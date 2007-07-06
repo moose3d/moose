@@ -79,6 +79,30 @@ TEST(CMatrix3x3_Assignment)
   CHECK_ARRAY_CLOSE( aValues2, matrix.GetArray(), 9, 0.00001f);
 }
 /////////////////////////////////////////////////////////////////
+TEST(CMatrix3x3_Identity)
+{
+  CMatrix3x3<float> matrix(1,2,3,
+			   4,5,6,
+			   7,8,9);
+
+  float aValues[9] = { 1,0,0,0,1,0,0,0,1 };
+  matrix.IdentityMatrix();
+  CHECK_ARRAY_CLOSE( aValues, matrix.GetArray(), 9, 0.00001f);
+  
+}
+/////////////////////////////////////////////////////////////////
+TEST(CMatrix3x3_Zero)
+{
+  CMatrix3x3<float> matrix(1,2,3,
+			   4,5,6,
+			   7,8,9);
+
+  float aValues[9] = { 1,0,0,0,1,0,0,0,1 };
+  matrix.IdentityMatrix();
+  CHECK_ARRAY_CLOSE( aValues, matrix.GetArray(), 9, 0.00001f);
+  
+}
+/////////////////////////////////////////////////////////////////
 TEST(CMatrix3x3_OperatorPlus)
 {
   CMatrix3x3<float> matrix(1,2,3,
@@ -347,24 +371,3 @@ TEST(CMatrix3x3_MultiplyColumnBy)
   CHECK_ARRAY_CLOSE( aValues2, matrix.GetArray(), 9, 0.00001f);
 }
 /////////////////////////////////////////////////////////////////
-TEST(CMatrix3x3_Inverse)
-{
-  CMatrix3x3<float> matrix(1.000, 0.000, 0.000,
-			   0.000, 0.400, 2.000,
-			   2.000, 0.000, 5.000);
-  
-  float aValues[9] = { 1.000,  0.000,  0.000,
-		       2.000,  2.500, -1.000,
-		       -0.400,  0.000,  0.200};
-  float aValues2[9] = { 1.000,  0.000,  0.000,
-			0.000,  1.000,  0.000,
-			0.000,  0.000,  1.000};
-  
-  
-  CMatrix3x3<float> mInv = matrix.Inverse();
-  CHECK_ARRAY_CLOSE( aValues, mInv.GetArray(), 9, 0.00001f);
-
-  CMatrix3x3<float> mRes = mInv * matrix ;
-  CHECK_ARRAY_CLOSE( aValues2, mRes.GetArray(), 9, 0.0001f); 
-}
-
