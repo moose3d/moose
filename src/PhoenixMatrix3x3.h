@@ -1,6 +1,8 @@
 #ifndef __PhoenixMatrix3x3_h__
 #define __PhoenixMatrix3x3_h__
 #include <iostream>
+#include <math.h>
+#include "PhoenixMathUtils.h"
 namespace Phoenix 
 {
   namespace Math 
@@ -41,7 +43,7 @@ namespace Phoenix
       // Returns a singledimensional array of floats in Row-Major mode.
       // The values of the first row are listed first,
       // then the second row, etc.
-      TYPE *GetArray() 
+      inline TYPE *GetArray() 
       {
 	return m_aValues;
       }
@@ -50,7 +52,7 @@ namespace Phoenix
       /// This multiplies mMatrix from the left side.
       /// \param mMatrix right side of multiplication.
       /// \returns CMatrix3x3 The multiplication result.
-      CMatrix3x3 operator*(const CMatrix3x3 &mMatrix) const
+      inline CMatrix3x3 operator*(const CMatrix3x3 &mMatrix) const
       {
 
 	return CMatrix3x3( m_aValues[0] * mMatrix.m_aValues[0]+
@@ -92,7 +94,7 @@ namespace Phoenix
       ////////////////////
       /// The assignment operator.
       /// \param m Matrix where values are copied to this.
-      void operator=(const CMatrix3x3 &m)
+      inline void operator=(const CMatrix3x3 &m)
       {
 	m_aValues[0] = m.m_aValues[0];
 	m_aValues[1] = m.m_aValues[1];
@@ -109,7 +111,7 @@ namespace Phoenix
       /// Adds to matrices together.
       /// \param m Matrix to be added to this.
       /// \return CMatrix3x3 sum matrix.
-      CMatrix3x3 operator+( const CMatrix3x3 &m) const
+      inline CMatrix3x3 operator+( const CMatrix3x3 &m) const
       {
 
 	return CMatrix3x3( m_aValues[0] + m.m_aValues[0],
@@ -126,7 +128,7 @@ namespace Phoenix
       /// Subtracts matrix from this matrix.
       /// \param m Matrix to be subtracted from this.
       /// \return CMatrix3x3 subtraction result.
-      CMatrix3x3 operator-( const CMatrix3x3 &m) const
+      inline CMatrix3x3 operator-( const CMatrix3x3 &m) const
       {
 	return CMatrix3x3( m_aValues[0] - m.m_aValues[0],
 			   m_aValues[1] - m.m_aValues[1],
@@ -141,7 +143,7 @@ namespace Phoenix
       ////////////////////
       /// Negates matrix values.
       /// \return CMatrix3x3 with negated values.
-      CMatrix3x3 operator-() const
+      inline CMatrix3x3 operator-() const
       {
 	return CMatrix3x3( -m_aValues[0],  -m_aValues[1],  -m_aValues[2],   
 			   -m_aValues[3],  -m_aValues[4],  -m_aValues[5],  
@@ -151,7 +153,7 @@ namespace Phoenix
       /// Multiplies matrix with scalar value.
       /// \param value The value used in multiplication.
       /// \return CMatrix3x3 multiplication result.
-      CMatrix3x3 operator*( TYPE value ) const
+      inline CMatrix3x3 operator*( TYPE value ) const
       {
 	return CMatrix3x3( m_aValues[0] * value,
 			   m_aValues[1] * value,
@@ -164,10 +166,25 @@ namespace Phoenix
 			   m_aValues[8] * value);
       }
       ////////////////////
+      /// Multiplies matrix with scalar value.
+      /// \param value The value used in multiplication.
+      inline void operator*=( TYPE value ) 
+      {
+	m_aValues[0] *= value,
+	m_aValues[1] *= value,
+	m_aValues[2] *= value,
+	m_aValues[3] *= value,
+	m_aValues[4] *= value,
+	m_aValues[5] *= value,
+	m_aValues[6] *= value,
+	m_aValues[7] *= value,
+	m_aValues[8] *= value;
+      }
+      ////////////////////
       /// Divides matrix with scalar value value.
       /// \param value division value, must not be zero!!!.
       /// \return CMatrix3x3 division result.
-      CMatrix3x3 operator/( TYPE value ) const
+      inline CMatrix3x3 operator/( TYPE value ) const
       {
 	TYPE t1DivValue = 1.0f / value;
 	return CMatrix3x3( m_aValues[0] * t1DivValue,
@@ -203,7 +220,7 @@ namespace Phoenix
       
       ////////////////////
       /// Transposes matrix.
-      void Transpose()
+      inline void Transpose()
       {
 	TYPE tTemp = m_aValues[1];
 	m_aValues[1] = m_aValues[3];
@@ -220,7 +237,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Returns transposed matrix as a copy.
-      CMatrix3x3 GetTransposition() const
+      inline CMatrix3x3 GetTransposition() const
       {
 	return CMatrix3x3( m_aValues[0],  m_aValues[3],  m_aValues[6],
 			   m_aValues[1],  m_aValues[4],  m_aValues[7],
@@ -235,7 +252,7 @@ namespace Phoenix
       ////////////////////
       /// Division operator with assign.
       /// \param divider value for division.
-      void operator/=(TYPE divider)
+      inline void operator/=(TYPE divider)
       {
 	TYPE t1DivValue = 1.0f / divider;
 	m_aValues[0] *= t1DivValue;
@@ -250,9 +267,9 @@ namespace Phoenix
       }
       ////////////////////
       /// Swaps the two rows.
-      /// \param iRow1 Row one.
-      /// \param iRow2 Row two.
-      void SwapRows(unsigned int iRow1, unsigned int iRow2)
+      /// \param iRow1 Row one. Must be 0-2
+      /// \param iRow2 Row two. Must be 0-2
+      inline void SwapRows(unsigned int iRow1, unsigned int iRow2)
       {
 	TYPE tmpRow[3];
 	// copy iRow1th row to tmpRow
@@ -270,9 +287,9 @@ namespace Phoenix
       }
       ////////////////////
       /// Divides row with given value.
-      /// \param iRow Which row is divided.
+      /// \param iRow Which row is divided. Must be 0-2.
       /// \param tDivider value which is the divider.
-      void DivideRowBy(unsigned int iRow, TYPE tDivider )
+      inline void DivideRowBy(unsigned int iRow, TYPE tDivider )
       {
 	TYPE t1DivValue = 1.0f / tDivider;
 	(*this)(iRow,0) *= t1DivValue;
@@ -281,9 +298,9 @@ namespace Phoenix
       }
       ////////////////////
       /// Multiplies row with value.
-      /// \param iRow Which row is multiplied.
+      /// \param iRow Which row is multiplied. Must be 0-2.
       /// \param tMultiplier multiplication value.
-      void MultiplyRowBy(unsigned int iRow, TYPE tMultiplier )
+      inline void MultiplyRowBy(unsigned int iRow, TYPE tMultiplier )
       {
 	
 	(*this)(iRow,0) *= tMultiplier;
@@ -295,7 +312,7 @@ namespace Phoenix
       /// Divides column by value.
       /// \param iCol Which column is divided.
       /// \param tDivider value which is the divider.
-      void DivideColumnBy(unsigned int iCol, TYPE tDivider )
+      inline void DivideColumnBy(unsigned int iCol, TYPE tDivider )
       {
 
 	TYPE t1DivValue = 1.0f / tDivider;
@@ -308,7 +325,7 @@ namespace Phoenix
       /// Multiplies column with value.
       /// \param iCol Which column is multiplied.
       /// \param tMultiplier multiplication value.
-      void MultiplyColumnBy(unsigned int iCol, TYPE tMultiplier )
+      inline void MultiplyColumnBy(unsigned int iCol, TYPE tMultiplier )
       {
 	(*this)(0,iCol) *= tMultiplier;
 	(*this)(1,iCol) *= tMultiplier;
@@ -320,11 +337,11 @@ namespace Phoenix
       /// 4x4 matrix inverse using Gauss-Jordan algorithm with row pivoting
       /// originally written by Nathan Reed, now released into the public domain.
       /// \returns inverted matrix.
-      CMatrix3x3 Inverse()
+      inline CMatrix3x3 Inverse()
       {
 	CMatrix3x3 mOrig;    // The matrix whose inverse we want to take
 	CMatrix3x3 mInverse; // initialize to 4x4 identity matrix
-	CMatrix3x3::Identity(mInverse);
+	mInverse.IdentityMatrix();
 	unsigned int i, j, pivot;
 	mOrig = *this;      
 	
@@ -341,7 +358,7 @@ namespace Phoenix
 	  if ( TOO_CLOSE_TO_ZERO( mOrig(pivot,j)) )
 	  {
 	    std::cerr << "Matrix inverse does not exist!"  << std::endl;
-	    return CMatrix3x3::Identity();
+	    return CMatrix3x3(1,0,0,  0,1,0,  0,0,1);
 	  }
 	
 	  // interchange rows to put pivot element on the diagonal
@@ -402,7 +419,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Initializes a matrix to Identity matrix.
-      void IdentityMatrix()
+      inline void IdentityMatrix()
       {
 	m_aValues[0] = 1; m_aValues[1] = 0; m_aValues[2] = 0; 
 	m_aValues[3] = 0; m_aValues[4] = 1; m_aValues[5] = 0; 
@@ -410,7 +427,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Zeroes matrix.
-      void ZeroMatrix()
+      inline void ZeroMatrix()
       {
 	m_aValues[0] = 0; m_aValues[1] = 0; m_aValues[2] = 0; 
 	m_aValues[3] = 0; m_aValues[4] = 0; m_aValues[5] = 0; 
