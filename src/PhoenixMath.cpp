@@ -791,31 +791,168 @@ Phoenix::Math::InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInver
       mOrig.SwapRows(    iPivot, iCol );
       mInverse.SwapRows( iPivot, iCol );
     }
+    
+    
     ////////////////////
     /// Set element (iCol,iCol) to 1
-    fMultValue = 1.0f/mOrig(iCol,iCol);
-    mOrig.MultiplyRowBy( iCol, fMultValue   );
-    mInverse.MultiplyRowBy( iCol, fMultValue );
-
+    if ( mOrig(iCol,iCol) != 1.0f)
+    {
+      fMultValue = 1.0f/mOrig(iCol,iCol);
+      mOrig.MultiplyRowBy( iCol, fMultValue   );
+      mInverse.MultiplyRowBy( iCol, fMultValue );
+    }
+    
     ////////////////////
-    /// for each row do
+    /// subtract this row from others to make rest of column iCol zero
     for(unsigned int iR=0;iR<3;iR++)
     {
       /// skip diagonal element
-      if ( iR == iCol ) continue;
-
-      /// Add -M_{rj} x M(iR,*) to M(iCol, *)
-      fScale = -mOrig(iR, iCol);
-      for( unsigned int iTmpCol=0;iTmpCol<3;iTmpCol++)
+      if ( (iR != iCol) && !TOO_CLOSE_TO_ZERO(mOrig(iR,iCol)))
       {
-	mOrig(iR,iTmpCol)    += fScale * mOrig(iCol,iTmpCol);
-	mInverse(iR,iTmpCol) += fScale * mInverse(iCol,iTmpCol);
+	/// Add -M_{rj} x M(iR,*) to M(iCol, *)
+	fScale = -mOrig(iR, iCol);
+	for( unsigned int iTmpCol=0;iTmpCol<3;iTmpCol++)
+	{
+	  mOrig(iR,iTmpCol)    += fScale * mOrig(iCol,iTmpCol);
+	  mInverse(iR,iTmpCol) += fScale * mInverse(iCol,iTmpCol);
+	}
       }
     } // for each row
   } // for each column
 
   // At this point, matrix has been completely inverted and all is good.
   return MATRIX_INVERTIBLE;
+  
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInverse)
+{
+  
+  mInverse.IdentityMatrix();
+  unsigned int iRow, iCol, iPivot;
+  float fScale, fMultValue;
+  iCol = 0;
+  iPivot = 0;
+  ////////////////////
+  /// for each column
+  for( iCol=0;iCol<4;iCol++) 
+  {
+    // Find largest absolute value from current column.
+    for( iPivot = iCol, iRow = iCol;iRow<4; iRow++ )
+    {
+      if ( fabs(mOrig(iRow,iCol)) > fabs(mOrig(iPivot, iCol))) { iPivot = iRow; }
+      
+    } // For each row in iCol
+    ////////////////////
+    /// If current value is zero, matrix cannot be inverted.
+    if ( TOO_CLOSE_TO_ZERO(mOrig(iPivot, iCol)))
+    {
+      std::cerr << "Matrix is not invertible!" << std::endl;
+      return MATRIX_NOT_INVERTIBLE;
+    }
+    ////////////////////
+    if ( iPivot != iCol )
+    {
+      // Swap rows
+      mOrig.SwapRows(    iPivot, iCol );
+      mInverse.SwapRows( iPivot, iCol );
+    }
+    
+    
+    ////////////////////
+    /// Set element (iCol,iCol) to 1
+    if ( mOrig(iCol,iCol) != 1.0f)
+    {
+      fMultValue = 1.0f/mOrig(iCol,iCol);
+      mOrig.MultiplyRowBy( iCol, fMultValue   );
+      mInverse.MultiplyRowBy( iCol, fMultValue );
+    }
+    
+    ////////////////////
+    /// subtract this row from others to make rest of column iCol zero
+    for(unsigned int iR=0;iR<4;iR++)
+    {
+      /// skip diagonal element
+      if ( (iR != iCol) && !TOO_CLOSE_TO_ZERO(mOrig(iR,iCol)))
+      {
+	/// Add -M_{rj} x M(iR,*) to M(iCol, *)
+	fScale = -mOrig(iR, iCol);
+	for( unsigned int iTmpCol=0;iTmpCol<4;iTmpCol++)
+	{
+	  mOrig(iR,iTmpCol)    += fScale * mOrig(iCol,iTmpCol);
+	  mInverse(iR,iTmpCol) += fScale * mInverse(iCol,iTmpCol);
+	}
+      }
+    } // for each row
+  } // for each column
 
+  // At this point, matrix has been completely inverted and all is good.
+  return MATRIX_INVERTIBLE;
+  
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Math::InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInverse)
+{
+
+  
+  mInverse.IdentityMatrix();
+  unsigned int iRow, iCol, iPivot;
+  float fScale, fMultValue;
+  iCol = 0;
+  iPivot = 0;
+  ////////////////////
+  /// for each column
+  for( iCol=0;iCol<2;iCol++) 
+  {
+    // Find largest absolute value from current column.
+    for( iPivot = iCol, iRow = iCol;iRow<2; iRow++ )
+    {
+      if ( fabs(mOrig(iRow,iCol)) > fabs(mOrig(iPivot, iCol))) { iPivot = iRow; }
+      
+    } // For each row in iCol
+    ////////////////////
+    /// If current value is zero, matrix cannot be inverted.
+    if ( TOO_CLOSE_TO_ZERO(mOrig(iPivot, iCol)))
+    {
+      std::cerr << "Matrix is not invertible!" << std::endl;
+      return MATRIX_NOT_INVERTIBLE;
+    }
+    ////////////////////
+    if ( iPivot != iCol )
+    {
+      // Swap rows
+      mOrig.SwapRows(    iPivot, iCol );
+      mInverse.SwapRows( iPivot, iCol );
+    }
+    ////////////////////
+    /// Set element (iCol,iCol) to 1
+    if ( mOrig(iCol,iCol) != 1.0f)
+    {
+      fMultValue = 1.0f/mOrig(iCol,iCol);
+      mOrig.MultiplyRowBy( iCol, fMultValue   );
+      mInverse.MultiplyRowBy( iCol, fMultValue );
+    }
+    
+    ////////////////////
+    /// subtract this row from others to make rest of column iCol zero
+    for(unsigned int iR=0;iR<2;iR++)
+    {
+      /// skip diagonal element
+      if ( (iR != iCol) && !TOO_CLOSE_TO_ZERO(mOrig(iR,iCol)))
+      {
+	/// Add -M_{rj} x M(iR,*) to M(iCol, *)
+	fScale = -mOrig(iR, iCol);
+	for( unsigned int iTmpCol=0;iTmpCol<2;iTmpCol++)
+	{
+	  mOrig(iR,iTmpCol)    += fScale * mOrig(iCol,iTmpCol);
+	  mInverse(iR,iTmpCol) += fScale * mInverse(iCol,iTmpCol);
+	}
+      }
+    } // for each row
+  } // for each column
+  // At this point, matrix has been completely inverted and all is good.
+  return MATRIX_INVERTIBLE;
 }
 /////////////////////////////////////////////////////////////////
