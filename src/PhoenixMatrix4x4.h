@@ -63,22 +63,86 @@ namespace Phoenix
       CMatrix4x4 operator*(const CMatrix4x4 &mMatrix) const
       {
 
-	return CMatrix4x4( m_aValues[0] * mMatrix.m_aValues[0],
-			   m_aValues[1] * mMatrix.m_aValues[4],
-			   m_aValues[2] * mMatrix.m_aValues[8],
+	return CMatrix4x4( m_aValues[0] * mMatrix.m_aValues[0]+
+			   m_aValues[1] * mMatrix.m_aValues[4]+
+			   m_aValues[2] * mMatrix.m_aValues[8]+
 			   m_aValues[3] * mMatrix.m_aValues[12],
-			   m_aValues[4] * mMatrix.m_aValues[1],
-			   m_aValues[5] * mMatrix.m_aValues[5],
-			   m_aValues[6] * mMatrix.m_aValues[9],
+			   
+			   m_aValues[0] * mMatrix.m_aValues[1]+
+			   m_aValues[1] * mMatrix.m_aValues[5]+
+			   m_aValues[2] * mMatrix.m_aValues[9]+
+			   m_aValues[3] * mMatrix.m_aValues[13],
+
+			   m_aValues[0] * mMatrix.m_aValues[2]+
+			   m_aValues[1] * mMatrix.m_aValues[6]+
+			   m_aValues[2] * mMatrix.m_aValues[10]+
+			   m_aValues[3] * mMatrix.m_aValues[14],
+
+			   m_aValues[0] * mMatrix.m_aValues[3]+
+			   m_aValues[1] * mMatrix.m_aValues[7]+
+			   m_aValues[2] * mMatrix.m_aValues[11]+
+			   m_aValues[3] * mMatrix.m_aValues[15],
+
+			   m_aValues[4] * mMatrix.m_aValues[0]+
+			   m_aValues[5] * mMatrix.m_aValues[4]+
+			   m_aValues[6] * mMatrix.m_aValues[8]+
+			   m_aValues[7] * mMatrix.m_aValues[12],
+			   
+			   m_aValues[4] * mMatrix.m_aValues[1]+
+			   m_aValues[5] * mMatrix.m_aValues[5]+
+			   m_aValues[6] * mMatrix.m_aValues[9]+
 			   m_aValues[7] * mMatrix.m_aValues[13],
-			   m_aValues[8] * mMatrix.m_aValues[2],
-			   m_aValues[9] * mMatrix.m_aValues[6],
-			   m_aValues[10] * mMatrix.m_aValues[10],
+
+			   m_aValues[4] * mMatrix.m_aValues[2]+
+			   m_aValues[5] * mMatrix.m_aValues[6]+
+			   m_aValues[6] * mMatrix.m_aValues[10]+
+			   m_aValues[7] * mMatrix.m_aValues[14],
+
+			   m_aValues[4] * mMatrix.m_aValues[3]+
+			   m_aValues[5] * mMatrix.m_aValues[7]+
+			   m_aValues[6] * mMatrix.m_aValues[11]+
+			   m_aValues[7] * mMatrix.m_aValues[15],
+
+			   m_aValues[8] * mMatrix.m_aValues[0]+
+			   m_aValues[9] * mMatrix.m_aValues[4]+
+			   m_aValues[10] * mMatrix.m_aValues[8]+
+			   m_aValues[11] * mMatrix.m_aValues[12],
+			   
+			   m_aValues[8] * mMatrix.m_aValues[1]+
+			   m_aValues[9] * mMatrix.m_aValues[5]+
+			   m_aValues[10] * mMatrix.m_aValues[9]+
+			   m_aValues[11] * mMatrix.m_aValues[13],
+
+			   m_aValues[8] * mMatrix.m_aValues[2]+
+			   m_aValues[9] * mMatrix.m_aValues[6]+
+			   m_aValues[10] * mMatrix.m_aValues[10]+
 			   m_aValues[11] * mMatrix.m_aValues[14],
-			   m_aValues[12] * mMatrix.m_aValues[3],
-			   m_aValues[13] * mMatrix.m_aValues[7],
-			   m_aValues[14] * mMatrix.m_aValues[11],
-			   m_aValues[15] * mMatrix.m_aValues[15]);
+
+			   m_aValues[8] * mMatrix.m_aValues[3]+
+			   m_aValues[9] * mMatrix.m_aValues[7]+
+			   m_aValues[10] * mMatrix.m_aValues[11]+
+			   m_aValues[11] * mMatrix.m_aValues[15],
+
+			   m_aValues[12] * mMatrix.m_aValues[0]+
+			   m_aValues[13] * mMatrix.m_aValues[4]+
+			   m_aValues[14] * mMatrix.m_aValues[8]+
+			   m_aValues[15] * mMatrix.m_aValues[12],
+			   
+			   m_aValues[12] * mMatrix.m_aValues[1]+
+			   m_aValues[13] * mMatrix.m_aValues[5]+
+			   m_aValues[14] * mMatrix.m_aValues[9]+
+			   m_aValues[15] * mMatrix.m_aValues[13],
+
+			   m_aValues[12] * mMatrix.m_aValues[2]+
+			   m_aValues[13] * mMatrix.m_aValues[6]+
+			   m_aValues[14] * mMatrix.m_aValues[10]+
+			   m_aValues[15] * mMatrix.m_aValues[14],
+
+			   m_aValues[12] * mMatrix.m_aValues[3]+
+			   m_aValues[13] * mMatrix.m_aValues[7]+
+			   m_aValues[14] * mMatrix.m_aValues[11]+
+			   m_aValues[15] * mMatrix.m_aValues[15]
+			   );
       }
       ////////////////////
       /// The assignment operator.
