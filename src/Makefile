@@ -8,7 +8,7 @@ DEBUG_FLAGS=#-DDEBUG #-DDEBUG_PRINT_INSANE
 INCLUDE_DIR=-I/home/entity/workdir/phoenixentities/src
 LINUX_CFLAGS=-Wall -c `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
-	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) -D__STDC_CONSTANT_MACROS \
+	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
 	-mmmx -m3dnow -msse -mfpmath=387
 LDFLAGS_LINUX=-Wall -lGLU -lGLee -lSDL_image \
 		`sdl-config --libs` `freetype-config --libs` \
