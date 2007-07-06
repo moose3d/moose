@@ -1,98 +1,14 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-/////////////////////////////////////////////////////////////////
-// $Id: GSE_structures.h,v 1.27 2007/06/01 08:55:43 entity Exp $
-// desc : Header for the various classes.
-// author : AG/eNtity
 /////////////////////////////////////////////////////////////////
 #ifndef __GSE_structures_h__
 #define __GSE_structures_h__
 /////////////////////////////////////////////////////////////////
 #include "GSE_globals.h"
 #include "GSE_Logger.h"
-#include "GSE_Vector.h"
 #include <math.h>
 #include <vector>
 #include <map>
 #include <list>
 #include <algorithm>
-/////////////////////////////////////////////////////////////////
-
-
-
-/////////////////////////////////////////////////////////////////
-/// A vector class which consists of 3 float values
-class GSE_Vector3f: public CVector<float,3>
-{
- public:
-
-
-
-  /// Rotates this vector using qRotation.
-  void Rotate( const Math::GSE_Quaternion & qRotation );
-  /// Rotate vector with Quaternion qRotation and return a copy, leaving original as it was.
-  GSE_Vector3   GetRotated(const Math::GSE_Quaternion & qRotation) const;
-
-  
-  /// Returns the World X vector (1.0, 0.0, 0.0).
-  static  GSE_Vector3 &GetWorldX();
-  /// Returns the World Y vector (0.0, 1.0, 0.0).
-  static  GSE_Vector3 &GetWorldY();
-  /// Returns the World Z vector (0.0, 0.0, 1.0).
-  static  GSE_Vector3 &GetWorldZ();
-  
-  
-
-
-
-
-};
-/////////////////////////////////////////////////////////////////
-/// Vector with two components.
-class GSE_Vector2 : public GSE_Vector<float, 2>
-{
- public:
-  enum {
-    /// Symbolic index X.
-    X = 0,
-    /// Symbolic index Y.
-    Y = 1  
-  };
-  /// The default constructor.
-  GSE_Vector2();
-  /// The parametrized constructor.
-  GSE_Vector2( float fX, float fY );
-  /// The destructor.
-  ~GSE_Vector2();
-  /// The Scaling operation.
-  GSE_Vector2   operator*(float fScalar) const;
-  /// The negation operation.
-  GSE_Vector2   operator-() const;
-  /// The subtraction operation.
-  GSE_Vector2   operator-(const GSE_Vector2 & vVector) const;
-  /// The sum operation.
-  GSE_Vector2 operator+(const GSE_Vector2 & vVector) const;
-  /// Assigns x and y values.
-  void Set( float fX, float fY );
-};
 /////////////////////////////////////////////////////////////////
 /// The base class for color representation with RGBA values.
 class GSE_Color : public GSE_Vector< float, 4 >
@@ -175,7 +91,8 @@ class GSE_Color : public GSE_Vector< float, 4 >
 };
 /////////////////////////////////////////////////////////////////
 /// The base object for everything in the system.
-class GSE_Object {
+class GSE_Object 
+{
 
  private:
   /// How many objects have been created.
