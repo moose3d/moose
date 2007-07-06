@@ -40,7 +40,11 @@ namespace Phoenix
     /// vRadians[Y] rad over Y-axis and vRadians[Z] rad over Z-axis.
     CMatrix4x4<float> RotationMatrix(const CVector3<float> & vRadians );
     ////////////////////
-    /// Generates a translation matrix 
+    /// Generates a translation matrix .
+    /// \param fX X-axis translation.
+    /// \param fY Y-axis translation.
+    /// \param fZ Z-axis translation.
+    /// \returns Translation Matrix.
     inline CMatrix4x4<float> TranslationMatrix(float fX, float fY, float fZ)
     {
       return CMatrix4x4<float>( 1,0,0,fX,
@@ -49,7 +53,9 @@ namespace Phoenix
 				0,0,0,1);
     }
     ////////////////////
-    /// Generates a translation matrix 
+    /// Generates a translation matrix.
+    /// \param vValues Vector with translations for x,y,z axes.
+    /// \returns Translation Matrix.
     inline CMatrix4x4<float> TranslationMatrix(const CVector3<float> &vValues)
     {
       return CMatrix4x4<float>( 1,0,0, vValues(0),
@@ -58,7 +64,17 @@ namespace Phoenix
 				0,0,0, 1);
 
     }
-    CMatrix4x4<float> UniformScaleMatrix( float fScale );  
+    ////////////////////
+    /// Creates uniform scale matrix.
+    /// \param fScale scaling value.
+    /// \returns Matrix with scaling property.
+    inline CMatrix4x4<float> UniformScaleMatrix( float fScale )
+    {
+      return CMatrix4x4<float>( fScale,  0,0,0,
+				0, fScale, 0,0,
+				0,0,  fScale,0,
+				0,0,0,       1 );
+    }
     
 
     // Constructs a Row-Major TBN (Tangent, Bitangent, Normal)-matrix for bump mapping

@@ -193,15 +193,6 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ )
   return mResult;
 }
 /////////////////////////////////////////////////////////////////
-CMatrix4x4<float> 
-Phoenix::Math::UniformScaleMatrix( float fScale )
-{
-  return CMatrix4x4<float>( fScale,  0,0,0,
-			    0, fScale, 0,0,
-			    0,0,  fScale,0,
-			    0,0,0,       1 );
-}
-/////////////////////////////////////////////////////////////////
 // ---------------------------------------------------------------------------------
 //
 // Calculates the tangent, bitangent and normal vectors in tangent space
