@@ -1,0 +1,758 @@
+#include <math.h>
+#include <iostream>
+#include "PhoenixMath.h"
+
+using namespace Phoenix::Math;
+
+// -----------------------------------------------------------------
+void
+Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix )
+{
+  
+// The values in Row-Major mode matrix which represents the 
+// rotation matrix from the Quaternion:
+// (From http://skal.planet-d.net/demo/matrixfaq.htm#Q2)
+//
+//          ¦                                                     ¦
+//          ¦ 1 - (2Y²  + 2Z² ) 2XY - 2ZW           2XZ + 2YW     ¦
+//          ¦                                                     ¦
+//          ¦                                                     ¦
+//      M = ¦ 2XY + 2ZW         1 - (2X²  + 2Z² )   2YZ - 2XW     ¦
+//          ¦                                                     ¦
+//          ¦                                                     ¦
+//          ¦ 2XZ - 2YW         2YZ + 2XW         1 - (2X²  + 2Y²)¦
+//          ¦                                                     ¦
+//
+
+  float xx = qQuat(0) * qQuat(0);
+  float yy = qQuat(1) * qQuat(1);
+  float zz = qQuat(2) * qQuat(2);
+  
+  float xy = qQuat(0) * qQuat(1);
+  float xz = qQuat(0) * qQuat(2);
+  float yz = qQuat(1) * qQuat(2);
+  
+  float wz = qQuat(3) * qQuat(2);
+  float wy = qQuat(3) * qQuat(1);
+  float wx = qQuat(3) * qQuat(0);
+  
+  mMatrix(0,0) = 1.0 - yy - yy - zz - zz;
+  mMatrix(0,1) = xy + xy - wz - wz;
+  mMatrix(0,2) = xz + xz + wy + wy;
+  mMatrix(0,3) = 0.0;
+  
+  mMatrix(1,0) = xy + xy + wz + wz;
+  mMatrix(1,1) = 1.0f - xx - xx - zz - zz;
+  mMatrix(1,2) = yz + yz - wx - wx;
+  mMatrix(1,3) = 0.0;
+  
+  mMatrix(2,0) = xz + xz - wy - wy;
+  mMatrix(2,1) = yz + yz + wx + wx;
+  mMatrix(2,2) = 1.0 - xx - xx - yy - yy;
+  mMatrix(2,3) = 0.0;
+  
+  mMatrix(3,0) = 0.0;
+  mMatrix(3,1) = 0.0;
+  mMatrix(3,2) = 0.0;
+  mMatrix(3,3) = 1.0;
+
+}
+
+std::ostream & 
+operator<<(std::ostream &stream, const CQuaternion & qQuat)
+{
+  stream << qQuat(0) << "," <<qQuat(1) << "," <<qQuat(2) << "," << qQuat(3);
+  return stream;
+}
+
+
+CQuaternion 
+Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation )
+{
+  
+  float fCos = qFrom.Dot(qTo);
+  float fScaleFrom, fScaleTo;
+
+  if( fCos < 0.0f )
+  {
+    fCos = -fCos;
+    qTo = -qTo;
+  }
+  
+  if ( 1.0f - fCos > 0.00001f )
+  {
+    float fOmega = acosf(fCos);
+    float f1DivSinOmega = (1.0f/sinf(fOmega));
+    fScaleFrom = sinf((1.0f - fInterpolation )*fOmega) * f1DivSinOmega;
+    fScaleTo   = sinf( fInterpolation * fOmega )  * f1DivSinOmega;
+
+  } 
+  else 
+  {
+    fScaleFrom = 1.0f - fInterpolation;
+    fScaleTo = fInterpolation;
+  }
+  
+  qFrom *= fScaleFrom;
+  qTo *= fScaleTo;
+  return qFrom + qTo;
+}
+/////////////////////////////////////////////////////////////////
+CQuaternion
+Phoenix::Math::RotationArc( CVector3<float> v0, CVector3<float> v1)
+{
+  v0.Normalize();
+  v1.Normalize();
+  CVector3<float> vCross = v0.Cross(v1);
+  
+  float  fDot = v0.Dot(v1);
+  float  fS   = sqrtf((1.0f+fDot)*2.0f);
+  float  f1DivS = 1.0f / fS;
+  
+  return CQuaternion(vCross[0] * f1DivS,  vCross[1] * f1DivS,   vCross[2] * f1DivS,
+		     fS * 0.5f );
+}
+/////////////////////////////////////////////////////////////////
+CMatrix4x4<float> 
+Phoenix::Math::RotationMatrix(const CVector3<float> & vAxis, float fRadians)
+{
+  return RotationMatrix( vAxis(0), vAxis(1), vAxis(2), fRadians );
+}
+/////////////////////////////////////////////////////////////////
+CMatrix4x4<float> 
+Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians)
+{
+  CMatrix4x4<float> mS;
+  CMatrix4x4<float> uuT;
+  uuT.ZeroMatrix();
+  CMatrix4x4<float> mResult;
+  // An unit vector is required
+  CVector3<float> vAxisUnit(fX,fY,fZ);
+  vAxisUnit.Normalize();
+  // For readability 
+  fZ = vAxisUnit[2];
+  fX = vAxisUnit[0];
+  fY = vAxisUnit[1];
+  // Sine and cosine of the fRadians
+  float fSinAlpha = sinf(fRadians);
+  float fCosAlpha = cosf(fRadians);
+
+  // To remove couple of overlapping mulitiplications
+  float fXX = fX * fX;
+  float fXY = fX * fY;
+  float fXZ = fX * fZ;
+  float fYY = fY * fY;
+  float fYZ = fY * fZ;
+  float fZZ = fZ * fZ;
+  // At first, we construct matrix S:
+  // 
+  //     ( 0 -z -y )
+  // S = ( z  0 -x )
+  //     (-y  x  0 )
+  //
+  mS(0,0) = 0.0; mS(0,1) = -fZ; mS(0,2) =  fY; mS(0,3) = 0.0;
+  mS(1,0) =  fZ; mS(1,1) = 0.0; mS(1,2) = -fX; mS(1,3) = 0.0;
+  mS(2,0) = -fY; mS(2,1) = -fX; mS(2,2) = 0.0; mS(2,3) = 0.0;
+  mS(3,0) = 0.0; mS(3,1) = 0.0; mS(3,2) = 0.0; mS(3,3) = 1.0;
+  // then sin (fRadians) * S
+  mS = mS * fSinAlpha;
+  // uuT = uT * u;
+  uuT(0,0) = fXX; uuT(0,1)= fXY; uuT(0,2) = fXZ; 
+  uuT(1,0) = fXY; uuT(1,1)= fYY; uuT(1,2) = fYZ; 
+  uuT(2,0) = fXZ; uuT(2,1)= fYZ; uuT(2,2) = fZZ; 
+  CMatrix4x4<float> mTemp;
+  mTemp.IdentityMatrix();
+  mResult = uuT + (mTemp - uuT)*fCosAlpha + mS;
+  mResult(3,3) = 1.0;
+
+  return mResult;
+}
+/////////////////////////////////////////////////////////////////
+CMatrix4x4<float>
+Phoenix::Math::RotationMatrix( const CVector3<float> &vRadians)
+{
+  return RotationMatrix( vRadians(0), 
+			 vRadians(1),
+			 vRadians(2));
+}
+/////////////////////////////////////////////////////////////////
+CMatrix4x4<float>
+Phoenix::Math::RotationMatrix(float fX, float fY, float fZ )
+{
+  // Create quaternions from angles
+  CQuaternion qX,qY,qZ,qR;
+  CMatrix4x4<float> mResult;
+
+  qX.CreateFromAxisAngleRad( 1.0, 0.0, 0.0, fX);
+  qY.CreateFromAxisAngleRad( 0.0, 1.0, 0.0, fY);
+  qZ.CreateFromAxisAngleRad( 0.0, 0.0, 1.0, fZ);
+  qR = qZ * qY * qX;
+
+  Phoenix::Math::QuaternionToMatrix(qR,mResult);
+  // combine quaternions and convert to matrix.
+  return mResult;
+}
+/////////////////////////////////////////////////////////////////
+CMatrix4x4<float> 
+Phoenix::Math::UniformScaleMatrix( float fScale )
+{
+  return CMatrix4x4<float>( fScale,  0,0,0,
+			    0, fScale, 0,0,
+			    0,0,  fScale,0,
+			    0,0,0,       1 );
+}
+/////////////////////////////////////////////////////////////////
+// ---------------------------------------------------------------------------------
+//
+// Calculates the tangent, bitangent and normal vectors in tangent space
+// for given vertices vPoint0, vPoint1, vPoint2
+//
+// ---------------------------------------------------------------------------------
+CMatrix3x3<float> 
+GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> vPoint2,
+	      CVector2<float> vTexCoord0, CVector2<float> vTexCoord1, CVector2<float> vTexCoord2)
+{
+  CMatrix3x3<float> mResult;
+    
+  CVector3<float> vQ1 = vPoint1 - vPoint0;
+  CVector3<float> vQ2 = vPoint2 - vPoint0;
+  CVector2<float> vQTex1 = vTexCoord1 - vTexCoord0;
+  CVector2<float> vQTex2 = vTexCoord2 - vTexCoord0;
+  //  ----------------------------------------------------------
+  // The formula for retrieving the tangent space matrix 
+  //
+  //   Q1.xyz = V1.xyz - V0.xyz
+  //   Q2.xyz = V2.xyz - V0.xyz
+  //   Q1.s   = V1.s - V0.s
+  //   Q2.s   = V2.s - V0.s
+  //   
+  //
+  //  | Tx Ty Tz |              1               |  Q2.t -Q1.t | | Q1.x Q1.y Q1.z |
+  //  |          | =    ------------------    * |             |*|                |
+  //  | Bx By Bz |     Q1.s*Q2.t - Q2.s*Q1.t    | -Q2.s  Q1.s | | Q2.x Q2.y Q2.z |
+  //
+  //  ----------------------------------------------------------
+  float fDenominator = (vQTex1(0) * vQTex2(1)) - (vQTex2(0) * vQTex1(1));
+  float fCoefficient = 0.0;
+
+  if ( TOO_CLOSE_TO_ZERO(fCoefficient))
+  {
+    // Handle error
+    mResult.IdentityMatrix();
+    return mResult;
+  } 
+  else 
+  {
+
+    CVector3<float> vNormal(0.0f, 0.0f, 1.0f);
+    fCoefficient = 1.0f / fDenominator;
+
+    CVector3<float> vTangent( vQTex2(1) * vQ1(0) +
+			      -vQTex1(1) * vQ2(0),
+			      vQTex2(1) * vQ1(1) +
+			      -vQTex1(1) * vQ2(1),
+			      vQTex2(1) * vQ1(2) +
+			      -vQTex1(1) * vQ2(2) );
+
+    CVector3<float> vBitangent( -vQTex2(0) * vQ1(0) +
+				vQTex1(0) * vQ2(0),
+				-vQTex2(0) * vQ1(1) +
+				vQTex1(0) * vQ2(1),
+				-vQTex2(0) * vQ1(2) +
+				vQTex1(0) * vQ2(2)) ;
+
+    vTangent   *= fCoefficient;
+    vBitangent *= fCoefficient;
+    // Ensure that the vectors are orthogonal
+    vTangent = vTangent - ( vNormal.Dot(vTangent) * vNormal);    
+    vBitangent = vBitangent - ( vNormal.Dot(vBitangent) * vNormal ) - 
+    ( vTangent.Dot(vBitangent)*vTangent );
+    // construct the matrix
+    mResult(0,0) = vTangent[0];
+    mResult(0,1) = vTangent[1];
+    mResult(0,2) = vTangent[2];
+    mResult(1,0) = vBitangent[0];
+    mResult(1,1) = vBitangent[1];
+    mResult(1,2) = vBitangent[2];
+    mResult(2,0) = vNormal[0];
+    mResult(2,1) = vNormal[1];
+    mResult(2,2) = vNormal[2];
+    
+  }
+  
+  
+  return mResult;
+}
+////////////////////
+/// Returns the determinant of the 4x4 float matrix.
+float 
+Phoenix::Math::Det(const CMatrix4x4<float> & mMatrix)
+{
+  float fDet = 0.0;
+  fDet += mMatrix.At(0,0) * Det(RemoveRowAndColumn(mMatrix, 1,1));
+  fDet -= mMatrix.At(0,1) * Det(RemoveRowAndColumn(mMatrix, 1,2));
+  fDet += mMatrix.At(0,2) * Det(RemoveRowAndColumn(mMatrix, 1,3));
+  fDet -= mMatrix.At(0,3) * Det(RemoveRowAndColumn(mMatrix, 1,4));
+  return fDet;
+}
+////////////////////
+/// Returns the determinant of the 3x3 float matrix.
+float 
+Phoenix::Math::Det(const CMatrix3x3<float> & mMatrix)
+{
+  float fDet = 0.0;
+  fDet += mMatrix.At(0,0) * Det(RemoveRowAndColumn(mMatrix, 1,1));
+  fDet -= mMatrix.At(0,1) * Det(RemoveRowAndColumn(mMatrix, 1,2));
+  fDet += mMatrix.At(0,2) * Det(RemoveRowAndColumn(mMatrix, 1,3));
+  return fDet;
+}
+////////////////////
+/// Returns the determinant of the 2x2 float matrix.
+float 
+Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
+{
+  return mMatrix.At(0,0) * mMatrix.At(1,1) - mMatrix.At(0,1) * mMatrix.At(1,0);
+}
+/////////////////////////////////////////////////////////////////
+// CMatrix3x3<float>
+// CovarianceMatrix( float *pVertexArray, unsigned int nNumVertices)
+// {
+  
+//   CMatrix3x3<float> mCovariance;
+//   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
+//   // Calculate average position
+//   for(unsigned int iVertComponent = 0;iVertComponent < nNumVertices*3; iVertComponent+=3)
+//   {
+//     vAveragePos[0] += pVertexArray[iVertComponent];
+//     vAveragePos[1] += pVertexArray[iVertComponent+1];
+//     vAveragePos[2] += pVertexArray[iVertComponent+2];
+//   }
+  
+//   vAveragePos /= nNumVertices;
+  
+//   // Calculate Covariance matrix
+//   for(unsigned int iVertComponent = 0;iVertComponent < nNumVertices*3; iVertComponent+=3)
+//   {
+//     float fTmpX = pVertexArray[iVertComponent]   - vAveragePos[0];
+//     float fTmpY = pVertexArray[iVertComponent+1] - vAveragePos[1];
+//     float fTmpZ = pVertexArray[iVertComponent+2] - vAveragePos[2];
+    
+//     mCovariance(0,0) += fTmpX * fTmpX;
+//     mCovariance(1,1) += fTmpY * fTmpY;
+//     mCovariance(2,2) += fTmpZ * fTmpZ;
+//     mCovariance(0,1) = mCovariance(1,0) += fTmpX * fTmpY;
+//     mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
+//     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
+
+//   }    
+//   mCovariance /= nNumVertices;
+
+//   return mCovariance;
+// }
+/////////////////////////////////////////////////////////////////
+//CMatrix3x3<float>
+// CovarianceMatrix( float *pVertexArray, const CIndexBuffer &indexBuffer)
+// {
+  
+//   CMatrix3x3<float> mCovariance;
+//   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
+//   unsigned int nVertexIndex;
+//   // Calculate average position
+//   for(unsigned int nIndex = 0;nIndex < indexBuffer.m_nNumIndices; nIndex++)
+//   {
+//     nVertexIndex = indexBuffer.m_pIndices[nIndex] * 3;
+//     vAveragePos[0] += pVertexArray[nVertexIndex];
+//     vAveragePos[1] += pVertexArray[nVertexIndex+1];
+//     vAveragePos[2] += pVertexArray[nVertexIndex+2];
+//   }
+
+//   vAveragePos /= indexBuffer.m_nNumIndices;
+//   float fTmpX;
+//   float fTmpY;
+//   float fTmpZ;
+//   // Calculate Covariance matrix
+//   for(unsigned int nIndex = 0;nIndex < indexBuffer.m_nNumIndices; nIndex++)
+//   {
+//     nVertexIndex = indexBuffer.m_pIndices[nIndex] * 3;
+//     fTmpX = pVertexArray[nVertexIndex]   - vAveragePos[0];
+//     fTmpY = pVertexArray[nVertexIndex+1] - vAveragePos[1];
+//     fTmpZ = pVertexArray[nVertexIndex+2] - vAveragePos[2];
+    
+//     mCovariance(0,0) += fTmpX * fTmpX;
+//     mCovariance(1,1) += fTmpY * fTmpY;
+//     mCovariance(2,2) += fTmpZ * fTmpZ;
+//     mCovariance(0,1) = mCovariance(1,0) += fTmpX * fTmpY;
+//     mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
+//     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
+
+//   }    
+//   mCovariance /= indexBuffer.m_nNumIndices;
+
+//   return mCovariance;
+// }
+/////////////////////////////////////////////////////////////////
+
+#define SIGN(VAL) (VAL < 0.0F ? -1.0F : 1.0F)
+
+void 
+Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1, float &fLambda2, float &fLambda3, CMatrix3x3<float> &mRes)
+{
+  const float fEpsilon = 1.0e-10F;
+  const int nMaxSweeps = 32;
+
+  float m11 = mMatrix(0,0);
+  float m12 = mMatrix(0,1);
+  float m13 = mMatrix(0,2);
+  float m22 = mMatrix(1,1);
+  float m23 = mMatrix(1,2);
+  float m33 = mMatrix(2,2);
+
+  mRes.IdentityMatrix();
+
+  for(int a=0;a<nMaxSweeps;a++)
+  {
+    //Core::CLogger::Log() << "loop" << a << std::endl;
+    // Exit if off-diagonal entries are small enough
+    if ( (fabs(m12) < fEpsilon) && 
+	 (fabs(m13) < fEpsilon) &&
+	 (fabs(m23) < fEpsilon)) break;
+    
+    if ( m12 != 0.0F)
+    {
+
+      float u = (m22 - m11 ) * 0.5F / m12;
+      float u2 = u * u;
+      float u2p1 = u2 + 1.0F;
+      float t = (u2p1 != u2 ) ? SIGN(u) * (sqrt(u2p1) - fabs(u)) : 0.5F / u;
+					   
+      float c = 1.0F / sqrt(t * t + 1.0F);
+      float s = c * t;
+
+
+      
+      m11 -= t * m12;
+      m22 += t * m12;
+      m12 =  0.0 ;
+
+      float temp = (c * m13) - (s * m23);
+      m23 = (s * m13) + (c * m23);
+      m13 = temp;      
+
+      for(int i=0;i<3;i++)
+      {
+	float tmp = (c * mRes(i,0)) - (s * mRes(i,1));
+	mRes(i,1) = (s * mRes(i,0)) + (c * mRes(i,1));
+	mRes(i,0) = tmp;
+      }
+      
+    }
+    
+    if ( m13 != 0.0F )
+    {
+
+      float u = (m33 - m11 ) * 0.5F / m13;
+      float u2 = u * u;
+      float u2p1 = u2 + 1.0F;
+      float t = (u2p1 != u2 ) ? SIGN(u) * (sqrt(u2p1) - fabs(u)) : 0.5F / u;
+      
+      float c = 1.0F / sqrt((t * t) + 1.0F);
+      float s = c * t;
+
+
+      m11 -= t * m13;
+      m33 += t * m13;
+      m13  = 0.0;
+
+      float temp = (c * m12) - (s * m23);
+      m23 = (s * m12) + (c * m23);
+      m12 = temp;
+
+      for(int i=0;i<3;i++)
+      {
+	float tmp = (c * mRes(i,0)) - (s * mRes(i,2));
+	mRes(i,2) = (s * mRes(i,0)) + (c * mRes(i,2));
+	mRes(i,0) = tmp;
+      }
+    }
+
+    if ( m23 != 0.0F )
+    {
+      float u = (m33 - m22 ) * 0.5F / m23;
+      float u2 = u * u;
+      float u2p1 = u2 + 1.0F;
+      float t = ( u2p1 != u2 ) ? SIGN(u) * (sqrt(u2p1) - fabs(u)) : 0.5F / u;
+      
+      float c = 1.0F / sqrt(t * t + 1.0F);
+      float s = c * t;
+      
+
+      m22 -= t * m23;
+      m33 += t * m23;
+      m23  = 0.0;
+      
+      float temp = (c * m12) - (s * m13);
+      m13 = (s * m12) + (c * m13);
+      m12 = temp;
+
+      for(int i=0;i<3;i++)
+      {
+	float tmp = (c * mRes(i,1)) - (s * mRes(i,2));
+	mRes(i,2) = (s * mRes(i,1)) + (c * mRes(i,2));
+	mRes(i,1) = tmp;
+      }
+    }
+  } //  for(int a=0;a<nMaxSweeps;a++)
+  
+  fLambda1 = m11;
+  fLambda2 = m22;
+  fLambda3 = m33;
+  
+}
+//
+// Copies values from the vVector to iRowth row of the matrix mMatrix
+//
+void
+Phoenix::Math::SetRowVector(CMatrix3x3<float> &mMatrix, unsigned int iRow, CVector3<float> vVector)
+{
+
+  float *pArray = mMatrix.GetArray();
+  unsigned int nIndex = (iRow % 3) * 3;
+  
+  pArray[nIndex]   = vVector[0];
+  pArray[nIndex+1] = vVector[1];
+  pArray[nIndex+2] = vVector[2];
+
+}
+// Copies values from the vVector to iColth column of the matrix mMatrix
+void 
+Phoenix::Math::SetColumnVector(CMatrix3x3<float> &mMatrix, unsigned int iCol, CVector3<float> vVector)
+{
+
+  float *pArray = mMatrix.GetArray();
+  unsigned int nIndex = iCol % 3;
+  pArray[nIndex]   = vVector[0];
+  pArray[nIndex+3] = vVector[1];
+  pArray[nIndex+6] = vVector[2];
+  
+}
+
+CVector3<float> 
+Phoenix::Math::GetRowVector(CMatrix3x3<float> mMatrix, unsigned int iRow)
+{
+  return CVector3<float>(mMatrix(iRow, 0),
+		     mMatrix(iRow, 1),
+		     mMatrix(iRow, 2));
+}
+CVector3<float> 
+Phoenix::Math::GetColumnVector(CMatrix3x3<float> mMatrix, unsigned int iCol)
+{
+  
+  return CVector3<float>(mMatrix(0, iCol),
+		     mMatrix(1, iCol),
+		     mMatrix(2, iCol));
+
+
+}
+
+CVector3<float> 
+Phoenix::Math::Translate(CVector3<float> v, CMatrix4x4<float> m)
+{
+  return CVector3<float>( v[0]+m(0,3),
+			  v[1]+m(1,3),
+			  v[2]+m(2,3) );
+
+}
+
+CVector3<float> 
+Phoenix::Math::TranslateInverse(CVector3<float> v, CMatrix4x4<float> m)
+{
+  return CVector3<float>(v[0]-m(0,3),
+			 v[1]-m(1,3),
+			 v[2]-m(2,3));
+}
+
+CVector3<float> 
+Phoenix::Math::Rotate( const CVector3<float> & v, const CMatrix4x4<float> &m)
+{
+  return CVector3<float>(m.At(0,0) * v(0) + m.At(0,1) * v(1) + m.At(0,2) * v(2),
+			 m.At(1,0) * v(0) + m.At(1,1) * v(1) + m.At(1,2) * v(2),
+			 m.At(2,0) * v(0) + m.At(2,1) * v(1) + m.At(2,2) * v(2));
+}
+/////////////////////////////////////////////////////////////////
+CVector3<float> 
+Phoenix::Math::Transform( const CVector3<float> &v, const CMatrix4x4<float> &m)
+{
+#define T_X    v(0)
+#define T_Y    v(1)
+#define T_Z    v(2)
+#define m00  m.At(0,0)
+#define m01  m.At(0,1)
+#define m02  m.At(0,2)
+#define m03  m.At(0,3)
+#define m10  m.At(1,0)
+#define m11  m.At(1,1)
+#define m12  m.At(1,2)
+#define m13  m.At(1,3)
+#define m20  m.At(2,0)
+#define m21  m.At(2,1)
+#define m22  m.At(2,2)
+#define m23  m.At(2,3)
+
+  return CVector3<float>(m00*T_X + m01*T_Y + m02*T_Z + m03,
+			 m10*T_X + m11*T_Y + m12*T_Z + m13,
+			 m20*T_X + m21*T_Y + m22*T_Z + m23 );
+#undef T_X
+#undef T_Y
+#undef T_Z
+#undef m00
+#undef m01
+#undef m02
+#undef m03
+#undef m10
+#undef m11
+#undef m12
+#undef m13
+#undef m20
+#undef m21
+#undef m22
+#undef m23
+}
+/////////////////////////////////////////////////////////////////
+CVector3<float> 
+Phoenix::Math::MultiplyFromRight( CMatrix3x3<float> mMatrix, CVector3<float> &vVector)
+{
+
+  return CVector3<float>( mMatrix(0,0) * vVector(0) + 
+			  mMatrix(0,1) * vVector(1) + 
+			  mMatrix(0,2) * vVector(2),
+			  
+			  mMatrix(1,0) * vVector(0) + 
+			  mMatrix(1,1) * vVector(1) + 
+			  mMatrix(1,2) * vVector(2),
+			  
+			  mMatrix(2,0) * vVector(0) + 
+			  mMatrix(2,1) * vVector(1) + 
+			  mMatrix(2,2) * vVector(2) );
+
+}
+/////////////////////////////////////////////////////////////////
+CQuaternion 
+Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix )
+{
+    
+  CQuaternion qRetval;
+  float fTrace = mMatrix.Trace();
+  float fS = 0.0f;
+  float f1DivS = 0.0f;
+  const CMatrix4x4<float> &m = mMatrix;
+
+  if ( fTrace > 0.000001f )  // Greater than zero
+  {
+    
+    fS = 2.0f * sqrt(fTrace);
+    f1DivS = 1.0f / fS;
+    qRetval[3] = 0.25f * fS;
+   
+    qRetval[0] = ( m.At(2,1) - m.At(1,2) ) * f1DivS;
+    qRetval[1] = ( m.At(0,2) - m.At(2,0) ) * f1DivS;
+    qRetval[2] = ( m.At(1,0) - m.At(0,1) ) * f1DivS;
+    
+  } else {
+    
+    // determine column where diagonal element has the greatest value
+    unsigned int nColumnWithGreatestValue = 0;
+    
+    if ( m.At(0,0) > m.At(1,1)) {
+      if ( m.At(0,0) > m.At(2,2) ) {
+	nColumnWithGreatestValue = 0;
+      } else {
+	nColumnWithGreatestValue = 2;
+      }
+    } else {
+
+      if ( m.At(1,1) > m.At(2,2) ) {
+	nColumnWithGreatestValue = 1;
+      } else {
+	nColumnWithGreatestValue = 2;
+      }
+    }
+
+    switch( nColumnWithGreatestValue ){
+    case 0:
+      fS  = sqrtf( 1.0f + m.At(0,0) - m.At(1,1) - m.At(2,2) ) * 2.0f;
+      qRetval[0] = 0.25f * fS;
+      qRetval[1] = (m.At(1,0) + m.At(0,1) ) * f1DivS;
+      qRetval[2] = (m.At(0,2) + m.At(2,0) ) * f1DivS;
+      qRetval[3] = (m.At(2,1) - m.At(1,2) ) * f1DivS;
+    case 1:
+      fS  = sqrtf( 1.0f + m.At(1,1) - m.At(0,0) - m.At(2,2) ) * 2.0f;
+      qRetval[0] = (m.At(1,0) + m.At(0,1) ) * f1DivS;
+      qRetval[1] = 0.25f * fS;
+      qRetval[2] = (m.At(2,1) + m.At(1,2) ) * f1DivS;
+      qRetval[3] = (m.At(0,2) - m.At(2,0) ) * f1DivS;
+      break;
+    case 2:
+      fS  = sqrtf( 1.0f + m.At(2,2) - m.At(0,0) - m.At(1,1) ) * 2.0f;
+      qRetval[0] = (m.At(0,2) + m.At(2,0) ) * f1DivS;
+      qRetval[1] = (m.At(2,1) + m.At(1,2) ) * f1DivS;
+      qRetval[2] = 0.25f * fS;
+      qRetval[3] = (m.At(1,0) + m.At(0,1) ) * f1DivS;
+    default:
+      break;
+    }
+
+  }
+  return qRetval;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Math::RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector)
+{
+  CQuaternion qVect(vVector(0),vVector(1),vVector(2),0.0f);
+  CQuaternion qResult = qRotation * qVect * qRotation.GetInverse();
+  vVector[0] = qResult(0);
+  vVector[1] = qResult(1);
+  vVector[2] = qResult(2);
+}
+/////////////////////////////////////////////////////////////////
+CVector3<float> 
+Phoenix::Math::RotateAroundPoint( const CVector3<float> & vVector, 
+				  const CVector3<float> & vPoint, 
+				  const CQuaternion & ref )
+{
+  CVector3<float> vTemp = (vVector - vPoint);
+  Phoenix::Math::RotateVector( ref, vTemp );
+  return vTemp + vPoint;
+}
+/////////////////////////////////////////////////////////////////
+// As described in MatrixFAQ:
+// 
+//     cos_angle  = qr -> qw;
+//     angle      = acos( cos_angle ) * 2 * RADIANS;
+//     sin_angle  = sqrt( 1.0 - cos_angle * cos_angle );
+//     if ( fabs( sin_angle ) < 0.0005 )
+//       sin_angle = 1;
+//     axis -> vx = qr -> qx / sin_angle;
+//     axis -> vy = qr -> qy / sin_angle;
+//     axis -> vz = qr -> qz / sin_angle;
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat, 
+						 CVector3<float> &vAxis,
+						 float &fAngleInDegrees )
+{
+  float fCosAngle = qQuat(4);
+  float fSinAngle = sqrt( 1.0f - fCosAngle * fCosAngle );
+  
+  /// If denominator is too close to zero.
+  if ( fabs(fSinAngle < EPSILON)) fSinAngle = 1;
+  /// The axis.
+  float f1DivSinAngle = 1.0f / fSinAngle;
+  vAxis[0] = qQuat(0) * f1DivSinAngle;
+  vAxis[1] = qQuat(1) * f1DivSinAngle;
+  vAxis[2] = qQuat(2) * f1DivSinAngle;
+  /// The angle
+  fAngleInDegrees = Rad2Deg(acosf( fCosAngle )) * 2.0f;
+
+}
+/////////////////////////////////////////////////////////////////
