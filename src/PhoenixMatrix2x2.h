@@ -234,7 +234,6 @@ namespace Phoenix
 	(*this)(0,iCol) *= tMultiplier;
 	(*this)(1,iCol) *= tMultiplier;
       }
-
       ////////////////////
       /// Prints the matrix values to stream.
       /// \param stream The output stream where matrix is printed.
