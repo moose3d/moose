@@ -53,15 +53,41 @@ namespace Phoenix
       CMatrix3x3 operator*(const CMatrix3x3 &mMatrix) const
       {
 
-	return CMatrix3x3( m_aValues[0] * mMatrix.m_aValues[0],
-			   m_aValues[1] * mMatrix.m_aValues[3],
+	return CMatrix3x3( m_aValues[0] * mMatrix.m_aValues[0]+
+			   m_aValues[1] * mMatrix.m_aValues[3]+
 			   m_aValues[2] * mMatrix.m_aValues[6],
-			   m_aValues[3] * mMatrix.m_aValues[1],
-			   m_aValues[4] * mMatrix.m_aValues[4],
+
+			   m_aValues[0] * mMatrix.m_aValues[1]+
+			   m_aValues[1] * mMatrix.m_aValues[4]+
+			   m_aValues[2] * mMatrix.m_aValues[7],
+
+			   m_aValues[0] * mMatrix.m_aValues[2]+
+			   m_aValues[1] * mMatrix.m_aValues[5]+
+			   m_aValues[2] * mMatrix.m_aValues[8],
+			   
+			   m_aValues[3] * mMatrix.m_aValues[0]+
+			   m_aValues[4] * mMatrix.m_aValues[3]+
+			   m_aValues[5] * mMatrix.m_aValues[6],
+
+			   m_aValues[3] * mMatrix.m_aValues[1]+
+			   m_aValues[4] * mMatrix.m_aValues[4]+
 			   m_aValues[5] * mMatrix.m_aValues[7],
-			   m_aValues[6] * mMatrix.m_aValues[2],
-			   m_aValues[7] * mMatrix.m_aValues[5],
-			   m_aValues[8] * mMatrix.m_aValues[8]);
+
+			   m_aValues[3] * mMatrix.m_aValues[2]+
+			   m_aValues[4] * mMatrix.m_aValues[5]+
+			   m_aValues[5] * mMatrix.m_aValues[8],
+
+			   m_aValues[6] * mMatrix.m_aValues[0]+
+			   m_aValues[7] * mMatrix.m_aValues[3]+
+			   m_aValues[8] * mMatrix.m_aValues[6],
+
+			   m_aValues[6] * mMatrix.m_aValues[1]+
+			   m_aValues[7] * mMatrix.m_aValues[4]+
+			   m_aValues[8] * mMatrix.m_aValues[7],
+
+			   m_aValues[6] * mMatrix.m_aValues[2]+
+			   m_aValues[7] * mMatrix.m_aValues[5]+
+			   m_aValues[8] * mMatrix.m_aValues[8] );
       }
       ////////////////////
       /// The assignment operator.
