@@ -234,74 +234,7 @@ namespace Phoenix
 	(*this)(0,iCol) *= tMultiplier;
 	(*this)(1,iCol) *= tMultiplier;
       }
-      ////////////////////
-      /// Inverses matrix.
-      /// From http://www.devmaster.net/wiki/Matrix#Inverting_Matrices
-      /// 4x4 matrix inverse using Gauss-Jordan algorithm with row pivoting
-      /// originally written by Nathan Reed, now released into the public domain.
-      /// \returns inverted matrix.
-      CMatrix2x2 Inverse()
-      {
-	CMatrix2x2 mOrig;    // The matrix whose inverse we want to take
-	CMatrix2x2 mInverse; // initialize to 4x4 identity matrix
-	CMatrix2x2::Identity(mInverse);
-	unsigned int i, j, pivot;
-	mOrig = *this;      
-	
-	// loop through columns
-	for (j = 0; j < 2; ++j)
-	{
-	  // select pivot element: maximum magnitude in this column
-	  for (pivot = 0, i = 1; i < 2; ++i){
-	    if (fabs(mOrig(i,j)) > fabs(mOrig(pivot,j))){
-	      pivot = i;
-	    }
-	  }
 
-	  if ( TOO_CLOSE_TO_ZERO( mOrig(pivot,j)) )
-	  {
-	    std::cerr << "Matrix inverse does not exist!"  << std::endl;
-	    return CMatrix2x2(1,0,0,1);
-	  }
-	
-	  // interchange rows to put pivot element on the diagonal
-	  // skip if already on diagonal
-	  if (pivot != j)
-	  {
-	    mOrig.SwapRows( pivot, j );
-	    mInverse.SwapRows( pivot, j);
-	  }
-	
-	  // divide row by pivot element
-	  // skip if already equal to 1
-	  if ( mOrig(j,j) != 1.0f )
-	  {
-	    float temp = mOrig(j,j);
-	    mOrig.DivideRowBy(j,temp);
-	    mInverse.DivideRowBy(j,temp);
-	    // Now the pivot element is 1
-	  }
-	
-	  // subtract this row from others to make the rest of column j zero
-	  for (i = 0; i < 2; ++i)
-	  {
-	    // skip rows that are already zero
-	    if ((i != j) && !TOO_CLOSE_TO_ZERO( mOrig(i,j) ) )
-	    {
-	      float scale = -mOrig(i,j);
-	      for(unsigned int iCol=0;iCol<2;iCol++)
-	      {
-		mOrig(i, iCol )    += mOrig(j,iCol)*scale;
-		mInverse(i, iCol ) += mInverse(j,iCol)*scale;
-	      }
-	    }
-	  }
-	}
-	// When these operations have been completed, 'a' should have been transformed 
-	// to the identity matrix and 'b' should have been transformed into the inverse 
-	// of the original 'a'.
-	return mInverse;
-      }
       ////////////////////
       /// Prints the matrix values to stream.
       /// \param stream The output stream where matrix is printed.
