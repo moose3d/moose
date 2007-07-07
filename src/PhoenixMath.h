@@ -107,72 +107,25 @@ namespace Phoenix
     CVector3<float> Transform( const CVector3<float> &v, const CMatrix4x4<float> &m);
     // Multiplies vector vVector from right by matrix mMatrix  ( mMatrix * vVector );
     CVector3<float> MultiplyFromRight( CMatrix3x3<float> mMatrix, CVector3<float> &vVector);
-  
-  
-
+    ////////////////////
+    /// Removes row and column from matrix, creating new submatrix.
+    /// \param mMatrix orignal matrix.
+    /// \param iRowSkip which row is removed.
+    /// \param iColSkip which column is removed.
+    /// \returns New smaller square matrix.
     CMatrix3x3<float> RemoveRowAndColumn(CMatrix4x4<float> mMatrix, 
 					 unsigned int iRowSkip, 
-					 unsigned int iColSkip)
-    {
-
-      CMatrix3x3<float> mResult;
-      unsigned int iResultRow = 1;
-      unsigned int iResultCol = 1;
-
-      for( unsigned int iRow = 1;iRow <= 4;iRow++)
-      {
-	if ( iRow == iRowSkip ){} 
-	else
-	{
-	  iResultCol = 1;
-	  for( unsigned int iCol = 1;iCol <= 4;iCol++)
-	  {
-
-	    if ( iCol == iColSkip ){} 
-	    else 
-	    {
-	      mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
-	      iResultCol++;
-	    }
-	    
-	  }
-	  iResultRow++;
-	}
-      }
-      return mResult;
-    }
-    
+					 unsigned int iColSkip);
+    ////////////////////
+    /// Removes row and column from matrix, creating new submatrix.
+    /// \param mMatrix orignal matrix.
+    /// \param iRowSkip which row is removed.
+    /// \param iColSkip which column is removed.
+    /// \returns New smaller square matrix.
     CMatrix2x2<float> RemoveRowAndColumn(CMatrix3x3<float> mMatrix, 
 					 unsigned int iRowSkip, 
-					 unsigned int iColSkip)
-    {
-
-      CMatrix2x2<float> mResult;
-      unsigned int iResultRow = 1;
-      unsigned int iResultCol = 1;
-
-      for( unsigned int iRow = 1;iRow <= 3;iRow++)
-      {
-	if ( iRow == iRowSkip ){} 
-	else 
-	{
-	  iResultCol = 1;
-	  for( unsigned int iCol = 1;iCol <= 3;iCol++)
-	  {
-
-	    if ( iCol == iColSkip ){} 
-	    else 
-	    {
-	      mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
-	      iResultCol++;
-	    }
-	  
-	  }
-	  iResultRow++;
-	}
-      }
-      return mResult;
-    }
+					 unsigned int iColSkip);
+    
     // Returns the covariance matrix of the vertices in the pVertexArray
     //CMatrix3x3<float> CovarianceMatrix( float *pVertexArray, unsigned int nNumVertices );
 
