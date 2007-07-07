@@ -99,27 +99,28 @@ namespace Phoenix
       ////////////////////
       /// Destructor
       ~COglRenderer();
-
       ////////////////////
       /// Clears buffer
       void ClearBuffer( BUFFER_TYPE tType);
-      
       ////////////////////
       /// Swaps the buffers if double buffering is used, otherwise 
       /// it doesn't do a thing.
       void Finalize();
-
       ////////////////////
       /// Commits vertex buffer.
       /// \param pBuffer buffer to be applied.
       void CommitVertexBuffer( CVertexBuffer *pBuffer );
-
       ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
-      void DrawPrimitive( CIndexBuffer *pIndexBuffer );
-    };  
-  } // namespace Graphics
-} // namespace Phoenix
+      void CommitPrimitive( CIndexBuffer *pIndexBuffer );
+      ////////////////////
+      /// Sets vertex color for drawing.
+      /// \param vColor RGBA Color vector.
+      void CommitVertexColor( CVector4<unsigned char> &vColor );
+    };
+    /////////////////////////////////////////////////////////////////  
+  }; // namespace Graphics
+}; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 #endif
