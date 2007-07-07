@@ -4,6 +4,9 @@
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
+#include "PhoenixVertexBuffer.h"
+#include "PhoenixIndexBuffer.h"
+using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -75,34 +78,12 @@ namespace Phoenix
     protected:
       /// Initializes the supported values.
       void Init();
-
-  
     };
-    // The fontset class which is used to store font textures and display lists 
-    // for drawing text.
-    /////////////////////////////////////////////////////////////////
-    class COglRendererFontset
-    {
-    protected:
-      // Pointers to font textures
-      COglTexture * m_ppTextures[Phoenix::Graphics::MAX_FONT_CHARACTERS];   
-      // The display lists for font letters
-      GLuint	 m_nDisplayLists; 
-      ////////////////////
-      // This will not be passed as a copy
-      COglRendererFontset( const COglRendererFontset &fs )      {  }
-    public:
-      ////////////////////
-      /// The constructor
-      COglRendererFontset();
-      ////////////////////
-      /// The destructor
-      ~COglRendererFontset();
-      ////////////////////
-      /// Returns the reference to the display list
-      GLuint &GetDisplayList();
-      /// Returns the pointer to array of texture pointers
-      COglTexture * *Textures();  
+    /// BufferType
+    enum BUFFER_TYPE 
+    { 
+      COLOR_BUFFER = 0,
+      DEPTH_BUFFER = 1
     };
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
@@ -111,8 +92,6 @@ namespace Phoenix
     protected:
       /// Supported features.
       COglRendererFeatures *m_pFeatures;
-      /// The fontsets which can be used to render text.
-      std::vector<COglRendererFontset *> m_vFontsets;
     public:
       ////////////////////
       /// Default constructor
@@ -120,80 +99,25 @@ namespace Phoenix
       ////////////////////
       /// Destructor
       ~COglRenderer();
+
+      ////////////////////
+      /// Clears buffer
+      void ClearBuffer( BUFFER_TYPE tType);
+      
       ////////////////////
       /// Swaps the buffers if double buffering is used, otherwise 
       /// it doesn't do a thing.
       void Finalize();
-      ////////////////////
-      /// Creates a new fontset and adds it to m_vFontsets. 
-      /// \param sPathToFontFile path to TTF font file.
-      /// \parma nFontSize point size for font.
-      /// \return on success zero. on error, non-zero is returned and m_vFontset is not changed.
-      int CreateFontset( const std::string *sPathToFontFile, unsigned int nFontSize);
-      ////////////////////
-      /// Return the reference to the m_vFontsets.
-      /// \returns fontsets in a vector.
-      std::vector<COglRendererFontset *> & Fontsets();
 
-      /// Sets up the arrays for vertices, normal vectors and texture coordinates.
-      void SetupArrays( CGeometryData *m_pGeometryData );
+      ////////////////////
+      /// Commits vertex buffer.
+      /// \param pBuffer buffer to be applied.
+      void CommitVertexBuffer( CVertexBuffer *pBuffer );
+
+      ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
       void DrawPrimitive( CIndexBuffer *pIndexBuffer );
-      /// Applies the properties of a material. 
-      /// \param iType GL_FRONT or GL_BACK
-      /// \param pMaterial Material which properties are applied.
-      void ApplyMaterial( GLenum iType, CMaterial *pMaterial );
-      /// Disables the material properties set in ApplyMaterial.
-      void DisableMaterial( CMaterial *pMaterial );
-      /// Applies the view settings from a camera.
-      /// \param pCamera a camera.
-      void ApplyPerspective( CCamera *pCamera );
-      /// Applies the light settings from a light.
-      /// \param pLight a light.
-      void ApplyLightParameters( CLightClusterNode *pLight );
-      /// Applies the vertex attributes for shader usage.
-      /// \param pVertexAttrib the vertex attributes.
-      void SetupVertexAttrib( CVertexAttribStruct *pVertexAttrib);
-      /// Finalizes the vertex attributes when render pass exists the node.
-      void FinishVertexAttrib( CVertexAttribStruct *pVertexAttrib);
-      /// Handles the global lighting parameters.
-      void ApplyGlobalLighting( CGlobalLightingNode *pGlobalLightingNode );
-      /// Handles the selection name.
-      void SetSelectionName( CSelectionNameNode *pSelectionNameNode );
-      /// Handles the textnode.
-      void RenderText( CTextNode *pTextNode );
-      /// Handles the pushing of attributes to the stack.
-      void HandleStackPush( CRenderStateStackNode *pNode );
-      /// Handles the particle system update - vertex transform.
-      void Handle_ParticleSystemUpdate( CParticleSystemNode *pNode );
-      /// Handles the utility quad drawing.
-      void Handle_Draw_UtilQuad( CUtilQuadNode *pNode );
-      /// Handles Cullingstate node.
-      void Handle_Draw_CullingState( CCullingStateNode *pCullingStateNode );
-      /// Debug print handler.
-      int Handle_DebugPrint_RenderPass_Enter( CGraphNode<RenderNode::NodeType> *pNode );
-      /// Debug print handler.
-      int Handle_DebugPrint_RenderPass_Leave( CGraphNode<RenderNode::NodeType> *pNode );
-      /// Handles the render passes of the OglCacheNode.
-      int HandleOglCache_Enter( COglCacheNode *pNode );
-      /// Handles the finish passes of the OglCacheNode.
-      int HandleOglCache_Leave( COglCacheNode *pNode );
-      /// Handles the render passes of the normal drawing process.
-      int Handle_Drawing_RenderPass_Enter( CGraphNode<RenderNode::NodeType> *pNode );
-      /// Handles the finish passes of the normal drawing process.
-      int Handle_Drawing_RenderPass_Leave( CGraphNode<RenderNode::NodeType> *pNode );
-      /// Handles the RENDER_PASS_CONSTRUCT_BOUNDING_VOLUMES render.
-      int Handle_BoundingVolume_RenderPass_Enter( CGraphNode<RenderNode::NodeType> *pNode );
-      /// Draws the polyline.
-      void DrawPolyline( CPolyLineNode *pNode );
-      /// Optimizes given IndexBuffer indices so that they can be send as optimally as possible by using glDrawRangeElements.
-      void OptimizeVBOBatching( CIndexBuffer *pIndexBuffer );
-      ////////////////////
-      /// Handles textures on enter().
-      int HandleTexture( CTextureNode *pNode );
-  
-  
     };  
   } // namespace Graphics
 } // namespace Phoenix
