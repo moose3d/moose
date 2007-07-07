@@ -5,6 +5,21 @@
 #include <GL/glu.h>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Window;
+/// declare visiblity for static member.
+extern CSDLScreenParams Phoenix::Window::CSDLScreen::m_SDLScreenParams;
+/////////////////////////////////////////////////////////////////
+Phoenix::Window::CSDLScreenParams::CSDLScreenParams()
+{
+  m_iRedSize = 8;
+  m_iGreenSize = 8;
+  m_iBlueSize = 8;
+  m_bDoubleBuffer = 0;
+  m_iDepthBufferSize = 16;
+  m_iScreenDepth = 24;
+  m_iWidth = 640;
+  m_iHeight = 480;
+  m_iVideoModeFlags = SDL_OPENGL;
+}
 /////////////////////////////////////////////////////////////////
 std::ostream &
 operator<<(std::ostream &stream, 
@@ -55,16 +70,10 @@ Phoenix::Window::CSDLScreen::~CSDLScreen() {
 Phoenix::Window::CSDLScreen::CSDLScreen( )
 {
   const SDL_VideoInfo *sdlVideoInfo = 0;
-
-  
-
-
   if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) 
   {
     std::cerr << "Couldn't initialize screen (SDL_Init())!" 
 	      << std::endl;   
-    
-      
   } 
   else 
   {
@@ -110,10 +119,6 @@ Phoenix::Window::CSDLScreen::CSDLScreen( )
 		  << std::endl;
 	  
       } 
-      else 
-      {
-	CSDLScreen::m_SDLScreenParams = m_SDLScreenParams;
-      } // ..SDL_SetVideoMode
     } // ..!sdlVideoInfo
   } // ..SDL_Init
 
