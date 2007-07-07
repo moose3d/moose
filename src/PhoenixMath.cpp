@@ -342,7 +342,7 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 // }
 /////////////////////////////////////////////////////////////////
 //CMatrix3x3<float>
-// CovarianceMatrix( float *pVertexArray, const CIndexBuffer &indexBuffer)
+// CovarianceMatrix( float *pVertexArray, const CIndexArray &indexBuffer)
 // {
   
 //   CMatrix3x3<float> mCovariance;

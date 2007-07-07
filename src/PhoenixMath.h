@@ -130,7 +130,7 @@ namespace Phoenix
     //CMatrix3x3<float> CovarianceMatrix( float *pVertexArray, unsigned int nNumVertices );
 
     // Returns the covariance matrix of the vertices in the pVertexArray using the given indices 
-    //CMatrix3x3<float> CovarianceMatrix( float *pVertexArray, const CIndexBuffer &indexBuffer );
+    //CMatrix3x3<float> CovarianceMatrix( float *pVertexArray, const CIndexArray &indexBuffer );
 
     // Calculates the eigenvectors and eigenvalues for matrix mMatrix 
     // using the Jacobi method. For matrices with dimensions less than 10,

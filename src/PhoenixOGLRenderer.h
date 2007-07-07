@@ -12,6 +12,12 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    enum VERTEX_BUFFER_TYPE 
+    {
+      VB_VERTEX_BUFFER = 0,
+      VB_COLOR_BUFFER = 1
+    };
+
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
@@ -109,15 +115,19 @@ namespace Phoenix
       ////////////////////
       /// Commits vertex buffer.
       /// \param pBuffer buffer to be applied.
-      void CommitVertexBuffer( CVertexBuffer *pBuffer );
+      void CommitVertexBuffer( CVertexArray *pBuffer );
       ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
-      void CommitPrimitive( CIndexBuffer *pIndexBuffer );
+      void CommitPrimitive( CIndexArray *pIndexBuffer );
       ////////////////////
       /// Sets vertex color for drawing.
       /// \param vColor RGBA Color vector.
       void CommitVertexColor( CVector4<unsigned char> &vColor );
+      ////////////////////
+      /// Disable vertex, color and normal arrays.
+      /// \param tType VERTEX_BUFFER_TYPE to be disabled.
+      void DisableBuffer( VERTEX_BUFFER_TYPE tType );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics

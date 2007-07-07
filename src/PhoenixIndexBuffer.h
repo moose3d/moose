@@ -20,7 +20,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
-    class CIndexBuffer
+    class CIndexArray
     {
     public:
       
@@ -34,7 +34,7 @@ namespace Phoenix
 
       /////////////////////////////////////////////////////////////////
       /// The constructor.
-      CIndexBuffer( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), m_nType(nType)
+      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), m_nType(nType)
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
@@ -42,7 +42,7 @@ namespace Phoenix
       }
       /////////////////////////////////////////////////////////////////
       /// The destructor.
-      ~CIndexBuffer()
+      ~CIndexArray()
       {
 	if ( IsShortIndices())
 	{

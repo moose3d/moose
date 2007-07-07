@@ -154,7 +154,7 @@ Phoenix::Graphics::COglRenderer::Finalize()
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitVertexBuffer( CVertexBuffer *pBuffer )
+Phoenix::Graphics::COglRenderer::CommitVertexBuffer( CVertexArray *pBuffer )
 {
   switch( pBuffer->GetType() )
   {
@@ -162,14 +162,17 @@ Phoenix::Graphics::COglRenderer::CommitVertexBuffer( CVertexBuffer *pBuffer )
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     break;
+  case ELEMENT_TYPE_COLOR_4UB:
+    glEnableClientState( GL_COLOR_ARRAY );
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
+    break;
   case ELEMENT_TYPE_NULL:
-    glDisableClientState( GL_VERTEX_ARRAY );
     break;
   }
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexBuffer *pIndexBuffer )
+Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 {
 
   GLenum glPrimitive = GL_POINTS;
@@ -218,5 +221,19 @@ void
 Phoenix::Graphics::COglRenderer::CommitVertexColor( CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::DisableBuffer( VERTEX_BUFFER_TYPE tType )
+{
+  switch ( tType)
+  {
+  case VB_VERTEX_BUFFER:
+    glDisableClientState( GL_VERTEX_ARRAY );
+    break;
+  case VB_COLOR_BUFFER:
+    glDisableClientState( GL_COLOR_ARRAY );
+    break;
+  }
 }
 /////////////////////////////////////////////////////////////////
