@@ -224,16 +224,31 @@ Phoenix::Graphics::COglRenderer::CommitColor( CVector4<unsigned char> &vColor )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::DisableClientArray( CLIENT_ARRAY_TYPE tType )
+Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
 {
   switch ( tType)
   {
-  case CA_VERTEX_ARRAY:
+  case CLIENT_STATE_VERTEX_ARRAY:
     glDisableClientState( GL_VERTEX_ARRAY );
     break;
-  case CA_COLOR_ARRAY:
+  case CLIENT_STATE_COLOR_ARRAY:
     glDisableClientState( GL_COLOR_ARRAY );
     break;
   }
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
+{
+  switch ( tType)
+  {
+  case CLIENT_STATE_VERTEX_ARRAY:
+    glEnableClientState( GL_VERTEX_ARRAY );
+    break;
+  case CLIENT_STATE_COLOR_ARRAY:
+    glEnableClientState( GL_COLOR_ARRAY );
+    break;
+  }
+}
+/////////////////////////////////////////////////////////////////
+

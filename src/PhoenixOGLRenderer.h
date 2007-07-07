@@ -12,10 +12,10 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    enum CLIENT_ARRAY_TYPE 
+    enum CLIENT_STATE_TYPE 
     {
-      CA_VERTEX_ARRAY = 0,
-      CA_COLOR_ARRAY = 1
+      CLIENT_STATE_VERTEX_ARRAY = 0,
+      CLIENT_STATE_COLOR_ARRAY = 1
     };
 
     /////////////////////////////////////////////////////////////////
@@ -125,9 +125,13 @@ namespace Phoenix
       /// \param vColor RGBA Color vector.
       void CommitColor( CVector4<unsigned char> &vColor );
       ////////////////////
-      /// Disable vertex, color and normal arrays.
-      /// \param tType CLIENT_ARRAY_TYPE to be disabled.
-      void DisableClientArray( CLIENT_ARRAY_TYPE tType );
+      /// Disable client states, such as vertex array.
+      /// \param tType CLIENT_STATE_TYPE to be disabled.
+      void DisableClientState( CLIENT_STATE_TYPE tType );
+      ////////////////////
+      /// Enable client states, such as vertex array.
+      /// \param tType CLIENT_STATE_TYPE to be enabled.
+      void EnableClientState( CLIENT_STATE_TYPE tType );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
