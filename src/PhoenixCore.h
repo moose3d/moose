@@ -170,7 +170,197 @@ namespace Phoenix
       }
     
     };
+    /////////////////////////////////////////////////////////////////
+    /// Generic container class for several types.
+    template <class T>
+    class CContainer
+    {
+    protected:
+      /// vector of objects.
+      std::vector<T *> m_Objects;
+      
+    public:
+      ////////////////////
+      /// Default constructor.
+      CContainer()      {}
+      ////////////////////
+      /// Destructor.
+      ~CContainer() {    Clear();  }
+      ////////////////////
+      /// Deletes all objects.
+      void Clear()
+      {
+	for( unsigned int i=0;i<m_Objects.size();i++)
+	{
+	  if ( m_Objects[i] != NULL ) 
+	  {
+	    delete m_Objects[i];
+	  }
+	}
+	m_Objects.clear();
+      }
+      ////////////////////
+      /// Adds an object to this container.
+      /// \param pObject pointer to an object with type T.
+      /// \returns -1 if unsuccessfull, >=0 otherwise.
+      int Add( T *pObject )
+      {
+	int iIndex = -1;
+	if ( pObject != NULL )
+	{
+	  m_Objects.push_back(pObject);
+	  iIndex = m_Objects.size()-1;
+	}
+	return iIndex; 
+      }
+      ////////////////////
+      /// Delete, removing in O( number of elements) time.
+      /// \param nIndex from which index an object is removed.
+      void Delete( unsigned int nIndex )
+      {
+	if ( m_Objects[nIndex] != NULL ) 
+	{
+	  if (nIndex < m_Objects.size())
+	  {
+	    T *pTmp = m_Objects[nIndex];
+	    typename std::vector<T *>::iterator it = m_Objects.begin();
+	    it += nIndex;
+	    m_Objects.erase(it);
+	    delete pTmp;
+	  }
+	}
+      }
+      /// Delete, removing in O( number of elements) time.
+      /// \param pObject a pointer to an object to be deleted from this container.
+      void Delete( T *pObject )
+      {
+	typename std::vector< T * >::iterator itResult;
+	itResult = find( m_Objects.begin(), m_Objects.end(), pObject );    
+	if ( itResult != m_Objects.end() )
+	{
+	  T *pDEADBEEF = *itResult;
+	  m_Objects.erase(itResult);
+	  delete pDEADBEEF;
+	}
+      }   
+      /// Gets the number of objects in this container.
+      /// \return number of objects.
+      inline const int GetSize() const
+      {
+	return m_Objects.size();
+      }
+      /// Gets object from an index in the object vector.
+      /// \return pointer to an object.
+      T *At(unsigned int iIndex)
+      {
+	if ( iIndex >= 0 && iIndex < m_Objects.size() )
+	{
+	  return m_Objects[iIndex];
+	} 
+	else
+	{
+	  return NULL;
+	}
+      }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Singleton template, which makes creating singleton objects easier.
+    template <class T>
+    class CSingleton
+    {
+
+    private:
+      /// Static pointer to only instance.
+      static T *m_pSingleton;
+      ////////////////////
+      /// Copy constructor.
+      CSingleton( const CSingleton &ref){}
+    protected:
+      ////////////////////
+      /// Default constructor.
+      CSingleton() {}
+      ////////////////////
+      /// Destructor.
+      virtual ~CSingleton() {}
+    public:
+      ////////////////////
+      /// Returns a pointer to this singleton.
+      static T *GetInstance() 
+      {
+	if ( m_pSingleton == NULL )
+	{
+	  m_pSingleton = new T();
+	}
+	return m_pSingleton;
+      }
+      /// Destroys this singleton.
+      static void Destroy()
+      {
+	if ( m_pSingleton != NULL )
+	{
+	  delete m_pSingleton;
+	  m_pSingleton = NULL;
+	}
+      }
+    };
+    /// Initialize the static member in the derived classes.
+    template<class T> T *CSingleton<T>::m_pSingleton = NULL;
+    /////////////////////////////////////////////////////////////////
+    /// A template which creates KEY-VALUE maps between given types.
+    /// If you use pointers as keys, you better know the effects.
+    /// ie. const char * will make your dustbin go wah-wah in no time. Get that?
+    /// Yup, that's what I thought.
+    template <typename KEY, typename VALUE>
+    class CMapper
+    {
+    protected:
+      /// map template
+      std::map< KEY , VALUE * > m_Map;
+    public:
+      ////////////////////
+      /// Default constructor.
+      CMapper()
+      {
+	
+      }
+      ////////////////////
+      /// Destructor.
+      ~CMapper()
+      {
+	CDEBUG( "Mapper:: delete\n");
+	Clear();
+      }
+      ////////////////////
+      /// Clears all mappings.
+      void Clear()
+      {
+	m_Map.clear();
+      }
+      ////////////////////
+      /// Adds pValue under the key kKey into the map.
+      /// \param kKey key value.
+      /// \param pValue a pointer.
+      void Map( KEY kKey, VALUE *pValue )
+      {
+	m_Map[kKey] = pValue;
+      }
+      ////////////////////
+      /// Finds the pointer to the object mapped with key kKey. 
+      /// \param kKey key value for object.
+      /// \return a pointer to found object, or if not found, NULL.
+      VALUE *Find( KEY kKey )
+      {
+	// Try to find key-value pair
+	typename std::map< KEY, VALUE * >::iterator itValue = m_Map.find( kKey ) ;
     
+	if ( itValue == m_Map.end())
+	{
+	  return NULL; // no luck, so we return NULL
+	} 
+	// Return the object pointer
+	return itValue->second;
+      }
+    };
   }; // namespace core
 }// namespace Phoenix
 #endif 
