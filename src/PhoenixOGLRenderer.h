@@ -12,7 +12,6 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
@@ -45,36 +44,37 @@ namespace Phoenix
       COglRendererFeatures();
       /// Is vertex_program extension supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasVertexProgram();
+      int HasVertexProgram() const;
       /// Is vertex_shader extension supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasVertexShader();
+      int HasVertexShader() const;
       /// Is fragment_shader extension supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasFragmentShader();
+      int HasFragmentShader() const;
       /// Is vertex_array supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasVertexArray();
+      int HasVertexArray() const;
       /// Is vertex_buffer_object supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasVertexBufferObject();
+      int HasVertexBufferObject() const;
       /// Is multitexture supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasMultitexture();
+      int HasMultitexture() const;
       /// Is shader_objects supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasShaderObjects();
+      int HasShaderObjects() const;
       /// Get maximum number of lights.
       /// \return maximum number of lights.
-      int  GetMaxLights();
+      int  GetMaxLights() const;
       /// Get max elements in vertex arrays.
       /// \return maximum number of elements in vertex arrays.
-      int  GetMaxElementsVertices();
+      int  GetMaxElementsVertices() const;
       /// Get max elements in index arrays.
       /// \return maximum number of elements in index arrays.
-      int  GetMaxElementsIndices();
+      int  GetMaxElementsIndices() const;
       /// for printing out supported features.
-      friend std::ostream &operator<<(std::ostream &stream, COglRendererFeatures &obj);
+      friend std::ostream &operator<<(std::ostream &stream, 
+				      const COglRendererFeatures &obj);
     protected:
       /// Initializes the supported values.
       void Init();

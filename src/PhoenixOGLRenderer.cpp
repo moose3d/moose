@@ -9,7 +9,118 @@
 #include "PhoenixOGLRenderer.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
+using std::endl;
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
+{
+Init();
+  // Check for required extensions:
+  if ( GLEE_ARB_vertex_program	)  m_bARB_vertex_program  = 1;
+  if ( GLEE_ARB_vertex_shader	)  m_bARB_vertex_shader   = 1;
+  if ( GLEE_ARB_fragment_shader )  m_bARB_fragment_shader = 1;
+  if ( GLEE_ARB_shader_objects	)  m_bARB_shader_objects  = 1;
+  if ( GLEE_EXT_vertex_array	)  m_bEXT_vertex_array    = 1;
+  if ( GLEE_ARB_multitexture	)  m_bARB_multitexture     = 1;
 
+  if ( GLEE_ARB_vertex_buffer_object	) m_bARB_vertex_buffer_object = 1;
+  glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
+  glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
+  glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);  
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRendererFeatures::Init()
+{
+  m_bARB_vertex_program = 0;
+  m_bARB_vertex_shader = 0;
+  m_bARB_fragment_shader = 0;
+  m_bEXT_vertex_array = 0;
+  m_bARB_vertex_buffer_object = 0;
+  m_bARB_multitexture = 0;
+  m_bARB_shader_objects = 0;
+  m_iMaxLights = 0;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasVertexProgram() const
+{
+  return m_bARB_vertex_program;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasVertexShader() const
+{
+  return m_bARB_vertex_shader;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasFragmentShader() const
+{
+  return m_bARB_fragment_shader;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasVertexArray() const
+{
+  return m_bEXT_vertex_array;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasVertexBufferObject() const
+{
+  return m_bARB_vertex_buffer_object;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasMultitexture() const
+{
+  return m_bARB_multitexture;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRendererFeatures::HasShaderObjects() const
+{
+  return m_bARB_shader_objects;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRendererFeatures::GetMaxLights() const
+{
+  return m_iMaxLights;
+}
+/////////////////////////////////////////////////////////////////
+int  
+Phoenix::Graphics::COglRendererFeatures::GetMaxElementsVertices() const
+{
+  return m_iMaxElementsVertices;
+}
+/////////////////////////////////////////////////////////////////
+int  
+Phoenix::Graphics::COglRendererFeatures::GetMaxElementsIndices() const
+{
+  return m_iMaxElementsIndices;
+}
+/////////////////////////////////////////////////////////////////
+std::ostream &
+Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &obj)
+{
+  stream << "OpenGL extensions:" << std::endl;
+  stream << "------------------" << std::endl;
+  stream << "GL_ARB_vertex_program "  << ( obj.HasVertexProgram() ? "YES" : "NO" ) << endl;
+  stream << "GL_ARB_vertex_shader "   << ( obj.HasVertexShader() ? "YES" : "NO" ) << endl;
+  stream << "GL_ARB_fragment_shader " << ( obj.HasFragmentShader() ? "YES" : "NO" ) << endl;
+  stream << "GL_EXT_vertex_array "    << ( obj.HasVertexArray() ? "YES" : "NO" ) << endl;
+  stream << "GL_ARB_vertex_buffer_object " << ( obj.HasVertexBufferObject() ? "YES" : "NO" ) << endl;
+  stream << "GL_ARB_multitexture " << ( obj.HasMultitexture() ? "YES" : "NO" ) << endl;
+  stream << "GL_ARB_shader_objects " << ( obj.HasShaderObjects() ? "YES" : "NO" ) << endl;
+  stream << "------------------" << std::endl;
+  stream << "OpenGL environment variables:" << std::endl;
+  stream << "------------------" << std::endl;
+  stream << "GL_MAX_LIGHTS = " << obj.GetMaxLights() << endl;
+  stream << "GL_MAX_ELEMENTS_VERTICES = " << obj.GetMaxElementsVertices() << std::endl;
+  stream << "GL_MAX_ELEMENTS_INDICES  = " << obj.GetMaxElementsIndices() << std::endl;
+  return stream;
+}
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::COglRenderer()
 {
