@@ -66,7 +66,7 @@ namespace Phoenix
       CSDLScreen();
       ////////////////////
       /// The deconstructor
-      ~CSDLScreen(){}
+      ~CSDLScreen();
     public:  
       /// Screen parameters.
       static CSDLScreenParams m_SDLScreenParams;
