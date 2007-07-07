@@ -1,36 +1,14 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-
-#include "GSE_Screen.h"
+/////////////////////////////////////////////////////////////////
+#include "PhoenixSDLScreen.h"
 #include <SDL.h>
 #include <GL/GLee.h>
 #include <GL/glu.h>
-#include <ffmpeg/avformat.h> 
-
-// Initialize static pointer
-GSE_Screen * GSE_Screen::m_pScreen = NULL;
-
+/////////////////////////////////////////////////////////////////
+using namespace Phoenix::Window;
+/////////////////////////////////////////////////////////////////
 std::ostream &
 operator<<(std::ostream &stream, 
-	   GSE_OglScreenParams oglSP)
+	   CSDLScreenParams oglSP)
 {
     int iVal = 0;
     const char *tmp = oglSP.m_bDoubleBuffer ? "yes" : "no";
@@ -65,86 +43,79 @@ operator<<(std::ostream &stream,
 
     return stream;
 }
-
-GSE_Screen::~GSE_Screen() {
+/////////////////////////////////////////////////////////////////
+Phoenix::Window::CSDLScreen::~CSDLScreen() {
     
   SDL_Quit();
-  Core::GSE_Logger::Log() << "Screen destroyed, exiting."  
-			  << std::endl;
+  std::cerr << "Screen destroyed, exiting."  
+       << std::endl;
   
 }
-
-GSE_Screen *
-GSE_Screen::GetScreen()
-{
-
-  if ( m_pScreen == NULL ){
-    GSE_OglScreenParams defaultParams;
-    m_pScreen = GetScreen(defaultParams);
-  }
-  return m_pScreen;
-}
-
-GSE_Screen *
-GSE_Screen::GetScreen( GSE_OglScreenParams &rOglScreenParams)
+/////////////////////////////////////////////////////////////////
+Phoenix::Window::CSDLScreen::CSDLScreen( )
 {
   const SDL_VideoInfo *sdlVideoInfo = 0;
 
+  
 
-  if ( m_pScreen == NULL ) {
 
-    if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
-
-      Core::GSE_Logger::Error() << "Couldn't initialize screen (SDL_Init())!" 
-				<< std::endl; 
-      
-    } else {
+  if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) 
+  {
+    std::cerr << "Couldn't initialize screen (SDL_Init())!" 
+	      << std::endl;   
     
-      sdlVideoInfo = SDL_GetVideoInfo();
-
-      if ( !sdlVideoInfo ) {
-	Core::GSE_Logger::Error() << "Couldn't initialize screen " 
-				  << "( SDL_GetVideoInfo())!"
-				  << std::endl;
-      } else {
-
-	// Define which screen depth should be used, currently allowed are 
-	// 32, 24 and 16. Any other ScreenDepth will revert to desktop depth.
-	switch ( rOglScreenParams.m_iScreenDepth ) {
-
-	case 32:
-	case 24:
-	case 16:
-	  break;
+      
+  } 
+  else 
+  {
+    
+    sdlVideoInfo = SDL_GetVideoInfo();
+    
+    if ( !sdlVideoInfo ) 
+    {
+      std::cerr << "Couldn't initialize screen " 
+		<< "( SDL_GetVideoInfo())!"
+		<< std::endl;
+    } 
+    else 
+    {
+      // Define which screen depth should be used, currently allowed are 
+      // 32, 24 and 16. Any other ScreenDepth will revert to desktop depth.
+      switch ( m_SDLScreenParams.m_iScreenDepth ) {
+	
+      case 32:
+      case 24:
+      case 16:
+	break;
 	  
-	default:
-	  rOglScreenParams.m_iScreenDepth = sdlVideoInfo->vfmt->BitsPerPixel;
-	  break;
-	}
+      default:
+	m_SDLScreenParams.m_iScreenDepth = sdlVideoInfo->vfmt->BitsPerPixel;
+	break;
+      }
 
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   rOglScreenParams.m_iRedSize);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, rOglScreenParams.m_iGreenSize);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  rOglScreenParams.m_iBlueSize);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 
-			    rOglScreenParams.m_iDepthBufferSize);
+      SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   m_SDLScreenParams.m_iRedSize);
+      SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, m_SDLScreenParams.m_iGreenSize);
+      SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  m_SDLScreenParams.m_iBlueSize);
+      SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 
+			  m_SDLScreenParams.m_iDepthBufferSize);
 
-	if ( SDL_SetVideoMode( rOglScreenParams.m_iWidth,
-			       rOglScreenParams.m_iHeight,
-			       rOglScreenParams.m_iScreenDepth,
-			       rOglScreenParams.m_iVideoModeFlags) == NULL ){
+      if ( SDL_SetVideoMode( m_SDLScreenParams.m_iWidth,
+			     m_SDLScreenParams.m_iHeight,
+			     m_SDLScreenParams.m_iScreenDepth,
+			     m_SDLScreenParams.m_iVideoModeFlags) == NULL ){
 	  
-	  Core::GSE_Logger::Error() << "Couldn't initialize screen "
-				    << "( SDL_SetVideoMode: "
-				    << SDL_GetError() << ")!"
-				    << std::endl;
+	std::cerr << "Couldn't initialize screen "
+		  << "( SDL_SetVideoMode: "
+		  << SDL_GetError() << ")!"
+		  << std::endl;
 	  
-	} else {
-	  
-	  m_pScreen = new GSE_Screen();    
-	  m_pScreen->m_OglScreenParams = rOglScreenParams;
-	} // ..SDL_SetVideoMode
-      } // ..!sdlVideoInfo
-    } // ..SDL_Init
+      } 
+      else 
+      {
+	CSDLScreen::m_SDLScreenParams = m_SDLScreenParams;
+      } // ..SDL_SetVideoMode
+    } // ..!sdlVideoInfo
+  } // ..SDL_Init
 
     
     // When images are loaded as textures they are flipped and mirrored over Y-axis. 
@@ -160,10 +131,8 @@ GSE_Screen::GetScreen( GSE_OglScreenParams &rOglScreenParams)
     //glMatrixMode(GL_MODELVIEW);
 
     // Register ffmpeg-provided codecs for video textures
-    av_register_all();
+    //av_register_all();
     
-  } // ..m_pScreen == NULL
 
-  return m_pScreen;
-  
 }
+/////////////////////////////////////////////////////////////////
