@@ -1,30 +1,8 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
+using namespace Phoenix::Math;
+using namespace Phoenix::Spatial;
+
 /////////////////////////////////////////////////////////////////
-//  Implementation for Orientable3 class
-/////////////////////////////////////////////////////////////////
-#include "GSE_Orientable.h"
-#include "GSE_Logger.h"
-/////////////////////////////////////////////////////////////////
-GSE_Orientable::GSE_Orientable() : m_vRight(1.0f,0.0f,0.0f),
+Phoenix::Spatial::COrientable::COrientable() : m_vRight(1.0f,0.0f,0.0f),
 				   m_vUpward(0.0f,1.0f,0.0f),
 				   m_vForward(0.0f,0.0f,-1.0f),
 				   m_qRotation(0.0f,0.0f,0.0f,1.0f)
@@ -33,34 +11,34 @@ GSE_Orientable::GSE_Orientable() : m_vRight(1.0f,0.0f,0.0f),
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::Reset()
+Phoenix::Spatial::COrientable::Reset()
 {
-  m_vForward[GSE_Vector3::X] = 0.0;
-  m_vForward[GSE_Vector3::Y] = 0.0;
-  m_vForward[GSE_Vector3::Z] = -1.0;
+  m_vForward[CVector3::X] = 0.0;
+  m_vForward[CVector3::Y] = 0.0;
+  m_vForward[CVector3::Z] = -1.0;
 
-  m_vRight[GSE_Vector3::X] = 1.0;
-  m_vRight[GSE_Vector3::Y] = 0.0;
-  m_vRight[GSE_Vector3::Z] = 0.0;
+  m_vRight[CVector3::X] = 1.0;
+  m_vRight[CVector3::Y] = 0.0;
+  m_vRight[CVector3::Z] = 0.0;
 
-  m_vUpward[GSE_Vector3::X] = 0.0;
-  m_vUpward[GSE_Vector3::Y] = 1.0;
-  m_vUpward[GSE_Vector3::Z] = 0.0;
+  m_vUpward[CVector3::X] = 0.0;
+  m_vUpward[CVector3::Y] = 1.0;
+  m_vUpward[CVector3::Z] = 0.0;
   
   // Unit quaternion
-  m_qRotation[GSE_Quaternion::X ] =
-  m_qRotation[GSE_Quaternion::Y ] =
-  m_qRotation[GSE_Quaternion::Z ] = 0.0f;
-  m_qRotation[GSE_Quaternion::W ] = 1.0f;
+  m_qRotation[CQuaternion::X ] =
+  m_qRotation[CQuaternion::Y ] =
+  m_qRotation[CQuaternion::Z ] = 0.0f;
+  m_qRotation[CQuaternion::W ] = 1.0f;
   
   SetRotationChanged(1);
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateAroundX( float degrees ) 
+Phoenix::Spatial::COrientable::RotateAroundX( float degrees ) 
 {
 
-  GSE_Quaternion q; 
+  CQuaternion q; 
   q.CreateFromAxisAngle( 1.0, 0.0, 0.0, degrees );
   m_qRotation = q * m_qRotation;
   RotateAllDirections( q );
@@ -69,10 +47,10 @@ GSE_Orientable::RotateAroundX( float degrees )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateAroundY( float degrees ) 
+Phoenix::Spatial::COrientable::RotateAroundY( float degrees ) 
 {
 
-  GSE_Quaternion q;
+  CQuaternion q;
   q.CreateFromAxisAngle( 0.0, 1.0, 0.0, degrees );
   m_qRotation = q * m_qRotation;
   RotateAllDirections( q );
@@ -80,10 +58,10 @@ GSE_Orientable::RotateAroundY( float degrees )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateAroundZ( float degrees ) 
+Phoenix::Spatial::COrientable::RotateAroundZ( float degrees ) 
 {
 
-  GSE_Quaternion q; q.CreateFromAxisAngle( 0.0, 0.0, 1.0, degrees );
+  CQuaternion q; q.CreateFromAxisAngle( 0.0, 0.0, 1.0, degrees );
   m_qRotation = q * m_qRotation;
   RotateAllDirections( q );
   SetRotationChanged(1);
@@ -91,21 +69,21 @@ GSE_Orientable::RotateAroundZ( float degrees )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::Rotate( GSE_Vector3 &vAngles )
+Phoenix::Spatial::COrientable::Rotate( CVector3 &vAngles )
 {
-  Rotate( vAngles[GSE_Vector3::X],  
-	  vAngles[GSE_Vector3::Y], 
-	  vAngles[GSE_Vector3::Z]);
+  Rotate( vAngles[CVector3::X],  
+	  vAngles[CVector3::Y], 
+	  vAngles[CVector3::Z]);
 
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::Rotate( float fXAngle, float fYAngle, float fZAngle )
+Phoenix::Spatial::COrientable::Rotate( float fXAngle, float fYAngle, float fZAngle )
 {
 
   // get rotations
-  GSE_Quaternion qOne; qOne.CreateFromAxisAngle( 1.0, 0.0, 0.0, fXAngle );
-  GSE_Quaternion qTwo; qTwo.CreateFromAxisAngle( 0.0, 1.0, 0.0, fYAngle );
+  CQuaternion qOne; qOne.CreateFromAxisAngle( 1.0, 0.0, 0.0, fXAngle );
+  CQuaternion qTwo; qTwo.CreateFromAxisAngle( 0.0, 1.0, 0.0, fYAngle );
   qOne = qTwo * qOne;
   qTwo.CreateFromAxisAngle( 0.0, 0.0, 1.0, fZAngle );
 
@@ -117,14 +95,14 @@ GSE_Orientable::Rotate( float fXAngle, float fYAngle, float fZAngle )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateAroundRight( float fDegrees ) 
+Phoenix::Spatial::COrientable::RotateAroundRight( float fDegrees ) 
 {
 
   /* get rotations using local m_vRight */
-  GSE_Quaternion q; 
-  q.CreateFromAxisAngle( m_vRight[GSE_Vector3::X], 
-			 m_vRight[GSE_Vector3::Y], 
-			 m_vRight[GSE_Vector3::Z], 
+  CQuaternion q; 
+  q.CreateFromAxisAngle( m_vRight[CVector3::X], 
+			 m_vRight[CVector3::Y], 
+			 m_vRight[CVector3::Z], 
 			 fDegrees );
   
   m_qRotation = q * m_qRotation;
@@ -134,14 +112,14 @@ GSE_Orientable::RotateAroundRight( float fDegrees )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateAroundUp( float fDegrees ) 
+Phoenix::Spatial::COrientable::RotateAroundUp( float fDegrees ) 
 {
 
   /* get rotations using local m_vUpward */
-  GSE_Quaternion q;
-  q.CreateFromAxisAngle( m_vUpward[GSE_Vector3::X], 
-			 m_vUpward[GSE_Vector3::Y], 
-			 m_vUpward[GSE_Vector3::Z], 
+  CQuaternion q;
+  q.CreateFromAxisAngle( m_vUpward[CVector3::X], 
+			 m_vUpward[CVector3::Y], 
+			 m_vUpward[CVector3::Z], 
 			 fDegrees );
   
   m_qRotation = q * m_qRotation;  
@@ -152,13 +130,13 @@ GSE_Orientable::RotateAroundUp( float fDegrees )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateAroundForward( float fDegrees ) 
+Phoenix::Spatial::COrientable::RotateAroundForward( float fDegrees ) 
 {
   
   /* get rotations using local m_vForward */
-  GSE_Quaternion q; q.CreateFromAxisAngle( m_vForward[GSE_Vector3::X], 
-					   m_vForward[GSE_Vector3::Y], 
-					   m_vForward[GSE_Vector3::Z], 
+  CQuaternion q; q.CreateFromAxisAngle( m_vForward[CVector3::X], 
+					   m_vForward[CVector3::Y], 
+					   m_vForward[CVector3::Z], 
 					   fDegrees );
   m_qRotation = q * m_qRotation;
   m_vRight.Rotate(q);
@@ -167,33 +145,33 @@ GSE_Orientable::RotateAroundForward( float fDegrees )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateLocal( GSE_Vector3 &vAngles )
+Phoenix::Spatial::COrientable::RotateLocal( CVector3 &vAngles )
 {
-  RotateLocal( vAngles[GSE_Vector3::X], 
-	       vAngles[GSE_Vector3::Y], 
-	       vAngles[GSE_Vector3::Z]);
+  RotateLocal( vAngles[CVector3::X], 
+	       vAngles[CVector3::Y], 
+	       vAngles[CVector3::Z]);
   
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::RotateLocal( float fRightAngle, float fUpAngle, float fForwardAngle )
+Phoenix::Spatial::COrientable::RotateLocal( float fRightAngle, float fUpAngle, float fForwardAngle )
 {
 
 
   /* Get the Rotations from LOCAL axis */
-  GSE_Quaternion qOne; qOne.CreateFromAxisAngle( m_vRight[GSE_Vector3::X],
-						 m_vRight[GSE_Vector3::Y],
-						 m_vRight[GSE_Vector3::Z], 
+  CQuaternion qOne; qOne.CreateFromAxisAngle( m_vRight[CVector3::X],
+						 m_vRight[CVector3::Y],
+						 m_vRight[CVector3::Z], 
 						 fRightAngle );
 
-  GSE_Quaternion qTwo; qTwo.CreateFromAxisAngle( m_vUpward[GSE_Vector3::X], 
-						 m_vUpward[GSE_Vector3::Y],
-						 m_vUpward[GSE_Vector3::Z],
+  CQuaternion qTwo; qTwo.CreateFromAxisAngle( m_vUpward[CVector3::X], 
+						 m_vUpward[CVector3::Y],
+						 m_vUpward[CVector3::Z],
 						 fUpAngle );
   qOne = qTwo * qOne;
-  qTwo.CreateFromAxisAngle( m_vForward[GSE_Vector3::X], 
-			    m_vForward[GSE_Vector3::Y],
-			    m_vForward[GSE_Vector3::Z],
+  qTwo.CreateFromAxisAngle( m_vForward[CVector3::X], 
+			    m_vForward[CVector3::Y],
+			    m_vForward[CVector3::Z],
 			    fForwardAngle );
   qOne = qTwo * qOne;
   /* Apply the combined rotation to each vector */
@@ -203,26 +181,8 @@ GSE_Orientable::RotateLocal( float fRightAngle, float fUpAngle, float fForwardAn
   SetRotationChanged(1);
 }
 /////////////////////////////////////////////////////////////////
-const GSE_Vector3 &
-GSE_Orientable::GetRightVector() const
-{
-  return m_vRight;
-}
-/////////////////////////////////////////////////////////////////
-const GSE_Vector3 &
-GSE_Orientable::GetUpVector() const
-{
-  return m_vUpward;
-}
-/////////////////////////////////////////////////////////////////
-const GSE_Vector3 &
-GSE_Orientable::GetForwardVector() const
-{
-  return m_vForward;
-}
-/////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::SetDirectionForwardUp( GSE_Vector3 f, GSE_Vector3 u )
+Phoenix::Spatial::COrientable::SetDirectionForwardUp( CVector3 f, CVector3 u )
 {
   Reset();
 
@@ -231,33 +191,26 @@ GSE_Orientable::SetDirectionForwardUp( GSE_Vector3 f, GSE_Vector3 u )
   m_vRight = m_vForward.Cross(m_vUpward);
   m_vRight.ToUnit();
   // To ensure numerical stability
-  GSE_Vector3 vDiff = f - u;
-  if ( vDiff[GSE_Vector3::X] < 0.0001f &&
-       vDiff[GSE_Vector3::Y] < 0.0001f &&
-       vDiff[GSE_Vector3::Z] < 0.0001f )
+  CVector3 vDiff = f - u;
+  if ( vDiff[CVector3::X] < 0.0001f &&
+       vDiff[CVector3::Y] < 0.0001f &&
+       vDiff[CVector3::Z] < 0.0001f )
   {
     m_qRotation.CreateFromAxisAngle( m_vRight, 180.0f);
   }
   else 
   {
-    m_qRotation = GSE_Quaternion::RotationArc( m_vForward, f);
+    m_qRotation = CQuaternion::RotationArc( m_vForward, f);
   }
   SetRotationChanged(1);
 }
 /////////////////////////////////////////////////////////////////
-GSE_Quaternion
-GSE_Orientable::GetRotationQuaternion()
-{
-  return m_qRotation;
-}
-/////////////////////////////////////////////////////////////////
 void			
-GSE_Orientable::SetRotationFromInitialState( GSE_Vector3 &vForward,
-					     GSE_Vector3 &vRight,
-					     GSE_Vector3 &vUp,
-					     GSE_Quaternion & qQuat)
+Phoenix::Spatial::COrientable::SetRotationFromInitialState( const CVector3 &vForward,
+							    const CVector3 &vRight,
+							    const CVector3 &vUp,
+							    const CQuaternion & qQuat)
 {
-  
   m_qRotation = qQuat;
   m_vRight   = vRight;
   m_vForward = vForward;
@@ -268,11 +221,10 @@ GSE_Orientable::SetRotationFromInitialState( GSE_Vector3 &vForward,
   m_vUpward.Rotate(qQuat);
   
   SetRotationChanged(1);
-  
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::AppendToRotation( const GSE_Quaternion &qQuaternion)
+Phoenix::Spatial::COrientable::AppendToRotation( const CQuaternion &qQuaternion)
 {
   /* rotate every orientation vector by new quaternion*/
   m_vForward.Rotate(qQuaternion);
@@ -284,19 +236,8 @@ GSE_Orientable::AppendToRotation( const GSE_Quaternion &qQuaternion)
 
 }
 /////////////////////////////////////////////////////////////////
-int
-GSE_Orientable::IsRotationChanged() const
-{
-  return m_bRotationChanged;
-}
-/////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::SetRotationChanged( int bFlag )
-{
-  m_bRotationChanged = bFlag;
-}
-void
-GSE_Orientable::SetRotation( const GSE_Matrix4x4f &mMatrix )
+Phoenix::Spatial::COrientable::SetRotation( const CMatrix4x4f &mMatrix )
 {
   // Restore initial state
   Reset();
@@ -305,8 +246,9 @@ GSE_Orientable::SetRotation( const GSE_Matrix4x4f &mMatrix )
   RotateAllDirections(m_qRotation);
   SetRotationChanged(1);
 }
+/////////////////////////////////////////////////////////////////
 void
-GSE_Orientable::SetRotation( const GSE_Quaternion &qRotation )
+Phoenix::Spatial::COrientable::SetRotation( const CQuaternion &qRotation )
 {
   // Restore initial state
   Reset();
@@ -315,35 +257,4 @@ GSE_Orientable::SetRotation( const GSE_Quaternion &qRotation )
   RotateAllDirections(qRotation);
   SetRotationChanged(1);
 }
-/////////////////////////////////////////////////////////////////
-//  $Log: GSE_Orientable.cpp,v $
-//  Revision 1.11  2007/05/18 08:08:09  entity
-//  Vector3 constructor check & fixes
-//
-//  Revision 1.10  2007/03/26 17:46:53  entity
-//  major cleanups and fixes
-//
-//  Revision 1.9  2007/03/26 12:54:06  entity
-//  const & stuff
-//
-//  Revision 1.8  2007/03/21 08:24:19  entity
-//  Get*Vector() is now const
-//
-//  Revision 1.7  2007/03/20 20:40:42  entity
-//  const & stuff added
-//
-//  Revision 1.6  2007/03/15 18:25:07  entity
-//  Fixed the badbadbadbad Inverse() quaternion thingy
-//
-//  Revision 1.5  2007/03/15 14:04:18  entity
-//  SetRotation() added
-//
-//  Revision 1.4  2007/03/14 10:56:22  entity
-//  added IsRotationChanged()
-//
-//  Revision 1.3  2007/01/08 12:24:00  entity
-//  added GPL licence
-//
-//  Revision 1.2  2006/10/10 07:52:57  entity
-//  some changes
 /////////////////////////////////////////////////////////////////
