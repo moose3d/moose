@@ -16,7 +16,7 @@ LDFLAGS_LINUX=-Wall -lGLU -lGLee -lSDL_image \
 
 #/////////////////////////////////////////////////////////////////
 SRC=$(OBJ:.o=.cpp)
-OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o PhoenixSDLScreen.o
+OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o PhoenixSDLScreen.o PhoenixOGLRenderer.o
 #/////////////////////////////////////////////////////////////////
 all:  linux
 
