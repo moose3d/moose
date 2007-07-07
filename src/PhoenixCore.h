@@ -1,6 +1,7 @@
-
+/////////////////////////////////////////////////////////////////
 #ifndef __Ccore_h__
 #define __Ccore_h__
+/////////////////////////////////////////////////////////////////
 #include <ostream>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -24,10 +25,11 @@ namespace Phoenix
       /// Default constructor.
       CPhoenixObject()
       {
+	// Default object name is PhoenixObject<id>
 	m_nId = m_nObjectCounter;
 	m_nObjectCounter++;
 	std::stringstream str;
-	str << "Object" << GetId();
+	str << "PhoenixObject" << GetId();
 	SetName(str.str());
       }
       ////////////////////
@@ -64,18 +66,21 @@ namespace Phoenix
       /// The starting time in milliseconds where passed time is calculated from.
       unsigned int m_nStartTimeMS;
     public:
+      ////////////////////
       /// The constructor.
       CTimer()
       {
 	m_nPassedTimeMS = 0;
 	m_nStartTimeMS = 0;
       }
+      ////////////////////
       /// Sets the starting time for calculations.
       /// \param nTimeMS the starting time in milliseconds.
       void SetStartTimeMS( unsigned int nTimeMS )
       {
 	m_nStartTimeMS = nTimeMS;
       }
+      ////////////////////
       /// Sets the current time in milliseconds. If passed time is less than 
       /// starting time, the passed time will be set as starting time.
       /// \param nTimeMS The current time in milliseconds, 
@@ -87,17 +92,19 @@ namespace Phoenix
 	}
 	else			  m_nPassedTimeMS = nTimeMS - m_nStartTimeMS;
       }
+      ////////////////////
       /// Returns the passed time in milliseconds.
       /// \returns unsigned int the passed time relative to starting time.
-      unsigned int GetPassedTimeMS()
+      inline unsigned int GetPassedTimeMS()
       {
 	return m_nPassedTimeMS;
       }
+      ////////////////////
       /// Checks whether given time has passed since the last call to 
       /// SetStartTime().
       /// \param nTimeMS time in milliseconds which is desired to be passed.
-      /// \returns bool true, if nTimeMS milliseconds have passed, false if not.
-      bool HasPassedMS( unsigned int nTimeMS )
+      /// \returns true, if nTimeMS milliseconds have passed, false if not.
+      inline int HasPassedMS( unsigned int nTimeMS )
       {
 	return ( m_nPassedTimeMS >= nTimeMS );
       }
@@ -230,6 +237,7 @@ namespace Phoenix
 	  }
 	}
       }
+      ////////////////////
       /// Delete, removing in O( number of elements) time.
       /// \param pObject a pointer to an object to be deleted from this container.
       void Delete( T *pObject )
@@ -243,12 +251,14 @@ namespace Phoenix
 	  delete pDEADBEEF;
 	}
       }   
+      ////////////////////
       /// Gets the number of objects in this container.
       /// \return number of objects.
       inline const int GetSize() const
       {
 	return m_Objects.size();
       }
+      ////////////////////
       /// Gets object from an index in the object vector.
       /// \return pointer to an object.
       T *At(unsigned int iIndex)
@@ -303,6 +313,7 @@ namespace Phoenix
 	}
       }
     };
+    /////////////////////////////////////////////////////////////////
     /// Initialize the static member in the derived classes.
     template<class T> T *CSingleton<T>::m_pSingleton = NULL;
     /////////////////////////////////////////////////////////////////
@@ -361,6 +372,49 @@ namespace Phoenix
 	return itValue->second;
       }
     };
+    /////////////////////////////////////////////////////////////////
+    /// A value list container.
+    template <typename T>
+    class CValueList 
+    {
+    protected:
+      /// List of values.
+      std::list<T> m_lstValues;
+    public:
+      ////////////////////
+      /// Constructor.
+      CValueList()
+      {
+      }
+      ////////////////////
+      /// Destructor.
+      ~CValueList()
+      {
+	Clear();
+      }
+      ////////////////////
+      /// Adds value to list.
+      /// \param value Value to be added.
+      inline void Add( T value )
+      {
+	m_lstValues.push_back(value);
+      }
+      ////////////////////
+      /// Clears the list.
+      inline void Clear()
+      {
+	m_lstValues.clear();
+      }
+      ////////////////////
+      /// Returns a reference to the value list.
+      const std::list<T> & GetValues()
+      {
+	return m_lstValues;
+      }
+    };
+    /////////////////////////////////////////////////////////////////
   }; // namespace core
 }// namespace Phoenix
+/////////////////////////////////////////////////////////////////
 #endif 
+/////////////////////////////////////////////////////////////////
