@@ -61,18 +61,12 @@ namespace Phoenix
 	return m_nNumIndices;
       }
       ////////////////////
-      /// Returns pointer to unsigned int index data .
+      /// Returns pointer to index data .
       /// \returns Pointer to m_pIndexData
-      inline unsigned int *GetIntIndices()
+      template<typename TYPE>
+      inline TYPE *GetPointer()
       {
-	return (unsigned int *)m_pIndexData;
-      }
-      ////////////////////
-      /// Returns pointer to unsigned short int index data .
-      /// \returns Pointer to m_pIndexData
-      inline unsigned short int *GetShortIndices()
-      {
-	return (unsigned short int *)m_pIndexData;
+	return reinterpret_cast<TYPE *>(m_pIndexData);
       }
       ////////////////////
       /// Returns true if indices are stored with ushort int data type.
