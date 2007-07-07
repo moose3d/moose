@@ -1,145 +1,32 @@
 /////////////////////////////////////////////////////////////////
-#ifndef __GSE_structures_h__
-#define __GSE_structures_h__
+#ifndef __Cstructures_h__
+#define __Cstructures_h__
 /////////////////////////////////////////////////////////////////
-#include "GSE_globals.h"
-#include "GSE_Logger.h"
-#include <math.h>
-#include <vector>
-#include <map>
-#include <list>
-#include <algorithm>
-/////////////////////////////////////////////////////////////////
-/// The base class for color representation with RGBA values.
-class GSE_Color : public GSE_Vector< float, 4 >
-{
- public:
-  /// The enumerations for color indices.
-  typedef enum ColorIndex_t 
-  {
-    /// Symbolic index for RED value.
-    R = 0,
-    /// Symbolic index for GREEN value.
-    G = 1,
-    /// Symbolic index for BLUE value.
-    B = 2,
-    /// Symbolic index for ALPHA value.
-    A = 3
-  } ColorIndex;
-
-  /// The Default Constructor.
-  GSE_Color()
-  {
-    // It's almost...BLACK!!!
-    m_pValues[R] = 0.0;
-    m_pValues[G] = 0.0;
-    m_pValues[B] = 0.0;
-    m_pValues[A] = 0.0;
-
-  }
-  /// The parametrized constructor.
-  GSE_Color( float *pArray ) : GSE_Vector<float,4>(pArray)
-  {
-  }
-  /// The parametrized constructor.
-  GSE_Color( float r, float g, float b, float a)
-  {
-    
-    m_pValues[R] = r;
-    m_pValues[G] = g;
-    m_pValues[B] = b;
-    m_pValues[A] = a;
-
-  }
-  /// Destructor.
-  ~GSE_Color()
-  {
-
-  }
-  /// Assigns color values.
-  /// \param fR Red value.
-  /// \param fG Green value.
-  /// \param fB Blue value.
-  /// \param fA Transparency value.
-  inline void Set( float fR, float fG, float fB, float fA)
-  {
-    m_pValues[R] = fR;
-    m_pValues[G] = fG;
-    m_pValues[B] = fB;
-    m_pValues[A] = fA;
-  }
-  /// Returns the value array.
-  inline const float *GetValues() const
-  { 
-    return m_pValues; 
-  }
-  /// For assisting in the accessing of color components.
-  inline float & operator[](ColorIndex index) const
-  {
-    return m_pValues[index];
-  }
-  /// For debugging.
-  friend std::ostream &operator<<( std::ostream &stream, 
-				   GSE_Color color ) 
-  {
-    stream << color.m_pValues[R] << ","
-	   << color.m_pValues[G] << ","
-	   << color.m_pValues[B] << ","
-	   << color.m_pValues[A] ;
-    return stream; 
-  }
-};
-/////////////////////////////////////////////////////////////////
-/// The base object for everything in the system.
-class GSE_Object 
-{
-
- private:
-  /// How many objects have been created.
-  static unsigned int m_nObjectCounter;
- protected:
-  /// The identification number for the object.
-  unsigned int	m_nId;
-  /// Object name.
-  char  m_sName[GSE_OBJECT_MAX_NAME_SIZE];
- public:
-  /// Constructor.
-  GSE_Object();
-
-  /// Assigns the string sNewName to the object name. 
-  /// The length of the sNewName must be less or equal  
-  /// to GSE_OBJECT_MAX_NAME_SIZE. 
-  /// If NULL is passed, Object name will be object<N> 
-  /// where N is running object number.
-  void SetName( char *sNewName );
-  /// Returns the pointer to the name of the object.
-  const char * GetName();
-  /// Returns the ID number for this object.
-  unsigned int GetID();
-};
+#include <sstream>
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 /// The base class for Objects with position.
-class GSE_Positional 
+class CPositional 
 {
  protected:
   /// Vector where position is stored.
-  GSE_Vector3 m_vPosition;
+  CVector3 m_vPosition;
   /// has the position changed.
   int	      m_bPositionChanged;
  public:
   /// Default constructor.
-  GSE_Positional() : m_vPosition(0.0f,0.0f,0.0f),m_bPositionChanged(0)
+  CPositional() : m_vPosition(0.0f,0.0f,0.0f),m_bPositionChanged(0)
   {
 
   }
   /// Parametrized constructor.
   /// \param vPosition vector for location-
-  GSE_Positional( const GSE_Vector3 & vPosition ) : m_vPosition(vPosition),m_bPositionChanged(0)
+  CPositional( const CVector3 & vPosition ) : m_vPosition(vPosition),m_bPositionChanged(0)
   {
   }
   /// Assigns position.
   /// \param vPosition vector of which values are used.
-  inline void SetPosition( const GSE_Vector3 &vPosition )
+  inline void SetPosition( const CVector3 &vPosition )
   {
     m_vPosition = vPosition;
     SetPositionChanged(1);
@@ -156,12 +43,12 @@ class GSE_Positional
     SetPositionChanged(1);
   }
   /// Returns position.
-  inline const GSE_Vector3 & GetPosition() const
+  inline const CVector3 & GetPosition() const
   {
     return m_vPosition;
   }
   /// Adds vector to current position.
-  void Move( GSE_Vector3 vPosition )
+  void Move( CVector3 vPosition )
   {
     m_vPosition = m_vPosition + vPosition;
     SetPositionChanged(1);
@@ -180,19 +67,19 @@ class GSE_Positional
 };
 /////////////////////////////////////////////////////////////////
 /// The class for single-directional object.
-class GSE_Directional 
+class CDirectional 
 {
  protected:
   /// Direction vector.
-  GSE_Vector3 m_vDirection;
+  CVector3 m_vDirection;
  public:
   /// Assigns the direction.
-  inline void SetDirection( GSE_Vector3 vDirection )
+  inline void SetDirection( CVector3 vDirection )
   {
     m_vDirection = vDirection;
   }
   /// Returns the direction.
-  inline GSE_Vector3 GetDirection()
+  inline CVector3 GetDirection()
   {
     return m_vDirection;
   }
@@ -200,18 +87,18 @@ class GSE_Directional
 /////////////////////////////////////////////////////////////////
 /// A value list container.
 template <typename T>
-class GSE_ValueList 
+class CValueList 
 {
  protected:
   /// List of values.
   std::list<T> m_lstValues;
  public:
   /// Constructor.
-  GSE_ValueList()
+  CValueList()
   {
   }
   /// Destructor.
-  ~GSE_ValueList()
+  ~CValueList()
   {
     Clear();
   }
@@ -235,7 +122,7 @@ class GSE_ValueList
 /// Generic container class for several types.
 /////////////////////////////////////////////////////////////////
 template <class T>
-class GSE_Container
+class CContainer
 {
  protected:
   /// vector of objects.
@@ -243,23 +130,23 @@ class GSE_Container
   
  public:
   /// Default constructor.
-  GSE_Container()
+  CContainer()
   {
      
   }
   /// Destructor.
-  ~GSE_Container()
+  ~CContainer()
   {
-    GSE_DEBUG( "Deleting GSE_Container (" << m_Objects.size() <<")...");
+    CDEBUG( "Deleting CContainer (" << m_Objects.size() <<")...");
     Clear();
-    GSE_DEBUG( "Done deleting GSE_Container" );
+    CDEBUG( "Done deleting CContainer" );
   }
   /// deletes all objects.
   void Clear()
   {
     for( unsigned int i=0;i<m_Objects.size();i++)
     {
-      GSE_DEBUG( "deleting " << i << "ptr:" << m_Objects[i] );
+      CDEBUG( "deleting " << i << "ptr:" << m_Objects[i] );
       if ( m_Objects[i] != NULL ) 
       {
 	delete m_Objects[i];
@@ -334,15 +221,15 @@ class GSE_Container
 /////////////////////////////////////////////////////////////////
 /// Singleton template, which makes creating singleton objects easier.
 template <class T>
-class GSE_Singleton
+class CSingleton
 {
 
  private:
   static T *m_pSingleton;
-  GSE_Singleton( const GSE_Singleton &ref){}
+  CSingleton( const CSingleton &ref){}
  protected:
-  GSE_Singleton() {}
-  virtual ~GSE_Singleton() {}
+  CSingleton() {}
+  virtual ~CSingleton() {}
    
  public:
   /// Returns a pointer to this singleton.
@@ -368,7 +255,7 @@ class GSE_Singleton
   }
 };
 /// Initialize the static member in the derived classes.
-template<class T> T *GSE_Singleton<T>::m_pSingleton = NULL;
+template<class T> T *CSingleton<T>::m_pSingleton = NULL;
 
 #ifndef _WIN32EXPORT 
 // WHOA!! This was probably the most mind-boggling thing to fix. This is 
@@ -379,11 +266,11 @@ template<class T> T *GSE_Singleton<T>::m_pSingleton = NULL;
 // of the singleton; one inside the DLL and one inside the application binary.
 // And since the point of Singleton is to have a single instance of an object, so 
 // this nasty feature wreaks havoc on implementation. Following statements 
-// say that the GSE_Singleton<GSE_MaterialMgr> template has already been 
+// say that the CSingleton<CMaterialMgr> template has already been 
 // created in DLL and should not be created again.
 #ifdef WIN32
-class GSE_MaterialMgr;
-extern template class __declspec(dllimport) GSE_Singleton<GSE_MaterialMgr>;
+class CMaterialMgr;
+extern template class __declspec(dllimport) CSingleton<CMaterialMgr>;
 #endif
 #endif
 /////////////////////////////////////////////////////////////////
@@ -392,21 +279,21 @@ extern template class __declspec(dllimport) GSE_Singleton<GSE_MaterialMgr>;
 /// ie. const char * will make your dustbin go wah-wah in no time. Get that?
 /// Yup, that's what I thought.
 template <typename KEY, typename VALUE>
-class GSE_Mapper
+class CMapper
 {
  protected:
   /// map template
   std::map< KEY , VALUE * > m_Map;
  public:
   /// Constructor.
-  GSE_Mapper()
+  CMapper()
   {
     
   }
   /// Destructor.
-  ~GSE_Mapper()
+  ~CMapper()
   {
-    GSE_DEBUG( "Mapper:: delete\n");
+    CDEBUG( "Mapper:: delete\n");
     Clear();
   }
   /// Clears all mappings.
@@ -439,110 +326,29 @@ class GSE_Mapper
 };
 // ---------------------------------------------------------------
 /// Vertex class for some cases where it is easier to handle things as a blob.
-class GSE_Vertex
+class CVertex
 {
  public:
   /// Vertex position.
-  GSE_Vector3 m_vPosition;
+  CVector3 m_vPosition;
   /// Vertex normal.
-  GSE_Vector3 m_vNormal;
+  CVector3 m_vNormal;
   /// Vertex texture coordinates.
-  GSE_Vector2 m_vTexCoord;
+  CVector2 m_vTexCoord;
   /// The equality comparison operator.
-  /// \param vert GSE_Vertex object which this is compared against.
-  bool operator==( GSE_Vertex vert)
+  /// \param vert CVertex object which this is compared against.
+  bool operator==( CVertex vert)
   {
     return (m_vPosition == vert.m_vPosition &&
             m_vNormal   == vert.m_vNormal   &&
 	    m_vTexCoord == vert.m_vTexCoord );
   }
   /// The less than comparison operator.
-  bool operator< (GSE_Vertex vert)
+  bool operator< (CVertex vert)
   {
-    return m_vPosition[GSE_Vector3::Y] < vert.m_vPosition[GSE_Vector3::Y];
+    return m_vPosition[CVector3::Y] < vert.m_vPosition[CVector3::Y];
   }
 };
 /////////////////////////////////////////////////////////////////
 #endif
-/////////////////////////////////////////////////////////////////
-// history:
-//
-//	$Log: GSE_structures.h,v $
-//	Revision 1.27  2007/06/01 08:55:43  entity
-//	doxygen comments added
-//
-//	Revision 1.26  2007/06/01 06:47:01  entity
-//	missing doxy comments again.
-//
-//	Revision 1.25  2007/06/01 06:26:19  entity
-//	Added missing doxygen comments.
-//
-//	Revision 1.24  2007/05/31 14:00:12  entity
-//	missing comments added.
-//
-//	Revision 1.23  2007/05/21 12:50:00  entity
-//	glew to GLee
-//
-//	Revision 1.22  2007/05/18 08:08:09  entity
-//	Vector3 constructor check & fixes
-//
-//	Revision 1.21  2007/05/14 09:44:27  entity
-//	more reasonable operations for Vector2
-//
-//	Revision 1.20  2007/04/01 15:25:05  entity
-//	texture system overhaul, Elements->Indexbuffer rename
-//
-//	Revision 1.19  2007/03/31 16:20:43  entity
-//	ObjStruct -> GeometryData rename
-//
-//	Revision 1.18  2007/03/30 12:56:32  entity
-//	SetElements->SetVertexCount rename
-//
-//	Revision 1.17  2007/03/29 06:58:10  entity
-//	code cleanups
-//
-//	Revision 1.16  2007/03/27 07:41:32  entity
-//	moved history to end of file
-//
-//	Revision 1.15  2007/03/26 18:24:55  entity
-//	Rotate() modified and GetRotated() added
-//
-//	Revision 1.14  2007/03/14 10:54:15  entity
-//	removed Position() and added dirty flag for GSE_Positional
-//
-//	Revision 1.13  2007/03/12 14:50:51  entity
-//	Removed unneeded virtual functions
-//
-//	Revision 1.12  2007/03/11 12:48:18  entity
-//	const keyword meddling and unneeded vars removed
-//
-//	Revision 1.11  2007/03/09 13:28:55  entity
-//	const & issues
-//
-//	Revision 1.10  2007/03/09 12:27:01  entity
-//	small stuff
-//
-//	Revision 1.9  2007/03/08 21:10:34  entity
-//	inline keywords + const GetValues()
-//
-//	Revision 1.8  2007/03/07 13:33:38  entity
-//	Vector3 with inlined functions
-//
-//	Revision 1.7  2007/02/28 11:53:50  entity
-//	added GSE_Vertex class
-//
-//	Revision 1.6  2007/01/08 12:23:15  entity
-//	added GPL licence and win32 fix for singleton objects
-//
-//	Revision 1.5  2006/12/29 14:00:23  entity
-//	duh
-//
-//	Revision 1.4  2006/10/16 14:48:04  entity
-//	Removed an unnecessary method
-//
-//	Revision 1.3  2006/10/16 07:10:48  entity
-//	Created new GSE_Vector template and corresponding changes
-//
-//	Revision 1.2  2006/10/13 14:32:04  entity
-//	Code cleanups, comments, replaced #ifdef DEBUG with GSE_DEBUG macro, Added file header
 /////////////////////////////////////////////////////////////////
