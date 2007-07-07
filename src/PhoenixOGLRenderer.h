@@ -113,9 +113,9 @@ namespace Phoenix
       /// it doesn't do a thing.
       void Finalize();
       ////////////////////
-      /// Commits vertex buffer.
+      /// Commits vertex descriptor.
       /// \param pBuffer buffer to be applied.
-      void CommitVertexBuffer( CVertexArray *pBuffer );
+      void CommitVertexArray( CVertexArray *pBuffer );
       ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
