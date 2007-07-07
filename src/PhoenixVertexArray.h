@@ -1,5 +1,5 @@
-#ifndef __PhoenixVertexBuffer_h__
-#define __PhoenixVertexBuffer_h__
+#ifndef __PhoenixVertexArray_h__
+#define __PhoenixVertexArray_h__
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>

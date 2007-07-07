@@ -4,8 +4,8 @@
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
-#include "PhoenixVertexBuffer.h"
-#include "PhoenixIndexBuffer.h"
+#include "PhoenixVertexArray.h"
+#include "PhoenixIndexArray.h"
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
