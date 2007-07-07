@@ -59,7 +59,7 @@ namespace Phoenix
       int HasFragmentShader() const;
       /// Is vertex_array supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasVertexDescriptor() const;
+      int HasVertexArray() const;
       /// Is vertex_buffer_object supported.
       /// \return 1 if supported, 0 otherwise.
       int HasVertexBufferObject() const;
