@@ -1,112 +1,43 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
 /////////////////////////////////////////////////////////////////
-#include <SDL.h>
-#include "GSE_globals.h"
-#include "GSE_Octree.h"
-#include "GSE_GeometryData.h"
-#include "GSE_Texture.h"
-#include "GSE_OglRenderer.h"
-#include "GSE_OglTexture.h"
-#include "GSE_OglUtils.h"
-#include "GSE_OglShaders.h"
-#include "GSE_Logger.h"
-#include "GSE_Light.h"
-#include "GSE_Material.h"
-#include "GSE_IndexBuffer.h"
-#include "GSE_math.h"
-#include "GSE_particlesystems.h"
-#include "GSE_geometry.h"
-#include "GSE_OglCache.h"
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <ft2build.h>
 #include <list>
 #include <iostream>
+#include "PhoenixGlobals.h"
+/////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
 #include FT_FREETYPE_H
 /////////////////////////////////////////////////////////////////
-#ifdef DEBUG
-#define GSE_SHOW_OGL_ERRORS() {\
-	Core::GSE_Logger::Error() << "GL_ERROR at " << __LINE__ << std::endl;\
-	GSE_OglUtils::ShowGLErrors();\
-}
-#else
-#define GSE_SHOW_OGL_ERRORS() {}
-#endif
-/////////////////////////////////////////////////////////////////
-// namespace definitions 
-using Geometry::GSE_Plane;
-using Core::GSE_Logger;
-using namespace RenderNode;
-/////////////////////////////////////////////////////////////////
 // globals 
-const GLenum g_aGLMultiTexIds[GSE_MAX_TEXCOORD_ARRAYS] = { GL_TEXTURE0_ARB,
-							   GL_TEXTURE1_ARB,
-							   GL_TEXTURE2_ARB,
-							   GL_TEXTURE3_ARB,
-							   GL_TEXTURE4_ARB,
-							   GL_TEXTURE5_ARB,
-							   GL_TEXTURE6_ARB,
-							   GL_TEXTURE7_ARB };
+const GLenum g_aGLMultiTexIds[8] = { GL_TEXTURE0_ARB,
+				     GL_TEXTURE1_ARB,
+				     GL_TEXTURE2_ARB,
+				     GL_TEXTURE3_ARB,
+				     GL_TEXTURE4_ARB,
+				     GL_TEXTURE5_ARB,
+				     GL_TEXTURE6_ARB,
+				     GL_TEXTURE7_ARB };
 /////////////////////////////////////////////////////////////////
-GLenum GetGLType( TextureType::Type type )
-{
-  switch ( type )
-  {
-  case TextureType::GSE_TEX1D:
-    return GL_TEXTURE_1D;
-    break;
-  case TextureType::GSE_TEX2D:
-    return GL_TEXTURE_2D;
-    break;
-  case TextureType::GSE_TEXR2D:
-    return GL_TEXTURE_RECTANGLE_ARB;
-    break;
-  }
-  return GL_TEXTURE_2D;
-}
-/////////////////////////////////////////////////////////////////
-// Returns true if display lists is being compiled
-#define IS_COMPILING_DISPLAY_LIST() ( !m_DisplayListStack.empty() )
-/////////////////////////////////////////////////////////////////
-GSE_OglRendererFontset::GSE_OglRendererFontset()
+COglRendererFontset::COglRendererFontset()
 {
   m_nDisplayLists = 0;
-  memset( m_ppTextures, 0, GSE_MAX_FONT_CHARACTERS );
+  memset( m_ppTextures, 0, Phoenix::Graphics::MAX_FONT_CHARACTERS );
 }
 /////////////////////////////////////////////////////////////////
-GSE_OglRendererFontset::~GSE_OglRendererFontset()
+COglRendererFontset::~COglRendererFontset()
 {
-  GSE_OglTextureMgr *pOglTextureMgr = GSE_OglTextureMgr::GetInstance();
+  COglTextureMgr *pOglTextureMgr = COglTextureMgr::GetInstance();
   // delete display lists
-  glDeleteLists(m_nDisplayLists, GSE_MAX_FONT_CHARACTERS);
+  glDeleteLists(m_nDisplayLists, Phoenix::Graphics::MAX_FONT_CHARACTERS);
   // delete textures as well
-  for(unsigned int nTex=0;nTex<GSE_MAX_FONT_CHARACTERS;nTex++)
+  for(unsigned int nTex=0;nTex<Phoenix::Graphics::MAX_FONT_CHARACTERS;nTex++)
   {
     if ( m_ppTextures[nTex] != NULL )
     {
-      GSE_Texture *pTexture = m_ppTextures[nTex]; 
+      CTexture *pTexture = m_ppTextures[nTex]; 
       pOglTextureMgr->Delete( pTexture );
       m_ppTextures[nTex] = NULL;
     }
@@ -114,19 +45,19 @@ GSE_OglRendererFontset::~GSE_OglRendererFontset()
 }
 /////////////////////////////////////////////////////////////////
 GLuint &
-GSE_OglRendererFontset::DisplayList()
+COglRendererFontset::DisplayList()
 {
   return m_nDisplayLists;
 }
 /////////////////////////////////////////////////////////////////
 // Returns the pointer to array of texture pointers
-GSE_Texture **
-GSE_OglRendererFontset::Textures()
+CTexture **
+COglRendererFontset::Textures()
 {
   return m_ppTextures;
 }
 /////////////////////////////////////////////////////////////////
-GSE_OglRendererFeatures::GSE_OglRendererFeatures()
+COglRendererFeatures::COglRendererFeatures()
 {
   Init();
   // Check for required extensions:
@@ -144,7 +75,7 @@ GSE_OglRendererFeatures::GSE_OglRendererFeatures()
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRendererFeatures::Init()
+COglRendererFeatures::Init()
 {
   m_bARB_vertex_program = 0;
   m_bARB_vertex_shader = 0;
@@ -157,66 +88,66 @@ GSE_OglRendererFeatures::Init()
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasVertexProgram()
+COglRendererFeatures::HasVertexProgram()
 {
   return m_bARB_vertex_program;
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasVertexShader()
+COglRendererFeatures::HasVertexShader()
 {
   return m_bARB_vertex_shader;
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasFragmentShader()
+COglRendererFeatures::HasFragmentShader()
 {
   return m_bARB_fragment_shader;
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasVertexArray()
+COglRendererFeatures::HasVertexArray()
 {
   return m_bEXT_vertex_array;
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasVertexBufferObject()
+COglRendererFeatures::HasVertexBufferObject()
 {
   return m_bARB_vertex_buffer_object;
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasMultitexture()
+COglRendererFeatures::HasMultitexture()
 {
   return m_bARB_multitexture;
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasShaderObjects()
+COglRendererFeatures::HasShaderObjects()
 {
   return m_bARB_shader_objects;
 }
 /////////////////////////////////////////////////////////////////
 int
-GSE_OglRendererFeatures::GetMaxLights()
+COglRendererFeatures::GetMaxLights()
 {
   return m_iMaxLights;
 }
 /////////////////////////////////////////////////////////////////
 int  
-GSE_OglRendererFeatures::GetMaxElementsVertices()
+COglRendererFeatures::GetMaxElementsVertices()
 {
   return m_iMaxElementsVertices;
 }
 /////////////////////////////////////////////////////////////////
 int  
-GSE_OglRendererFeatures::GetMaxElementsIndices()
+COglRendererFeatures::GetMaxElementsIndices()
 {
   return m_iMaxElementsIndices;
 }
 /////////////////////////////////////////////////////////////////
-std::ostream &operator<<(std::ostream &stream, GSE_OglRendererFeatures &obj)
+std::ostream &operator<<(std::ostream &stream, COglRendererFeatures &obj)
 {
   stream << "OpenGL extensions:" << std::endl;
   stream << "------------------" << std::endl;
@@ -237,10 +168,10 @@ std::ostream &operator<<(std::ostream &stream, GSE_OglRendererFeatures &obj)
   return stream;
 }
 /////////////////////////////////////////////////////////////////
-GSE_OglRenderer::GSE_OglRenderer()
+COglRenderer::COglRenderer()
 {
-  m_pFeatures = new GSE_OglRendererFeatures();
-  GSE_LOG( "OpenGL information:" << endl << *m_pFeatures );
+  m_pFeatures = new COglRendererFeatures();
+  std::cerr <<  "OpenGL information:" << std::endl << *m_pFeatures );
   
   SetRenderPass(OGL_RENDER_PASS_ONLY_OPAQUE);
   m_pCurrentCamera  = NULL;
@@ -255,7 +186,7 @@ GSE_OglRenderer::GSE_OglRenderer()
    
 }
 /////////////////////////////////////////////////////////////////
-GSE_OglRenderer::~GSE_OglRenderer()
+COglRenderer::~COglRenderer()
 {
   // Delete all registered fontsets
   for( unsigned int nFontset = 0;nFontset<m_vFontsets.size();nFontset++)
@@ -266,49 +197,26 @@ GSE_OglRenderer::~GSE_OglRenderer()
   delete m_pFeatures;
 }
 /////////////////////////////////////////////////////////////////
-void 
-GSE_OglRenderer::SetRenderPass(GSE_OglRenderPass_t iRenderPass)
-{
-  //m_iRenderPassType = iRenderPass;
-  GSE_MultiPassRenderer<GSE_OglRenderPass_t>::SetRenderPass(iRenderPass);
-
-  switch ( GetRenderPass() )
-  {
-  case OGL_RENDER_PASS_GET_SELECTION:
-    glSelectBuffer( GSE_MAX_SELECTION_OBJECTS, m_aSelectionBuffer );
-    glRenderMode( GL_SELECT );
-    glInitNames();
-    glPushName(0);
-    break;
-  case OGL_RENDER_PASS_ONLY_OPAQUE:
-  case OGL_RENDER_PASS_ONLY_TRANSPARENT:
-    glRenderMode( GL_RENDER );
-  default:
-    break;
-  } 
-  
-}
-/////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::SetClearBuffers( char bFlag )
+COglRenderer::SetClearBuffers( char bFlag )
 {
   m_bClearBuffers = bFlag;
 }
 /////////////////////////////////////////////////////////////////
-Geometry::GSE_OrientedBox &
-GSE_OglRenderer::GetBoundingBox()
+Geometry::COrientedBox &
+COglRenderer::GetBoundingBox()
 {
   return m_obBoundingBox;
 }
 /////////////////////////////////////////////////////////////////
-Geometry::GSE_Sphere &
-GSE_OglRenderer::GetBoundingSphere()
+Geometry::CSphere &
+COglRenderer::GetBoundingSphere()
 {
   return m_BoundingSphere;
 }
 /////////////////////////////////////////////////////////////////
 int 
-GSE_OglRenderer::Enter( GSE_GraphNode<NodeType> *pNode )
+COglRenderer::Enter( CGraphNode<NodeType> *pNode )
 {
 
   int			iCulled = 0;
@@ -331,7 +239,7 @@ GSE_OglRenderer::Enter( GSE_GraphNode<NodeType> *pNode )
 }
 /////////////////////////////////////////////////////////////////
 int 
-GSE_OglRenderer::Leave( GSE_GraphNode<NodeType> *pNode )
+COglRenderer::Leave( CGraphNode<NodeType> *pNode )
 {
   int			iRetval = 0;
 
@@ -359,11 +267,11 @@ GSE_OglRenderer::Leave( GSE_GraphNode<NodeType> *pNode )
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::ApplyLightParameters( GSE_LightClusterNode *pNode )
+COglRenderer::ApplyLightParameters( CLightClusterNode *pNode )
 {
   
   /////////////////////////////////////////////////////////////////
-  GSE_Light *pLight = NULL;
+  CLight *pLight = NULL;
   GLenum iGLLightID = GL_LIGHT0;
   float aLightPosition[4];
 
@@ -389,46 +297,46 @@ GSE_OglRenderer::ApplyLightParameters( GSE_LightClusterNode *pNode )
 
     /////////////////////////////////////////////////////////////////
     glEnable(iGLLightID);
-    GSE_DEBUG( "glEnable( GL_LIGHT" << nLight << ")")
+    CDEBUG( "glEnable( GL_LIGHT" << nLight << ")")
     // set position
     // Convert position into float array of four elements
-    aLightPosition[0] = pLight->GetPosition().m_pValues[GSE_Vector3::X];
-    aLightPosition[1] = pLight->GetPosition().m_pValues[GSE_Vector3::Y];
-    aLightPosition[2] = pLight->GetPosition().m_pValues[GSE_Vector3::Z];
+    aLightPosition[0] = pLight->GetPosition().m_pValues[CVector3::X];
+    aLightPosition[1] = pLight->GetPosition().m_pValues[CVector3::Y];
+    aLightPosition[2] = pLight->GetPosition().m_pValues[CVector3::Z];
     /////////////////////////////////////////////////////////////////
     switch ( pLight->m_iLightType )
     {
       /////////////////////////////////////////////////////////////////
-    case GSE_Light::DIRECTIONAL:
+    case CLight::DIRECTIONAL:
 
-      GSE_DEBUG("/* We have DIRECTIONAL light */");
+      CDEBUG("/* We have DIRECTIONAL light */");
       /////////////////////////////////////////////////////////////////
       // if we have directional light, the position parameter 
       // actually defines the direction
-      aLightPosition[0] = -pLight->m_vDirection[GSE_Vector3::X];
-      aLightPosition[1] = -pLight->m_vDirection[GSE_Vector3::Y];
-      aLightPosition[2] = -pLight->m_vDirection[GSE_Vector3::Z];
+      aLightPosition[0] = -pLight->m_vDirection[CVector3::X];
+      aLightPosition[1] = -pLight->m_vDirection[CVector3::Y];
+      aLightPosition[2] = -pLight->m_vDirection[CVector3::Z];
       aLightPosition[3] = 0.0f;
       glLightf(iGLLightID, GL_SPOT_CUTOFF, 180.0);
       /////////////////////////////////////////////////////////////////
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_SPOT_CUTOFF, 180.0)");
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_LINEAR_ATTENUATION, 0.0) /* ignored*/");
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_QUADRATIC_ATTENUATION, 0.0) /* ignored */");
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_CONSTANT_ATTENUATION, 0.0) /* ignored */");
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_SPOT_CUTOFF, 180.0)");
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_LINEAR_ATTENUATION, 0.0) /* ignored*/");
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_QUADRATIC_ATTENUATION, 0.0) /* ignored */");
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_CONSTANT_ATTENUATION, 0.0) /* ignored */");
       break;
       /////////////////////////////////////////////////////////////////
-    case GSE_Light::SPOTLIGHT:
+    case CLight::SPOTLIGHT:
 
-      GSE_DEBUG( "/* We have SPOTLIGHT  */" );
+      CDEBUG( "/* We have SPOTLIGHT  */" );
       /////////////////////////////////////////////////////////////////
       aLightPosition[3] = 1.0f;
       /////////////////////////////////////////////////////////////////    
       glLightf( iGLLightID, GL_SPOT_CUTOFF,    pLight->m_fSpotAngle);
       glLightfv(iGLLightID, GL_SPOT_DIRECTION, pLight->m_vDirection.m_pValues);
       /////////////////////////////////////////////////////////////////
-      GSE_DEBUG("glLightf(GL_LIGHT" << nLight << ", GL_SPOT_CUTOFF, "
+      CDEBUG("glLightf(GL_LIGHT" << nLight << ", GL_SPOT_CUTOFF, "
 		<< pLight->m_fSpotAngle << ")" );
-      GSE_DEBUG("glLightf(GL_LIGHT" << nLight << ", GL_SPOT_DIRECTION, "
+      CDEBUG("glLightf(GL_LIGHT" << nLight << ", GL_SPOT_DIRECTION, "
 		<< pLight->m_vDirection << ")" );
       /////////////////////////////////////////////////////////////////
       // Set the attenuation parameters
@@ -436,33 +344,33 @@ GSE_OglRenderer::ApplyLightParameters( GSE_LightClusterNode *pNode )
       glLightf(iGLLightID, GL_QUADRATIC_ATTENUATION, pLight->m_fQuadraticAttenuation);
       glLightf(iGLLightID, GL_CONSTANT_ATTENUATION,  pLight->m_fConstantAttenuation);
       /////////////////////////////////////////////////////////////////
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_LINEAR_ATTENUATION, "
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_LINEAR_ATTENUATION, "
 		 << pLight->m_fLinearAttenuation  << ")" );
-      GSE_DEBUG("glLightf(GL_LIGHT" << nLight << ", GL_QUADRATIC_ATTENUATION, "
+      CDEBUG("glLightf(GL_LIGHT" << nLight << ", GL_QUADRATIC_ATTENUATION, "
 		<< pLight->m_fQuadraticAttenuation  << ")" );
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_CONSTANT_ATTENUATION, "
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_CONSTANT_ATTENUATION, "
 		 << pLight->m_fConstantAttenuation << ")" );
 
       break;
       /////////////////////////////////////////////////////////////////
-    case GSE_Light::POINTLIGHT:
+    case CLight::POINTLIGHT:
 
-      GSE_DEBUG( "/* We have POINTLIGHT  */" );
+      CDEBUG( "/* We have POINTLIGHT  */" );
       /////////////////////////////////////////////////////////////////
       aLightPosition[3] = 1.0f;
       glLightf(iGLLightID, GL_SPOT_CUTOFF, 180.0f);
-      GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_SPOT_CUTOFF, 180.0)");
+      CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_SPOT_CUTOFF, 180.0)");
       /////////////////////////////////////////////////////////////////
       // Set the attenuation parameters
       glLightf(iGLLightID, GL_LINEAR_ATTENUATION,    pLight->m_fLinearAttenuation);
       glLightf(iGLLightID, GL_QUADRATIC_ATTENUATION, pLight->m_fQuadraticAttenuation);
       glLightf(iGLLightID, GL_CONSTANT_ATTENUATION,  pLight->m_fConstantAttenuation);
       /////////////////////////////////////////////////////////////////
-      GSE_DEBUG("glLightf(GL_LIGHT" << nLight << ", GL_LINEAR_ATTENUATION, "
+      CDEBUG("glLightf(GL_LIGHT" << nLight << ", GL_LINEAR_ATTENUATION, "
 		<< pLight->m_fLinearAttenuation  << ")" );
-      GSE_DEBUG("glLightf(GL_LIGHT" << nLight << ", GL_QUADRATIC_ATTENUATION, "
+      CDEBUG("glLightf(GL_LIGHT" << nLight << ", GL_QUADRATIC_ATTENUATION, "
 		<< pLight->m_fQuadraticAttenuation  << ")");
-      GSE_DEBUG("glLightf(GL_LIGHT" << nLight << ", GL_CONSTANT_ATTENUATION, "
+      CDEBUG("glLightf(GL_LIGHT" << nLight << ", GL_CONSTANT_ATTENUATION, "
 		<< pLight->m_fConstantAttenuation << ")");
     
       break;
@@ -485,18 +393,18 @@ GSE_OglRenderer::ApplyLightParameters( GSE_LightClusterNode *pNode )
     
     /////////////////////////////////////////////////////////////////
     // Debug output
-    GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_POSITION, "
+    CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_POSITION, "
 	       << aLightPosition[0] << ","
 	       << aLightPosition[1] << ","
 	       << aLightPosition[2] << ","
 	       << aLightPosition[3] << ")" );
-    GSE_DEBUG("glLightfv(GL_LIGHT" << nLight << ", GL_SPECULAR, " 
+    CDEBUG("glLightfv(GL_LIGHT" << nLight << ", GL_SPECULAR, " 
 	      << pLight->m_vSpecular << ")");
-    GSE_DEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_SPOT_EXPONENT, "
+    CDEBUG( "glLightf(GL_LIGHT" << nLight << ", GL_SPOT_EXPONENT, "
 	       << pLight->m_fSpotExponent << ")" );
-    GSE_DEBUG( "glLightfv(GL_LIGHT" << nLight << ", GL_DIFFUSE, "
+    CDEBUG( "glLightfv(GL_LIGHT" << nLight << ", GL_DIFFUSE, "
 	       << pLight->m_vDiffuseColor << ")" );
-    GSE_DEBUG( "glLightfv(GL_LIGHT" << nLight << ", GL_AMBIENT, "
+    CDEBUG( "glLightfv(GL_LIGHT" << nLight << ", GL_AMBIENT, "
 	       << pLight->m_vAmbientColor << ")");
     /////////////////////////////////////////////////////////////////
   }
@@ -505,14 +413,14 @@ GSE_OglRenderer::ApplyLightParameters( GSE_LightClusterNode *pNode )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::ApplyPerspective( GSE_Camera *pCamera )
+COglRenderer::ApplyPerspective( CCamera *pCamera )
 {  
 
   m_pCurrentCamera = pCamera;
  
   if ( pCamera == NULL )
   {
-    GSE_ERR("Can't handle NULL's");
+    CERR("Can't handle NULL's");
     return;
   }
   
@@ -566,8 +474,8 @@ GSE_OglRenderer::ApplyPerspective( GSE_Camera *pCamera )
   glMultMatrixf( pCamera->GetView().Transposed().GetArray());
   
   // Extract frustum
-  GSE_Matrix4x4f mProj, mModelv, mClip;
-  GSE_Plane tmpPlane;
+  CMatrix4x4f mProj, mModelv, mClip;
+  CPlane tmpPlane;
   
   glGetFloatv( GL_PROJECTION_MATRIX, mProj.GetArray() );
   glGetFloatv( GL_MODELVIEW_MATRIX,  mModelv.GetArray() );
@@ -580,52 +488,52 @@ GSE_OglRenderer::ApplyPerspective( GSE_Camera *pCamera )
   float *pClipArray = mClip.GetArray();
   
   // calculate RIGHT plane
-  tmpPlane.m_pValues[GSE_Plane::X] = pClipArray[3]  - pClipArray[0];
-  tmpPlane.m_pValues[GSE_Plane::Y] = pClipArray[7]  - pClipArray[4];
-  tmpPlane.m_pValues[GSE_Plane::Z] = pClipArray[11] - pClipArray[8];
-  tmpPlane.m_pValues[GSE_Plane::D] = pClipArray[15] - pClipArray[12];
+  tmpPlane.m_pValues[CPlane::X] = pClipArray[3]  - pClipArray[0];
+  tmpPlane.m_pValues[CPlane::Y] = pClipArray[7]  - pClipArray[4];
+  tmpPlane.m_pValues[CPlane::Z] = pClipArray[11] - pClipArray[8];
+  tmpPlane.m_pValues[CPlane::D] = pClipArray[15] - pClipArray[12];
   tmpPlane.Normalize();
-  pCamera->Frustum().SetPlane( GSE_Frustum::RIGHT, tmpPlane );
+  pCamera->Frustum().SetPlane( CFrustum::RIGHT, tmpPlane );
   
   // calculate LEFT plane
-  tmpPlane.m_pValues[GSE_Plane::X] = pClipArray[3]  + pClipArray[0];
-  tmpPlane.m_pValues[GSE_Plane::Y] = pClipArray[7]  + pClipArray[4];
-  tmpPlane.m_pValues[GSE_Plane::Z] = pClipArray[11] + pClipArray[8];
-  tmpPlane.m_pValues[GSE_Plane::D] = pClipArray[15] + pClipArray[12];
+  tmpPlane.m_pValues[CPlane::X] = pClipArray[3]  + pClipArray[0];
+  tmpPlane.m_pValues[CPlane::Y] = pClipArray[7]  + pClipArray[4];
+  tmpPlane.m_pValues[CPlane::Z] = pClipArray[11] + pClipArray[8];
+  tmpPlane.m_pValues[CPlane::D] = pClipArray[15] + pClipArray[12];
   tmpPlane.Normalize();
-  pCamera->Frustum().SetPlane( GSE_Frustum::LEFT, tmpPlane );
+  pCamera->Frustum().SetPlane( CFrustum::LEFT, tmpPlane );
 
   // calculate BOTTOM plane
-  tmpPlane.m_pValues[GSE_Plane::X] = pClipArray[ 3] + pClipArray[ 1];
-  tmpPlane.m_pValues[GSE_Plane::Y] = pClipArray[ 7] + pClipArray[ 5];
-  tmpPlane.m_pValues[GSE_Plane::Z] = pClipArray[11] + pClipArray[ 9];
-  tmpPlane.m_pValues[GSE_Plane::D] = pClipArray[15] + pClipArray[13];
+  tmpPlane.m_pValues[CPlane::X] = pClipArray[ 3] + pClipArray[ 1];
+  tmpPlane.m_pValues[CPlane::Y] = pClipArray[ 7] + pClipArray[ 5];
+  tmpPlane.m_pValues[CPlane::Z] = pClipArray[11] + pClipArray[ 9];
+  tmpPlane.m_pValues[CPlane::D] = pClipArray[15] + pClipArray[13];
   tmpPlane.Normalize();
-  pCamera->Frustum().SetPlane( GSE_Frustum::BOTTOM, tmpPlane );
+  pCamera->Frustum().SetPlane( CFrustum::BOTTOM, tmpPlane );
 
   // calculate TOP plane
-  tmpPlane.m_pValues[GSE_Plane::X] = pClipArray[ 3] - pClipArray[ 1];
-  tmpPlane.m_pValues[GSE_Plane::Y] = pClipArray[ 7] - pClipArray[ 5];
-  tmpPlane.m_pValues[GSE_Plane::Z] = pClipArray[11] - pClipArray[ 9];
-  tmpPlane.m_pValues[GSE_Plane::D] = pClipArray[15] - pClipArray[13];
+  tmpPlane.m_pValues[CPlane::X] = pClipArray[ 3] - pClipArray[ 1];
+  tmpPlane.m_pValues[CPlane::Y] = pClipArray[ 7] - pClipArray[ 5];
+  tmpPlane.m_pValues[CPlane::Z] = pClipArray[11] - pClipArray[ 9];
+  tmpPlane.m_pValues[CPlane::D] = pClipArray[15] - pClipArray[13];
   tmpPlane.Normalize();
-  pCamera->Frustum().SetPlane( GSE_Frustum::TOP, tmpPlane );
+  pCamera->Frustum().SetPlane( CFrustum::TOP, tmpPlane );
 
   // calculate FAR plane
-  tmpPlane.m_pValues[GSE_Plane::X] = pClipArray[ 3] - pClipArray[ 2];
-  tmpPlane.m_pValues[GSE_Plane::Y] = pClipArray[ 7] - pClipArray[ 6];
-  tmpPlane.m_pValues[GSE_Plane::Z] = pClipArray[11] - pClipArray[10];
-  tmpPlane.m_pValues[GSE_Plane::D] = pClipArray[15] - pClipArray[14];
+  tmpPlane.m_pValues[CPlane::X] = pClipArray[ 3] - pClipArray[ 2];
+  tmpPlane.m_pValues[CPlane::Y] = pClipArray[ 7] - pClipArray[ 6];
+  tmpPlane.m_pValues[CPlane::Z] = pClipArray[11] - pClipArray[10];
+  tmpPlane.m_pValues[CPlane::D] = pClipArray[15] - pClipArray[14];
   tmpPlane.Normalize();
-  pCamera->Frustum().SetPlane( GSE_Frustum::FAR, tmpPlane );
+  pCamera->Frustum().SetPlane( CFrustum::FAR, tmpPlane );
   
   // calculate NEAR plane
-  tmpPlane.m_pValues[GSE_Plane::X] = pClipArray[ 3] + pClipArray[ 2];
-  tmpPlane.m_pValues[GSE_Plane::Y] = pClipArray[ 7] + pClipArray[ 6];
-  tmpPlane.m_pValues[GSE_Plane::Z] = pClipArray[11] + pClipArray[10];
-  tmpPlane.m_pValues[GSE_Plane::D] = pClipArray[15] + pClipArray[14];
+  tmpPlane.m_pValues[CPlane::X] = pClipArray[ 3] + pClipArray[ 2];
+  tmpPlane.m_pValues[CPlane::Y] = pClipArray[ 7] + pClipArray[ 6];
+  tmpPlane.m_pValues[CPlane::Z] = pClipArray[11] + pClipArray[10];
+  tmpPlane.m_pValues[CPlane::D] = pClipArray[15] + pClipArray[14];
   tmpPlane.Normalize();
-  pCamera->Frustum().SetPlane( GSE_Frustum::NEAR, tmpPlane );
+  pCamera->Frustum().SetPlane( CFrustum::NEAR, tmpPlane );
   
   pCamera->CalculateBoundingSphere();
   pCamera->CalculateBoundingCone();
@@ -633,44 +541,44 @@ GSE_OglRenderer::ApplyPerspective( GSE_Camera *pCamera )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::DisableMaterial( GSE_Material *pMaterial )
+COglRenderer::DisableMaterial( CMaterial *pMaterial )
 {
   // NOP
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::ApplyMaterial( GLenum iType, GSE_Material *pMaterial )
+COglRenderer::ApplyMaterial( GLenum iType, CMaterial *pMaterial )
 {
   
   // Sanity check
   if ( pMaterial == NULL )
   {
-    GSE_WARN("Can't handle NULL's");
+    CWARN("Can't handle NULL's");
     return;
   }
   
   switch ( pMaterial->GetCacheMethod())
   {
-  case GSE_Material::CACHED_IN_DL:
+  case CMaterial::CACHED_IN_DL:
     glCallList( pMaterial->Cache());
     return;
     break;
-  case GSE_Material::NO_CACHE:
+  case CMaterial::NO_CACHE:
     break;
-  case GSE_Material::REQUEST_DL_CACHE:
+  case CMaterial::REQUEST_DL_CACHE:
     /* generate list and compile properties in */
     pMaterial->Cache() = glGenLists(1);
     glNewList( pMaterial->Cache(), GL_COMPILE );
     break;
-  case GSE_Material::REGENERATE_DL_CACHE:
+  case CMaterial::REGENERATE_DL_CACHE:
 
     glDeleteLists(pMaterial->Cache(), 1);
     pMaterial->Cache() = glGenLists(1);
     glNewList( pMaterial->Cache(), GL_COMPILE );
     break;
-  case GSE_Material::DELETE_DL_CACHE:
+  case CMaterial::DELETE_DL_CACHE:
     glDeleteLists(pMaterial->Cache(),1);
-    pMaterial->SetCacheMethod( GSE_Material::NO_CACHE );
+    pMaterial->SetCacheMethod( CMaterial::NO_CACHE );
     break;
   } 
   
@@ -682,8 +590,8 @@ GSE_OglRenderer::ApplyMaterial( GLenum iType, GSE_Material *pMaterial )
 
 #ifdef DEBUG
 
-  GSE_Logger::Error() << "Material: " << pMaterial->GetName() << std::endl;
-  GSE_Logger::Error() << "glMaterialfv( iType, GL_AMBIENT, "
+  CLogger::Error() << "Material: " << pMaterial->GetName() << std::endl;
+  CLogger::Error() << "glMaterialfv( iType, GL_AMBIENT, "
 		      << pMaterial->GetAmbient() 
 		      << ")" << std::endl
 		      << "glMaterialfv( iType, GL_DIFFUSE, "
@@ -703,27 +611,27 @@ GSE_OglRenderer::ApplyMaterial( GLenum iType, GSE_Material *pMaterial )
   
   switch ( pMaterial->GetCacheMethod())
   {
-  case GSE_Material::CACHED_IN_DL:
-  case GSE_Material::NO_CACHE:
-  case GSE_Material::DELETE_DL_CACHE:
+  case CMaterial::CACHED_IN_DL:
+  case CMaterial::NO_CACHE:
+  case CMaterial::DELETE_DL_CACHE:
     break;
-  case GSE_Material::REQUEST_DL_CACHE:
-  case GSE_Material::REGENERATE_DL_CACHE:
+  case CMaterial::REQUEST_DL_CACHE:
+  case CMaterial::REGENERATE_DL_CACHE:
     glEndList();
-    pMaterial->SetCacheMethod( GSE_Material::CACHED_IN_DL );
+    pMaterial->SetCacheMethod( CMaterial::CACHED_IN_DL );
     glCallList( pMaterial->Cache());
     break;
   }
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData ) 
+COglRenderer::SetupArrays( CGeometryData *pGeometryData ) 
 {
   
 
   if ( pGeometryData == NULL ) 
   {
-    GSE_WARN("Can't handle NULL's");
+    CWARN("Can't handle NULL's");
     return;
   }
 
@@ -736,10 +644,10 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
   glDisableClientState( GL_VERTEX_ARRAY );
   glDisableClientState( GL_NORMAL_ARRAY );
   glDisableClientState( GL_COLOR_ARRAY );
-  GSE_DEBUG("arrays disabled"); 
-  for(int i =0;i<GSE_MAX_TEXCOORD_ARRAYS;i++)
+  CDEBUG("arrays disabled"); 
+  for(int i =0;i<CMAX_TEXCOORD_ARRAYS;i++)
   {
-    GSE_DEBUG("disabling multitexarray"); 
+    CDEBUG("disabling multitexarray"); 
     glClientActiveTextureARB(g_aGLMultiTexIds[i]);
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
   }
@@ -756,48 +664,48 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
     } 
     else
     {
-      switch( pGeometryData->GetCacheMethod( GSE_GeometryData::VERTEX_ARRAY ))
+      switch( pGeometryData->GetCacheMethod( CGeometryData::VERTEX_ARRAY ))
       {
-      case GSE_GeometryData::NO_CACHE:
+      case CGeometryData::NO_CACHE:
 	glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	glVertexPointer( 3, GL_FLOAT, 0, pGeometryData->m_pVertices);
 	break;
-      case GSE_GeometryData::REQUEST_VBO_CACHE:
-	glGenBuffersARB(1, &(pGeometryData->Cache( GSE_GeometryData::VERTEX_ARRAY )));
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( GSE_GeometryData::VERTEX_ARRAY));
+      case CGeometryData::REQUEST_VBO_CACHE:
+	glGenBuffersARB(1, &(pGeometryData->Cache( CGeometryData::VERTEX_ARRAY )));
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( CGeometryData::VERTEX_ARRAY));
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*3*pGeometryData->m_iNumElements, pGeometryData->m_pVertices, GL_STATIC_DRAW_ARB);
 	////////////////////
 	// Prepare for the case if the buffer does not fit.
 	if ( glGetError() == GL_OUT_OF_MEMORY )
 	{
-	  GSE_ERR("Couldn't create VBO for vertexbuffer.");
+	  CERR("Couldn't create VBO for vertexbuffer.");
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-	  glDeleteBuffersARB(1, &(pGeometryData->Cache( GSE_GeometryData::VERTEX_ARRAY)));
+	  glDeleteBuffersARB(1, &(pGeometryData->Cache( CGeometryData::VERTEX_ARRAY)));
 	  glVertexPointer( 3, GL_FLOAT, 0, pGeometryData->m_pVertices);
-	  pGeometryData->Cache( GSE_GeometryData::VERTEX_ARRAY ) = 0;
-	  pGeometryData->SetCacheMethod( GSE_GeometryData::VERTEX_ARRAY, GSE_GeometryData::NO_CACHE );
+	  pGeometryData->Cache( CGeometryData::VERTEX_ARRAY ) = 0;
+	  pGeometryData->SetCacheMethod( CGeometryData::VERTEX_ARRAY, CGeometryData::NO_CACHE );
 	} 
 	else
 	{
 	  glVertexPointer( 3, GL_FLOAT, 0, 0);
-	  pGeometryData->SetCacheMethod( GSE_GeometryData::VERTEX_ARRAY, GSE_GeometryData::CACHED_IN_VBO );
+	  pGeometryData->SetCacheMethod( CGeometryData::VERTEX_ARRAY, CGeometryData::CACHED_IN_VBO );
 	}
 	break;
-      case GSE_GeometryData::CACHED_IN_VBO:
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(GSE_GeometryData::VERTEX_ARRAY) );
+      case CGeometryData::CACHED_IN_VBO:
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(CGeometryData::VERTEX_ARRAY) );
 	glVertexPointer( 3, GL_FLOAT, 0, 0);
 	break;
-      case GSE_GeometryData::REGENERATE_VBO_CACHE:
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(GSE_GeometryData::VERTEX_ARRAY) );
+      case CGeometryData::REGENERATE_VBO_CACHE:
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(CGeometryData::VERTEX_ARRAY) );
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, 0, NULL, GL_STATIC_DRAW_ARB);
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*3*pGeometryData->m_iNumElements, pGeometryData->m_pVertices, GL_STATIC_DRAW_ARB);
 	glVertexPointer( 3, GL_FLOAT, 0, 0);
-	pGeometryData->SetCacheMethod( GSE_GeometryData::VERTEX_ARRAY, GSE_GeometryData::CACHED_IN_VBO );
+	pGeometryData->SetCacheMethod( CGeometryData::VERTEX_ARRAY, CGeometryData::CACHED_IN_VBO );
 	break;
-      case GSE_GeometryData::DELETE_VBO_CACHE:
-	glDeleteBuffersARB( 1, &(pGeometryData->Cache( GSE_GeometryData::VERTEX_ARRAY )));
-	pGeometryData->Cache( GSE_GeometryData::VERTEX_ARRAY ) = 0;
-	pGeometryData->SetCacheMethod( GSE_GeometryData::VERTEX_ARRAY, GSE_GeometryData::NO_CACHE );
+      case CGeometryData::DELETE_VBO_CACHE:
+	glDeleteBuffersARB( 1, &(pGeometryData->Cache( CGeometryData::VERTEX_ARRAY )));
+	pGeometryData->Cache( CGeometryData::VERTEX_ARRAY ) = 0;
+	pGeometryData->SetCacheMethod( CGeometryData::VERTEX_ARRAY, CGeometryData::NO_CACHE );
 
 	break; 
       }
@@ -817,49 +725,49 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
     } 
     else 
     {
-      switch( pGeometryData->GetCacheMethod( GSE_GeometryData::NORMAL_ARRAY ))
+      switch( pGeometryData->GetCacheMethod( CGeometryData::NORMAL_ARRAY ))
       {
-      case GSE_GeometryData::NO_CACHE:
+      case CGeometryData::NO_CACHE:
 	glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	glNormalPointer( GL_FLOAT, 0, aNormals );
 	break;
-      case GSE_GeometryData::REQUEST_VBO_CACHE:
-	glGenBuffersARB(1, &(pGeometryData->Cache( GSE_GeometryData::NORMAL_ARRAY )));
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( GSE_GeometryData::NORMAL_ARRAY));
+      case CGeometryData::REQUEST_VBO_CACHE:
+	glGenBuffersARB(1, &(pGeometryData->Cache( CGeometryData::NORMAL_ARRAY )));
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( CGeometryData::NORMAL_ARRAY));
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*3*pGeometryData->m_iNumElements, aNormals, GL_STATIC_DRAW_ARB);
 	if ( glGetError() == GL_OUT_OF_MEMORY )
 	{
 
-	  GSE_ERR("Couldn't create VBO for normalbuffer.");
-	  glDeleteBuffersARB( 1, &(pGeometryData->Cache( GSE_GeometryData::NORMAL_ARRAY )));
-	  pGeometryData->Cache( GSE_GeometryData::NORMAL_ARRAY ) = 0;
-	  pGeometryData->SetCacheMethod( GSE_GeometryData::NORMAL_ARRAY, GSE_GeometryData::NO_CACHE );
+	  CERR("Couldn't create VBO for normalbuffer.");
+	  glDeleteBuffersARB( 1, &(pGeometryData->Cache( CGeometryData::NORMAL_ARRAY )));
+	  pGeometryData->Cache( CGeometryData::NORMAL_ARRAY ) = 0;
+	  pGeometryData->SetCacheMethod( CGeometryData::NORMAL_ARRAY, CGeometryData::NO_CACHE );
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	  glNormalPointer( GL_FLOAT, 0, aNormals );
 	}
 	else
 	{
 	  glNormalPointer( GL_FLOAT, 0, 0 );
-	  pGeometryData->SetCacheMethod( GSE_GeometryData::NORMAL_ARRAY, GSE_GeometryData::CACHED_IN_VBO );
+	  pGeometryData->SetCacheMethod( CGeometryData::NORMAL_ARRAY, CGeometryData::CACHED_IN_VBO );
 	}
 	break;
-      case GSE_GeometryData::CACHED_IN_VBO:
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(GSE_GeometryData::NORMAL_ARRAY) );
+      case CGeometryData::CACHED_IN_VBO:
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(CGeometryData::NORMAL_ARRAY) );
 	glNormalPointer( GL_FLOAT, 0, 0 );
 	break;
-      case GSE_GeometryData::REGENERATE_VBO_CACHE:
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(GSE_GeometryData::NORMAL_ARRAY) );
+      case CGeometryData::REGENERATE_VBO_CACHE:
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(CGeometryData::NORMAL_ARRAY) );
 	// clear previous
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, 0, NULL, GL_STATIC_DRAW_ARB);
 	// send new ones in
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*3*pGeometryData->m_iNumElements, aNormals, GL_STATIC_DRAW_ARB);
 	glNormalPointer( GL_FLOAT, 0, 0 );
-	pGeometryData->SetCacheMethod( GSE_GeometryData::NORMAL_ARRAY, GSE_GeometryData::CACHED_IN_VBO );
+	pGeometryData->SetCacheMethod( CGeometryData::NORMAL_ARRAY, CGeometryData::CACHED_IN_VBO );
 	break;
-      case GSE_GeometryData::DELETE_VBO_CACHE:
-	glDeleteBuffersARB( 1, &(pGeometryData->Cache( GSE_GeometryData::NORMAL_ARRAY )));
-	pGeometryData->Cache( GSE_GeometryData::NORMAL_ARRAY ) = 0;
-	pGeometryData->SetCacheMethod( GSE_GeometryData::NORMAL_ARRAY, GSE_GeometryData::NO_CACHE );
+      case CGeometryData::DELETE_VBO_CACHE:
+	glDeleteBuffersARB( 1, &(pGeometryData->Cache( CGeometryData::NORMAL_ARRAY )));
+	pGeometryData->Cache( CGeometryData::NORMAL_ARRAY ) = 0;
+	pGeometryData->SetCacheMethod( CGeometryData::NORMAL_ARRAY, CGeometryData::NO_CACHE );
 
 	break; 
       }
@@ -879,48 +787,48 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
     } 
     else 
     {
-      switch( pGeometryData->GetCacheMethod( GSE_GeometryData::COLOR_ARRAY ))
+      switch( pGeometryData->GetCacheMethod( CGeometryData::COLOR_ARRAY ))
       {
-      case GSE_GeometryData::NO_CACHE:
+      case CGeometryData::NO_CACHE:
 	glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	glColorPointer( 4, GL_FLOAT, 0, aColors );
 	break;
-      case GSE_GeometryData::REQUEST_VBO_CACHE:
-	glGenBuffersARB(1, &(pGeometryData->Cache( GSE_GeometryData::COLOR_ARRAY )));
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( GSE_GeometryData::COLOR_ARRAY));
+      case CGeometryData::REQUEST_VBO_CACHE:
+	glGenBuffersARB(1, &(pGeometryData->Cache( CGeometryData::COLOR_ARRAY )));
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( CGeometryData::COLOR_ARRAY));
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*4*pGeometryData->m_iNumElements, aColors, GL_STATIC_DRAW_ARB);
 	if ( glGetError() == GL_OUT_OF_MEMORY )
 	{
-	  GSE_ERR("Couldn't create VBO for colorbuffer.");
-	  glDeleteBuffersARB( 1, &(pGeometryData->Cache( GSE_GeometryData::COLOR_ARRAY )));
-	  pGeometryData->Cache( GSE_GeometryData::COLOR_ARRAY ) = 0;
-	  pGeometryData->SetCacheMethod( GSE_GeometryData::COLOR_ARRAY, GSE_GeometryData::NO_CACHE );
+	  CERR("Couldn't create VBO for colorbuffer.");
+	  glDeleteBuffersARB( 1, &(pGeometryData->Cache( CGeometryData::COLOR_ARRAY )));
+	  pGeometryData->Cache( CGeometryData::COLOR_ARRAY ) = 0;
+	  pGeometryData->SetCacheMethod( CGeometryData::COLOR_ARRAY, CGeometryData::NO_CACHE );
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	  glColorPointer( 4, GL_FLOAT, 0, aColors );
 	}
 	else
 	{
 	  glColorPointer( 4, GL_FLOAT, 0, 0 );
-	  pGeometryData->SetCacheMethod( GSE_GeometryData::COLOR_ARRAY, GSE_GeometryData::CACHED_IN_VBO );
+	  pGeometryData->SetCacheMethod( CGeometryData::COLOR_ARRAY, CGeometryData::CACHED_IN_VBO );
 	}
 	break;
-      case GSE_GeometryData::CACHED_IN_VBO:
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(GSE_GeometryData::COLOR_ARRAY) );
+      case CGeometryData::CACHED_IN_VBO:
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(CGeometryData::COLOR_ARRAY) );
 	glColorPointer( 4, GL_FLOAT, 0, 0 );
 	break;
-      case GSE_GeometryData::REGENERATE_VBO_CACHE:
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(GSE_GeometryData::COLOR_ARRAY) );
+      case CGeometryData::REGENERATE_VBO_CACHE:
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(CGeometryData::COLOR_ARRAY) );
 	// clear previous
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, 0, NULL, GL_STATIC_DRAW_ARB);
 	// send new ones in
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*4*pGeometryData->m_iNumElements, aColors, GL_STATIC_DRAW_ARB);
 	glColorPointer( 4, GL_FLOAT, 0, 0 );
-	pGeometryData->SetCacheMethod( GSE_GeometryData::COLOR_ARRAY, GSE_GeometryData::CACHED_IN_VBO );
+	pGeometryData->SetCacheMethod( CGeometryData::COLOR_ARRAY, CGeometryData::CACHED_IN_VBO );
 	break;
-      case GSE_GeometryData::DELETE_VBO_CACHE:
-	glDeleteBuffersARB( 1, &(pGeometryData->Cache( GSE_GeometryData::COLOR_ARRAY )));
-	pGeometryData->Cache( GSE_GeometryData::COLOR_ARRAY ) = 0;
-	pGeometryData->SetCacheMethod( GSE_GeometryData::COLOR_ARRAY, GSE_GeometryData::NO_CACHE );
+      case CGeometryData::DELETE_VBO_CACHE:
+	glDeleteBuffersARB( 1, &(pGeometryData->Cache( CGeometryData::COLOR_ARRAY )));
+	pGeometryData->Cache( CGeometryData::COLOR_ARRAY ) = 0;
+	pGeometryData->SetCacheMethod( CGeometryData::COLOR_ARRAY, CGeometryData::NO_CACHE );
 	glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	break; 
       }
@@ -929,7 +837,7 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
   /////////////////////////////////////////////////////////////////
   // Enable Texture Coordinate Arrays
   /////////////////////////////////////////////////////////////////
-  for(unsigned int i=0;i<GSE_MAX_TEXCOORD_ARRAYS;i++){
+  for(unsigned int i=0;i<CMAX_TEXCOORD_ARRAYS;i++){
 
     if ( pGeometryData->HasTexCoords(i) ) 
     {
@@ -939,9 +847,9 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
       glEnableClientState( GL_TEXTURE_COORD_ARRAY );   
 
       // determine cache key
-      GSE_GeometryData::CacheTarget_t nCacheKey = GSE_GeometryData::TEXCOORD0_ARRAY;
+      CGeometryData::CacheTarget_t nCacheKey = CGeometryData::TEXCOORD0_ARRAY;
       // Since the key is enumeration, we can do this and be moderately safe.
-      nCacheKey= (GSE_GeometryData::CacheTarget_t)(((int)nCacheKey) +i);
+      nCacheKey= (CGeometryData::CacheTarget_t)(((int)nCacheKey) +i);
 
       if ( IS_COMPILING_DISPLAY_LIST() || !m_pFeatures->HasVertexBufferObject() )
       {
@@ -951,46 +859,46 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
       {
 	switch( pGeometryData->GetCacheMethod( nCacheKey ))
 	{
-	case GSE_GeometryData::NO_CACHE:
+	case CGeometryData::NO_CACHE:
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	  glTexCoordPointer( 2, GL_FLOAT, 0, pGeometryData->m_pTexCoords[i] );
 	  break;
-	case GSE_GeometryData::REQUEST_VBO_CACHE:
+	case CGeometryData::REQUEST_VBO_CACHE:
 	  glGenBuffersARB(1, &(pGeometryData->Cache( nCacheKey )));
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache( nCacheKey));
 	  glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*2*pGeometryData->m_iNumElements, pGeometryData->m_pTexCoords[i], GL_STATIC_DRAW_ARB);
 	  if ( glGetError() == GL_OUT_OF_MEMORY )
 	  {
-	    GSE_ERR("Couldn't create VBO for texcoordbuffer " << i);
+	    CERR("Couldn't create VBO for texcoordbuffer " << i);
 	    glDeleteBuffersARB( 1, &(pGeometryData->Cache( nCacheKey )));
 	    pGeometryData->Cache( nCacheKey ) = 0;
-	    pGeometryData->SetCacheMethod( nCacheKey, GSE_GeometryData::NO_CACHE );
+	    pGeometryData->SetCacheMethod( nCacheKey, CGeometryData::NO_CACHE );
 	    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	    glTexCoordPointer( 2, GL_FLOAT, 0, pGeometryData->m_pTexCoords[i] );
 	  }
 	  else
 	  {
 	    glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-	    pGeometryData->SetCacheMethod( nCacheKey, GSE_GeometryData::CACHED_IN_VBO );
+	    pGeometryData->SetCacheMethod( nCacheKey, CGeometryData::CACHED_IN_VBO );
 	  }
 	  break;
-	case GSE_GeometryData::CACHED_IN_VBO:
+	case CGeometryData::CACHED_IN_VBO:
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(nCacheKey) );
 	  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
 	  break;
-	case GSE_GeometryData::REGENERATE_VBO_CACHE:
+	case CGeometryData::REGENERATE_VBO_CACHE:
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, pGeometryData->Cache(nCacheKey) );
 	  // clear previous
 	  glBufferDataARB( GL_ARRAY_BUFFER_ARB, 0, NULL, GL_STATIC_DRAW_ARB);
 	  // send new ones in
 	  glBufferDataARB( GL_ARRAY_BUFFER_ARB, sizeof(float)*2*pGeometryData->m_iNumElements,  pGeometryData->m_pTexCoords[i], GL_STATIC_DRAW_ARB);
 	  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-	  pGeometryData->SetCacheMethod( nCacheKey, GSE_GeometryData::CACHED_IN_VBO );
+	  pGeometryData->SetCacheMethod( nCacheKey, CGeometryData::CACHED_IN_VBO );
 	  break;
-	case GSE_GeometryData::DELETE_VBO_CACHE:
+	case CGeometryData::DELETE_VBO_CACHE:
 	  glDeleteBuffersARB( 1, &(pGeometryData->Cache( nCacheKey )));
 	  pGeometryData->Cache( nCacheKey ) = 0;
-	  pGeometryData->SetCacheMethod( nCacheKey, GSE_GeometryData::NO_CACHE );
+	  pGeometryData->SetCacheMethod( nCacheKey, CGeometryData::NO_CACHE );
 	  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	  break; 
 	}
@@ -1006,7 +914,7 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
         {		                                             \
 	  glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );	     \
 	}                                                            \
-        std::list<GSE_IndexBuffer::RenderBatch_t>::iterator it =     \
+        std::list<CIndexBuffer::RenderBatch_t>::iterator it =     \
 	  pIndexBuffer->RenderBatches().begin();                     \
 	for(;it!=pIndexBuffer->RenderBatches().end();it++)           \
 	{                                                            \
@@ -1017,14 +925,14 @@ GSE_OglRenderer::SetupArrays( GSE_GeometryData *pGeometryData )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::DrawPrimitive( GSE_IndexBuffer *pIndexBuffer )
+COglRenderer::DrawPrimitive( CIndexBuffer *pIndexBuffer )
 {
   
   // To see later was the number of vertices in primitive valid
   char bValidPrimitive = 0;
   if ( pIndexBuffer == NULL )
   {
-    GSE_ERR("Can't handle NULL's");
+    CERR("Can't handle NULL's");
   }
 
   // To make the compiler happy
@@ -1041,7 +949,7 @@ GSE_OglRenderer::DrawPrimitive( GSE_IndexBuffer *pIndexBuffer )
     bValidPrimitive = 1;
     break;
   default:
-    GSE_ERR("I don't know how to draw primitive with " 
+    CERR("I don't know how to draw primitive with " 
 	      << pIndexBuffer->m_nVerticesInPrimitive 
 	      << " vertices ");
     bValidPrimitive = 0;
@@ -1075,17 +983,17 @@ GSE_OglRenderer::DrawPrimitive( GSE_IndexBuffer *pIndexBuffer )
   {
     switch ( pIndexBuffer->GetCacheMethod()){
    
-    case GSE_IndexBuffer::NO_CACHE:
+    case CIndexBuffer::NO_CACHE:
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
       DRAW_RENDER_BATCHES();
       break;
-    case GSE_IndexBuffer::DELETE_VBO_CACHE:
+    case CIndexBuffer::DELETE_VBO_CACHE:
       glDeleteBuffersARB(1, &(pIndexBuffer->Cache()));
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );      
       DRAW_RENDER_BATCHES();
-      pIndexBuffer->SetCacheMethod(GSE_IndexBuffer::NO_CACHE);
+      pIndexBuffer->SetCacheMethod(CIndexBuffer::NO_CACHE);
       break;
-    case GSE_IndexBuffer::REQUEST_VBO_CACHE:
+    case CIndexBuffer::REQUEST_VBO_CACHE:
       
       glGenBuffersARB( 1, &(pIndexBuffer->Cache()) );
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->Cache());
@@ -1095,21 +1003,21 @@ GSE_OglRenderer::DrawPrimitive( GSE_IndexBuffer *pIndexBuffer )
       // Prepare for the case if the buffer does not fit.
       if ( glGetError() == GL_OUT_OF_MEMORY )
       {
-	GSE_ERR(__PRETTY_FUNCTION__ << "Couldn't create VBO for indexbuffer.");
+	CERR(__PRETTY_FUNCTION__ << "Couldn't create VBO for indexbuffer.");
 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
 	glDeleteBuffersARB(1, &(pIndexBuffer->Cache()));
 	DRAW_RENDER_BATCHES();
-	pIndexBuffer->SetCacheMethod( GSE_IndexBuffer::NO_CACHE );
+	pIndexBuffer->SetCacheMethod( CIndexBuffer::NO_CACHE );
       }
       else 
       {
 	glDrawElements( iPrimitive, pIndexBuffer->m_nDrawIndices,
 			GL_UNSIGNED_SHORT, 0);
-	pIndexBuffer->SetCacheMethod( GSE_IndexBuffer::CACHED_IN_VBO);
+	pIndexBuffer->SetCacheMethod( CIndexBuffer::CACHED_IN_VBO);
       }
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
       break;
-    case GSE_IndexBuffer::CACHED_IN_VBO:
+    case CIndexBuffer::CACHED_IN_VBO:
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->Cache());
       glDrawElements( iPrimitive, 
 		      pIndexBuffer->m_nDrawIndices,
@@ -1118,7 +1026,7 @@ GSE_OglRenderer::DrawPrimitive( GSE_IndexBuffer *pIndexBuffer )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
       break;
     default:
-      GSE_WARN(__PRETTY_FUNCTION__ << "Unhandled state!");
+      CWARN(__PRETTY_FUNCTION__ << "Unhandled state!");
       break;
     }
   }
@@ -1126,11 +1034,11 @@ GSE_OglRenderer::DrawPrimitive( GSE_IndexBuffer *pIndexBuffer )
 
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::SetupVertexAttrib( GSE_VertexAttribStruct *pVertexAttrib )
+COglRenderer::SetupVertexAttrib( CVertexAttribStruct *pVertexAttrib )
 {
   if ( pVertexAttrib == NULL )
   {
-    GSE_ERR( __PRETTY_FUNCTION__ << "Can't handle NULL's");
+    CERR( __PRETTY_FUNCTION__ << "Can't handle NULL's");
     return;
   }
   if ( m_pFeatures->HasVertexProgram() )
@@ -1141,12 +1049,12 @@ GSE_OglRenderer::SetupVertexAttrib( GSE_VertexAttribStruct *pVertexAttrib )
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::FinishVertexAttrib( GSE_VertexAttribStruct *pVertexAttrib )
+COglRenderer::FinishVertexAttrib( CVertexAttribStruct *pVertexAttrib )
 {
 
   if ( pVertexAttrib == NULL )
   {
-    GSE_ERR( __PRETTY_FUNCTION__ << "Can't handle NULL's");
+    CERR( __PRETTY_FUNCTION__ << "Can't handle NULL's");
     return;
   }
   if ( m_pFeatures->HasVertexProgram())
@@ -1157,7 +1065,7 @@ GSE_OglRenderer::FinishVertexAttrib( GSE_VertexAttribStruct *pVertexAttrib )
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::Handle_ParticleSystemUpdate( GSE_ParticleSystemNode *pNode )
+COglRenderer::Handle_ParticleSystemUpdate( CParticleSystemNode *pNode )
 {
 
   
@@ -1166,15 +1074,15 @@ GSE_OglRenderer::Handle_ParticleSystemUpdate( GSE_ParticleSystemNode *pNode )
   {
     
     /* if there's no particlesystem, updating isn't necessary either */
-    GSE_ParticleSystemBase *ps = pNode->GetParticleSystem();
+    CParticleSystemBase *ps = pNode->GetParticleSystem();
     if ( ps == NULL || !ps->IsAlive() ) return;
 
-    GSE_Vector3 vX,vY;
-    GSE_Vector3 vRight   = m_pCurrentCamera->GetRightVector();
-    GSE_Vector3 vUp      = m_pCurrentCamera->GetUpVector();
-    GSE_GeometryData *pGeometryData = NULL;    
-    GSE_Vector3 pos;
-    GSE_Vector3 vNormal;
+    CVector3 vX,vY;
+    CVector3 vRight   = m_pCurrentCamera->GetRightVector();
+    CVector3 vUp      = m_pCurrentCamera->GetUpVector();
+    CGeometryData *pGeometryData = NULL;    
+    CVector3 pos;
+    CVector3 vNormal;
 
     unsigned int nNumVertices = 3;
     unsigned int nVertIndex = 0;
@@ -1189,12 +1097,12 @@ GSE_OglRenderer::Handle_ParticleSystemUpdate( GSE_ParticleSystemNode *pNode )
     // Let's be sure about that pointer...
     if ( pGeometryData == NULL ) 
     {
-      GSE_ERR("GeometryData is not initialized!");
+      CERR("GeometryData is not initialized!");
       return;      
     }
     // Updating is needed only for the alive particles.
     unsigned int nNumParticles = ps->GetAliveCount();
-    const GSE_Particle *pParticles = ps->GetParticles();
+    const CParticle *pParticles = ps->GetParticles();
     // For each particle do
     for(unsigned int p=0;p<nNumParticles;p++)
     {
@@ -1208,22 +1116,22 @@ GSE_OglRenderer::Handle_ParticleSystemUpdate( GSE_ParticleSystemNode *pNode )
       nVertIndex_p3By3 = (nVertIndex + 3) * nNumVertices;
       
       
-      //GSE_Logger::Error() << "particle " << p << std::endl;
+      //CLogger::Error() << "particle " << p << std::endl;
 
-      const GSE_Particle *particle = &(pParticles[p]);
+      const CParticle *particle = &(pParticles[p]);
       fWidth  = particle->m_fSize;
       fHeight = particle->m_fSize;
       
       vX = fWidth * vRight;
-      //vX.m_pValues[GSE_Vector3::X] = fWidth*vRight.m_pValues[GSE_Vector3::X];
-      //vX.m_pValues[GSE_Vector3::Y] = fWidth*vRight.m_pValues[GSE_Vector3::Y];
-      //vX.m_pValues[GSE_Vector3::Z] = fWidth*vRight.m_pValues[GSE_Vector3::Z];
+      //vX.m_pValues[CVector3::X] = fWidth*vRight.m_pValues[CVector3::X];
+      //vX.m_pValues[CVector3::Y] = fWidth*vRight.m_pValues[CVector3::Y];
+      //vX.m_pValues[CVector3::Z] = fWidth*vRight.m_pValues[CVector3::Z];
       vY = fHeight * vUp;
-      //vY.m_pValues[GSE_Vector3::X] = fHeight*vUp.m_pValues[GSE_Vector3::X];
-      //vY.m_pValues[GSE_Vector3::Y] = fHeight*vUp.m_pValues[GSE_Vector3::Y];
-      //vY.m_pValues[GSE_Vector3::Z] = fHeight*vUp.m_pValues[GSE_Vector3::Z];  
-      //vX = GSE_Vector3::GetWorldX();
-      //vY = GSE_Vector3::GetWorldY();
+      //vY.m_pValues[CVector3::X] = fHeight*vUp.m_pValues[CVector3::X];
+      //vY.m_pValues[CVector3::Y] = fHeight*vUp.m_pValues[CVector3::Y];
+      //vY.m_pValues[CVector3::Z] = fHeight*vUp.m_pValues[CVector3::Z];  
+      //vX = CVector3::GetWorldX();
+      //vY = CVector3::GetWorldY();
 
       //
       // Assign values to the vertex buffer
@@ -1231,83 +1139,83 @@ GSE_OglRenderer::Handle_ParticleSystemUpdate( GSE_ParticleSystemNode *pNode )
       //
       // Inlining does a little help - optimizing by hand appears to be more efficient
       // 
-      //if ( ps->m_ParticleBase.m_iParticlePrimitive == GSE_ParticleBase::TRIANGLE ){
+      //if ( ps->m_ParticleBase.m_iParticlePrimitive == CParticleBase::TRIANGLE ){
       
-      //pos.m_pValues[GSE_Vector3::X] = particle->m_vPosition.m_pValues[GSE_Vector3::X] - vX.m_pValues[GSE_Vector3::X] * 0.66f - vY.m_pValues[GSE_Vector3::X] * 0.33f;
-      //pos.m_pValues[GSE_Vector3::Y] = particle->m_vPosition.m_pValues[GSE_Vector3::Y] - vX.m_pValues[GSE_Vector3::Y] * 0.66f - vY.m_pValues[GSE_Vector3::Y] * 0.33f;
-      //pos.m_pValues[GSE_Vector3::Z] = particle->m_vPosition.m_pValues[GSE_Vector3::Z] - vX.m_pValues[GSE_Vector3::Z] * 0.66f - vY.m_pValues[GSE_Vector3::Z] * 0.33f;
+      //pos.m_pValues[CVector3::X] = particle->m_vPosition.m_pValues[CVector3::X] - vX.m_pValues[CVector3::X] * 0.66f - vY.m_pValues[CVector3::X] * 0.33f;
+      //pos.m_pValues[CVector3::Y] = particle->m_vPosition.m_pValues[CVector3::Y] - vX.m_pValues[CVector3::Y] * 0.66f - vY.m_pValues[CVector3::Y] * 0.33f;
+      //pos.m_pValues[CVector3::Z] = particle->m_vPosition.m_pValues[CVector3::Z] - vX.m_pValues[CVector3::Z] * 0.66f - vY.m_pValues[CVector3::Z] * 0.33f;
 
       pos = particle->m_vPosition - vX * 0.66f;
       pos -= (vY * 0.33f);
       /*} else {
 
-       pos.m_pValues[GSE_Vector3::X] = particle->m_vPosition.m_pValues[GSE_Vector3::X] - vX.m_pValues[GSE_Vector3::X] * 0.5 - vY.m_pValues[GSE_Vector3::X] * 0.5;
-       pos.m_pValues[GSE_Vector3::Y] = particle->m_vPosition.m_pValues[GSE_Vector3::Y] - vX.m_pValues[GSE_Vector3::Y] * 0.5 - vY.m_pValues[GSE_Vector3::Y] * 0.5;
-       pos.m_pValues[GSE_Vector3::Z] = particle->m_vPosition.m_pValues[GSE_Vector3::Z] - vX.m_pValues[GSE_Vector3::Z] * 0.5 - vY.m_pValues[GSE_Vector3::Z] * 0.5;
+       pos.m_pValues[CVector3::X] = particle->m_vPosition.m_pValues[CVector3::X] - vX.m_pValues[CVector3::X] * 0.5 - vY.m_pValues[CVector3::X] * 0.5;
+       pos.m_pValues[CVector3::Y] = particle->m_vPosition.m_pValues[CVector3::Y] - vX.m_pValues[CVector3::Y] * 0.5 - vY.m_pValues[CVector3::Y] * 0.5;
+       pos.m_pValues[CVector3::Z] = particle->m_vPosition.m_pValues[CVector3::Z] - vX.m_pValues[CVector3::Z] * 0.5 - vY.m_pValues[CVector3::Z] * 0.5;
 
        }*/
       //pGeometryData->SetVertex(nVertIndex,   pos);
-      pGeometryData->m_pVertices[(nVertIndex_By3)]   = pos.m_pValues[GSE_Vector3::X];
-      pGeometryData->m_pVertices[(nVertIndex_By3)+1] = pos.m_pValues[GSE_Vector3::Y];
-      pGeometryData->m_pVertices[(nVertIndex_By3)+2] = pos.m_pValues[GSE_Vector3::Z];
+      pGeometryData->m_pVertices[(nVertIndex_By3)]   = pos.m_pValues[CVector3::X];
+      pGeometryData->m_pVertices[(nVertIndex_By3)+1] = pos.m_pValues[CVector3::Y];
+      pGeometryData->m_pVertices[(nVertIndex_By3)+2] = pos.m_pValues[CVector3::Z];
 
       // pos += vX;
-      pos.m_pValues[GSE_Vector3::X] += vX.m_pValues[GSE_Vector3::X];
-      pos.m_pValues[GSE_Vector3::Y] += vX.m_pValues[GSE_Vector3::Y];
-      pos.m_pValues[GSE_Vector3::Z] += vX.m_pValues[GSE_Vector3::Z];
+      pos.m_pValues[CVector3::X] += vX.m_pValues[CVector3::X];
+      pos.m_pValues[CVector3::Y] += vX.m_pValues[CVector3::Y];
+      pos.m_pValues[CVector3::Z] += vX.m_pValues[CVector3::Z];
       
       //pGeometryData->SetVertex(nVertIndex+1, pos);
-      pGeometryData->m_pVertices[(nVertIndex_p1By3)]   = pos.m_pValues[GSE_Vector3::X];
-      pGeometryData->m_pVertices[(nVertIndex_p1By3)+1] = pos.m_pValues[GSE_Vector3::Y];
-      pGeometryData->m_pVertices[(nVertIndex_p1By3)+2] = pos.m_pValues[GSE_Vector3::Z];
+      pGeometryData->m_pVertices[(nVertIndex_p1By3)]   = pos.m_pValues[CVector3::X];
+      pGeometryData->m_pVertices[(nVertIndex_p1By3)+1] = pos.m_pValues[CVector3::Y];
+      pGeometryData->m_pVertices[(nVertIndex_p1By3)+2] = pos.m_pValues[CVector3::Z];
       // pos += vY;
-      pos.m_pValues[GSE_Vector3::X] += vY.m_pValues[GSE_Vector3::X];
-      pos.m_pValues[GSE_Vector3::Y] += vY.m_pValues[GSE_Vector3::Y];
-      pos.m_pValues[GSE_Vector3::Z] += vY.m_pValues[GSE_Vector3::Z];
+      pos.m_pValues[CVector3::X] += vY.m_pValues[CVector3::X];
+      pos.m_pValues[CVector3::Y] += vY.m_pValues[CVector3::Y];
+      pos.m_pValues[CVector3::Z] += vY.m_pValues[CVector3::Z];
       
       //pGeometryData->SetVertex(nVertIndex+2, pos);
-      pGeometryData->m_pVertices[nVertIndex_p2By3]   = pos.m_pValues[GSE_Vector3::X];
-      pGeometryData->m_pVertices[nVertIndex_p2By3+1] = pos.m_pValues[GSE_Vector3::Y];
-      pGeometryData->m_pVertices[nVertIndex_p2By3+2] = pos.m_pValues[GSE_Vector3::Z];
+      pGeometryData->m_pVertices[nVertIndex_p2By3]   = pos.m_pValues[CVector3::X];
+      pGeometryData->m_pVertices[nVertIndex_p2By3+1] = pos.m_pValues[CVector3::Y];
+      pGeometryData->m_pVertices[nVertIndex_p2By3+2] = pos.m_pValues[CVector3::Z];
       vNormal = m_pCurrentCamera->GetPosition() - particle->m_vPosition;
-      //vNormal.m_pValues[GSE_Vector3::X] = (m_pCurrentCamera->GetPosition()).m_pValues[GSE_Vector3::X] - particle->m_vPosition.m_pValues[GSE_Vector3::X];
-      //vNormal.m_pValues[GSE_Vector3::Y] = (m_pCurrentCamera->GetPosition()).m_pValues[GSE_Vector3::Y] - particle->m_vPosition.m_pValues[GSE_Vector3::Y];
-      //vNormal.m_pValues[GSE_Vector3::Z] = (m_pCurrentCamera->GetPosition()).m_pValues[GSE_Vector3::Z] - particle->m_vPosition.m_pValues[GSE_Vector3::Z];
+      //vNormal.m_pValues[CVector3::X] = (m_pCurrentCamera->GetPosition()).m_pValues[CVector3::X] - particle->m_vPosition.m_pValues[CVector3::X];
+      //vNormal.m_pValues[CVector3::Y] = (m_pCurrentCamera->GetPosition()).m_pValues[CVector3::Y] - particle->m_vPosition.m_pValues[CVector3::Y];
+      //vNormal.m_pValues[CVector3::Z] = (m_pCurrentCamera->GetPosition()).m_pValues[CVector3::Z] - particle->m_vPosition.m_pValues[CVector3::Z];
 
       //pGeometryData->SetNormal( nVertIndex,   vNormal );
       //pGeometryData->SetNormal( nVertIndex+1, vNormal );
       //pGeometryData->SetNormal( nVertIndex+2, vNormal );
 
-      pGeometryData->m_pNormals[ (nVertIndex_By3)  ] = vNormal.m_pValues[GSE_Vector3::X];
-      pGeometryData->m_pNormals[ (nVertIndex_By3)+1] = vNormal.m_pValues[GSE_Vector3::Y];
-      pGeometryData->m_pNormals[ (nVertIndex_By3)+2] = vNormal.m_pValues[GSE_Vector3::Z];
+      pGeometryData->m_pNormals[ (nVertIndex_By3)  ] = vNormal.m_pValues[CVector3::X];
+      pGeometryData->m_pNormals[ (nVertIndex_By3)+1] = vNormal.m_pValues[CVector3::Y];
+      pGeometryData->m_pNormals[ (nVertIndex_By3)+2] = vNormal.m_pValues[CVector3::Z];
       
-      pGeometryData->m_pNormals[ (nVertIndex_p1By3)  ] = vNormal.m_pValues[GSE_Vector3::X];
-      pGeometryData->m_pNormals[ (nVertIndex_p1By3)+1] = vNormal.m_pValues[GSE_Vector3::Y];
-      pGeometryData->m_pNormals[ (nVertIndex_p1By3)+2] = vNormal.m_pValues[GSE_Vector3::Z];
+      pGeometryData->m_pNormals[ (nVertIndex_p1By3)  ] = vNormal.m_pValues[CVector3::X];
+      pGeometryData->m_pNormals[ (nVertIndex_p1By3)+1] = vNormal.m_pValues[CVector3::Y];
+      pGeometryData->m_pNormals[ (nVertIndex_p1By3)+2] = vNormal.m_pValues[CVector3::Z];
 
-      pGeometryData->m_pNormals[ nVertIndex_p2By3  ] = vNormal.m_pValues[GSE_Vector3::X];
-      pGeometryData->m_pNormals[ nVertIndex_p2By3+1] = vNormal.m_pValues[GSE_Vector3::Y];
-      pGeometryData->m_pNormals[ nVertIndex_p2By3+2] = vNormal.m_pValues[GSE_Vector3::Z];
+      pGeometryData->m_pNormals[ nVertIndex_p2By3  ] = vNormal.m_pValues[CVector3::X];
+      pGeometryData->m_pNormals[ nVertIndex_p2By3+1] = vNormal.m_pValues[CVector3::Y];
+      pGeometryData->m_pNormals[ nVertIndex_p2By3+2] = vNormal.m_pValues[CVector3::Z];
       
       pGeometryData->SetColor( p * 3, particle->m_vColor );
       pGeometryData->SetColor( 1 + p * 3, particle->m_vColor );
       pGeometryData->SetColor( 2 + p * 3, particle->m_vColor );
      //  // The fourth vertex will be update only if we have quad
-//       if ( ps->m_ParticleBase.m_iParticlePrimitive == GSE_ParticleBase::QUAD )
+//       if ( ps->m_ParticleBase.m_iParticlePrimitive == CParticleBase::QUAD )
 //       {
 // 	// pos -= vX;
-// 	pos.m_pValues[GSE_Vector3::X] -= vX.m_pValues[GSE_Vector3::X];
-// 	pos.m_pValues[GSE_Vector3::Y] -= vX.m_pValues[GSE_Vector3::Y];
-// 	pos.m_pValues[GSE_Vector3::Z] -= vX.m_pValues[GSE_Vector3::Z];
+// 	pos.m_pValues[CVector3::X] -= vX.m_pValues[CVector3::X];
+// 	pos.m_pValues[CVector3::Y] -= vX.m_pValues[CVector3::Y];
+// 	pos.m_pValues[CVector3::Z] -= vX.m_pValues[CVector3::Z];
 // 	// pGeometryData->SetVertex(nVertIndex+3, pos);
-// 	pGeometryData->m_pVertices[(nVertIndex_p3By3)]   = pos.m_pValues[GSE_Vector3::X];
-// 	pGeometryData->m_pVertices[(nVertIndex_p3By3)+1] = pos.m_pValues[GSE_Vector3::Y];
-// 	pGeometryData->m_pVertices[(nVertIndex_p3By3)+2] = pos.m_pValues[GSE_Vector3::Z];      
+// 	pGeometryData->m_pVertices[(nVertIndex_p3By3)]   = pos.m_pValues[CVector3::X];
+// 	pGeometryData->m_pVertices[(nVertIndex_p3By3)+1] = pos.m_pValues[CVector3::Y];
+// 	pGeometryData->m_pVertices[(nVertIndex_p3By3)+2] = pos.m_pValues[CVector3::Z];      
 // 	// pGeometryData->SetNormal( nVertIndex+3, vNormal );    
-// 	pGeometryData->m_pNormals[ (nVertIndex_p3By3) ]   = vNormal.m_pValues[GSE_Vector3::X];
-// 	pGeometryData->m_pNormals[ (nVertIndex_p3By3) +1] = vNormal.m_pValues[GSE_Vector3::Y];
-// 	pGeometryData->m_pNormals[ (nVertIndex_p3By3) +2] = vNormal.m_pValues[GSE_Vector3::Z];
+// 	pGeometryData->m_pNormals[ (nVertIndex_p3By3) ]   = vNormal.m_pValues[CVector3::X];
+// 	pGeometryData->m_pNormals[ (nVertIndex_p3By3) +1] = vNormal.m_pValues[CVector3::Y];
+// 	pGeometryData->m_pNormals[ (nVertIndex_p3By3) +2] = vNormal.m_pValues[CVector3::Z];
 
 //       }
     }
@@ -1315,7 +1223,7 @@ GSE_OglRenderer::Handle_ParticleSystemUpdate( GSE_ParticleSystemNode *pNode )
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::ApplyGlobalLighting( GSE_GlobalLightingNode *pNode )
+COglRenderer::ApplyGlobalLighting( CGlobalLightingNode *pNode )
 {
   // change modes as specificed in node values
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT,      (const float *)pNode->GetGlobalAmbient().GetValues());
@@ -1330,33 +1238,30 @@ GSE_OglRenderer::ApplyGlobalLighting( GSE_GlobalLightingNode *pNode )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::SwapBuffers()
+COglRenderer::Finalize()
 {
+  ////////////////////
   // ATI driver messes up lighting if glTexEnv is set to 
   // GL_REPLACE and not reverted to GL_MODULATE
+  ////////////////////
   glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+  
   SDL_GL_SwapBuffers();
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::SetSelectionName( GSE_SelectionNameNode *pSelectionNameNode )
-{
-  glLoadName( pSelectionNameNode->GetSelectionName() );
-}
-/////////////////////////////////////////////////////////////////
-void
-GSE_OglRenderer::RenderText( GSE_TextNode *pTextNode )
+COglRenderer::RenderText( CTextNode *pTextNode )
 {
   
   // If fontsets exist, we can do something
   if ( m_vFontsets.size() == 0 )
   {
-    GSE_Logger::Error() << DEBUG_HEADER << "Error: No Fontsets created!" << endl;
+    std::cerr << DEBUG_HEADER << "Error: No Fontsets created!" << endl;
     return;
   }
   if ( pTextNode->GetString() == NULL )
   {
-    GSE_Logger::Error() << DEBUG_HEADER << "I shall not render a NULL string!" << endl;
+    CLogger::Error() << DEBUG_HEADER << "I shall not render a NULL string!" << endl;
     return;
   }
   glPushAttrib( GL_LIST_BIT );
@@ -1382,131 +1287,131 @@ GSE_OglRenderer::RenderText( GSE_TextNode *pTextNode )
 }
 /////////////////////////////////////////////////////////////////
 int 
-GSE_OglRenderer::Handle_DebugPrint_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode )
+COglRenderer::Handle_DebugPrint_RenderPass_Enter( CGraphNode<NodeType> *pNode )
 {
   int bCulled = 0;
-  GSE_Logger::Error() << m_sPadding <<  "|" << std::endl;
+  CLogger::Error() << m_sPadding <<  "|" << std::endl;
   
   switch ( pNode->GetType() )
   {
   case OCTREE:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Octree"  << std::endl;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Octree"  << std::endl;
     break;
   case TRANSFORM:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Transform"  << std::endl;
-    //GSE_Logger::Error() << ((GSE_TransformNode *)pNode)->GetMatrix();
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Transform"  << std::endl;
+    //CLogger::Error() << ((CTransformNode *)pNode)->GetMatrix();
     break;
   case GEOMETRY:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Geometry" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Geometry" ;
     break;
   case CAMERA:
-    GSE_Logger::Error() << m_sPadding<<  m_sArrow <<  "Camera"  << endl;
-    //GSE_Logger::Error() << ((GSE_CameraNode *)pNode)->GetCamera()->GetView();
+    CLogger::Error() << m_sPadding<<  m_sArrow <<  "Camera"  << endl;
+    //CLogger::Error() << ((CCameraNode *)pNode)->GetCamera()->GetView();
     break;
   case GROUP:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Group" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Group" ;
     break;
   case LIGHT_CLUSTER:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "LightCluster" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "LightCluster" ;
     break;
   case FRONT_MATERIAL:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "FrontMaterial" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "FrontMaterial" ;
     break;
   case BACK_MATERIAL:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "BackMaterial" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "BackMaterial" ;
     break;
   case INDEXBUFFER:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "IndexBuffer" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "IndexBuffer" ;
     break;
   case RENDERSTATE_CULLING:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "RenderStateCulling" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "RenderStateCulling" ;
     break;
   case SHADER:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Shader" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Shader" ;
     break;
   case VERTEXATTRIB:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "VertexAttrib" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "VertexAttrib" ;
     break;
   case GLOBAL_LIGHTING:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "GlobalLighting" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "GlobalLighting" ;
     break;
   case PARTICLESYSTEM:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "ParticleSystem" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "ParticleSystem" ;
     break;
   case CACHE:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Display list" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Display list" ;
     break;
   case SELECTION:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Selection name" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Selection name" ;
     break;
   case TEXT:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Text string" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Text string" ;
     break;
   case COLOR:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Color" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Color" ;
     break;
   case ALPHA_TEST:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "AlphaTest" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "AlphaTest" ;
     break;
   case RENDERSTATE_BLEND:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "BlendingState" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "BlendingState" ;
     break;
   case RENDERSTATE_DEPTHBUFFER:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "DepthBufferState" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "DepthBufferState" ;
     break;
   case RENDERSTATE_STACK:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "RenderStateStack" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "RenderStateStack" ;
     break;
   case TEXTURE:  
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Texture" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Texture" ;
     break;
   case SCISSOR:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "ScissorTest" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "ScissorTest" ;
     break;
   case CLEARBUFFER:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "ClearBuffer" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "ClearBuffer" ;
     break;
   case SHADEMODEL:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "ShadeModel" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "ShadeModel" ;
     break;
   case POLYLINE:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "PolyLine" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "PolyLine" ;
     break;
   case KDOP:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "KDOP" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "KDOP" ;
     break;
   case UNDEFINED:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Undefined" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Undefined" ;
     break;
   case UTIL_SPHERE:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Sphere" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Sphere" ;
     break;
   case UTIL_BOX:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Box" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Box" ;
     break;
   case UTIL_CONE:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Cone" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Cone" ;
     break;
   case UTIL_LINESTRIP:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "LineStrip" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "LineStrip" ;
     break;
   case ROTATION:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Rotation" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Rotation" ;
     break;
   case TRANSLATION:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "Translation" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "Translation" ;
     break;
   case ROOT:
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "RenderRoot" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "RenderRoot" ;
     break;
   case UTIL_QUAD:  
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "UtilQuad" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "UtilQuad" ;
     break;
   case POLYGONMODE:  
-    GSE_Logger::Error() << m_sPadding <<  m_sArrow <<  "PolygonMode" ;
+    CLogger::Error() << m_sPadding <<  m_sArrow <<  "PolygonMode" ;
     break;
   }
-  GSE_Logger::Error() << "(" << pNode << ")" << endl;
+  CLogger::Error() << "(" << pNode << ")" << endl;
   
   m_sPadding.append(1,' ');
   m_sPadding.append(2,' ');
@@ -1514,7 +1419,7 @@ GSE_OglRenderer::Handle_DebugPrint_RenderPass_Enter( GSE_GraphNode<NodeType> *pN
 }
 /////////////////////////////////////////////////////////////////
 int 
-GSE_OglRenderer::Handle_DebugPrint_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode )
+COglRenderer::Handle_DebugPrint_RenderPass_Leave( CGraphNode<NodeType> *pNode )
 {
   int iRetval = 0;
   m_sPadding.erase(0,3);
@@ -1522,39 +1427,39 @@ GSE_OglRenderer::Handle_DebugPrint_RenderPass_Leave( GSE_GraphNode<NodeType> *pN
 }
 /////////////////////////////////////////////////////////////////
 int
-GSE_OglRenderer::HandleOglCache_Enter( GSE_OglCacheNode *pNode )
+COglRenderer::HandleOglCache_Enter( COglCacheNode *pNode )
 {
 
   
   int bCulled = 0;
  
   if ( pNode == NULL ){
-    GSE_Logger::Error() << "Can't handle NULLs!" << std::endl;
+    CLogger::Error() << "Can't handle NULLs!" << std::endl;
     return 0;
   }
 
-  GSE_OglCache *pCache = pNode->GetCache();
+  COglCache *pCache = pNode->GetCache();
 
   if ( pCache == NULL )
   {
-    GSE_Logger::Error() << "Can't handle NULL caches." << std::endl;
+    CLogger::Error() << "Can't handle NULL caches." << std::endl;
     return 0;
   }
   switch ( pCache->GetCacheMethod())
   {
-  case GSE_OglCache::NO_CACHE:
+  case COglCache::NO_CACHE:
     bCulled = 0;
     break;
-  case GSE_OglCache::CACHED_IN_DL:
+  case COglCache::CACHED_IN_DL:
     glCallList( pCache->Cache());
     bCulled = 1; 
     break;
-  case GSE_OglCache::REGENERATE_DL_CACHE:
+  case COglCache::REGENERATE_DL_CACHE:
     if ( !IS_COMPILING_DISPLAY_LIST()){
       glDeleteLists(pCache->Cache(), 1);
       break;
     } 
-  case GSE_OglCache::REQUEST_DL_CACHE:
+  case COglCache::REQUEST_DL_CACHE:
     if ( IS_COMPILING_DISPLAY_LIST())
     {
       break;
@@ -1563,9 +1468,9 @@ GSE_OglRenderer::HandleOglCache_Enter( GSE_OglCacheNode *pNode )
     pCache->Cache()  = glGenLists( 1 );
     if ( pCache->Cache() == 0 )
     {
-      GSE_Logger::Error() << "Couldn't create display list!" << std::endl;
+      CLogger::Error() << "Couldn't create display list!" << std::endl;
       
-      pCache->SetCacheMethod( GSE_OglCache::NO_CACHE );
+      pCache->SetCacheMethod( COglCache::NO_CACHE );
     } 
     else 
     {
@@ -1574,10 +1479,10 @@ GSE_OglRenderer::HandleOglCache_Enter( GSE_OglCacheNode *pNode )
     bCulled = 0;
     m_DisplayListStack.push('o');
     break;
-  case GSE_OglCache::DELETE_DL_CACHE:
+  case COglCache::DELETE_DL_CACHE:
     if ( !IS_COMPILING_DISPLAY_LIST()){
       glDeleteLists(pCache->Cache(), 1);
-      pCache->SetCacheMethod( GSE_OglCache::NO_CACHE );
+      pCache->SetCacheMethod( COglCache::NO_CACHE );
     }
     break;
   }
@@ -1587,37 +1492,37 @@ GSE_OglRenderer::HandleOglCache_Enter( GSE_OglCacheNode *pNode )
 }
 /////////////////////////////////////////////////////////////////
 int 
-GSE_OglRenderer::HandleOglCache_Leave( GSE_OglCacheNode *pNode )
+COglRenderer::HandleOglCache_Leave( COglCacheNode *pNode )
 {
   int bRetval = 0;
   if ( pNode == NULL )
   {
-    GSE_WARN("Can't handle NULLs!");
+    CWARN("Can't handle NULLs!");
     return 0;
   }
 
-  GSE_OglCache *pCache = pNode->GetCache();
+  COglCache *pCache = pNode->GetCache();
 
   if ( pCache == NULL )
   {
-    GSE_WARN("Can't handle NULL caches.");
+    CWARN("Can't handle NULL caches.");
     return 0;
   }
   switch ( pCache->GetCacheMethod())
   {
-  case GSE_OglCache::NO_CACHE:
-  case GSE_OglCache::CACHED_IN_DL:
-  case GSE_OglCache::DELETE_DL_CACHE:
+  case COglCache::NO_CACHE:
+  case COglCache::CACHED_IN_DL:
+  case COglCache::DELETE_DL_CACHE:
     break;
-  case GSE_OglCache::REQUEST_DL_CACHE:
-  case GSE_OglCache::REGENERATE_DL_CACHE:
+  case COglCache::REQUEST_DL_CACHE:
+  case COglCache::REGENERATE_DL_CACHE:
     // end the GL_COMPILE
     glEndList();
-    GSE_DEBUG("glEndList( );");
+    CDEBUG("glEndList( );");
     // Change cache message
-    pCache->SetCacheMethod( GSE_OglCache::CACHED_IN_DL );
+    pCache->SetCacheMethod( COglCache::CACHED_IN_DL );
     // Call list so everything will be drawn also in this pass
-    GSE_DEBUG("glCallList( " << pCache->Cache() << ");");
+    CDEBUG("glCallList( " << pCache->Cache() << ");");
     glCallList( pCache->Cache());
     m_DisplayListStack.pop();
     break;
@@ -1630,12 +1535,12 @@ GSE_OglRenderer::HandleOglCache_Leave( GSE_OglCacheNode *pNode )
 /// The size of the batch depends on hardware limits, and the optimization
 /// will occur only once.
 void 
-GSE_OglRenderer::OptimizeVBOBatching( GSE_IndexBuffer *pIndexBuffer )
+COglRenderer::OptimizeVBOBatching( CIndexBuffer *pIndexBuffer )
 {
   
   if ( pIndexBuffer == NULL )
   {
-    GSE_ERR( __PRETTY_FUNCTION__ << "Can't handle NULL's.");
+    CERR( __PRETTY_FUNCTION__ << "Can't handle NULL's.");
     return;
   }
   if ( !pIndexBuffer->RenderBatches().empty() || 
@@ -1658,7 +1563,7 @@ GSE_OglRenderer::OptimizeVBOBatching( GSE_IndexBuffer *pIndexBuffer )
   unsigned short *pData = NULL;
   // while there remains unbatched faces do
 
-  GSE_IndexBuffer::RenderBatch_t renderBatch;
+  CIndexBuffer::RenderBatch_t renderBatch;
 
   nIndexCount  = 0;  
   // Clear previous batches, if there are any
@@ -1724,7 +1629,7 @@ GSE_OglRenderer::OptimizeVBOBatching( GSE_IndexBuffer *pIndexBuffer )
   renderBatch.m_pData = pData;
   
   pIndexBuffer->RenderBatches().push_back( renderBatch );
-  GSE_DEBUG("Renderbatches have been issued, size: " 
+  CDEBUG("Renderbatches have been issued, size: " 
 	    << pIndexBuffer->RenderBatches().size());
 
   
@@ -1732,7 +1637,7 @@ GSE_OglRenderer::OptimizeVBOBatching( GSE_IndexBuffer *pIndexBuffer )
 /////////////////////////////////////////////////////////////////
 /// Handles the render passes of the normal drawing process.
 int 
-GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode )
+COglRenderer::Handle_Drawing_RenderPass_Enter( CGraphNode<NodeType> *pNode )
 {
   
   int iCulled = 0;
@@ -1742,7 +1647,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
   
   if ( pNode == NULL )
   {
-    GSE_DEBUG("Can't handle NULL's!");
+    CDEBUG("Can't handle NULL's!");
     iCulled = 1;
   } 
   else 
@@ -1752,52 +1657,52 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
     switch ( pNode->GetType() )
     {
     case OCTREE:
-      DrawOctree( static_cast<GSE_OctreeNode *>(pNode)->GetOctree());
+      DrawOctree( static_cast<COctreeNode *>(pNode)->GetOctree());
       break;
     case POLYLINE:
-      DrawPolyline( static_cast<GSE_PolyLineNode *>(pNode) );
+      DrawPolyline( static_cast<CPolyLineNode *>(pNode) );
       break;
     case TEXTURE:
-      iCulled = HandleTexture( static_cast<GSE_TextureNode *>(pNode) );
+      iCulled = HandleTexture( static_cast<CTextureNode *>(pNode) );
       break;
     case TRANSFORM:
       glPushMatrix();
-      glMultMatrixf( (static_cast<GSE_TransformNode *>(pNode))->GetMatrix().Transposed().GetArray()) ;
+      glMultMatrixf( (static_cast<CTransformNode *>(pNode))->GetMatrix().Transposed().GetArray()) ;
       break;
     case GEOMETRY: 
-      SetupArrays( ( static_cast<GSE_GeometryNode *>(pNode))->GetGeometryDataWorld() );
+      SetupArrays( ( static_cast<CGeometryNode *>(pNode))->GetGeometryDataWorld() );
       break;
     case CAMERA:
-      ApplyPerspective( ( static_cast<GSE_CameraNode *>(pNode))->GetCamera());
+      ApplyPerspective( ( static_cast<CCameraNode *>(pNode))->GetCamera());
       break;
     case GROUP:
       break;
     case LIGHT_CLUSTER: 
-      ApplyLightParameters( static_cast<GSE_LightClusterNode *>(pNode) );
+      ApplyLightParameters( static_cast<CLightClusterNode *>(pNode) );
       break;
     case POLYGONMODE:
       {
-	switch(static_cast<GSE_PolygonModeNode *>(pNode)->GetFrontFaceMode())
+	switch(static_cast<CPolygonModeNode *>(pNode)->GetFrontFaceMode())
 	{
-	case GSE_PolygonModeNode::FILL:
+	case CPolygonModeNode::FILL:
 	  glPolygonMode( GL_FRONT, GL_FILL );
 	  break;  
-	case GSE_PolygonModeNode::LINE:
+	case CPolygonModeNode::LINE:
 	  glPolygonMode( GL_FRONT, GL_LINE );
 	  break;  
-	case GSE_PolygonModeNode::POINT:
+	case CPolygonModeNode::POINT:
 	  glPolygonMode( GL_FRONT, GL_POINT );
 	  break;  
 	}
-	switch(static_cast<GSE_PolygonModeNode *>(pNode)->GetBackFaceMode())
+	switch(static_cast<CPolygonModeNode *>(pNode)->GetBackFaceMode())
 	{
-	case GSE_PolygonModeNode::FILL:
+	case CPolygonModeNode::FILL:
 	  glPolygonMode( GL_BACK, GL_FILL );
 	  break;  
-	case GSE_PolygonModeNode::LINE:
+	case CPolygonModeNode::LINE:
 	  glPolygonMode( GL_BACK, GL_LINE );
 	  break;  
-	case GSE_PolygonModeNode::POINT:
+	case CPolygonModeNode::POINT:
 	  glPolygonMode( GL_BACK, GL_POINT );
 	  break;  
 	}
@@ -1805,7 +1710,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case FRONT_MATERIAL:
       {
- 	GSE_Material *pMat = ( static_cast<GSE_MaterialNode *>(pNode))->GetMaterial();
+ 	CMaterial *pMat = ( static_cast<CMaterialNode *>(pNode))->GetMaterial();
 
  	if ( ( pMat->IsTransparent() && m_iRenderPassType == OGL_RENDER_PASS_ONLY_TRANSPARENT) ||
  	     (!pMat->IsTransparent() && m_iRenderPassType == OGL_RENDER_PASS_ONLY_OPAQUE) ||
@@ -1819,7 +1724,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;    
     case BACK_MATERIAL:
       {
-	GSE_Material *pMat = ( static_cast<GSE_MaterialNode *>(pNode))->GetMaterial();
+	CMaterial *pMat = ( static_cast<CMaterialNode *>(pNode))->GetMaterial();
  	if ( ( pMat->IsTransparent() && m_iRenderPassType == OGL_RENDER_PASS_ONLY_TRANSPARENT) ||
  	     (!pMat->IsTransparent() && m_iRenderPassType == OGL_RENDER_PASS_ONLY_OPAQUE) ||
  	     m_iRenderPassType == OGL_RENDER_PASS_GET_SELECTION){
@@ -1832,26 +1737,26 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case INDEXBUFFER:
       // Retrieve the IndexBuffer from the manager and pass it 
-      DrawPrimitive( ( static_cast<GSE_IndexBufferNode *>(pNode))->GetIndexBuffer());
+      DrawPrimitive( ( static_cast<CIndexBufferNode *>(pNode))->GetIndexBuffer());
       break;
     case RENDERSTATE_CULLING:
-      Handle_Draw_CullingState( static_cast<GSE_CullingStateNode *>(pNode));
+      Handle_Draw_CullingState( static_cast<CCullingStateNode *>(pNode));
       break;
     case RENDERSTATE_STACK:
       // Stores the defined attribute group
-      HandleStackPush( static_cast<GSE_RenderStateStackNode *>(pNode));
+      HandleStackPush( static_cast<CRenderStateStackNode *>(pNode));
       break;
     case CLEARBUFFER:
       {
 	
-	GSE_ClearBufferNode *pClearBuf = static_cast<GSE_ClearBufferNode *>(pNode);
+	CClearBufferNode *pClearBuf = static_cast<CClearBufferNode *>(pNode);
 	if ( m_bClearBuffers )
 	{
-	  GSE_Color &Color = pClearBuf->ClearColor();
-	  glClearColor( Color[GSE_Color::R],
-			Color[GSE_Color::G],
-			Color[GSE_Color::B],
-			Color[GSE_Color::A]);
+	  CColor &Color = pClearBuf->ClearColor();
+	  glClearColor( Color[CColor::R],
+			Color[CColor::G],
+			Color[CColor::B],
+			Color[CColor::A]);
 	  
 	  GLenum eClearBuffers = 0;
 	  // Depth mask clearing requires that the glDepthMask is set to GL_TRUE.
@@ -1873,15 +1778,15 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case SHADEMODEL:
       // Change the shade model
-      switch( ( static_cast<GSE_ShadeModelNode *>(pNode))->GetShadeModel())
+      switch( ( static_cast<CShadeModelNode *>(pNode))->GetShadeModel())
       {
-      case GSE_ShadeModelNode::SMOOTH:
+      case CShadeModelNode::SMOOTH:
 	glShadeModel(GL_SMOOTH);
-	GSE_DEBUG("glShadeModel(GL_SMOOTH);");
+	CDEBUG("glShadeModel(GL_SMOOTH);");
 	break;
-      case GSE_ShadeModelNode::FLAT:
+      case CShadeModelNode::FLAT:
 	glShadeModel(GL_FLAT);
-	GSE_DEBUG("glShadeModel(GL_FLAT);");
+	CDEBUG("glShadeModel(GL_FLAT);");
 	break;
       }
       
@@ -1891,8 +1796,8 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	// Check for shader support and skip node if so
 	if ( !m_pFeatures->HasVertexProgram()) break;
 
-	GSE_ShaderNode *pShaderNode = static_cast<GSE_ShaderNode *>(pNode);
-	GSE_OglShaderProgram *pShaderProgram = static_cast<GSE_OglShaderProgram *>(pShaderNode->GetShaderProgram());
+	CShaderNode *pShaderNode = static_cast<CShaderNode *>(pNode);
+	COglShaderProgram *pShaderProgram = static_cast<COglShaderProgram *>(pShaderNode->GetShaderProgram());
       
 	glPushAttrib( GL_LIGHTING_BIT );
 	if ( pShaderNode->IsEnabled() )
@@ -1906,31 +1811,31 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;  
     case VERTEXATTRIB:
 
-      SetupVertexAttrib(( static_cast<GSE_VertexAttribNode *>(pNode))->GetVertexAttrib());
+      SetupVertexAttrib(( static_cast<CVertexAttribNode *>(pNode))->GetVertexAttrib());
 
       break;
     case GLOBAL_LIGHTING:
       
-      ApplyGlobalLighting( static_cast<GSE_GlobalLightingNode *>(pNode));
+      ApplyGlobalLighting( static_cast<CGlobalLightingNode *>(pNode));
     
       break;
     case PARTICLESYSTEM:
       
-      Handle_ParticleSystemUpdate( static_cast<GSE_ParticleSystemNode *>(pNode) );
-      SetupArrays( static_cast<GSE_ParticleSystemNode *>(pNode)->GetGeometryData() );
+      Handle_ParticleSystemUpdate( static_cast<CParticleSystemNode *>(pNode) );
+      SetupArrays( static_cast<CParticleSystemNode *>(pNode)->GetGeometryData() );
       
       break;
     case UTIL_SPHERE:
       {quadric = gluNewQuadric();
-      GSE_UtilSphereNode *pSphere = static_cast<GSE_UtilSphereNode *>(pNode);
+      CUtilSphereNode *pSphere = static_cast<CUtilSphereNode *>(pNode);
 
       // Set the drawstyle
       switch ( pSphere->GetDrawMode())
       {
-      case GSE_UtilSphereNode::WIREFRAME:
+      case CUtilSphereNode::WIREFRAME:
 	gluQuadricDrawStyle( quadric, GLU_LINE );
 	break;
-      case GSE_UtilSphereNode::SILHOUETTE:
+      case CUtilSphereNode::SILHOUETTE:
 	gluQuadricDrawStyle( quadric, GLU_SILHOUETTE );
 	break;
       default:
@@ -1944,9 +1849,9 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       glPushMatrix();
       glDisable(GL_LIGHTING);
       glColor4fv( pSphere->GetColor().GetValues());
-      glTranslatef( pSphere->GetPosition().m_pValues[GSE_Vector3::X],
-		    pSphere->GetPosition().m_pValues[GSE_Vector3::Y],
-		    pSphere->GetPosition().m_pValues[GSE_Vector3::Z] );
+      glTranslatef( pSphere->GetPosition().m_pValues[CVector3::X],
+		    pSphere->GetPosition().m_pValues[CVector3::Y],
+		    pSphere->GetPosition().m_pValues[CVector3::Z] );
     
       gluSphere(quadric,pSphere->GetRadius(), 16,16 );
     
@@ -1957,23 +1862,23 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       }
       break;
     case CACHE:
-      iCulled = HandleOglCache_Enter( static_cast<GSE_OglCacheNode *>(pNode));
+      iCulled = HandleOglCache_Enter( static_cast<COglCacheNode *>(pNode));
       break;
     case SELECTION:
       iCulled = 0;
-      SetSelectionName( static_cast<GSE_SelectionNameNode *>(pNode));
+      SetSelectionName( static_cast<CSelectionNameNode *>(pNode));
       break;
     case TEXT:
       iCulled = 0;
-      RenderText( static_cast<GSE_TextNode *>(pNode) );
+      RenderText( static_cast<CTextNode *>(pNode) );
       break;
     case COLOR:
-      glColor4fv( ( static_cast<GSE_ColorNode *>(pNode))->m_pValues);
+      glColor4fv( ( static_cast<CColorNode *>(pNode))->m_pValues);
       iCulled = 0;
       break;
     case RENDERSTATE_DEPTHBUFFER:
       // Enable/disable depth test
-      if ( static_cast<GSE_DepthBufferStateNode *>(pNode)->IsDepthTest() )   
+      if ( static_cast<CDepthBufferStateNode *>(pNode)->IsDepthTest() )   
       {	
 	glEnable(GL_DEPTH_TEST);  
       } 
@@ -1982,7 +1887,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	glDisable(GL_DEPTH_TEST); 
       }
       // Enable disable writing into the depth buffer
-      if ( static_cast<GSE_DepthBufferStateNode *>(pNode)->IsDepthBufferWriting() )   
+      if ( static_cast<CDepthBufferStateNode *>(pNode)->IsDepthBufferWriting() )   
       { 
 	glDepthMask( GL_TRUE  ); 
       }
@@ -1993,7 +1898,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case ALPHA_TEST:
       {
-	GSE_AlphaTestNode *pAlphaTest = static_cast<GSE_AlphaTestNode *>(pNode);
+	CAlphaTestNode *pAlphaTest = static_cast<CAlphaTestNode *>(pNode);
 	if ( pAlphaTest->IsEnabled())
 	{
 	  glEnable(GL_ALPHA_TEST);
@@ -2033,7 +1938,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case RENDERSTATE_BLEND:
       {
-	GSE_BlendingStateNode *pBlendState = static_cast<GSE_BlendingStateNode *>(pNode);
+	CBlendingStateNode *pBlendState = static_cast<CBlendingStateNode *>(pNode);
 	if ( pBlendState->IsEnabled())
 	{
 	  glEnable(GL_BLEND);
@@ -2047,7 +1952,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
     
     case SCISSOR:
       {
-	GSE_ScissorTestNode *pScissorTestNode = static_cast<GSE_ScissorTestNode *>(pNode);
+	CScissorTestNode *pScissorTestNode = static_cast<CScissorTestNode *>(pNode);
 	
 	if ( pScissorTestNode->IsEnabled())
 	{
@@ -2065,22 +1970,22 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case KDOP:
       {
-	list<GSE_Vector3>		lstPoints;
-	list<GSE_Vector3>::iterator	pointIt;
-	list<GSE_Plane>			lstTmpPlanes;
+	list<CVector3>		lstPoints;
+	list<CVector3>::iterator	pointIt;
+	list<CPlane>			lstTmpPlanes;
 
-	GSE_KDopUtilNode *pKDopUtil = static_cast<GSE_KDopUtilNode *>(pNode);
-	//GSE_Logger::Error() << "Rendering KDOP " << endl << pKDopUtil->GetKDOP() << endl;	
+	CKDopUtilNode *pKDopUtil = static_cast<CKDopUtilNode *>(pNode);
+	//CLogger::Error() << "Rendering KDOP " << endl << pKDopUtil->GetKDOP() << endl;	
 	
 	if ( pKDopUtil->GetKDOP().GetNumPlanes() > 2  ) 
 	{
 	  lstTmpPlanes = pKDopUtil->GetKDOP().Planes();
 	  lstTmpPlanes.reverse();
-	  list<GSE_Plane>::iterator planeIt = lstTmpPlanes.begin();
+	  list<CPlane>::iterator planeIt = lstTmpPlanes.begin();
 
-	  GSE_Plane far = *planeIt;
+	  CPlane far = *planeIt;
 	  planeIt++;
-	  GSE_Plane near = *planeIt;
+	  CPlane near = *planeIt;
 	  
 	  lstTmpPlanes.pop_front();
 	  lstTmpPlanes.pop_front();
@@ -2090,8 +1995,8 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	  // Calculate corners
 	  for(; planeIt != lstTmpPlanes.end();planeIt++)
 	  {
-	    GSE_Plane plane1 = *planeIt;
-	    list<GSE_Plane>::iterator planeItNext = planeIt;
+	    CPlane plane1 = *planeIt;
+	    list<CPlane>::iterator planeItNext = planeIt;
 	    planeItNext++;
 
 	    if ( planeItNext == lstTmpPlanes.end())
@@ -2099,13 +2004,13 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	      planeItNext = lstTmpPlanes.begin();
 	    }
 
-	    GSE_Plane plane2 = *planeItNext;
-	    GSE_Vector3 vTmp1;
+	    CPlane plane2 = *planeItNext;
+	    CVector3 vTmp1;
 	    
 	    if ( Geometry::PlaneIntersectionPoint( plane1, plane2, near, vTmp1 ) != Geometry::POINT )
 	    {
 	      
-	      GSE_ERR("HELL BREAKS LOOSE, kDop planes do not intersect!!! (near)");
+	      CERR("HELL BREAKS LOOSE, kDop planes do not intersect!!! (near)");
 	      //abort();
 	    } 
 	    else 
@@ -2115,7 +2020,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	    
 	    if ( Geometry::PlaneIntersectionPoint( plane1, plane2, far, vTmp1 ) != Geometry::POINT )
 	    {
-	      GSE_ERR("HELL BREAKS LOOSE, kDop planes do not intersect (far)!!!");
+	      CERR("HELL BREAKS LOOSE, kDop planes do not intersect (far)!!!");
 	      //abort();
 	    } else {
 	      lstPoints.push_back( vTmp1 );
@@ -2132,10 +2037,10 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	  glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 	  glBegin( GL_QUAD_STRIP );
-	  //GSE_Logger::Error() << "KDOP corner winners are: " << endl;
+	  //CLogger::Error() << "KDOP corner winners are: " << endl;
 	  for(;pointIt!=lstPoints.end();pointIt++)
 	  {
-	    //GSE_Logger::Error() << (*pointIt) << endl;
+	    //CLogger::Error() << (*pointIt) << endl;
 	    glVertex3fv( (*pointIt).m_pValues );
 	  }
 	  glEnd();
@@ -2149,22 +2054,22 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       glPushMatrix();
       // we need to transpose the matrix
       // before passing the array to glMultMatrixf
-      glMultMatrixf( (static_cast<GSE_RotationNode *>(pNode))->ToMatrix().Transposed().GetArray());            
+      glMultMatrixf( (static_cast<CRotationNode *>(pNode))->ToMatrix().Transposed().GetArray());            
       break;
     case TRANSLATION:
       // Store modelview matrix stack (or at least it should be stored)
-      GSE_DEBUG("glPushMatrix()");
+      CDEBUG("glPushMatrix()");
       glPushMatrix();
-      pTmp = (static_cast<GSE_TranslationNode *>(pNode))->m_pValues;
+      pTmp = (static_cast<CTranslationNode *>(pNode))->m_pValues;
       glTranslatef( pTmp[0], pTmp[1], pTmp[2]  );
       break;
     case UTIL_QUAD:
-      Handle_Draw_UtilQuad( static_cast<GSE_UtilQuadNode *>(pNode) );
+      Handle_Draw_UtilQuad( static_cast<CUtilQuadNode *>(pNode) );
       
       break;
     case UTIL_BOX:
       {
-	GSE_UtilBoxNode *pBox = static_cast<GSE_UtilBoxNode *>(pNode);
+	CUtilBoxNode *pBox = static_cast<CUtilBoxNode *>(pNode);
 	// This sphere will never have lighting
 	glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT);
 	// Set the drawstyle
@@ -2183,16 +2088,16 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	glColor4fv( pBox->GetColor().GetValues());
 
 	glBegin( GL_QUAD_STRIP );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::TOP_LEFT_BACK ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::BOTTOM_LEFT_BACK ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::TOP_RIGHT_BACK ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::BOTTOM_RIGHT_BACK ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::TOP_RIGHT_FRONT ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::BOTTOM_RIGHT_FRONT ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::TOP_LEFT_FRONT ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::BOTTOM_LEFT_FRONT ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::TOP_LEFT_BACK ) );
-	glVertex3fv( pBox->GetCorner( GSE_OrientedBox::BOTTOM_LEFT_BACK ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::TOP_LEFT_BACK ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::BOTTOM_LEFT_BACK ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::TOP_RIGHT_BACK ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::BOTTOM_RIGHT_BACK ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::TOP_RIGHT_FRONT ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::BOTTOM_RIGHT_FRONT ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::TOP_LEFT_FRONT ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::BOTTOM_LEFT_FRONT ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::TOP_LEFT_BACK ) );
+	glVertex3fv( pBox->GetCorner( COrientedBox::BOTTOM_LEFT_BACK ) );
 	glEnd();
 
 	glPopMatrix();
@@ -2208,7 +2113,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       {
       
 	quadric = gluNewQuadric();
-	GSE_UtilConeNode *pCone = static_cast<GSE_UtilConeNode *>(pNode);
+	CUtilConeNode *pCone = static_cast<CUtilConeNode *>(pNode);
 
 	// Set the drawstyle
 	if ( pCone->IsWireframe())
@@ -2226,18 +2131,18 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 	glDisable(GL_LIGHTING);
 	glColor4fv( pCone->GetColor().GetValues());
       
-	glTranslatef( pCone->GetPosition().m_pValues[GSE_Vector3::X],
-		      pCone->GetPosition().m_pValues[GSE_Vector3::Y],
-		      pCone->GetPosition().m_pValues[GSE_Vector3::Z] );
+	glTranslatef( pCone->GetPosition().m_pValues[CVector3::X],
+		      pCone->GetPosition().m_pValues[CVector3::Y],
+		      pCone->GetPosition().m_pValues[CVector3::Z] );
 	
-	float fAngle = acosf(pCone->GetDirection().Dot(GSE_Vector3::GetWorldZ()) / 
+	float fAngle = acosf(pCone->GetDirection().Dot(CVector3::GetWorldZ()) / 
 			     pCone->GetDirection().Length());
-	//GSE_Logger::Error() << "angle between " << pCone->GetDirection() << " and " << GSE_Vector3::GetWorldZ() << " is " << fAngle << std::endl;
-	GSE_Vector3 vRotationVector = GSE_Vector3::GetWorldZ().Cross(pCone->GetDirection());
+	//CLogger::Error() << "angle between " << pCone->GetDirection() << " and " << CVector3::GetWorldZ() << " is " << fAngle << std::endl;
+	CVector3 vRotationVector = CVector3::GetWorldZ().Cross(pCone->GetDirection());
 	glRotatef( RAD2DEG(fAngle), 
-		   vRotationVector[GSE_Vector3::X],
-		   vRotationVector[GSE_Vector3::Y],
-		   vRotationVector[GSE_Vector3::Z]);
+		   vRotationVector[CVector3::X],
+		   vRotationVector[CVector3::Y],
+		   vRotationVector[CVector3::Z]);
 	
 	gluCylinder(quadric, 0.0f, pCone->GetLength()*tan( pCone->GetAngle()), 
 		    pCone->GetLength(), 32, 1 );
@@ -2253,14 +2158,14 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
       break;
     case UTIL_LINESTRIP:
       {
-	GSE_UtilLineStripNode *pLineStripNode = static_cast<GSE_UtilLineStripNode *>(pNode);
+	CUtilLineStripNode *pLineStripNode = static_cast<CUtilLineStripNode *>(pNode);
 	glPushAttrib( GL_ENABLE_BIT );
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glLineWidth(2.0);
 	glColor3f( 1.0, 1.0, 1.0); // white
 	glBegin( GL_LINE_STRIP );
-	std::list<GSE_Vector3>::iterator it = pLineStripNode->Vertices().begin();
+	std::list<CVector3>::iterator it = pLineStripNode->Vertices().begin();
 	for( ; it != pLineStripNode->Vertices().end(); it++)
 	{
 	  glVertex3fv( (*it).m_pValues );
@@ -2277,7 +2182,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
     case ROOT:
       break;
     case UNDEFINED:
-      GSE_Logger::Error() << "Node type is undefined!" << std::endl;
+      CLogger::Error() << "Node type is undefined!" << std::endl;
       break;
     }
   }
@@ -2287,7 +2192,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Enter( GSE_GraphNode<NodeType> *pNode
 /////////////////////////////////////////////////////////////////
 /// Handles the finish passes of the normal drawing process.
 int 
-GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode )
+COglRenderer::Handle_Drawing_RenderPass_Leave( CGraphNode<NodeType> *pNode )
 {
   int iRetval = 0;
   
@@ -2297,7 +2202,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode
   case TRANSLATION:
   case TRANSFORM:
     // Pop the previously stored matrix 
-    GSE_DEBUG("glPopMatrix();");
+    CDEBUG("glPopMatrix();");
     glPopMatrix();
     break;
   case LIGHT_CLUSTER:
@@ -2315,7 +2220,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode
     break;
   case FRONT_MATERIAL:
   case BACK_MATERIAL:
-    DisableMaterial( static_cast<GSE_MaterialNode *>(pNode)->GetMaterial() );
+    DisableMaterial( static_cast<CMaterialNode *>(pNode)->GetMaterial() );
     break;
   case SHADER:
     // revert to fixed functionality
@@ -2323,10 +2228,10 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode
     glPopAttrib();
     break;
   case VERTEXATTRIB:
-    FinishVertexAttrib( static_cast<GSE_VertexAttribNode *>(pNode)->GetVertexAttrib());
+    FinishVertexAttrib( static_cast<CVertexAttribNode *>(pNode)->GetVertexAttrib());
     break;
   case CACHE:
-    iRetval = HandleOglCache_Leave( static_cast<GSE_OglCacheNode *>(pNode) );
+    iRetval = HandleOglCache_Leave( static_cast<COglCacheNode *>(pNode) );
     break;
   case RENDERSTATE_STACK:
     // pops the stored attribute group
@@ -2334,7 +2239,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode
     break;
   case TEXTURE:
     {
-      GSE_TextureNode *pTexNode = static_cast<GSE_TextureNode *>(pNode);
+      CTextureNode *pTexNode = static_cast<CTextureNode *>(pNode);
       if ( pTexNode->GetTexture() != NULL )
       { 
 	glActiveTextureARB( g_aGLMultiTexIds[pTexNode->GetTexId()] );
@@ -2345,7 +2250,7 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode
     break;
   case RENDERSTATE_BLEND:
     {
-      GSE_BlendingStateNode *pBlendState = static_cast<GSE_BlendingStateNode *>(pNode);
+      CBlendingStateNode *pBlendState = static_cast<CBlendingStateNode *>(pNode);
       if ( pBlendState->IsEnabled())
       {
 	glDisable(GL_BLEND);
@@ -2381,14 +2286,14 @@ GSE_OglRenderer::Handle_Drawing_RenderPass_Leave( GSE_GraphNode<NodeType> *pNode
   case POLYGONMODE:
     break;
   case UNDEFINED:
-    GSE_Logger::Error() << "Node type is undefined!" << std::endl;
+    CLogger::Error() << "Node type is undefined!" << std::endl;
     break;
   }
   return iRetval;
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::SetSelection ( unsigned int nMouseX, unsigned int nMouseY, 
+COglRenderer::SetSelection ( unsigned int nMouseX, unsigned int nMouseY, 
 				unsigned int nWidth , unsigned int nHeight  )
 {
   m_Selection.m_nMouseX = nMouseX;
@@ -2399,42 +2304,42 @@ GSE_OglRenderer::SetSelection ( unsigned int nMouseX, unsigned int nMouseY,
 }
 /////////////////////////////////////////////////////////////////
 GLuint *
-GSE_OglRenderer::GetSelectionBuffer()
+COglRenderer::GetSelectionBuffer()
 {
   return m_aSelectionBuffer;
 }
 /////////////////////////////////////////////////////////////////
 const unsigned int 
-GSE_OglRenderer::GetNumHits()
+COglRenderer::GetNumHits()
 {
   return m_nHits;
 }
 /////////////////////////////////////////////////////////////////
 int 
-GSE_OglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontSize)
+COglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontSize)
 {
 
 #define WHITESPACE 32
-  GSE_OglRendererFontset *pFontset;
+  COglRendererFontset *pFontset;
 
   FT_Library ftLibrary;
   FT_Error ftError;
   FT_Face  ftFace;  
 
-  GSE_OglTextureMgr *pOglTextureMgr = GSE_OglTextureMgr::GetInstance();
+  COglTextureMgr *pOglTextureMgr = COglTextureMgr::GetInstance();
 
   // Initialize the font library
   ftError = FT_Init_FreeType( &ftLibrary ); 
   if ( ftError ) 
   { 
-    GSE_ERR("Error initializing FT");
+    CERR("Error initializing FT");
     return 1;
   }
   // Create new face
   ftError = FT_New_Face( ftLibrary,sPathToFontFile, 0, &ftFace);
   if ( ftError )
   {
-    GSE_ERR("Error loading face");
+    CERR("Error loading face");
     return 1;
   }
   // Set the character size
@@ -2442,18 +2347,18 @@ GSE_OglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontS
   
   if ( ftError )
   {
-    GSE_ERR("Error setting font size");
+    CERR("Error setting font size");
     return 1;
   }
   
   // create textures
   // glGenTextures( MAX_CHARS, Textures );
   
-  pFontset = new GSE_OglRendererFontset();
+  pFontset = new COglRendererFontset();
   // create display lists 
-  pFontset->DisplayList() = glGenLists(GSE_MAX_FONT_CHARACTERS);
+  pFontset->DisplayList() = glGenLists(CMAX_FONT_CHARACTERS);
   
-  for(unsigned int n=0;n<GSE_MAX_FONT_CHARACTERS;n++)
+  for(unsigned int n=0;n<CMAX_FONT_CHARACTERS;n++)
   {
 
     if ( n == WHITESPACE )
@@ -2506,8 +2411,8 @@ GSE_OglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontS
       }
     }
     // Create and bind texture
-    GSE_OglTexture *pTexture = new GSE_OglTexture();
-    pTexture->SetType(TextureType::GSE_TEX2D);
+    COglTexture *pTexture = new COglTexture();
+    pTexture->SetType(TextureType::CTEX2D);
     glBindTexture  ( GL_TEXTURE_2D, pTexture->GetId());
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
@@ -2568,50 +2473,50 @@ GSE_OglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontS
   return 0;
 }
 /////////////////////////////////////////////////////////////////
-std::vector<GSE_OglRendererFontset *> &
-GSE_OglRenderer::Fontsets()
+std::vector<COglRendererFontset *> &
+COglRenderer::Fontsets()
 {
   return m_vFontsets;
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::HandleStackPush( GSE_RenderStateStackNode *pNode )
+COglRenderer::HandleStackPush( CRenderStateStackNode *pNode )
 {
   
   GLenum eBits = 0;
 
-  if ( pNode->IsStored( GSE_RenderStateStackNode::ACCUM_BUFFER ))	eBits |= GL_ACCUM_BUFFER_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::COLOR_BUFFER ))	eBits |= GL_COLOR_BUFFER_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::CURRENT ))		eBits |= GL_CURRENT_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::DEPTH_BUFFER ))	eBits |= GL_DEPTH_BUFFER_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::ENABLE ))		eBits |= GL_ENABLE_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::EVAL ))		eBits |= GL_EVAL_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::FOG ))		eBits |= GL_FOG_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::HINT ))		eBits |= GL_HINT_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::LIGHTING ))	eBits |= GL_LIGHTING_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::LINE ))		eBits |= GL_LINE_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::LIST ))		eBits |= GL_LIST_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::PIXEL_MODE ))	eBits |= GL_PIXEL_MODE_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::POINT ))		eBits |= GL_POINT_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::POLYGON ))		eBits |= GL_POLYGON_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::POLYGON_STIPPLE )) eBits |= GL_POLYGON_STIPPLE_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::SCISSOR ))		eBits |= GL_SCISSOR_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::STENCIL_BUFFER ))  eBits |= GL_STENCIL_BUFFER_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::TEXTURE ))		eBits |= GL_TEXTURE_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::TRANSFORM ))	eBits |= GL_TRANSFORM_BIT;
-  if ( pNode->IsStored( GSE_RenderStateStackNode::VIEWPORT ))	eBits |= GL_VIEWPORT_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::ACCUM_BUFFER ))	eBits |= GL_ACCUM_BUFFER_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::COLOR_BUFFER ))	eBits |= GL_COLOR_BUFFER_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::CURRENT ))		eBits |= GL_CURRENT_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::DEPTH_BUFFER ))	eBits |= GL_DEPTH_BUFFER_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::ENABLE ))		eBits |= GL_ENABLE_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::EVAL ))		eBits |= GL_EVAL_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::FOG ))		eBits |= GL_FOG_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::HINT ))		eBits |= GL_HINT_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::LIGHTING ))	eBits |= GL_LIGHTING_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::LINE ))		eBits |= GL_LINE_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::LIST ))		eBits |= GL_LIST_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::PIXEL_MODE ))	eBits |= GL_PIXEL_MODE_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::POINT ))		eBits |= GL_POINT_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::POLYGON ))		eBits |= GL_POLYGON_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::POLYGON_STIPPLE )) eBits |= GL_POLYGON_STIPPLE_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::SCISSOR ))		eBits |= GL_SCISSOR_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::STENCIL_BUFFER ))  eBits |= GL_STENCIL_BUFFER_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::TEXTURE ))		eBits |= GL_TEXTURE_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::TRANSFORM ))	eBits |= GL_TRANSFORM_BIT;
+  if ( pNode->IsStored( CRenderStateStackNode::VIEWPORT ))	eBits |= GL_VIEWPORT_BIT;
 
   glPushAttrib( eBits );
     
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::Handle_Draw_UtilQuad( GSE_UtilQuadNode *pNode )
+COglRenderer::Handle_Draw_UtilQuad( CUtilQuadNode *pNode )
 {
 
-  GSE_Vector3 vPos = pNode->GetPosition() -
-  (GSE_Vector3::GetWorldY() * pNode->GetHalfHeight()) -
-  (GSE_Vector3::GetWorldX() * pNode->GetHalfWidth());
+  CVector3 vPos = pNode->GetPosition() -
+  (CVector3::GetWorldY() * pNode->GetHalfHeight()) -
+  (CVector3::GetWorldX() * pNode->GetHalfWidth());
 
 
   glPushMatrix();
@@ -2619,15 +2524,15 @@ GSE_OglRenderer::Handle_Draw_UtilQuad( GSE_UtilQuadNode *pNode )
        glTexCoord2f(pNode->GetTexCoord(0), pNode->GetTexCoord(1)); 
        glVertex3fv(vPos.m_pValues);
 
-       vPos += GSE_Vector3::GetWorldX() * pNode->GetWidth();
+       vPos += CVector3::GetWorldX() * pNode->GetWidth();
        glTexCoord2f(pNode->GetTexCoord(2), pNode->GetTexCoord(3)); 
        glVertex3fv(vPos.m_pValues);
        
-       vPos += GSE_Vector3::GetWorldY() * pNode->GetHeight();
+       vPos += CVector3::GetWorldY() * pNode->GetHeight();
        glTexCoord2f(pNode->GetTexCoord(4), pNode->GetTexCoord(5) ); 
        glVertex3fv(vPos.m_pValues);
 	
-       vPos -= GSE_Vector3::GetWorldX() * pNode->GetWidth();
+       vPos -= CVector3::GetWorldX() * pNode->GetWidth();
        glTexCoord2f(pNode->GetTexCoord(6), pNode->GetTexCoord(7)); 
        glVertex3fv(vPos.m_pValues);
   glEnd();
@@ -2636,7 +2541,7 @@ GSE_OglRenderer::Handle_Draw_UtilQuad( GSE_UtilQuadNode *pNode )
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::Handle_Draw_CullingState( GSE_CullingStateNode *pCullState )
+COglRenderer::Handle_Draw_CullingState( CCullingStateNode *pCullState )
 {
 
 
@@ -2671,7 +2576,7 @@ GSE_OglRenderer::Handle_Draw_CullingState( GSE_CullingStateNode *pCullState )
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_OglRenderer::DrawPolyline( GSE_PolyLineNode * pNode )
+COglRenderer::DrawPolyline( CPolyLineNode * pNode )
 {
   // This would not produce any graphics anyway
   if ( pNode->GetPointCount() < 2 ) return;
@@ -2684,14 +2589,14 @@ GSE_OglRenderer::DrawPolyline( GSE_PolyLineNode * pNode )
   // T_k = Z_k X ( P_k-1 - P_k+1 ) | k in [1,n-1]
   // T_n = - (Z_n X ( P_n-1 - P_n ))
 
-  GSE_PolyLineNode &poly = (*pNode);
+  CPolyLineNode &poly = (*pNode);
   unsigned int nP = 1;
   unsigned int nCount = poly.GetPointCount()-1;
   float    fTexCoordFraction = 1.0f / pNode->GetPointCount();
   float    fTexCoordY = 0.0f;
   float    fWidth = poly.GetWidth() * 0.5f;
 
-  GSE_Vector3 vTangent = ( (poly[1] - poly[0]).Cross( m_pCurrentCamera->GetPosition()-poly[0])).ToUnit() * 0.5f * fWidth;
+  CVector3 vTangent = ( (poly[1] - poly[0]).Cross( m_pCurrentCamera->GetPosition()-poly[0])).ToUnit() * 0.5f * fWidth;
   
   glBegin( GL_QUAD_STRIP );  
   glVertex3fv( (poly[0]+vTangent).m_pValues );  glTexCoord2f( 0.0f, 0.0f );
@@ -2716,7 +2621,7 @@ GSE_OglRenderer::DrawPolyline( GSE_PolyLineNode * pNode )
   glPopAttrib();
 }
 /////////////////////////////////////////////////////////////////
-void DrawOctreeRecursive( GSE_GeometryOctree *pOctree )
+void DrawOctreeRecursive( CGeometryOctree *pOctree )
 {
   if ( pOctree == NULL )
   {
@@ -2724,59 +2629,59 @@ void DrawOctreeRecursive( GSE_GeometryOctree *pOctree )
   }
   glBegin(GL_QUAD_STRIP);
 
-  GSE_Vector3 vVertex = pOctree->GetPosition();
+  CVector3 vVertex = pOctree->GetPosition();
   // 1st
-  vVertex[GSE_Vector3::X] -= pOctree->GetWidth() *0.5f;
-  vVertex[GSE_Vector3::Y] += pOctree->GetHeight()*0.5f;
-  vVertex[GSE_Vector3::Z] += pOctree->GetLength()*0.5f;
+  vVertex[CVector3::X] -= pOctree->GetWidth() *0.5f;
+  vVertex[CVector3::Y] += pOctree->GetHeight()*0.5f;
+  vVertex[CVector3::Z] += pOctree->GetLength()*0.5f;
   glVertex3fv( vVertex.m_pValues );
   // 2nd
-  vVertex[GSE_Vector3::Y] -= pOctree->GetHeight();       
+  vVertex[CVector3::Y] -= pOctree->GetHeight();       
   glVertex3fv( vVertex.m_pValues );
   // 3rd
-  vVertex[GSE_Vector3::Y] += pOctree->GetHeight();
-  vVertex[GSE_Vector3::X] += pOctree->GetWidth();
+  vVertex[CVector3::Y] += pOctree->GetHeight();
+  vVertex[CVector3::X] += pOctree->GetWidth();
   glVertex3fv( vVertex.m_pValues );
   //4th
-  vVertex[GSE_Vector3::Y] -= pOctree->GetHeight();       
+  vVertex[CVector3::Y] -= pOctree->GetHeight();       
   glVertex3fv( vVertex.m_pValues );
   // 5th
-  vVertex[GSE_Vector3::Y] += pOctree->GetHeight();
-  vVertex[GSE_Vector3::Z] -= pOctree->GetLength();
+  vVertex[CVector3::Y] += pOctree->GetHeight();
+  vVertex[CVector3::Z] -= pOctree->GetLength();
   glVertex3fv( vVertex.m_pValues );
   // 6th
-  vVertex[GSE_Vector3::Y] -= pOctree->GetHeight();       
+  vVertex[CVector3::Y] -= pOctree->GetHeight();       
   glVertex3fv( vVertex.m_pValues );
   // 7th
-  vVertex[GSE_Vector3::Y] += pOctree->GetHeight();
-  vVertex[GSE_Vector3::X] -= pOctree->GetWidth();
+  vVertex[CVector3::Y] += pOctree->GetHeight();
+  vVertex[CVector3::X] -= pOctree->GetWidth();
   glVertex3fv( vVertex.m_pValues );
   // 8th
-  vVertex[GSE_Vector3::Y] -= pOctree->GetHeight();
+  vVertex[CVector3::Y] -= pOctree->GetHeight();
   glVertex3fv( vVertex.m_pValues );
   // 9th
-  vVertex[GSE_Vector3::Y] += pOctree->GetHeight();
-  vVertex[GSE_Vector3::Z] += pOctree->GetLength();
+  vVertex[CVector3::Y] += pOctree->GetHeight();
+  vVertex[CVector3::Z] += pOctree->GetLength();
   glVertex3fv( vVertex.m_pValues );
   // 10th
-  vVertex[GSE_Vector3::Y] -= pOctree->GetHeight();
+  vVertex[CVector3::Y] -= pOctree->GetHeight();
   glVertex3fv( vVertex.m_pValues );
 
   glEnd();
   
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::TOP_LEFT_FRONT]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::TOP_LEFT_BACK]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::TOP_RIGHT_FRONT]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::TOP_RIGHT_BACK]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::BOTTOM_LEFT_FRONT]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::BOTTOM_LEFT_BACK]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::BOTTOM_RIGHT_FRONT]));
-  DrawOctreeRecursive(static_cast<GSE_GeometryOctree *>(pOctree->GetNodes()[GSE_Octree::BOTTOM_RIGHT_BACK]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::TOP_LEFT_FRONT]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::TOP_LEFT_BACK]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::TOP_RIGHT_FRONT]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::TOP_RIGHT_BACK]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::BOTTOM_LEFT_FRONT]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::BOTTOM_LEFT_BACK]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::BOTTOM_RIGHT_FRONT]));
+  DrawOctreeRecursive(static_cast<CGeometryOctree *>(pOctree->GetNodes()[COctree::BOTTOM_RIGHT_BACK]));
   
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_OglRenderer::DrawOctree( GSE_GeometryOctree *pOctree )
+COglRenderer::DrawOctree( CGeometryOctree *pOctree )
 {
   glDisable(GL_CULL_FACE);
   glDisable(GL_LIGHTING);
@@ -2790,7 +2695,7 @@ GSE_OglRenderer::DrawOctree( GSE_GeometryOctree *pOctree )
 using namespace TextureFilter;
 /////////////////////////////////////////////////////////////////
 int  
-GSE_OglRenderer::HandleTexture( GSE_TextureNode *pNode )
+COglRenderer::HandleTexture( CTextureNode *pNode )
 {
 
   if ( pNode->GetTexture() == NULL ) 
@@ -2806,7 +2711,7 @@ GSE_OglRenderer::HandleTexture( GSE_TextureNode *pNode )
     return 1;
   }
 
-  GSE_OglTexture *pTexture = static_cast<GSE_OglTexture *>(pNode->GetTexture());
+  COglTexture *pTexture = static_cast<COglTexture *>(pNode->GetTexture());
 
   // check enable bit for texture id
   //if ( ! (pTexture->IsActive() & (1 << pNode->GetTexId())) )
@@ -2885,75 +2790,4 @@ GSE_OglRenderer::HandleTexture( GSE_TextureNode *pNode )
     //  }
   return 0;
 }
-
 /////////////////////////////////////////////////////////////////
-// $Log: GSE_OglRenderer.cpp,v $
-// Revision 1.58  2007/06/04 09:03:32  entity
-// GLee fix
-//
-// Revision 1.57  2007/05/23 15:56:00  entity
-// activetexture scheme
-//
-// Revision 1.56  2007/05/21 12:50:00  entity
-// glew to GLee
-//
-// Revision 1.55  2007/05/18 08:08:09  entity
-// Vector3 constructor check & fixes
-//
-// Revision 1.54  2007/05/16 13:03:36  entity
-// UtilQuad with texture coords
-//
-// Revision 1.53  2007/05/10 11:08:37  entity
-// polygonmodenode added
-//
-// Revision 1.52  2007/05/07 06:34:05  entity
-// crash bug fix (glBindBuffer(...))
-//
-// Revision 1.51  2007/04/09 20:18:11  entity
-// fixed lighting bug on ATI drivers
-//
-// Revision 1.50  2007/04/09 09:40:58  entity
-// AlphaTest added
-//
-// Revision 1.49  2007/04/06 11:53:12  entity
-// fixed nasty VBO bug
-//
-// Revision 1.48  2007/04/04 08:58:19  entity
-// fixed particle positioning and update now only alive count
-//
-// Revision 1.47  2007/04/03 20:24:15  entity
-// blending mode fix
-//
-// Revision 1.46  2007/04/03 12:56:23  entity
-// code cleanups
-//
-// Revision 1.45  2007/04/03 06:57:40  entity
-// comments and GL_LIGHTING is enabled only when lightcluster demands
-//
-// Revision 1.44  2007/04/02 12:55:50  entity
-// added CLAMP_TO_EDGE filters
-//
-// Revision 1.43  2007/04/02 11:08:15  entity
-// Texture disabling on _leave(), fixed
-// culling by transparency
-//
-// Revision 1.42  2007/04/01 21:06:21  entity
-// debug output tweaked
-//
-// Revision 1.41  2007/04/01 15:25:05  entity
-// texture system overhaul, Elements->Indexbuffer rename
-//
-// Revision 1.40  2007/03/31 16:20:43  entity
-// ObjStruct -> GeometryData rename
-//
-// Revision 1.39  2007/03/31 15:56:35  entity
-// ElementList->IndexBuffer rename
-//
-// Revision 1.38  2007/03/30 12:57:29  entity
-// static_cast added
-//
-// Revision 1.37  2007/03/30 09:13:34  entity
-// Added some comments
-//
-/////////////////////////////////////////////////////////////////
-
