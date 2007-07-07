@@ -947,3 +947,69 @@ Phoenix::Math::InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInver
   return MATRIX_INVERTIBLE;
 }
 /////////////////////////////////////////////////////////////////
+CMatrix3x3<float> 
+Phoenix::Math::RemoveRowAndColumn(CMatrix4x4<float> mMatrix, 
+				  unsigned int iRowSkip, 
+				  unsigned int iColSkip)
+{
+
+  CMatrix3x3<float> mResult;
+  unsigned int iResultRow = 1;
+  unsigned int iResultCol = 1;
+
+  for( unsigned int iRow = 1;iRow <= 4;iRow++)
+  {
+    if ( iRow == iRowSkip ){} 
+    else
+    {
+      iResultCol = 1;
+      for( unsigned int iCol = 1;iCol <= 4;iCol++)
+      {
+
+	if ( iCol == iColSkip ){} 
+	else 
+	{
+	  mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
+	  iResultCol++;
+	}
+	    
+      }
+      iResultRow++;
+    }
+  }
+  return mResult;
+}
+/////////////////////////////////////////////////////////////////    
+CMatrix2x2<float> 
+Phoenix::Math::RemoveRowAndColumn(CMatrix3x3<float> mMatrix, 
+					 unsigned int iRowSkip, 
+				  unsigned int iColSkip)
+{
+  
+  CMatrix2x2<float> mResult;
+  unsigned int iResultRow = 1;
+  unsigned int iResultCol = 1;
+
+  for( unsigned int iRow = 1;iRow <= 3;iRow++)
+  {
+    if ( iRow == iRowSkip ){} 
+    else 
+    {
+      iResultCol = 1;
+      for( unsigned int iCol = 1;iCol <= 3;iCol++)
+      {
+
+	if ( iCol == iColSkip ){} 
+	else 
+	{
+	  mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
+	  iResultCol++;
+	}
+	  
+      }
+      iResultRow++;
+    }
+  }
+  return mResult;
+}
+/////////////////////////////////////////////////////////////////
