@@ -150,6 +150,168 @@ namespace Phoenix
 	return m_vPosition[CVector3::Y] < vert.m_vPosition[CVector3::Y];
       }
     };
+    /////////////////////////////////////////////////////////////////
+    /// \brief The generic orientable object. Contains base vectors
+    /// which are rotated using the provided methods.
+    class COrientable
+    {
+    protected:
+
+      /// The vector pointing right.
+      CVector3 m_vRight;
+      /// The vector pointing upwards.
+      CVector3 m_vUpward;
+      /// The vector pointing forward.
+      CVector3 m_vForward;
+      /// The quaternion holding rotations. 
+      CQuaternion m_qRotation;
+      /////////////////////////////////////////////////////////////////
+      /// A boolean flag indicating the change of rotation.
+      char	m_bRotationChanged;
+    public:
+      /////////////////////////////////////////////////////////////////
+      /// The constructor.
+      COrientable();
+      /////////////////////////////////////////////////////////////////
+      /// The destructor.
+      ~COrientable() {   }
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object given degrees over axis (1,0,0)
+      /// \param fDegrees the degrees the object is rotated around axis.
+      void RotateAroundX          ( float    fDegrees );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object given degrees over axis (0,1,0)
+      /// \param fDegrees the degrees the object is rotated around axis.
+      void RotateAroundY          ( float    fDegrees );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object given degrees over axis (0,0,1)
+      /// \param fDegrees the degrees the object is rotated around axis.
+      void RotateAroundZ          ( float    fDegrees );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object over world x,y,z axis by given degrees.
+      /// \param vAngles the vector where angles for x,y,z axis rotations is given.
+      void Rotate           ( CVector3  &vAngles );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object over world x,y,z axis by given degrees.
+      /// \param fAroundWorldXAngle The degrees by which the object is rotated over world x-axis.
+      /// \param fAroundWorldYAngle The degrees by which the object is rotated over world y-axis.
+      /// \param fAroundWorldZAngle The degrees by which the object is rotated over world z-axis.
+      void Rotate           ( float fAroundWorldXAngle, 
+			      float fAroundWorldYAngle, 
+			      float fAroundWorldZAngle );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object given degrees over axis "right".
+      /// \param fDegrees the degrees the object is rotated around axis.
+      void RotateAroundRight   ( float    fDegrees );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object given degrees over axis "up".
+      /// \param fDegrees the degrees the object is rotated around axis.
+      void RotateAroundUp      ( float    fDegrees );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object given degrees over axis "forward".
+      /// \param fDegrees the degrees the object is rotated around axis.
+      void RotateAroundForward ( float    fDegrees );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object over local axes by given degrees.
+      /// \param vAngles the vector where angles for right,up and forward axis rotations is given.
+      void RotateLocal         ( CVector3  &vAngles );
+      /////////////////////////////////////////////////////////////////
+      /// Rotates object over local right,up,forward axis by given degrees.
+      /// \param fAroundRightAngle The degrees by which the object is rotated over local right axis.
+      /// \param fAroundUpAngle The degrees by which the object is rotated over local up axis.
+      /// \param fAroundForwardAngle The degrees by which the object is rotated over local forward axis.
+      void RotateLocal          ( float fAroundRightAngle, 
+				  float fAroundUpAngle, 
+				  float fAroundForwardAngle );
+      /////////////////////////////////////////////////////////////////
+      /// Initializes the object by assigning axis forward and up, the right
+      /// axis is calculated by cross product of the two.
+      /// Rotation is set to unit.
+      void         SetDirectionForwardUp   ( CVector3 vForward, 
+					     CVector3 vUp );
+      /////////////////////////////////////////////////////////////////
+      /// Return the right vector.
+      /// \return CVector3 The vector currently used as local right axis.
+      inline const CVector3 & GetRightVector   () const
+      {
+	return m_vRight;
+      }
+      /////////////////////////////////////////////////////////////////
+      /// Return the up vector.
+      /// \return CVector3 The vector currently used as local up axis.
+      inline const CVector3 & GetUpVector      () const
+      {
+	return m_vUpward;
+      }
+      /////////////////////////////////////////////////////////////////
+      /// Return the forward vector.
+      /// \return CVector3 The vector currently used as local forward axis.
+      inline const CVector3 & GetForwardVector () const
+      {
+	return m_vForward;
+      }
+      /////////////////////////////////////////////////////////////////
+      /// Returns the current rotation.
+      /// \returns CQuaternion the rotation quaternion.
+      inline const CQuaternion	& GetRotationQuaternion() const
+      {
+	return m_qRotation;
+      }
+      /////////////////////////////////////////////////////////////////
+      /// Initializes the orientation by given local axis and rotates them
+      /// by given quaternion.
+      /// \param vForward The vector for forward vector.
+      /// \param vRight The vector for right vector.
+      /// \param vUp The vector for up vector.
+      /// \param qQuat The rotation quaternion which is applied to vectors.
+      void			SetRotationFromInitialState( const CVector3 &vForward,
+							     const CVector3 &vRight,
+							     const CVector3 &vUp,
+							     const CQuaternion & qQuat);
+      /////////////////////////////////////////////////////////////////
+      /// Rotates the orientation by given quaternion.
+      /// \param qQuaternion The rotation which will be applied to the current rotation.
+      void			AppendToRotation( const CQuaternion &qQuaternion);
+      /////////////////////////////////////////////////////////////////
+      /// Returns boolean has the rotation changed.
+      /// \returns boolean true if any rotations have been applied, false otherwise.
+      inline int	       IsRotationChanged() const
+      {
+	return m_bRotationChanged;
+      }
+      /////////////////////////////////////////////////////////////////
+      /// Sets the flag which indicates rotation change.
+      /// \param bFlag boolean flag.
+      inline void SetRotationChanged( int bFlag )
+      {
+	m_bRotationChanged = bFlag;
+      }
+      /////////////////////////////////////////////////////////////////
+      /// Resets the orientation to original state.
+      /// Forward = (0,0,-1)
+      /// Up = ( 0,1,0)
+      /// Right = ( 1,0,0)
+      void			Reset();
+      /////////////////////////////////////////////////////////////////
+      /// Resets the orientation and applies rotation matrix mMatrix to vectors.
+      /// \param mMatrix 4x4 rotation matrix which is applied to original vectors.
+      void			SetRotation( const CMatrix4x4f &mMatrix );
+      /////////////////////////////////////////////////////////////////
+      /// Resets the orientation and applies rotation qRotation to vectors.
+      /// \param qRotation The quaternion which is applied to original vectors.
+      void			SetRotation( const CQuaternion &qRotation );
+    protected:
+      /////////////////////////////////////////////////////////////////
+      /// Rotates all orientation vectors by q.
+      /// \param q The quaternion which is applied to all vectors.
+      inline void RotateAllDirections( const CQuaternion &q )
+      {
+	m_vRight.Rotate(q);
+	m_vForward.Rotate(q);
+	m_vUpward.Rotate(q);
+      }
+    };
+
   }; // namespace Spatial
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
