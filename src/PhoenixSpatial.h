@@ -1,6 +1,16 @@
 /////////////////////////////////////////////////////////////////
 #ifndef __PhoenixSpatial_h__
 #define __PhoenixSpatial_h__
+/////////////////////////////////////////////////////////////////
+#include "PhoenixVector4.h"
+#include "PhoenixVector3.h"
+#include "PhoenixVector2.h"
+#include "PhoenixQuaternion.h"
+#include "PhoenixMatrix4x4.h"
+#include "PhoenixMatrix3x3.h"
+#include "PhoenixMath.h"
+using namespace Phoenix::Math;
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Spatial
@@ -147,7 +157,7 @@ namespace Phoenix
       /// The less than comparison operator.
       bool operator< (CVertex vert)
       {
-	return m_vPosition[CVector3::Y] < vert.m_vPosition[CVector3::Y];
+	return m_vPosition[1] < vert.m_vPosition[1];
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -158,11 +168,11 @@ namespace Phoenix
     protected:
 
       /// The vector pointing right.
-      CVector3 m_vRight;
+      CVector3<float> m_vRight;
       /// The vector pointing upwards.
-      CVector3 m_vUpward;
+      CVector3<float> m_vUpward;
       /// The vector pointing forward.
-      CVector3 m_vForward;
+      CVector3<float> m_vForward;
       /// The quaternion holding rotations. 
       CQuaternion m_qRotation;
       /////////////////////////////////////////////////////////////////
@@ -190,7 +200,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Rotates object over world x,y,z axis by given degrees.
       /// \param vAngles the vector where angles for x,y,z axis rotations is given.
-      void Rotate           ( CVector3  &vAngles );
+      void Rotate           ( CVector3<float>  &vAngles );
       /////////////////////////////////////////////////////////////////
       /// Rotates object over world x,y,z axis by given degrees.
       /// \param fAroundWorldXAngle The degrees by which the object is rotated over world x-axis.
@@ -214,7 +224,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Rotates object over local axes by given degrees.
       /// \param vAngles the vector where angles for right,up and forward axis rotations is given.
-      void RotateLocal         ( CVector3  &vAngles );
+      void RotateLocal         ( CVector3<float>  &vAngles );
       /////////////////////////////////////////////////////////////////
       /// Rotates object over local right,up,forward axis by given degrees.
       /// \param fAroundRightAngle The degrees by which the object is rotated over local right axis.
@@ -227,26 +237,26 @@ namespace Phoenix
       /// Initializes the object by assigning axis forward and up, the right
       /// axis is calculated by cross product of the two.
       /// Rotation is set to unit.
-      void         SetDirectionForwardUp   ( CVector3 vForward, 
-					     CVector3 vUp );
+      void         SetDirectionForwardUp   ( CVector3<float> vForward, 
+					     CVector3<float> vUp );
       /////////////////////////////////////////////////////////////////
       /// Return the right vector.
-      /// \return CVector3 The vector currently used as local right axis.
-      inline const CVector3 & GetRightVector   () const
+      /// \return CVector3<float> The vector currently used as local right axis.
+      inline const CVector3<float> & GetRightVector   () const
       {
 	return m_vRight;
       }
       /////////////////////////////////////////////////////////////////
       /// Return the up vector.
-      /// \return CVector3 The vector currently used as local up axis.
-      inline const CVector3 & GetUpVector      () const
+      /// \return CVector3<float> The vector currently used as local up axis.
+      inline const CVector3<float> & GetUpVector      () const
       {
 	return m_vUpward;
       }
       /////////////////////////////////////////////////////////////////
       /// Return the forward vector.
-      /// \return CVector3 The vector currently used as local forward axis.
-      inline const CVector3 & GetForwardVector () const
+      /// \return CVector3<float> The vector currently used as local forward axis.
+      inline const CVector3<float> & GetForwardVector () const
       {
 	return m_vForward;
       }
@@ -264,9 +274,9 @@ namespace Phoenix
       /// \param vRight The vector for right vector.
       /// \param vUp The vector for up vector.
       /// \param qQuat The rotation quaternion which is applied to vectors.
-      void			SetRotationFromInitialState( const CVector3 &vForward,
-							     const CVector3 &vRight,
-							     const CVector3 &vUp,
+      void			SetRotationFromInitialState( const CVector3<float> &vForward,
+							     const CVector3<float> &vRight,
+							     const CVector3<float> &vUp,
 							     const CQuaternion & qQuat);
       /////////////////////////////////////////////////////////////////
       /// Rotates the orientation by given quaternion.
@@ -295,7 +305,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Resets the orientation and applies rotation matrix mMatrix to vectors.
       /// \param mMatrix 4x4 rotation matrix which is applied to original vectors.
-      void			SetRotation( const CMatrix4x4f &mMatrix );
+      void			SetRotation( const CMatrix4x4<float> &mMatrix );
       /////////////////////////////////////////////////////////////////
       /// Resets the orientation and applies rotation qRotation to vectors.
       /// \param qRotation The quaternion which is applied to original vectors.
@@ -306,9 +316,9 @@ namespace Phoenix
       /// \param q The quaternion which is applied to all vectors.
       inline void RotateAllDirections( const CQuaternion &q )
       {
-	m_vRight.Rotate(q);
-	m_vForward.Rotate(q);
-	m_vUpward.Rotate(q);
+	Phoenix::Math::RotateVector(q, m_vRight);
+	Phoenix::Math::RotateVector(q, m_vForward);
+	Phoenix::Math::RotateVector(q, m_vUpward);
       }
     };
 
