@@ -218,20 +218,20 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitVertexColor( CVector4<unsigned char> &vColor )
+Phoenix::Graphics::COglRenderer::CommitColor( CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::DisableBuffer( VERTEX_BUFFER_TYPE tType )
+Phoenix::Graphics::COglRenderer::DisableClientArray( CLIENT_ARRAY_TYPE tType )
 {
   switch ( tType)
   {
-  case VB_VERTEX_BUFFER:
+  case CA_VERTEX_ARRAY:
     glDisableClientState( GL_VERTEX_ARRAY );
     break;
-  case VB_COLOR_BUFFER:
+  case CA_COLOR_ARRAY:
     glDisableClientState( GL_COLOR_ARRAY );
     break;
   }

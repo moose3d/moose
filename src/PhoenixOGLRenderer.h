@@ -12,10 +12,10 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    enum VERTEX_BUFFER_TYPE 
+    enum CLIENT_ARRAY_TYPE 
     {
-      VB_VERTEX_BUFFER = 0,
-      VB_COLOR_BUFFER = 1
+      CA_VERTEX_ARRAY = 0,
+      CA_COLOR_ARRAY = 1
     };
 
     /////////////////////////////////////////////////////////////////
@@ -121,13 +121,13 @@ namespace Phoenix
       /// \param pIndexBuffer which indices are used and what primitives will be created.
       void CommitPrimitive( CIndexArray *pIndexBuffer );
       ////////////////////
-      /// Sets vertex color for drawing.
+      /// Sets color for drawing.
       /// \param vColor RGBA Color vector.
-      void CommitVertexColor( CVector4<unsigned char> &vColor );
+      void CommitColor( CVector4<unsigned char> &vColor );
       ////////////////////
       /// Disable vertex, color and normal arrays.
-      /// \param tType VERTEX_BUFFER_TYPE to be disabled.
-      void DisableBuffer( VERTEX_BUFFER_TYPE tType );
+      /// \param tType CLIENT_ARRAY_TYPE to be disabled.
+      void DisableClientArray( CLIENT_ARRAY_TYPE tType );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
