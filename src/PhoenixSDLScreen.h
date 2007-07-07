@@ -1,11 +1,11 @@
 /////////////////////////////////////////////////////////////////
-#ifndef __CSDLScreen_h__
-#define __CSDLScreen_h__
+#ifndef __PhoenixSDLScreen_h__
+#define __PhoenixSDLScreen_h__
 /////////////////////////////////////////////////////////////////
-#include <SDL.h> 
 #include "PhoenixCore.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
+
 namespace Phoenix
 {
   namespace Window
@@ -36,18 +36,7 @@ namespace Phoenix
       int m_iVideoModeFlags;
       ////////////////////
       /// The default constructor, sets default values for members.
-      CSDLScreenParams()
-      {
-	m_iRedSize = 8;
-	m_iGreenSize = 8;
-	m_iBlueSize = 8;
-	m_bDoubleBuffer = 0;
-	m_iDepthBufferSize = 16;
-	m_iScreenDepth = 24;
-	m_iWidth = 640;
-	m_iHeight = 480;
-	m_iVideoModeFlags = SDL_OPENGL;
-      }
+      CSDLScreenParams();
       ////////////////////
       /// Prints out screen parameters to output stream.
       /// \param stream output stream
@@ -57,10 +46,10 @@ namespace Phoenix
 				       const CSDLScreenParams & oglSP);
     };
     /////////////////////////////////////////////////////////////////
-    class CSDLScreen 
+    class CSDLScreen : public CSingleton<CSDLScreen>
     {
+      friend class CSingleton<CSDLScreen>;
     private:
-
       ////////////////////
       /// The constructor 
       CSDLScreen();
@@ -68,7 +57,6 @@ namespace Phoenix
       /// The deconstructor
       ~CSDLScreen();
     public:  
-      /// Screen parameters.
       static CSDLScreenParams m_SDLScreenParams;
     };
     /////////////////////////////////////////////////////////////////
