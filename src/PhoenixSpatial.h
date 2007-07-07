@@ -200,7 +200,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Rotates object over world x,y,z axis by given degrees.
       /// \param vAngles the vector where angles for x,y,z axis rotations is given.
-      void Rotate           ( CVector3<float>  &vAngles );
+      void Rotate           ( const CVector3<float>  &vAngles );
       /////////////////////////////////////////////////////////////////
       /// Rotates object over world x,y,z axis by given degrees.
       /// \param fAroundWorldXAngle The degrees by which the object is rotated over world x-axis.
