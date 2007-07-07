@@ -1,10 +1,5 @@
-/////////////////////////////////////////////////////////////////
-// file : CGeometryData.h
-// desc : Header file for the GeometryData and GeometryDataMgr classes
-// author : AG/eNtity
-/////////////////////////////////////////////////////////////////
-#ifndef __GeometryData_h__
-#define __GeometryData_h__
+#ifndef __PhoenixVertexBuffer_h__
+#define __PhoenixVertexBuffer_h__
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -57,7 +52,6 @@ namespace Phoenix
       {
 	delete m_pData;
       }
-      
     };
   };  // end namespace Graphics
 }// end namespace Phoenix
