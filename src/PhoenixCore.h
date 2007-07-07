@@ -5,6 +5,11 @@
 #include <sstream>
 #include <iostream>
 #include <ostream>
+#include <vector>
+#include <map>
+#include <list>
+/////////////////////////////////////////////////////////////////
+using std::string;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -31,7 +36,7 @@ namespace Phoenix
 	m_nId = m_nObjectCounter;
 	m_nObjectCounter++;
 	std::stringstream str;
-	str << "PhoenixObject" << GetId();
+	str << "PhoenixObject" << GetID();
 	SetName(str.str());
       }
       ////////////////////
@@ -56,7 +61,7 @@ namespace Phoenix
       }
     };
     // Initialize object count to zero.
-    unsigned int CObject::m_nObjectCounter = 0;
+    unsigned int CPhoenixObject::m_nObjectCounter = 0;
     
     /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
@@ -90,7 +95,7 @@ namespace Phoenix
       void SetCurrentTimeMS( unsigned int nTimeMS )
       {
 	if ( nTimeMS < m_nStartTimeMS ) {
-	  SetStartTime( nTimeMS );
+	  SetStartTimeMS( nTimeMS );
 	}
 	else			  m_nPassedTimeMS = nTimeMS - m_nStartTimeMS;
       }
@@ -340,7 +345,6 @@ namespace Phoenix
       /// Destructor.
       ~CMapper()
       {
-	CDEBUG( "Mapper:: delete\n");
 	Clear();
       }
       ////////////////////
