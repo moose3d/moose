@@ -1,43 +1,14 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-
-#ifndef __GSE_Screen_h__
-#define __GSE_Screen_h__
-#include "GSE_Logger.h"
-// =============== WIN32 includes ================
-#ifdef WIN32   
-#include <SDL.h>
-#else
-// =============== LINUX includes ================
-#include <SDL/SDL.h> 
-#endif
-// =============== Generic includes ================
-
+/////////////////////////////////////////////////////////////////
+#ifndef __CScreen_h__
+#define __CScreen_h__
+#include <SDL.h> 
 
 //
 // The Screen Singleton. Each application can have only one screen where
 // drawing occurs. Hence, the Singleton nature.
 //
 
-class GSE_OglScreenParams 
+class COglScreenParams 
 {
  public:
   // The number of red bits  
@@ -60,7 +31,7 @@ class GSE_OglScreenParams
   int m_iVideoModeFlags;
 
   // The default constructor, sets default values for members.
-  GSE_OglScreenParams()
+  COglScreenParams()
   {
     m_iRedSize = 8;
     m_iGreenSize = 8;
@@ -74,31 +45,31 @@ class GSE_OglScreenParams
   }
 
   friend std::ostream& operator<<( std::ostream &stream, 
-				   GSE_OglScreenParams oglSP);
+				   const COglScreenParams & oglSP);
 };
-
-
-
-class GSE_Screen {
+/////////////////////////////////////////////////////////////////
+class CScreen 
+{
 
  private:
   // ------------------------------------------------
-  static GSE_Screen *m_pScreen;
+  static CScreen *m_pScreen;
   // ------------------------------------------------
 
   // The constructor 
-  GSE_Screen(){
+  CScreen()
+  {
 
   }
   
  public:  
   // ------------------------------------------------
-  GSE_OglScreenParams m_OglScreenParams;
+  COglScreenParams m_OglScreenParams;
   // ------------------------------------------------
-  static GSE_Screen *GetScreen(GSE_OglScreenParams &rOglScreenParams);
-  static GSE_Screen *GetScreen();
+  static CScreen *GetScreen(COglScreenParams &rOglScreenParams);
+  static CScreen *GetScreen();
   // The deconstructor
-  ~GSE_Screen();
+  ~CScreen();
 
 
   
