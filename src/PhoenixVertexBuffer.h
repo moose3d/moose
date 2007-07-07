@@ -14,11 +14,11 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    typedef enum 
+    enum ELEMENT_TYPE
     {
       ELEMENT_TYPE_NULL = 0,
       ELEMENT_TYPE_VERTEX_3F = 1
-    } ElementType;
+    };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
     class CVertexBuffer
@@ -28,15 +28,18 @@ namespace Phoenix
       unsigned int		m_nSize;
       /// element data
       void *			m_pData;
+      /// Element type.
+      ELEMENT_TYPE		m_nType;
     public:
       ////////////////////
       /// default constructor.
       /// \param nType Element type
       /// \param nNumElements how many elements this vertexbuffer have.
-      CVertexBuffer( ElementType nType, 
+      CVertexBuffer( ELEMENT_TYPE nType, 
 		     unsigned int nNumElements) 
       {  
-	switch ( nType )
+	m_nType = nType;
+	switch ( GetType() )
 	{
 	case ELEMENT_TYPE_VERTEX_3F:
 	  m_pData = new float[3*nNumElements];
@@ -47,10 +50,33 @@ namespace Phoenix
 	}
       }
       ////////////////////
-      /// Frees the memory
+      /// Frees reserverd memory.
       ~CVertexBuffer()
       {
-	delete m_pData;
+	switch ( GetType() )
+	{
+	case ELEMENT_TYPE_VERTEX_3F:
+	  delete reinterpret_cast<float *>(m_pData);
+	  break;
+	case ELEMENT_TYPE_NULL:
+	  m_pData = NULL;
+	  break;
+	}
+      }
+      ////////////////////
+      /// Returns element type.
+      /// \returns ELEMENT_TYPE
+      inline ELEMENT_TYPE GetType() const
+      {
+	return m_nType;
+      }
+      ////////////////////
+      /// Returns float pointer.
+      /// \returns pointer to float array
+      template<typename TYPE> 
+      inline TYPE * GetPointer()
+      {
+	return reinterpret_cast<TYPE *>(m_pData);
       }
     };
   };  // end namespace Graphics
