@@ -1,63 +1,3 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-
-// -----------------------------------------------------------------
-// $Id: GSE_structures.cpp,v 1.11 2007/05/14 09:46:57 entity Exp $
-// desc : Implementation for various stuff in GSE_structures.h
-// author : AG/eNtity
-// history :
-//
-//	$Log: GSE_structures.cpp,v $
-//	Revision 1.11  2007/05/14 09:46:57  entity
-//	more reasonable operations for Vector2
-//
-//	Revision 1.10  2007/03/31 16:21:25  entity
-//	ObjStruct -> GeometryData rename
-//
-//	Revision 1.9  2007/03/30 12:56:32  entity
-//	SetElements->SetVertexCount rename
-//
-//	Revision 1.8  2007/03/26 18:25:11  entity
-//	Rotate() modified and GetRotated() added
-//
-//	Revision 1.7  2007/03/11 12:48:18  entity
-//	const keyword meddling and unneeded vars removed
-//
-//	Revision 1.6  2007/03/07 13:34:02  entity
-//	Vector3 with inlined functions
-//
-//	Revision 1.5  2007/01/08 12:24:00  entity
-//	added GPL licence
-//
-//	Revision 1.4  2006/10/16 07:10:48  entity
-//	Created new GSE_Vector template and corresponding changes
-//
-//	Revision 1.3  2006/10/13 13:57:05  entity
-//	fixed wrong macro name
-//
-//	Revision 1.2  2006/10/13 13:54:41  entity
-//	Added file header, made code cleanups and added comments
-//
-//
-// -----------------------------------------------------------------
 #include "GSE_structures.h"
 #include "GSE_math.h"
 #include "GSE_Logger.h"
@@ -69,11 +9,6 @@
 // -----------------------------------------------------------------
 using namespace Math;
 using namespace Core;
-// --------------------------------------------------------------------
-// Initialize static members of vector3 class
-GSE_Vector3 GSE_Vector3::m_vWorldX = GSE_Vector3(1,0,0);
-GSE_Vector3 GSE_Vector3::m_vWorldY = GSE_Vector3(0,1,0);
-GSE_Vector3 GSE_Vector3::m_vWorldZ = GSE_Vector3(0,0,1);
 // --------------------------------------------------------------------
 /////////////////////////////////////////////////////////////////
 // The GSE_Vector3 implementation
