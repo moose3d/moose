@@ -7,33 +7,34 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    ////////////////////
+    enum PRIMITIVE_TYPE
+    {
+      PRIMITIVE_NULL = 0,
+      PRIMITIVE_POINT_LIST = 1,
+      PRIMITIVE_TRI_LIST,
+      PRIMITIVE_TRI_STRIP,
+      PRIMITIVE_LINE_LIST,
+      PRIMITIVE_LINE_STRIP,
+      PRIMITIVE_QUAD_LIST
+    };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
     class CIndexBuffer
     {
     public:
-      ////////////////////
-      typedef enum 
-      {
-	PRIMITIVE_NULL = 0,
-	PRIMITIVE_POINT_LIST = 1,
-	PRIMITIVE_TRI_LIST,
-	PRIMITIVE_TRI_STRIP,
-	PRIMITIVE_LINE_LIST,
-	PRIMITIVE_LINE_STRIP,
-	PRIMITIVE_QUAD_LIST
-      } PrimitiveType;
+      
     protected:
 
       unsigned int m_nNumIndices;
-      PrimitiveType m_nType;
+      PRIMITIVE_TYPE m_nType;
       void *	   m_pIndexData;
     public:
 
 
       /////////////////////////////////////////////////////////////////
       /// The constructor.
-      CIndexBuffer( PrimitiveType nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), m_nType(nType)
+      CIndexBuffer( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), m_nType(nType)
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
@@ -43,7 +44,14 @@ namespace Phoenix
       /// The destructor.
       ~CIndexBuffer()
       {
-	delete m_pIndexData;
+	if ( IsShortIndices())
+	{
+	  delete reinterpret_cast<unsigned short int *>(m_pIndexData);
+	}
+	else 
+	{
+	  delete reinterpret_cast<unsigned int *>(m_pIndexData);
+	}
       }
       ////////////////////
       /// Returns number of indices.
@@ -62,7 +70,7 @@ namespace Phoenix
       ////////////////////
       /// Returns pointer to unsigned short int index data .
       /// \returns Pointer to m_pIndexData
-      inline unsigned int *GetShortIndices()
+      inline unsigned short int *GetShortIndices()
       {
 	return (unsigned short int *)m_pIndexData;
       }
@@ -73,8 +81,14 @@ namespace Phoenix
       {
 	return (GetNumIndices() <= 65536);
       }
-      
-    }; 
+      //////////////////// 
+      /// Returns primitive type.
+      /// \returns PRIMITIVE_TYPE
+      inline int GetPrimitiveType() const
+      {
+	return m_nType;
+      }
+    };
     /////////////////////////////////////////////////////////////////
   }; //namespace Graphics
 }; //namespace Phoenix
