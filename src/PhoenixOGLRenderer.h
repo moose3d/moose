@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
-#include "PhoenixVertexArray.h"
+#include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ namespace Phoenix
       int HasFragmentShader() const;
       /// Is vertex_array supported.
       /// \return 1 if supported, 0 otherwise.
-      int HasVertexArray() const;
+      int HasVertexDescriptor() const;
       /// Is vertex_buffer_object supported.
       /// \return 1 if supported, 0 otherwise.
       int HasVertexBufferObject() const;
@@ -115,7 +115,7 @@ namespace Phoenix
       ////////////////////
       /// Commits vertex descriptor.
       /// \param pBuffer buffer to be applied.
-      void CommitVertexArray( CVertexArray *pBuffer );
+      void CommitVertexDescriptor( CVertexDescriptor *pBuffer );
       ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.

@@ -169,7 +169,7 @@ namespace Geometry
     void CalculateCorners();
     void CalculatePlanes();
 
-    VertexArray GetCorner( BoxCorner_t corner );
+    VertexDescriptor GetCorner( BoxCorner_t corner );
     
     friend std::ostream& operator<<( std::ostream &stream, GSE_OrientedBox box )
     {
@@ -464,28 +464,28 @@ namespace Geometry
     BEHIND,
   } GSE_PlaneIntersection;
   // Calculates the oriented bounding box for vertices in vertexarray
-  GSE_OrientedBox CalculateOrientedBoundingBox( VertexArray pVertices, 
+  GSE_OrientedBox CalculateOrientedBoundingBox( VertexDescriptor pVertices, 
 						unsigned int nNumVertices );
   
   // Calculates the axis-aligned bounding box for vertices in vertexarray
-  GSE_AxisAlignedBox CalculateAlignedBox( VertexArray pVertices, int nNumVertices ) ;
+  GSE_AxisAlignedBox CalculateAlignedBox( VertexDescriptor pVertices, int nNumVertices ) ;
   
-  // Calculates the bounding sphere for vertices in VertexArray using fast
+  // Calculates the bounding sphere for vertices in VertexDescriptor using fast
   // but not so accurate algorithm.
-  GSE_Sphere CalculateBoundingSphere( VertexArray pVertices, 
+  GSE_Sphere CalculateBoundingSphere( VertexDescriptor pVertices, 
 				      unsigned int nNumVertices );
   
-  // Calculates the bounding sphere for vertices in VertexArray using slightly 
+  // Calculates the bounding sphere for vertices in VertexDescriptor using slightly 
   // slower, but more accurate algorithm
-  GSE_Sphere CalculateBoundingSphereTight( VertexArray pVertices, 
+  GSE_Sphere CalculateBoundingSphereTight( VertexDescriptor pVertices, 
 					   unsigned int nNumVertices );
-  // Calculates the bounding sphere for vertices in VertexArray by given set of indices
+  // Calculates the bounding sphere for vertices in VertexDescriptor by given set of indices
   // using slightly slower, but more accurate algorithm
-  GSE_Sphere CalculateBoundingSphereTight( VertexArray pVertices, 
+  GSE_Sphere CalculateBoundingSphereTight( VertexDescriptor pVertices, 
 					   const GSE_IndexBuffer &elementList );
   // Calculates the oriented bounding box for vertices in vertexarray using 
   // the given set of indices.
-  GSE_OrientedBox CalculateOrientedBoundingBox( VertexArray pVertices,
+  GSE_OrientedBox CalculateOrientedBoundingBox( VertexDescriptor pVertices,
 					       const GSE_IndexBuffer &elementList );
   // The intersection test functions
   char SphereIntersectsCone ( const GSE_Sphere &sphere, const GSE_Cone &cone );
@@ -502,12 +502,12 @@ namespace Geometry
   // The principal method for determining the sphere-polygon intersection 
   //
   char  SphereIntersectsPolygon( GSE_Sphere &sphere,   // The sphere which is tested
-				 VertexArray pVertices,  // The vertices of the polygon which sphere is tested on
+				 VertexDescriptor pVertices,  // The vertices of the polygon which sphere is tested on
 				 unsigned int nNumVertices, // The number of vertices in the polygon
 				 GSE_Vector3 &vOffsetMovement);  // The offset vector of collision
 
   char  SphereIntersectsPolygonEdges( GSE_Sphere &sphere, 
-				      VertexArray pVertices, 
+				      VertexDescriptor pVertices, 
 				      unsigned int nNumVertices);  
   
   float AngleBetweenVectors( GSE_Vector3 &vVect1, GSE_Vector3 &vVect2);
@@ -559,7 +559,7 @@ namespace Geometry
 			float *pfValue);
 
   char InsidePolygon( GSE_Vector3 &vPoint, 
-		      VertexArray pVertices, 
+		      VertexDescriptor pVertices, 
 		      unsigned int nNumVertices );
   // Returns the floating-point distance from point to a plane
   float PointDistanceFromPlane( GSE_Vector3 &vPoint, GSE_Plane plane );

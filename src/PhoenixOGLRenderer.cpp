@@ -60,7 +60,7 @@ Phoenix::Graphics::COglRendererFeatures::HasFragmentShader() const
 }
 /////////////////////////////////////////////////////////////////
 int 
-Phoenix::Graphics::COglRendererFeatures::HasVertexArray() const
+Phoenix::Graphics::COglRendererFeatures::HasVertexDescriptor() const
 {
   return m_bEXT_vertex_array;
 }
@@ -109,7 +109,7 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   stream << "GL_ARB_vertex_program "  << ( obj.HasVertexProgram() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_vertex_shader "   << ( obj.HasVertexShader() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_fragment_shader " << ( obj.HasFragmentShader() ? "YES" : "NO" ) << endl;
-  stream << "GL_EXT_vertex_array "    << ( obj.HasVertexArray() ? "YES" : "NO" ) << endl;
+  stream << "GL_EXT_vertex_array "    << ( obj.HasVertexDescriptor() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_vertex_buffer_object " << ( obj.HasVertexBufferObject() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_multitexture " << ( obj.HasMultitexture() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_shader_objects " << ( obj.HasShaderObjects() ? "YES" : "NO" ) << endl;
@@ -154,7 +154,7 @@ Phoenix::Graphics::COglRenderer::Finalize()
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitVertexBuffer( CVertexArray *pBuffer )
+Phoenix::Graphics::COglRenderer::CommitVertexBuffer( CVertexDescriptor *pBuffer )
 {
   switch( pBuffer->GetType() )
   {

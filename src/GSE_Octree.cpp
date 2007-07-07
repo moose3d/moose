@@ -118,7 +118,7 @@ GSE_Octree::GetNodes(){
 } 
 /////////////////////////////////////////////////////////////////
 GSE_GeometryOctree *
-GSE_GeometryOctree::Split( VertexArray pVertices, 
+GSE_GeometryOctree::Split( VertexDescriptor pVertices, 
 			   std::list<unsigned int> & lstIndices,
 			   unsigned int nMaxTreeDepth, 
 			   unsigned int nMinFacesInNode,

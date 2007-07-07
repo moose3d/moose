@@ -167,7 +167,7 @@ GSE_OrientedBox::GetCorners() const
   return m_aCorners;
 }
 /////////////////////////////////////////////////////////////////
-VertexArray 
+VertexDescriptor 
 GSE_OrientedBox::GetCorner( BoxCorner_t nBoxCorner )
 {
   return &(m_aCorners[nBoxCorner*3]);
@@ -190,7 +190,7 @@ GSE_OrientedBox::GetCorner( BoxCorner_t nBoxCorner )
 }
 
 GSE_OrientedBox 
-Geometry::CalculateOrientedBoundingBox( VertexArray pVertices, unsigned int nNumVertices )
+Geometry::CalculateOrientedBoundingBox( VertexDescriptor pVertices, unsigned int nNumVertices )
 {
   /////////////////////////////////////////////////////////////////  
   float fMaxR = 0.0f;
@@ -340,7 +340,7 @@ Geometry::CalculateOrientedBoundingBox( VertexArray pVertices, unsigned int nNum
 }
 /////////////////////////////////////////////////////////////////
 GSE_OrientedBox 
-Geometry::CalculateOrientedBoundingBox( VertexArray pVertices, const GSE_IndexBuffer &indexBuffer )
+Geometry::CalculateOrientedBoundingBox( VertexDescriptor pVertices, const GSE_IndexBuffer &indexBuffer )
 {
   /////////////////////////////////////////////////////////////////
   // Variables used
@@ -500,7 +500,7 @@ Geometry::CalculateOrientedBoundingBox( VertexArray pVertices, const GSE_IndexBu
 }
 /////////////////////////////////////////////////////////////////
 Geometry::GSE_Sphere
-Geometry::CalculateBoundingSphere( VertexArray pVertices, unsigned int nNumVertices)
+Geometry::CalculateBoundingSphere( VertexDescriptor pVertices, unsigned int nNumVertices)
 {
   // Minimum and maximum values for each coordinates.
   GSE_Vector3 vMaxValues;
@@ -556,7 +556,7 @@ Geometry::CalculateBoundingSphere( VertexArray pVertices, unsigned int nNumVerti
 
 /////////////////////////////////////////////////////////////////
 Geometry::GSE_Sphere 
-Geometry::CalculateBoundingSphereTight( VertexArray pVertices, unsigned int nNumVertices )
+Geometry::CalculateBoundingSphereTight( VertexDescriptor pVertices, unsigned int nNumVertices )
 {
   // The returned sphere
   GSE_Sphere sphere;
@@ -655,7 +655,7 @@ Geometry::CalculateBoundingSphereTight( VertexArray pVertices, unsigned int nNum
 }
 /////////////////////////////////////////////////////////////////
 Geometry::GSE_Sphere 
-Geometry::CalculateBoundingSphereTight( VertexArray pVertices, const GSE_IndexBuffer &indexBuffer )
+Geometry::CalculateBoundingSphereTight( VertexDescriptor pVertices, const GSE_IndexBuffer &indexBuffer )
 {
   // The returned sphere
   GSE_Sphere sphere;
@@ -754,7 +754,7 @@ Geometry::CalculateBoundingSphereTight( VertexArray pVertices, const GSE_IndexBu
 }
 /////////////////////////////////////////////////////////////////
 GSE_AxisAlignedBox 
-Geometry::CalculateAlignedBox( VertexArray pVertices, int nNumVertices ) 
+Geometry::CalculateAlignedBox( VertexDescriptor pVertices, int nNumVertices ) 
 {
   if ( nNumVertices > 1)
   {
@@ -1039,7 +1039,7 @@ Geometry::SphereIntersectsCone( const GSE_Sphere &sphere, const GSE_Cone &cone )
 /////////////////////////////////////////////////////////////////
 char 
 Geometry::SphereIntersectsPolygon( GSE_Sphere &sphere, 
-				   VertexArray pVertices,
+				   VertexDescriptor pVertices,
 				   unsigned int nNumVertices,
 				   GSE_Vector3 &vOffsetMovement )
 {
@@ -1095,7 +1095,7 @@ Geometry::SphereIntersectsPolygon( GSE_Sphere &sphere,
 /////////////////////////////////////////////////////////////////
 char 
 Geometry::InsidePolygon( GSE_Vector3 &vPoint, 
-			 VertexArray pVertices,
+			 VertexDescriptor pVertices,
 			 unsigned int nNumVertices)
 {
   char bRetval = 0;
@@ -1142,7 +1142,7 @@ Geometry::AngleBetweenVectors( GSE_Vector3 &vVect1, GSE_Vector3 &vVect2)
 /////////////////////////////////////////////////////////////////
 char      
 Geometry::SphereIntersectsPolygonEdges( GSE_Sphere &sphere, 
-					VertexArray pVertices,
+					VertexDescriptor pVertices,
 					unsigned int nNumVertices)
 {
 

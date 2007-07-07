@@ -126,11 +126,11 @@ namespace Phoenix
 					 unsigned int iRowSkip, 
 					 unsigned int iColSkip);
     
-    // Returns the covariance matrix of the vertices in the pVertexArray
-    //CMatrix3x3<float> CovarianceMatrix( float *pVertexArray, unsigned int nNumVertices );
+    // Returns the covariance matrix of the vertices in the pVertexDescriptor
+    //CMatrix3x3<float> CovarianceMatrix( float *pVertexDescriptor, unsigned int nNumVertices );
 
-    // Returns the covariance matrix of the vertices in the pVertexArray using the given indices 
-    //CMatrix3x3<float> CovarianceMatrix( float *pVertexArray, const CIndexArray &indexBuffer );
+    // Returns the covariance matrix of the vertices in the pVertexDescriptor using the given indices 
+    //CMatrix3x3<float> CovarianceMatrix( float *pVertexDescriptor, const CIndexArray &indexBuffer );
 
     // Calculates the eigenvectors and eigenvalues for matrix mMatrix 
     // using the Jacobi method. For matrices with dimensions less than 10,

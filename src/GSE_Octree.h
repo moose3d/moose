@@ -131,7 +131,7 @@ protected:
   /// \param vCenter the center point of the current node.
   /// \param rRenderGraph The RenderGraph where geometry belongs to.
   /// \returns A pointer to the ready octree node (may have children).
-  static GSE_GeometryOctree *Split( VertexArray pVertices, 
+  static GSE_GeometryOctree *Split( VertexDescriptor pVertices, 
 				    std::list<unsigned int> & lstIndices,
 				    unsigned int nMaxTreeDepth, 
 				    unsigned int nMinFacesInNode,

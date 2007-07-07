@@ -306,7 +306,7 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 }
 /////////////////////////////////////////////////////////////////
 // CMatrix3x3<float>
-// CovarianceMatrix( float *pVertexArray, unsigned int nNumVertices)
+// CovarianceMatrix( float *pVertexDescriptor, unsigned int nNumVertices)
 // {
   
 //   CMatrix3x3<float> mCovariance;
@@ -314,9 +314,9 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 //   // Calculate average position
 //   for(unsigned int iVertComponent = 0;iVertComponent < nNumVertices*3; iVertComponent+=3)
 //   {
-//     vAveragePos[0] += pVertexArray[iVertComponent];
-//     vAveragePos[1] += pVertexArray[iVertComponent+1];
-//     vAveragePos[2] += pVertexArray[iVertComponent+2];
+//     vAveragePos[0] += pVertexDescriptor[iVertComponent];
+//     vAveragePos[1] += pVertexDescriptor[iVertComponent+1];
+//     vAveragePos[2] += pVertexDescriptor[iVertComponent+2];
 //   }
   
 //   vAveragePos /= nNumVertices;
@@ -324,9 +324,9 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 //   // Calculate Covariance matrix
 //   for(unsigned int iVertComponent = 0;iVertComponent < nNumVertices*3; iVertComponent+=3)
 //   {
-//     float fTmpX = pVertexArray[iVertComponent]   - vAveragePos[0];
-//     float fTmpY = pVertexArray[iVertComponent+1] - vAveragePos[1];
-//     float fTmpZ = pVertexArray[iVertComponent+2] - vAveragePos[2];
+//     float fTmpX = pVertexDescriptor[iVertComponent]   - vAveragePos[0];
+//     float fTmpY = pVertexDescriptor[iVertComponent+1] - vAveragePos[1];
+//     float fTmpZ = pVertexDescriptor[iVertComponent+2] - vAveragePos[2];
     
 //     mCovariance(0,0) += fTmpX * fTmpX;
 //     mCovariance(1,1) += fTmpY * fTmpY;
@@ -342,7 +342,7 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 // }
 /////////////////////////////////////////////////////////////////
 //CMatrix3x3<float>
-// CovarianceMatrix( float *pVertexArray, const CIndexArray &indexBuffer)
+// CovarianceMatrix( float *pVertexDescriptor, const CIndexArray &indexBuffer)
 // {
   
 //   CMatrix3x3<float> mCovariance;
@@ -352,9 +352,9 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 //   for(unsigned int nIndex = 0;nIndex < indexBuffer.m_nNumIndices; nIndex++)
 //   {
 //     nVertexIndex = indexBuffer.m_pIndices[nIndex] * 3;
-//     vAveragePos[0] += pVertexArray[nVertexIndex];
-//     vAveragePos[1] += pVertexArray[nVertexIndex+1];
-//     vAveragePos[2] += pVertexArray[nVertexIndex+2];
+//     vAveragePos[0] += pVertexDescriptor[nVertexIndex];
+//     vAveragePos[1] += pVertexDescriptor[nVertexIndex+1];
+//     vAveragePos[2] += pVertexDescriptor[nVertexIndex+2];
 //   }
 
 //   vAveragePos /= indexBuffer.m_nNumIndices;
@@ -365,9 +365,9 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 //   for(unsigned int nIndex = 0;nIndex < indexBuffer.m_nNumIndices; nIndex++)
 //   {
 //     nVertexIndex = indexBuffer.m_pIndices[nIndex] * 3;
-//     fTmpX = pVertexArray[nVertexIndex]   - vAveragePos[0];
-//     fTmpY = pVertexArray[nVertexIndex+1] - vAveragePos[1];
-//     fTmpZ = pVertexArray[nVertexIndex+2] - vAveragePos[2];
+//     fTmpX = pVertexDescriptor[nVertexIndex]   - vAveragePos[0];
+//     fTmpY = pVertexDescriptor[nVertexIndex+1] - vAveragePos[1];
+//     fTmpZ = pVertexDescriptor[nVertexIndex+2] - vAveragePos[2];
     
 //     mCovariance(0,0) += fTmpX * fTmpX;
 //     mCovariance(1,1) += fTmpY * fTmpY;

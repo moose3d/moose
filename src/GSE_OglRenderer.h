@@ -135,7 +135,7 @@ class GSE_OglRendererFeatures
   char HasFragmentShader();
   /// Is vertex_array supported.
   /// \return 1 if supported, 0 otherwise.
-  char HasVertexArray();
+  char HasVertexDescriptor();
   /// Is vertex_buffer_object supported.
   /// \return 1 if supported, 0 otherwise.
   char HasVertexBufferObject();

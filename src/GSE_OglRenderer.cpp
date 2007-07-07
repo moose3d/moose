@@ -175,7 +175,7 @@ GSE_OglRendererFeatures::HasFragmentShader()
 }
 /////////////////////////////////////////////////////////////////
 char 
-GSE_OglRendererFeatures::HasVertexArray()
+GSE_OglRendererFeatures::HasVertexDescriptor()
 {
   return m_bEXT_vertex_array;
 }
@@ -223,7 +223,7 @@ std::ostream &operator<<(std::ostream &stream, GSE_OglRendererFeatures &obj)
   stream << "GL_ARB_vertex_program "  << ( obj.HasVertexProgram() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_vertex_shader "   << ( obj.HasVertexShader() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_fragment_shader " << ( obj.HasFragmentShader() ? "YES" : "NO" ) << endl;
-  stream << "GL_EXT_vertex_array "    << ( obj.HasVertexArray() ? "YES" : "NO" ) << endl;
+  stream << "GL_EXT_vertex_array "    << ( obj.HasVertexDescriptor() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_vertex_buffer_object " << ( obj.HasVertexBufferObject() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_multitexture " << ( obj.HasMultitexture() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_shader_objects " << ( obj.HasShaderObjects() ? "YES" : "NO" ) << endl;

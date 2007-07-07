@@ -1,5 +1,5 @@
-#ifndef __PhoenixVertexArray_h__
-#define __PhoenixVertexArray_h__
+#ifndef __PhoenixVertexDescriptor_h__
+#define __PhoenixVertexDescriptor_h__
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -22,7 +22,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
-    class CVertexArray
+    class CVertexDescriptor
     {  
     protected:
       /// number of elements.
@@ -36,7 +36,7 @@ namespace Phoenix
       /// default constructor.
       /// \param nType Element type
       /// \param nNumElements how many elements this vertexbuffer have.
-      CVertexArray( ELEMENT_TYPE nType, 
+      CVertexDescriptor( ELEMENT_TYPE nType, 
 		     unsigned int nNumElements) 
       {  
 	m_nType = nType;
@@ -55,7 +55,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Frees reserverd memory.
-      ~CVertexArray()
+      ~CVertexDescriptor()
       {
 	switch ( GetType() )
 	{
