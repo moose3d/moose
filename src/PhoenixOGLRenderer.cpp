@@ -169,7 +169,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexBuffer( CVertexBuffer *pBuffer )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::DrawPrimitive( CIndexBuffer *pIndexBuffer )
+Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexBuffer *pIndexBuffer )
 {
 
   GLenum glPrimitive = GL_POINTS;
@@ -203,12 +203,20 @@ Phoenix::Graphics::COglRenderer::DrawPrimitive( CIndexBuffer *pIndexBuffer )
   if ( pIndexBuffer->IsShortIndices() )   
   {
     glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
-		    GL_UNSIGNED_SHORT, pIndexBuffer->GetShortIndices());
+		    GL_UNSIGNED_SHORT, 
+		    pIndexBuffer->GetPointer<unsigned short int>());
   }
   else
   {
     glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
-		    GL_UNSIGNED_INT, pIndexBuffer->GetIntIndices());
+		    GL_UNSIGNED_INT, 
+		    pIndexBuffer->GetPointer<unsigned int>());
   }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexColor( CVector4<unsigned char> &vColor )
+{
+  glColor4ubv( vColor.GetArray());
 }
 /////////////////////////////////////////////////////////////////
