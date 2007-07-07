@@ -120,8 +120,7 @@ namespace Phoenix
     extern template class __declspec(dllimport) CSingleton<CMaterialMgr>;
 #endif
 #endif
-
-    // ---------------------------------------------------------------
+    ////////////////////
     /// Vertex class for some cases where it is easier to handle things as a blob.
     class CVertex
     {
@@ -134,6 +133,7 @@ namespace Phoenix
       CVector2<float> m_vTexCoord;
       /// Vertex color.
       CVector3<unsigned char> m_vColor;
+      ////////////////////
       /// The equality comparison operator.
       /// \param vert CVertex object which this is compared against.
       bool operator==( CVertex vert)
@@ -143,6 +143,7 @@ namespace Phoenix
 		m_vTexCoord == vert.m_vTexCoord && 
 		m_vColor    == vert.m_vColor );
       }
+      ////////////////////
       /// The less than comparison operator.
       bool operator< (CVertex vert)
       {
