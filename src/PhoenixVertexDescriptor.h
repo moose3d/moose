@@ -4,12 +4,7 @@
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include "PhoenixMath.h"
-// ---------------------------------------------------------------
-//
-// The GeometryData is the foundation for geometry data in
-// every 3D Object, containing vertex colors, texture coordinates
-// normals, and position data.
-// --------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////
 namespace Phoenix 
 {
   namespace Graphics
