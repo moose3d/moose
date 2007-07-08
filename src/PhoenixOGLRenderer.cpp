@@ -13,7 +13,7 @@ using std::endl;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
-Init();
+  Init();
   // Check for required extensions:
   if ( GLEE_ARB_vertex_program	)  m_bARB_vertex_program  = 1;
   if ( GLEE_ARB_vertex_shader	)  m_bARB_vertex_shader   = 1;
@@ -166,6 +166,11 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_COLOR_ARRAY );
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
     break;
+  case ELEMENT_TYPE_TEX0_2F:
+    glClientActiveTextureARB( GL_TEXTURE0_ARB );  
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    break;
   case ELEMENT_TYPE_NULL:
     break;
   }
@@ -234,6 +239,10 @@ Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_COLOR_ARRAY:
     glDisableClientState( GL_COLOR_ARRAY );
     break;
+  case CLIENT_STATE_TEX0_ARRAY:
+    glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+    break;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -248,7 +257,10 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_COLOR_ARRAY:
     glEnableClientState( GL_COLOR_ARRAY );
     break;
+  case CLIENT_STATE_TEX0_ARRAY:
+    glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    break;
   }
 }
 /////////////////////////////////////////////////////////////////
-

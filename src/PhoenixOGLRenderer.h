@@ -2,10 +2,9 @@
 #ifndef __PhoenixOGLRenderer_h__
 #define __PhoenixOGLRenderer_h__
 /////////////////////////////////////////////////////////////////
-#include <GL/GLee.h>
-#include <GL/gl.h>
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
+#include "PhoenixTGAImage.h"
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -15,9 +14,13 @@ namespace Phoenix
     enum CLIENT_STATE_TYPE 
     {
       CLIENT_STATE_VERTEX_ARRAY = 0,
-      CLIENT_STATE_COLOR_ARRAY = 1
+      CLIENT_STATE_COLOR_ARRAY = 1,
+      CLIENT_STATE_TEX0_ARRAY
     };
-
+    enum PX_TEXTURE_TYPE 
+    {
+      PX_TEXTURE_2D = 0
+    };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
@@ -85,6 +88,17 @@ namespace Phoenix
       /// Initializes the supported values.
       void Init();
     };
+    /////////////////////////////////////////////////////////////////
+    class COglTexture
+    {
+    private:
+      unsigned int m_nOglId;
+    public:
+       COglTexture( unsigned int nId, PX_TEXTURE_TYPE tType );
+      ~COglTexture();
+      
+    };
+    /////////////////////////////////////////////////////////////////
     /// BufferType
     enum BUFFER_TYPE 
     { 
@@ -132,6 +146,7 @@ namespace Phoenix
       /// Enable client states, such as vertex array.
       /// \param tType CLIENT_STATE_TYPE to be enabled.
       void EnableClientState( CLIENT_STATE_TYPE tType );
+
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics

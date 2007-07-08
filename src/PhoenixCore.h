@@ -8,61 +8,16 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 using std::string;
+using std::vector;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Core 
   {
-    /////////////////////////////////////////////////////////////////
-    /// The base object for everything in the system.
-    class CPhoenixObject 
-    {
-    private:
-      /// How many objects have been created.
-      static unsigned int m_nObjectCounter;
-    protected:
-      /// The identification number for the object.
-      unsigned int	m_nId;
-      /// Object name.
-      string	m_sObjectName;
-    public:
-      ////////////////////
-      /// Default constructor.
-      CPhoenixObject()
-      {
-	// Default object name is PhoenixObject<id>
-	m_nId = m_nObjectCounter;
-	m_nObjectCounter++;
-	std::stringstream str;
-	str << "PhoenixObject" << GetID();
-	SetName(str.str());
-      }
-      ////////////////////
-      /// Assigns object name,
-      /// \param sNewName name for object.
-      inline void SetName( const std::string & sNewName )
-      {
-	m_sObjectName = sNewName;
-      }
-      ////////////////////
-      /// Returns object name.
-      /// \returns string containing object name,
-      inline const std::string & GetName()
-      {
-	return m_sObjectName;
-      }
-      ////////////////////
-      /// Returns the ID number for this object.
-      inline unsigned int GetID()
-      {
-	return m_nId;
-      }
-    };
-    // Initialize object count to zero.
-    unsigned int CPhoenixObject::m_nObjectCounter = 0;
-    
+    using namespace Phoenix::Core;
     /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
     class CTimer 
@@ -184,100 +139,129 @@ namespace Phoenix
       }
     
     };
-    /////////////////////////////////////////////////////////////////
-    /// Generic container class for several types.
-    template <class T>
-    class CContainer
+ /////////////////////////////////////////////////////////////////
+    /// The base object for hash table storing.
+    template<typename A>
+    class CHashItem
     {
     protected:
-      /// vector of objects.
-      std::vector<T *> m_Objects;
-      
+      /// The identification number for the object.
+      unsigned int	m_nId;
+      /// Object itself.
+      A		m_Object;
+    public:
+      ////////////////////
+      /// Constructor.
+      CHashItem( unsigned int nId, A &object ) : m_nId(nId), m_Object(object)
+      {
+      }
+      ////////////////////
+      /// Returns the ID number for this object.
+      inline unsigned int GetID() const
+      {
+	return m_nId;
+      }
+      ////////////////////
+      /// Returns reference to object.
+      inline A & GetObject()
+      {
+	return m_Object;
+      }
+      ////////////////////
+      /// Comparison operator.
+      inline bool operator==( const CHashItem & item )
+      {
+	return (item.GetID() == GetID());
+      }
+      ////////////////////
+      /// Assignment operator.
+      inline void operator=(const CHashItem &item)
+      {
+	m_nId = item.GetID();
+	m_Object = item.GetObject();
+      }
+    };
+    
+    /////////////////////////////////////////////////////////////////
+    /// Hash table class for several types.
+    template <typename T>
+    class CHashTable
+    {
+    protected:
+      /// vector of vector of objects.
+      std::vector< CHashItem<T> > *m_pTable;
+      unsigned int		   m_nSize;
     public:
       ////////////////////
       /// Default constructor.
-      CContainer()      {}
+      CHashTable( unsigned int nSize) : m_nSize(nSize) 
+      {
+	assert ( m_nSize > 0 );
+	m_pTable = new std::vector< CHashItem<T> >[GetSize()];
+      }
       ////////////////////
       /// Destructor.
-      ~CContainer() {    Clear();  }
-      ////////////////////
-      /// Deletes all objects.
-      void Clear()
-      {
-	for( unsigned int i=0;i<m_Objects.size();i++)
-	{
-	  if ( m_Objects[i] != NULL ) 
-	  {
-	    delete m_Objects[i];
-	  }
-	}
-	m_Objects.clear();
+      ~CHashTable() 
+      {    
+	delete [] m_pTable;
       }
       ////////////////////
-      /// Adds an object to this container.
-      /// \param pObject pointer to an object with type T.
-      /// \returns -1 if unsuccessfull, >=0 otherwise.
-      int Add( T *pObject )
+      /// Inserts new item to hashtable.
+      /// \param obj object to be inserted.
+      inline void Insert( CHashItem<T> &obj )
       {
-	int iIndex = -1;
-	if ( pObject != NULL )
-	{
-	  m_Objects.push_back(pObject);
-	  iIndex = m_Objects.size()-1;
-	}
-	return iIndex; 
+	unsigned int nHash = CreateHash( obj.GetKey() );
+	m_pTable[nHash].push_back(obj);
       }
       ////////////////////
-      /// Delete, removing in O( number of elements) time.
-      /// \param nIndex from which index an object is removed.
-      void Delete( unsigned int nIndex )
+      /// Returns size of this CHashTable
+      /// \return number of hash slots.
+      inline int GetSize() const
       {
-	if ( m_Objects[nIndex] != NULL ) 
+	return m_nSize();
+      }
+      ////////////////////
+      /// Deletes object with key.
+      /// \param nKey Key to object.
+      void Delete( unsigned int nKey )
+      {
+	CHashItem<T> item;
+	item.SetKey(nKey);
+	
+	int nHash = CreateHash(nKey);
+	std::vector< CHashItem<T> > *pHashChain = &m_pTable[nHash];
+	typename std::vector< CHashItem<T> >::iterator it;
+
+	for( it = pHashChain->begin(); it!= pHashChain->end(); it++)
 	{
-	  if (nIndex < m_Objects.size())
+	  if ( *it == item )
 	  {
-	    T *pTmp = m_Objects[nIndex];
-	    typename std::vector<T *>::iterator it = m_Objects.begin();
-	    it += nIndex;
-	    m_Objects.erase(it);
-	    delete pTmp;
+	    pHashChain->erase(it);
+	    break;
 	  }
 	}
       }
       ////////////////////
-      /// Delete, removing in O( number of elements) time.
-      /// \param pObject a pointer to an object to be deleted from this container.
-      void Delete( T *pObject )
+      /// Finds HashItem by key. 
+      /// \param nKey Key to object.
+      /// \returns NULL if not found, pointer to hashitem otherwise.
+      CHashItem<T> * Find( int nKey )
       {
-	typename std::vector< T * >::iterator itResult;
-	itResult = find( m_Objects.begin(), m_Objects.end(), pObject );    
-	if ( itResult != m_Objects.end() )
+	
+	CHashItem<T> item;
+	item.SetKey(nKey);
+	
+	int nHash = CreateHash(nKey);
+	std::vector<CHashItem<T> > *pHashChain = &m_pTable[nHash];
+	for( unsigned int i =0; i<pHashChain.size();  i++)
 	{
-	  T *pDEADBEEF = *itResult;
-	  m_Objects.erase(itResult);
-	  delete pDEADBEEF;
+	  if ((*pHashChain)[i] == item ) return (&(*pHashChain)[i]);
 	}
-      }   
-      ////////////////////
-      /// Gets the number of objects in this container.
-      /// \return number of objects.
-      inline const int GetSize() const
-      {
-	return m_Objects.size();
+	return NULL;
       }
-      ////////////////////
-      /// Gets object from an index in the object vector.
-      /// \return pointer to an object.
-      T *At(unsigned int iIndex)
+      unsigned int CreateHash( unsigned int nKey )
       {
-	if ( iIndex >= 0 && iIndex < m_Objects.size() )
-	{
-	  return m_Objects[iIndex];
-	} 
-	else
-	{
-	  return NULL;
-	}
+	return nKey % GetSize();
       }
     };
     /////////////////////////////////////////////////////////////////
