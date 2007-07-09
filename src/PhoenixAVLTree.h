@@ -41,18 +41,32 @@ namespace Phoenix
 	m_Value = value;
       }
       ////////////////////
-      /// Returns right child
+      /// Returns right child.
       /// \returns A pointer to right child.
       inline CBinTreeNode * GetRightChild() const
       {
 	return m_pRightChild;
       }
       ////////////////////
-      /// Returns left child
+      /// Returns left child.
       /// \returns A pointer to left child.
       inline CBinTreeNode * GetLeftChild() const
       {
 	return m_pLeftChild;
+      }
+      ////////////////////
+      /// Assigns right child.
+      /// \param pRightChild New right child node.
+      inline void SetRightChild( CBinTreeNode *pRightChild) 
+      {
+	m_pRightChild = pRightChild;
+      }
+      ////////////////////
+      /// Assigns right child.
+      /// \param pLeftChild New right child node.
+      inline void SetLeftChild( CBinTreeNode *pLeftChild) 
+      {
+	m_pLeftChild = pLeftChild;
       }
     }; // CBinTree
   }; // namespace Core
