@@ -1,7 +1,7 @@
 #ifndef __PhoenixMatrix4x4_h__
 #define __PhoenixMatrix4x4_h__
 #include <iostream>
-
+#include "PhoenixMathUtils.h"
 namespace Phoenix 
 {
   namespace Math 
@@ -338,7 +338,7 @@ namespace Phoenix
       ////////////////////
       /// Division operator with assign.
       /// \param divider value for division.
-      void operator/=(TYPE divider)
+      inline void operator/=(TYPE divider)
       {
 	TYPE t1DivValue = 1.0f / divider;
 	m_aValues[0] *= t1DivValue;
@@ -362,7 +362,7 @@ namespace Phoenix
       /// Swaps the two rows.
       /// \param iRow1 Row one.
       /// \param iRow2 Row two.
-      void SwapRows(unsigned int iRow1, unsigned int iRow2)
+      inline void SwapRows(unsigned int iRow1, unsigned int iRow2)
       {
 	TYPE tmpRow[4];
 	// copy iRow1th row to tmpRow
@@ -382,7 +382,7 @@ namespace Phoenix
       /// Divides row with given value.
       /// \param iRow Which row is divided.
       /// \param tDivider value which is the divider.
-      void DivideRowBy(unsigned int iRow, TYPE tDivider )
+      inline void DivideRowBy(unsigned int iRow, TYPE tDivider )
       {
 	TYPE t1DivValue = 1.0f / tDivider;
 	(*this)(iRow,0) *= t1DivValue;
@@ -394,7 +394,7 @@ namespace Phoenix
       /// Multiplies row with value.
       /// \param iRow Which row is multiplied.
       /// \param tMultiplier multiplication value.
-      void MultiplyRowBy(unsigned int iRow, TYPE tMultiplier )
+      inline void MultiplyRowBy(unsigned int iRow, TYPE tMultiplier )
       {
 	
 	(*this)(iRow,0) *= tMultiplier;
@@ -407,7 +407,7 @@ namespace Phoenix
       /// Divides column by value.
       /// \param iCol Which column is divided.
       /// \param tDivider value which is the divider.
-      void DivideColumnBy(unsigned int iCol, TYPE tDivider )
+      inline void DivideColumnBy(unsigned int iCol, TYPE tDivider )
       {
 
 	TYPE t1DivValue = 1.0f / tDivider;
@@ -421,7 +421,7 @@ namespace Phoenix
       /// Multiplies column with value.
       /// \param iCol Which column is multiplied.
       /// \param tMultiplier multiplication value.
-      void MultiplyColumnBy(unsigned int iCol, TYPE tMultiplier )
+      inline void MultiplyColumnBy(unsigned int iCol, TYPE tMultiplier )
       {
 	(*this)(0,iCol) *= tMultiplier;
 	(*this)(1,iCol) *= tMultiplier;
@@ -451,7 +451,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Initializes a matrix to Identity matrix.
-      void IdentityMatrix()
+      inline void IdentityMatrix()
       {
 	m_aValues[0] = 1; m_aValues[1] = 0; m_aValues[2] = 0; m_aValues[3] = 0;
 	m_aValues[4] = 0; m_aValues[5] = 1; m_aValues[6] = 0; m_aValues[7] = 0;
@@ -460,7 +460,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Zeroes givem matrix.
-      void ZeroMatrix()
+      inline void ZeroMatrix()
       {
 	m_aValues[0] = 0; m_aValues[1] = 0; m_aValues[2] = 0; m_aValues[3] = 0;
 	m_aValues[4] = 0; m_aValues[5] = 0; m_aValues[6] = 0; m_aValues[7] = 0;
@@ -469,6 +469,86 @@ namespace Phoenix
 	
       }
     }; // template CMatrix
-  } // namespace Math
-} // namespace Phoenix
+    ////////////////////
+    /// Inverses matrix.
+    /// 4x4 matrix inverse using Gauss-Jordan algorithm with row pivoting.
+    /// \param mOrig Matrix which will be inverted.
+    /// \param mInverse Matrix where inverted matrix will be stored.
+    /// \returns zero, if matrix is invertible and assigns mInverse as the inverted matrix
+    ///		 non-zero if matrix is not invertible. mInverse in this case is undefined.
+    template< typename TYPE >
+    int InverseMatrix( CMatrix4x4<TYPE> mOrig, CMatrix4x4<TYPE> &mInverse);
+
+  }; // namespace Math
+}; // namespace Phoenix
+/////////////////////////////////////////////////////////////////
+template< typename TYPE>
+int
+Phoenix::Math::InverseMatrix( CMatrix4x4<TYPE> mOrig, CMatrix4x4<TYPE> &mInverse)
+{
+#define MATRIX_NOT_INVERTIBLE 1
+#define MATRIX_INVERTIBLE     0
+  mInverse.IdentityMatrix();
+  unsigned int iRow, iCol, iPivot;
+  float fScale, fMultValue;
+  iCol = 0;
+  iPivot = 0;
+  ////////////////////
+  /// for each column
+  for( iCol=0;iCol<4;iCol++) 
+  {
+    // Find largest absolute value from current column.
+    for( iPivot = iCol, iRow = iCol;iRow<4; iRow++ )
+    {
+      if ( fabs(mOrig(iRow,iCol)) > fabs(mOrig(iPivot, iCol))) { iPivot = iRow; }
+      
+    } // For each row in iCol
+    ////////////////////
+    /// If current value is zero, matrix cannot be inverted.
+    if ( TOO_CLOSE_TO_ZERO(mOrig(iPivot, iCol)))
+    {
+      std::cerr << "Matrix is not invertible!" << std::endl;
+      return MATRIX_NOT_INVERTIBLE;
+    }
+    
+    ////////////////////
+    if ( iPivot != iCol )
+    {
+      // Swap rows
+      mOrig.SwapRows(    iPivot, iCol );
+      mInverse.SwapRows( iPivot, iCol );
+    }
+    
+    
+    ////////////////////
+    /// Set element (iCol,iCol) to 1
+    if ( mOrig(iCol,iCol) != 1.0f)
+    {
+      fMultValue = 1.0f/mOrig(iCol,iCol);
+      mOrig.MultiplyRowBy( iCol, fMultValue   );
+      mInverse.MultiplyRowBy( iCol, fMultValue );
+    }
+    
+    ////////////////////
+    /// subtract this row from others to make rest of column iCol zero
+    for(unsigned int iR=0;iR<4;iR++)
+    {
+      /// skip diagonal element
+      if ( (iR != iCol) && !TOO_CLOSE_TO_ZERO(mOrig(iR,iCol)))
+      {
+	/// Add -M_{rj} x M(iR,*) to M(iCol, *)
+	fScale = -mOrig(iR, iCol);
+	for( unsigned int iTmpCol=0;iTmpCol<4;iTmpCol++)
+	{
+	  mOrig(iR,iTmpCol)    += fScale * mOrig(iCol,iTmpCol);
+	  mInverse(iR,iTmpCol) += fScale * mInverse(iCol,iTmpCol);
+	}
+      }
+    } // for each row
+  } // for each column
+
+  // At this point, matrix has been completely inverted and all is good.
+  return MATRIX_INVERTIBLE;
+  
+}
 #endif

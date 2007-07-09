@@ -1,5 +1,6 @@
 #include <UnitTest++/UnitTest++.h>
 #include "PhoenixMath.h"
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 TEST(CMatrix3x3_Inverse)
 {
@@ -79,5 +80,8 @@ TEST(CMatrix2x2_Inverse)
 
   CHECK( InverseMatrix( mId, mInv ) == 0 );
   CHECK_ARRAY_CLOSE( aIdentity, mInv.GetArray(), 4, 0.002f);
+  CVector3<float> vec1(1,0,0);
+  CVector3<float> vec2(0,1,0);
+  RotationArc( vec1, vec2);
 }
 /////////////////////////////////////////////////////////////////

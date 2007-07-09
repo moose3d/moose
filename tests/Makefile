@@ -1,4 +1,4 @@
-UNIT_OBJ=PhoenixVectorTest2.o PhoenixVectorTest3.o PhoenixVectorTest4.o PhoenixQuaternionTest.o PhoenixMatrix3x3Test.o PhoenixMathTest.o PhoenixTest.o
+UNIT_OBJ=PhoenixVectorTest2.o PhoenixVectorTest3.o PhoenixVectorTest4.o PhoenixQuaternionTest.o PhoenixMatrix3x3Test.o PhoenixMathTest.o PhoenixAVLTreeTest.o PhoenixTest.o
 # helpful targets for unit test compiling
 all: unit
 	g++ -Wall $(UNIT_OBJ) -o PhoenixTest -lUnitTest++ -lPhoenix
