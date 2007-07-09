@@ -1,5 +1,6 @@
 #ifndef __PhoenixAVLTree_h__
 #define __PhoenixAVLTree_h__
+#include <stdlib.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -7,7 +8,7 @@ namespace Phoenix
   {
     namespace AVLTree
     {
-      template< int Key, typename Value > 
+      template< typename Value > 
       class KeyValue
       {
       private:
@@ -28,7 +29,7 @@ namespace Phoenix
 	////////////////////
 	/// Returns value.
 	/// \returns Value object.
-	inline const Value & GetValue() { return m_Value; } 
+	inline Value & GetValue() { return m_Value; } 
 	////////////////////
 	/// Assigns value.
 	/// \param value Value object.
@@ -57,8 +58,21 @@ namespace Phoenix
 	{
 	  return GetKey() == tKeyValue.GetKey();
 	}
-      }
-      
+      };
+      template <class KeyValue > class CAVLTreeNode;
+      template< class KeyValue >
+      class CAVLTreeNode
+      {
+      protected:
+	CAVLTreeNode<KeyValue> *m_pRoot;
+      public:
+	////////////////////
+	/// Constructor.
+	CAVLTreeNode() : m_pRoot(NULL)
+	{
+	  
+	}
+      };
       ////////////////////
       /// Binary tree data structure.
       template< class KeyValue >
@@ -69,30 +83,39 @@ namespace Phoenix
 	CAVLTreeNode *m_pLeftChild; 
 	/// Right child.
 	CAVLTreeNode *m_pRightChild;
+	/// Parent node.
+	CAVLTreeNode *m_pParent;
 	/// Node data with key.
-	KeyValue m_Data;
+	KeyValue m_KeyValue;
 	/// Height of this subtree
 	int  m_iHeight;
+	/// balance of this node.
+	int  m_iBalance;
+	CAVLTree *m_pTree;
+
       public:
 	////////////////////
 	/// Constructor.
-	CAVLTreeNode( KeyValue value ) : m_pLeftChild(NULL), 
-				m_pRightChild(NULL),
-				m_Value(value),
-				m_iHeight(0) { }
+	CAVLTreeNode( KeyValue value, CAVLTree *pTree ) : m_pLeftChild(NULL), 
+	m_pRightChild(NULL),
+	m_pParent(NULL),
+	m_KeyValue(value),
+	m_iHeight(1),
+	m_iBalance(0),
+	m_pTree(pTree) { }
 	////////////////////
 	/// For retrieving the value.
 	/// \return Value in this node.
 	inline KeyValue & GetKeyValue() 
 	{
-	  return m_Value;
+	  return m_KeyValue;
 	}
 	////////////////////
 	/// For setting the value.
 	/// \param value A value to be set.
 	inline void SetKeyValue( KeyValue &value )
 	{
-	  m_Value = value;
+	  m_KeyValue = value;
 	}
 	////////////////////
 	/// Returns right child.
@@ -122,6 +145,206 @@ namespace Phoenix
 	{
 	  m_pLeftChild = pLeftChild;
 	}
+	////////////////////
+	/// Returns parent.
+	/// \returns parent node.
+	inline CAVLTreeNode * GetParent() 
+	{
+	  return m_pParent;
+	}
+	////////////////////
+	/// Assigns parent.
+	/// \param pNode Node to be assigned as parent.
+	inline void SetParent( CAVLTreeNode *pNode ) 
+	{
+	  m_pParent = pNode;
+	}
+	////////////////////
+	/// Returns height.
+	/// \returns height of tree.
+	inline int GetHeight() const
+	{
+	  return m_iHeight;
+	}
+	////////////////////
+	/// Returns height.
+	/// \returns height of tree.
+	inline void SetHeight( int iHeight) 
+	{
+	  m_iHeight = iHeight;
+	}
+	////////////////////
+	/// Sets balance
+	/// \param iBalance new balance.
+	inline void SetBalance( int iBalance )
+	{
+	  m_iBalance = iBalance;
+	}
+	////////////////////
+	/// Returns balance.
+	/// \returns balance of node.
+	inline int GetBalance() const
+	{
+	  return m_iBalance;
+	}
+
+	////////////////////
+	void RotateRight()
+	{
+	  CAVLTreeNode *pParentOfThis  = GetParent();
+	  CAVLTreeNode *pNewRoot       = GetLeftChild();
+	  CAVLTreeNode *pNewLeftChild = GetLeftChild()->GetRightChild();
+	  
+	  SetLeftChild( pNewLeftChild );
+	  pNewLeftChild->SetParent(this);
+	  pNewRoot->SetRightChild( this );
+
+	  if ( IsRoot() )                    { pTree->SetRoot( pNewRoot );	         }
+	  else if ( IsRightChildOfParent() )  { pParentOfThis->SetRightChild( pNewRoot );  }
+	  else                                { pParentOfThis->SetLeftChild( pNewRoot ); }
+
+	  SetBalance(0);
+	  pNewRoot->SetBalance(0);
+
+	  CalculateHeight();
+	  pNewRoot->CalculateHeight();
+	}
+	////////////////////
+	void RotateLeft()
+	{
+	  CAVLTreeNode *pParentOfThis  = GetParent();
+	  CAVLTreeNode *pNewRoot       = GetRightChild();
+	  CAVLTreeNode *pNewRightChild = GetRightChild()->GetLeftChild();
+	  
+	  SetRightChild( pNewRightChild );
+	  pNewRightChild->SetParent(this);
+
+	  pNewRoot->SetLeftChild( this );
+	  this->SetParent(pNewRoot);
+
+	  if ( IsRoot() ) 
+	  { 
+	    pTree->SetRoot( pNewRoot ); 
+	    pNewRoot->SetParent(NULL); 
+	  }
+	  else if ( IsLeftChildOfParent() )  
+	  { 
+	    pParentOfThis->SetLeftChild( pNewRoot ); 
+	    pNewRoot->SetParent(pParentOfThis); 
+	  }
+	  else
+	  { 
+	    pParentOfThis->SetRightChild( pNewRoot ); 
+	    pNewRoot->SetParent(pParentOfThis); 
+	  }
+	  
+	  SetBalance(0);
+	  pNewRoot->SetBalance(0);
+
+	  CalculateHeight();
+	  pNewRoot->CalculateHeight();
+	}
+	////////////////////
+	void DoubleRotateRight()
+	{
+	  CAVLTreeNode *pNewRoot       = GetRightChild()->GetLeftChild();
+	  CAVLTreeNode *pNewRightChild = GetRightChild();
+	  CAVLTreeNode *pNewLeftChild  = this;
+	  CAVLTreeNode *pParentOfThis  = GetParent();
+	  
+	  pNewRightChild->SetLeftChild( pNewRoot->GetRightChild() );
+	  pNewRoot->GetRightChild()->SetParent( pNewRightChild );
+	  
+	  this->SetRightChild( pNewRoot->GetLeftChild() );
+	  pNewRoot->GetLeftChild()->SetParent( this );
+	  
+	  pNewRoot->SetLeftChild( this );
+	  this->SetParent( pNewRoot );
+
+	  pNewRoot->SetRightChild(pNewRightChild);
+	  pNewRightChild->SetParent(pNewRoot);
+
+	  pParentOfThis
+	  
+	}
+	////////////////////
+	void DoubleRotateLeft()
+	{
+	  
+	}
+
+	void CalculateHeight()
+	{
+	  
+	  CAVLTreeNode  *pLeft = pNode->GetLeftChild();
+	  CAVLTreeNode  *pRight = pNode->GetRightChild();
+
+	  if ( pLeft == NULL && pRight == NULL ) // no children at all
+	  {
+	    SetHeight(1);
+	    SetBalance(0);
+	  }
+	  else if ( pLeft == NULL )  // only right
+	  {
+	    SetHeight( 1 + pRight->GetHeight() );
+	    SetBalance( pRight->GetHeight());
+	  }
+	  else if ( pRight == NULL ) // only left
+	  {
+	    SetHeight( 1 + pLeft->GetHeight() );
+	    SetBalance( -pLeft->GetHeight());
+	  }
+	  else // both child exists
+	  {
+	    if ( pLeft->GetHeight() > pRight->GetHeight() ) SetHeight( 1 + pLeft->GetHeight());
+	    else					    SetHeight( 1 + pRight->GetHeight());
+	    
+	    SetBalance( pRight->GetHeight() - pLeft->GetHeight() );
+	  }
+	}
+	////////////////////
+	void PropagateHeight()
+	{
+	  CAVLTreeNode *pNode = this->GetParent();
+	  CAVLTreeNode *pLeft = NULL;
+	  CAVLTreeNode *pRight = NULL;
+	  ////////////////////
+	  // Do Until we reach root ( no parent node )
+	  while ( pNode->GetParent() != NULL )
+	  {
+	    pLeft = pNode->GetLeftChild();
+	    pRight = pNode->GetRightChild();
+	    pNode->CalculateHeight();
+	    pNode = pNode->GetParent();
+	  }
+	  ////////////////////
+	  // Update also root node height.
+	  pNode->CalculateHeight();
+	}
+	////////////////////
+	/// Returns true, if this node is left child of parent node.
+	/// \returns non-zero if true, zero if false.
+	inline int IsLeftChildOfParent() const
+	{
+	  if ( GetParent() == NULL ) return 0;
+	  return (GetParent()->GetLeftChild() == this );
+	}
+	////////////////////
+	/// Returns true, if this node is right child of parent node.
+	/// \returns non-zero if true, zero if false.
+	inline int IsRightChildOfParent() const
+	{
+	  if ( GetParent() == NULL ) return 0;
+	  return (GetParent()->GetRightChild() == this );
+	}
+	////////////////////
+	/// Returns true, if this node is root node ( no parent )
+	/// \returns non-zero if true, zero if false.
+	inline int IsRoot() const
+	{
+	  return ( GetParent() == NULL );
+	}
+	
       }; // CBinTree
       ////////////////////
       /// Inserts into binary tree.
@@ -134,7 +357,7 @@ namespace Phoenix
 	int bFound = 0;
 	while ( !bFound )
 	{
-	  if ( tKeyValue.GetKey() > pTemp->GetKeyValue() )
+	  if ( tKeyValue > pTemp->GetKeyValue() )
 	  {
 	    if ( pTemp->GetRightChild() != NULL )
 	    {
@@ -145,10 +368,12 @@ namespace Phoenix
 	    {
 	      CAVLTreeNode<KeyValue> *pNew = new CAVLTreeNode<KeyValue>( tKeyValue );
 	      pTemp->SetRightChild( pNew );
+	      pNew->SetParent(pTemp);
+	      pNew->PropagateHeight();
 	      return 0;
 	    }
 	  }
-	  else if ( kKeyValue < pTemp->GetKeyValue())
+	  else if ( tKeyValue < pTemp->GetKeyValue() )
 	  {
 	    if ( pTemp->GetLeftChild() != NULL )
 	    {
@@ -159,12 +384,38 @@ namespace Phoenix
 	    {
 	      CAVLTreeNode<KeyValue> *pNew = new CAVLTreeNode<KeyValue>( tKeyValue );
 	      pTemp->SetLeftChild( pNew );
+	      pNew->SetParent(pTemp);
+	      pNew->PropagateHeight();
 	      return 0;
 	    }
 	  }
  
 	} // while 
 	return -1;
+      } // Insert( ...
+      ////////////////////
+      /// Seeks key from binary tree.
+      /// \param pRoot Pointer to root node. Must be NON-NULL.
+      /// \param iKey Key to seek.
+      /// \returns KeyValue object.
+      template<class KeyValue>
+      KeyValue * Find( CAVLTreeNode<KeyValue> *pRoot, int iKey )
+      {
+	CAVLTreeNode<KeyValue> *pTemp = pRoot;
+	int bFound = 0;
+	while ( !bFound )
+	{
+	  if ( iKey < pTemp->GetKeyValue().GetKey() )
+	  {
+	    pTemp = pTemp->GetLeftChild();
+	  }
+	  else if ( iKey > pTemp->GetKeyValue().GetKey() )
+	  {
+	    pTemp = pTemp->GetRightChild();
+	  }
+	  else return &pTemp->GetKeyValue();
+	} // while
+	return NULL;
       } // Insert( ...
     }; // namespace AvlTree
   }; // namespace Core
