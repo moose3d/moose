@@ -184,7 +184,7 @@ namespace Phoenix
 	/// Balancing method, performs rotation to right. 
 	void RotateRight()
 	{
-
+	  std::cerr << "RotateRight for " << GetKeyValue().GetKey() << std::endl;
 	  NODE_TYPE kType              = ClassifyNode();
 	  CAVLTreeNode *pParentOfThis  = GetParent();
 	  CAVLTreeNode *pNewRoot       = GetLeftChild();
@@ -199,13 +199,16 @@ namespace Phoenix
 	  switch( kType )
 	  {
 	  case NODE_ROOT:
-	    GetTree()->SetRoot( pNewRoot );	           
+	    GetTree()->SetRoot( pNewRoot );
+	    pNewRoot->SetParent(NULL);
 	    break;
 	  case NODE_RIGHT_CHILD:
 	    pParentOfThis->SetRightChild( pNewRoot );
+	    pNewRoot->SetParent( pParentOfThis );
 	    break;
 	  case NODE_LEFT_CHILD:
 	    pParentOfThis->SetLeftChild( pNewRoot ); 
+	    pNewRoot->SetParent( pParentOfThis );
 	    break;
 	  }
 	  SetBalance(0);
