@@ -180,6 +180,7 @@ namespace Phoenix
 	////////////////////
 	void RotateRight()
 	{
+
 	  NODE_TYPE kType              = ClassifyNode();
 	  CAVLTreeNode *pParentOfThis  = GetParent();
 	  CAVLTreeNode *pNewRoot       = GetLeftChild();
@@ -208,11 +209,13 @@ namespace Phoenix
 
 	  CalculateHeight();
 	  pNewRoot->CalculateHeight();
+
 	  
 	}
 	////////////////////
 	void RotateLeft()
 	{
+
 	  NODE_TYPE kType = ClassifyNode();
 	  CAVLTreeNode *pParentOfThis  = GetParent();
 	  CAVLTreeNode *pNewRoot       = GetRightChild();
@@ -245,10 +248,12 @@ namespace Phoenix
 	  
 	  CalculateHeight();
 	  pNewRoot->CalculateHeight();
+
 	}
 	////////////////////
 	void DoubleRotateRight()
 	{
+
 	  NODE_TYPE     kType	       = ClassifyNode();
 	  CAVLTreeNode *pNewRoot       = GetLeftChild()->GetRightChild();
 	  CAVLTreeNode *pNewLeftChild  = GetLeftChild();
@@ -258,7 +263,10 @@ namespace Phoenix
 	  pNewRoot->GetLeftChild()->SetParent( pNewLeftChild );
 	  
 	  this->SetLeftChild( pNewRoot->GetRightChild() );
-	  pNewRoot->GetRightChild()->SetParent( this );
+	  if ( pNewRoot->GetRightChild() != NULL ) 
+	  {
+	    pNewRoot->GetRightChild()->SetParent( this );
+	  }
 	  
 	  pNewRoot->SetRightChild( this );
 	  this->SetParent( pNewRoot );
@@ -284,10 +292,12 @@ namespace Phoenix
 	  CalculateHeight();
 	  if ( pNewLeftChild != NULL )
 	    pNewLeftChild->CalculateHeight();
+
 	}
 	////////////////////
 	void DoubleRotateLeft()
 	{
+
 	  NODE_TYPE     kType	       = ClassifyNode();
 	  CAVLTreeNode *pNewRoot       = GetRightChild()->GetLeftChild();
 	  CAVLTreeNode *pNewRightChild = GetRightChild();
@@ -298,13 +308,17 @@ namespace Phoenix
 	  pNewRoot->GetRightChild()->SetParent( pNewRightChild );
 	  
 	  this->SetRightChild( pNewRoot->GetLeftChild() );
-	  pNewRoot->GetLeftChild()->SetParent( this );
-	  
+	  if ( pNewRoot->GetLeftChild() != NULL ) 
+	  {
+	    pNewRoot->GetLeftChild()->SetParent( this );
+	  }
+
 	  pNewRoot->SetLeftChild( this );
 	  this->SetParent( pNewRoot );
 
 	  pNewRoot->SetRightChild(pNewRightChild);
 	  pNewRightChild->SetParent(pNewRoot);
+
 	  switch ( kType )
 	  {
 	  case NODE_ROOT:
@@ -324,6 +338,7 @@ namespace Phoenix
 	  CalculateHeight();
 	  if ( pNewRightChild != NULL )
 	    pNewRightChild->CalculateHeight();
+
 	}
 
 	void CalculateHeight()
@@ -358,46 +373,52 @@ namespace Phoenix
 	////////////////////
 	void PropagateHeight()
 	{
+	  
 	  CAVLTreeNode *pNode = this->GetParent();
-	  CAVLTreeNode *pLeft = NULL;
-	  CAVLTreeNode *pRight = NULL;
+
 	  ////////////////////
-	  // Do Until we reach root ( no parent node )
+	  /// Do Until we reach root ( no parent node ).
 	  while ( pNode->GetParent() != NULL )
 	  {
-	    pLeft = pNode->GetLeftChild();
-	    pRight = pNode->GetRightChild();
 	    pNode->CalculateHeight();
-
-	    if ( pNode->GetBalance() == 2 )
-	    {
-	      if ( pNode->GetRightChild()->GetBalance() == 1 )
-	      {
-		pNode->RotateLeft();
-	      }
-	      else
-	      {
-		pNode->DoubleRotateLeft();
-	      }
-	    }
-	    if ( pNode->GetBalance() == -2 )
-	    {
-	      if ( pNode->GetLeftChild()->GetBalance() == -1 )
-	      {
-		pNode->RotateRight();
-	      }
-	      else
-	      {
-		pNode->DoubleRotateRight();
-	      }
-	    }
+	    pNode->CheckBalance();
 	    // Go up towards root
 	    pNode = pNode->GetParent();
 	  }
 	  ////////////////////
-	  // Update also root node height.
+	  /// Update also root node height.
 	  pNode->CalculateHeight();
+	  pNode->CheckBalance();
+	  
 	}
+	////////////////////
+	/// Checks for imbalanced nodes and corrects them.
+	inline void CheckBalance()
+	{
+	  if ( GetBalance() == 2 )
+	  {
+	    if ( GetRightChild()->GetBalance() == 1 )
+	    {
+	      RotateLeft();
+	    }
+	    else
+	    {
+	      DoubleRotateLeft();
+	    }
+	  }
+	  if ( GetBalance() == -2 )
+	  {
+	    if ( GetLeftChild()->GetBalance() == -1 )
+	    {
+	      RotateRight();
+	    }
+	    else
+	    {
+	      DoubleRotateRight();
+	    }
+	  }
+	}
+
 	////////////////////
 	/// Returns NODE_TYPE in respect to parent.
 	/// \returns NODE_ROOT, if it has no parent,
@@ -451,12 +472,15 @@ namespace Phoenix
 	{
 	  CAVLTreeNode<KeyValue> *pTemp = GetRoot();
 	  int bFound = 0;
+
 	  if ( pTemp == NULL )
 	  {
 	    CAVLTreeNode<KeyValue> *pNew = new CAVLTreeNode<KeyValue>( tKeyValue, this );
 	    SetRoot( pNew );
+	    GetRoot()->CalculateHeight();
 	    return 0;
 	  }
+	  
 	  while ( !bFound )
 	  {
 	    if ( tKeyValue > pTemp->GetKeyValue() )
@@ -490,6 +514,11 @@ namespace Phoenix
 		pNew->PropagateHeight();
 		return 0;
 	      }
+	    }
+	    else
+	    {
+	      // Duplicate key found, Cannot insert.
+	      bFound = 1;
 	    }
  
 	  } // while 
