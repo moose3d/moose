@@ -10,7 +10,10 @@ namespace Phoenix
     namespace AVLTree
     {
       using namespace Phoenix::Core::AVLTree;
+      /// Node classification values (in respect to parent node)
       enum NODE_TYPE { NODE_ROOT = 0, NODE_RIGHT_CHILD, NODE_LEFT_CHILD };
+      ////////////////////
+      /// Data container for each node.
       template< typename Value > 
       class KeyValue
       {
@@ -64,7 +67,7 @@ namespace Phoenix
       };
       template <class KeyValue > class CAVLTree;
       ////////////////////
-      /// Binary tree data structure.
+      /// A self-balancing binary tree data structure node (AVL-tree node).
       template< class KeyValue >
       class CAVLTreeNode
       {
@@ -178,6 +181,7 @@ namespace Phoenix
 	  return m_iBalance;
 	}
 	////////////////////
+	/// Balancing method, performs rotation to right. 
 	void RotateRight()
 	{
 
@@ -213,6 +217,7 @@ namespace Phoenix
 	  
 	}
 	////////////////////
+	/// Balancing method, performs rotation to left. 
 	void RotateLeft()
 	{
 
@@ -251,6 +256,7 @@ namespace Phoenix
 
 	}
 	////////////////////
+	/// Balancing method, performs double rotation to right. 
 	void DoubleRotateRight()
 	{
 
@@ -295,6 +301,7 @@ namespace Phoenix
 
 	}
 	////////////////////
+	/// Balancing method, performs double rotation to left. 
 	void DoubleRotateLeft()
 	{
 
@@ -340,7 +347,9 @@ namespace Phoenix
 	    pNewRightChild->CalculateHeight();
 
 	}
-
+	////////////////////
+	/// Calculates height for this node.
+	/// height = max(height of left child, height of right child) + 1.
 	void CalculateHeight()
 	{
 	  
@@ -371,6 +380,7 @@ namespace Phoenix
 	  }
 	}
 	////////////////////
+	/// Travels towards root node from this node, updates heights and balances.
 	void PropagateHeight()
 	{
 	  
@@ -439,7 +449,8 @@ namespace Phoenix
 	  return m_pTree;
 	}
       }; // CBinTree
-      
+      ////////////////////
+      /// AVL-tree structure.
       template< class KeyValue >
       class CAVLTree
       {
