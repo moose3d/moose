@@ -3,9 +3,11 @@
 #include <iostream>
 #include <math.h>
 #include <assert.h>
+/////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core::AVLTree;
 using namespace std;
 const int MAX_TEST_NODES = 5;
+/////////////////////////////////////////////////////////////////
 #define IntStringKeyPair KeyValue<std::string>
 /////////////////////////////////////////////////////////////////
 class Handler 
@@ -14,15 +16,17 @@ public:
   int maxheight;
   int previous;
   int first;
+  int failure;
   Handler()
   {
     first = 1;
     maxheight = 0;
     previous = 0;
+    failure = 0;
   }
   void Handle( CAVLTreeNode< IntStringKeyPair > &node )
   {
-    std::cerr << node.GetKeyValue().GetKey() << std::endl;
+    //std::cerr << node.GetKeyValue().GetKey() << std::endl;
     if ( first )
     {
       first = 0;
@@ -34,6 +38,15 @@ public:
     }
     if ( node.GetHeight() > maxheight )  maxheight = node.GetHeight();
   }
+  void Reset()
+  {
+    first = 1;
+    failure = 0;
+  }
+  bool IsFailed() 
+  {
+    return failure;
+  }
 };
 
 /////////////////////////////////////////////////////////////////
@@ -43,24 +56,19 @@ TEST( AVLTreeInsertLinearReverse )
   CAVLTree<IntStringKeyPair > *pTree = new  CAVLTree<IntStringKeyPair >(); 
   std::cerr << "inserting, please wait: " << std::endl;
   IntStringKeyPair tKeyValue( 5, std::string("Root of life") );
-  pTree->Insert(tKeyValue );
-  std::cerr << "insert 5 ok " << endl;
+  CHECK( pTree->Insert(tKeyValue ) == 0 );
   tKeyValue.SetKey(4);
-  pTree->Insert(tKeyValue );
-  std::cerr << "insert 4 ok " << endl;
+  CHECK( pTree->Insert(tKeyValue ) == 0);
   tKeyValue.SetKey(3);
-  pTree->Insert(tKeyValue );
-  std::cerr << "insert 3 ok " << endl;
+  CHECK( pTree->Insert(tKeyValue ) ==  0);
   tKeyValue.SetKey(2);
-  pTree->Insert(tKeyValue );
-  std::cerr << "insert 2 ok " << endl;
+  CHECK( pTree->Insert(tKeyValue ) == 0 );
   tKeyValue.SetKey(1);
-  pTree->Insert(tKeyValue );
-  std::cerr << "insert 1 ok " << endl;
+  CHECK( pTree->Insert(tKeyValue ) == 0);
   Handler handler;
   pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
-  
-
+  CHECK( handler.IsFailed() == 0);
+  CHECK( 1.44f*(logf(MAX_TEST_NODES)/logf(2)) >= pTree->GetRoot()->GetHeight()  );
 }
 /////////////////////////////////////////////////////////////////
 TEST( AVLTreeInsertLinear )
@@ -78,7 +86,7 @@ TEST( AVLTreeInsertLinear )
   Handler handler;
   pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
   CHECK( 1.44f*(logf(MAX_TEST_NODES)/logf(2)) >= pTree->GetRoot()->GetHeight()  );
-  std::cerr << "tree height: " << handler.maxheight << std::endl;
+  
   
 }
 /////////////////////////////////////////////////////////////////
@@ -102,8 +110,21 @@ TEST( AVLTree_DoubleRotateLeft )
 
   Handler handler;
   pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
-  
+  CHECK( handler.IsFailed() == 0);
+  CHECK( 1.44f*(logf(6)/logf(2)) >= pTree->GetHeight()  );
+  CHECK( pTree->GetRoot()->GetKeyValue().GetKey() == 6);
+  CHECK( pTree->GetRoot()->GetLeftChild()->GetKeyValue().GetKey() == 5);
+  CHECK( pTree->GetRoot()->GetRightChild()->GetKeyValue().GetKey() == 8);
+  CHECK( pTree->GetRoot()->GetLeftChild()->GetLeftChild()->GetKeyValue().GetKey() == 2);
+  CHECK( pTree->GetRoot()->GetRightChild()->GetLeftChild()->GetKeyValue().GetKey() == 7);
+  CHECK( pTree->GetRoot()->GetRightChild()->GetRightChild()->GetKeyValue().GetKey() == 9);
 
+  CHECK_EQUAL( 1, pTree->GetRoot()->GetRightChild()->GetRightChild()->GetHeight());
+  CHECK_EQUAL( 1, pTree->GetRoot()->GetRightChild()->GetLeftChild()->GetHeight());
+  CHECK_EQUAL( 1, pTree->GetRoot()->GetLeftChild()->GetLeftChild()->GetHeight());
+  CHECK_EQUAL( 2, pTree->GetRoot()->GetRightChild()->GetHeight());
+  CHECK_EQUAL( 2, pTree->GetRoot()->GetLeftChild()->GetHeight());
+  CHECK_EQUAL( 3, pTree->GetRoot()->GetHeight());
 }
 /////////////////////////////////////////////////////////////////
 TEST( AVLTree_DoubleRotateRight )
@@ -125,6 +146,57 @@ TEST( AVLTree_DoubleRotateRight )
   
   Handler handler;
   pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  CHECK( 1.44f*(logf(6)/logf(2)) >= pTree->GetHeight()  );
+
+}
+/////////////////////////////////////////////////////////////////
+TEST( AVLTree_Delete )
+{
   
+  CAVLTree<IntStringKeyPair > *pTree = new  CAVLTree<IntStringKeyPair >(); 
+  IntStringKeyPair tKeyValue( 5, std::string("Child of life") );  
+  pTree->Insert(tKeyValue );
+  tKeyValue.SetKey(8);  
+  pTree->Insert(tKeyValue );
+  tKeyValue.SetKey(2);  
+  pTree->Insert(tKeyValue );
+  tKeyValue.SetKey(4);  
+  pTree->Insert(tKeyValue );
+  tKeyValue.SetKey(1);  
+  pTree->Insert(tKeyValue );
+  tKeyValue.SetKey(3);  
+  pTree->Insert(tKeyValue );
+  CHECK( pTree->GetRoot()->GetKeyValue().GetKey() == 4 );
+
+  CHECK( pTree->Delete( 15 ) != 0 );
+  Handler handler;
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  handler.Reset();
+  CHECK( pTree->Delete( 5 ) == 0 );
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  handler.Reset();
+  CHECK( pTree->Delete( 8 ) == 0);
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  handler.Reset();
+  CHECK( pTree->Delete( 2 ) == 0);
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  handler.Reset();
+  CHECK( pTree->Delete( 4 ) == 0);
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  handler.Reset();
+  CHECK( pTree->Delete( 1 ) == 0);
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  handler.Reset();
+  CHECK( pTree->Delete( 3 ) == 0);
+  pTree->ProcessInOrder<Handler>( handler, pTree->GetRoot() );
+  CHECK( handler.IsFailed() == 0);
+  CHECK( 1.44f*(logf(6)/logf(2)) >= pTree->GetHeight() );
 
 }
