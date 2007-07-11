@@ -97,6 +97,12 @@ namespace Phoenix
 	m_iBalance(0),
 	m_pTree(pTree) { }
 	////////////////////
+	/// Destructor.
+	~CAVLTreeNode() 
+	{
+	  DeleteThis();
+	}
+	////////////////////
 	/// For retrieving the value.
 	/// \return Value in this node.
 	inline KeyValue & GetKeyValue() 
@@ -268,7 +274,8 @@ namespace Phoenix
 	  CAVLTreeNode *pParentOfThis  = GetParent();
 	  
 	  pNewLeftChild->SetRightChild( pNewRoot->GetLeftChild() );
-	  pNewRoot->GetLeftChild()->SetParent( pNewLeftChild );
+	  if ( pNewRoot->GetLeftChild() != NULL ) 
+	    pNewRoot->GetLeftChild()->SetParent( pNewLeftChild );
 	  
 	  this->SetLeftChild( pNewRoot->GetRightChild() );
 	  if ( pNewRoot->GetRightChild() != NULL ) 
@@ -296,10 +303,10 @@ namespace Phoenix
 	    pNewRoot->SetParent( pParentOfThis );
 	    break;
 	  }
-	  pNewRoot->CalculateHeight();
 	  CalculateHeight();
 	  if ( pNewLeftChild != NULL )
 	    pNewLeftChild->CalculateHeight();
+	  pNewRoot->CalculateHeight();
 
 	}
 	////////////////////
@@ -314,7 +321,8 @@ namespace Phoenix
 	  CAVLTreeNode *pParentOfThis  = GetParent();
 	  
 	  pNewRightChild->SetLeftChild( pNewRoot->GetRightChild() );
-	  pNewRoot->GetRightChild()->SetParent( pNewRightChild );
+	  if( pNewRoot->GetRightChild() != NULL ) 
+	    pNewRoot->GetRightChild()->SetParent( pNewRightChild );
 	  
 	  this->SetRightChild( pNewRoot->GetLeftChild() );
 	  if ( pNewRoot->GetLeftChild() != NULL ) 
@@ -343,11 +351,11 @@ namespace Phoenix
 	    pNewRoot->SetParent( pParentOfThis );
 	    break;
 	  }
-	  pNewRoot->CalculateHeight();
+
 	  CalculateHeight();
 	  if ( pNewRightChild != NULL )
 	    pNewRightChild->CalculateHeight();
-
+	  pNewRoot->CalculateHeight();
 	}
 	////////////////////
 	/// Calculates height for this node.
@@ -387,7 +395,7 @@ namespace Phoenix
 	{
 	  
 	  CAVLTreeNode *pNode = this->GetParent();
-
+	  if ( pNode == NULL ) return;
 	  ////////////////////
 	  /// Do Until we reach root ( no parent node ).
 	  while ( pNode->GetParent() != NULL )
@@ -430,7 +438,6 @@ namespace Phoenix
 	    }
 	  }
 	}
-
 	////////////////////
 	/// Returns NODE_TYPE in respect to parent.
 	/// \returns NODE_ROOT, if it has no parent,
@@ -446,9 +453,124 @@ namespace Phoenix
 	    return NODE_RIGHT_CHILD;
 	}
 	////////////////////
+	/// Returns tree that this node belongs to.
+	/// \returns Pointer to tree.
 	inline CAVLTree<KeyValue> * GetTree() 
 	{
 	  return m_pTree;
+	}
+      protected:
+	////////////////////
+	/// Updates tree so that removal of this node leaves correct order.
+	void DeleteThis()
+	{
+	  // Lift largest of smallest children (LOS) of this node in place of this.
+	  // The left child of LOS becomes the right child of this->leftChild.
+	  // The right child of this becomes right child of LOS.
+	  NODE_TYPE tType = ClassifyNode();
+	  CAVLTreeNode *pLargestOfSmallest = SeekLargestOfSmallest();
+
+	  // If there isn't smaller nodes
+	  if ( pLargestOfSmallest == NULL )
+	  {
+	    switch( tType )
+	    {
+	    case NODE_ROOT:
+
+	      GetTree()->SetRoot( GetRightChild() );
+	      if ( GetRightChild() != NULL )
+	      {
+		GetRightChild()->SetParent(NULL);
+	      }
+	      /// in case the node was last, root has become NULL.
+	      if ( GetTree()->GetRoot() != NULL )
+	      {
+		// Take care of balancing
+		GetTree()->GetRoot()->CalculateHeight();
+		GetTree()->GetRoot()->CheckBalance();
+	      }
+	      break;
+	    case NODE_LEFT_CHILD:
+	      GetParent()->SetLeftChild( GetRightChild() );
+	      if ( GetRightChild() != NULL )
+		GetRightChild()->SetParent( GetParent() );
+	      // Take care of balancing
+	      GetParent()->CalculateHeight();
+	      GetParent()->CheckBalance();
+	      GetParent()->PropagateHeight();
+	      break;
+	    case NODE_RIGHT_CHILD:
+
+	      GetParent()->SetRightChild( GetRightChild() );
+	      if ( GetRightChild() != NULL )
+		GetRightChild()->SetParent( GetParent() );
+	      // Take care of balancing
+	      GetParent()->CalculateHeight();
+	      GetParent()->CheckBalance();
+	      GetParent()->PropagateHeight();
+	      break;
+	    }
+	  }
+	  else
+	  {
+	    // If LOS isn't the left child.
+	    if ( GetLeftChild() != pLargestOfSmallest )
+	    {
+	      GetLeftChild()->SetRightChild( pLargestOfSmallest->GetLeftChild());
+	      if ( pLargestOfSmallest->GetLeftChild() != NULL )
+		pLargestOfSmallest->GetLeftChild()->SetParent( GetLeftChild() );
+	      
+	      pLargestOfSmallest->SetLeftChild( this->GetLeftChild() );
+	      if( this->GetLeftChild() != NULL ) 
+		this->GetLeftChild()->SetParent( pLargestOfSmallest );
+	    }
+	    // Right child of LOS will be this->rightchild
+	    pLargestOfSmallest->SetRightChild( this->GetRightChild());
+	    if ( this->GetRightChild() != NULL )
+	      this->GetRightChild()->SetParent( pLargestOfSmallest);
+	    
+	    switch( tType )
+	    {
+	    case NODE_ROOT:
+	      GetTree()->SetRoot( pLargestOfSmallest );
+	      pLargestOfSmallest->SetParent( NULL );
+	      break;
+	    case NODE_LEFT_CHILD:
+	      this->GetParent()->SetLeftChild( pLargestOfSmallest);
+	      pLargestOfSmallest->SetParent( this->GetParent());
+	      break;
+	    case NODE_RIGHT_CHILD:
+	      this->GetParent()->SetRightChild( pLargestOfSmallest);
+	      pLargestOfSmallest->SetParent( this->GetParent());
+	      break;
+	    }
+	    // Take care of balancing.
+	    if ( pLargestOfSmallest->GetLeftChild() != NULL )
+	    {
+	      pLargestOfSmallest->GetLeftChild()->CalculateHeight();
+	      pLargestOfSmallest->GetLeftChild()->CheckBalance();
+	      pLargestOfSmallest->GetLeftChild()->PropagateHeight();
+	    }
+	    else
+	    {
+	      pLargestOfSmallest->CalculateHeight();
+	      pLargestOfSmallest->CheckBalance();
+	      pLargestOfSmallest->PropagateHeight();
+	    }
+	  }
+	}
+	////////////////////
+	/// Seeks the largest of smallest child nodes.
+	/// \returns Pointer to such node if one exists. Otherwise NULL.
+	CAVLTreeNode * SeekLargestOfSmallest() const
+	{
+	  CAVLTreeNode *pTemp = GetLeftChild();
+	  if ( pTemp == NULL ) return NULL;
+	  while( pTemp->GetRightChild() != NULL ) 
+	  {
+	    pTemp = pTemp->GetRightChild();
+	  }
+	  return pTemp;
 	}
       }; // CBinTree
       ////////////////////
@@ -474,7 +596,7 @@ namespace Phoenix
 	////////////////////
 	/// Returns root node.
 	/// \returns Pointer to root node .
-	inline CAVLTreeNode<KeyValue> *GetRoot() 
+	inline CAVLTreeNode<KeyValue> *GetRoot()  const
 	{
 	  return m_pRoot;
 	}
@@ -541,13 +663,24 @@ namespace Phoenix
 	/// Seeks key from binary tree.
 	/// \param iKey Key to seek.
 	/// \returns KeyValue object.
-	KeyValue * Find( int iKey )
+	inline KeyValue * Find( int iKey ) const
+	{
+	  CAVLTreeNode<KeyValue> *pTemp = FindNode( iKey );
+	  if ( pTemp != NULL ) 
+	    return &pTemp->GetKeyValue();
+	  return NULL;
+	} // Find( ...
+	////////////////////
+	/// Seeks node from binary tree.
+	/// \param iKey Key to seek.
+	/// \returns Pointer to node.
+	CAVLTreeNode<KeyValue> *FindNode( int iKey ) const
 	{
 	  if ( GetRoot() == NULL ) return NULL;
-
+	  
 	  CAVLTreeNode<KeyValue> *pTemp = GetRoot();
-	  int bFound = 0;
-	  while ( !bFound )
+
+	  while ( pTemp != NULL  )
 	  {
 	    if ( iKey < pTemp->GetKeyValue().GetKey() )
 	    {
@@ -557,16 +690,38 @@ namespace Phoenix
 	    {
 	      pTemp = pTemp->GetRightChild();
 	    }
-	    else return &pTemp->GetKeyValue();
+	    else return pTemp;
 	  } // while
 	  return NULL;
-	} // Find( ...
-	
+	} // FindNode
+	////////////////////
+	/// Deletes node with key.
+	/// \param iKey Key to node.
+	/// \returns zero if success, non-zero on failure.
+	int Delete( int iKey )
+	{
+	  CAVLTreeNode<KeyValue> *pTemp = FindNode( iKey );
+	  if ( pTemp != NULL ) 
+	  {
+	    delete pTemp;
+	    return 0;
+	  }
+	  return 1;
+	}
+	////////////////////
+	/// Returns height of the tree.
+	/// \returns height of root node, if it exists, 0 otherwise.
+	inline unsigned int GetHeight() const
+	{
+	  if ( GetRoot() == NULL ) return 0;
+	  else return GetRoot()->GetHeight();
+	}
 	////////////////////
 	/// Travels through tree in Pre-Order.
 	template< class Handler >
 	void ProcessPreOrder( Handler &handler, CAVLTreeNode<KeyValue> *pNode ) 
 	{
+	  if ( pNode == NULL ) return;
 	  handler.Handle( *pNode );
 	  if ( pNode->GetLeftChild() != NULL) ProcessPreOrder( handler, pNode->GetLeftChild());
 	  if ( pNode->GetRightChild() != NULL ) ProcessPreOrder( handler, pNode->GetRightChild());
@@ -576,6 +731,7 @@ namespace Phoenix
 	template< class Handler >
 	void ProcessInOrder( Handler &handler, CAVLTreeNode<KeyValue> *pNode ) 
 	{
+	  if ( pNode == NULL ) return;
 	  if ( pNode->GetLeftChild() != NULL) ProcessInOrder(handler, pNode->GetLeftChild());
 	  handler.Handle( *pNode );
 	  if ( pNode->GetRightChild() != NULL ) ProcessInOrder(handler, pNode->GetRightChild());
@@ -585,6 +741,7 @@ namespace Phoenix
 	template< class Handler >
 	void ProcessPostOrder( Handler &handler, CAVLTreeNode<KeyValue> *pNode ) 
 	{
+	  if ( pNode == NULL ) return;
 	  if ( pNode->GetLeftChild() != NULL) ProcessPostOrder( handler, pNode->GetLeftChild());
 	  if ( pNode->GetRightChild() != NULL ) ProcessPostOrder( handler, pNode->GetRightChild());
 	  handler.Handle( *pNode );
