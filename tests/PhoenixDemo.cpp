@@ -1,4 +1,6 @@
 #include "Phoenix.h"
+#include <iostream>
+using std::string;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
 using namespace Phoenix::Math;
@@ -44,22 +46,45 @@ int main()
   pColors->GetPointer<unsigned char>()[9] = 0;
   pColors->GetPointer<unsigned char>()[10] = 255;
   pColors->GetPointer<unsigned char>()[11] = 255;
-
+  ////////////////////
+  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX0_2F, 3 );
+  pTexCoords->GetPointer<float>()[0] = 0.0f;
+  pTexCoords->GetPointer<float>()[1] = 0.0f;
+  pTexCoords->GetPointer<float>()[2] = 1.0f;
+  pTexCoords->GetPointer<float>()[3] = 0.0f;
+  pTexCoords->GetPointer<float>()[4] = 0.5f;
+  pTexCoords->GetPointer<float>()[5] = 1.0f;
+  
   CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, 3 );
   pIndices->GetPointer<unsigned short int>()[0] = 0;
   pIndices->GetPointer<unsigned short int>()[1] = 1;
   pIndices->GetPointer<unsigned short int>()[2] = 2;
 
   COglRenderer *pOglRenderer = new COglRenderer();
+  string strTexFilename("opengl.tga");
+  COglTexture *pTexture = pOglRenderer->CreateTexture(strTexFilename);
+  
   pOglRenderer->ClearBuffer( COLOR_BUFFER );
   pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-  
+  // Draw colored triangle
   pOglRenderer->CommitVertexDescriptor( pVertices );
   pOglRenderer->CommitVertexDescriptor( pColors );
   pOglRenderer->CommitPrimitive( pIndices );
-  
-  pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
+  // Draw textured / transparent triangle
+  pOglRenderer->CommitTexture( 0, pTexture );
+  glEnable(GL_ALPHA_TEST);
+  glAlphaFunc( GL_GREATER, 0.3f);
+  glTranslatef( 0,0,0.3f);
+  pOglRenderer->CommitVertexDescriptor( pTexCoords );
   pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
+  CVector4<unsigned char> vWhite(255,255,255,255);
+  pOglRenderer->CommitColor( vWhite );
+  pOglRenderer->CommitTexture( 0, pTexture );
+  pOglRenderer->CommitPrimitive( pIndices );
+
+  pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
+  pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
+  pOglRenderer->DisableTexture( 0, pTexture );
   pOglRenderer->Finalize();
   sleep(2);
   CSDLScreen::Destroy();
