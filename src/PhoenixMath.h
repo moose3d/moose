@@ -171,15 +171,44 @@ namespace Phoenix
     /// Converts quaternion into rotation matrix
     void QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix);
 
-
+    ////////////////////
+    /// The numerically stable minimal rotation arc between vectors v0 and v1.
+    /// Note that it must be v0 != -v1!
+    /// \param v0 some vector.
+    /// \param v1 another vector.
+    /// \returns Quaternion expressing rotation from v0 to v1. If (v0 == -v1), result is undefined.
+    CQuaternion RotationArc( CVector3<float> v0, CVector3<float> v1);
     ////////////////////
     /// Performs a spherical linear interpolation between quaternions qFrom and qTo.
     /// \param qFrom Rotation which is the beginning.
     /// \param qTo Rotation which is the end.
     /// \float fInterpolation between 0.0f (qFrom) and 1.0f (qTo).
     CQuaternion Slerp(CQuaternion qFrom, CQuaternion qTo, float fInterpolation);
-    
+
+    ////////////////////
+    /// Inverses matrix.
+    /// 2x2 matrix inverse using Gauss-Jordan algorithm with row pivoting.
+    /// \param mOrig Matrix which will be inverted.
+    /// \param mInverse Matrix where inverted matrix will be stored.
+    /// \returns zero, if matrix is invertible and assigns mInverse as the inverted matrix
+    ///		 non-zero if matrix is not invertible. mInverse in this case is undefined.
+    int InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInverse);
+    ////////////////////
+    /// Inverses matrix.
+    /// 3x3 matrix inverse using Gauss-Jordan algorithm with row pivoting.
+    /// \param mOrig Matrix which will be inverted.
+    /// \param mInverse Matrix where inverted matrix will be stored.
+    /// \returns zero, if matrix is invertible and assigns mInverse as the inverted matrix
+    ///		 non-zero if matrix is not invertible. mInverse in this case is undefined.
+    int InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInverse);    
+    ////////////////////
+    /// Inverses matrix.
+    /// 4x4 matrix inverse using Gauss-Jordan algorithm with row pivoting.
+    /// \param mOrig Matrix which will be inverted.
+    /// \param mInverse Matrix where inverted matrix will be stored.
+    /// \returns zero, if matrix is invertible and assigns mInverse as the inverted matrix
+    ///		 non-zero if matrix is not invertible. mInverse in this case is undefined.
+    int InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInverse);
   }; // namespace Math
 }; // namespace Phoenix
-
 #endif
