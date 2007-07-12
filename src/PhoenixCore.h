@@ -263,6 +263,18 @@ namespace Phoenix
       {
 	return nKey % GetSize();
       }
+      ////////////////////
+      /// Creates hash of string. Uses djb2 algorithm.
+      unsigned int CreateHash( const std::string &string )
+      {
+	unsigned int nHash = 5381;
+        int c;
+	char *pStr = string.c_str();
+	while (c = *pStr++)
+	  nHash = ((nHash << 5) + nHash) + c; /* hash * 33 + c */
+	
+        return nHash % GetSize();
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Singleton template, which makes creating singleton objects easier.
@@ -401,10 +413,13 @@ namespace Phoenix
       {
 	return m_lstValues;
       }
+
     };
     /////////////////////////////////////////////////////////////////
   }; // namespace core
 }// namespace Phoenix
+/////////////////////////////////////////////////////////////////
+#include "PhoenixObjectCounter.h"
 /////////////////////////////////////////////////////////////////
 #endif 
 /////////////////////////////////////////////////////////////////
