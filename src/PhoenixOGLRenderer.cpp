@@ -7,9 +7,33 @@
 #include <iostream>
 #include "PhoenixGlobals.h"
 #include "PhoenixOGLRenderer.h"
+#include "PhoenixTGAImage.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
 using std::endl;
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture::COglTexture( unsigned int nId, TEXTURE_TYPE tType ) : m_nOglId(nId), 
+										      m_tTextureType(tType)
+{
+  
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture::~COglTexture()
+{
+  glDeleteTextures( 1, &m_nOglId );
+}
+/////////////////////////////////////////////////////////////////
+unsigned int 
+Phoenix::Graphics::COglTexture::GetID() const
+{
+  return m_nOglId;
+}
+/////////////////////////////////////////////////////////////////
+TEXTURE_TYPE 
+Phoenix::Graphics::COglTexture::GetType() const
+{
+  return m_tTextureType;
+}
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
@@ -134,14 +158,14 @@ Phoenix::Graphics::COglRenderer::~COglRenderer()
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::COglRenderer::ClearBuffer(BUFFER_TYPE tType)
+Phoenix::Graphics::COglRenderer::ClearBuffer(Phoenix::Graphics::BUFFER_TYPE tType)
 {
   switch( tType )
   {
-  case COLOR_BUFFER:
+  case Phoenix::Graphics::COLOR_BUFFER:
     glClear(GL_COLOR_BUFFER_BIT);
     break;
-  case DEPTH_BUFFER:
+  case Phoenix::Graphics::DEPTH_BUFFER:
     glClear(GL_DEPTH_BUFFER_BIT);
     break;
   }
@@ -223,12 +247,6 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitColor( CVector4<unsigned char> &vColor )
-{
-  glColor4ubv( vColor.GetArray());
-}
-/////////////////////////////////////////////////////////////////
-void 
 Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
 {
   switch ( tType)
@@ -260,6 +278,116 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_TEX0_ARRAY:
     glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    break;
+  }
+}
+/////////////////////////////////////////////////////////////////
+
+
+Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename )
+{
+  ////////////////////
+#define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
+  ////////////////////
+  CTGAImage *pImage = new CTGAImage();
+  COglTexture *pTexture = NULL;
+  switch ( pImage->Load( strFilename ) )
+  {
+  case IMG_OK:
+    break;
+  case IMG_ERR_NO_FILE:
+    std::cerr << "No such file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  case IMG_ERR_UNSUPPORTED:
+    std::cerr << "Unsupported format in file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  case IMG_ERR_MEM_FAIL:
+    std::cerr << "Out of memory while loading file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  case IMG_ERR_BAD_FORMAT:
+    std::cerr << "Out of memory while loading file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  }
+  ////////////////////
+  int    iGLInternalFormat = 3;
+  GLenum iGLformat = GL_RGB;
+  ////////////////////
+  // Check correct depth
+  switch (pImage->GetBPP())
+  {
+  case 24:
+    break;
+  case 32:
+    iGLInternalFormat = 4;
+    iGLformat = GL_RGBA;
+    break;
+  default:
+    delete pImage;
+    std::cerr << "Not 24 or 32 BBP image :  '" << strFilename << "'" << std::endl;
+    return NULL;
+  }
+  ////////////////////
+  // create texture
+  unsigned int iTexId;
+  glGenTextures( 1, &iTexId);
+  pTexture = new COglTexture( iTexId, TEXTURE_2D );
+
+  // check memory allocation
+  if ( !pTexture ) return NULL;
+
+  // create actual gl texture 
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, pTexture->GetID());  
+  glTexImage2D( GL_TEXTURE_2D, 0, iGLInternalFormat, 
+		pImage->GetWidth(), pImage->GetHeight(), 0, 
+		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
+  // build mipmaps 
+  gluBuild2DMipmaps(GL_TEXTURE_2D, iGLInternalFormat, 
+		    pImage->GetWidth(), pImage->GetHeight(),
+		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
+  
+  glDisable(GL_TEXTURE_2D);
+  ////////////////////
+  // ReleaseMemory
+  CLEANUP();
+  ////////////////////
+#undef CLEANUP  	   
+  ////////////////////
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType )
+{
+  return NULL;
+}
+/////////////////////////////////////////////////////////////////
+#define GL_ENABLE_TEXTURE( TYPE, ID ) { glEnable( TYPE ); glBindTexture( TYPE, ID );} 
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTexture *pTexture )
+{
+  glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
+  switch ( pTexture->GetType())
+  {
+  case TEXTURE_2D:
+    GL_ENABLE_TEXTURE( GL_TEXTURE_2D, pTexture->GetID());
+    break;
+  }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglTexture *pTexture )
+{
+  glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
+  switch ( pTexture->GetType())
+  {
+  case TEXTURE_2D:
+    glDisable( GL_TEXTURE_2D);
     break;
   }
 }
