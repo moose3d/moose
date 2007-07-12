@@ -179,29 +179,7 @@ namespace Phoenix
 	m_pValues[3] = qQuat.m_pValues[3];
       }
     };
-    ////////////////////
-    /// The numerically stable minimal rotation arc between vectors v0 and v1.
-    /// Note that it must be v0 != -v1!
-    /// \param v0 some vector.
-    /// \param v1 another vector.
-    /// \returns Quaternion expressing rotation from v0 to v1. If (v0 == -v1), result is undefined.
-    template < typename TYPE > CQuaternion RotationArc( CVector3<TYPE> v0, CVector3<TYPE> v1);
   }; // namespace Math
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-template< typename TYPE>
-Phoenix::Math::CQuaternion
-Phoenix::Math::RotationArc( CVector3<TYPE> v0, CVector3<TYPE> v1)
-{
-  v0.Normalize();
-  v1.Normalize();
-  CVector3<float> vCross = v0.Cross(v1);
-  
-  float  fDot = v0.Dot(v1);
-  float  fS   = sqrtf((1.0f+fDot)*2.0f);
-  float  f1DivS = 1.0f / fS;
-  
-  return CQuaternion(vCross[0] * f1DivS,  vCross[1] * f1DivS,   vCross[2] * f1DivS,
-		     fS * 0.5f );
-}
 #endif
