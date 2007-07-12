@@ -4,7 +4,6 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
-#include "PhoenixTGAImage.h"
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -17,9 +16,9 @@ namespace Phoenix
       CLIENT_STATE_COLOR_ARRAY = 1,
       CLIENT_STATE_TEX0_ARRAY
     };
-    enum PX_TEXTURE_TYPE 
+    enum TEXTURE_TYPE 
     {
-      PX_TEXTURE_2D = 0
+      TEXTURE_2D = 0
     };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
@@ -93,10 +92,12 @@ namespace Phoenix
     {
     private:
       unsigned int m_nOglId;
+      TEXTURE_TYPE m_tTextureType;
     public:
-       COglTexture( unsigned int nId, PX_TEXTURE_TYPE tType );
-      ~COglTexture();
-      
+        COglTexture( unsigned int nId, TEXTURE_TYPE tType );
+	~COglTexture();
+       unsigned int GetID() const;
+       TEXTURE_TYPE GetType() const;
     };
     /////////////////////////////////////////////////////////////////
     /// BufferType
@@ -146,10 +147,38 @@ namespace Phoenix
       /// Enable client states, such as vertex array.
       /// \param tType CLIENT_STATE_TYPE to be enabled.
       void EnableClientState( CLIENT_STATE_TYPE tType );
-
+      ////////////////////
+      /// Enables texture.
+      /// \param nTexUnit which texture unit does this texture belong to ( 0 - 7)
+      /// \param pTexture Texture object
+      void CommitTexture( unsigned int nTexUnit, COglTexture *pTexture );
+      ////////////////////
+      /// Disables texture.
+      /// \param nTexUnit which texture unit does this texture belong to ( 0 - 7)
+      /// \param pTexture Texture object.
+      void DisableTexture( unsigned int nTexUnit, COglTexture *pTexture );
+      ////////////////////
+      /// Creates new 2D texture from TGA image.
+      /// \param strFilename filename for tga image.
+      /// \returns Pointer to COglTexture.
+      COglTexture * CreateTexture( const std::string &strFilename );
+      ////////////////////
+      /// Creates new empty 2D texture.
+      /// \param nWidth width of texture.
+      /// \param nHeight height of texture.
+      /// \param tType TEXTURE_TYPE 
+      /// \returns Pointer to COglTexture.
+      COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType );
+      
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitColor( CVector4<unsigned char> &vColor )
+{
+  glColor4ubv( vColor.GetArray());
+}
 #endif
