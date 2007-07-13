@@ -8,6 +8,7 @@ namespace Phoenix
 {
   namespace Core
   {
+    using namespace Phoenix::Core;
     ////////////////////
     /// Handle class.
     template<typename TAG>
@@ -16,22 +17,38 @@ namespace Phoenix
     private:
       unsigned int m_nIndex;
     public:
+      ////////////////////
+      /// Constructor.
       CHandle() : CNullable(), m_nIndex(0) {  }
+      ////////////////////
+      /// Destructor.
       ~CHandle() {}
+      //////////////////// 
+      /// Returns index.
+      /// \returns current index pointed by handle.
       inline unsigned int GetIndex() const
       {
 	return m_nIndex;
       }
+      ////////////////////
+      /// Initializes handle.
+      /// \param nIndex Index where handle points.
       inline void Initialize( unsigned int nIndex )
       {
 	m_nIndex = nIndex;
 	SetNull(0);
       }
+      ////////////////////
+      /// Nullifies handle. Handle won't point anywhere.
       inline void Nullify()
       {
 	m_nIndex = 0;
 	SetNull(1);
       }
+      ////////////////////
+      /// Comparison for handles by indices.
+      /// \param handle Another handle.
+      /// \returns boolean true if same, false otherwise.
       bool operator==( const CHandle<TAG> & handle ) const
       {
 	return (handle.GetIndex() == GetIndex());
@@ -84,25 +101,21 @@ namespace Phoenix
     };
     ////////////////////
     /// Resource Manager class.
-    template<typename OBJECTTYPE, typename HANDLE>
-    class CResourceManager
+    template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+    class CResourceManager : public CSingleton<CResourceManager<OBJECTTYPE,HANDLE,SIZE> >
     {
+      friend class CSingleton<CResourceManager<OBJECTTYPE,HANDLE,SIZE> >;
     protected:
-      CHashTable<std::string,ResourceName> *m_pResourceHash;
+      CHashTable<std::string,CResourceName> *m_pResourceHash;
       std::vector<OBJECTTYPE *> m_vecObjects;
-    public:
+
       ////////////////////
       /// Constructor.
-      CResourceManager( unsigned int nSize ) 
-      {
-	m_pResourceHash = new CHashTable<std::string,ResourceName>(nSize);
-      }
+      CResourceManager();
       ////////////////////
       /// Destructor.
-      ~CResourceManager() 
-      {
-	delete m_pResourceHash;
-      }
+      ~CResourceManager();
+    public:
       ////////////////////
       /// Creates new resource to pointer, named strName - handle 
       /// is initialized refer to that object.
@@ -135,13 +148,24 @@ namespace Phoenix
   };
 };
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
-int
-Phoenix::Core::CResourceManager::Create( OBJECTTYPE *pType, 
-					 const str::string &strName, 
-					 HANDLE *pHandle )
+template<typename OBJECTTYPE, typename HANDLE,size_t SIZE>
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::CResourceManager()
 {
-  
+  m_pResourceHash = new CHashTable<std::string,CResourceName>(SIZE);
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE,size_t SIZE>
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::~CResourceManager() 
+{
+  delete m_pResourceHash;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE,size_t SIZE>
+int
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::Create( OBJECTTYPE *pType, 
+							    const std::string &strName, 
+							    HANDLE *pHandle )
+{
   if ( m_pResourceHash->Find(strName)==NULL )
   {
 
@@ -152,9 +176,9 @@ Phoenix::Core::CResourceManager::Create( OBJECTTYPE *pType,
     CResourceName resourceName;
     resourceName.SetName( strName );
     resourceName.SetIndex( nIndex );
-    
+
     // Put string-> resourcename into hashtable.
-    CHashItem<std::string,ResourceName> hashItem;
+    CHashItem<std::string,CResourceName> hashItem;
     hashItem.SetKey(strName);
     hashItem.SetObject(resourceName);
     
@@ -170,23 +194,23 @@ Phoenix::Core::CResourceManager::Create( OBJECTTYPE *pType,
   return -1;
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
+template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
 void
-Phoenix::Core::CResourceManager::DeleteMemory()
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::DeleteMemory()
 {
   for(unsigned int n=0;n<GetSize();n++)
   {
-    if ( m_vecObjects[i] != NULL )
-      delete m_vecObjects[i];
-    m_vecObjects[i] = NULL;
+    if ( m_vecObjects[n] != NULL )
+      delete m_vecObjects[n];
+    m_vecObjects[n] = NULL;
   }
   delete m_pResourceHash;
   m_pResourceHash = NULL;
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
-void
-Phoenix::Core::CResourceManager::GetResource( const HANDLE &handle)
+template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+OBJECTTYPE *
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetResource( const HANDLE &handle) const
 {
   if ( handle.GetIndex() >= GetSize() || handle.IsNull() )
   {
@@ -195,27 +219,26 @@ Phoenix::Core::CResourceManager::GetResource( const HANDLE &handle)
   return m_vecObjects[handle.GetIndex()];
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
-void
-Phoenix::Core::CResourceManager::GetResource( const std::string &strName )
+template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+OBJECTTYPE *
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetResource( const std::string &strName ) const
 {
-  CResourceName *pResName = m_pResourceHash->Find(strName);
+  CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
+  if ( pHashItem == NULL ) return NULL;
 
-  if ( pResName == NULL ) return NULL;
-
-  return m_vecObjects[pResName->GetIndex()];
+  return m_vecObjects[pHashItem->GetObject().GetIndex()];
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
+template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
 inline unsigned int
-Phoenix::Core::CResourceManager::GetSize()
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetSize() const
 {
   return m_vecObjects.size();
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
+template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
 inline void
-Phoenix::Core::CResourceManager::Release( HANDLE &handle )
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::Release( HANDLE &handle )
 {
   handle.Nullify();
   ///  remove pointer to handle in ResourceName (future)
