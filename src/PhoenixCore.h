@@ -182,7 +182,7 @@ namespace Phoenix
       ////////////////////
       /// Sets item key.
       /// \param nKey Item key.
-      inline void SetKey( KEYTYPE & key )
+      inline void SetKey( const KEYTYPE & key )
       {
 	m_Key = key;
       }
@@ -276,7 +276,7 @@ namespace Phoenix
       /// Finds HashItem by key. 
       /// \param nKey Key to object.
       /// \returns NULL if not found, pointer to hashitem otherwise.
-      CHashItem<KEYTYPE,OBJECTTYPE> * Find( KEYTYPE &nKey ) const
+      CHashItem<KEYTYPE,OBJECTTYPE> * Find( const KEYTYPE &nKey ) const
       {
 	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
@@ -324,7 +324,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Returns a pointer to this singleton.
-      static T *GetInstance() 
+      inline static T *GetInstance() 
       {
 	if ( m_pSingleton == NULL )
 	{
@@ -333,7 +333,7 @@ namespace Phoenix
 	return m_pSingleton;
       }
       /// Destroys this singleton.
-      static void Destroy()
+      inline static void DestroyInstance()
       {
 	if ( m_pSingleton != NULL )
 	{
@@ -345,101 +345,6 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Initialize the static member in the derived classes.
     template<class T> T *CSingleton<T>::m_pSingleton = NULL;
-    /////////////////////////////////////////////////////////////////
-    /// A template which creates KEY-VALUE maps between given types.
-    /// If you use pointers as keys, you better know the effects.
-    /// ie. const char * will make your dustbin go wah-wah in no time. Get that?
-    /// Yup, that's what I thought.
-    template <typename KEY, typename VALUE>
-    class CMapper
-    {
-    protected:
-      /// map template
-      std::map< KEY , VALUE * > m_Map;
-    public:
-      ////////////////////
-      /// Default constructor.
-      CMapper()
-      {
-      }
-      ////////////////////
-      /// Destructor.
-      ~CMapper()
-      {
-	Clear();
-      }
-      ////////////////////
-      /// Clears all mappings.
-      void Clear()
-      {
-	m_Map.clear();
-      }
-      ////////////////////
-      /// Adds pValue under the key kKey into the map.
-      /// \param kKey key value.
-      /// \param pValue a pointer.
-      void Map( KEY kKey, VALUE *pValue )
-      {
-	m_Map[kKey] = pValue;
-      }
-      ////////////////////
-      /// Finds the pointer to the object mapped with key kKey. 
-      /// \param kKey key value for object.
-      /// \return a pointer to found object, or if not found, NULL.
-      VALUE *Find( KEY kKey )
-      {
-	// Try to find key-value pair
-	typename std::map< KEY, VALUE * >::iterator itValue = m_Map.find( kKey ) ;
-    
-	if ( itValue == m_Map.end())
-	{
-	  return NULL; // no luck, so we return NULL
-	} 
-	// Return the object pointer
-	return itValue->second;
-      }
-    };
-    /////////////////////////////////////////////////////////////////
-    /// A value list container.
-    template <typename T>
-    class CValueList 
-    {
-    protected:
-      /// List of values.
-      std::list<T> m_lstValues;
-    public:
-      ////////////////////
-      /// Constructor.
-      CValueList()
-      {
-      }
-      ////////////////////
-      /// Destructor.
-      ~CValueList()
-      {
-	Clear();
-      }
-      ////////////////////
-      /// Adds value to list.
-      /// \param value Value to be added.
-      inline void Add( T value )
-      {
-	m_lstValues.push_back(value);
-      }
-      ////////////////////
-      /// Clears the list.
-      inline void Clear()
-      {
-	m_lstValues.clear();
-      }
-      ////////////////////
-      /// Returns a reference to the value list.
-      const std::list<T> & GetValues()
-      {
-	return m_lstValues;
-      }
-
-    };
     /////////////////////////////////////////////////////////////////
   }; // namespace core
 }// namespace Phoenix
