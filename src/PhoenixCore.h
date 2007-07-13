@@ -19,6 +19,26 @@ namespace Phoenix
   {
     using namespace Phoenix::Core;
     /////////////////////////////////////////////////////////////////
+    class CNullable
+    {
+    private:
+      /// State
+      int m_bIsNull;
+    protected:
+      ////////////////////
+      /// Constructor.
+      CNullable() : m_bIsNull(1) { }
+    public:
+      ////////////////////
+      /// Assigns null state.
+      /// \param bNull Nullification state.
+      inline void SetNull(int bNull) { m_bIsNull = bNull; }
+      ////////////////////
+      /// Returns nullification state.
+      /// \returns state.
+      inline int IsNull() const { return m_bIsNull; }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
     class CTimer 
     {
@@ -139,57 +159,68 @@ namespace Phoenix
       }
     
     };
- /////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
     /// The base object for hash table storing.
-    template<typename A>
+    template<typename KEYTYPE, typename OBJECTTYPE>
     class CHashItem
     {
     protected:
       /// The identification number for the object.
-      unsigned int	m_nId;
+      KEYTYPE			m_Key;
       /// Object itself.
-      A		m_Object;
+      OBJECTTYPE		m_Object;
     public:
       ////////////////////
       /// Constructor.
-      CHashItem( unsigned int nId, A &object ) : m_nId(nId), m_Object(object)
+      CHashItem() { }
+      ////////////////////
+      /// 
+      inline void SetObject( OBJECTTYPE & object )
       {
+	m_Object = object;
       }
       ////////////////////
-      /// Returns the ID number for this object.
-      inline unsigned int GetID() const
+      /// Sets item key.
+      /// \param nKey Item key.
+      inline void SetKey( KEYTYPE & key )
       {
-	return m_nId;
+	m_Key = key;
+      }
+      ////////////////////
+      /// Returns the key for this object.
+      /// \returns Hash key.
+      inline KEYTYPE GetKey() const
+      {
+	return m_Key;
       }
       ////////////////////
       /// Returns reference to object.
-      inline A & GetObject()
+      inline OBJECTTYPE & GetObject() 
       {
 	return m_Object;
       }
       ////////////////////
       /// Comparison operator.
-      inline bool operator==( const CHashItem & item )
+      inline bool operator==( const CHashItem & item ) const
       {
-	return (item.GetID() == GetID());
+	return (item.GetKey() == GetKey());
       }
       ////////////////////
       /// Assignment operator.
-      inline void operator=(const CHashItem &item)
+      inline void operator=(CHashItem &item)
       {
-	m_nId = item.GetID();
+	m_Key    = item.GetKey();
 	m_Object = item.GetObject();
       }
     };
-    
     /////////////////////////////////////////////////////////////////
     /// Hash table class for several types.
-    template <typename T>
+    template <typename KEYTYPE, typename OBJECTTYPE>
     class CHashTable
     {
     protected:
       /// vector of vector of objects.
-      std::vector< CHashItem<T> > *m_pTable;
+      std::vector< CHashItem<KEYTYPE,OBJECTTYPE> > *m_pTable;
       unsigned int		   m_nSize;
     public:
       ////////////////////
@@ -197,7 +228,7 @@ namespace Phoenix
       CHashTable( unsigned int nSize) : m_nSize(nSize) 
       {
 	assert ( m_nSize > 0 );
-	m_pTable = new std::vector< CHashItem<T> >[GetSize()];
+	m_pTable = new std::vector< CHashItem<KEYTYPE,OBJECTTYPE> >[GetSize()];
       }
       ////////////////////
       /// Destructor.
@@ -208,7 +239,7 @@ namespace Phoenix
       ////////////////////
       /// Inserts new item to hashtable.
       /// \param obj object to be inserted.
-      inline void Insert( CHashItem<T> &obj )
+      inline void Insert( CHashItem<KEYTYPE,OBJECTTYPE> &obj )
       {
 	unsigned int nHash = CreateHash( obj.GetKey() );
 	m_pTable[nHash].push_back(obj);
@@ -218,19 +249,19 @@ namespace Phoenix
       /// \return number of hash slots.
       inline int GetSize() const
       {
-	return m_nSize();
+	return m_nSize;
       }
       ////////////////////
       /// Deletes object with key.
       /// \param nKey Key to object.
       void Delete( unsigned int nKey )
       {
-	CHashItem<T> item;
+	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
 	
 	int nHash = CreateHash(nKey);
-	std::vector< CHashItem<T> > *pHashChain = &m_pTable[nHash];
-	typename std::vector< CHashItem<T> >::iterator it;
+	std::vector< CHashItem<KEYTYPE,OBJECTTYPE> > *pHashChain = &m_pTable[nHash];
+	typename std::vector< CHashItem<KEYTYPE,OBJECTTYPE> >::iterator it;
 
 	for( it = pHashChain->begin(); it!= pHashChain->end(); it++)
 	{
@@ -245,32 +276,27 @@ namespace Phoenix
       /// Finds HashItem by key. 
       /// \param nKey Key to object.
       /// \returns NULL if not found, pointer to hashitem otherwise.
-      CHashItem<T> * Find( int nKey )
+      CHashItem<KEYTYPE,OBJECTTYPE> * Find( KEYTYPE &nKey ) const
       {
-	
-	CHashItem<T> item;
+	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
 	
 	int nHash = CreateHash(nKey);
-	std::vector<CHashItem<T> > *pHashChain = &m_pTable[nHash];
-	for( unsigned int i =0; i<pHashChain.size();  i++)
+	std::vector<CHashItem<KEYTYPE,OBJECTTYPE> > *pHashChain = &m_pTable[nHash];
+	for( unsigned int i =0; i<pHashChain->size();  i++)
 	{
 	  if ((*pHashChain)[i] == item ) return (&(*pHashChain)[i]);
 	}
 	return NULL;
       }
-      unsigned int CreateHash( unsigned int nKey )
-      {
-	return nKey % GetSize();
-      }
-      ////////////////////
+        ////////////////////
       /// Creates hash of string. Uses djb2 algorithm.
-      unsigned int CreateHash( const std::string &string )
+      unsigned int CreateHash( const std::string &string ) const
       {
 	unsigned int nHash = 5381;
         int c;
-	char *pStr = string.c_str();
-	while (c = *pStr++)
+	const char *pStr = string.c_str();
+	while ( (c = *pStr++) )
 	  nHash = ((nHash << 5) + nHash) + c; /* hash * 33 + c */
 	
         return nHash % GetSize();
@@ -335,7 +361,6 @@ namespace Phoenix
       /// Default constructor.
       CMapper()
       {
-	
       }
       ////////////////////
       /// Destructor.

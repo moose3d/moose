@@ -8,8 +8,10 @@ namespace Phoenix
 {
   namespace Core
   {
+    ////////////////////
+    /// Handle class.
     template<typename TAG>
-    class CHandle : protected CNullable
+    class CHandle : public CNullable
     {
     private:
       unsigned int m_nIndex;
@@ -19,6 +21,20 @@ namespace Phoenix
       inline unsigned int GetIndex() const
       {
 	return m_nIndex;
+      }
+      inline void Initialize( unsigned int nIndex )
+      {
+	m_nIndex = nIndex;
+	SetNull(0);
+      }
+      inline void Nullify()
+      {
+	m_nIndex = 0;
+	SetNull(1);
+      }
+      bool operator==( const CHandle<TAG> & handle ) const
+      {
+	return (handle.GetIndex() == GetIndex());
       }
     };
     ////////////////////
@@ -95,7 +111,26 @@ namespace Phoenix
       /// \param pHandle Pointer to handle which will refer to this resource.
       /// \returns zero on success, non-zero on error.
       int Create( OBJECTTYPE *pType, const std::string &strName, HANDLE *pHandle );
+      ////////////////////
+      /// Releases handle to this object.
+      /// \param handle Handle to object.
+      void Release( HANDLE &handle );
+      ////////////////////
+      /// Returns pointer to resource.
+      /// \param handle Handle to resource.
+      /// \returns Pointer to object, if handle is valid. NULL otherwise.
+      OBJECTTYPE *GetResource( const HANDLE &handle ) const;
+      ////////////////////
+      /// Returns pointer to resource.
+      /// \param name Registered resource name. 
+      /// \returns Pointer to object, if handle is valid. NULL otherwise.
+      OBJECTTYPE *GetResource( const std::string &resName ) const;
+      ////////////////////
+      /// Gets number of currently managed objects.
+      unsigned int GetSize() const;
       
+    private:
+      void DeleteMemory();
     };
   };
 };
@@ -124,8 +159,8 @@ Phoenix::Core::CResourceManager::Create( OBJECTTYPE *pType,
     hashItem.SetObject(resourceName);
     
     m_pResourceHash->Insert( hashItem );
-
     pHandle->Initialize( nIndex );
+
     return 0;
   } 
   else
@@ -133,6 +168,57 @@ Phoenix::Core::CResourceManager::Create( OBJECTTYPE *pType,
     pHandle->Nullify();
   }
   return -1;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager::DeleteMemory()
+{
+  for(unsigned int n=0;n<GetSize();n++)
+  {
+    if ( m_vecObjects[i] != NULL )
+      delete m_vecObjects[i];
+    m_vecObjects[i] = NULL;
+  }
+  delete m_pResourceHash;
+  m_pResourceHash = NULL;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager::GetResource( const HANDLE &handle)
+{
+  if ( handle.GetIndex() >= GetSize() || handle.IsNull() )
+  {
+    return NULL;
+  }
+  return m_vecObjects[handle.GetIndex()];
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager::GetResource( const std::string &strName )
+{
+  CResourceName *pResName = m_pResourceHash->Find(strName);
+
+  if ( pResName == NULL ) return NULL;
+
+  return m_vecObjects[pResName->GetIndex()];
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline unsigned int
+Phoenix::Core::CResourceManager::GetSize()
+{
+  return m_vecObjects.size();
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline void
+Phoenix::Core::CResourceManager::Release( HANDLE &handle )
+{
+  handle.Nullify();
+  ///  remove pointer to handle in ResourceName (future)
 }
 /////////////////////////////////////////////////////////////////
 #endif
