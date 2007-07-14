@@ -64,7 +64,7 @@ namespace Phoenix
       /// Returns pointer to index data .
       /// \returns Pointer to m_pIndexData
       template<typename TYPE>
-      inline TYPE *GetPointer()
+      inline TYPE *GetPointer() const
       {
 	return reinterpret_cast<TYPE *>(m_pIndexData);
       }
