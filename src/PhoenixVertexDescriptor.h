@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
-#include "PhoenixMath.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
 {
@@ -47,10 +46,18 @@ namespace Phoenix
       /// Returns float pointer.
       /// \returns pointer to float array
       template<typename TYPE> 
-      inline TYPE * GetPointer()
+      inline TYPE * GetPointer() const
       {
 	return reinterpret_cast<TYPE *>(m_pData);
       }
+      ////////////////////
+      /// Returns number of elements in descriptor.
+      /// \returns Number of elements.
+      inline unsigned int GetSize() const
+      {
+	return m_nSize;
+      }
+      
     };
   };  // end namespace Graphics
 };// end namespace Phoenix
