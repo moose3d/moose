@@ -15,8 +15,12 @@
 #include "PhoenixMatrix3x3.h"
 #include "PhoenixMatrix2x2.h"
 #include "PhoenixQuaternion.h"
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
+using Phoenix::Graphics::CVertexDescriptor;
+using Phoenix::Graphics::CIndexArray;
 namespace Phoenix 
 {
   namespace Math 
@@ -126,10 +130,10 @@ namespace Phoenix
 					 unsigned int iColSkip);
     
     // Returns the covariance matrix of the vertices in the pVertexDescriptor
-    //CMatrix3x3<float> CovarianceMatrix( float *pVertexDescriptor, unsigned int nNumVertices );
+    CMatrix3x3<float> CovarianceMatrix( const CVertexDescriptor &vertexDescriptor);
 
     // Returns the covariance matrix of the vertices in the pVertexDescriptor using the given indices 
-    //CMatrix3x3<float> CovarianceMatrix( float *pVertexDescriptor, const CIndexArray &indexBuffer );
+    CMatrix3x3<float> CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray &indexBuffer );
 
     // Calculates the eigenvectors and eigenvalues for matrix mMatrix 
     // using the Jacobi method. For matrices with dimensions less than 10,
