@@ -4,7 +4,9 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
+#include "PhoenixVector4.h"
 using namespace Phoenix::Graphics;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {

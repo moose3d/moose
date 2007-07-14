@@ -1,55 +1,35 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
 /////////////////////////////////////////////////////////////////
 #include <iostream>
-#include "GSE_Camera.h"
+#include "PhoenixCamera.h"
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
 /////////////////////////////////////////////////////////////////
-GSE_Camera::GSE_Camera() : GSE_Orientable()
+CCamera::CCamera() : COrientable()
 {
   SetFieldOfView(45.0);
   SetProjectionChanged(1);
 }
 /////////////////////////////////////////////////////////////////
-GSE_Camera::~GSE_Camera()
+CCamera::~CCamera()
 {
   
 }
 /////////////////////////////////////////////////////////////////
 float *
-GSE_Camera::GetOrthoPlanes()
+CCamera::GetOrthoPlanes()
 {
   return m_aOrthoPlanes;
 }
 /////////////////////////////////////////////////////////////////
 char
-GSE_Camera::IsOrthogonal()
+CCamera::IsOrthogonal()
 {
   return m_bOrtho;
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Camera::SetFieldOfView(float fDegrees)
+CCamera::SetFieldOfView(float fDegrees)
 {
   m_fFieldOfView = fDegrees;
   m_bOrtho = 0;
@@ -57,7 +37,7 @@ GSE_Camera::SetFieldOfView(float fDegrees)
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Camera::SetViewOrtho( float fLeft, float fRight, 
+CCamera::SetViewOrtho( float fLeft, float fRight, 
 			  float fBottom, float fTop )
 {
   m_aOrthoPlanes[0] = fLeft;
@@ -69,7 +49,7 @@ GSE_Camera::SetViewOrtho( float fLeft, float fRight,
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::SetViewport( int iX, int iY, int iWidth, int iHeight)
+CCamera::SetViewport( int iX, int iY, int iWidth, int iHeight)
 {
 
   m_aViewport[0] = iX;
@@ -80,7 +60,7 @@ GSE_Camera::SetViewport( int iX, int iY, int iWidth, int iHeight)
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::SetNearClipping(float fNearClipping)
+CCamera::SetNearClipping(float fNearClipping)
 {
 
   m_fNearClipping = fNearClipping;
@@ -88,7 +68,7 @@ GSE_Camera::SetNearClipping(float fNearClipping)
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::SetFarClipping(float fFarClipping)
+CCamera::SetFarClipping(float fFarClipping)
 {
 
   m_fFarClipping = fFarClipping;
@@ -96,43 +76,43 @@ GSE_Camera::SetFarClipping(float fFarClipping)
 }
 /////////////////////////////////////////////////////////////////
 float
-GSE_Camera::GetFarClipping()
+CCamera::GetFarClipping()
 {
   return m_fFarClipping;
 }
 /////////////////////////////////////////////////////////////////
 float
-GSE_Camera::GetNearClipping()
+CCamera::GetNearClipping()
 {
   return m_fNearClipping;
 }
 /////////////////////////////////////////////////////////////////
 float
-GSE_Camera::GetFieldOfView()
+CCamera::GetFieldOfView()
 {
   return m_fFieldOfView;
 }
 /////////////////////////////////////////////////////////////////
 int *
-GSE_Camera::GetViewport()
+CCamera::GetViewport()
 {
   return m_aViewport;
 }
 /////////////////////////////////////////////////////////////////
 char
-GSE_Camera::IsLensFlaresEnabled()
+CCamera::IsLensFlaresEnabled()
 {
   return m_bLensFlaresEnabled;
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::SetLensFlaresEnabled(char bFlag)
+CCamera::SetLensFlaresEnabled(char bFlag)
 {
   m_bLensFlaresEnabled = bFlag;
 }
 /////////////////////////////////////////////////////////////////
-GSE_Frustum &
-GSE_Camera::Frustum()
+CFrustum &
+CCamera::Frustum()
 {
   return m_Frustum;
 }
@@ -141,7 +121,7 @@ GSE_Camera::Frustum()
 // http://www.flipcode.com/articles/article_frustumculling.shtml
 //
 void
-GSE_Camera::CalculateBoundingSphere()
+CCamera::CalculateBoundingSphere()
 {
   float fViewLen = m_fFarClipping - m_fNearClipping;
   float fHeight = fViewLen * tan(DEG2RAD(m_fFieldOfView) * 0.5f);
@@ -149,13 +129,13 @@ GSE_Camera::CalculateBoundingSphere()
 
   // halfway point between near/far planes starting at the origin and 
   // extending along the z axis
-  GSE_Vector3 vP(0.0f, 0.0f, m_fNearClipping + fViewLen * 0.5f);
+  CVector3 vP(0.0f, 0.0f, m_fNearClipping + fViewLen * 0.5f);
 
   // the calculate far corner of the frustum
-  GSE_Vector3 vQ(fWidth, fHeight, fViewLen);
+  CVector3 vQ(fWidth, fHeight, fViewLen);
   
   // the vector between P and Q
-  GSE_Vector3 vDiff = vP - vQ;
+  CVector3 vDiff = vP - vQ;
   
   // the radius becomes the length of this vector
   m_FrustumSphere.SetRadius( vDiff.Length());
@@ -166,7 +146,7 @@ GSE_Camera::CalculateBoundingSphere()
 }
 /////////////////////////////////////////////////////////////////
 void
-GSE_Camera::CalculateBoundingCone()
+CCamera::CalculateBoundingCone()
 {
   
   float fHalfHeight = m_aViewport[3] * 0.5f; // Half of the screen height
@@ -188,20 +168,20 @@ GSE_Camera::CalculateBoundingCone()
 
 }
 /////////////////////////////////////////////////////////////////
-GSE_Cone &
-GSE_Camera::FrustumCone()
+CCone &
+CCamera::FrustumCone()
 {
   return m_FrustumCone;
 }
 /////////////////////////////////////////////////////////////////
-GSE_Sphere &
-GSE_Camera::FrustumSphere()
+CSphere &
+CCamera::FrustumSphere()
 {
   return m_FrustumSphere;
 }
 /////////////////////////////////////////////////////////////////
 // Handy operator override  for debug printing
-std::ostream &operator<<(std::ostream &stream, GSE_Camera &obj)
+std::ostream &operator<<(std::ostream &stream, CCamera &obj)
 {
   
   stream << "position: " << obj.GetPosition() << endl
@@ -212,7 +192,7 @@ std::ostream &operator<<(std::ostream &stream, GSE_Camera &obj)
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::RotateAroundPoint( const GSE_Vector3 & vPoint, const GSE_Quaternion & q)
+CCamera::RotateAroundPoint( const CVector3 & vPoint, const CQuaternion & q)
 {
 
   AppendToRotation(q);
@@ -220,20 +200,20 @@ GSE_Camera::RotateAroundPoint( const GSE_Vector3 & vPoint, const GSE_Quaternion 
   
 }
 /////////////////////////////////////////////////////////////////
-GSE_CameraMgr::GSE_CameraMgr() : GSE_Container<GSE_Camera>()
+CCameraMgr::CCameraMgr() : CContainer<CCamera>()
 {
   
 }
 /////////////////////////////////////////////////////////////////
-GSE_CameraMgr::~GSE_CameraMgr()
+CCameraMgr::~CCameraMgr()
 {
-  Core::GSE_Logger::Error() << "CameraMgr:: delete\n";
+  Core::CLogger::Error() << "CameraMgr:: delete\n";
 }
 /////////////////////////////////////////////////////////////////
-GSE_Camera *
-GSE_CameraMgr::CreateCamera()
+CCamera *
+CCameraMgr::CreateCamera()
 {
-  GSE_Camera *pCamera = new GSE_Camera();
+  CCamera *pCamera = new CCamera();
   Add( pCamera );
   Map( (char *)pCamera->GetName(), pCamera);
   
@@ -241,7 +221,7 @@ GSE_CameraMgr::CreateCamera()
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::UpdateProjection() 
+CCamera::UpdateProjection() 
 {
   float fH = tanf( DEG2RAD( GetFieldOfView() * 0.5f )) * GetNearClipping(); 
   float fW = fH * (float)m_aViewport[2]/(float)m_aViewport[3];
@@ -249,7 +229,7 @@ GSE_Camera::UpdateProjection()
   float fNear = m_fNearClipping;
   //             l   r   b    t   n      f
   // glFrustum( -fW, fW, -fH, fH, fNear, fFar );
-  m_mProjectionInv = m_mProjection = GSE_Matrix4x4f::Zero();
+  m_mProjectionInv = m_mProjection = CMatrix4x4f::Zero();
   
   if ( IsOrthogonal() )
   {
@@ -293,11 +273,11 @@ GSE_Camera::UpdateProjection()
 }
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::UpdateView()
+CCamera::UpdateView()
 {
   // Transform camera reversely so we get proper effect.
-  GSE_Matrix4x4f mT = Math::TranslationMatrix( GetPosition());
-  GSE_Matrix4x4f mR = GetRotationQuaternion().ToMatrix();
+  CMatrix4x4f mT = Math::TranslationMatrix( GetPosition());
+  CMatrix4x4f mR = GetRotationQuaternion().ToMatrix();
   m_mViewInv = mT * mR;
 
   mT(0,3) = -mT(0,3);
@@ -314,8 +294,8 @@ GSE_Camera::UpdateView()
 }
 /////////////////////////////////////////////////////////////////
 // 0,0 lower left corner
-GSE_Vector3 
-GSE_Camera::WindowCoordinatesToEye( float fX, float fY, float fZ )
+CVector3 
+CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ )
 {
 
   // Convert mouse coordinates to opengl window coordinates 
@@ -333,14 +313,14 @@ GSE_Camera::WindowCoordinatesToEye( float fX, float fY, float fZ )
   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
   float fH = tanf( DEG2RAD( GetFieldOfView() * 0.5f )) * fZInEye; 
   
-  return GSE_Vector3(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
+  return CVector3(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
   
 }
 /////////////////////////////////////////////////////////////////
-GSE_Vector3 
-GSE_Camera::EyeToWorld( const GSE_Vector3 &vPosition )
+CVector3 
+CCamera::EyeToWorld( const CVector3 &vPosition )
 {
-  GSE_Vector<float,4> vTmp;
+  CVector<float,4> vTmp;
   vTmp[0] = vPosition.m_pValues[0];
   vTmp[1] = vPosition.m_pValues[1];
   vTmp[2] = vPosition.m_pValues[2];
@@ -354,12 +334,12 @@ GSE_Camera::EyeToWorld( const GSE_Vector3 &vPosition )
     vTmp[1] /= vTmp[3];
     vTmp[2] /= vTmp[3];
   }
-  return GSE_Vector3(vTmp[0],vTmp[1],vTmp[2]);
+  return CVector3(vTmp[0],vTmp[1],vTmp[2]);
 
 }
 /////////////////////////////////////////////////////////////////
-GSE_Vector3 
-GSE_Camera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
+CVector3 
+CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
 {
   // Convert mouse coordinates to opengl window coordinates 
   // ( as it would fill entire screen )
@@ -376,7 +356,7 @@ GSE_Camera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
   float fH = tanf( DEG2RAD( GetFieldOfView() * 0.5f )) * fZInEye; 
 
-  GSE_Vector<float,4> vTmp;
+  CVector<float,4> vTmp;
   vTmp[0] = fH * fAspect * fNormX;
   vTmp[1] = fH * fNormY;
   vTmp[2] = -fZInEye;
@@ -390,35 +370,35 @@ GSE_Camera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
     vTmp[1] /= vTmp[3];
     vTmp[2] /= vTmp[3];
   }
-  return GSE_Vector3(vTmp[0],vTmp[1],vTmp[2]);
+  return CVector3(vTmp[0],vTmp[1],vTmp[2]);
 }
 /////////////////////////////////////////////////////////////////
 // The factor which gives seemingly good results on the trackball.
 #define TRACKBALL_FUDGE_FACTOR 0.5f
 /////////////////////////////////////////////////////////////////
 void 
-GSE_Camera::VirtualTrackball( const GSE_Vector3 &vPosition, 
-			      const GSE_Vector2 &vStartPoint,
-			      const GSE_Vector2 &vEndPoint )
+CCamera::VirtualTrackball( const CVector3 &vPosition, 
+			      const CVector2 &vStartPoint,
+			      const CVector2 &vEndPoint )
 {
-  GSE_Vector3 vOrig = WindowCoordinatesToWorld( vStartPoint.m_pValues[GSE_Vector2::X], 
-						vStartPoint.m_pValues[GSE_Vector2::Y],
+  CVector3 vOrig = WindowCoordinatesToWorld( vStartPoint.m_pValues[CVector2::X], 
+						vStartPoint.m_pValues[CVector2::Y],
 						0.0f);
-  GSE_Vector3 vEnd = WindowCoordinatesToWorld( vStartPoint.m_pValues[GSE_Vector2::X], 
-					       vStartPoint.m_pValues[GSE_Vector2::Y],
+  CVector3 vEnd = WindowCoordinatesToWorld( vStartPoint.m_pValues[CVector2::X], 
+					       vStartPoint.m_pValues[CVector2::Y],
 					       1.0f);
   /////////////////////////////////////////////////////////////////
-  GSE_Vector3 vIntersection0;
-  GSE_Vector3 vIntersection1;
-  GSE_Sphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
+  CVector3 vIntersection0;
+  CVector3 vIntersection1;
+  CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
   /////////////////////////////////////////////////////////////////
   if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection0, NULL, sphere) >= 1)
   {
-    vOrig = WindowCoordinatesToWorld( vEndPoint.m_pValues[GSE_Vector2::X], 
-				      vEndPoint.m_pValues[GSE_Vector2::Y],
+    vOrig = WindowCoordinatesToWorld( vEndPoint.m_pValues[CVector2::X], 
+				      vEndPoint.m_pValues[CVector2::Y],
 				      0.0f);
-    vEnd = WindowCoordinatesToWorld( vEndPoint.m_pValues[GSE_Vector2::X], 
-				     vEndPoint.m_pValues[GSE_Vector2::Y],
+    vEnd = WindowCoordinatesToWorld( vEndPoint.m_pValues[CVector2::X], 
+				     vEndPoint.m_pValues[CVector2::Y],
 				     1.0f);
     /////////////////////////////////////////////////////////////////
     if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection1, NULL, sphere) >= 1)
@@ -430,7 +410,7 @@ GSE_Camera::VirtualTrackball( const GSE_Vector3 &vPosition,
       //cerr << "end : "   << vIntersection1 << endl;
       vOrig.ToUnit();
       vEnd.ToUnit();
-      GSE_Quaternion qRotation = GSE_Quaternion::RotationArc(vOrig,vEnd).Reverse();
+      CQuaternion qRotation = CQuaternion::RotationArc(vOrig,vEnd).Reverse();
       RotateAroundPoint( sphere.GetPosition(), qRotation  );
     }
   }
@@ -439,12 +419,12 @@ GSE_Camera::VirtualTrackball( const GSE_Vector3 &vPosition,
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR
 /////////////////////////////////////////////////////////////////
-GSE_Vector3
-GSE_Camera::WorldCoordinatesToScreen( const GSE_Vector3 &vPosition)
+CVector3
+CCamera::WorldCoordinatesToScreen( const CVector3 &vPosition)
 {
 
   
-  GSE_Vector<float,4> vTmp;
+  CVector<float,4> vTmp;
 
   vTmp[0] = vPosition.m_pValues[0];
   vTmp[1] = vPosition.m_pValues[1];
@@ -465,47 +445,9 @@ GSE_Camera::WorldCoordinatesToScreen( const GSE_Vector3 &vPosition)
   vTmp[1] = vTmp[1] * 0.5f + 0.5f;
   vTmp[2] = vTmp[2] * 0.5f + 0.5f;
   
-  return GSE_Vector3(m_aViewport[0] + vTmp[0] * m_aViewport[2],
+  return CVector3(m_aViewport[0] + vTmp[0] * m_aViewport[2],
 		     m_aViewport[1] + vTmp[1] * m_aViewport[3],
 		     vTmp[2]);
   
 }
-/////////////////////////////////////////////////////////////////
-// $Log: GSE_Camera.cpp,v $
-// Revision 1.21  2007/05/09 11:51:55  entity
-// removed some comments
-//
-// Revision 1.20  2007/05/09 11:51:25  entity
-// improved WindowCoordinatesToWorld, WorldCoordinatesToScreen and EyeToWorld methods
-//
-// Revision 1.19  2007/03/27 05:58:42  entity
-// no more magic number at VirtualTrackball
-//
-// Revision 1.18  2007/03/26 18:21:28  entity
-// comments added
-//
-// Revision 1.17  2007/03/26 16:41:27  entity
-// UpdateView() enhanced and fixed WindowCoordinatesTo* z-coordinate mapping
-//
-// Revision 1.16  2007/03/26 13:01:30  entity
-// const & stuff + VirtualTrackball
-//
-// Revision 1.15  2007/03/19 15:41:06  entity
-// better view inverse calculation
-//
-// Revision 1.14  2007/03/16 14:43:34  entity
-// WindowCoordinatesToWorld added
-//
-// Revision 1.13  2007/03/16 12:41:06  entity
-// checks for inverses done
-//
-// Revision 1.12  2007/03/16 11:44:27  entity
-// WindowCoordinatesToEye now with z-coordinate
-//
-// Revision 1.11  2007/03/16 11:32:27  entity
-// EyeToWorld() added
-//
-// Revision 1.10  2007/03/16 11:25:55  entity
-// WindowCoordinatesToEye added
-//
 /////////////////////////////////////////////////////////////////

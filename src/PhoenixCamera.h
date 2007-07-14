@@ -3,6 +3,7 @@
 #define __PhoenixCamera_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixMatrix4x4.h"
+#include "PhoenixSpatial.h"
 using namespace Phoenix::Spatial;
 namespace Phoenix
 {

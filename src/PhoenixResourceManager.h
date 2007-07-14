@@ -244,4 +244,4 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::Release( HANDLE &handle
   ///  remove pointer to handle in ResourceName (future)
 }
 /////////////////////////////////////////////////////////////////
-
+#endif
