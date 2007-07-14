@@ -2,7 +2,7 @@
 #include <iostream>
 #include "PhoenixMath.h"
 using namespace Phoenix::Math;
-
+using namespace Phoenix::Graphics;
 // -----------------------------------------------------------------
 void
 Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix )
@@ -289,82 +289,119 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
   return mMatrix.At(0,0) * mMatrix.At(1,1) - mMatrix.At(0,1) * mMatrix.At(1,0);
 }
 /////////////////////////////////////////////////////////////////
-// CMatrix3x3<float>
-// CovarianceMatrix( float *pVertexDescriptor, unsigned int nNumVertices)
-// {
+CMatrix3x3<float>
+Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor)
+{
   
-//   CMatrix3x3<float> mCovariance;
-//   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
-//   // Calculate average position
-//   for(unsigned int iVertComponent = 0;iVertComponent < nNumVertices*3; iVertComponent+=3)
-//   {
-//     vAveragePos[0] += pVertexDescriptor[iVertComponent];
-//     vAveragePos[1] += pVertexDescriptor[iVertComponent+1];
-//     vAveragePos[2] += pVertexDescriptor[iVertComponent+2];
-//   }
+
+  CMatrix3x3<float> mCovariance;
+  CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
+
+  /// Covariance matrix is valid only for 3d coordinates
+  if ( vertexDescriptor.GetType()  != ELEMENT_TYPE_VERTEX_3F ) 
+  {
+    mCovariance.IdentityMatrix();
+    return mCovariance;
+  }
+  ////////////////////
+  // Okay, type is correct.
+  // Calculate average position
+  for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize()*3; iVertComponent+=3)
+  {
+    vAveragePos[0] += vertexDescriptor.GetPointer<float>()[iVertComponent];
+    vAveragePos[1] += vertexDescriptor.GetPointer<float>()[iVertComponent+1];
+    vAveragePos[2] += vertexDescriptor.GetPointer<float>()[iVertComponent+2];
+  }
   
-//   vAveragePos /= nNumVertices;
+  vAveragePos /= vertexDescriptor.GetSize();
   
-//   // Calculate Covariance matrix
-//   for(unsigned int iVertComponent = 0;iVertComponent < nNumVertices*3; iVertComponent+=3)
-//   {
-//     float fTmpX = pVertexDescriptor[iVertComponent]   - vAveragePos[0];
-//     float fTmpY = pVertexDescriptor[iVertComponent+1] - vAveragePos[1];
-//     float fTmpZ = pVertexDescriptor[iVertComponent+2] - vAveragePos[2];
+  // Calculate Covariance matrix
+  for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize()*3; iVertComponent+=3)
+  {
+    float fTmpX = vertexDescriptor.GetPointer<float>()[iVertComponent]   - vAveragePos[0];
+    float fTmpY = vertexDescriptor.GetPointer<float>()[iVertComponent+1] - vAveragePos[1];
+    float fTmpZ = vertexDescriptor.GetPointer<float>()[iVertComponent+2] - vAveragePos[2];
     
-//     mCovariance(0,0) += fTmpX * fTmpX;
-//     mCovariance(1,1) += fTmpY * fTmpY;
-//     mCovariance(2,2) += fTmpZ * fTmpZ;
-//     mCovariance(0,1) = mCovariance(1,0) += fTmpX * fTmpY;
-//     mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
-//     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
+    mCovariance(0,0) += fTmpX * fTmpX;
+    mCovariance(1,1) += fTmpY * fTmpY;
+    mCovariance(2,2) += fTmpZ * fTmpZ;
+    mCovariance(0,1) = mCovariance(1,0) += fTmpX * fTmpY;
+    mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
+    mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
 
-//   }    
-//   mCovariance /= nNumVertices;
+  }    
+  mCovariance /= vertexDescriptor.GetSize();
 
-//   return mCovariance;
-// }
+  return mCovariance;
+}
 /////////////////////////////////////////////////////////////////
-//CMatrix3x3<float>
-// CovarianceMatrix( float *pVertexDescriptor, const CIndexArray &indexBuffer)
-// {
+CMatrix3x3<float>
+CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray &indices )
+{
   
-//   CMatrix3x3<float> mCovariance;
-//   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
-//   unsigned int nVertexIndex;
-//   // Calculate average position
-//   for(unsigned int nIndex = 0;nIndex < indexBuffer.m_nNumIndices; nIndex++)
-//   {
-//     nVertexIndex = indexBuffer.m_pIndices[nIndex] * 3;
-//     vAveragePos[0] += pVertexDescriptor[nVertexIndex];
-//     vAveragePos[1] += pVertexDescriptor[nVertexIndex+1];
-//     vAveragePos[2] += pVertexDescriptor[nVertexIndex+2];
-//   }
+  CMatrix3x3<float> mCovariance;
+  CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
+  unsigned int nVertexIndex;
+  unsigned short int *m_pIndexShortArray = NULL;
+  unsigned int *m_pIndexIntArray = NULL;
 
-//   vAveragePos /= indexBuffer.m_nNumIndices;
-//   float fTmpX;
-//   float fTmpY;
-//   float fTmpZ;
-//   // Calculate Covariance matrix
-//   for(unsigned int nIndex = 0;nIndex < indexBuffer.m_nNumIndices; nIndex++)
-//   {
-//     nVertexIndex = indexBuffer.m_pIndices[nIndex] * 3;
-//     fTmpX = pVertexDescriptor[nVertexIndex]   - vAveragePos[0];
-//     fTmpY = pVertexDescriptor[nVertexIndex+1] - vAveragePos[1];
-//     fTmpZ = pVertexDescriptor[nVertexIndex+2] - vAveragePos[2];
+  /// Covariance matrix is valid only for 3d coordinates
+  if ( vertexDescriptor.GetType()  != ELEMENT_TYPE_VERTEX_3F ) 
+  {
+    mCovariance.IdentityMatrix();
+    return mCovariance;
+  }
+  if ( indices.IsShortIndices())
+    m_pIndexShortArray = indices.GetPointer<unsigned short int>();
+  else
+    m_pIndexIntArray = indices.GetPointer<unsigned int>();
+
+  // Calculate average position
+  for(unsigned int nIndex = 0;nIndex < indices.GetNumIndices(); nIndex++)
+  {
+    // The index points to and triplet of three floats, which are 
+    // stored continuously into vertexdescriptor.
+    if ( indices.IsShortIndices() )
+      nVertexIndex = m_pIndexShortArray[nIndex] * 3;
+    else
+      nVertexIndex = m_pIndexIntArray[nIndex] * 3;
+
+    vAveragePos[0] += vertexDescriptor.GetPointer<float>()[nVertexIndex];
+    vAveragePos[1] += vertexDescriptor.GetPointer<float>()[nVertexIndex+1];
+    vAveragePos[2] += vertexDescriptor.GetPointer<float>()[nVertexIndex+2];
+  }
+  
+  vAveragePos /= indices.GetNumIndices();
+
+  float fTmpX;
+  float fTmpY;
+  float fTmpZ;
+
+  // Calculate Covariance matrix
+  for(unsigned int nIndex = 0;nIndex < indices.GetNumIndices(); nIndex++)
+  {
+
+    if ( indices.IsShortIndices() )
+      nVertexIndex = m_pIndexShortArray[nIndex] * 3;
+    else
+      nVertexIndex = m_pIndexIntArray[nIndex] * 3;
+
+    fTmpX = vertexDescriptor.GetPointer<float>()[nVertexIndex]   - vAveragePos[0];
+    fTmpY = vertexDescriptor.GetPointer<float>()[nVertexIndex+1] - vAveragePos[1];
+    fTmpZ = vertexDescriptor.GetPointer<float>()[nVertexIndex+2] - vAveragePos[2];
     
-//     mCovariance(0,0) += fTmpX * fTmpX;
-//     mCovariance(1,1) += fTmpY * fTmpY;
-//     mCovariance(2,2) += fTmpZ * fTmpZ;
-//     mCovariance(0,1) = mCovariance(1,0) += fTmpX * fTmpY;
-//     mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
-//     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
+    mCovariance(0,0) += fTmpX * fTmpX;
+    mCovariance(1,1) += fTmpY * fTmpY;
+    mCovariance(2,2) += fTmpZ * fTmpZ;
+    mCovariance(0,1) = mCovariance(1,0) += fTmpX * fTmpY;
+    mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
+    mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
 
-//   }    
-//   mCovariance /= indexBuffer.m_nNumIndices;
+  }    
+  mCovariance /= indices.GetNumIndices();
 
-//   return mCovariance;
-// }
+  return mCovariance;
+}
 /////////////////////////////////////////////////////////////////
 
 #define SIGN(VAL) (VAL < 0.0F ? -1.0F : 1.0F)
