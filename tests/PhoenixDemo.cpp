@@ -87,6 +87,6 @@ int main()
   pOglRenderer->DisableTexture( 0, pTexture );
   pOglRenderer->Finalize();
   sleep(2);
-  CSDLScreen::Destroy();
+  CSDLScreen::DestroyInstance();
   return 0;
 }
