@@ -5,7 +5,7 @@
 # The native linux c++ compiler
 LINUX_CC=g++
 DEBUG_FLAGS=#-DDEBUG #-DDEBUG_PRINT_INSANE 
-INCLUDE_DIR=-I/home/entity/workdir/phoenixentities/src
+INCLUDE_DIR=-I/home/entity/workdir/phoenix/src
 LINUX_CFLAGS=-Wall -c `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
@@ -16,7 +16,7 @@ LDFLAGS_LINUX=-Wall -lGLU -lGLee -lSDL_image \
 
 #/////////////////////////////////////////////////////////////////
 SRC=$(OBJ:.o=.cpp)
-OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o PhoenixSDLScreen.o PhoenixOGLRenderer.o PhoenixTGAImage.o PhoenixVertexDescriptor.o PhoenixCamera.o
+OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o PhoenixSDLScreen.o PhoenixOGLRenderer.o PhoenixTGAImage.o PhoenixVertexDescriptor.o PhoenixVolume.o PhoenixFrustum.o PhoenixCamera.o PhoenixMathGeometry.o
 #/////////////////////////////////////////////////////////////////
 all:  linux
 

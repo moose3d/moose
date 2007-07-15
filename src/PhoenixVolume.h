@@ -2,8 +2,13 @@
 #define __PhoenixVolume_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSpatial.h"
+#include "PhoenixMathGeometry.h"
+#include <iostream>
+using std::cerr;
+using std::endl;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Spatial;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -33,10 +38,48 @@ namespace Phoenix
       BOTTOM_RIGHT_BACK = 6,
       BOTTOM_RIGHT_FRONT = 7
     };
-    
+    /////////////////////////////////////////////////////////////////
+    // A class for discrete oriented polytope, defines a convex bounding 
+    // volume by set of planes.
+    class CPolytope
+    {
+    protected:
+      std::list<CPlane> m_lstPlanes;
+    public:
+      ////////////////////
+      CPolytope()      {}
+      ////////////////////
+      ~CPolytope()      { m_lstPlanes.clear();  }
+      ////////////////////
+      void AddPlane( CPlane &Plane )
+      {
+	m_lstPlanes.push_back(Plane);
+      }
+      ////////////////////
+      std::list<CPlane> &Planes()
+      {
+	return m_lstPlanes;
+      }
+      ////////////////////
+      unsigned int GetNumPlanes()
+      {
+	return m_lstPlanes.size();
+      }
+      ////////////////////
+      friend std::ostream& operator<<( std::ostream &stream, const CPolytope & polytope )
+      {
+	std::list<CPlane>::const_iterator it = polytope.m_lstPlanes.begin();
+	stream << "KDOP planes:" << endl;
+	for( ; it != polytope.m_lstPlanes.end(); it++)
+	{
+	  stream << *it << endl;
+	}
+	return stream;
+      }
+    }; // CPolytope
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) box.
-    class CAxisAlignedBox : public CPositional, public CDimensional
+    class CAxisAlignedBox : public CPositional, public CDimensional, public CPolytope
     {
     public:
       ////////////////////
@@ -47,7 +90,7 @@ namespace Phoenix
       CAxisAlignedBox( const CVector3<float> &vCenter, 
 		       float fWidth, float fHeight,  float fLength ) : 
                              CPositional( vCenter ), 
-                             CDimensional( fWidth, fHeight, fLength) { }
+                             CDimensional( fWidth, fHeight, fLength) {  }
     };
     /////////////////////////////////////////////////////////////////
     // The class for Oriented Box. Forward vector will be the principal axis,
@@ -76,9 +119,9 @@ namespace Phoenix
       }
       void operator=( const CAxisAlignedBox & box )
       {
-	SetOrientation( CVector3<float>::GetWorldY(),
-			CVector3<float>::GetWorldZ(),
-			CVector3<float>::GetWorldX());
+	SetOrientation( CVector3<float>(0,1,0),
+			CVector3<float>(0,0,-1),
+			CVector3<float>(1,0,0));
 	SetPosition( box.GetPosition());
 	SetWidth( box.GetWidth());
 	SetHeight( box.GetHeight());
@@ -108,7 +151,7 @@ namespace Phoenix
 
       CVector3<float> GetCorner( BBOX_CORNER_TYPE tCorner );
     
-      friend std::ostream& operator<<( std::ostream &stream, COrientedBox box );
+      friend std::ostream& operator<<( std::ostream &stream, COrientedBox box )
       {
 	stream << endl
 	       << "R = " << box.GetForwardVector() << ", scale " << box.GetLength() << endl
@@ -277,107 +320,127 @@ namespace Phoenix
       float GetLength() const;
 
     }; // class CCone
+    
+    ////////////////////
+    /// Calculates the oriented bounding box for vertices in vertexarray
+    /// \param vertexDescriptor Vertices.
+    /// \returns Oriented bounding box
+    COrientedBox    CalculateOrientedBoundingBox( const CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the axis-aligned bounding box for vertices in vertexarray
+    /// \param vertexDescriptor Vertices.
+    /// \returns Oriented bounding box
+    CAxisAlignedBox CalculateAlignedBox( const CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the bounding sphere for vertices in VertexDescriptor using fast but not so accurate algorithm.
+    /// \param vertexDescriptor Vertices.
+    /// \returns Bounding sphere.
+    CSphere CalculateBoundingSphere( const CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the bounding sphere for vertices in VertexDescriptor using slightly slower, but more accurate algorithm
+    /// \param vertexDescriptor Vertices.
+    /// \returns Bounding sphere.
+    CSphere CalculateBoundingSphereTight( const CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the bounding sphere for vertices in VertexDescriptor by given set of indices using slightly slower, but more accurate algorithm
+    /// \param vertexDescriptor Vertices.
+    /// \param indices Which vertices are used.
+    /// \returns Bounding sphere.
+    CSphere CalculateBoundingSphereTight( const CVertexDescriptor &vertexDescriptor, 
+					  const CIndexArray &indices );
+    ////////////////////
+    /// Calculates the oriented bounding box for vertices in vertexarray using the given set of indices.
+    /// \param vertexDescriptor Vertices.
+    /// \param indices Which vertices are used.
+    /// \returns Bounding sphere.
+    COrientedBox CalculateOrientedBoundingBox( const CVertexDescriptor &vertexDescriptor,
+					       const CIndexArray &elementList );
+    ////////////////////
+    /// Creates a new sphere is the minimum sphere containing two spheres given as arguments.
+    /// \param one One sphere.
+    /// \param two Another sphere.
+    /// \returns Sphere enclosing both spheres.
+    CSphere MergeSpheres( const CSphere &one, const CSphere &two);
+    ////////////////////
+    /// Creates a new Oriented Box containing two oriented boxes.
+    /// \param obOne One oriented box.
+    /// \param obTwo Another oriented box.
+    /// \returns Bounding box enclosing both boxes.
+    COrientedBox MergeOrientedBoxes( const COrientedBox &obOne, const COrientedBox &obTwo );
+    
     /////////////////////////////////////////////////////////////////
-    // A class for discrete oriented polytope, defines a convex bounding 
-    // volume by set of planes.
+    // Constructs a 4x4 rotation matrix by inserting the Oriented Box axis 
+    // as column vectors of the it.
+    //
+    //     Fx Rx Ux 0
+    // M = Fy Ry Uy 0 ,  F = Forward Vector
+    //     Fz Rz Uz 0    R = Right Vector
+    //     0  0  0  1    U = Up Vector
     /////////////////////////////////////////////////////////////////
-    class CPolytope
-    {
-    protected:
-      std::list<CPlane> m_lstPlanes;
-    public:
-      ////////////////////
-      CPolytope()      {}
-      ////////////////////
-      ~CPolytope()      { m_lstPlanes.clear();  }
-      ////////////////////
-      void AddPlane( CPlane &Plane )
-      {
-	m_lstPlanes.push_back(Plane);
-      }
-      ////////////////////
-      std::list<CPlane> &Planes()
-      {
-	return m_lstPlanes;
-      }
-      ////////////////////
-      unsigned int GetNumPlanes()
-      {
-	return m_lstPlanes.size();
-      }
-      ////////////////////
-      friend std::ostream& operator<<( std::ostream &stream, CKDOP kDop )
-      {
-	std::list<CPlane>::iterator it = kDop.m_lstPlanes.begin();
-	stream << "KDOP planes:" << endl;
-	for( ; it != kDop.m_lstPlanes.end(); it++)
-	{
-	  stream << *it << endl;
-	}
-	return stream;
-      }
-    }; // CPolytope
+    CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const COrientedBox &ob  );
   };// namespace Volume
 };// namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline void 
-CPhoenix::Math::CCone:SetDirection( const CVector3<float> &  vDir )
+Phoenix::Volume::CCone::SetDirection( const CVector3<float> &  vDir )
 {
   m_vDirection = vDir.GetNormalized();
 }
 /////////////////////////////////////////////////////////////////
 inline CVector3<float> 
-CPhoenix::Math::CCone:GetDirection()  const
+Phoenix::Volume::CCone::GetDirection()  const
 {
   return m_vDirection;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:GetAngle() const
+Phoenix::Volume::CCone::GetAngle() const
 {
   return m_fAngle;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:SinReciprocal() const
+Phoenix::Volume::CCone::SinReciprocal() const
 {
   return m_fSinReciprocal;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:SinSqr() const
+Phoenix::Volume::CCone::SinSqr() const
 {
   return m_fSinAngleSqr;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:CosSqr() const
+Phoenix::Volume::CCone::CosSqr() const
 {
   return m_fCosAngleSqr;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:CosAngle() const
+Phoenix::Volume::CCone::CosAngle() const
 {
   return m_fCosAngle;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:SinAngle() const
+Phoenix::Volume::CCone::SinAngle() const
 {
   return m_fSinAngle;
 }
 /////////////////////////////////////////////////////////////////
 inline void 
-CPhoenix::Math::CCone:SetLength(float fLength)
+Phoenix::Volume::CCone::SetLength(float fLength)
 {
   m_fLength = fLength;
 }
 /////////////////////////////////////////////////////////////////
 inline float 
-CPhoenix::Math::CCone:GetLength() const
+Phoenix::Volume::CCone::GetLength() const
 {
   return m_fLength;
 }
 /////////////////////////////////////////////////////////////////
+
+
 #endif

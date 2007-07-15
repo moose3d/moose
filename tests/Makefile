@@ -3,6 +3,8 @@ UNIT_OBJ=PhoenixVectorTest2.o PhoenixVectorTest3.o PhoenixVectorTest4.o PhoenixQ
 all: unit
 	g++ -Wall $(UNIT_OBJ) -o PhoenixTest -lUnitTest++ -lPhoenix
 unit: $(UNIT_OBJ)
+demo:
+	g++ -Wall -I../src `sdl-config --cflags` PhoenixDemo.cpp -lPhoenix `sdl-config --libs`
 .cpp.o: $@.cpp 
 	g++ -c -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean

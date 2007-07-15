@@ -4,12 +4,13 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixFrustum.h"
 using namespace Phoenix::Spatial;
 namespace Phoenix
 {
   namespace Graphics
   {
-    class CCamera : public CPositional, public CObject, public COrientable
+    class CCamera : public CPositional, public COrientable
     {
     protected:
       /// field of view angle in degrees.
@@ -28,14 +29,8 @@ namespace Phoenix
       /// The coordinates for left, right, bottom and top clipping planes
       /// in orthogonal mode
       float		m_aOrthoPlanes[4];
-
-      /// The view frustum for this camera ( Renderer will fill this out );
-      CFrustum	 m_Frustum;
-      /// The sphere surrounding the frustum
-      CSphere	 m_FrustumSphere;
-      /// The cone surrounding the frustum
-      CCone	 m_FrustumCone;
-  
+      /// View frustum for this camera
+      CFrustum		m_Frustum;
       /// The projection matrix for this camera
       CMatrix4x4<float> m_mProjection;
       /// The inverse projection matrix for this camera
@@ -79,14 +74,15 @@ namespace Phoenix
       friend std::ostream &operator<<(std::ostream &stream, CCamera &obj);
       // Returns the reference to frustum object
       CFrustum &Frustum();
+      void CalculateFrustum();
       // Calculates the bounding sphere for the frustum.
-      void CalculateBoundingSphere();
+      //void CalculateBoundingSphere();
       // Calculates the bounding cone for the frustum
-      void CalculateBoundingCone();
+      //void CalculateBoundingCone();
       // Returns reference to the bounding cone
-      CCone   &FrustumCone();
+      //CCone   &FrustumCone();
       // Returns reference to the bounding sphere
-      CSphere &FrustumSphere();
+      //CSphere &FrustumSphere();
       // Returns true if orthogonal mode is on
       char IsOrthogonal();
       // Returns the pointer to orthogonal plane coordinates
@@ -143,12 +139,12 @@ namespace Phoenix
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as eye coordinates.
-      CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
+      //CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
       /////////////////////////////////////////////////////////////////
       /// Converts eye coordinates into world coordinates.
       /// \param vPosition The position in eye coordinates which is converted into world coordinates.
       /// \returns CVector3<float> the vPosition in world coordinates.
-      CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
+      //CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
       /////////////////////////////////////////////////////////////////
       /// Converts window coordinates (x,y,z) into world coordinates. 
       /// \param fX x coordinate with 0,0 as lower left corner.
@@ -156,18 +152,18 @@ namespace Phoenix
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as world coordinates.
-      CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
+      //CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
       /////////////////////////////////////////////////////////////////
       /// Creates an imaginary trackball and rotates camera using two
       /// positions on the surface of the sphere.
       /// \param vPosition The center of the sphere.
       /// \param vStartPoint The point where rotation begins.
       /// \param vEndPoint The point where rotation ends.
-      void VirtualTrackball( const CVector3<float> &vPosition, 
-			     const CVector2<float> &vStartPoint,
-			     const CVector2<float> &vEndPoint );
+     /*  void VirtualTrackball( const CVector3<float> &vPosition,  */
+/* 			     const CVector2<float> &vStartPoint, */
+/* 			     const CVector2<float> &vEndPoint ); */
 				   
-      CVector3<float> WorldCoordinatesToScreen( const CVector3<float> &vPosition);
+      ///CVector3<float> WorldCoordinatesToScreen( const CVector3<float> &vPosition);
     };
   }; // namespace Graphics
 }; // Phoenix

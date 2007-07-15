@@ -1047,3 +1047,19 @@ Phoenix::Math::RotationArc( CVector3<float> v0, CVector3<float> v1)
 		     fS * 0.5f );
 }
 /////////////////////////////////////////////////////////////////
+float 
+Phoenix::Math::AngleBetweenVectors( const CVector3<float> &vVect1, const CVector3<float> &vVect2)
+{
+  float fDot = vVect1.Dot(vVect2);
+  float fLengthMult = vVect1.Length() * vVect2.Length();
+  float fAngle = 0.0f;
+
+  if ( fLengthMult != 0.0f )
+  {
+    fAngle = acosf( fDot / fLengthMult );
+    // sanity check 
+    if ( isnan(fAngle) ) fAngle = 0.0f;
+  }
+  return fAngle;
+}
+/////////////////////////////////////////////////////////////////

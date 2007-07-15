@@ -5,6 +5,7 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixVector4.h"
+#include "PhoenixCamera.h"
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
@@ -171,7 +172,10 @@ namespace Phoenix
       /// \param tType TEXTURE_TYPE 
       /// \returns Pointer to COglTexture.
       COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType );
-      
+      ////////////////////
+      /// Sets view using camera.
+      /// \param camera Camera.
+      void CommitCamera( CCamera &camera );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics

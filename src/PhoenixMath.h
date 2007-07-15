@@ -164,7 +164,7 @@ namespace Phoenix
 	return min;
       return  min + (Type)( (val *rand()) / (RAND_MAX+1) );
     }
-  
+    
     ////////////////////
     /// Converts Quaternion qQuat into rotation axis vAxis and
     /// and angle fAngle. vAxis is not normalized, ie. ||vAxis|| != 1.0f
@@ -172,9 +172,14 @@ namespace Phoenix
 					   CVector3<float> &vAxis,
 					   float &fAngle );
     ////////////////////
-    /// Converts quaternion into rotation matrix
+    /// Converts quaternion into rotation matrix.
+    /// \param qQuat Quaternion.
+    /// \param mMatrix Matrix where result is stored.
     void QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix);
-
+    ////////////////////
+    /// Returns minimal rotation angle between two vectors.
+    /// \return rotation angle.
+    float AngleBetweenVectors( const CVector3<float> &vVect1, const CVector3<float> &vVect2);
     ////////////////////
     /// The numerically stable minimal rotation arc between vectors v0 and v1.
     /// Note that it must be v0 != -v1!

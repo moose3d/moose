@@ -1,10 +1,10 @@
 #include "PhoenixVolume.h"
 using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
-Phoenix::Math::COrientedBox &
-Phoenix::Math::COrientedBox::SetOrientation(const CVector3 &vUp, 
-					    const CVector3 &vForward,
-					    const CVector3 &vRight)
+Phoenix::Volume::COrientedBox &
+Phoenix::Volume::COrientedBox::SetOrientation(const CVector3<float> &vUp, 
+					      const CVector3<float> &vForward,
+					      const CVector3<float> &vRight)
 {
   m_vUpward  = vUp;
   m_vRight   = vRight;
@@ -13,7 +13,7 @@ Phoenix::Math::COrientedBox::SetOrientation(const CVector3 &vUp,
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Math::COrientedBox::CalculatePlanes()
+Phoenix::Volume::COrientedBox::CalculatePlanes()
 {
   m_Planes[TOP].Calculate(   -GetUpVector(),       GetPosition()+(GetUpVector()*GetHalfHeight()));
   m_Planes[BOTTOM].Calculate( GetUpVector(),       GetPosition()-(GetUpVector()*GetHalfHeight()));
@@ -24,12 +24,12 @@ Phoenix::Math::COrientedBox::CalculatePlanes()
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Math::COrientedBox::CalculateCorners()
+Phoenix::Volume::COrientedBox::CalculateCorners()
 {
-  CVector3 vTmp;
-  CVector3 vTmp2;
+  CVector3<float> vTmp;
+  CVector3<float> vTmp2;
 
-  vTmp.UseExternalData( GetCorner( TOP_LEFT_FRONT ));
+  vTmp = GetCorner( TOP_LEFT_FRONT );
   
   vTmp =  GetPosition();
   vTmp += GetForwardVector()*GetHalfLength();
@@ -38,52 +38,52 @@ Phoenix::Math::COrientedBox::CalculateCorners()
 
   vTmp2 = vTmp;
 
-  vTmp.UseExternalData( GetCorner( TOP_RIGHT_FRONT ));
+  vTmp = GetCorner( TOP_RIGHT_FRONT );
   vTmp2 += GetRightVector()*GetWidth();
   vTmp = vTmp2;
   
-  vTmp.UseExternalData( GetCorner( TOP_RIGHT_BACK ));
+  vTmp = GetCorner( TOP_RIGHT_BACK );
   vTmp2 += -GetForwardVector()*GetLength();
   vTmp = vTmp2;
   
-  vTmp.UseExternalData( GetCorner( TOP_LEFT_BACK ));
+  vTmp = GetCorner( TOP_LEFT_BACK );
   vTmp2 += -GetRightVector()*GetWidth();
   vTmp = vTmp2;
 
-  vTmp.UseExternalData( GetCorner( COrientedBox::BOTTOM_LEFT_BACK ));
+  vTmp = GetCorner( BOTTOM_LEFT_BACK );
   vTmp2 += -GetUpVector()*GetHeight();
   vTmp = vTmp2;
   
-  vTmp.UseExternalData( GetCorner( BOTTOM_RIGHT_BACK ));
+  vTmp = GetCorner( BOTTOM_RIGHT_BACK );
   vTmp2 += GetRightVector()*GetWidth();
   vTmp = vTmp2;
   
-  vTmp.UseExternalData( GetCorner( BOTTOM_RIGHT_FRONT ));
+  vTmp = GetCorner( BOTTOM_RIGHT_FRONT );
   vTmp2 += GetForwardVector()*GetLength();
   vTmp = vTmp2;
   
-  vTmp.UseExternalData( GetCorner( BOTTOM_LEFT_FRONT ));
+  vTmp = GetCorner( BOTTOM_LEFT_FRONT );
   vTmp2 += -GetRightVector()*GetWidth();
   vTmp = vTmp2;  
 
 }
 /////////////////////////////////////////////////////////////////
 const float *
-Phoenix::Math::COrientedBox::GetCorners() const
+Phoenix::Volume::COrientedBox::GetCorners() const
 {
   return m_aCorners;
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float> 
-Phoenix::Math::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner )
+Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner )
 {
   CVector3<float> m_vVector;
-  m_vVector.UseExternalData( &(m_aCorners[tCorner]) );
+  m_vVector.UseExternalData( &m_aCorners[tCorner] );
   return m_vVector;
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Math::CCone::SetAngle( float fAngle )
+Phoenix::Volume::CCone::SetAngle( float fAngle )
 {
   m_fAngle = fAngle;
   m_fSinAngle = sinf(m_fAngle);
@@ -93,12 +93,12 @@ Phoenix::Math::CCone::SetAngle( float fAngle )
   m_fSinAngleSqr = m_fSinAngle * m_fSinAngle;
 }
 /////////////////////////////////////////////////////////////////
-CPhoenix::Math::CCone::Cone() : CPositional(), m_vDirection(CVector3<float>(0,0,-1.0f)),m_fLength(1.0f)
+Phoenix::Volume::CCone::CCone() : CPositional(), m_vDirection(CVector3<float>(0,0,-1.0f)),m_fLength(1.0f)
 {
   SetAngle(0.0f);
 }
 /////////////////////////////////////////////////////////////////
-CPhoenix::Math::CCone::CCone( const CVector3<float> &vPos, const CVector3<float> &vDir, float fAngle, float fLength ) : CPositional(vPos),m_vDirection(vDir)
+Phoenix::Volume::CCone::CCone( const CVector3<float> &vPos, const CVector3<float> &vDir, float fAngle, float fLength ) : CPositional(vPos),m_vDirection(vDir)
 {
   SetAngle(fAngle);
   m_fLength = fLength;
