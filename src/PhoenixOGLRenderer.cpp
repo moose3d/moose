@@ -392,3 +392,36 @@ Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglText
   }
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
+{
+  ////////////////////
+  // Handle updating of view and projection, if they are changed.
+  if ( camera.IsProjectionChanged()) camera.UpdateProjection();
+  if ( camera.IsViewChanged()) camera.UpdateView();
+
+  int *pViewport = camera.GetViewport();
+  glViewport(pViewport[0], pViewport[1], pViewport[2], pViewport[3]);
+  glMatrixMode( GL_PROJECTION );
+  glLoadIdentity();
+  ////////////////////
+  // Set up perspective OR orthogonal projection
+  if ( camera.IsOrthogonal() )
+  {
+    float *pOrthoPlanes = camera.GetOrthoPlanes();
+    // Set the orthogonal mode
+    glOrtho( pOrthoPlanes[0],		 pOrthoPlanes[1],
+	     pOrthoPlanes[2],		 pOrthoPlanes[3],
+	     camera.GetNearClipping(), camera.GetFarClipping());
+  } 
+  else 
+  {
+    glMultMatrixf( camera.GetProjection().GetTransposition().GetArray());
+  }
+  ////////////////////
+  /// Set up proper position.
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMultMatrixf( camera.GetView().GetTransposition().GetArray());
+}
+/////////////////////////////////////////////////////////////////
