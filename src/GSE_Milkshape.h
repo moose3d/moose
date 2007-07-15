@@ -1,28 +1,8 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
 /////////////////////////////////////////////////////////////////
-#ifndef __GSE_Milkshape_h__
-#define __GSE_Milkshape_h__
+#ifndef __CMilkshape_h__
+#define __CMilkshape_h__
 /////////////////////////////////////////////////////////////////
-#include "GSE_structures.h"
+#include "Cstructures.h"
 // So we can use the structs directly while reading the MS3D file
 #define PACKED __attribute__((packed))
 /////////////////////////////////////////////////////////////////
@@ -266,7 +246,7 @@ struct  MS3D_Vertex_ex_t
 /////////////////////////////////////////////////////////////////
 /// Actual model class, which encapsulates structs above.
 /////////////////////////////////////////////////////////////////
-class GSE_MS3DModel
+class CMS3DModel
 {
  private:
   /// indicates does this model have data loaded.
@@ -317,13 +297,13 @@ class GSE_MS3DModel
   // The method prototypes
   /////////////////////////////////////////////////////////////////
   /// Constructor.
-  GSE_MS3DModel();
+  CMS3DModel();
   /// Desctructor.
-  ~GSE_MS3DModel();
+  ~CMS3DModel();
   /// Copy constructor (since model has pointer members).
-  GSE_MS3DModel( const GSE_MS3DModel &ref);
+  CMS3DModel( const CMS3DModel &ref);
   /// Assignment operator ( since model has pointer members).
-  GSE_MS3DModel &operator=( GSE_MS3DModel obj );
+  CMS3DModel &operator=( CMS3DModel obj );
   /// Loads the model data from file sFilename.
   char Load(const std::string &sFilename);
 
