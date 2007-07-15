@@ -1,5 +1,6 @@
 #include "Phoenix.h"
 #include <iostream>
+#include <SDL.h>
 using std::string;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
@@ -8,8 +9,10 @@ using namespace Phoenix::Spatial;
 using namespace Phoenix::Window;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
+int g_bLoop = 1;
 int main()
 {
+  
   if ( !CSDLScreen::GetInstance() )
   {
     std::cerr << "Couldn't open screen" << std::endl;
@@ -64,29 +67,67 @@ int main()
   string strTexFilename("opengl.tga");
   COglTexture *pTexture = pOglRenderer->CreateTexture(strTexFilename);
   
-  pOglRenderer->ClearBuffer( COLOR_BUFFER );
-  pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-  // Draw colored triangle
-  pOglRenderer->CommitVertexDescriptor( pVertices );
-  pOglRenderer->CommitVertexDescriptor( pColors );
-  pOglRenderer->CommitPrimitive( pIndices );
-  // Draw textured / transparent triangle
-  pOglRenderer->CommitTexture( 0, pTexture );
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc( GL_GREATER, 0.3f);
-  glTranslatef( 0,0,0.3f);
-  pOglRenderer->CommitVertexDescriptor( pTexCoords );
-  pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
-  CVector4<unsigned char> vWhite(255,255,255,255);
-  pOglRenderer->CommitColor( vWhite );
-  pOglRenderer->CommitTexture( 0, pTexture );
-  pOglRenderer->CommitPrimitive( pIndices );
 
-  pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
-  pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
-  pOglRenderer->DisableTexture( 0, pTexture );
-  pOglRenderer->Finalize();
-  sleep(2);
+  CCamera camera;
+  camera.SetPosition( 0,0,2.0f);
+  camera.SetViewport( 0,0, 640, 480 );
+  camera.SetNearClipping( 0.1f);
+  camera.SetFarClipping( 100.0f );
+  camera.SetFieldOfView( 45.0f);
+  SDL_Event event;
+  CVector3<float> vMove(0,0,0.2f);
+  while( g_bLoop )
+  {
+    while ( SDL_PollEvent(&event ))
+    {
+      switch(event.type)
+      {
+      case SDL_KEYDOWN:
+	if ( event.key.keysym.sym == SDLK_ESCAPE)	
+	{
+	  g_bLoop = 0;
+	}
+	else if ( event.key.keysym.sym == SDLK_UP )
+	{
+	  camera.Move( -vMove );
+	}      
+	else if ( event.key.keysym.sym == SDLK_DOWN )
+	{
+	  camera.Move( vMove );
+	} 
+	break;
+      default:
+	break;
+      }
+    }
+    
+    pOglRenderer->ClearBuffer( COLOR_BUFFER );
+    pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+    pOglRenderer->CommitCamera( camera );
+    // Draw colored triangle
+    pOglRenderer->CommitVertexDescriptor( pVertices );
+    pOglRenderer->CommitVertexDescriptor( pColors );
+    pOglRenderer->CommitPrimitive( pIndices );
+    // Draw textured / transparent triangle
+    pOglRenderer->CommitTexture( 0, pTexture );
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc( GL_GREATER, 0.3f);
+    glTranslatef( 0,0,0.3f);
+    pOglRenderer->CommitVertexDescriptor( pTexCoords );
+    pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
+    CVector4<unsigned char> vWhite(255,255,255,255);
+    pOglRenderer->CommitColor( vWhite );
+    pOglRenderer->CommitTexture( 0, pTexture );
+    pOglRenderer->CommitPrimitive( pIndices );
+    
+    pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
+    pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
+    pOglRenderer->DisableTexture( 0, pTexture );
+    pOglRenderer->Finalize();
+    //sleep(1);
+    //g_bLoop = 0;
+
+  }
   CSDLScreen::DestroyInstance();
   return 0;
 }
