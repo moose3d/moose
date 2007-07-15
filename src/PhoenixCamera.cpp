@@ -4,32 +4,34 @@
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
+using namespace Phoenix::Graphics;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
-CCamera::CCamera() : COrientable()
+Phoenix::Graphics::CCamera::CCamera() : COrientable()
 {
   SetFieldOfView(45.0);
   SetProjectionChanged(1);
 }
 /////////////////////////////////////////////////////////////////
-CCamera::~CCamera()
+Phoenix::Graphics::CCamera::~CCamera()
 {
   
 }
 /////////////////////////////////////////////////////////////////
 float *
-CCamera::GetOrthoPlanes()
+Phoenix::Graphics::CCamera::GetOrthoPlanes()
 {
   return m_aOrthoPlanes;
 }
 /////////////////////////////////////////////////////////////////
 char
-CCamera::IsOrthogonal()
+Phoenix::Graphics::CCamera::IsOrthogonal()
 {
   return m_bOrtho;
 }
 /////////////////////////////////////////////////////////////////
 void
-CCamera::SetFieldOfView(float fDegrees)
+Phoenix::Graphics::CCamera::SetFieldOfView(float fDegrees)
 {
   m_fFieldOfView = fDegrees;
   m_bOrtho = 0;
@@ -37,7 +39,7 @@ CCamera::SetFieldOfView(float fDegrees)
 }
 /////////////////////////////////////////////////////////////////
 void
-CCamera::SetViewOrtho( float fLeft, float fRight, 
+Phoenix::Graphics::CCamera::SetViewOrtho( float fLeft, float fRight, 
 			  float fBottom, float fTop )
 {
   m_aOrthoPlanes[0] = fLeft;
@@ -49,7 +51,7 @@ CCamera::SetViewOrtho( float fLeft, float fRight,
 }
 /////////////////////////////////////////////////////////////////
 void 
-CCamera::SetViewport( int iX, int iY, int iWidth, int iHeight)
+Phoenix::Graphics::CCamera::SetViewport( int iX, int iY, int iWidth, int iHeight)
 {
 
   m_aViewport[0] = iX;
@@ -60,7 +62,7 @@ CCamera::SetViewport( int iX, int iY, int iWidth, int iHeight)
 }
 /////////////////////////////////////////////////////////////////
 void 
-CCamera::SetNearClipping(float fNearClipping)
+Phoenix::Graphics::CCamera::SetNearClipping(float fNearClipping)
 {
 
   m_fNearClipping = fNearClipping;
@@ -68,7 +70,7 @@ CCamera::SetNearClipping(float fNearClipping)
 }
 /////////////////////////////////////////////////////////////////
 void 
-CCamera::SetFarClipping(float fFarClipping)
+Phoenix::Graphics::CCamera::SetFarClipping(float fFarClipping)
 {
 
   m_fFarClipping = fFarClipping;
@@ -76,43 +78,43 @@ CCamera::SetFarClipping(float fFarClipping)
 }
 /////////////////////////////////////////////////////////////////
 float
-CCamera::GetFarClipping()
+Phoenix::Graphics::CCamera::GetFarClipping()
 {
   return m_fFarClipping;
 }
 /////////////////////////////////////////////////////////////////
 float
-CCamera::GetNearClipping()
+Phoenix::Graphics::CCamera::GetNearClipping()
 {
   return m_fNearClipping;
 }
 /////////////////////////////////////////////////////////////////
 float
-CCamera::GetFieldOfView()
+Phoenix::Graphics::CCamera::GetFieldOfView()
 {
   return m_fFieldOfView;
 }
 /////////////////////////////////////////////////////////////////
 int *
-CCamera::GetViewport()
+Phoenix::Graphics::CCamera::GetViewport()
 {
   return m_aViewport;
 }
 /////////////////////////////////////////////////////////////////
 char
-CCamera::IsLensFlaresEnabled()
+Phoenix::Graphics::CCamera::IsLensFlaresEnabled()
 {
   return m_bLensFlaresEnabled;
 }
 /////////////////////////////////////////////////////////////////
 void 
-CCamera::SetLensFlaresEnabled(char bFlag)
+Phoenix::Graphics::CCamera::SetLensFlaresEnabled(char bFlag)
 {
   m_bLensFlaresEnabled = bFlag;
 }
 /////////////////////////////////////////////////////////////////
-CFrustum &
-CCamera::Frustum()
+Phoenix::Graphics::CFrustum &
+Phoenix::Graphics::CCamera::Frustum()
 {
   return m_Frustum;
 }
@@ -120,65 +122,65 @@ CCamera::Frustum()
 // As described in 
 // http://www.flipcode.com/articles/article_frustumculling.shtml
 //
-void
-CCamera::CalculateBoundingSphere()
-{
-  float fViewLen = m_fFarClipping - m_fNearClipping;
-  float fHeight = fViewLen * tan(DEG2RAD(m_fFieldOfView) * 0.5f);
-  float fWidth = fHeight;
+// void
+// Phoenix::Graphics::CCamera::CalculateBoundingSphere()
+// {
+//   float fViewLen = m_fFarClipping - m_fNearClipping;
+//   float fHeight = fViewLen * tan(Deg2Rad(m_fFieldOfView) * 0.5f);
+//   float fWidth = fHeight;
 
-  // halfway point between near/far planes starting at the origin and 
-  // extending along the z axis
-  CVector3 vP(0.0f, 0.0f, m_fNearClipping + fViewLen * 0.5f);
+//   // halfway point between near/far planes starting at the origin and 
+//   // extending along the z axis
+//   CVector3<float> vP(0.0f, 0.0f, m_fNearClipping + fViewLen * 0.5f);
 
-  // the calculate far corner of the frustum
-  CVector3 vQ(fWidth, fHeight, fViewLen);
+//   // the calculate far corner of the frustum
+//   CVector3<float> vQ(fWidth, fHeight, fViewLen);
   
-  // the vector between P and Q
-  CVector3 vDiff = vP - vQ;
+//   // the vector between P and Q
+//   CVector3<float> vDiff = vP - vQ;
   
-  // the radius becomes the length of this vector
-  m_FrustumSphere.SetRadius( vDiff.Length());
+//   // the radius becomes the length of this vector
+//   //m_FrustumSphere.SetRadius( vDiff.Length());
   
-  // calculate the center of the sphere
-  m_FrustumSphere.SetPosition( GetPosition() + (GetForwardVector() * (fViewLen * 0.5f + m_fNearClipping)));
+//   // calculate the center of the sphere
+//   //m_FrustumSphere.SetPosition( GetPosition() + (GetForwardVector() * (fViewLen * 0.5f + m_fNearClipping)));
   
-}
+// }
 /////////////////////////////////////////////////////////////////
-void
-CCamera::CalculateBoundingCone()
-{
+// void
+// Phoenix::Graphics::CCamera::CalculateBoundingCone()
+// {
   
-  float fHalfHeight = m_aViewport[3] * 0.5f; // Half of the screen height
-  float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
+//   float fHalfHeight = m_aViewport[3] * 0.5f; // Half of the screen height
+//   float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
 
-  // calculate the length of the fov triangle
-  float fDepth  = fHalfHeight / tan(DEG2RAD(m_fFieldOfView) * 0.5f);
+//   // calculate the length of the fov triangle
+//   float fDepth  = fHalfHeight / tanf(Deg2Rad(m_fFieldOfView) * 0.5f);
 
-  // calculate the corner of the screen
-  float fCorner = sqrt(fHalfWidth * fHalfWidth + fHalfHeight * fHalfHeight);
+//   // calculate the corner of the screen
+//   float fCorner = sqrt(fHalfWidth * fHalfWidth + fHalfHeight * fHalfHeight);
   
-  // now calculate the new fov
-  float fFov = atan(fCorner / fDepth);
+//   // now calculate the new fov
+//   float fFov = atan(fCorner / fDepth);
   
-  // apply to the cone
-  m_FrustumCone.SetDirection(GetForwardVector());
-  m_FrustumCone.SetPosition(GetPosition());
-  m_FrustumCone.SetAngle(fFov);
+//   // apply to the cone
+//   //m_FrustumCone.SetDirection(GetForwardVector());
+//   //m_FrustumCone.SetPosition(GetPosition());
+//   //m_FrustumCone.SetAngle(fFov);
 
-}
+// }
 /////////////////////////////////////////////////////////////////
-CCone &
-CCamera::FrustumCone()
-{
-  return m_FrustumCone;
-}
-/////////////////////////////////////////////////////////////////
-CSphere &
-CCamera::FrustumSphere()
-{
-  return m_FrustumSphere;
-}
+// CCone &
+// Phoenix::Graphics::CCamera::FrustumCone()
+// {
+//   return m_FrustumCone;
+// }
+// /////////////////////////////////////////////////////////////////
+// CSphere &
+// Phoenix::Graphics::CCamera::FrustumSphere()
+// {
+//   return m_FrustumSphere;
+// }
 /////////////////////////////////////////////////////////////////
 // Handy operator override  for debug printing
 std::ostream &operator<<(std::ostream &stream, CCamera &obj)
@@ -192,7 +194,7 @@ std::ostream &operator<<(std::ostream &stream, CCamera &obj)
 }
 /////////////////////////////////////////////////////////////////
 void 
-CCamera::RotateAroundPoint( const CVector3 & vPoint, const CQuaternion & q)
+Phoenix::Graphics::CCamera::RotateAroundPoint( const CVector3<float> & vPoint, const CQuaternion & q)
 {
 
   AppendToRotation(q);
@@ -200,36 +202,17 @@ CCamera::RotateAroundPoint( const CVector3 & vPoint, const CQuaternion & q)
   
 }
 /////////////////////////////////////////////////////////////////
-CCameraMgr::CCameraMgr() : CContainer<CCamera>()
-{
-  
-}
-/////////////////////////////////////////////////////////////////
-CCameraMgr::~CCameraMgr()
-{
-  Core::CLogger::Error() << "CameraMgr:: delete\n";
-}
-/////////////////////////////////////////////////////////////////
-CCamera *
-CCameraMgr::CreateCamera()
-{
-  CCamera *pCamera = new CCamera();
-  Add( pCamera );
-  Map( (char *)pCamera->GetName(), pCamera);
-  
-  return pCamera;
-}
-/////////////////////////////////////////////////////////////////
 void 
-CCamera::UpdateProjection() 
+Phoenix::Graphics::CCamera::UpdateProjection() 
 {
-  float fH = tanf( DEG2RAD( GetFieldOfView() * 0.5f )) * GetNearClipping(); 
+  float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * GetNearClipping(); 
   float fW = fH * (float)m_aViewport[2]/(float)m_aViewport[3];
   float fFar = m_fFarClipping;
   float fNear = m_fNearClipping;
   //             l   r   b    t   n      f
   // glFrustum( -fW, fW, -fH, fH, fNear, fFar );
-  m_mProjectionInv = m_mProjection = CMatrix4x4f::Zero();
+  m_mProjection.ZeroMatrix();
+  m_mProjectionInv = m_mProjection;
   
   if ( IsOrthogonal() )
   {
@@ -273,11 +256,12 @@ CCamera::UpdateProjection()
 }
 /////////////////////////////////////////////////////////////////
 void 
-CCamera::UpdateView()
+Phoenix::Graphics::CCamera::UpdateView()
 {
   // Transform camera reversely so we get proper effect.
-  CMatrix4x4f mT = Math::TranslationMatrix( GetPosition());
-  CMatrix4x4f mR = GetRotationQuaternion().ToMatrix();
+  CMatrix4x4<float> mT = TranslationMatrix( GetPosition());
+  CMatrix4x4<float> mR;
+  QuaternionToMatrix( GetRotationQuaternion(), mR );
   m_mViewInv = mT * mR;
 
   mT(0,3) = -mT(0,3);
@@ -294,160 +278,238 @@ CCamera::UpdateView()
 }
 /////////////////////////////////////////////////////////////////
 // 0,0 lower left corner
-CVector3 
-CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ )
-{
+// CVector3<float> 
+// Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ )
+// {
 
-  // Convert mouse coordinates to opengl window coordinates 
-  // ( as it would fill entire screen )
-  float fOglX = fX - (float)m_aViewport[0];
-  float fOglY = fY - (float)m_aViewport[1];
+//   // Convert mouse coordinates to opengl window coordinates 
+//   // ( as it would fill entire screen )
+//   float fOglX = fX - (float)m_aViewport[0];
+//   float fOglY = fY - (float)m_aViewport[1];
   
-  float fCenterX = (m_aViewport[2] * 0.5f);
-  float fCenterY = (m_aViewport[3] * 0.5f); 
+//   float fCenterX = (m_aViewport[2] * 0.5f);
+//   float fCenterY = (m_aViewport[3] * 0.5f); 
   
-  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+//   float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
 
-  float fNormX = (fOglX - fCenterX) / fCenterX;
-  float fNormY = (fOglY - fCenterY) / fCenterY;
-  float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
-  float fH = tanf( DEG2RAD( GetFieldOfView() * 0.5f )) * fZInEye; 
+//   float fNormX = (fOglX - fCenterX) / fCenterX;
+//   float fNormY = (fOglY - fCenterY) / fCenterY;
+//   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
+//   float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
   
-  return CVector3(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
+//   return CVector3<float>(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
   
-}
+// }
+// /////////////////////////////////////////////////////////////////
+// CVector3<float> 
+// Phoenix::Graphics::CCamera::EyeToWorld( const CVector3<float> &vPosition )
+// {
+//   CVector4<float> vTmp;
+//   vTmp[0] = vPosition(0);
+//   vTmp[1] = vPosition(1);
+//   vTmp[2] = vPosition(2);
+//   vTmp[3] = 1.0f;
+  
+//   vTmp = m_mViewInv * vTmp;
+
+//   if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) )
+//   {
+//     vTmp[0] /= vTmp(3);
+//     vTmp[1] /= vTmp(3);
+//     vTmp[2] /= vTmp(3);
+//   }
+//   return CVector3<float>(vTmp(0),vTmp(1),vTmp(2));
+
+// }
 /////////////////////////////////////////////////////////////////
-CVector3 
-CCamera::EyeToWorld( const CVector3 &vPosition )
-{
-  CVector<float,4> vTmp;
-  vTmp[0] = vPosition.m_pValues[0];
-  vTmp[1] = vPosition.m_pValues[1];
-  vTmp[2] = vPosition.m_pValues[2];
-  vTmp[3] = 1.0f;
+// CVector3<float> 
+// Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
+// {
+//   // Convert mouse coordinates to opengl window coordinates 
+//   // ( as it would fill entire screen )
+//   float fOglX = fX - (float)m_aViewport[0];
+//   float fOglY = fY - (float)m_aViewport[1];
   
-  vTmp = m_mViewInv * vTmp;
-
-  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
-  {
-    vTmp[0] /= vTmp[3];
-    vTmp[1] /= vTmp[3];
-    vTmp[2] /= vTmp[3];
-  }
-  return CVector3(vTmp[0],vTmp[1],vTmp[2]);
-
-}
-/////////////////////////////////////////////////////////////////
-CVector3 
-CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
-{
-  // Convert mouse coordinates to opengl window coordinates 
-  // ( as it would fill entire screen )
-  float fOglX = fX - (float)m_aViewport[0];
-  float fOglY = fY - (float)m_aViewport[1];
+//   float fCenterX = (m_aViewport[2] * 0.5f);
+//   float fCenterY = (m_aViewport[3] * 0.5f); 
   
-  float fCenterX = (m_aViewport[2] * 0.5f);
-  float fCenterY = (m_aViewport[3] * 0.5f); 
+//   float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+
+//   float fNormX = (fOglX - fCenterX) / fCenterX;
+//   float fNormY = (fOglY - fCenterY) / fCenterY;
+//   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
+//   float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+
+//   CVector4<float> vTmp;
+//   vTmp[0] = fH * fAspect * fNormX;
+//   vTmp[1] = fH * fNormY;
+//   vTmp[2] = -fZInEye;
+//   vTmp[3] = 1.0f;
   
-  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+//   //vTmp = m_mViewInv * vTmp;
 
-  float fNormX = (fOglX - fCenterX) / fCenterX;
-  float fNormY = (fOglY - fCenterY) / fCenterY;
-  float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
-  float fH = tanf( DEG2RAD( GetFieldOfView() * 0.5f )) * fZInEye; 
-
-  CVector<float,4> vTmp;
-  vTmp[0] = fH * fAspect * fNormX;
-  vTmp[1] = fH * fNormY;
-  vTmp[2] = -fZInEye;
-  vTmp[3] = 1.0f;
-  
-  vTmp = m_mViewInv * vTmp;
-
-  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
-  {
-    vTmp[0] /= vTmp[3];
-    vTmp[1] /= vTmp[3];
-    vTmp[2] /= vTmp[3];
-  }
-  return CVector3(vTmp[0],vTmp[1],vTmp[2]);
-}
+//   if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
+//   {
+//     vTmp[0] /= vTmp[3];
+//     vTmp[1] /= vTmp[3];
+//     vTmp[2] /= vTmp[3];
+//   }
+//   return CVector3<float>(vTmp[0],vTmp[1],vTmp[2]);
+// }
 /////////////////////////////////////////////////////////////////
 // The factor which gives seemingly good results on the trackball.
 #define TRACKBALL_FUDGE_FACTOR 0.5f
 /////////////////////////////////////////////////////////////////
-void 
-CCamera::VirtualTrackball( const CVector3 &vPosition, 
-			      const CVector2 &vStartPoint,
-			      const CVector2 &vEndPoint )
-{
-  CVector3 vOrig = WindowCoordinatesToWorld( vStartPoint.m_pValues[CVector2::X], 
-						vStartPoint.m_pValues[CVector2::Y],
-						0.0f);
-  CVector3 vEnd = WindowCoordinatesToWorld( vStartPoint.m_pValues[CVector2::X], 
-					       vStartPoint.m_pValues[CVector2::Y],
-					       1.0f);
-  /////////////////////////////////////////////////////////////////
-  CVector3 vIntersection0;
-  CVector3 vIntersection1;
-  CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
-  /////////////////////////////////////////////////////////////////
-  if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection0, NULL, sphere) >= 1)
-  {
-    vOrig = WindowCoordinatesToWorld( vEndPoint.m_pValues[CVector2::X], 
-				      vEndPoint.m_pValues[CVector2::Y],
-				      0.0f);
-    vEnd = WindowCoordinatesToWorld( vEndPoint.m_pValues[CVector2::X], 
-				     vEndPoint.m_pValues[CVector2::Y],
-				     1.0f);
-    /////////////////////////////////////////////////////////////////
-    if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection1, NULL, sphere) >= 1)
-    {
-      vOrig = vIntersection0 - sphere.GetPosition();
-      vEnd  = vIntersection1 - sphere.GetPosition();
+// void 
+// Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
+// 			      const CVector2<int> &vStartPoint,
+// 			      const CVector2<int> &vEndPoint )
+// {
+//   CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint(0), 
+// 						vStartPoint(1),
+// 						0.0f);
+//   CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint(0), 
+// 					       vStartPoint(1),
+// 					       1.0f);
+//   /////////////////////////////////////////////////////////////////
+//   CVector3<float> vIntersection0;
+//   CVector3<float> vIntersection1;
+//   CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
+//   /////////////////////////////////////////////////////////////////
+//   if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection0, NULL, sphere) >= 1)
+//   {
+//     vOrig = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1), 0.0f);
+//     vEnd = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1),  1.0f);
+//     /////////////////////////////////////////////////////////////////
+//     if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection1, NULL, sphere) >= 1)
+//     {
+//       vOrig = vIntersection0 - sphere.GetPosition();
+//       vEnd  = vIntersection1 - sphere.GetPosition();
 
-      //cerr << "start : " << vIntersection0 << endl;
-      //cerr << "end : "   << vIntersection1 << endl;
-      vOrig.ToUnit();
-      vEnd.ToUnit();
-      CQuaternion qRotation = CQuaternion::RotationArc(vOrig,vEnd).Reverse();
-      RotateAroundPoint( sphere.GetPosition(), qRotation  );
-    }
-  }
+//       vOrig.Normalize();
+//       vEnd.Normalize();
 
-}
+//       CQuaternion qRotation = CQuaternion::RotationArc(vOrig,vEnd).Reverse();
+//       RotateAroundPoint( sphere.GetPosition(), qRotation  );
+//     }
+//   }
+
+// }
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR
 /////////////////////////////////////////////////////////////////
-CVector3
-CCamera::WorldCoordinatesToScreen( const CVector3 &vPosition)
-{
+// CVector3<float>
+// Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPosition)
+// {
 
   
-  CVector<float,4> vTmp;
+//   CVector4<float> vTmp;
 
-  vTmp[0] = vPosition.m_pValues[0];
-  vTmp[1] = vPosition.m_pValues[1];
-  vTmp[2] = vPosition.m_pValues[2];
-  vTmp[3] = 1.0f;
+//   vTmp[0] = vPosition(0);
+//   vTmp[1] = vPosition(1);
+//   vTmp[2] = vPosition(2);
+//   vTmp[3] = 1.0f;
 
-  vTmp = GetViewMatrix() * vTmp;
-  vTmp = GetProjectionMatrix() * vTmp;
+//   vTmp = GetViewMatrix() * vTmp;
+//   vTmp = GetProjectionMatrix() * vTmp;
     
-  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) ) 
-  {
-    vTmp[0] /= vTmp[3];
-    vTmp[1] /= vTmp[3];
-    vTmp[2] /= vTmp[3];
-  }
+//   if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) ) 
+//   {
+//     vTmp[0] /= vTmp[3];
+//     vTmp[1] /= vTmp[3];
+//     vTmp[2] /= vTmp[3];
+//   }
 
-  vTmp[0] = vTmp[0] * 0.5f + 0.5f;
-  vTmp[1] = vTmp[1] * 0.5f + 0.5f;
-  vTmp[2] = vTmp[2] * 0.5f + 0.5f;
+//   vTmp[0] = vTmp(0) * 0.5f + 0.5f;
+//   vTmp[1] = vTmp(1) * 0.5f + 0.5f;
+//   vTmp[2] = vTmp(2) * 0.5f + 0.5f;
   
-  return CVector3(m_aViewport[0] + vTmp[0] * m_aViewport[2],
-		     m_aViewport[1] + vTmp[1] * m_aViewport[3],
-		     vTmp[2]);
+//   return CVector3<float>(m_aViewport[0] + vTmp(0) * m_aViewport[2],
+// 		     m_aViewport[1] + vTmp(1) * m_aViewport[3],
+// 		     vTmp(2));
   
-}
+// }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CCamera::CalculateFrustum()
+{
+  // Left clipping plane
+  CMatrix4x4<float> mCombo;
+  mCombo = GetProjectionMatrix() * GetViewMatrix();
+  
+  m_Frustum.GetPlane(LEFT)[0] = mCombo(0,3) + mCombo(0,0);
+  m_Frustum.GetPlane(LEFT)[1] = mCombo(1,3) + mCombo(1,0);
+
+  m_Frustum.GetPlane(LEFT)[2] = mCombo(2,3) + mCombo(2,0);
+  m_Frustum.GetPlane(LEFT)[3] = mCombo(3,3) + mCombo(3,0);
+
+  // p_planes[0].a = comboMatrix._14 + comboMatrix._11;
+//   p_planes[0].b = comboMatrix._24 + comboMatrix._21;
+//   p_planes[0].c = comboMatrix._34 + comboMatrix._31;
+//   p_planes[0].d = comboMatrix._44 + comboMatrix._41;
+
+  // Right clipping plane
+  m_Frustum.GetPlane(RIGHT)[0] = mCombo(0,3) - mCombo(0,0);
+  m_Frustum.GetPlane(RIGHT)[1] = mCombo(1,3) - mCombo(1,0);
+  m_Frustum.GetPlane(RIGHT)[2] = mCombo(2,3) - mCombo(2,0);
+  m_Frustum.GetPlane(RIGHT)[3] = mCombo(3,3) - mCombo(3,0);
+  // p_planes[1].a = comboMatrix._14 - comboMatrix._11;
+//   p_planes[1].b = comboMatrix._24 - comboMatrix._21;
+//   p_planes[1].c = comboMatrix._34 - comboMatrix._31;
+//   p_planes[1].d = comboMatrix._44 - comboMatrix._41;
+  // Top clipping plane
+  m_Frustum.GetPlane(TOP)[0] = mCombo(0,3) - mCombo(0,1);
+  m_Frustum.GetPlane(TOP)[1] = mCombo(1,3) - mCombo(1,1);
+  m_Frustum.GetPlane(TOP)[2] = mCombo(2,3) - mCombo(2,1);
+  m_Frustum.GetPlane(TOP)[3] = mCombo(3,3) - mCombo(3,1);
+//   p_planes[2].a = comboMatrix._14 - comboMatrix._12;
+//   p_planes[2].b = comboMatrix._24 - comboMatrix._22;
+//   p_planes[2].c = comboMatrix._34 - comboMatrix._32;
+//   p_planes[2].d = comboMatrix._44 - comboMatrix._42;
+  // Bottom clipping plane
+  m_Frustum.GetPlane(BOTTOM)[0] = mCombo(0,3) + mCombo(0,1);
+  m_Frustum.GetPlane(BOTTOM)[1] = mCombo(1,3) + mCombo(1,1);
+  m_Frustum.GetPlane(BOTTOM)[2] = mCombo(2,3) + mCombo(2,1);
+  m_Frustum.GetPlane(BOTTOM)[3] = mCombo(3,3) + mCombo(3,1);
+  // p_planes[3].a = comboMatrix._14 + comboMatrix._12;
+//   p_planes[3].b = comboMatrix._24 + comboMatrix._22;
+//   p_planes[3].c = comboMatrix._34 + comboMatrix._32;
+//   p_planes[3].d = comboMatrix._44 + comboMatrix._42;
+
+  // Near clipping plane
+  m_Frustum.GetPlane(BACK)[0] = mCombo(0,2);
+  m_Frustum.GetPlane(BACK)[1] = mCombo(1,2);
+  m_Frustum.GetPlane(BACK)[2] = mCombo(2,2);
+  m_Frustum.GetPlane(BACK)[3] = mCombo(3,2);
+
+//   p_planes[4].a = comboMatrix._13;
+//   p_planes[4].b = comboMatrix._23;
+//   p_planes[4].c = comboMatrix._33;
+//   p_planes[4].d = comboMatrix._43;
+  // Far clipping plane
+  m_Frustum.GetPlane(FRONT)[0] = mCombo(0,3) - mCombo(0,2);
+  m_Frustum.GetPlane(FRONT)[1] = mCombo(1,3) - mCombo(1,2);
+  m_Frustum.GetPlane(FRONT)[2] = mCombo(2,3) - mCombo(2,2);
+  m_Frustum.GetPlane(FRONT)[3] = mCombo(3,3) - mCombo(3,2);
+  
+  // p_planes[5].a = comboMatrix._14 - comboMatrix._13;
+//   p_planes[5].b = comboMatrix._24 - comboMatrix._23;
+//   p_planes[5].c = comboMatrix._34 - comboMatrix._33;
+//   p_planes[5].d = comboMatrix._44 - comboMatrix._43;
+  // Normalize the plane equations, if requested
+  // if (normalize == true)
+//   {
+//     NormalizePlane(p_planes[0]);
+//     NormalizePlane(p_planes[1]);
+//     NormalizePlane(p_planes[2]);
+//     NormalizePlane(p_planes[3]);
+//     NormalizePlane(p_planes[4]);
+//     NormalizePlane(p_planes[5]);
+//   }
+  m_Frustum.GetPlane(TOP).Normalize();
+  m_Frustum.GetPlane(BOTTOM).Normalize();
+  m_Frustum.GetPlane(LEFT).Normalize();
+  m_Frustum.GetPlane(RIGHT).Normalize();
+  m_Frustum.GetPlane(BACK).Normalize();
+  m_Frustum.GetPlane(FRONT).Normalize();
+}
