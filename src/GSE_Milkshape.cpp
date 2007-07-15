@@ -1,26 +1,5 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-
-#include "GSE_Milkshape.h"
-#include "GSE_Logger.h"
+#include "CMilkshape.h"
+#include "CLogger.h"
 #include <fstream>
 // ------------------------------------------------------------
 #define DELETE(OBJ) if(OBJ != NULL ) delete OBJ; OBJ=NULL;
@@ -28,25 +7,25 @@
 using std::fstream;
 using std::ios;
 using namespace Core;
+using std::cerr;
 // ------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------
-GSE_MS3DModel::GSE_MS3DModel()
+CMS3DModel::CMS3DModel()
 {
   Init();
-
 }
 // ------------------------------------------------------------
 // Desctructor
 // ------------------------------------------------------------
-GSE_MS3DModel::~GSE_MS3DModel()
+CMS3DModel::~CMS3DModel()
 {
   Destroy();
 }
 // ------------------------------------------------------------
 // Copy constructor (since model has pointer members)
 // ------------------------------------------------------------
-GSE_MS3DModel::GSE_MS3DModel( const GSE_MS3DModel &ref)
+CMS3DModel::CMS3DModel( const CMS3DModel &ref)
 {
   // Get sizes 
   m_nNumVertices = ref.m_nNumVertices;
@@ -93,8 +72,8 @@ GSE_MS3DModel::GSE_MS3DModel( const GSE_MS3DModel &ref)
 // ------------------------------------------------------------
 // Assignment operator ( since model has pointer members)
 // ------------------------------------------------------------
-GSE_MS3DModel &
-GSE_MS3DModel::operator=( GSE_MS3DModel obj )
+CMS3DModel &
+CMS3DModel::operator=( CMS3DModel obj )
 {
   Destroy();
   // Get sizes 
@@ -144,7 +123,7 @@ GSE_MS3DModel::operator=( GSE_MS3DModel obj )
 // Initializes the model structures
 // ------------------------------------------------------------
 void 
-GSE_MS3DModel::Init()
+CMS3DModel::Init()
 {
   
   m_nNumVertices = 0;
@@ -170,7 +149,7 @@ GSE_MS3DModel::Init()
 // Frees the memory reserved by the model 
 // ------------------------------------------------------------
 void 
-GSE_MS3DModel::Destroy()
+CMS3DModel::Destroy()
 {
   
   unsigned int i = 0;
@@ -208,7 +187,7 @@ GSE_MS3DModel::Destroy()
 // Loads the model data from file sFilename
 // ------------------------------------------------------------
 char
-GSE_MS3DModel::Load(const std::string &sFilename)
+CMS3DModel::Load(const std::string &sFilename)
 {
 
   fstream	fFile;
@@ -218,13 +197,13 @@ GSE_MS3DModel::Load(const std::string &sFilename)
   
   if ( !fFile )
   {
-    GSE_Logger::Error() << "Couldn't open " << sFilename << std::endl;
+    cerr << "Couldn't open " << sFilename << std::endl;
     return 1;
   }
   
   if ( Check_File(fFile) )
   {
-    GSE_Logger::Error() << "Invalid file, loading cancelled." << std::endl;
+    cerr << "Invalid file, loading cancelled." << std::endl;
     return 1;
   }
 
@@ -234,7 +213,7 @@ GSE_MS3DModel::Load(const std::string &sFilename)
   unsigned char *pBuffer = Read_Into_Buffer(fFile, &iFilesize);
 
   if ( pBuffer == NULL ){
-    GSE_Logger::Error() << "Error while reading " << sFilename << std::endl;
+    cerr << "Error while reading " << sFilename << std::endl;
     return 1;
   }
 
@@ -266,7 +245,7 @@ GSE_MS3DModel::Load(const std::string &sFilename)
 // Validates the file - returns 0 if ms3d v.1.3-1.4, non-zero otherwise
 // ------------------------------------------------------------
 int 
-GSE_MS3DModel::Check_File( std::fstream &File)
+CMS3DModel::Check_File( std::fstream &File)
 {
   
   int bRetval = 0;
@@ -277,22 +256,22 @@ GSE_MS3DModel::Check_File( std::fstream &File)
   
   if ( File.bad())
   {
-    GSE_Logger::Error() << "Couldn't read file!" << std::endl;
+    cerr << "Couldn't read file!" << std::endl;
     bRetval = 1;
 
   } else {
 
 
-    GSE_Logger::Log() << "MS3Dheader.id = "      << MS3Dheader.id << std::endl;
-    GSE_Logger::Log() << "MS3Dheader.version = " << MS3Dheader.version << std::endl;
+    cerr << "MS3Dheader.id = "      << MS3Dheader.id << std::endl;
+    cerr << "MS3Dheader.version = " << MS3Dheader.version << std::endl;
 
 
     // Check file type and version, exit if invalid
     if ( strncmp(MS3Dheader.id, "MS3D000000", 10) != 0 ){
-      GSE_Logger::Error() << "Not a Milkshape3D file!" << std::endl;
+      cerr << "Not a Milkshape3D file!" << std::endl;
       bRetval = 1;
     } else if ( MS3Dheader.version < 3 || MS3Dheader.version > 4 ){
-      GSE_Logger::Error() << "Only ms3d versions 1.3 and 1.4 are supported!" << std::endl;
+      cerr << "Only ms3d versions 1.3 and 1.4 are supported!" << std::endl;
       bRetval = 1;
     }
   }
@@ -301,7 +280,7 @@ GSE_MS3DModel::Check_File( std::fstream &File)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Read_Into_Buffer( std::fstream &File, unsigned int *pFilesize)
+CMS3DModel::Read_Into_Buffer( std::fstream &File, unsigned int *pFilesize)
 {
 
   unsigned char *pBuffer = NULL;
@@ -326,7 +305,7 @@ GSE_MS3DModel::Read_Into_Buffer( std::fstream &File, unsigned int *pFilesize)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd)
+CMS3DModel::Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd)
 {
 
   if ( pWorkBuffer != NULL ){
@@ -339,11 +318,11 @@ GSE_MS3DModel::Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd)
     m_nNumVertices = *(WORD *)pWorkBuffer;
     pWorkBuffer += sizeof(WORD);
     
-    GSE_Logger::Log() << m_nNumVertices 
+    cerr << m_nNumVertices 
 		      << " vertices to be read..." << std::endl;
     
     if ( m_nNumVertices >= MAX_VERTICES ){
-      GSE_Logger::Error() << "Bogus file - vertex count too large. This madness ends here!" << std::endl;
+      cerr << "Bogus file - vertex count too large. This madness ends here!" << std::endl;
       pWorkBuffer = NULL;
     }
     
@@ -354,7 +333,7 @@ GSE_MS3DModel::Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd)
       for(unsigned int i=0;i<m_nNumVertices;i++){
 
 	if ( (pWorkBuffer+sizeof(MS3D_Vertex_t)) >= pEnd ){
-	  GSE_Logger::Error() << "Bogus file - faulty vertex count. This madness ends here!" << std::endl;
+	  cerr << "Bogus file - faulty vertex count. This madness ends here!" << std::endl;
 	  pWorkBuffer = NULL;
 	  break;
 	}
@@ -365,7 +344,7 @@ GSE_MS3DModel::Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd)
 
 
 #ifdef DEBUG
-	GSE_Logger::Log() << "v[0] = " << m_pVertices[i].vertex[0]
+	cerr << "v[0] = " << m_pVertices[i].vertex[0]
 			  << "v[1] = " << m_pVertices[i].vertex[1]
 			  << "v[2] = " << m_pVertices[i].vertex[2] 
 			  << "boneid = " << (int)m_pVertices[i].boneId  << std::endl;
@@ -379,7 +358,7 @@ GSE_MS3DModel::Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Handle_Triangles( unsigned char *pWorkBuffer)
+CMS3DModel::Handle_Triangles( unsigned char *pWorkBuffer)
 {
   if ( pWorkBuffer != NULL ){
 
@@ -390,7 +369,7 @@ GSE_MS3DModel::Handle_Triangles( unsigned char *pWorkBuffer)
 
       m_pTriangles = new MS3D_Triangle_t[m_nNumTriangles];
 
-      GSE_Logger::Log() << m_nNumTriangles 
+      cerr << m_nNumTriangles 
 			<< " triangles to be read.." << std::endl;
 
       for(unsigned int i=0;i<m_nNumTriangles;i++)
@@ -420,7 +399,7 @@ GSE_MS3DModel::Handle_Triangles( unsigned char *pWorkBuffer)
       }
 
     } else {
-      GSE_Logger::Error() << "Bogus file - triangle count faulty. This madness ends here!"
+      cerr << "Bogus file - triangle count faulty. This madness ends here!"
 			  << std::endl;
     }
   }
@@ -428,7 +407,7 @@ GSE_MS3DModel::Handle_Triangles( unsigned char *pWorkBuffer)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Handle_Groups( unsigned char *pWorkBuffer)
+CMS3DModel::Handle_Groups( unsigned char *pWorkBuffer)
 {
   if ( pWorkBuffer != NULL ){
 
@@ -437,7 +416,7 @@ GSE_MS3DModel::Handle_Groups( unsigned char *pWorkBuffer)
 
     if ( m_nNumGroups > 0 && m_nNumGroups < MAX_GROUPS ){
 
-      GSE_Logger::Log() << m_nNumGroups 
+      cerr << m_nNumGroups 
 			<< " groups to be read.." << std::endl;
       m_pGroups = new MS3D_Group_t[m_nNumGroups];
 
@@ -450,8 +429,7 @@ GSE_MS3DModel::Handle_Groups( unsigned char *pWorkBuffer)
 	strncpy(m_pGroups[i].name, (char *)pWorkBuffer, 32);
 	pWorkBuffer+=sizeof(char)*32;
 
-	/*GSE_Logger::Log() << "name of the group : "
-	  << m_pGroups[i].name << std::endl;*/
+
 	// triangle count
 	m_pGroups[i].nNumTriangles = *(WORD *)pWorkBuffer;	
 	pWorkBuffer+=sizeof(WORD);
@@ -468,7 +446,7 @@ GSE_MS3DModel::Handle_Groups( unsigned char *pWorkBuffer)
       }
       
     } else {
-      GSE_Logger::Error() << "Bogus file - triangle count faulty. This madness ends here!"
+      cerr << "Bogus file - triangle count faulty. This madness ends here!"
 			  << std::endl;
     }
   }
@@ -476,7 +454,7 @@ GSE_MS3DModel::Handle_Groups( unsigned char *pWorkBuffer)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Handle_Materials( unsigned char *pWorkBuffer)
+CMS3DModel::Handle_Materials( unsigned char *pWorkBuffer)
 {
   if ( pWorkBuffer != NULL ){
 
@@ -486,7 +464,7 @@ GSE_MS3DModel::Handle_Materials( unsigned char *pWorkBuffer)
     if ( m_nNumMaterials > 0 && m_nNumMaterials < MAX_MATERIALS){
       
       m_pMaterials = new MS3D_Material_t[m_nNumMaterials];
-      GSE_Logger::Log() << m_nNumMaterials 
+      cerr << m_nNumMaterials 
 			<< " materials to be read.." << std::endl;
       for(WORD i=0;i<m_nNumMaterials;i++){
 
@@ -498,7 +476,7 @@ GSE_MS3DModel::Handle_Materials( unsigned char *pWorkBuffer)
       
     } else {
       
-      GSE_Logger::Error() << "Bogus file - material count faulty. This madness ends here!"
+      cerr << "Bogus file - material count faulty. This madness ends here!"
 			  << std::endl;
     }
     
@@ -509,7 +487,7 @@ GSE_MS3DModel::Handle_Materials( unsigned char *pWorkBuffer)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Handle_Keyframer( unsigned char *pWorkBuffer)
+CMS3DModel::Handle_Keyframer( unsigned char *pWorkBuffer)
 {
   if ( pWorkBuffer != NULL ){
 
@@ -520,7 +498,7 @@ GSE_MS3DModel::Handle_Keyframer( unsigned char *pWorkBuffer)
     m_Animationdata.iTotalFrames = *(int *)pWorkBuffer;
     pWorkBuffer+=sizeof(int);
     /*
-    GSE_Logger::Log() << "Animation FPS : " 
+    cerr << "Animation FPS : " 
 		      << m_Animationdata.fAnimationFPS
 		      << ", #frames " 
 		      << m_Animationdata.iTotalFrames << std::endl;
@@ -530,7 +508,7 @@ GSE_MS3DModel::Handle_Keyframer( unsigned char *pWorkBuffer)
 }
 // ------------------------------------------------------------
 unsigned char *
-GSE_MS3DModel::Handle_Joints( unsigned char *pWorkBuffer)
+CMS3DModel::Handle_Joints( unsigned char *pWorkBuffer)
 {
   if ( pWorkBuffer != NULL ){
 
@@ -539,18 +517,18 @@ GSE_MS3DModel::Handle_Joints( unsigned char *pWorkBuffer)
     
     if ( m_nNumJoints == 0 ) 
     {
-      GSE_LOG( "No joints to be read") ;
+      CLOG( "No joints to be read") ;
     }
     else if (m_nNumJoints >= MAX_JOINTS) 
     {
-      GSE_ERR( "Bogus file - joint count too large " 
+      CERR( "Bogus file - joint count too large " 
 	       << m_nNumJoints << " vs. " << 
 	       MAX_JOINTS-1 << ". This madness ends here!");
     }
     else
     {
       m_pJoints = new MS3D_Joint_t[m_nNumJoints];
-      /*GSE_Logger::Log() << m_nNumJoints 
+      /*cerr << m_nNumJoints 
 	<< " joints to be read.." << std::endl;*/
       for(WORD i=0;i<m_nNumJoints;i++){
 	// flags
@@ -559,7 +537,7 @@ GSE_MS3DModel::Handle_Joints( unsigned char *pWorkBuffer)
 	// name
 	strncpy(m_pJoints[i].name, (char *)pWorkBuffer, 32);
 	pWorkBuffer+=sizeof(char)*32;
-	/*GSE_Logger::Log() << "name of the joint : "
+	/*cerr << "name of the joint : "
 	  << m_pJoints[i].name << std::endl;*/
 	// Parentname
 	strncpy(m_pJoints[i].parentName, (char *)pWorkBuffer, 32);
@@ -576,12 +554,7 @@ GSE_MS3DModel::Handle_Joints( unsigned char *pWorkBuffer)
 	// Translation keyframe count
 	m_pJoints[i].nNumKeyFramesTrans = *(WORD *)pWorkBuffer;
 	pWorkBuffer+=sizeof(WORD);
-	/*
-	GSE_Logger::Log() << "\tRotation keyframes:" 
-			  << m_pJoints[i].nNumKeyFramesRot << std::endl
-			  << "\tTranslation keyframes "
-			  << m_pJoints[i].nNumKeyFramesTrans << std::endl;
-	*/
+	
 	// Allocate keyframe arrays
 	m_pJoints[i].keyFramesRot   = new MS3D_Keyframe_rot_t[m_pJoints[i].nNumKeyFramesRot];
 	m_pJoints[i].keyFramesTrans = new MS3D_Keyframe_pos_t[m_pJoints[i].nNumKeyFramesTrans];
