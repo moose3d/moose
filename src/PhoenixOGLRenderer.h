@@ -181,8 +181,7 @@ namespace Phoenix
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-void 
+inline void 
 Phoenix::Graphics::COglRenderer::CommitColor( CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
