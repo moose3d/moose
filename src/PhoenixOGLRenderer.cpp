@@ -11,29 +11,7 @@
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
 using std::endl;
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture::COglTexture( unsigned int nId, TEXTURE_TYPE tType ) : m_nOglId(nId), 
-										      m_tTextureType(tType)
-{
-  
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture::~COglTexture()
-{
-  glDeleteTextures( 1, &m_nOglId );
-}
-/////////////////////////////////////////////////////////////////
-unsigned int 
-Phoenix::Graphics::COglTexture::GetID() const
-{
-  return m_nOglId;
-}
-/////////////////////////////////////////////////////////////////
-TEXTURE_TYPE 
-Phoenix::Graphics::COglTexture::GetType() const
-{
-  return m_tTextureType;
-}
+
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
