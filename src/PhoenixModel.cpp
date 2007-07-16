@@ -9,8 +9,8 @@ Phoenix::Graphics::CModel::CModel()
 Phoenix::Graphics::CModel::~CModel()
 {
   m_TextureHandle.Nullify();
-  m_VertexHandle.Nullify();
-  m_IndexHandle.Nullify();
+  m_VertexDescriptorHandle.Nullify();
+  m_IndexArrayHandle.Nullify();
 }
 /////////////////////////////////////////////////////////////////
 TEXTURE_HANDLE
@@ -28,24 +28,24 @@ Phoenix::Graphics::CModel::SetTextureHandle(TEXTURE_HANDLE handle)
 VERTEX_HANDLE
 Phoenix::Graphics::CModel::GetVertexHandle() const
 {
-  return m_VertexHandle;
+  return m_VertexDescriptorHandle;
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::CModel::SetVertexHandle(VERTEX_HANDLE handle) 
 {
-  m_VertexHandle = handle; 
+  m_VertexDescriptorHandle = handle; 
 }
 /////////////////////////////////////////////////////////////////
 INDEX_HANDLE
 Phoenix::Graphics::CModel::GetIndexHandle() const
 {
-  return m_IndexHandle;
+  return m_IndexArrayHandle;
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::CModel::SetIndexHandle(INDEX_HANDLE handle) 
 {
-  m_IndexHandle = handle; 
+  m_IndexArrayHandle = handle; 
 }
 /////////////////////////////////////////////////////////////////
