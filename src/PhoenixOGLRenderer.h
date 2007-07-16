@@ -19,10 +19,7 @@ namespace Phoenix
       CLIENT_STATE_COLOR_ARRAY = 1,
       CLIENT_STATE_TEX0_ARRAY
     };
-    enum TEXTURE_TYPE 
-    {
-      TEXTURE_2D = 0
-    };
+    
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
@@ -90,18 +87,7 @@ namespace Phoenix
       /// Initializes the supported values.
       void Init();
     };
-    /////////////////////////////////////////////////////////////////
-    class COglTexture
-    {
-    private:
-      unsigned int m_nOglId;
-      TEXTURE_TYPE m_tTextureType;
-    public:
-        COglTexture( unsigned int nId, TEXTURE_TYPE tType );
-	~COglTexture();
-       unsigned int GetID() const;
-       TEXTURE_TYPE GetType() const;
-    };
+    
     /////////////////////////////////////////////////////////////////
     /// BufferType
     enum BUFFER_TYPE 
