@@ -6,6 +6,7 @@
 #include "PhoenixIndexArray.h"
 #include "PhoenixVector4.h"
 #include "PhoenixCamera.h"
+#include "PhoenixTexture.h"
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
