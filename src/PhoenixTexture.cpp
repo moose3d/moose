@@ -1,4 +1,8 @@
 #include "PhoenixTexture.h"
+#include <GL/GLee.h>
+#include <GL/gl.h>
+/////////////////////////////////////////////////////////////////
+using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture::COglTexture( unsigned int nId, TEXTURE_TYPE tType ) : m_nOglId(nId), 
 										      m_tTextureType(tType)
