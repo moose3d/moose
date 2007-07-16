@@ -3,14 +3,16 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
 #include "PhoenixResourceManager.h"
+#include "PhoenixOGLRenderer.h"
 /////////////////////////////////////////////////////////////////
+
 namespace Phoenix
 {
   namespace Graphics
   {
-    typedef CHandle<COglTexture>       TEXTURE_HANDLE;
-    typedef CHandle<CVertexDescriptor> VERTEX_HANDLE;
-    typedef CHandle<CIndexArray>       INDEX_HANDLE;
+    typedef Phoenix::Core::CHandle<COglTexture>       TEXTURE_HANDLE;
+    typedef Phoenix::Core::CHandle<CVertexDescriptor> VERTEX_HANDLE;
+    typedef Phoenix::Core::CHandle<CIndexArray>       INDEX_HANDLE;
     ////////////////////
     /// Model class for 3D models with texture and vertex data.
     class CModel
