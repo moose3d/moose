@@ -3,9 +3,14 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
 #include "PhoenixResourceManager.h"
-#include "PhoenixOGLRenderer.h"
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
+#include "PhoenixTexture.h"
 /////////////////////////////////////////////////////////////////
-
+using Phoenix::Graphics::CVertexDescriptor;
+using Phoenix::Graphics::CIndexArray;
+using Phoenix::Graphics::COglTexture;
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
