@@ -132,6 +132,34 @@ namespace Phoenix
       {
 	m_bProjectionChanged = bFlag;
       }
+      ////////////////////
+      /// Strafes camera (moves sideways).
+      /// \param fAmount Amount of movement along right vector.
+      inline void Strafe( float fAmount ) 
+      {
+	CPositional::Move( fAmount * GetRightVector());
+      }
+      ////////////////////
+      /// Lifts / lowers camera.
+      /// \param fAmount Amount of movement along up vector.
+      inline void Elevate( float fAmount ) 
+      {
+	CPositional::Move( fAmount * GetUpVector());
+      }
+      ////////////////////
+      ///  Moves camera forward or backward.
+      /// \param fAmount Amount of movement along forward vector.
+      inline void Move ( float fAmount )
+      {
+	CPositional::Move( fAmount * GetForwardVector());
+      }
+      ////////////////////
+      /// Moves camera using direction and length of given vector.
+      /// \param vVector Movement vector.
+      inline void Move ( const CVector3<float> & vVector )
+      {
+	CPositional::Move( vVector );
+      }
       /////////////////////////////////////////////////////////////////
       /// Converts window coordinates (x,y,z) into eye coordinates. 
       /// \param fX x coordinate with 0,0 as lower left corner.
