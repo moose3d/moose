@@ -24,7 +24,7 @@ Phoenix::Graphics::CCamera::GetOrthoPlanes()
   return m_aOrthoPlanes;
 }
 /////////////////////////////////////////////////////////////////
-char
+int
 Phoenix::Graphics::CCamera::IsOrthogonal()
 {
   return m_bOrtho;
@@ -101,14 +101,14 @@ Phoenix::Graphics::CCamera::GetViewport()
   return m_aViewport;
 }
 /////////////////////////////////////////////////////////////////
-char
+int
 Phoenix::Graphics::CCamera::IsLensFlaresEnabled()
 {
   return m_bLensFlaresEnabled;
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::CCamera::SetLensFlaresEnabled(char bFlag)
+Phoenix::Graphics::CCamera::SetLensFlaresEnabled(int bFlag)
 {
   m_bLensFlaresEnabled = bFlag;
 }
