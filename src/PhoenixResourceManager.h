@@ -101,14 +101,13 @@ namespace Phoenix
     };
     ////////////////////
     /// Resource Manager class.
-    template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
-    class CResourceManager : public CSingleton<CResourceManager<OBJECTTYPE,HANDLE,SIZE> >
+    template<typename OBJECTTYPE, typename HANDLE>
+    class CResourceManager : public CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >
     {
-      friend class CSingleton<CResourceManager<OBJECTTYPE,HANDLE,SIZE> >;
+      friend class CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >;
     protected:
       CHashTable<std::string,CResourceName> *m_pResourceHash;
       std::vector<OBJECTTYPE *> m_vecObjects;
-
       ////////////////////
       /// Constructor.
       CResourceManager();
@@ -116,6 +115,11 @@ namespace Phoenix
       /// Destructor.
       ~CResourceManager();
     public:
+      ////////////////////
+      /// Initializes hash table with given size. If size is not given, it defaults to PHOENIX_MAGIC_NUMBER.
+      /// \param nSize Number of hash table arrays.
+      /// \returns non-zero on error, zero on success.
+      int Initialize( size_t nSize = PHOENIX_MAGIC_NUMBER );
       ////////////////////
       /// Creates new resource to pointer, named strName - handle 
       /// is initialized refer to that object.
@@ -148,24 +152,41 @@ namespace Phoenix
   };
 };
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE,size_t SIZE>
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::CResourceManager()
+template<typename OBJECTTYPE, typename HANDLE>
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::CResourceManager() : m_pResourceHash(NULL)
 {
-  m_pResourceHash = new CHashTable<std::string,CResourceName>(SIZE);
+  // NOP
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE,size_t SIZE>
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::~CResourceManager() 
+template<typename OBJECTTYPE, typename HANDLE>
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::~CResourceManager() 
 {
-  delete m_pResourceHash;
+  if ( m_pResourceHash ) delete m_pResourceHash;
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE,size_t SIZE>
+template<typename OBJECTTYPE, typename HANDLE>
 int
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::Create( OBJECTTYPE *pType, 
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Initialize(size_t nSize)
+{
+  m_pResourceHash = new CHashTable<std::string,CResourceName>(nSize);
+  
+  if ( m_pResourceHash == NULL )
+  {
+    return -1;
+  }
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+int
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType, 
 							    const std::string &strName, 
 							    HANDLE *pHandle )
 {
+  if ( m_pResourceHash == NULL )
+  {
+    Initialize();
+  }
   if ( m_pResourceHash->Find(strName)==NULL )
   {
 
@@ -194,9 +215,9 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::Create( OBJECTTYPE *pTy
   return -1;
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+template<typename OBJECTTYPE, typename HANDLE>
 void
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::DeleteMemory()
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DeleteMemory()
 {
   for(unsigned int n=0;n<GetSize();n++)
   {
@@ -204,13 +225,16 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::DeleteMemory()
       delete m_vecObjects[n];
     m_vecObjects[n] = NULL;
   }
-  delete m_pResourceHash;
+  if ( m_pResourceHash != NULL )  
+  {
+    delete m_pResourceHash;
+  }
   m_pResourceHash = NULL;
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+template<typename OBJECTTYPE, typename HANDLE>
 OBJECTTYPE *
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetResource( const HANDLE &handle) const
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const HANDLE &handle) const
 {
   if ( handle.GetIndex() >= GetSize() || handle.IsNull() )
   {
@@ -219,26 +243,28 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetResource( const HAND
   return m_vecObjects[handle.GetIndex()];
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+template<typename OBJECTTYPE, typename HANDLE>
 OBJECTTYPE *
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetResource( const std::string &strName ) const
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const std::string &strName ) const
 {
+  if ( m_pResourceHash == NULL ) return NULL;
+
   CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
   if ( pHashItem == NULL ) return NULL;
 
   return m_vecObjects[pHashItem->GetObject().GetIndex()];
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+template<typename OBJECTTYPE, typename HANDLE>
 inline unsigned int
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::GetSize() const
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetSize() const
 {
   return m_vecObjects.size();
 }
 /////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE, size_t SIZE>
+template<typename OBJECTTYPE, typename HANDLE>
 inline void
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE,SIZE>::Release( HANDLE &handle )
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Release( HANDLE &handle )
 {
   handle.Nullify();
   ///  remove pointer to handle in ResourceName (future)
