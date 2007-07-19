@@ -6,6 +6,7 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixTexture.h"
+#include "PhoenixDefaultEntities.h"
 /////////////////////////////////////////////////////////////////
 using Phoenix::Graphics::CVertexDescriptor;
 using Phoenix::Graphics::CIndexArray;
@@ -15,9 +16,6 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    typedef Phoenix::Core::CHandle<COglTexture>       TEXTURE_HANDLE;
-    typedef Phoenix::Core::CHandle<CVertexDescriptor> VERTEX_HANDLE;
-    typedef Phoenix::Core::CHandle<CIndexArray>       INDEX_HANDLE;
     ////////////////////
     /// Model class for 3D models with texture and vertex data.
     class CModel
