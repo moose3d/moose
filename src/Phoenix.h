@@ -18,3 +18,4 @@
 #include "PhoenixVector3.h"
 #include "PhoenixVector4.h"
 #include "PhoenixVertexDescriptor.h"
+#include "PhoenixDefaultEntities.h"
