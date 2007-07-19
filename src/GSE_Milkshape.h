@@ -2,7 +2,8 @@
 #ifndef __CMilkshape_h__
 #define __CMilkshape_h__
 /////////////////////////////////////////////////////////////////
-#include "Cstructures.h"
+#include "PhoenixModel.h"
+/////////////////////////////////////////////////////////////////
 // So we can use the structs directly while reading the MS3D file
 #define PACKED __attribute__((packed))
 /////////////////////////////////////////////////////////////////
@@ -242,15 +243,14 @@ struct  MS3D_Vertex_ex_t
   // weights[1] is the weight for boneIds[0]
   // weights[2] is the weight for boneIds[1]
   // 1.0f - weights[0] - weights[1] - weights[2] is the weight for boneIds[2]
-}PACKED;
+} PACKED;
 /////////////////////////////////////////////////////////////////
 /// Actual model class, which encapsulates structs above.
-/////////////////////////////////////////////////////////////////
-class CMS3DModel
+class CMS3DModelLoader
 {
  private:
   /// indicates does this model have data loaded.
-  char  m_bHasBeenLoaded;
+  int  m_bHasBeenLoaded;
  public:
 
   /// Vertex array size.
@@ -291,51 +291,59 @@ class CMS3DModel
   //MS3D_Comment_t  *m_pMaterialComments;
   //MS3D_Comment_t  *m_pJointComments;
   //MS3D_Comment_t  *m_pModelComments;
-
-
-  /////////////////////////////////////////////////////////////////
-  // The method prototypes
-  /////////////////////////////////////////////////////////////////
+  ////////////////////
   /// Constructor.
-  CMS3DModel();
+  CMS3DModelLoader();
+  ////////////////////
   /// Desctructor.
-  ~CMS3DModel();
+  ~CMS3DModelLoader();
+  ////////////////////
   /// Copy constructor (since model has pointer members).
-  CMS3DModel( const CMS3DModel &ref);
+  CMS3DModelLoader( const CMS3DModelLoader &ref);
+  ////////////////////
   /// Assignment operator ( since model has pointer members).
-  CMS3DModel &operator=( CMS3DModel obj );
+  CMS3DModelLoader &operator=( CMS3DModelLoader obj );
+  ////////////////////
   /// Loads the model data from file sFilename.
-  char Load(const std::string &sFilename);
-
+  int Load(const std::string &sFilename);
+  Phoenix::Graphics CModel * LoadModel()
  private:
-  /////////////////////////////////////////////////////////////////
+  ////////////////////
   /// Initializes the model structures.
-  void Init();
+  void		Init();
+  ////////////////////
   /// Frees the memory reserved by the model.
-  void Destroy();
+  void		Destroy();
+  ////////////////////
   /// Validates the file - returns 0 if ms3d v.1.3-1.4, non-zero otherwise.
   int		 Check_File( std::fstream &File);
+  ////////////////////
   /// Reads entire file into a buffer, including the header.
   /// \param File fstream object representing MS3D file.
   /// \param pFilesize pointer to unsigned int variable where file size in bytes is stored.
   unsigned char *Read_Into_Buffer( std::fstream &File, unsigned int *pFilesize);
-  
+  ////////////////////
   /// Handles vertex data from buffer, assumes the first item to be the number of vertices.
   /// \param pWorkBuffer Byte buffer where data is read from.
   /// \param pEnd The end of the buffer.
   unsigned char *Handle_Vertices( unsigned char *pWorkBuffer, unsigned char *pEnd );
+  ////////////////////
   /// Processes triangles.
   /// \param pWorkBuffer Byte buffer where data is read from.
   unsigned char *Handle_Triangles( unsigned char *pWorkBuffer);
+  ////////////////////
   /// Processes Groups.
   /// \param pWorkBuffer Byte buffer where data is read from.
   unsigned char *Handle_Groups( unsigned char *pWorkBuffer);
+  ////////////////////
   /// Processes Groups.
   /// \param pWorkBuffer Byte buffer where data is read from.
   unsigned char *Handle_Materials( unsigned char *pWorkBuffer);
+  ////////////////////
   /// Processes Keyframes.
   /// \param pWorkBuffer Byte buffer where data is read from.
   unsigned char *Handle_Keyframer( unsigned char *pWorkBuffer);
+  ////////////////////
   /// Processes Joints.
   /// \param pWorkBuffer Byte buffer where data is read from.
   unsigned char *Handle_Joints( unsigned char *pWorkBuffer);

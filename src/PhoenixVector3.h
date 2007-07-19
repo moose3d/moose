@@ -60,7 +60,7 @@ namespace Phoenix
       ////////////////////
       /// Returns values as array.
       /// \returns pointer to array of values.
-      inline TYPE * GetArray()
+      inline TYPE * GetArray() 
       {
 	return m_pValues;
       }
