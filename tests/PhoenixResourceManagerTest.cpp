@@ -31,7 +31,7 @@ TEST( PhoenixResourceManager_Create )
   std::string strSearch("resourcetest");
   std::string strSearchNotFound("thisIsNotHere");
   ////////////////////
-  CHECK_EQUAL( 0, pMgr->Create( &iResource, strResName, &handle ));
+  CHECK_EQUAL( 0, pMgr->Create( &iResource, strResName, handle ));
   CHECK( pMgr->GetResource( handle ) == &iResource );
   CHECK( pMgr->GetResource( strSearch) ==  &iResource );
   CHECK( pMgr->GetResource( strSearchNotFound) ==  NULL );
