@@ -18,6 +18,7 @@ int main()
     std::cerr << "Couldn't open screen" << std::endl;
     return 1;
   }
+  
   ////////////////////
   CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 3 );
 
@@ -66,8 +67,19 @@ int main()
   COglRenderer *pOglRenderer = new COglRenderer();
   string strTexFilename("opengl.tga");
   COglTexture *pTexture = pOglRenderer->CreateTexture(strTexFilename);
-  
 
+  VERTEX_HANDLE hVertexHandle;
+  TEXTURE_HANDLE hTextureHandle;
+  INDEX_HANDLE hIndexHandle;
+  string strVertexTest("VertexTest");
+  string strIndexTest("IndexTest");
+  string strTextureTest("TextureTest");
+
+  assert( g_DefaultVertexManager->Create( pVertices, strVertexTest, hVertexHandle ) == 0);
+  assert( g_DefaultIndexManager->Create( pIndices, strIndexTest, hIndexHandle ) == 0);
+  assert( g_DefaultTextureManager->Create( pTexture, strTextureTest, hTextureHandle ) == 0);
+  
+  assert( g_DefaultIndexManager->GetResource( hIndexHandle ) != NULL );
   CCamera camera;
   camera.SetPosition( 0,0,2.0f);
   camera.SetViewport( 0,0, 640, 480 );
@@ -76,6 +88,12 @@ int main()
   camera.SetFieldOfView( 45.0f);
   SDL_Event event;
   CVector3<float> vMove(0,0,0.2f);
+
+  CModel model;
+  model.SetVertexHandle( hVertexHandle );
+  model.SetIndexHandle( hIndexHandle );
+  model.SetTextureHandle( hTextureHandle );
+  
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -89,11 +107,27 @@ int main()
 	}
 	else if ( event.key.keysym.sym == SDLK_UP )
 	{
-	  camera.Move( -vMove );
+	  camera.Move( 0.3f );
 	}      
 	else if ( event.key.keysym.sym == SDLK_DOWN )
 	{
-	  camera.Move( vMove );
+	  camera.Move( -0.3f );
+	} 
+	else if ( event.key.keysym.sym == SDLK_LEFT )
+	{
+	  camera.Strafe( -0.3f );
+	}      
+	else if ( event.key.keysym.sym == SDLK_RIGHT )
+	{
+	  camera.Strafe( 0.3f );
+	} 
+	else if ( event.key.keysym.sym == SDLK_PAGEUP )
+	{
+	  camera.Elevate( 0.3f );
+	}      
+	else if ( event.key.keysym.sym == SDLK_PAGEDOWN )
+	{
+	  camera.Elevate( -0.3f );
 	} 
 	break;
       default:
@@ -110,16 +144,21 @@ int main()
     pOglRenderer->CommitPrimitive( pIndices );
     // Draw textured / transparent triangle
     pOglRenderer->CommitTexture( 0, pTexture );
+    
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc( GL_GREATER, 0.3f);
     glTranslatef( 0,0,0.3f);
+
     pOglRenderer->CommitVertexDescriptor( pTexCoords );
     pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
+    pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
+    //pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
+    
     CVector4<unsigned char> vWhite(255,255,255,255);
     pOglRenderer->CommitColor( vWhite );
-    pOglRenderer->CommitTexture( 0, pTexture );
-    pOglRenderer->CommitPrimitive( pIndices );
-    
+    //pOglRenderer->CommitTexture( 0, pTexture );
+    //pOglRenderer->CommitPrimitive( pIndices );
+    pOglRenderer->CommitModel( model );
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
     pOglRenderer->DisableTexture( 0, pTexture );
