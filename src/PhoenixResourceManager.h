@@ -125,9 +125,9 @@ namespace Phoenix
       /// is initialized refer to that object.
       /// \param pType Pointer to object.
       /// \param strName Name for this resource.
-      /// \param pHandle Pointer to handle which will refer to this resource.
+      /// \param Handle Reference to handle which will refer to this resource.
       /// \returns zero on success, non-zero on error.
-      int Create( OBJECTTYPE *pType, const std::string &strName, HANDLE *pHandle );
+      int Create( OBJECTTYPE *pType, const std::string &strName, HANDLE &Handle );
       ////////////////////
       /// Releases handle to this object.
       /// \param handle Handle to object.
@@ -181,7 +181,7 @@ template<typename OBJECTTYPE, typename HANDLE>
 int
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType, 
 							    const std::string &strName, 
-							    HANDLE *pHandle )
+							    HANDLE &Handle )
 {
   if ( m_pResourceHash == NULL )
   {
@@ -204,13 +204,13 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
     hashItem.SetObject(resourceName);
     
     m_pResourceHash->Insert( hashItem );
-    pHandle->Initialize( nIndex );
+    Handle.Initialize( nIndex );
 
     return 0;
   } 
   else
   {
-    pHandle->Nullify();
+    Handle.Nullify();
   }
   return -1;
 }
