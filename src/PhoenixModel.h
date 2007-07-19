@@ -11,6 +11,9 @@
 using Phoenix::Graphics::CVertexDescriptor;
 using Phoenix::Graphics::CIndexArray;
 using Phoenix::Graphics::COglTexture;
+using Phoenix::Default::TEXTURE_HANDLE;
+using Phoenix::Default::VERTEX_HANDLE;
+using Phoenix::Default::INDEX_HANDLE;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
