@@ -7,8 +7,10 @@
 #include "PhoenixVector4.h"
 #include "PhoenixCamera.h"
 #include "PhoenixTexture.h"
+#include "PhoenixModel.h"
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
+
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -72,15 +74,19 @@ namespace Phoenix
       /// Is shader_objects supported.
       /// \return 1 if supported, 0 otherwise.
       int HasShaderObjects() const;
+      ////////////////////
       /// Get maximum number of lights.
       /// \return maximum number of lights.
       int  GetMaxLights() const;
+      ////////////////////
       /// Get max elements in vertex arrays.
       /// \return maximum number of elements in vertex arrays.
       int  GetMaxElementsVertices() const;
+      ////////////////////
       /// Get max elements in index arrays.
       /// \return maximum number of elements in index arrays.
       int  GetMaxElementsIndices() const;
+      ////////////////////
       /// for printing out supported features.
       friend std::ostream &operator<<(std::ostream &stream, 
 				      const COglRendererFeatures &obj);
@@ -163,6 +169,11 @@ namespace Phoenix
       /// Sets view using camera.
       /// \param camera Camera.
       void CommitCamera( CCamera &camera );
+      ////////////////////
+      /// Renders a complete model.
+      /// \param model Model object. 
+      void CommitModel( CModel &model );
+      
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
