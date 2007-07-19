@@ -23,9 +23,9 @@ namespace Phoenix
       /// The distance of the far clipping plane.
       float		m_fFarClipping;
       /// Should this camera show lens flares on light sources.
-      char		m_bLensFlaresEnabled;
+      int		m_bLensFlaresEnabled;
       /// Is the orthogonal view enabled
-      char		m_bOrtho;
+      int		m_bOrtho;
       /// The coordinates for left, right, bottom and top clipping planes
       /// in orthogonal mode
       float		m_aOrthoPlanes[4];
@@ -67,9 +67,9 @@ namespace Phoenix
       // Returns the Field Of View angle
       float GetFieldOfView();
       // Returns true if lens flares are enabled.
-      char IsLensFlaresEnabled();
+      int IsLensFlaresEnabled();
       // Sets lens flares enabled or disabled according the bFlag.
-      void SetLensFlaresEnabled(char bFlag);
+      void SetLensFlaresEnabled(int bFlag);
       // For debugging
       friend std::ostream &operator<<(std::ostream &stream, CCamera &obj);
       // Returns the reference to frustum object
@@ -84,7 +84,7 @@ namespace Phoenix
       // Returns reference to the bounding sphere
       //CSphere &FrustumSphere();
       // Returns true if orthogonal mode is on
-      char IsOrthogonal();
+      int IsOrthogonal();
       // Returns the pointer to orthogonal plane coordinates
       float *GetOrthoPlanes();
       /// Rotates the camera around a point in space.
@@ -99,7 +99,6 @@ namespace Phoenix
       {
 	return m_mView;
       }
-
       // Updates the projection matrix
       void UpdateProjection();
       // Updates the view matrix
