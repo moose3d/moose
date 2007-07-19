@@ -403,3 +403,17 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glMultMatrixf( camera.GetView().GetTransposition().GetArray());
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
+{
+  // Retrieve resources
+  COglTexture *pTexture = g_DefaultTextureManager->GetResource(model.GetTextureHandle());
+  CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
+  CIndexArray *pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandle());
+  // check and commit resources
+  if ( pTexture  != NULL ) { CommitTexture( 0, pTexture );         }
+  if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
+  if ( pIndices  != NULL ) { CommitPrimitive ( pIndices );         }
+  
+}
+/////////////////////////////////////////////////////////////////
