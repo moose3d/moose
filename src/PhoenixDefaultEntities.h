@@ -27,5 +27,7 @@ namespace Phoenix
 #define g_DefaultVertexManager  (Phoenix::Default::VertexManager::GetInstance())
 #define g_DefaultIndexManager   (Phoenix::Default::IndexManager::GetInstance())
 ////////////////////
+// Constants
+#define TEXTURE_HANDLE_COUNT 8
 #endif
 /////////////////////////////////////////////////////////////////
