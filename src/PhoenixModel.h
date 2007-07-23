@@ -39,11 +39,11 @@ namespace Phoenix
       ////////////////////
       /// Returns handle to Texture.
       /// \returns TEXTURE_HANDLE
-      TEXTURE_HANDLE    GetTextureHandle() const;
+      TEXTURE_HANDLE    GetTextureHandle( unsigned int nId ) const;
       ////////////////////
       /// Sets texture handle.
       /// \param handle Handle to texture.
-      void		SetTextureHandle( TEXTURE_HANDLE handle );
+      void		SetTextureHandle( unsigned int nId, TEXTURE_HANDLE handle );
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
