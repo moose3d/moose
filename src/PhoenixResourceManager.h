@@ -10,7 +10,7 @@ namespace Phoenix
   {
     using namespace Phoenix::Core;
     ////////////////////
-    /// Handle class.
+    /// Handle class. Handle is always null handle before it is Initialize()'d.
     template<typename TAG>
     class CHandle : public CNullable
     {
