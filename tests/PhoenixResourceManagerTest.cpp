@@ -17,6 +17,16 @@ TEST( PhoenixResourceManager )
 
 }
 /////////////////////////////////////////////////////////////////
+TEST( PhoenixHandle )
+{
+  CHandle<int> handle;
+  CHECK( handle.IsNull() != 0 );
+  handle.Initialize(4);
+  CHECK( handle.IsNull() == 0 );
+  handle.Nullify();
+  CHECK( handle.IsNull() != 0 );
+}
+/////////////////////////////////////////////////////////////////
 TEST( PhoenixResourceManager_Create )
 {
 
