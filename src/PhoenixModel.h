@@ -7,6 +7,7 @@
 #include "PhoenixIndexArray.h"
 #include "PhoenixTexture.h"
 #include "PhoenixDefaultEntities.h"
+#include <vector>
 /////////////////////////////////////////////////////////////////
 using Phoenix::Graphics::CVertexDescriptor;
 using Phoenix::Graphics::CIndexArray;
@@ -14,6 +15,7 @@ using Phoenix::Graphics::COglTexture;
 using Phoenix::Default::TEXTURE_HANDLE;
 using Phoenix::Default::VERTEX_HANDLE;
 using Phoenix::Default::INDEX_HANDLE;
+using std::vector;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -25,9 +27,9 @@ namespace Phoenix
     {
     protected:
 
-      TEXTURE_HANDLE   	m_TextureHandle;
+      TEXTURE_HANDLE   	m_aTextureHandles[TEXTURE_HANDLE_COUNT];
       VERTEX_HANDLE    	m_VertexDescriptorHandle;
-      INDEX_HANDLE	m_IndexArrayHandle;
+      INDEX_HANDLE      m_IndexArrayHandle;
       
     public:
       ////////////////////
@@ -38,12 +40,14 @@ namespace Phoenix
       ~CModel();
       ////////////////////
       /// Returns handle to Texture.
+      /// \param nId Which texture unit is handled. By default it is zero, the first.
       /// \returns TEXTURE_HANDLE
-      TEXTURE_HANDLE    GetTextureHandle( unsigned int nId ) const;
+      TEXTURE_HANDLE    GetTextureHandle( unsigned int nId = 0) const;
       ////////////////////
       /// Sets texture handle.
+      /// \param nId Which texture unit is handled. By default it is zero, the first.
       /// \param handle Handle to texture.
-      void		SetTextureHandle( unsigned int nId, TEXTURE_HANDLE handle );
+      void		SetTextureHandle( TEXTURE_HANDLE handle, unsigned int nId = 0 );
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
