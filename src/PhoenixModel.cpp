@@ -25,9 +25,7 @@ Phoenix::Graphics::CModel::GetTextureHandle( unsigned int nId ) const
   else
   {
     // return null handle.
-    TEXTURE_HANDLE nullHandle;
-    nullHandle.Nullify();
-    return nullHandle;
+    return TEXTURE_HANDLE();
   }
 }
 /////////////////////////////////////////////////////////////////
