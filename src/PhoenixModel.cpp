@@ -8,21 +8,34 @@ Phoenix::Graphics::CModel::CModel()
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CModel::~CModel()
 {
-  m_TextureHandle.Nullify();
+  // nullify all handles
+  for(unsigned int i=0;i<8;i++)
+  {
+    m_aTextureHandles[i].Nullify();
+  }
   m_VertexDescriptorHandle.Nullify();
   m_IndexArrayHandle.Nullify();
 }
 /////////////////////////////////////////////////////////////////
 TEXTURE_HANDLE
-Phoenix::Graphics::CModel::GetTextureHandle() const
+Phoenix::Graphics::CModel::GetTextureHandle( unsigned int nId ) const
 {
-  return m_TextureHandle;
+  if ( nId < TEXTURE_HANDLE_COUNT )
+    return m_aTextureHandles[nId];
+  else
+  {
+    // return null handle.
+    TEXTURE_HANDLE nullHandle;
+    nullHandle.Nullify();
+    return nullHandle;
+  }
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::SetTextureHandle(TEXTURE_HANDLE handle) 
+Phoenix::Graphics::CModel::SetTextureHandle(TEXTURE_HANDLE handle, unsigned int nId) 
 {
-  m_TextureHandle = handle; 
+  if ( nId < TEXTURE_HANDLE_COUNT )
+    m_aTextureHandles[nId] = handle; 
 }
 /////////////////////////////////////////////////////////////////
 VERTEX_HANDLE
