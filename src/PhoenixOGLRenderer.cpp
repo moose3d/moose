@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
 using std::endl;
-
+using std::cerr;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
@@ -156,7 +156,7 @@ Phoenix::Graphics::COglRenderer::Finalize()
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffer )
+Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
   switch( pBuffer->GetType() )
   {
@@ -168,8 +168,9 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_COLOR_ARRAY );
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
     break;
-  case ELEMENT_TYPE_TEX0_2F:
-    glClientActiveTextureARB( GL_TEXTURE0_ARB );  
+  case ELEMENT_TYPE_TEX_2F:
+    if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
+    else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     break;
@@ -236,6 +237,13 @@ Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
     glDisableClientState( GL_COLOR_ARRAY );
     break;
   case CLIENT_STATE_TEX0_ARRAY:
+  case CLIENT_STATE_TEX1_ARRAY:
+  case CLIENT_STATE_TEX2_ARRAY:
+  case CLIENT_STATE_TEX3_ARRAY:
+  case CLIENT_STATE_TEX4_ARRAY:
+  case CLIENT_STATE_TEX5_ARRAY:
+  case CLIENT_STATE_TEX6_ARRAY:
+  case CLIENT_STATE_TEX7_ARRAY:
     glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
@@ -254,6 +262,13 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
     glEnableClientState( GL_COLOR_ARRAY );
     break;
   case CLIENT_STATE_TEX0_ARRAY:
+  case CLIENT_STATE_TEX1_ARRAY:
+  case CLIENT_STATE_TEX2_ARRAY:
+  case CLIENT_STATE_TEX3_ARRAY:
+  case CLIENT_STATE_TEX4_ARRAY:
+  case CLIENT_STATE_TEX5_ARRAY:
+  case CLIENT_STATE_TEX6_ARRAY:
+  case CLIENT_STATE_TEX7_ARRAY:
     glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
@@ -407,11 +422,22 @@ void
 Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
 {
   // Retrieve resources
-  COglTexture *pTexture = g_DefaultTextureManager->GetResource(model.GetTextureHandle());
+  COglTexture *pTexture = NULL;
+  CVertexDescriptor *pTemp = NULL;
   CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
   CIndexArray *pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandle());
+  
+  // Commit textures
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
+    pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
+    
+    // check that resources actually exist
+    if ( pTemp     != NULL ) { CommitVertexDescriptor( pTemp ); } 
+    if ( pTexture  != NULL ) { CommitTexture( i, pTexture ); }      
+  }
   // check and commit resources
-  if ( pTexture  != NULL ) { CommitTexture( 0, pTexture );         }
   if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
   if ( pIndices  != NULL ) { CommitPrimitive ( pIndices );         }
   
