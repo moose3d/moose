@@ -20,7 +20,14 @@ namespace Phoenix
     {
       CLIENT_STATE_VERTEX_ARRAY = 0,
       CLIENT_STATE_COLOR_ARRAY = 1,
-      CLIENT_STATE_TEX0_ARRAY
+      CLIENT_STATE_TEX0_ARRAY,
+      CLIENT_STATE_TEX1_ARRAY,
+      CLIENT_STATE_TEX2_ARRAY,
+      CLIENT_STATE_TEX3_ARRAY,
+      CLIENT_STATE_TEX4_ARRAY,
+      CLIENT_STATE_TEX5_ARRAY,
+      CLIENT_STATE_TEX6_ARRAY,
+      CLIENT_STATE_TEX7_ARRAY
     };
     
     /////////////////////////////////////////////////////////////////
@@ -125,8 +132,9 @@ namespace Phoenix
       void Finalize();
       ////////////////////
       /// Commits vertex descriptor.
-      /// \param pBuffer buffer to be applied.
-      void CommitVertexDescriptor( CVertexDescriptor *pBuffer );
+      /// \param pBuffer Buffer to be applied.
+      /// \param nId Number for active texture unit. Used only in conjunction of ELEMENT_TYPE_TEX_*. If value is omitted, it defaults to zero.
+      void CommitVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId = 0);
       ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
