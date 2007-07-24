@@ -51,7 +51,7 @@ int main()
   pColors->GetPointer<unsigned char>()[10] = 255;
   pColors->GetPointer<unsigned char>()[11] = 255;
   ////////////////////
-  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX0_2F, 3 );
+  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 3 );
   pTexCoords->GetPointer<float>()[0] = 0.0f;
   pTexCoords->GetPointer<float>()[1] = 0.0f;
   pTexCoords->GetPointer<float>()[2] = 1.0f;
@@ -65,21 +65,34 @@ int main()
   pIndices->GetPointer<unsigned short int>()[2] = 2;
 
   COglRenderer *pOglRenderer = new COglRenderer();
-  string strTexFilename("opengl.tga");
-  COglTexture *pTexture = pOglRenderer->CreateTexture(strTexFilename);
-
+  string strTexFilename("painting.tga");
+  string strTexFilename2("lightmap.tga");
+  COglTexture *pTexture  = pOglRenderer->CreateTexture(strTexFilename);
+  COglTexture *pTexture2 = pOglRenderer->CreateTexture(strTexFilename2);
+  assert( pTexture2 != NULL);
   VERTEX_HANDLE hVertexHandle;
+  VERTEX_HANDLE hTexCoordHandle;
   TEXTURE_HANDLE hTextureHandle;
+  TEXTURE_HANDLE hTextureHandle2;
   INDEX_HANDLE hIndexHandle;
   string strVertexTest("VertexTest");
+  string strTexCoords("TexCoordTest");
   string strIndexTest("IndexTest");
   string strTextureTest("TextureTest");
-
+  string strTextureTest2("Texture2");
+  // Create vertex resource
   assert( g_DefaultVertexManager->Create( pVertices, strVertexTest, hVertexHandle ) == 0);
+  // create texture coordinate resource
+  assert( g_DefaultVertexManager->Create( pTexCoords, strTexCoords, hTexCoordHandle ) == 0);
+  // create index array resource
   assert( g_DefaultIndexManager->Create( pIndices, strIndexTest, hIndexHandle ) == 0);
+  // create texture resource
   assert( g_DefaultTextureManager->Create( pTexture, strTextureTest, hTextureHandle ) == 0);
-  
+  // create another texture resource 
+  assert( g_DefaultTextureManager->Create( pTexture2, strTextureTest2, hTextureHandle2 ) == 0);
+  // check that index resource actually exists
   assert( g_DefaultIndexManager->GetResource( hIndexHandle ) != NULL );
+
   CCamera camera;
   camera.SetPosition( 0,0,2.0f);
   camera.SetViewport( 0,0, 640, 480 );
@@ -93,7 +106,10 @@ int main()
   model.SetVertexHandle( hVertexHandle );
   model.SetIndexHandle( hIndexHandle );
   model.SetTextureHandle( hTextureHandle );
-  
+  model.SetTextureHandle( hTextureHandle2, 1 );
+  model.SetTextureCoordinateHandle( hTexCoordHandle );
+  model.SetTextureCoordinateHandle( hTexCoordHandle, 1);
+
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -144,12 +160,13 @@ int main()
     pOglRenderer->CommitPrimitive( pIndices );
     // Draw textured / transparent triangle
     pOglRenderer->CommitTexture( 0, pTexture );
-    
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc( GL_GREATER, 0.3f);
-    glTranslatef( 0,0,0.3f);
+    glPushMatrix();
+    glTranslatef(1.0f,0,0);
+    // glEnable(GL_ALPHA_TEST);
+//     glAlphaFunc( GL_GREATER, 0.3f);
+//     glTranslatef( 0,0,0.3f);
 
-    pOglRenderer->CommitVertexDescriptor( pTexCoords );
+    //pOglRenderer->CommitVertexDescriptor( pTexCoords );
     pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
     //pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
@@ -159,9 +176,12 @@ int main()
     //pOglRenderer->CommitTexture( 0, pTexture );
     //pOglRenderer->CommitPrimitive( pIndices );
     pOglRenderer->CommitModel( model );
+    glPopMatrix();
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
+    pOglRenderer->DisableClientState( CLIENT_STATE_TEX1_ARRAY );
     pOglRenderer->DisableTexture( 0, pTexture );
+    pOglRenderer->DisableTexture( 1, pTexture );
     pOglRenderer->Finalize();
     //sleep(1);
     //g_bLoop = 0;
