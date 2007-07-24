@@ -60,3 +60,23 @@ Phoenix::Graphics::CModel::SetIndexHandle(INDEX_HANDLE handle)
   m_IndexArrayHandle = handle; 
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CModel::SetTextureCoordinateHandle( VERTEX_HANDLE handle, unsigned int nId )
+{
+  if ( nId < TEXTURE_HANDLE_COUNT )
+  {
+    m_aTextureCoordinateHandles[nId] = handle;
+  }
+}
+/////////////////////////////////////////////////////////////////
+VERTEX_HANDLE    
+Phoenix::Graphics::CModel::GetTextureCoordinateHandle( unsigned int nId )
+{
+  if ( nId < TEXTURE_HANDLE_COUNT )
+  {
+    return m_aTextureCoordinateHandles[nId];
+  }
+  // return null handle
+  return VERTEX_HANDLE();
+}
+/////////////////////////////////////////////////////////////////
