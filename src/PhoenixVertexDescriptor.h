@@ -13,7 +13,7 @@ namespace Phoenix
       ELEMENT_TYPE_NULL = 0,
       ELEMENT_TYPE_VERTEX_3F = 1,
       ELEMENT_TYPE_COLOR_4UB,
-      ELEMENT_TYPE_TEX0_2F
+      ELEMENT_TYPE_TEX_2F
     };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
