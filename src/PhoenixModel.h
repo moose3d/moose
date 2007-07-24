@@ -28,6 +28,7 @@ namespace Phoenix
     protected:
 
       TEXTURE_HANDLE   	m_aTextureHandles[TEXTURE_HANDLE_COUNT];
+      VERTEX_HANDLE     m_aTextureCoordinateHandles[TEXTURE_HANDLE_COUNT];
       VERTEX_HANDLE    	m_VertexDescriptorHandle;
       INDEX_HANDLE      m_IndexArrayHandle;
       
@@ -64,6 +65,17 @@ namespace Phoenix
       /// Sets index array handle.
       /// \param handle Handle to index array.
       void		SetIndexHandle( INDEX_HANDLE handle );
+      ////////////////////
+      /// Sets texture coordinate vertexdescriptor handle.
+      /// \param handle Handle to vertexdescriptor with texture coordinates.
+      /// \param nId For which texture unit these coordinates are assigned to. By default, the first (zero)
+      void		SetTextureCoordinateHandle( VERTEX_HANDLE handle, unsigned int nId = 0);
+      ////////////////////
+      /// Returns handle to Texture Coordinate vertex descriptor.
+      /// \param nId From which texture unit these coordinates are retrieved.
+      /// \returns VERTEX_HANDLE.
+      VERTEX_HANDLE     GetTextureCoordinateHandle( unsigned int nId = 0 );
+      
     };
   }; // namespace Graphics
 }; // namespace Phoenix
