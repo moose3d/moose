@@ -171,8 +171,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   case ELEMENT_TYPE_TEX_2F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
     else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
   case ELEMENT_TYPE_NULL:
     break;
