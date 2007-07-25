@@ -20,21 +20,25 @@ int main()
   }
   
   ////////////////////
-  CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 3 );
+  CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 4 );
 
   pVertices->GetPointer<float>()[0] = -1.0f;
-  pVertices->GetPointer<float>()[1] = 0.0f;
+  pVertices->GetPointer<float>()[1] = 1.0f;
   pVertices->GetPointer<float>()[2] = 0.0f;
   
-  pVertices->GetPointer<float>()[3] = 1.0f;
-  pVertices->GetPointer<float>()[4] = 0.0f;
+  pVertices->GetPointer<float>()[3] = -1.0f;
+  pVertices->GetPointer<float>()[4] = -1.0f;
   pVertices->GetPointer<float>()[5] = 0.0f;
 
-  pVertices->GetPointer<float>()[6] = 0.0f;
+  pVertices->GetPointer<float>()[6] = 1.0f;
   pVertices->GetPointer<float>()[7] = 1.0f;
   pVertices->GetPointer<float>()[8] = 0.0f;
+
+  pVertices->GetPointer<float>()[9] =  1.0f;
+  pVertices->GetPointer<float>()[10] = -1.0f;
+  pVertices->GetPointer<float>()[11] = 0.0f;
   ////////////////////  
-  CVertexDescriptor *pColors = new CVertexDescriptor( ELEMENT_TYPE_COLOR_4UB, 3 );
+  CVertexDescriptor *pColors = new CVertexDescriptor( ELEMENT_TYPE_COLOR_4UB, 4 );
   
   pColors->GetPointer<unsigned char>()[0] = 255;
   pColors->GetPointer<unsigned char>()[1] = 0;
@@ -50,19 +54,27 @@ int main()
   pColors->GetPointer<unsigned char>()[9] = 0;
   pColors->GetPointer<unsigned char>()[10] = 255;
   pColors->GetPointer<unsigned char>()[11] = 255;
+
+  pColors->GetPointer<unsigned char>()[12] = 255;
+  pColors->GetPointer<unsigned char>()[13] = 255;
+  pColors->GetPointer<unsigned char>()[14] = 0;
+  pColors->GetPointer<unsigned char>()[15] = 255;
   ////////////////////
-  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 3 );
+  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 4 );
   pTexCoords->GetPointer<float>()[0] = 0.0f;
-  pTexCoords->GetPointer<float>()[1] = 0.0f;
-  pTexCoords->GetPointer<float>()[2] = 1.0f;
+  pTexCoords->GetPointer<float>()[1] = 1.0f;
+  pTexCoords->GetPointer<float>()[2] = 0.0f;
   pTexCoords->GetPointer<float>()[3] = 0.0f;
-  pTexCoords->GetPointer<float>()[4] = 0.5f;
+  pTexCoords->GetPointer<float>()[4] = 1.0f;
   pTexCoords->GetPointer<float>()[5] = 1.0f;
-  
-  CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, 3 );
+  pTexCoords->GetPointer<float>()[6] = 1.0f;
+  pTexCoords->GetPointer<float>()[7] = 0.0f;
+
+  CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_STRIP, 4 );
   pIndices->GetPointer<unsigned short int>()[0] = 0;
   pIndices->GetPointer<unsigned short int>()[1] = 1;
   pIndices->GetPointer<unsigned short int>()[2] = 2;
+  pIndices->GetPointer<unsigned short int>()[3] = 3;
 
   COglRenderer *pOglRenderer = new COglRenderer();
   string strTexFilename("painting.tga");
@@ -109,7 +121,7 @@ int main()
   model.SetTextureHandle( hTextureHandle2, 1 );
   model.SetTextureCoordinateHandle( hTexCoordHandle );
   model.SetTextureCoordinateHandle( hTexCoordHandle, 1);
-
+  SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -131,11 +143,11 @@ int main()
 	} 
 	else if ( event.key.keysym.sym == SDLK_LEFT )
 	{
-	  camera.Strafe( -0.3f );
+	  camera.RotateAroundUp( 2.93f );
 	}      
 	else if ( event.key.keysym.sym == SDLK_RIGHT )
 	{
-	  camera.Strafe( 0.3f );
+	  camera.RotateAroundUp( -2.93f );
 	} 
 	else if ( event.key.keysym.sym == SDLK_PAGEUP )
 	{
@@ -173,10 +185,13 @@ int main()
     
     CVector4<unsigned char> vWhite(255,255,255,255);
     pOglRenderer->CommitColor( vWhite );
+
     //pOglRenderer->CommitTexture( 0, pTexture );
     //pOglRenderer->CommitPrimitive( pIndices );
+
     pOglRenderer->CommitModel( model );
     glPopMatrix();
+    
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX1_ARRAY );
