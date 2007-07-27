@@ -9,6 +9,27 @@ namespace Phoenix
     {
       TEXTURE_2D = 0
     };
+    /// Texture filter modes.
+    enum TEXTURE_FILTER
+    {
+      ENV_MODULATE = 0,
+      ENV_DECAL,
+      ENV_BLEND,
+      ENV_REPLACE,
+      ENV_COLOR,
+      MIN_NEAREST,
+      MIN_LINEAR,
+      MIN_MIP_NEAREST,
+      MIN_MIP_LINEAR,
+      MAG_LINEAR,
+      MAG_NEAREST,
+      T_WRAP_REPEAT,
+      S_WRAP_REPEAT,
+      T_WRAP_CLAMP,
+      S_WRAP_CLAMP,
+      T_WRAP_CLAMP_TO_EDGE,
+      S_WRAP_CLAMP_TO_EDGE
+    };
     ////////////////////    
     /// Class for textures.
     class COglTexture
