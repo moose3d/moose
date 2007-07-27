@@ -121,6 +121,8 @@ int main()
   model.SetTextureHandle( hTextureHandle2, 1 );
   model.SetTextureCoordinateHandle( hTexCoordHandle );
   model.SetTextureCoordinateHandle( hTexCoordHandle, 1);
+  model.AddTextureFilter( ENV_REPLACE, 0 );
+  model.AddTextureFilter( ENV_MODULATE, 1 );
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   while( g_bLoop )
   {
@@ -171,7 +173,7 @@ int main()
     pOglRenderer->CommitVertexDescriptor( pColors );
     pOglRenderer->CommitPrimitive( pIndices );
     // Draw textured / transparent triangle
-    pOglRenderer->CommitTexture( 0, pTexture );
+    //pOglRenderer->CommitTexture( 0, pTexture );
     glPushMatrix();
     glTranslatef(1.0f,0,0);
     // glEnable(GL_ALPHA_TEST);
