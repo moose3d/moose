@@ -269,7 +269,7 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_TEX5_ARRAY:
   case CLIENT_STATE_TEX6_ARRAY:
   case CLIENT_STATE_TEX7_ARRAY:
-    glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
+    glClientActiveTextureARB( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
   }
@@ -359,7 +359,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
-#define GL_ENABLE_TEXTURE( TYPE, ID ) { glEnable( TYPE ); glBindTexture( TYPE, ID );} 
+#define GL_ENABLE_TEXTURE( TYPE, ID ) { glBindTexture( TYPE, ID ); glEnable( TYPE );} 
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTexture *pTexture )
@@ -433,13 +433,103 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
     pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
     pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
     
-    // check that resources actually exist
-    if ( pTemp     != NULL ) { CommitVertexDescriptor( pTemp ); } 
-    if ( pTexture  != NULL ) { CommitTexture( i, pTexture ); }      
+    // check that texcoord resources actually exist
+    if ( pTemp     != NULL ) 
+    { 
+      CommitVertexDescriptor( pTemp, i ); 
+    } 
+    // check that texture resource exists
+    if ( pTexture  != NULL ) 
+    { 
+      CommitTexture( i, pTexture ); 
+      // Apply texture filters.
+      std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
+      
+      for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
+      {
+	ApplyFilter( vecFilters[nFilter], pTexture->GetType() );
+      }
+    }
   }
   // check and commit resources
   if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
   if ( pIndices  != NULL ) { CommitPrimitive ( pIndices );         }
   
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType )
+{
+  GLenum glTarget;
+  ////////////////////
+  switch( tType )
+  {
+  case TEXTURE_2D:
+  default:
+    glTarget = GL_TEXTURE_2D;
+  }
+  ////////////////////
+  switch( tFilter )
+  {
+  case ENV_MODULATE:
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+    break;
+  case ENV_DECAL:
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    break;
+  case ENV_REPLACE:
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
+    break;
+  case ENV_BLEND:
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+    break;
+  case ENV_COMBINE_INCR:
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_INCR);
+    break;
+  case ENV_COMBINE_REPLACE:
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE);
+    break;
+  case MIN_NEAREST:
+    glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    break;
+  case MIN_LINEAR:
+    glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    break;
+  case MIN_MIP_NEAREST:
+    glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    break;
+  case MIN_MIP_LINEAR:
+    glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    break;
+  case MAG_NEAREST:
+    glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    break;
+  case MAG_LINEAR:
+    glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    break;
+  case T_WRAP_REPEAT:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    break;
+  case S_WRAP_REPEAT:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    break;
+  case T_WRAP_CLAMP:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    break;
+  case S_WRAP_CLAMP:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    break;
+  case T_WRAP_CLAMP_TO_EDGE:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    break;
+  case S_WRAP_CLAMP_TO_EDGE:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    break;
+  }
+  //  case ENV_COLOR:
+  //glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, pNode->GetTexEnvColor().GetValues()); 
+  //break;  
 }
 /////////////////////////////////////////////////////////////////
