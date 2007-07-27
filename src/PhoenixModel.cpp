@@ -83,12 +83,16 @@ Phoenix::Graphics::CModel::GetTextureCoordinateHandle( unsigned int nId )
 vector<TEXTURE_FILTER> & 
 Phoenix::Graphics::CModel::GetTextureFilters( unsigned int nId )
 {
+  assert( nId < TEXTURE_HANDLE_COUNT && "nId Over TEXTURE_HANDLE_COUNT");
   return m_aTextureFilters[nId];
 }
 /////////////////////////////////////////////////////////////////
 void   
 Phoenix::Graphics::CModel::AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId )
 {
-  m_aTextureFilters[nId].push_back(tTexFilter);
+  if ( nId < TEXTURE_HANDLE_COUNT )
+  {
+    m_aTextureFilters[nId].push_back(tTexFilter);
+  }
 }
 /////////////////////////////////////////////////////////////////
