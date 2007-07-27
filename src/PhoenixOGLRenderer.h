@@ -181,7 +181,11 @@ namespace Phoenix
       /// Renders a complete model.
       /// \param model Model object. 
       void CommitModel( CModel &model );
-      
+      ////////////////////
+      /// Applies a texture filter.
+      /// \param tFilter Which filter will be applied.
+      /// \param tType TEXTURE_TYPE.
+      void ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
