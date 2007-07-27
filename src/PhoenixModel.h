@@ -29,6 +29,7 @@ namespace Phoenix
 
       TEXTURE_HANDLE   	m_aTextureHandles[TEXTURE_HANDLE_COUNT];
       VERTEX_HANDLE     m_aTextureCoordinateHandles[TEXTURE_HANDLE_COUNT];
+      vector<TEXTURE_FILTER> m_aTextureFilters[TEXTURE_HANDLE_COUNT];
       VERTEX_HANDLE    	m_VertexDescriptorHandle;
       INDEX_HANDLE      m_IndexArrayHandle;
       
@@ -75,7 +76,16 @@ namespace Phoenix
       /// \param nId From which texture unit these coordinates are retrieved. By default, the first one (zero).
       /// \returns VERTEX_HANDLE.
       VERTEX_HANDLE     GetTextureCoordinateHandle( unsigned int nId = 0 );
-      
+      ////////////////////
+      /// Returns texture filters for given texture.
+      /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1.  By default, it is first (zero).
+      /// \returns Reference to texture filter vector. 
+      vector<TEXTURE_FILTER> & GetTextureFilters( unsigned int nId = 0 );
+      ////////////////////
+      /// Adds texture filter to given texture.
+      /// \param tTexFilter TEXTURE_FILTER to insert.
+      /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1. By default, it is first (zero).
+      void   AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId = 0 );
     };
   }; // namespace Graphics
 }; // namespace Phoenix
