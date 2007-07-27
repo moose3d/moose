@@ -80,3 +80,15 @@ Phoenix::Graphics::CModel::GetTextureCoordinateHandle( unsigned int nId )
   return VERTEX_HANDLE();
 }
 /////////////////////////////////////////////////////////////////
+vector<TEXTURE_FILTER> & 
+Phoenix::Graphics::CModel::GetTextureFilters( unsigned int nId )
+{
+  return m_aTextureFilters[nId];
+}
+/////////////////////////////////////////////////////////////////
+void   
+Phoenix::Graphics::CModel::AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId )
+{
+  m_aTextureFilters[nId].push_back(tTexFilter);
+}
+/////////////////////////////////////////////////////////////////
