@@ -96,3 +96,15 @@ Phoenix::Graphics::CModel::AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned
   }
 }
 /////////////////////////////////////////////////////////////////
+SHADER_HANDLE	
+Phoenix::Graphics::CModel::GetShaderHandle() const
+{
+  return m_ShaderHandle;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CModel::SetShaderHandle( SHADER_HANDLE handle )
+{
+  m_ShaderHandle = handle;
+}
+/////////////////////////////////////////////////////////////////
