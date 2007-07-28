@@ -571,9 +571,9 @@ LoadFile( const std::string & strFilename, std::string &sContents )
   // The file stream 
   ifstream fsFile;
   // open file 
-  fsFile.open( strFilename.c_str() );
+  fsFile.open( strFilename.c_str(), ios::in );
   // test for failure 
-  if ( fsFile.is_open(), ios::in) 
+  if ( fsFile.is_open() ) 
   {
     // read line by line 
     while( ! fsFile.eof() )
