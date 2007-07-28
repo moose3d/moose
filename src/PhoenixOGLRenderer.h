@@ -183,16 +183,21 @@ namespace Phoenix
       /// \param model Model object. 
       void CommitModel( CModel &model );
       ////////////////////
-      /// Applies a texture filter.
+      /// Commits a texture filter.
       /// \param tFilter Which filter will be applied.
       /// \param tType TEXTURE_TYPE.
-      void ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType );
+      void CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType );
       ////////////////////
       /// Creates a shader from files.
       /// \param strVertexShader Path to vertex shader source.
       /// \param strFragmentShader Path to fragment shader source.
       /// \returns Pointer to shader object. NULL if shader could not be created.
       CShader * CreateShader( std::string strVertexShader, std::string strFragmentShader );
+      ////////////////////
+      /// Commits shader.
+      /// \param pShader Pointer to shader object. If NULL, default rendering pipeline is activated.
+      void CommitShader( CShader *pShader );
+      
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
