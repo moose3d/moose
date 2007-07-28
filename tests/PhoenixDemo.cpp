@@ -122,7 +122,11 @@ int main()
   model.SetTextureCoordinateHandle( hTexCoordHandle );
   model.SetTextureCoordinateHandle( hTexCoordHandle, 1);
   model.AddTextureFilter( ENV_REPLACE, 0 );
+  model.AddTextureFilter( MIN_MIP_LINEAR, 0 );
+  model.AddTextureFilter( MAG_LINEAR, 0 );
   model.AddTextureFilter( ENV_MODULATE, 1 );
+  model.AddTextureFilter( MIN_MIP_LINEAR, 1 );
+  model.AddTextureFilter( MAG_LINEAR, 1 );
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   while( g_bLoop )
   {
