@@ -77,8 +77,8 @@ int main()
   pIndices->GetPointer<unsigned short int>()[3] = 3;
 
   COglRenderer *pOglRenderer = new COglRenderer();
-  string strTexFilename("painting.tga");
-  string strTexFilename2("lightmap.tga");
+  string strTexFilename("Resources/Textures/painting.tga");
+  string strTexFilename2("Resources/Textures/lightmap.tga");
   COglTexture *pTexture  = pOglRenderer->CreateTexture(strTexFilename);
   COglTexture *pTexture2 = pOglRenderer->CreateTexture(strTexFilename2);
   assert( pTexture2 != NULL);
@@ -129,7 +129,7 @@ int main()
   model.AddTextureFilter( MAG_LINEAR, 1 );
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-  CShader *pShader = pOglRenderer->CreateShader( std::string("vertex.glsl"), std::string("fragment.glsl") );
+  CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/vertex.glsl"), std::string("Resources/Shaders/fragment.glsl") );
   assert(pShader != NULL );
   while( g_bLoop )
   {
