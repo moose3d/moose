@@ -8,6 +8,7 @@
 #include "PhoenixCamera.h"
 #include "PhoenixTexture.h"
 #include "PhoenixModel.h"
+#include "PhoenixShader.h"
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
 
@@ -187,8 +188,11 @@ namespace Phoenix
       /// \param tType TEXTURE_TYPE.
       void ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType );
       ////////////////////
-      /// Creates a shader from file.
-      /// 
+      /// Creates a shader from files.
+      /// \param strVertexShader Path to vertex shader source.
+      /// \param strFragmentShader Path to fragment shader source.
+      /// \returns Pointer to shader object. NULL if shader could not be created.
+      CShader * CreateShader( std::string strVertexShader, std::string strFragmentShader );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
