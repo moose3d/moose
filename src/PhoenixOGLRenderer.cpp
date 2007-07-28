@@ -8,10 +8,13 @@
 #include "PhoenixGlobals.h"
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixTGAImage.h"
+#include <fstream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
 using std::endl;
 using std::cerr;
+using std::ifstream;
+using std::ios;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
@@ -557,5 +560,93 @@ Phoenix::Graphics::COglRenderer::ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TY
   //  case ENV_COLOR:
   //glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, pNode->GetTexEnvColor().GetValues()); 
   //break;  
+}
+/////////////////////////////////////////////////////////////////
+int
+LoadFile( const std::string & strFilename, std::string &sContents )
+{
+
+  // Temporary container for line 
+  string sLine;
+  // The file stream 
+  ifstream fsFile;
+  // open file 
+  fsFile.open( strFilename.c_str() );
+  // test for failure 
+  if ( fsFile.is_open(), ios::in) 
+  {
+    // read line by line 
+    while( ! fsFile.eof() )
+    {
+      getline( fsFile, sLine );
+      sContents.append( sLine );
+    }
+    // close the file 
+    fsFile.close();
+  } 
+  else 
+  {
+    std::cerr << "The file " << strFilename
+	      << " couldn't be opened."  << std::endl;
+    return 1;
+  }
+  return 0;
+}  
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShader * 
+Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std::string strFragmentShader )
+{
+  unsigned int nProgram = glCreateProgram();
+  CShader *pShader = new CShader( nProgram );
+  int bHasShader = 0;
+  if ( pShader == NULL )
+  {
+    std::cerr << "Failed to allocate shader memory." << std::endl;
+  }
+  string strVSSource, strFSSource;
+  ////////////////////
+  // Vertex shader loading
+  if ( strVertexShader.size() > 0 )
+  {
+    if ( LoadFile( strVertexShader, strVSSource ))
+    {
+      std::cerr << "Failed to load vertex shader '" << strVertexShader << "'" << std::endl;
+    }
+    else
+    {
+      unsigned int nVertexShader = glCreateShader( GL_VERTEX_SHADER );
+      int nLength = strVSSource.size();
+      const char *pStrCode = strVSSource.c_str();
+      glShaderSource(nVertexShader,1, &pStrCode, &nLength );
+      pShader->SetVertexShader( nVertexShader );
+      bHasShader = 1;
+    }
+  }
+  ////////////////////
+  // Fragment shader loading 
+  if ( strFragmentShader.size() > 0 )
+  {
+    if ( LoadFile( strFragmentShader, strFSSource ))
+    {
+      std::cerr << "Failed to load fragment shader '" << strFragmentShader << "'" << std::endl;
+    }
+    else
+    {
+      unsigned int nFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
+      int nLength = strFSSource.size();
+      const char *pStrCode = strFSSource.c_str();
+      glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
+      pShader->SetFragmentShader( nFragmentShader );
+      bHasShader = 1;
+    }
+  }
+  // check that shader code exists
+  if ( !bHasShader )
+  {
+    return NULL;
+  }
+  // compile and return shader
+  glCompileShader(pShader->GetProgram());
+  return pShader;
 }
 /////////////////////////////////////////////////////////////////
