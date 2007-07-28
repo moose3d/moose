@@ -324,15 +324,19 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename )
     std::cerr << "Not 24 or 32 BBP image :  '" << strFilename << "'" << std::endl;
     return NULL;
   }
-  ////////////////////
+
   // create texture
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
   pTexture = new COglTexture( iTexId, TEXTURE_2D );
 
   // check memory allocation
-  if ( !pTexture ) return NULL;
-
+  if ( !pTexture ) 
+  {
+    std::cerr << "Failed to allocate memory while loading file '" << strFilename << "'" << std::endl;
+    return NULL;
+  }
+  
   // create actual gl texture 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, pTexture->GetID());  
@@ -345,18 +349,40 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename )
 		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
   
   glDisable(GL_TEXTURE_2D);
-  ////////////////////
+
   // ReleaseMemory
   CLEANUP();
-  ////////////////////
+
 #undef CLEANUP  	   
-  ////////////////////
+
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture * 
 Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType )
 {
-  return NULL;
+  
+  // create texture
+  unsigned int iTexId;
+  glGenTextures( 1, &iTexId);
+  COglTexture *pTexture = new COglTexture( iTexId, tType );
+  
+  // check memory allocation
+  if ( !pTexture ) 
+  {
+    std::cerr << "Failed to allocate memory while creating Empty Texture." << std::endl;
+    return NULL;
+  }
+  // create texture dimensions
+  switch ( tType )
+  {
+  case TEXTURE_2D:
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture( GL_TEXTURE_2D, pTexture->GetID());
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+    glDisable(GL_TEXTURE_2D);
+    break;
+  }
+  return pTexture;
 }
 /////////////////////////////////////////////////////////////////
 #define GL_ENABLE_TEXTURE( TYPE, ID ) { glBindTexture( TYPE, ID ); glEnable( TYPE );} 
