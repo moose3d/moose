@@ -128,6 +128,9 @@ int main()
   model.AddTextureFilter( MIN_MIP_LINEAR, 1 );
   model.AddTextureFilter( MAG_LINEAR, 1 );
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+
+  CShader *pShader = pOglRenderer->CreateShader( std::string("vertex.glsl"), std::string("fragment.glsl") );
+  assert(pShader != NULL );
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -194,8 +197,9 @@ int main()
 
     //pOglRenderer->CommitTexture( 0, pTexture );
     //pOglRenderer->CommitPrimitive( pIndices );
-
+    pOglRenderer->CommitShader( pShader );
     pOglRenderer->CommitModel( model );
+    pOglRenderer->CommitShader( NULL );
     glPopMatrix();
     
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
