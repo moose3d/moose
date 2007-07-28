@@ -476,7 +476,7 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
       
       for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
       {
-	ApplyFilter( vecFilters[nFilter], pTexture->GetType() );
+	CommitFilter( vecFilters[nFilter], pTexture->GetType() );
       }
     }
   }
@@ -487,7 +487,7 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType )
+Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType )
 {
   GLenum glTarget;
   ////////////////////
@@ -618,6 +618,7 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
       int nLength = strVSSource.size();
       const char *pStrCode = strVSSource.c_str();
       glShaderSource(nVertexShader,1, &pStrCode, &nLength );
+      glCompileShader( nVertexShader );
       pShader->SetVertexShader( nVertexShader );
       bHasShader = 1;
     }
@@ -636,6 +637,7 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
       int nLength = strFSSource.size();
       const char *pStrCode = strFSSource.c_str();
       glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
+      glCompileShader( nFragmentShader );
       pShader->SetFragmentShader( nFragmentShader );
       bHasShader = 1;
     }
@@ -646,7 +648,20 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
     return NULL;
   }
   // compile and return shader
-  glCompileShader(pShader->GetProgram());
+  glLinkProgram(pShader->GetProgram());
   return pShader;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
+{
+  if ( pShader )
+  {
+    glUseProgram( pShader->GetProgram() );
+  }
+  else
+  {
+    glUseProgram( 0 );
+  }
 }
 /////////////////////////////////////////////////////////////////
