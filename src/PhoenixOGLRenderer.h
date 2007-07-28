@@ -186,6 +186,9 @@ namespace Phoenix
       /// \param tFilter Which filter will be applied.
       /// \param tType TEXTURE_TYPE.
       void ApplyFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType );
+      ////////////////////
+      /// Creates a shader from file.
+      /// 
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
