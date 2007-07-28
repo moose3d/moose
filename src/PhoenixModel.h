@@ -15,6 +15,7 @@ using Phoenix::Graphics::COglTexture;
 using Phoenix::Default::TEXTURE_HANDLE;
 using Phoenix::Default::VERTEX_HANDLE;
 using Phoenix::Default::INDEX_HANDLE;
+using Phoenix::Default::SHADER_HANDLE;
 using std::vector;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -32,7 +33,7 @@ namespace Phoenix
       vector<TEXTURE_FILTER> m_aTextureFilters[TEXTURE_HANDLE_COUNT];
       VERTEX_HANDLE    	m_VertexDescriptorHandle;
       INDEX_HANDLE      m_IndexArrayHandle;
-      
+      SHADER_HANDLE     m_ShaderHandle;
     public:
       ////////////////////
       /// Constructor.
@@ -66,6 +67,14 @@ namespace Phoenix
       /// Sets index array handle.
       /// \param handle Handle to index array.
       void		SetIndexHandle( INDEX_HANDLE handle );
+      ////////////////////
+      /// Returns handle to shader.
+      /// \returns SHADER_HANDLE.
+      SHADER_HANDLE	GetShaderHandle() const;
+      ////////////////////
+      /// Sets shader handle.
+      /// \param handle Handle to shader.
+      void		SetShaderHandle( SHADER_HANDLE handle );
       ////////////////////
       /// Sets texture coordinate vertexdescriptor handle.
       /// \param handle Handle to vertexdescriptor with texture coordinates.
