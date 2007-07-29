@@ -592,18 +592,81 @@ LoadFile( const std::string & strFilename, std::string &sContents )
   }
   return 0;
 }  
+#define INFO_LOG_BUF_SIZE 1024
+/////////////////////////////////////////////////////////////////
+/// Parses shader/program info log into given string.
+/// \param nObject From which shader/program log is retrieved.
+/// \param strInfoLog String where log is stored.
+/// \param bProgram True for retrieving program info log, False for shader info log
+inline void 
+GetInfoLog( unsigned int nObject, std::string &strInfoLog, int bProgram )
+{
+  int iInfologLength   = 0;      // total length of log
+  int iCharsRetrievedBatch  = 0; // how many chars were retrived from log in current pass
+  int iCharsRetrievedTotal = 0;  // how many chars in total is retrieved.
+  char sInfoLog[INFO_LOG_BUF_SIZE];
+
+  // Get length of the info log
+  if ( bProgram )      glGetProgramiv(nObject, GL_INFO_LOG_LENGTH, &iInfologLength);
+  else		       glGetShaderiv(nObject, GL_INFO_LOG_LENGTH, &iInfologLength);
+  
+  // if info log exists, we parse it
+  if (iInfologLength > 0)
+  {
+    strInfoLog.clear(); // clear existing string
+    strInfoLog.reserve(iInfologLength); // allocate sufficient memory
+
+    // read chars up to info log length
+    while ( iCharsRetrievedTotal < iInfologLength )
+    {
+      if ( bProgram ) glGetProgramInfoLog(nObject, INFO_LOG_BUF_SIZE, &iCharsRetrievedBatch, sInfoLog);
+      else            glGetShaderInfoLog(nObject, INFO_LOG_BUF_SIZE, &iCharsRetrievedBatch, sInfoLog);
+
+      if ( iCharsRetrievedBatch > 0 )
+      {
+	iCharsRetrievedTotal += iCharsRetrievedBatch; // increase number of read chars
+	strInfoLog.append(sInfoLog, iCharsRetrievedBatch); // append data to string
+      }
+    } // end while
+    // ok, done
+  }
+}
+/////////////////////////////////////////////////////////////////
+/// Wrapper for retrieving shader info log.
+/// \param nShader From which shader log is retrieved.
+/// \param strInfoLog String where log is stored.
+inline void 
+GetShaderInfoLog( unsigned int nShader, std::string &strInfoLog )
+{
+  GetInfoLog( nShader, strInfoLog, 0 );
+}
+/////////////////////////////////////////////////////////////////
+/// Wrapper for retrieving program info log.
+/// \param nProg From which program log is retrieved.
+/// \param strInfoLog String where log is stored.
+inline void 
+GetProgramInfoLog( unsigned int nProg, std::string &strInfoLog )
+{
+  GetInfoLog( nProg, strInfoLog, 1 );
+}
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CShader * 
 Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std::string strFragmentShader )
 {
+
+  int bHasShader = 0;
+  string strVSSource, strFSSource;
+  int iState = 0; // compile and link status
+
   unsigned int nProgram = glCreateProgram();
   CShader *pShader = new CShader( nProgram );
-  int bHasShader = 0;
+
   if ( pShader == NULL )
   {
     std::cerr << "Failed to allocate shader memory." << std::endl;
+    return NULL;
   }
-  string strVSSource, strFSSource;
+
   ////////////////////
   // Vertex shader loading
   if ( strVertexShader.size() > 0 )
@@ -615,12 +678,26 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
     else
     {
       unsigned int nVertexShader = glCreateShader( GL_VERTEX_SHADER );
-      int nLength = strVSSource.size();
+      int nLength = strVSSource.size(); // source code length
       const char *pStrCode = strVSSource.c_str();
+
+      // compile source
       glShaderSource(nVertexShader,1, &pStrCode, &nLength );
       glCompileShader( nVertexShader );
-      pShader->SetVertexShader( nVertexShader );
-      bHasShader = 1;
+      // get compile status
+      glGetShaderiv( nVertexShader, GL_COMPILE_STATUS, &iState);
+      if ( iState == GL_TRUE )
+      {
+	// compiling went ok
+	pShader->SetVertexShader( nVertexShader );
+	bHasShader = 1;	
+      }
+      else
+      {
+	string strLog;
+	GetShaderInfoLog( nVertexShader, strLog );
+	std::cerr << strLog << std::endl;
+      }
     }
   }
   ////////////////////
@@ -634,12 +711,27 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
     else
     {
       unsigned int nFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-      int nLength = strFSSource.size();
+      int nLength = strFSSource.size(); // source code length
       const char *pStrCode = strFSSource.c_str();
+      
       glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
       glCompileShader( nFragmentShader );
-      pShader->SetFragmentShader( nFragmentShader );
-      bHasShader = 1;
+
+      // get compile status
+      glGetShaderiv( nFragmentShader, GL_COMPILE_STATUS, &iState);
+      if ( iState == GL_TRUE )
+      {
+	// compiling went ok
+	pShader->SetFragmentShader( nFragmentShader );
+	bHasShader = 1;
+      }
+      else
+      {
+	string strLog;
+	GetShaderInfoLog( nFragmentShader, strLog );
+	std::cerr << strLog << std::endl;
+      }
+      
     }
   }
   // check that shader code exists
@@ -647,8 +739,20 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
   {
     return NULL;
   }
-  // compile and return shader
+  
+  // link shader program
   glLinkProgram(pShader->GetProgram());
+  glGetProgramiv(pShader->GetProgram(), GL_LINK_STATUS, &iState);
+
+  // show linking errors, if any
+  if ( iState == GL_FALSE )
+  {
+    string strLog;
+    GetProgramInfoLog(pShader->GetProgram(), strLog);
+    std::cerr << strLog << std::endl;
+    return NULL;
+  }
+  
   return pShader;
 }
 /////////////////////////////////////////////////////////////////
