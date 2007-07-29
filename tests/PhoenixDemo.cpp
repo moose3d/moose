@@ -198,6 +198,8 @@ int main()
     //pOglRenderer->CommitTexture( 0, pTexture );
     //pOglRenderer->CommitPrimitive( pIndices );
     pOglRenderer->CommitShader( pShader );
+    pOglRenderer->CommitUniformShaderParam( *pShader, "tex0" , 0 );
+    pOglRenderer->CommitUniformShaderParam( *pShader, "tex1" , 1 );
     pOglRenderer->CommitModel( model );
     pOglRenderer->CommitShader( NULL );
     glPopMatrix();
