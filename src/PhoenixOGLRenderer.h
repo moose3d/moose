@@ -245,6 +245,56 @@ namespace Phoenix
       /// \param strParamName Variable name in shader.
       /// \param vValue Float 4-vector.
       void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector4<float> & vValue );
+      
+      ////////////////////
+      /// Commits integer shader parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param iValue Integer parameter value.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, int iValue );
+      ////////////////////
+      /// Commits float shader parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param fValue Float parameter value.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, float fValue );
+      ////////////////////
+      /// Commits integer two-vector shader parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param vValue Integer 2-vector.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector2<int> & vValue );
+      ////////////////////
+      /// Commits float two-vector shader parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param vValue Float 2-vector.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector2<float> & vValue );
+      ////////////////////
+      /// Commits integer three-vector parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param vValue Integer 3-vector.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector3<int> & vValue );
+      ////////////////////
+      /// Commits float three-vector parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param vValue Float 3-vector.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector3<float> & vValue );
+      ////////////////////
+      /// Commits integer four-vector parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param vValue Integer 4-vector.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector4<int> & vValue );
+      ////////////////////
+      /// Commits float four-vector parameter. This must be called after CommitShader.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \param vValue Float 4-vector.
+      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector4<float> & vValue );
+
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
