@@ -210,42 +210,11 @@ namespace Phoenix
       /// \param fValue Float parameter value.
       void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, float fValue );
       ////////////////////
-      /// Commits integer two-vector shader parameter. 
+      /// Commits either uniform or vertex attribute shader parameter. 
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
-      /// \param vValue Integer 2-vector.
-      void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector2<int> & vValue );
-      ////////////////////
-      /// Commits float two-vector shader parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Float 2-vector.
-      void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector2<float> & vValue );
-      ////////////////////
-      /// Commits integer three-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Integer 3-vector.
-      void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector3<int> & vValue );
-      ////////////////////
-      /// Commits float three-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Float 3-vector.
-      void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector3<float> & vValue );
-      ////////////////////
-      /// Commits integer four-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Integer 4-vector.
-      void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector4<int> & vValue );
-      ////////////////////
-      /// Commits float four-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Float 4-vector.
-      void CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector4<float> & vValue );
-      
+      /// \param vValue VertexDescriptor with uniform or vertex attribute param values.
+      void CommitShaderParam( CShader &shader, const std::string &strParamName, const CVertexDescriptor & vParam);
       ////////////////////
       /// Commits integer shader parameter. 
       /// \param shader Shader object where parameter is passed.
@@ -259,42 +228,11 @@ namespace Phoenix
       /// \param fValue Float parameter value.
       void CommitUniformShaderParam( CShader &shader, const char *strParamName, float fValue );
       ////////////////////
-      /// Commits integer two-vector shader parameter. 
+      /// Commits either uniform or vertex attribute shader parameter. 
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
-      /// \param vValue Integer 2-vector.
-      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector2<int> & vValue );
-      ////////////////////
-      /// Commits float two-vector shader parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Float 2-vector.
-      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector2<float> & vValue );
-      ////////////////////
-      /// Commits integer three-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Integer 3-vector.
-      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector3<int> & vValue );
-      ////////////////////
-      /// Commits float three-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Float 3-vector.
-      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector3<float> & vValue );
-      ////////////////////
-      /// Commits integer four-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Integer 4-vector.
-      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector4<int> & vValue );
-      ////////////////////
-      /// Commits float four-vector parameter. 
-      /// \param shader Shader object where parameter is passed.
-      /// \param strParamName Variable name in shader.
-      /// \param vValue Float 4-vector.
-      void CommitUniformShaderParam( CShader &shader, const char *strParamName, const CVector4<float> & vValue );
-
+      /// \param vValue VertexDescriptor with uniform or vertex attribute param values.
+      void CommitShaderParam( CShader &shader, const char *strParamName, const CVertexDescriptor & vParam);
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
