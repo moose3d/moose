@@ -480,6 +480,12 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
       }
     }
   }
+  // if shader exists
+  if ( m_ShaderHandle.IsNull() == 0 )
+  {
+    CShader *pShader = g_DefaultShaderManager->GetResource(model.GetShaderHandle());
+    CommitShader( pShader );
+  }
   // check and commit resources
   if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
   if ( pIndices  != NULL ) { CommitPrimitive ( pIndices );         }
