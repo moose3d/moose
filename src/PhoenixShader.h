@@ -58,41 +58,6 @@ namespace Phoenix
 	return m_nFragmentShader;
       }
     };
-    /// Shader parameter types
-    enum SHADER_PARAM_TYPE
-    {
-      SHADER_PARAM_U1F = 0,
-      SHADER_PARAM_U2F,
-      SHADER_PARAM_U3F,
-      SHADER_PARAM_U4F,
-      SHADER_PARAM_U1I,
-      SHADER_PARAM_U2I,
-      SHADER_PARAM_U3I,
-      SHADER_PARAM_U4I
-      SHADER_PARAM_U1FV,
-      SHADER_PARAM_U2FV,
-      SHADER_PARAM_U3FV,
-      SHADER_PARAM_U4FV,
-      SHADER_PARAM_U1IV,
-      SHADER_PARAM_U2IV,
-      SHADER_PARAM_U3IV,
-      SHADER_PARAM_U4IV,
-      SHADER_PARAM_U2X2M,
-      SHADER_PARAM_U3X3M,
-      SHADER_PARAM_U4X4M
-    };
-    ////////////////////
-    /// Shader parameter class.
-    class CShaderParam 
-    {
-    private:
-      void *m_pData;
-      size_t m_nCount;
-      SHADER_PARAM_TYPE m_tType;
-    public:
-      CShaderParam( SHADER_PARAM_TYPE tType, size_t nCount );
-      ~CShaderParam();
-    };
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
