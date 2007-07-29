@@ -769,3 +769,67 @@ Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
   }
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, int iValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform1i( iLoc, iValue );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, float fValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform1f( iLoc, fValue );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector2<float> & vValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform2f( iLoc, vValue(0), vValue(1) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector2<int> &vValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform2i( iLoc, vValue(0), vValue(1) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector3<float> & vValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform3f( iLoc, vValue(0), vValue(1), vValue(2) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector3<int> &vValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform3i( iLoc, vValue(0), vValue(1), vValue(2) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector4<float> & vValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform4f( iLoc, vValue(0), vValue(1), vValue(2), vValue(3) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, const std::string &strParamName, const CVector4<int> &vValue )
+{
+  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName.c_str());
+  if ( iLoc != -1 )
+    glUniform4i( iLoc, vValue(0), vValue(1), vValue(2), vValue(3) );
+}
+/////////////////////////////////////////////////////////////////
