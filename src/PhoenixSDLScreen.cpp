@@ -141,6 +141,7 @@ Phoenix::Window::CSDLScreen::CSDLScreen( )
 
 }
 /////////////////////////////////////////////////////////////////
+void 
 Phoenix::Window::CSDLScreen::SwapBuffers()
 {
   SDL_GL_SwapBuffers();
