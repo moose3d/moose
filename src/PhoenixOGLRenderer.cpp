@@ -2,7 +2,6 @@
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <SDL.h>
 #include <list>
 #include <iostream>
 #include "PhoenixGlobals.h"
@@ -155,7 +154,8 @@ Phoenix::Graphics::COglRenderer::ClearBuffer(Phoenix::Graphics::BUFFER_TYPE tTyp
 void
 Phoenix::Graphics::COglRenderer::Finalize()
 {
-  SDL_GL_SwapBuffers();
+  glFinish();
+  // Remember call buffer swapping from another source.
 }
 /////////////////////////////////////////////////////////////////
 void 
