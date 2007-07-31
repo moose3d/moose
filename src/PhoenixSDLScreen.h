@@ -58,6 +58,9 @@ namespace Phoenix
       ~CSDLScreen();
     public:  
       static CSDLScreenParams m_SDLScreenParams;
+      ////////////////////
+      /// Swaps buffers if double buffering is used.
+      void SwapBuffers();
     };
     /////////////////////////////////////////////////////////////////
   }; // namespace Window
