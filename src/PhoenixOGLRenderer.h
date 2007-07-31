@@ -128,8 +128,8 @@ namespace Phoenix
       /// Clears buffer
       void ClearBuffer( BUFFER_TYPE tType);
       ////////////////////
-      /// Swaps the buffers if double buffering is used, otherwise 
-      /// it doesn't do a thing.
+      /// Forces the rendering commands to be completed. 
+      /// Returns after currently given commands have been executed.
       void Finalize();
       ////////////////////
       /// Commits vertex descriptor.
