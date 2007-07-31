@@ -210,9 +210,10 @@ int main()
     pOglRenderer->DisableTexture( 0, pTexture );
     pOglRenderer->DisableTexture( 1, pTexture );
     pOglRenderer->Finalize();
+
     //sleep(1);
     //g_bLoop = 0;
-
+    CSDLScreen::GetInstance()->SwapBuffers();
   }
   CSDLScreen::DestroyInstance();
   return 0;
