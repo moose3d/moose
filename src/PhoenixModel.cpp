@@ -1,4 +1,5 @@
 #include "PhoenixModel.h"
+using std::endl;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CModel::CModel()
@@ -15,6 +16,7 @@ Phoenix::Graphics::CModel::~CModel()
   }
   m_VertexDescriptorHandle.Nullify();
   m_IndexArrayHandle.Nullify();
+  m_ShaderHandle.Nullify();
 }
 /////////////////////////////////////////////////////////////////
 TEXTURE_HANDLE
@@ -108,3 +110,33 @@ Phoenix::Graphics::CModel::SetShaderHandle( SHADER_HANDLE handle )
   m_ShaderHandle = handle;
 }
 /////////////////////////////////////////////////////////////////
+std::ostream & 
+Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CModel & model )
+{
+  for( int i =0;i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    stream << "TEXTURE_HANDLE " << i << " = " << model.m_aTextureHandles[i].GetIndex();
+    stream << (model.m_aTextureHandles[i].IsNull() ? "(null)" : "" ) << endl;
+  }
+  for( int i =0;i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    stream << "TEXTURE_COORD_HANDLE " << i << " = " << model.m_aTextureCoordinateHandles[i].GetIndex();
+    stream << (model.m_aTextureCoordinateHandles[i].IsNull() ? "(null)" : "" ) << endl;
+  }
+
+  for( int i =0;i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    stream << "TEXTURE_FILTERS for "<< i << " : " << endl;
+    for( unsigned int k = 0; k < model.m_aTextureFilters[i].size(); k++)
+    {
+      stream << model.m_aTextureFilters[i][k] << endl;
+    }
+  }
+  stream << "VERTEX_HANDLE = " << model.m_VertexDescriptorHandle.GetIndex();
+  stream << (model.m_VertexDescriptorHandle.IsNull() ? "(null)" : "" ) << endl;
+  stream << "INDEX_HANDLE = "  << model.m_IndexArrayHandle.GetIndex();
+  stream << (model.m_IndexArrayHandle.IsNull() ? "(null)" : "" ) << endl;
+  stream << "SHADER_HANDLE = " << model.m_ShaderHandle.GetIndex();
+  stream << (model.m_ShaderHandle.IsNull() ? "(null)" : "" ) << endl;
+  return stream;
+}

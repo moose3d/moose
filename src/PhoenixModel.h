@@ -8,6 +8,7 @@
 #include "PhoenixTexture.h"
 #include "PhoenixDefaultEntities.h"
 #include <vector>
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 using Phoenix::Graphics::CVertexDescriptor;
 using Phoenix::Graphics::CIndexArray;
@@ -95,6 +96,8 @@ namespace Phoenix
       /// \param tTexFilter TEXTURE_FILTER to insert.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1. By default, it is first (zero).
       void   AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId = 0 );
+      
+      friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CModel & model );
     };
   }; // namespace Graphics
 }; // namespace Phoenix
