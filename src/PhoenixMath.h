@@ -218,6 +218,12 @@ namespace Phoenix
     /// \returns zero, if matrix is invertible and assigns mInverse as the inverted matrix
     ///		 non-zero if matrix is not invertible. mInverse in this case is undefined.
     int InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInverse);
+    ////////////////////
+    /// Multiplies vector with matrix from left side.
+    /// \param mMatrix Multiplier matrix.
+    /// \param vVector Vector to be multiplied.
+    /// \returns CVector4<float> Resulting vector.
+    CVector4<float> operator*( const CMatrix4x4<float> &mMatrix, const CVector4<float> &vVector);
   }; // namespace Math
 }; // namespace Phoenix
 #endif
