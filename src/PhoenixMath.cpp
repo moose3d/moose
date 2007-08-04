@@ -1063,3 +1063,12 @@ Phoenix::Math::AngleBetweenVectors( const CVector3<float> &vVect1, const CVector
   return fAngle;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Math::CVector4<float>
+Phoenix::Math::operator*( const CMatrix4x4<float> &mMatrix, const CVector4<float> &vVector )
+{
+  return CVector4<float>( mMatrix.At(0,0) * vVector(0) + mMatrix.At(0,1) * vVector(1) + mMatrix.At(0,2) * vVector(2) + mMatrix.At(0,3) * vVector(3),
+			  mMatrix.At(1,0) * vVector(0) + mMatrix.At(1,1) * vVector(1) + mMatrix.At(1,2) * vVector(2) + mMatrix.At(1,3) * vVector(3),
+			  mMatrix.At(2,0) * vVector(0) + mMatrix.At(2,1) * vVector(1) + mMatrix.At(2,2) * vVector(2) + mMatrix.At(2,3) * vVector(3),
+			  mMatrix.At(3,0) * vVector(0) + mMatrix.At(3,1) * vVector(1) + mMatrix.At(3,2) * vVector(2) + mMatrix.At(3,3) * vVector(3) );
+}
+/////////////////////////////////////////////////////////////////
