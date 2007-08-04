@@ -85,3 +85,18 @@ TEST(CMatrix2x2_Inverse)
   RotationArc( vec1, vec2);
 }
 /////////////////////////////////////////////////////////////////
+TEST(CMatrix4x4_Multiply_Vector4)
+{
+  CMatrix4x4<float> matrix(1, 2, 3, 4,
+			   5 ,6 ,7 ,8,
+			   9, 10, 11, 12,
+			   13, 14, 15, 16);
+  CVector4<float> vector(5,6,7,2);
+  CVector4<float> vectorTest;
+  CVector4<float> vResult(46,126,206,286);
+  
+  vectorTest = matrix * vector;
+  CHECK_ARRAY_CLOSE( vResult.GetArray(), vectorTest.GetArray(), 4, 0.001f);
+
+}
+/////////////////////////////////////////////////////////////////
