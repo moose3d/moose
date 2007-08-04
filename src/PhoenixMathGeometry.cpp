@@ -668,63 +668,7 @@ std::ostream& operator<<( std::ostream &stream, CPlane plane )
 //   }
 // }
 // /////////////////////////////////////////////////////////////////
-// int 
-// Geometry::RayIntersectsSphere( CVector3<float> &vRayStart, 
-// 			       CVector3<float> &vRayEnd,
-// 			       CVector3<float> *pvIntersection0, 
-// 			       CVector3<float> *pvIntersection1, 
-// 			       CSphere &Sphere)
-// {
-//   int iIntersects = 0;
-//   CVector3<float> vSphereToRayStart = vRayStart - Sphere.GetPosition();
 
-//   CVector3<float> vStartToEnd = vRayEnd - vRayStart;
-//   // Check does it intersect
-//   float fA = vStartToEnd.Dot(vStartToEnd);
-//   float fB = 2.0f * ( vStartToEnd.Dot(vSphereToRayStart));
-//   float fC = Sphere.GetPosition().Dot(Sphere.GetPosition()) + 
-//              vRayStart.Dot(vRayStart) - 
-//              (2.0f *(Sphere.GetPosition().Dot(vRayStart))) - 
-//              Sphere.GetRadiusSqr();
-
-
-//   float fIntersection = fB * fB - 4.0f * fA * fC;
-//   float fMu = 0.0f;
-//   // No intersection
-//   if ( fIntersection < -0.001f ) 
-//   {
-//     iIntersects = 0;
-//   } // Intersects in one point
-//   else if ( fIntersection >= -0.001f && fIntersection <= 0.0f)
-//   {
-//     fMu = -fB / (2.0f * fA );
-//     if ( pvIntersection0 != NULL ) *pvIntersection0 = vRayStart + fMu * vStartToEnd;
-//     if ( pvIntersection1 != NULL ) *pvIntersection1 = vRayStart + fMu * vStartToEnd;
-//     iIntersects = 1;
-//   } 
-//   else  // Intersects in two points
-//   {
-//     CVector3<float> vInt0, vInt1;
-
-//     fMu = (-fB - sqrt(fIntersection)) / (2.0f * fA );
-//     vInt0 = vRayStart + fMu * vStartToEnd;
-    
-//     fMu = (-fB + sqrt(fIntersection)) / (2.0f * fA );
-//     vInt1 = vRayStart + fMu * vStartToEnd; 
-
-//     if ( pvIntersection0 != NULL ) 
-//     {
-//       *pvIntersection0 = vInt0;
-//     }
-//     if ( pvIntersection1 != NULL ) 
-//     {
-//       *pvIntersection1 = vInt1;
-//     }
-//     iIntersects = 2;
-
-//   }
-//   return iIntersects;
-// }
 // /////////////////////////////////////////////////////////////////
 
 // /////////////////////////////////////////////////////////////////

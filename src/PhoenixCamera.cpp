@@ -1,11 +1,13 @@
 /////////////////////////////////////////////////////////////////
 #include <iostream>
 #include "PhoenixCamera.h"
+#include "PhoenixCollision.h"
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
+using namespace Phoenix::Collision;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::CCamera() : COrientable()
 {
@@ -278,157 +280,158 @@ Phoenix::Graphics::CCamera::UpdateView()
 }
 /////////////////////////////////////////////////////////////////
 // 0,0 lower left corner
-// CVector3<float> 
-// Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ )
-// {
+CVector3<float> 
+Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ )
+{
 
-//   // Convert mouse coordinates to opengl window coordinates 
-//   // ( as it would fill entire screen )
-//   float fOglX = fX - (float)m_aViewport[0];
-//   float fOglY = fY - (float)m_aViewport[1];
+  // Convert mouse coordinates to opengl window coordinates 
+  // ( as it would fill entire screen )
+  float fOglX = fX - (float)m_aViewport[0];
+  float fOglY = fY - (float)m_aViewport[1];
   
-//   float fCenterX = (m_aViewport[2] * 0.5f);
-//   float fCenterY = (m_aViewport[3] * 0.5f); 
+  float fCenterX = (m_aViewport[2] * 0.5f);
+  float fCenterY = (m_aViewport[3] * 0.5f); 
   
-//   float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
 
-//   float fNormX = (fOglX - fCenterX) / fCenterX;
-//   float fNormY = (fOglY - fCenterY) / fCenterY;
-//   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
-//   float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+  float fNormX = (fOglX - fCenterX) / fCenterX;
+  float fNormY = (fOglY - fCenterY) / fCenterY;
+  float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
+  float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
   
-//   return CVector3<float>(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
+  return CVector3<float>(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
   
-// }
-// /////////////////////////////////////////////////////////////////
-// CVector3<float> 
-// Phoenix::Graphics::CCamera::EyeToWorld( const CVector3<float> &vPosition )
-// {
-//   CVector4<float> vTmp;
-//   vTmp[0] = vPosition(0);
-//   vTmp[1] = vPosition(1);
-//   vTmp[2] = vPosition(2);
-//   vTmp[3] = 1.0f;
-  
-//   vTmp = m_mViewInv * vTmp;
-
-//   if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) )
-//   {
-//     vTmp[0] /= vTmp(3);
-//     vTmp[1] /= vTmp(3);
-//     vTmp[2] /= vTmp(3);
-//   }
-//   return CVector3<float>(vTmp(0),vTmp(1),vTmp(2));
-
-// }
+}
 /////////////////////////////////////////////////////////////////
-// CVector3<float> 
-// Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
-// {
-//   // Convert mouse coordinates to opengl window coordinates 
-//   // ( as it would fill entire screen )
-//   float fOglX = fX - (float)m_aViewport[0];
-//   float fOglY = fY - (float)m_aViewport[1];
+CVector3<float> 
+Phoenix::Graphics::CCamera::EyeToWorld( const CVector3<float> &vPosition )
+{
+  CVector4<float> vTmp;
+  vTmp[0] = vPosition(0);
+  vTmp[1] = vPosition(1);
+  vTmp[2] = vPosition(2);
+  vTmp[3] = 1.0f;
   
-//   float fCenterX = (m_aViewport[2] * 0.5f);
-//   float fCenterY = (m_aViewport[3] * 0.5f); 
+  vTmp = m_mViewInv * vTmp;
+
+  if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) )
+  {
+    vTmp[0] /= vTmp(3);
+    vTmp[1] /= vTmp(3);
+    vTmp[2] /= vTmp(3);
+  }
+  return CVector3<float>(vTmp(0),vTmp(1),vTmp(2));
+
+}
+/////////////////////////////////////////////////////////////////
+CVector3<float> 
+Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
+{
+  // Convert mouse coordinates to opengl window coordinates 
+  // ( as it would fill entire screen )
+  float fOglX = fX - (float)m_aViewport[0];
+  float fOglY = fY - (float)m_aViewport[1];
   
-//   float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
-
-//   float fNormX = (fOglX - fCenterX) / fCenterX;
-//   float fNormY = (fOglY - fCenterY) / fCenterY;
-//   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
-//   float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
-
-//   CVector4<float> vTmp;
-//   vTmp[0] = fH * fAspect * fNormX;
-//   vTmp[1] = fH * fNormY;
-//   vTmp[2] = -fZInEye;
-//   vTmp[3] = 1.0f;
+  float fCenterX = (m_aViewport[2] * 0.5f);
+  float fCenterY = (m_aViewport[3] * 0.5f); 
   
-//   //vTmp = m_mViewInv * vTmp;
+  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
 
-//   if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
-//   {
-//     vTmp[0] /= vTmp[3];
-//     vTmp[1] /= vTmp[3];
-//     vTmp[2] /= vTmp[3];
-//   }
-//   return CVector3<float>(vTmp[0],vTmp[1],vTmp[2]);
-// }
+  float fNormX = (fOglX - fCenterX) / fCenterX;
+  float fNormY = (fOglY - fCenterY) / fCenterY;
+  float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
+  float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+
+  CVector4<float> vTmp;
+  vTmp[0] = fH * fAspect * fNormX;
+  vTmp[1] = fH * fNormY;
+  vTmp[2] = -fZInEye;
+  vTmp[3] = 1.0f;
+  
+  //vTmp = m_mViewInv * vTmp;
+
+  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
+  {
+    vTmp[0] /= vTmp[3];
+    vTmp[1] /= vTmp[3];
+    vTmp[2] /= vTmp[3];
+  }
+  return CVector3<float>(vTmp[0],vTmp[1],vTmp[2]);
+}
 /////////////////////////////////////////////////////////////////
 // The factor which gives seemingly good results on the trackball.
 #define TRACKBALL_FUDGE_FACTOR 0.5f
 /////////////////////////////////////////////////////////////////
-// void 
-// Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
-// 			      const CVector2<int> &vStartPoint,
-// 			      const CVector2<int> &vEndPoint )
-// {
-//   CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint(0), 
-// 						vStartPoint(1),
-// 						0.0f);
-//   CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint(0), 
-// 					       vStartPoint(1),
-// 					       1.0f);
-//   /////////////////////////////////////////////////////////////////
-//   CVector3<float> vIntersection0;
-//   CVector3<float> vIntersection1;
-//   CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
-//   /////////////////////////////////////////////////////////////////
-//   if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection0, NULL, sphere) >= 1)
-//   {
-//     vOrig = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1), 0.0f);
-//     vEnd = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1),  1.0f);
-//     /////////////////////////////////////////////////////////////////
-//     if ( Geometry::RayIntersectsSphere( vOrig, vEnd, &vIntersection1, NULL, sphere) >= 1)
-//     {
-//       vOrig = vIntersection0 - sphere.GetPosition();
-//       vEnd  = vIntersection1 - sphere.GetPosition();
+void 
+Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
+					      const CVector2<int> &vStartPoint,
+					      const CVector2<int> &vEndPoint )
+{
+  CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint(0), 
+						vStartPoint(1),
+						0.0f);
+  CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint(0), 
+					       vStartPoint(1),
+					       1.0f);
+  /////////////////////////////////////////////////////////////////
+  CVector3<float> vIntersection0;
+  CVector3<float> vIntersection1;
+  CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
+  /////////////////////////////////////////////////////////////////
+  if ( Collision::RayIntersectsSphere( vOrig, vEnd, &vIntersection0, NULL, sphere) >= 1)
+  {
+    vOrig = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1), 0.0f);
+    vEnd = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1),  1.0f);
+    /////////////////////////////////////////////////////////////////
+    if ( Collision::RayIntersectsSphere( vOrig, vEnd, &vIntersection1, NULL, sphere) >= 1)
+    {
+      vOrig = vIntersection0 - sphere.GetPosition();
+      vEnd  = vIntersection1 - sphere.GetPosition();
 
-//       vOrig.Normalize();
-//       vEnd.Normalize();
+      vOrig.Normalize();
+      vEnd.Normalize();
 
-//       CQuaternion qRotation = CQuaternion::RotationArc(vOrig,vEnd).Reverse();
-//       RotateAroundPoint( sphere.GetPosition(), qRotation  );
-//     }
-//   }
+      CQuaternion qRotation = Phoenix::Math::RotationArc(vOrig,vEnd);
+      qRotation.Reverse();
+      RotateAroundPoint( sphere.GetPosition(), qRotation  );
+    }
+  }
 
-// }
+}
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR
 /////////////////////////////////////////////////////////////////
-// CVector3<float>
-// Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPosition)
-// {
+CVector3<float>
+Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPosition)
+{
 
   
-//   CVector4<float> vTmp;
+  CVector4<float> vTmp;
 
-//   vTmp[0] = vPosition(0);
-//   vTmp[1] = vPosition(1);
-//   vTmp[2] = vPosition(2);
-//   vTmp[3] = 1.0f;
+  vTmp[0] = vPosition(0);
+  vTmp[1] = vPosition(1);
+  vTmp[2] = vPosition(2);
+  vTmp[3] = 1.0f;
 
-//   vTmp = GetViewMatrix() * vTmp;
-//   vTmp = GetProjectionMatrix() * vTmp;
+  vTmp = GetViewMatrix() * vTmp;
+  vTmp = GetProjectionMatrix() * vTmp;
     
-//   if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) ) 
-//   {
-//     vTmp[0] /= vTmp[3];
-//     vTmp[1] /= vTmp[3];
-//     vTmp[2] /= vTmp[3];
-//   }
+  if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) ) 
+  {
+    vTmp[0] /= vTmp[3];
+    vTmp[1] /= vTmp[3];
+    vTmp[2] /= vTmp[3];
+  }
 
-//   vTmp[0] = vTmp(0) * 0.5f + 0.5f;
-//   vTmp[1] = vTmp(1) * 0.5f + 0.5f;
-//   vTmp[2] = vTmp(2) * 0.5f + 0.5f;
+  vTmp[0] = vTmp(0) * 0.5f + 0.5f;
+  vTmp[1] = vTmp(1) * 0.5f + 0.5f;
+  vTmp[2] = vTmp(2) * 0.5f + 0.5f;
   
-//   return CVector3<float>(m_aViewport[0] + vTmp(0) * m_aViewport[2],
-// 		     m_aViewport[1] + vTmp(1) * m_aViewport[3],
-// 		     vTmp(2));
+  return CVector3<float>(m_aViewport[0] + vTmp(0) * m_aViewport[2],
+			 m_aViewport[1] + vTmp(1) * m_aViewport[3],
+			 vTmp(2));
   
-// }
+}
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Graphics::CCamera::CalculateFrustum()
@@ -487,10 +490,10 @@ Phoenix::Graphics::CCamera::CalculateFrustum()
 //   p_planes[4].c = comboMatrix._33;
 //   p_planes[4].d = comboMatrix._43;
   // Far clipping plane
-  m_Frustum.GetPlane(FRONT)[0] = mCombo(0,3) - mCombo(0,2);
-  m_Frustum.GetPlane(FRONT)[1] = mCombo(1,3) - mCombo(1,2);
-  m_Frustum.GetPlane(FRONT)[2] = mCombo(2,3) - mCombo(2,2);
-  m_Frustum.GetPlane(FRONT)[3] = mCombo(3,3) - mCombo(3,2);
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[0] = mCombo(0,3) - mCombo(0,2);
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[1] = mCombo(1,3) - mCombo(1,2);
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[2] = mCombo(2,3) - mCombo(2,2);
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[3] = mCombo(3,3) - mCombo(3,2);
   
   // p_planes[5].a = comboMatrix._14 - comboMatrix._13;
 //   p_planes[5].b = comboMatrix._24 - comboMatrix._23;
@@ -511,5 +514,5 @@ Phoenix::Graphics::CCamera::CalculateFrustum()
   m_Frustum.GetPlane(LEFT).Normalize();
   m_Frustum.GetPlane(RIGHT).Normalize();
   m_Frustum.GetPlane(BACK).Normalize();
-  m_Frustum.GetPlane(FRONT).Normalize();
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT).Normalize();
 }

@@ -159,38 +159,41 @@ namespace Phoenix
       {
 	CPositional::Move( vVector );
       }
-      /////////////////////////////////////////////////////////////////
+      ////////////////////
       /// Converts window coordinates (x,y,z) into eye coordinates. 
       /// \param fX x coordinate with 0,0 as lower left corner.
       /// \param fY y coordinate with 0,0 as lower left corner.
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as eye coordinates.
-      //CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
-      /////////////////////////////////////////////////////////////////
+      CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
+      ////////////////////
       /// Converts eye coordinates into world coordinates.
       /// \param vPosition The position in eye coordinates which is converted into world coordinates.
       /// \returns CVector3<float> the vPosition in world coordinates.
-      //CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
-      /////////////////////////////////////////////////////////////////
+      CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
+      ////////////////////
       /// Converts window coordinates (x,y,z) into world coordinates. 
       /// \param fX x coordinate with 0,0 as lower left corner.
       /// \param fY y coordinate with 0,0 as lower left corner.
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as world coordinates.
-      //CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
-      /////////////////////////////////////////////////////////////////
+      CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
+      ////////////////////
       /// Creates an imaginary trackball and rotates camera using two
       /// positions on the surface of the sphere.
       /// \param vPosition The center of the sphere.
       /// \param vStartPoint The point where rotation begins.
       /// \param vEndPoint The point where rotation ends.
-     /*  void VirtualTrackball( const CVector3<float> &vPosition,  */
-/* 			     const CVector2<float> &vStartPoint, */
-/* 			     const CVector2<float> &vEndPoint ); */
-				   
-      ///CVector3<float> WorldCoordinatesToScreen( const CVector3<float> &vPosition);
+      void VirtualTrackball( const CVector3<float> &vPosition,
+			     const CVector2<int> &vStartPoint,
+			     const CVector2<int> &vEndPoint );
+      ////////////////////
+      /// Converts world coordinates into screen coordinates.
+      /// \param vPosition Position in world coordinates.
+      /// \returns CVector3<float> position in window coordinates.
+      CVector3<float> WorldCoordinatesToScreen( const CVector3<float> &vPosition);
     };
   }; // namespace Graphics
 }; // Phoenix
