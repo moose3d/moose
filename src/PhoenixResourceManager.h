@@ -133,6 +133,10 @@ namespace Phoenix
       /// \param handle Handle to object.
       void Release( HANDLE &handle );
       ////////////////////
+      /// Removes a resource from manager.
+      /// \param strName Resource name.
+      //void Destroy( const std::string &strName ); 
+      ////////////////////
       /// Returns pointer to resource.
       /// \param handle Handle to resource.
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
@@ -269,5 +273,15 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Release( HANDLE &handle )
   handle.Nullify();
   ///  remove pointer to handle in ResourceName (future)
 }
+/////////////////////////////////////////////////////////////////
+//template<typename OBJECTTYPE, typename HANDLE>
+//inline void
+//Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destory( const std::string &strName )
+//{
+  //if ( m_pResourceHash == NULL ) return;
+  //CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
+  //if ( pHashItem == NULL ) return;
+  //phashItem->GetObject().GetIndex();
+//}
 /////////////////////////////////////////////////////////////////
 #endif
