@@ -297,8 +297,16 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
-  float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
-  
+  float fH;
+  if ( IsOrthogonal())
+  {
+    // (Top - bottom) / 2
+    fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
+  }   
+  else
+  {
+    fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+  }
   return CVector3<float>(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
   
 }
@@ -340,15 +348,38 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
-  float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
-
+  /////////////////////////////////////////////////////////////////
+  // the distance from center to edge of frustum.
+  /////////////////////////////////////////////////////////////////
+  //
+  //  \    |    /
+  //   \   |_h_/    Calculation in perspective mode.
+  //    \ z|  /      
+  //     \ |f/
+  //      \|/
+  /////////////////////////////////////////////////////////////////
+  //   _______
+  //  |   |   |
+  //  |_h_|   | Ortho mode is independent of z.
+  //  |___|___|
+  //
+  /////////////////////////////////////////////////////////////////
+  float fH;
+  if ( IsOrthogonal())
+  {
+    fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
+  } 
+  else
+  {
+    fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+  }
   CVector4<float> vTmp;
   vTmp[0] = fH * fAspect * fNormX;
   vTmp[1] = fH * fNormY;
   vTmp[2] = -fZInEye;
   vTmp[3] = 1.0f;
   
-  //vTmp = m_mViewInv * vTmp;
+  vTmp = m_mViewInv * vTmp;
 
   if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
   {
