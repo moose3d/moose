@@ -256,7 +256,7 @@ namespace Phoenix
       ////////////////////
       /// Deletes object with key.
       /// \param nKey Key to object.
-      void Delete( unsigned int nKey )
+      void Delete( const KEYTYPE &nKey )
       {
 	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
