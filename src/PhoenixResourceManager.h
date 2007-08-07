@@ -11,6 +11,11 @@ namespace Phoenix
     using namespace Phoenix::Core;
     ////////////////////
     /// Handle class. Handle is always null handle before it is Initialize()'d.
+    /// \note 
+    /// Handles must be Release()'d by CResourceManager before destroying them -
+    /// Nullifying them is not enough - Otherwise BAD things are about to happen. 
+    /// This is because CResourceManager keeps track of references (Handles) to resources 
+    /// and does not know that handle does not exist anymore without Releasing.
     template<typename TAG>
     class CHandle : public CNullable
     {
