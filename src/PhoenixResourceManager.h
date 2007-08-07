@@ -185,7 +185,7 @@ namespace Phoenix
       void InvalidateAllHandles()
       {
 	typename std::list<HANDLE *>::iterator it = m_lstHandles.begin();
-	for( ; it < m_lstHandles.end(); it++)
+	for( ; it != m_lstHandles.end(); it++)
 	{
 	  (*it)->Nullify();
 	}
@@ -279,7 +279,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::CResourceManager() : m_pReso
 template<typename OBJECTTYPE, typename HANDLE>
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::~CResourceManager() 
 {
-  if ( m_pResourceHash ) delete m_pResourceHash;
+  DeleteMemory();
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
@@ -415,7 +415,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
     // Assign last resource into place of deleted resource.
     m_vecObjects[nIndex] = m_vecObjects.back();
     // Update handle indices.
-    m_vecObjects[nIndex].UpdateAllHandles(nIndex);
+    m_vecObjects[nIndex]->UpdateAllHandles(nIndex);
     // Remove extra pointer.
     m_vecObjects.pop_back();
     // Remove key from hash table.
