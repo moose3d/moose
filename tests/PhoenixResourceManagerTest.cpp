@@ -98,7 +98,10 @@ TEST( PhoenixResourceManager_Delete )
   CHECK_EQUAL( 1, handle2.GetIndex());
   CHECK_EQUAL( 2, handle3.GetIndex());
   CHECK_EQUAL( 3, handle4.GetIndex());
-
+  const char *szName = "one";
+  CHECK_ARRAY_EQUAL( szName, pMgr->GetResourceName( handle1 ).c_str(), 3);
+  const char *szName2 = "two";
+  CHECK_ARRAY_EQUAL( szName2, pMgr->GetResourceName( handle2 ).c_str(), 3);
   // Verify that they something else is not found.
   CHECK( pMgr->GetResource( (strResName = "five")) ==  NULL );
   CHECK( pMgr->GetResource( (strResName = "zero")) ==  NULL );
