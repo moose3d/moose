@@ -55,7 +55,7 @@ namespace Phoenix
       }
     };
     ////////////////////
-    /// Resource Name class.
+    /// Resource Name class. This is used in Hash table.
     class CResourceName : public CNullable
     {
     protected:      
@@ -100,6 +100,120 @@ namespace Phoenix
       }
     };
     ////////////////////
+    /// Resource class.
+    template<typename OBJECTTYPE, typename HANDLE>
+    class CResource
+    {
+    protected:
+      /// Handles which refer to this resource.
+      std::list<HANDLE *> m_lstHandles;
+      /// Actual resource object pointer.
+      OBJECTTYPE *	  m_pObject;
+      /// Name for this resource. Must be same as in CResourceName.m_strName.
+      std::string	  m_strResourceName;
+    public:
+      ////////////////////
+      /// Constructor.
+      CResource() : m_pObject(NULL) {}
+      ////////////////////
+      /// Destructor.
+      ~CResource() 
+      {
+	InvalidateAllHandles();
+	if ( m_pObject != NULL ) 
+	{
+	  delete m_pObject;
+	}
+	m_pObject = NULL;
+      }
+      ////////////////////
+      /// Assigns object.
+      /// \param pObject Pointer to object.
+      void SetObject( OBJECTTYPE *pObject )
+      {
+	m_pObject = pObject;
+      }
+      ////////////////////
+      /// Retrieves object of this resource.
+      /// \returns Pointer to object of resource.
+      OBJECTTYPE *GetObject()
+      {
+	return m_pObject;
+      }
+      ////////////////////
+      /// Returns resource name as string.
+      /// \returns Resource name string.
+      const std::string & GetName() const
+      {
+	return m_strResourceName;
+      }
+      ////////////////////
+      /// Assigns resource name.
+      /// \param strName Resource name string.
+      void SetName(const std::string & strName)
+      {
+	m_strResourceName = strName;
+      }
+      ////////////////////
+      /// Adds handle to this resource.
+      /// \param handle Reference to a handle.
+      void ValidateHandle( HANDLE &handle)
+      {
+	if ( !handle.IsNull())
+	  m_lstHandles.push_back( &handle );
+      }
+      ////////////////////
+      /// Removes handle from list of handles and nullifies it.
+      void InvalidateHandle( HANDLE &handle )
+      {
+	if ( handle.IsNull()) return;
+
+	typename std::list<HANDLE *>::iterator it = m_lstHandles.begin();
+	for( ; it < m_lstHandles.end(); it++)
+	{
+	  // If handle address matches, nullify and delete.
+	  if ( (*it) == &handle )
+	  {
+	    (*it)->Nullify();
+	    m_lstHandles.erase(it);
+	    break;
+	  }
+	}	
+      }
+      ////////////////////
+      /// Nullifies all handles which point to this resource.
+      void InvalidateAllHandles()
+      {
+	typename std::list<HANDLE *>::iterator it = m_lstHandles.begin();
+	for( ; it < m_lstHandles.end(); it++)
+	{
+	  (*it)->Nullify();
+	}
+	m_lstHandles.clear();
+      }
+      ////////////////////
+      /// Updates all handles to this resource. Before nullifiy
+      /// \param nIndex New index for this resource in ResourceManager's array.
+      void UpdateAllHandles( unsigned int nIndex )
+      {
+	typename std::list<HANDLE *>::iterator it  = m_lstHandles.begin();
+	typename std::list<HANDLE *>::iterator end = m_lstHandles.end();
+	/// Update valid handles and remove invalid from list.
+	while( it != end )
+	{
+	  if( (*it)->IsNull() )
+	  {
+	    m_lstHandles.erase( it++ );
+	  }
+	  else
+	  {
+	    (*it)->Initialize(nIndex);
+	    ++it;
+	  }// else
+	} // while( 
+      }
+    };
+    ////////////////////
     /// Resource Manager class.
     template<typename OBJECTTYPE, typename HANDLE>
     class CResourceManager : public CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >
@@ -107,7 +221,7 @@ namespace Phoenix
       friend class CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >;
     protected:
       CHashTable<std::string,CResourceName> *m_pResourceHash;
-      std::vector<OBJECTTYPE *> m_vecObjects;
+      std::vector<CResource<OBJECTTYPE,HANDLE> *> m_vecObjects;
       ////////////////////
       /// Constructor.
       CResourceManager();
@@ -135,7 +249,7 @@ namespace Phoenix
       ////////////////////
       /// Removes a resource from manager.
       /// \param strName Resource name.
-      //void Destroy( const std::string &strName ); 
+      void Destroy( const std::string &strName ); 
       ////////////////////
       /// Returns pointer to resource.
       /// \param handle Handle to resource.
@@ -193,10 +307,15 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
   }
   if ( m_pResourceHash->Find(strName)==NULL )
   {
+    // Create resource object
+    CResource<OBJECTTYPE,HANDLE> *pResource = new CResource<OBJECTTYPE,HANDLE>();
+    pResource->SetObject(pType);
+    pResource->SetName( strName );
 
-    //  insert object into manager and get its index
-    m_vecObjects.push_back( pType );
+    // Insert object into manager and get its index
+    m_vecObjects.push_back( pResource );
     unsigned int nIndex = m_vecObjects.size() - 1;
+
     // Create object with name and index mapping
     CResourceName resourceName;
     resourceName.SetName( strName );
@@ -209,7 +328,8 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
     
     m_pResourceHash->Insert( hashItem );
     Handle.Initialize( nIndex );
-
+    // Add handle to list of handles to be updated. 
+    m_vecObjects[nIndex]->ValidateHandle( Handle );
     return 0;
   } 
   else
@@ -223,12 +343,16 @@ template<typename OBJECTTYPE, typename HANDLE>
 void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DeleteMemory()
 {
-  for(unsigned int n=0;n<GetSize();n++)
+  // Deletes resource pointers and objects inside them
+  for( unsigned int nObj = 0;nObj<m_vecObjects.size();nObj++)
   {
-    if ( m_vecObjects[n] != NULL )
-      delete m_vecObjects[n];
-    m_vecObjects[n] = NULL;
+    if ( m_vecObjects[nObj] != NULL )
+    {
+      delete m_vecObjects[nObj];
+      m_vecObjects[nObj] = NULL;
+    }
   }
+  m_vecObjects.clear();
   if ( m_pResourceHash != NULL )  
   {
     delete m_pResourceHash;
@@ -244,7 +368,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const HANDLE &h
   {
     return NULL;
   }
-  return m_vecObjects[handle.GetIndex()];
+  return m_vecObjects[handle.GetIndex()]->GetObject();
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
@@ -256,7 +380,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const std::stri
   CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
   if ( pHashItem == NULL ) return NULL;
 
-  return m_vecObjects[pHashItem->GetObject().GetIndex()];
+  return m_vecObjects[pHashItem->GetObject().GetIndex()]->GetObject();
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
@@ -270,18 +394,45 @@ template<typename OBJECTTYPE, typename HANDLE>
 inline void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Release( HANDLE &handle )
 {
+  m_vecObjects[handle.GetIndex()]->InvalidateHandle( handle );
   handle.Nullify();
-  ///  remove pointer to handle in ResourceName (future)
 }
 /////////////////////////////////////////////////////////////////
-//template<typename OBJECTTYPE, typename HANDLE>
-//inline void
-//Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destory( const std::string &strName )
-//{
-  //if ( m_pResourceHash == NULL ) return;
-  //CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
-  //if ( pHashItem == NULL ) return;
-  //phashItem->GetObject().GetIndex();
-//}
+template<typename OBJECTTYPE, typename HANDLE>
+inline void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &strName )
+{
+  if ( m_pResourceHash == NULL ) return;
+  CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
+  
+  if ( pHashItem == NULL ) return;
+  unsigned int nIndex = pHashItem->GetObject().GetIndex();
+  
+  if ( nIndex < m_vecObjects.size() - 1 )
+  {
+    // Remove resource (invalidates also handles)
+    delete m_vecObjects[nIndex];    
+    // Assign last resource into place of deleted resource.
+    m_vecObjects[nIndex] = m_vecObjects.back();
+    // Update handle indices.
+    m_vecObjects[nIndex].UpdateAllHandles(nIndex);
+    // Remove extra pointer.
+    m_vecObjects.pop_back();
+    // Remove key from hash table.
+    m_pResourceHash->Delete( strName );
+    
+    // Update hashtable's resourcename.index for moved resource
+    pHashItem = m_pResourceHash->Find(m_vecObjects[nIndex]->GetName());
+    pHashItem->GetObject().SetIndex( nIndex );
+  }
+  else
+  {
+    delete m_vecObjects[nIndex];
+    m_vecObjects.pop_back();    
+    // Remove key from hash table.
+    m_pResourceHash->Delete( strName );
+  }
+
+}
 /////////////////////////////////////////////////////////////////
 #endif
