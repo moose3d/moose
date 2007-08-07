@@ -262,7 +262,13 @@ namespace Phoenix
       OBJECTTYPE *GetResource( const std::string &resName ) const;
       ////////////////////
       /// Gets number of currently managed objects.
+      /// \returns Number of managed objects.
       unsigned int GetSize() const;
+      ////////////////////
+      /// Returns resource name where this handle refers to.
+      /// \param handle Handle which resource name is retrieved.
+      /// \returns String containing resource name. Empty string is returned if resource is not found.
+      std::string GetResourceName( const HANDLE &handle ) const;
       
     private:
       void DeleteMemory();
@@ -399,7 +405,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Release( HANDLE &handle )
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
-inline void
+void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &strName )
 {
   if ( m_pResourceHash == NULL ) return;
@@ -433,6 +439,17 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
     m_pResourceHash->Delete( strName );
   }
 
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE,typename HANDLE>
+std::string
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResourceName( const HANDLE &handle ) const
+{
+  if ( handle.IsNull() || handle.GetIndex() >= GetSize())
+  {
+    return string();
+  }
+  return m_vecObjects[handle.GetIndex()]->GetName();
 }
 /////////////////////////////////////////////////////////////////
 #endif
