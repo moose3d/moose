@@ -1,9 +1,11 @@
 #include "PhoenixFrustum.h"
-
 #include <list>
+/////////////////////////////////////////////////////////////////
 using std::list;
 using namespace Phoenix::Graphics;
-
+using namespace Phoenix::Math;
+using namespace Phoenix::Volume;
+/////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFrustum::CFrustum()
 {
 

@@ -3,12 +3,9 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSpatial.h"
 #include "PhoenixMathGeometry.h"
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
 #include <iostream>
-using std::cerr;
-using std::endl;
-/////////////////////////////////////////////////////////////////
-using namespace Phoenix::Spatial;
-using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -44,19 +41,19 @@ namespace Phoenix
     class CPolytope
     {
     protected:
-      std::list<CPlane> m_lstPlanes;
+      std::list<Phoenix::Math::CPlane> m_lstPlanes;
     public:
       ////////////////////
       CPolytope()      {}
       ////////////////////
       ~CPolytope()      { m_lstPlanes.clear();  }
       ////////////////////
-      void AddPlane( CPlane &Plane )
+      void AddPlane( Phoenix::Math::CPlane &Plane )
       {
 	m_lstPlanes.push_back(Plane);
       }
       ////////////////////
-      std::list<CPlane> &Planes()
+      std::list<Phoenix::Math::CPlane> &Planes()
       {
 	return m_lstPlanes;
       }
@@ -66,20 +63,20 @@ namespace Phoenix
 	return m_lstPlanes.size();
       }
       ////////////////////
-      friend std::ostream& operator<<( std::ostream &stream, const CPolytope & polytope )
+      friend std::ostream& operator<<( std::ostream &stream, const Phoenix::Volume::CPolytope & polytope )
       {
-	std::list<CPlane>::const_iterator it = polytope.m_lstPlanes.begin();
-	stream << "KDOP planes:" << endl;
+	std::list<Phoenix::Math::CPlane>::const_iterator it = polytope.m_lstPlanes.begin();
+	stream << "KDOP planes:" << std::endl;
 	for( ; it != polytope.m_lstPlanes.end(); it++)
 	{
-	  stream << *it << endl;
+	  stream << *it << std::endl;
 	}
 	return stream;
       }
     }; // CPolytope
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) box.
-    class CAxisAlignedBox : public CPositional, public CDimensional, public CPolytope
+    class CAxisAlignedBox : public Phoenix::Spatial::CPositional, public Phoenix::Spatial::CDimensional, public Phoenix::Volume::CPolytope
     {
     public:
       ////////////////////
@@ -98,11 +95,11 @@ namespace Phoenix
     // width = right, height = up.
     /////////////////////////////////////////////////////////////////
 
-    class COrientedBox : public CAxisAlignedBox, public COrientable
+    class COrientedBox : public CAxisAlignedBox, public Phoenix::Spatial::COrientable
     {
     protected:
 
-      CPlane    m_Planes[6];    // planes oriented along the box walls
+      Phoenix::Math::CPlane    m_Planes[6];    // planes oriented along the box walls
       float     m_aCorners[24]; // The corners of the box, 3 floats, 8 corners
 
     public:
@@ -113,15 +110,15 @@ namespace Phoenix
 	memset(m_aCorners,0,sizeof(float)*24);
       }
       
-      inline CPlane &operator[](BBOX_PLANE_TYPE iPlane)
+      inline Phoenix::Math::CPlane &operator[](BBOX_PLANE_TYPE iPlane)
       {
 	return m_Planes[iPlane];
       }
       void operator=( const CAxisAlignedBox & box )
       {
-	SetOrientation( CVector3<float>(0,1,0),
-			CVector3<float>(0,0,-1),
-			CVector3<float>(1,0,0));
+	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
+			Phoenix::Math::CVector3<float>(0,0,-1),
+			Phoenix::Math::CVector3<float>(1,0,0));
 	SetPosition( box.GetPosition());
 	SetWidth( box.GetWidth());
 	SetHeight( box.GetHeight());
@@ -141,9 +138,9 @@ namespace Phoenix
 	CalculateCorners();
 	CalculatePlanes();
       }
-      COrientedBox &SetOrientation(const CVector3<float> &vUp, 
-				      const CVector3<float> &vForward,
-				      const CVector3<float> &vRight);
+      COrientedBox &SetOrientation(const Phoenix::Math::CVector3<float> &vUp, 
+				      const Phoenix::Math::CVector3<float> &vForward,
+				      const Phoenix::Math::CVector3<float> &vRight);
 
       const float * GetCorners() const;
       void CalculateCorners();
@@ -153,26 +150,26 @@ namespace Phoenix
     
       friend std::ostream& operator<<( std::ostream &stream, COrientedBox box )
       {
-	stream << endl
-	       << "R = " << box.GetForwardVector() << ", scale " << box.GetLength() << endl
-	       << "S = " << box.GetRightVector()   << ", scale " << box.GetWidth() << endl
-	       << "T = " << box.GetUpVector()      << ", scale " << box.GetHeight() << endl
-	       << "C = " << box.GetPosition() << endl;
-	stream << "TLF:" << CVector3<float>(box.GetCorner(TOP_LEFT_FRONT)) << endl;
-	stream << "TLB:" << CVector3<float>(box.GetCorner(TOP_LEFT_BACK)) << endl;
-	stream << "TRF:" << CVector3<float>(box.GetCorner(TOP_RIGHT_FRONT)) << endl;
-	stream << "TRB:" << CVector3<float>(box.GetCorner(TOP_RIGHT_BACK)) << endl;
-	stream << "BLF:" << CVector3<float>(box.GetCorner(BOTTOM_LEFT_FRONT)) << endl;
-	stream << "BLB:" << CVector3<float>(box.GetCorner(BOTTOM_LEFT_BACK)) << endl;
-	stream << "BRF:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_FRONT)) << endl;
-	stream << "BRB:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_BACK)) << endl;
+	stream << std::endl
+	       << "R = " << box.GetForwardVector() << ", scale " << box.GetLength() << std::endl
+	       << "S = " << box.GetRightVector()   << ", scale " << box.GetWidth() << std::endl
+	       << "T = " << box.GetUpVector()      << ", scale " << box.GetHeight() << std::endl
+	       << "C = " << box.GetPosition() << std::endl;
+	stream << "TLF:" << CVector3<float>(box.GetCorner(TOP_LEFT_FRONT)) << std::endl;
+	stream << "TLB:" << CVector3<float>(box.GetCorner(TOP_LEFT_BACK)) << std::endl;
+	stream << "TRF:" << CVector3<float>(box.GetCorner(TOP_RIGHT_FRONT)) << std::endl;
+	stream << "TRB:" << CVector3<float>(box.GetCorner(TOP_RIGHT_BACK)) << std::endl;
+	stream << "BLF:" << CVector3<float>(box.GetCorner(BOTTOM_LEFT_FRONT)) << std::endl;
+	stream << "BLB:" << CVector3<float>(box.GetCorner(BOTTOM_LEFT_BACK)) << std::endl;
+	stream << "BRF:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_FRONT)) << std::endl;
+	stream << "BRB:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_BACK)) << std::endl;
 	return stream;
       }
     
     };
     /////////////////////////////////////////////////////////////////
     /// The class for generic sphere with center and radius.
-    class CSphere : public CPositional
+    class CSphere : public Phoenix::Spatial::CPositional
     {
     protected:
       /// Sphere radius.
@@ -237,7 +234,7 @@ namespace Phoenix
     }; // class CSphere
     /////////////////////////////////////////////////////////////////
     // Class for a Cone
-    class CCone : public CPositional 
+    class CCone : public Phoenix::Spatial::CPositional 
     {
     protected:
 
@@ -325,48 +322,48 @@ namespace Phoenix
     /// Calculates the oriented bounding box for vertices in vertexarray
     /// \param vertexDescriptor Vertices.
     /// \returns Oriented bounding box
-    COrientedBox    CalculateOrientedBoundingBox( const CVertexDescriptor &vertexDescriptor );
+    Phoenix::Volume::COrientedBox    CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the axis-aligned bounding box for vertices in vertexarray
     /// \param vertexDescriptor Vertices.
     /// \returns Oriented bounding box
-    CAxisAlignedBox CalculateAlignedBox( const CVertexDescriptor &vertexDescriptor );
+    Phoenix::Volume::CAxisAlignedBox CalculateAlignedBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor using fast but not so accurate algorithm.
     /// \param vertexDescriptor Vertices.
     /// \returns Bounding sphere.
-    CSphere CalculateBoundingSphere( const CVertexDescriptor &vertexDescriptor );
+    Phoenix::Volume::CSphere CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor using slightly slower, but more accurate algorithm
     /// \param vertexDescriptor Vertices.
     /// \returns Bounding sphere.
-    CSphere CalculateBoundingSphereTight( const CVertexDescriptor &vertexDescriptor );
+    Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor by given set of indices using slightly slower, but more accurate algorithm
     /// \param vertexDescriptor Vertices.
     /// \param indices Which vertices are used.
     /// \returns Bounding sphere.
-    CSphere CalculateBoundingSphereTight( const CVertexDescriptor &vertexDescriptor, 
-					  const CIndexArray &indices );
+    Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor, 
+							   const Phoenix::Graphics::CIndexArray &indices );
     ////////////////////
     /// Calculates the oriented bounding box for vertices in vertexarray using the given set of indices.
     /// \param vertexDescriptor Vertices.
     /// \param indices Which vertices are used.
     /// \returns Bounding sphere.
-    COrientedBox CalculateOrientedBoundingBox( const CVertexDescriptor &vertexDescriptor,
-					       const CIndexArray &elementList );
+    Phoenix::Volume::COrientedBox CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
+								const Phoenix::Graphics::CIndexArray &elementList );
     ////////////////////
     /// Creates a new sphere is the minimum sphere containing two spheres given as arguments.
     /// \param one One sphere.
     /// \param two Another sphere.
     /// \returns Sphere enclosing both spheres.
-    CSphere MergeSpheres( const CSphere &one, const CSphere &two);
+    Phoenix::Volume::CSphere MergeSpheres( const Phoenix::Volume::CSphere &one, const Phoenix::Volume::CSphere &two);
     ////////////////////
     /// Creates a new Oriented Box containing two oriented boxes.
     /// \param obOne One oriented box.
     /// \param obTwo Another oriented box.
     /// \returns Bounding box enclosing both boxes.
-    COrientedBox MergeOrientedBoxes( const COrientedBox &obOne, const COrientedBox &obTwo );
+    Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
     
     /////////////////////////////////////////////////////////////////
     // Constructs a 4x4 rotation matrix by inserting the Oriented Box axis 
@@ -377,7 +374,7 @@ namespace Phoenix
     //     Fz Rz Uz 0    R = Right Vector
     //     0  0  0  1    U = Up Vector
     /////////////////////////////////////////////////////////////////
-    CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const COrientedBox &ob  );
+    Phoenix::Math::CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const Phoenix::Volume::COrientedBox &ob  );
   };// namespace Volume
 };// namespace Phoenix
 /////////////////////////////////////////////////////////////////

@@ -32,13 +32,13 @@ namespace Phoenix
       /// View frustum for this camera
       CFrustum		m_Frustum;
       /// The projection matrix for this camera
-      CMatrix4x4<float> m_mProjection;
+      Phoenix::Math::CMatrix4x4<float> m_mProjection;
       /// The inverse projection matrix for this camera
-      CMatrix4x4<float> m_mProjectionInv;
+      Phoenix::Math::CMatrix4x4<float> m_mProjectionInv;
       /// The view matrix for this camera
-      CMatrix4x4<float> m_mView;
+      Phoenix::Math::CMatrix4x4<float> m_mView;
       /// The inverse view matrix for this camera
-      CMatrix4x4<float> m_mViewInv;
+      Phoenix::Math::CMatrix4x4<float> m_mViewInv;
       /// Is the projection changed
       int		 m_bProjectionChanged;
   
@@ -88,14 +88,14 @@ namespace Phoenix
       // Returns the pointer to orthogonal plane coordinates
       float *GetOrthoPlanes();
       /// Rotates the camera around a point in space.
-      void RotateAroundPoint( const CVector3<float> & vPoint, const CQuaternion & q);
+      void RotateAroundPoint( const Phoenix::Math::CVector3<float> & vPoint, const Phoenix::Math::CQuaternion & q);
       /// Returns the projection matrix.
-      inline const CMatrix4x4<float> & GetProjectionMatrix() const
+      inline const Phoenix::Math::CMatrix4x4<float> & GetProjectionMatrix() const
       {
 	return m_mProjection;
       }
       /// Returns the view matrix.
-      inline const CMatrix4x4<float> & GetViewMatrix() const
+      inline const Phoenix::Math::CMatrix4x4<float> & GetViewMatrix() const
       {
 	return m_mView;
       }
@@ -103,19 +103,19 @@ namespace Phoenix
       void UpdateProjection();
       // Updates the view matrix
       void UpdateView();
-      inline CMatrix4x4<float> & GetInvView() 
+      inline Phoenix::Math::CMatrix4x4<float> & GetInvView() 
       {
 	return m_mViewInv;
       }
-      inline  CMatrix4x4<float> & GetView() 
+      inline  Phoenix::Math::CMatrix4x4<float> & GetView() 
       {
 	return m_mView;
       }
-      inline  CMatrix4x4<float> & GetInvProjection() 
+      inline  Phoenix::Math::CMatrix4x4<float> & GetInvProjection() 
       {
 	return m_mProjectionInv;
       }
-      inline  CMatrix4x4<float> & GetProjection() 
+      inline  Phoenix::Math::CMatrix4x4<float> & GetProjection() 
       {
 	return m_mProjection;
       }
@@ -155,7 +155,7 @@ namespace Phoenix
       ////////////////////
       /// Moves camera using direction and length of given vector.
       /// \param vVector Movement vector.
-      inline void Move ( const CVector3<float> & vVector )
+      inline void Move ( const Phoenix::Math::CVector3<float> & vVector )
       {
 	CPositional::Move( vVector );
       }
@@ -166,12 +166,12 @@ namespace Phoenix
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as eye coordinates.
-      CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
+      Phoenix::Math::CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
       ////////////////////
       /// Converts eye coordinates into world coordinates.
       /// \param vPosition The position in eye coordinates which is converted into world coordinates.
       /// \returns CVector3<float> the vPosition in world coordinates.
-      CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
+      Phoenix::Math::CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
       ////////////////////
       /// Converts window coordinates (x,y,z) into world coordinates. 
       /// \param fX x coordinate with 0,0 as lower left corner.
@@ -179,21 +179,21 @@ namespace Phoenix
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as world coordinates.
-      CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
+      Phoenix::Math::CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
       ////////////////////
       /// Creates an imaginary trackball and rotates camera using two
       /// positions on the surface of the sphere.
       /// \param vPosition The center of the sphere.
       /// \param vStartPoint The point where rotation begins.
       /// \param vEndPoint The point where rotation ends.
-      void VirtualTrackball( const CVector3<float> &vPosition,
-			     const CVector2<int> &vStartPoint,
-			     const CVector2<int> &vEndPoint );
+      void VirtualTrackball( const Phoenix::Math::CVector3<float> &vPosition,
+			     const Phoenix::Math::CVector2<int> &vStartPoint,
+			     const Phoenix::Math::CVector2<int> &vEndPoint );
       ////////////////////
       /// Converts world coordinates into screen coordinates.
       /// \param vPosition Position in world coordinates.
       /// \returns CVector3<float> position in window coordinates.
-      CVector3<float> WorldCoordinatesToScreen( const CVector3<float> &vPosition);
+      Phoenix::Math::CVector3<float> WorldCoordinatesToScreen( const Phoenix::Math::CVector3<float> &vPosition);
     };
   }; // namespace Graphics
 }; // Phoenix

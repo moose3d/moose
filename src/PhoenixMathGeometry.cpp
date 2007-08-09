@@ -4,6 +4,9 @@
 #include <math.h>
 #include <algorithm>
 /////////////////////////////////////////////////////////////////
+using namespace Phoenix::Volume;
+using namespace Phoenix::Math;
+/////////////////////////////////////////////////////////////////
 Phoenix::Math::CPlane::CPlane()
 {
 }
@@ -1464,19 +1467,7 @@ std::ostream& operator<<( std::ostream &stream, CPlane plane )
 // #endif
 // }
 // /////////////////////////////////////////////////////////////////
-// float 
-// Geometry::PointDistanceFromPlane( CVector3<float> &vPoint, CPlane plane )
-// {
-  
-//   CVector3<float> vNormal;
 
-//   vNormal.UseExternalData(plane.m_pValues);
-
-//   float fDistance = vNormal.Dot(vPoint) + plane.Distance();
-
-//   return fDistance;
-
-// }
 // /////////////////////////////////////////////////////////////////
 // char	
 // Geometry::PointWithinKDOP( CVector3<float> &vPoint, CKDOP &kDop )

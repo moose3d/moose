@@ -1,9 +1,10 @@
 #include <math.h>
 #include <iostream>
 #include "PhoenixMath.h"
+/////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Graphics;
-// -----------------------------------------------------------------
+/////////////////////////////////////////////////////////////////
 void
 Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix )
 {
@@ -56,15 +57,14 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
   mMatrix(3,3) = 1.0;
 
 }
-
+/////////////////////////////////////////////////////////////////
 std::ostream & 
 operator<<(std::ostream &stream, const CQuaternion & qQuat)
 {
   stream << qQuat(0) << "," <<qQuat(1) << "," <<qQuat(2) << "," << qQuat(3);
   return stream;
 }
-
-
+/////////////////////////////////////////////////////////////////
 CQuaternion 
 Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation )
 {
@@ -254,8 +254,6 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
     mResult(2,2) = vNormal[2];
     
   }
-  
-  
   return mResult;
 }
 ////////////////////
@@ -292,8 +290,6 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 CMatrix3x3<float>
 Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor)
 {
-  
-
   CMatrix3x3<float> mCovariance;
   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
 
@@ -403,9 +399,7 @@ CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray 
   return mCovariance;
 }
 /////////////////////////////////////////////////////////////////
-
 #define SIGN(VAL) (VAL < 0.0F ? -1.0F : 1.0F)
-
 void 
 Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1, float &fLambda2, float &fLambda3, CMatrix3x3<float> &mRes)
 {
@@ -440,8 +434,6 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
       float c = 1.0F / sqrt(t * t + 1.0F);
       float s = c * t;
 
-
-      
       m11 -= t * m12;
       m22 += t * m12;
       m12 =  0.0 ;
@@ -520,9 +512,7 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
   fLambda3 = m33;
   
 }
-//
-// Copies values from the vVector to iRowth row of the matrix mMatrix
-//
+/////////////////////////////////////////////////////////////////
 void
 Phoenix::Math::SetRowVector(CMatrix3x3<float> &mMatrix, unsigned int iRow, CVector3<float> vVector)
 {
@@ -535,7 +525,7 @@ Phoenix::Math::SetRowVector(CMatrix3x3<float> &mMatrix, unsigned int iRow, CVect
   pArray[nIndex+2] = vVector[2];
 
 }
-// Copies values from the vVector to iColth column of the matrix mMatrix
+/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::SetColumnVector(CMatrix3x3<float> &mMatrix, unsigned int iCol, CVector3<float> vVector)
 {
@@ -547,7 +537,7 @@ Phoenix::Math::SetColumnVector(CMatrix3x3<float> &mMatrix, unsigned int iCol, CV
   pArray[nIndex+6] = vVector[2];
   
 }
-
+/////////////////////////////////////////////////////////////////
 CVector3<float> 
 Phoenix::Math::GetRowVector(CMatrix3x3<float> mMatrix, unsigned int iRow)
 {
@@ -555,17 +545,15 @@ Phoenix::Math::GetRowVector(CMatrix3x3<float> mMatrix, unsigned int iRow)
 		     mMatrix(iRow, 1),
 		     mMatrix(iRow, 2));
 }
+/////////////////////////////////////////////////////////////////
 CVector3<float> 
 Phoenix::Math::GetColumnVector(CMatrix3x3<float> mMatrix, unsigned int iCol)
 {
-  
   return CVector3<float>(mMatrix(0, iCol),
 		     mMatrix(1, iCol),
 		     mMatrix(2, iCol));
-
-
 }
-
+/////////////////////////////////////////////////////////////////
 CVector3<float> 
 Phoenix::Math::Translate(CVector3<float> v, CMatrix4x4<float> m)
 {
@@ -574,7 +562,7 @@ Phoenix::Math::Translate(CVector3<float> v, CMatrix4x4<float> m)
 			  v[2]+m(2,3) );
 
 }
-
+/////////////////////////////////////////////////////////////////
 CVector3<float> 
 Phoenix::Math::TranslateInverse(CVector3<float> v, CMatrix4x4<float> m)
 {
@@ -582,7 +570,7 @@ Phoenix::Math::TranslateInverse(CVector3<float> v, CMatrix4x4<float> m)
 			 v[1]-m(1,3),
 			 v[2]-m(2,3));
 }
-
+/////////////////////////////////////////////////////////////////
 CVector3<float> 
 Phoenix::Math::Rotate( const CVector3<float> & v, const CMatrix4x4<float> &m)
 {
@@ -767,7 +755,7 @@ Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
   fAngleInDegrees = Rad2Deg(acosf( fCosAngle )) * 2.0f;
 
 }
-
+/////////////////////////////////////////////////////////////////
 CMatrix3x3<float> 
 Phoenix::Math::RemoveRowAndColumn(CMatrix4x4<float> mMatrix, 
 				  unsigned int iRowSkip, 

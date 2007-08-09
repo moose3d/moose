@@ -1,13 +1,16 @@
 /////////////////////////////////////////////////////////////////
 #include <iostream>
+#include "PhoenixMath.h"
 #include "PhoenixCamera.h"
 #include "PhoenixCollision.h"
+#include "PhoenixVolume.h"
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
 using namespace Phoenix::Collision;
+using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::CCamera() : COrientable()
 {
@@ -200,8 +203,7 @@ Phoenix::Graphics::CCamera::RotateAroundPoint( const CVector3<float> & vPoint, c
 {
 
   AppendToRotation(q);
-  SetPosition( Math::RotateAroundPoint(GetPosition(), vPoint, q ));
-  
+  SetPosition( Phoenix::Math::RotateAroundPoint(GetPosition(), vPoint, q ));
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -404,17 +406,20 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition,
   CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint(0), 
 					       vStartPoint(1),
 					       1.0f);
+  CLine line;
+  line.SetStart( vOrig );
+  line.SetEnd( vEnd );
   /////////////////////////////////////////////////////////////////
   CVector3<float> vIntersection0;
   CVector3<float> vIntersection1;
   CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
   /////////////////////////////////////////////////////////////////
-  if ( Collision::RayIntersectsSphere( vOrig, vEnd, &vIntersection0, NULL, sphere) >= 1)
+  if ( Collision::LineIntersectsSphere( line, &vIntersection0, NULL, sphere) >= 1)
   {
     vOrig = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1), 0.0f);
     vEnd = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1),  1.0f);
     /////////////////////////////////////////////////////////////////
-    if ( Collision::RayIntersectsSphere( vOrig, vEnd, &vIntersection1, NULL, sphere) >= 1)
+    if ( Collision::LineIntersectsSphere( line, &vIntersection1, NULL, sphere) >= 1)
     {
       vOrig = vIntersection0 - sphere.GetPosition();
       vEnd  = vIntersection1 - sphere.GetPosition();

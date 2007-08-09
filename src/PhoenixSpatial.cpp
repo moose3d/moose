@@ -1,5 +1,6 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSpatial.h"
+#include "PhoenixMath.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Spatial;
@@ -191,7 +192,7 @@ Phoenix::Spatial::COrientable::SetDirectionForwardUp( CVector3<float> f, CVector
   }
   else 
   {
-    m_qRotation = RotationArc( m_vForward, f);
+    m_qRotation = Phoenix::Math::RotationArc( m_vForward, f);
   }
   SetRotationChanged(1);
 }

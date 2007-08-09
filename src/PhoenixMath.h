@@ -17,10 +17,8 @@
 #include "PhoenixQuaternion.h"
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
+#include "PhoenixMathGeometry.h"
 /////////////////////////////////////////////////////////////////
-using namespace Phoenix::Math;
-using Phoenix::Graphics::CVertexDescriptor;
-using Phoenix::Graphics::CIndexArray;
 namespace Phoenix 
 {
   namespace Math 
@@ -32,7 +30,7 @@ namespace Phoenix
     ////////////////////
     /// Generates a Rotation matrix which corresponds to rotation of fRadians rad
     /// over axis vAxis
-    CMatrix4x4<float> RotationMatrix(const CVector3<float> &vAxis, float fRadians);
+    CMatrix4x4<float> RotationMatrix(const Phoenix::Math::CVector3<float> &vAxis, float fRadians);
     ////////////////////
     /// Generates a rotation matrix from (x,y,z) -axis rotations 
     /// rotation fX radians using X-axis, fY rad over Y-axis and fZ rad over Z-axis.
@@ -41,7 +39,7 @@ namespace Phoenix
     /// Generates a rotation matrix from (x,y,z) -axis rotations 
     /// rotation vRadians[X] radians using X-axis, 
     /// vRadians[Y] rad over Y-axis and vRadians[Z] rad over Z-axis.
-    CMatrix4x4<float> RotationMatrix(const CVector3<float> & vRadians );
+    CMatrix4x4<float> RotationMatrix(const Phoenix::Math::CVector3<float> & vRadians );
     ////////////////////
     /// Generates a translation matrix .
     /// \param fX X-axis translation.
@@ -59,7 +57,7 @@ namespace Phoenix
     /// Generates a translation matrix.
     /// \param vValues Vector with translations for x,y,z axes.
     /// \returns Translation Matrix.
-    inline CMatrix4x4<float> TranslationMatrix(const CVector3<float> &vValues)
+    inline CMatrix4x4<float> TranslationMatrix(const Phoenix::Math::CVector3<float> &vValues)
     {
       return CMatrix4x4<float>( 1,0,0, vValues(0),
 				0,1,0, vValues(1),
@@ -81,35 +79,35 @@ namespace Phoenix
     
 
     // Constructs a Row-Major TBN (Tangent, Bitangent, Normal)-matrix for bump mapping
-    CMatrix3x3<float> GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> vPoint2,
-				    CVector2<float> vTexCoord0, CVector2<float> vTexCoord2, CVector2<float> vTexCoord3);
+    CMatrix3x3<float> GetTBNMatrix( Phoenix::Math::CVector3<float> vPoint0, Phoenix::Math::CVector3<float> vPoint1, Phoenix::Math::CVector3<float> vPoint2,
+				    Phoenix::Math::CVector2<float> vTexCoord0, Phoenix::Math::CVector2<float> vTexCoord2, Phoenix::Math::CVector2<float> vTexCoord3);
 
     // Returns the determinant of the 4x4 float matrix
-    float	Det(const CMatrix4x4<float> &mMatrix);
+    float	Det(const Phoenix::Math::CMatrix4x4<float> &mMatrix);
     // Returns the determinant of the 3x3 float matrix
-    float Det(const CMatrix3x3<float> &mMatrix);
+    float Det(const Phoenix::Math::CMatrix3x3<float> &mMatrix);
     // Returns the determinant of the 3x3 float matrix
-    float Det(const CMatrix2x2<float> &mMatrix);
+    float Det(const Phoenix::Math::CMatrix2x2<float> &mMatrix);
     // Returns the iRowth row vector from 3x3 matrix.
     // iRow in range [0..SIZE-1 ]
-    CVector3<float> GetRowVector(CMatrix3x3<float> mMatrix, unsigned int iRow);
+    CVector3<float> GetRowVector(Phoenix::Math::CMatrix3x3<float> mMatrix, unsigned int iRow);
     // Returns the iColth column vector from 3x3 matrix.
     // iCol in range [0..SIZE-1 ]
-    CVector3<float> GetColumnVector(CMatrix3x3<float> mMatrix, unsigned int iCol);
+    CVector3<float> GetColumnVector(Phoenix::Math::CMatrix3x3<float> mMatrix, unsigned int iCol);
     // Copies values from the vVector to iRowth row of the matrix mMatrix
-    void SetRowVector(CMatrix3x3<float> &mMatrix, unsigned int iRow, CVector3<float> vVector);
+    void SetRowVector(Phoenix::Math::CMatrix3x3<float> &mMatrix, unsigned int iRow, CVector3<float> vVector);
     // Copies values from the vVector to iColth column of the matrix mMatrix
-    void SetColumnVector(CMatrix3x3<float> &mMatrix, unsigned int iCol, CVector3<float> vVector);
+    void SetColumnVector(Phoenix::Math::CMatrix3x3<float> &mMatrix, unsigned int iCol, CVector3<float> vVector);
     // Translates the vector v by matrix m ( doesn't use scaling or rotation )
-    CVector3<float> Translate(CVector3<float> v, CMatrix4x4<float> m);
+    CVector3<float> Translate(CVector3<float> v, Phoenix::Math::CMatrix4x4<float> m);
     // Translates the vector v by the inverse of translation matrix m ( doesn't use scaling or rotation )
-    CVector3<float> TranslateInverse(CVector3<float> v, CMatrix4x4<float> m);
+    CVector3<float> TranslateInverse(Phoenix::Math::CVector3<float> v, Phoenix::Math::CMatrix4x4<float> m);
     // Rotates vector v by matrix m ( doesn't use scaling or translation )
-    CVector3<float> Rotate( const CVector3<float> & v, const CMatrix4x4<float> &m);
+    CVector3<float> Rotate( const Phoenix::Math::CVector3<float> & v, const Phoenix::Math::CMatrix4x4<float> &m);
     // Transforms vector v by matrix (scaling, rotation and translation is applied)
-    CVector3<float> Transform( const CVector3<float> &v, const CMatrix4x4<float> &m);
+    CVector3<float> Transform( const Phoenix::Math::CVector3<float> &v, const Phoenix::Math::CMatrix4x4<float> &m);
     // Multiplies vector vVector from right by matrix mMatrix  ( mMatrix * vVector );
-    CVector3<float> MultiplyFromRight( CMatrix3x3<float> mMatrix, CVector3<float> &vVector);
+    CVector3<float> MultiplyFromRight( Phoenix::Math::CMatrix3x3<float> mMatrix, Phoenix::Math::CVector3<float> &vVector);
     ////////////////////
     /// Removes row and column from matrix, creating new submatrix.
     /// \param mMatrix orignal matrix.
@@ -130,10 +128,10 @@ namespace Phoenix
 					 unsigned int iColSkip);
     
     // Returns the covariance matrix of the vertices in the pVertexDescriptor
-    CMatrix3x3<float> CovarianceMatrix( const CVertexDescriptor &vertexDescriptor);
+    CMatrix3x3<float> CovarianceMatrix( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor);
 
     // Returns the covariance matrix of the vertices in the pVertexDescriptor using the given indices 
-    CMatrix3x3<float> CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray &indexBuffer );
+    CMatrix3x3<float> CovarianceMatrix(  const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor, const Phoenix::Graphics::CIndexArray &indexBuffer );
 
     // Calculates the eigenvectors and eigenvalues for matrix mMatrix 
     // using the Jacobi method. For matrices with dimensions less than 10,

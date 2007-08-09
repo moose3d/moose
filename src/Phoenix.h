@@ -19,3 +19,4 @@
 #include "PhoenixVector4.h"
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixDefaultEntities.h"
+#include "PhoenixCollision.h"

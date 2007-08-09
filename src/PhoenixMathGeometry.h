@@ -1,12 +1,11 @@
 #ifndef __PhoenixMathGeometry_h__
 #define __PhoenixMathGeometry_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixVector3.h"
 #include "PhoenixVector4.h"
 #include "PhoenixSpatial.h"
 #include <list>
 #include <iostream>
-using namespace Phoenix::Math;
-using namespace Phoenix::Spatial;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -15,23 +14,22 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     // The plane class, always normalized. ( || Normal || == 1 )
     /////////////////////////////////////////////////////////////////
-    class CPlane : public CVector4<float>
+    class CPlane : public Phoenix::Math::CVector4<float>
     {
     public:
-
       CPlane();
       ~CPlane();
-      void SetNormal( CVector3<float> vNormal);
+      void SetNormal( Phoenix::Math::CVector3<float> vNormal);
       void SetDistance( float fDistance );    
       void Normalize();
-      void Calculate( CVector3<float> vNormal, const CVector3<float> & vPoint );
+      void Calculate( Phoenix::Math::CVector3<float> vNormal, const Phoenix::Math::CVector3<float> & vPoint );
 
       friend std::ostream& operator<<( std::ostream &stream, const CPlane & plane );
       
     };
     /////////////////////////////////////////////////////////////////
     // The class for a Quad
-    class CQuad : public CPositional 
+    class CQuad : public Phoenix::Spatial::CPositional 
     {
     protected:
       // The width of the quad
@@ -79,7 +77,7 @@ namespace Phoenix
     }; // class CQuad
     /////////////////////////////////////////////////////////////////
     /// Abstraction for rays. 
-    class CRay : public COneDirectional, public CPositional
+    class CRay : public Phoenix::Spatial::COneDirectional, public Phoenix::Spatial::CPositional
     {
     public:
       ////////////////////

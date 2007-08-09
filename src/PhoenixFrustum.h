@@ -7,7 +7,6 @@
 /////////////////////////////////////////////////////////////////
 #define NUM_FRUSTUM_CORNERS 8
 #define NUM_FRUSTUM_PLANES  6
-using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -15,10 +14,10 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// The frustum class for culling.
-    class CFrustum : public CPolytope
+    class CFrustum : public Phoenix::Volume::CPolytope
     {
     public:
-      typedef BBOX_PLANE_TYPE FRUSTUM_PLANE ;
+      typedef Phoenix::Volume::BBOX_PLANE_TYPE FRUSTUM_PLANE ;
       ////////////////////
       /// The corner indices.
       enum FRUSTUM_CORNER
@@ -56,9 +55,9 @@ namespace Phoenix
     protected:
       ////////////////////
       /// The pointers to the planes.
-      CPlane * m_aPlanes[NUM_FRUSTUM_PLANES];   
+      Phoenix::Math::CPlane * m_aPlanes[NUM_FRUSTUM_PLANES];   
       /// The corners of the frustum box.
-      CVector3<float> m_aCorners[NUM_FRUSTUM_CORNERS];  
+      Phoenix::Math::CVector3<float> m_aCorners[NUM_FRUSTUM_CORNERS];  
       /////////////////////////////////////////////////////////////////
     public:
       ////////////////////
@@ -68,12 +67,12 @@ namespace Phoenix
       /// Assigns a plane.
       /// \param nIndex The plane index which is assigned.
       /// \param vPlane The plane data.
-      void		SetPlane( FRUSTUM_PLANE nIndex, CPlane &vPlane);
+      void		SetPlane( FRUSTUM_PLANE nIndex, Phoenix::Math::CPlane &vPlane);
       ////////////////////
       /// Return a reference to the plane.
       /// \param nIndex The index of the plane desired.
       /// \returns The requested plane.
-      CPlane	&GetPlane( FRUSTUM_PLANE nIndex );
+      Phoenix::Math::CPlane	&GetPlane( FRUSTUM_PLANE nIndex );
       ////////////////////
       /// Returns a corner of the frustum.
       /// \param nIndex The index of the corner.
@@ -83,7 +82,7 @@ namespace Phoenix
       /// Sets a corner value.
       /// \param nIndex The index of the corner to be set.
       /// \param vPoint The value which is assigned.
-      void		SetCorner( FRUSTUM_CORNER nIndex, const CVector3<float> &vPoint );
+      void		SetCorner( FRUSTUM_CORNER nIndex, const Phoenix::Math::CVector3<float> &vPoint );
       ////////////////////
       /// Determines whether frustum and sphere intersect.
       /// \param sphere The sphere to be checked against.

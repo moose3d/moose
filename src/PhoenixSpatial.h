@@ -8,11 +8,13 @@
 #include "PhoenixQuaternion.h"
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixMatrix3x3.h"
-#include "PhoenixMath.h"
-using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+  namespace Math 
+  {
+    void RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector);
+  }
   namespace Spatial
   {
     /////////////////////////////////////////////////////////////////
@@ -21,7 +23,7 @@ namespace Phoenix
     {
     protected:
       /// Vector where position is stored.
-      CVector3<float> m_vPosition;
+      Phoenix::Math::CVector3<float> m_vPosition;
       /// has the position changed.
       int	      m_bPositionChanged;
     public:
@@ -34,13 +36,13 @@ namespace Phoenix
       ////////////////////
       /// Parametrized constructor.
       /// \param vPosition vector for location-
-      CPositional( const CVector3<float> & vPosition ) : m_vPosition(vPosition),m_bPositionChanged(0)
+      CPositional( const Phoenix::Math::CVector3<float> & vPosition ) : m_vPosition(vPosition),m_bPositionChanged(0)
       {
       }
       ////////////////////
       /// Assigns position.
       /// \param vPosition vector of which values are used.
-      inline void SetPosition( const CVector3<float> &vPosition )
+      inline void SetPosition( const Phoenix::Math::CVector3<float> &vPosition )
       {
 	m_vPosition = vPosition;
 	SetPositionChanged(1);
@@ -60,14 +62,14 @@ namespace Phoenix
       ////////////////////
       /// Returns position.
       /// \param current position.
-      inline const CVector3<float> & GetPosition() const
+      inline const Phoenix::Math::CVector3<float> & GetPosition() const
       {
 	return m_vPosition;
       }
       ////////////////////
       /// Adds vector to current position.
       /// \param vPosition the movement applied to current position.
-      inline void Move( const CVector3<float> & vPosition )
+      inline void Move( const Phoenix::Math::CVector3<float> & vPosition )
       {
 	m_vPosition = m_vPosition + vPosition;
 	SetPositionChanged(1);
@@ -93,12 +95,12 @@ namespace Phoenix
     {
     protected:
       /// Direction vector.
-      CVector3<float> m_vDirection;
+      Phoenix::Math::CVector3<float> m_vDirection;
     public:
       ////////////////////
       /// Assigns direction.
       /// \param vDirection direction vector to be assigned.
-      inline void SetDirection( const CVector3<float> & vDirection )
+      inline void SetDirection( const Phoenix::Math::CVector3<float> & vDirection )
       {
 	m_vDirection = vDirection;
       }
@@ -116,7 +118,7 @@ namespace Phoenix
       ////////////////////
       /// Returns the direction.
       /// \returns Vector with current direction.
-      inline const CVector3<float> & GetDirection() const
+      inline const Phoenix::Math::CVector3<float> & GetDirection() const
       {
 	return m_vDirection;
       }
@@ -147,13 +149,13 @@ namespace Phoenix
     {
     public:
       /// Vertex position.
-      CVector3<float> m_vPosition;
+      Phoenix::Math::CVector3<float> m_vPosition;
       /// Vertex normal.
-      CVector3<float> m_vNormal;
+      Phoenix::Math::CVector3<float> m_vNormal;
       /// Vertex texture coordinates.
-      CVector2<float> m_vTexCoord;
+      Phoenix::Math::CVector2<float> m_vTexCoord;
       /// Vertex color.
-      CVector3<unsigned char> m_vColor;
+      Phoenix::Math::CVector3<unsigned char> m_vColor;
       ////////////////////
       /// The equality comparison operator.
       /// \param vert CVertex object which this is compared against.
@@ -179,13 +181,13 @@ namespace Phoenix
     protected:
 
       /// The vector pointing right.
-      CVector3<float> m_vRight;
+      Phoenix::Math::CVector3<float> m_vRight;
       /// The vector pointing upwards.
-      CVector3<float> m_vUpward;
+      Phoenix::Math::CVector3<float> m_vUpward;
       /// The vector pointing forward.
-      CVector3<float> m_vForward;
+      Phoenix::Math::CVector3<float> m_vForward;
       /// The quaternion holding rotations. 
-      CQuaternion m_qRotation;
+      Phoenix::Math::CQuaternion m_qRotation;
       /////////////////////////////////////////////////////////////////
       /// A boolean flag indicating the change of rotation.
       char	m_bRotationChanged;
@@ -211,7 +213,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Rotates object over world x,y,z axis by given degrees.
       /// \param vAngles the vector where angles for x,y,z axis rotations is given.
-      void Rotate           ( const CVector3<float>  &vAngles );
+      void Rotate           ( const Phoenix::Math::CVector3<float>  &vAngles );
       /////////////////////////////////////////////////////////////////
       /// Rotates object over world x,y,z axis by given degrees.
       /// \param fAroundWorldXAngle The degrees by which the object is rotated over world x-axis.
@@ -235,7 +237,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Rotates object over local axes by given degrees.
       /// \param vAngles the vector where angles for right,up and forward axis rotations is given.
-      void RotateLocal         ( CVector3<float>  &vAngles );
+      void RotateLocal         ( Phoenix::Math::CVector3<float>  &vAngles );
       /////////////////////////////////////////////////////////////////
       /// Rotates object over local right,up,forward axis by given degrees.
       /// \param fAroundRightAngle The degrees by which the object is rotated over local right axis.
@@ -248,33 +250,33 @@ namespace Phoenix
       /// Initializes the object by assigning axis forward and up, the right
       /// axis is calculated by cross product of the two.
       /// Rotation is set to unit.
-      void         SetDirectionForwardUp   ( CVector3<float> vForward, 
-					     CVector3<float> vUp );
+      void         SetDirectionForwardUp   ( Phoenix::Math::CVector3<float> vForward, 
+					     Phoenix::Math::CVector3<float> vUp );
       /////////////////////////////////////////////////////////////////
       /// Return the right vector.
       /// \return CVector3<float> The vector currently used as local right axis.
-      inline const CVector3<float> & GetRightVector   () const
+      inline const Phoenix::Math::CVector3<float> & GetRightVector   () const
       {
 	return m_vRight;
       }
       /////////////////////////////////////////////////////////////////
       /// Return the up vector.
       /// \return CVector3<float> The vector currently used as local up axis.
-      inline const CVector3<float> & GetUpVector      () const
+      inline const Phoenix::Math::CVector3<float> & GetUpVector      () const
       {
 	return m_vUpward;
       }
       /////////////////////////////////////////////////////////////////
       /// Return the forward vector.
       /// \return CVector3<float> The vector currently used as local forward axis.
-      inline const CVector3<float> & GetForwardVector () const
+      inline const Phoenix::Math::CVector3<float> & GetForwardVector () const
       {
 	return m_vForward;
       }
       /////////////////////////////////////////////////////////////////
       /// Returns the current rotation.
       /// \returns CQuaternion the rotation quaternion.
-      inline const CQuaternion	& GetRotationQuaternion() const
+      inline const Phoenix::Math::CQuaternion	& GetRotationQuaternion() const
       {
 	return m_qRotation;
       }
@@ -285,14 +287,14 @@ namespace Phoenix
       /// \param vRight The vector for right vector.
       /// \param vUp The vector for up vector.
       /// \param qQuat The rotation quaternion which is applied to vectors.
-      void			SetRotationFromInitialState( const CVector3<float> &vForward,
-							     const CVector3<float> &vRight,
-							     const CVector3<float> &vUp,
-							     const CQuaternion & qQuat);
+      void			SetRotationFromInitialState( const Phoenix::Math::CVector3<float> &vForward,
+							     const Phoenix::Math::CVector3<float> &vRight,
+							     const Phoenix::Math::CVector3<float> &vUp,
+							     const Phoenix::Math::CQuaternion & qQuat);
       /////////////////////////////////////////////////////////////////
       /// Rotates the orientation by given quaternion.
       /// \param qQuaternion The rotation which will be applied to the current rotation.
-      void			AppendToRotation( const CQuaternion &qQuaternion);
+      void			AppendToRotation( const Phoenix::Math::CQuaternion &qQuaternion);
       /////////////////////////////////////////////////////////////////
       /// Returns boolean has the rotation changed.
       /// \returns boolean true if any rotations have been applied, false otherwise.
@@ -316,16 +318,16 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Resets the orientation and applies rotation matrix mMatrix to vectors.
       /// \param mMatrix 4x4 rotation matrix which is applied to original vectors.
-      void			SetRotation( const CMatrix4x4<float> &mMatrix );
+      void			SetRotation( const Phoenix::Math::CMatrix4x4<float> &mMatrix );
       /////////////////////////////////////////////////////////////////
       /// Resets the orientation and applies rotation qRotation to vectors.
       /// \param qRotation The quaternion which is applied to original vectors.
-      void			SetRotation( const CQuaternion &qRotation );
+      void			SetRotation( const Phoenix::Math::CQuaternion &qRotation );
     protected:
       /////////////////////////////////////////////////////////////////
       /// Rotates all orientation vectors by q.
       /// \param q The quaternion which is applied to all vectors.
-      inline void RotateAllDirections( const CQuaternion &q )
+      inline void RotateAllDirections( const Phoenix::Math::CQuaternion &q )
       {
 	Phoenix::Math::RotateVector(q, m_vRight);
 	Phoenix::Math::RotateVector(q, m_vForward);
