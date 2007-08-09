@@ -78,6 +78,81 @@ namespace Phoenix
       }
     }; // class CQuad
     /////////////////////////////////////////////////////////////////
+    /// Abstraction for rays. 
+    class CRay : public COneDirectional, public CPositional
+    {
+    public:
+      ////////////////////
+      /// Constructor.
+      CRay() 
+      {
+	SetDirection(0,0,-1);
+	SetPosition(0,0,0);
+      }
+    }; // class CRay
+    /////////////////////////////////////////////////////////////////
+    /// Abstraction for lines.
+    class CLine : protected CRay
+    {
+    public:
+      CLine()
+      {
+	SetStart(0,0,0);
+	SetEnd(0,0,0);
+      }
+      ////////////////////
+      /// Assigns starting point.
+      /// \param fX X-component of start point.
+      /// \param fY Y-component of start point.
+      /// \param fZ Z-component of start point.
+      inline void SetStart( float fX, float fY, float fZ)
+      {
+	CRay::SetPosition(fX, fY, fZ);
+      }
+      ////////////////////
+      /// Assigns starting point.
+      /// \param vPoint Starting point of line.
+      inline void SetStart( const CVector3<float> &vPoint )
+      {
+	CRay::SetPosition(vPoint);
+      }
+      ////////////////////
+      /// Assigns end point.
+      /// \param vPoint End point of line.
+      inline void SetEnd( float fX, float fY, float fZ )
+      {
+	CRay::SetDirection(fX, fY, fZ);
+      }
+      ////////////////////
+      /// Assigns end point.
+      /// \param vPoint End point of line.
+      inline void SetEnd( const CVector3<float> &vPoint )
+      {
+	CRay::SetDirection(vPoint);
+      }
+      ////////////////////
+      /// Returns start point.
+      /// \returns CVector3<float> representing start point.
+      inline const CVector3<float> GetStart() const
+      {
+	return CRay::GetPosition();
+      }
+      ////////////////////
+      /// Returns end point.
+      /// \returns CVector3<float> representing end point.
+      inline const CVector3<float> GetEnd() const
+      {
+	return CRay::GetDirection();
+      }
+      ////////////////////
+      /// Returns direction.
+      /// \returns Unnormalized direction vector from start to end point.
+      inline CVector3<float> GetDirection() const
+      {
+	return GetEnd() - GetStart();
+      }
+    };
+    /////////////////////////////////////////////////////////////////
   }; // namespace Math
 }; // namespace Phoenix
 #endif
