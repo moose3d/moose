@@ -37,11 +37,12 @@ namespace Phoenix
     /// \returns 0 if the ray and sphere do not intersect,
     ///	       1 if the ray and sphere intersect on one point,
     ///          2 if the ray and sphere intersect on two points.
-    int RayIntersectsSphere( const CVector3<float> &vRayStart,  const CVector3<float> &vRayEnd,
+    int RayIntersectsSphere( const CVector3<float> &vRayStart,  
+			     const CVector3<float> &vRayEnd,
 			     CVector3<float> *pvIntersection0,
 			     CVector3<float> *pvIntersection1,
 			     const Phoenix::Volume::CSphere &Sphere);
-
+    
     /// \brief Checks intersection with ray and OBB:
     /// \param vRayDir The direction of the line. || vRayDir || has to be 1.
     /// \param vRayStart A point of ray origin.
