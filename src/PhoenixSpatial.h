@@ -96,11 +96,22 @@ namespace Phoenix
       CVector3<float> m_vDirection;
     public:
       ////////////////////
-      /// Assigns the direction
+      /// Assigns direction.
       /// \param vDirection direction vector to be assigned.
       inline void SetDirection( const CVector3<float> & vDirection )
       {
 	m_vDirection = vDirection;
+      }
+      ////////////////////
+      /// Assigns direction.
+      /// \param fX X-component of direction vector.
+      /// \param fY Y-component of direction vector.
+      /// \param fZ Z-component of direction vector.
+      inline void SetDirection( float fX, float fY, float fZ )
+      {
+	m_vDirection[0] = fX;
+	m_vDirection[1] = fY;
+	m_vDirection[2] = fZ;
       }
       ////////////////////
       /// Returns the direction.
