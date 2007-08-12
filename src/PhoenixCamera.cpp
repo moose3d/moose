@@ -355,7 +355,7 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   float fCenterY = (m_aViewport[3] * 0.5f); 
   
   float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
-
+  
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
