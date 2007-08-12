@@ -453,20 +453,20 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glViewport(pViewport[0], pViewport[1], pViewport[2], pViewport[3]);
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity();
-  ////////////////////
-  // Set up perspective OR orthogonal projection
-  if ( camera.IsOrthogonal() )
-  {
-    float *pOrthoPlanes = camera.GetOrthoPlanes();
-    // Set the orthogonal mode
-    glOrtho( pOrthoPlanes[0],		 pOrthoPlanes[1],
-	     pOrthoPlanes[2],		 pOrthoPlanes[3],
-	     camera.GetNearClipping(), camera.GetFarClipping());
-  } 
-  else 
-  {
+//   ////////////////////
+//   // Set up perspective OR orthogonal projection
+//   if ( camera.IsOrthogonal() )
+//   {
+//     float *pOrthoPlanes = camera.GetOrthoPlanes();
+//     // Set the orthogonal mode
+//     glOrtho( pOrthoPlanes[0],		 pOrthoPlanes[1],
+// 	     pOrthoPlanes[2],		 pOrthoPlanes[3],
+// 	     camera.GetNearClipping(), camera.GetFarClipping());
+//   } 
+//   else 
+//   {
     glMultMatrixf( camera.GetProjection().GetTransposition().GetArray());
-  }
+    //  }
   ////////////////////
   /// Set up proper position.
   glMatrixMode(GL_MODELVIEW);
