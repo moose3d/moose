@@ -171,3 +171,11 @@ Phoenix::Collision::PointDistanceFromPlane( const CVector3<float> &vPoint, const
   return vNormal.Dot(vPoint) + plane(3);
 }
 /////////////////////////////////////////////////////////////////
+CVector3<float> 
+Phoenix::Collision::ClosestPointOnRay( const CVector3<float> &vPoint, const Phoenix::Math::CRay &ray )
+{
+  CVector3<float> vStartToPoint = vPoint - ray.GetPosition();
+  float fDot = ray.GetDirection().Dot(vStartToPoint);
+  return vPoint + (ray.GetDirection() * fDot );
+}
+/////////////////////////////////////////////////////////////////
