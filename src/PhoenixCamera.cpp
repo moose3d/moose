@@ -232,9 +232,9 @@ Phoenix::Graphics::CCamera::UpdateProjection()
     m_mProjection(0,0) = 2.0f / fRightMinusLeft;
     m_mProjection(0,3) = -( (fRight + fLeft) / fRightMinusLeft);
     m_mProjection(1,1) = 2.0f / fTopMinusBottom;
-    m_mProjection(1,3) = 0.0f;
+    m_mProjection(1,3) = -((fTop + fBottom) / fTopMinusBottom);
     m_mProjection(2,2) = -2.0f / fFarMinusNear;
-    m_mProjection(2,3) = (fFar + fNear) / fFarMinusNear ;
+    m_mProjection(2,3) = -((fFar + fNear) / fFarMinusNear) ;
     m_mProjection(3,3) = 1.0f;
     
     m_mProjectionInv(0,0) = fRightMinusLeft * 0.5f;
