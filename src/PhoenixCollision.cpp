@@ -17,13 +17,13 @@ Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
   
   fDistanceOne = vNormal.Dot( line.GetStart() ) + plane(3);
   fDistanceTwo = vNormal.Dot( line.GetEnd() ) + plane(3);
-
+  
   ////////////////////
   // if other distance is positive and other negative, we have collision.
   // (which means that the endpoints are located in both sides of the plane)
   // Or other line point is in the plane. (distance == 0.0 )
   float fDistanceSqr = fDistanceOne * fDistanceTwo;
-
+  
   if ( fDistanceSqr <= 0.0f )
   {
     CVector3<float> vDir = line.GetEnd()-line.GetStart();
@@ -31,18 +31,27 @@ Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
     float fNumerator = -(vNormal.Dot(line.GetStart()) + plane(3));
     // The vNormal · vDir = cos( angle( vNormal, vDir ))
     float fDenominator = vNormal.Dot(vDir);
-    float fDist = fNumerator / fDenominator;    
-    vCollisionPoint = line.GetStart() + (fDist * vDir);
-
-    return LINE_INTERSECTS_PLANE;
+    // Check that line is not in the plane completely, and if it is, we return some
+    // point.
+    if ( TOO_CLOSE_TO_ZERO(fDenominator ))
+    {
+      vCollisionPoint = line.GetStart();
+      return LINE_IN_PLANE;
+    }
+    else
+    {
+      float fDist = fNumerator / fDenominator;    
+      vCollisionPoint = line.GetStart() + (fDist * vDir);
+    }
+    return POINT_IN_PLANE;
   }
   else if ( fDistanceOne > 0.0f )
   {
-    return LINE_IS_FRONT_OF_PLANE;
+    return LINE_FRONT_OF_PLANE;
   }
   else
   {
-    return LINE_IS_BEHIND_OF_PLANE;
+    return LINE_BEHIND_PLANE;
   }
 }
 /////////////////////////////////////////////////////////////////
