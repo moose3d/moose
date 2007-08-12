@@ -11,9 +11,10 @@ namespace Phoenix
     /// Return values for line and plane intersections.
     enum LINE_PLANE_INTERSECTION
     {
-      LINE_IS_FRONT_OF_PLANE,
-      LINE_IS_BEHIND_OF_PLANE,
-      LINE_INTERSECTS_PLANE
+      LINE_FRONT_OF_PLANE,
+      LINE_BEHIND_PLANE,
+      LINE_IN_PLANE,
+      POINT_IN_PLANE
     };
     
     ////////////////////
