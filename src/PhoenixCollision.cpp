@@ -185,6 +185,6 @@ Phoenix::Collision::ClosestPointOnRay( const CVector3<float> &vPoint, const Phoe
 {
   CVector3<float> vStartToPoint = vPoint - ray.GetPosition();
   float fDot = ray.GetDirection().Dot(vStartToPoint);
-  return vPoint + (ray.GetDirection() * fDot );
+  return ray.GetPosition() + (ray.GetDirection() * fDot );
 }
 /////////////////////////////////////////////////////////////////
