@@ -65,6 +65,15 @@ namespace Phoenix
     /// \returns Distance to plane - value 0.0f is in plane.
     float PointDistanceFromPlane( const Phoenix::Math::CVector3<float> &vPoint, 
 				  const Phoenix::Math::CPlane &plane );
+
+    ////////////////////
+    /// Find closest point on ray to given point.
+    /// \param vPoint Point in space.
+    /// \param ray Ray which is compared to point.
+    /// \returns Closest position on ray to given point.
+    CVector3<float> ClosestPointOnRay( const CVector3<float> &vPoint,
+    				       const Phoenix::Math::CRay &ray);
+
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 /*     char SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo); */
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
@@ -120,11 +129,8 @@ namespace Phoenix
 /*     //CVector3<float> ClosestPointOnLine( const CVector3<float> &vPoint, */
 /*     //const CVector3<float> &vLinePoint1, */
 /*     //const CVector3<float> &vLinePoint2 ); */
-/*     /// The closest point on ray to given point. */
-/*     /// vDirection must be unit vector. */
-/*     //CVector3<float> ClosestPointOnRay( const CVector3<float> &vPoint, */
-/*     //				       const CVector3<float> &vStartPoint, */
-/*     //				       const CVector3<float> &vDirection ); */
+
+    
 
     
     
