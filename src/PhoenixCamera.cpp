@@ -220,20 +220,29 @@ Phoenix::Graphics::CCamera::UpdateProjection()
   
   if ( IsOrthogonal() )
   {
-    m_mProjection(0,0) = 2.0f / (fW + fW );
-    m_mProjection(0,3) = 0.0f;
-    m_mProjection(1,1) = 2.0f / (fH + fH );
+    float *pOrthoPlanes = GetOrthoPlanes();
+    float fLeft = pOrthoPlanes[0];
+    float fRight = pOrthoPlanes[1];
+    float fBottom = pOrthoPlanes[2];
+    float fTop = pOrthoPlanes[3];
+    float fRightMinusLeft = fRight-fLeft;
+    float fTopMinusBottom = fTop - fBottom;
+    float fFarMinusNear = fFar - fNear;
+    
+    m_mProjection(0,0) = 2.0f / fRightMinusLeft;
+    m_mProjection(0,3) = -( (fRight + fLeft) / fRightMinusLeft);
+    m_mProjection(1,1) = 2.0f / fTopMinusBottom;
     m_mProjection(1,3) = 0.0f;
-    m_mProjection(2,2) = -2.0f / (fFar - fNear);
-    m_mProjection(2,3) = (fFar + fNear) / (fFar - fNear );
+    m_mProjection(2,2) = -2.0f / fFarMinusNear;
+    m_mProjection(2,3) = (fFar + fNear) / fFarMinusNear ;
     m_mProjection(3,3) = 1.0f;
     
-    m_mProjectionInv(0,0) = (fW + fW) / 2.0f;
-    m_mProjectionInv(0,3) = 0.0f;
-    m_mProjectionInv(1,1) = (fH + fH) / 2.0f;
-    m_mProjectionInv(1,3) = 0.0f;
-    m_mProjectionInv(2,2) = (fFar - fNear ) / -2.0f;
-    m_mProjectionInv(2,3) = (fNear + fFar) / 2.0f;
+    m_mProjectionInv(0,0) = fRightMinusLeft * 0.5f;
+    m_mProjectionInv(0,3) = (fRight + fLeft) * 0.5f;
+    m_mProjectionInv(1,1) = fTopMinusBottom * 0.5f;
+    m_mProjectionInv(1,3) = (fTop + fBottom)  * 0.5f;
+    m_mProjectionInv(2,2) = (fFarMinusNear ) * -0.5f;
+    m_mProjectionInv(2,3) = (fNear + fFar) * 0.5f;
     m_mProjectionInv(3,3) = 1.0f;
     
   }
