@@ -341,3 +341,17 @@ TEST(LineIntersectsPlane_LineLength_ZAxis)
   CHECK_EQUAL( LINE_FRONT_OF_PLANE, LineIntersectsPlane( plane, line, vLinePlaneCollisionPointResult ));
 }
 /////////////////////////////////////////////////////////////////
+TEST(ClosestPointOnRay)
+{
+  CRay ray;
+  ray.SetPosition( 0,0,0 );
+  ray.SetDirection( 0,1,0);
+
+  CVector3<float> vPoint( 1,0,0);
+  CVector3<float> vReal( 0,0,0);
+  CVector3<float> vResult;
+  
+  vResult = ClosestPointOnRay( vPoint, ray);
+  CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f);
+}
+/////////////////////////////////////////////////////////////////
