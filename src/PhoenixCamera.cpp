@@ -415,11 +415,11 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition,
 					      const CVector2<int> &vEndPoint )
 {
   CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint(0), 
-						vStartPoint(1),
-						0.0f);
+						    vStartPoint(1),
+						    0.0f);
   CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint(0), 
-					       vStartPoint(1),
-					       1.0f);
+						   vStartPoint(1),
+						   1.0f);
   CLine line;
   line.SetStart( vOrig );
   line.SetEnd( vEnd );
@@ -432,6 +432,8 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition,
   {
     vOrig = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1), 0.0f);
     vEnd = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1),  1.0f);
+    line.SetStart( vOrig );
+    line.SetEnd( vEnd );
     /////////////////////////////////////////////////////////////////
     if ( Collision::LineIntersectsSphere( line, &vIntersection1, NULL, sphere) >= 1)
     {
@@ -443,10 +445,10 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition,
 
       CQuaternion qRotation = Phoenix::Math::RotationArc(vOrig,vEnd);
       qRotation.Reverse();
+      
       RotateAroundPoint( sphere.GetPosition(), qRotation  );
     }
   }
-
 }
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR
@@ -465,14 +467,14 @@ Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPo
 
   vTmp = GetViewMatrix() * vTmp;
   vTmp = GetProjectionMatrix() * vTmp;
-    
+  
   if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) ) 
   {
     vTmp[0] /= vTmp[3];
     vTmp[1] /= vTmp[3];
     vTmp[2] /= vTmp[3];
   }
-
+  
   vTmp[0] = vTmp(0) * 0.5f + 0.5f;
   vTmp[1] = vTmp(1) * 0.5f + 0.5f;
   vTmp[2] = vTmp(2) * 0.5f + 0.5f;
