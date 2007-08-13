@@ -81,7 +81,7 @@ namespace Phoenix
 #define DIRTY           8
     /////////////////////////////////////////////////////////////////
 
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Header_t struct
     struct MS3D_Header_t 
     {
@@ -90,9 +90,8 @@ namespace Phoenix
       /// we accept either 3 or 4.
       int	version;	
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Vertex_t struct
-    /////////////////////////////////////////////////////////////////
     struct  MS3D_Vertex_t
     {
       /// Accepted values SELECTED | SELECTED2 | HIDDEN.
@@ -104,10 +103,10 @@ namespace Phoenix
       /// Used by milkshape.
       BYTE referenceCount;
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Triangle_t struct.
-    /////////////////////////////////////////////////////////////////
-    struct MS3D_Triangle_t{
+    struct MS3D_Triangle_t
+    {
       /// Used by milkshape.
       WORD flags;
       /// Indices of vertices.
@@ -123,10 +122,10 @@ namespace Phoenix
       /// To which group this triangle belongs to.
       BYTE  groupIndex;
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Group_t struct.
-    /////////////////////////////////////////////////////////////////
-    struct MS3D_Group_t{
+    struct MS3D_Group_t
+    {
       /// SELECTED | HIDDEN.
       BYTE flags;			
       /// Group name.
@@ -138,9 +137,8 @@ namespace Phoenix
       /// -1 = no material.
       char materialIndex;		
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Material_t struct.
-    /////////////////////////////////////////////////////////////////
     struct MS3D_Material_t
     {
       /// Material name.
@@ -164,9 +162,8 @@ namespace Phoenix
       /// The alphamap file basename.
       char alphamap[128];		
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Keyframer_data_t
-    /////////////////////////////////////////////////////////////////
     struct MS3D_Keyframer_data_t 
     {
       /// Animation speed.
@@ -176,9 +173,8 @@ namespace Phoenix
       /// Total number of frames in animation.
       int	iTotalFrames;
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Keyframe_rot_t
-    /////////////////////////////////////////////////////////////////
     struct MS3D_Keyframe_rot_t
     {
       /// Event time in seconds.
@@ -186,9 +182,8 @@ namespace Phoenix
       /// x,y,z rotation angles.
       float		rotation[3];	
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Keyframe_pos_t
-    /////////////////////////////////////////////////////////////////
     struct MS3D_Keyframe_pos_t
     {
       /// Event time in seconds.
@@ -196,9 +191,8 @@ namespace Phoenix
       /// x,y,z position.
       float		position[3];	
     } PACKED;
-    /////////////////////////////////////////////////////////////////
+    ////////////////////
     /// MS3D_Joint_t
-    /////////////////////////////////////////////////////////////////
     struct  MS3D_Joint_t 
     {
       /// Eiher SELECTED | DIRTY.
@@ -220,11 +214,8 @@ namespace Phoenix
       /// Local animation matrices, MS3D_Keyframe_pos_t[nNumKeyFramesTrans].
       MS3D_Keyframe_pos_t	*keyFramesTrans;	
     } PACKED;
-    /////////////////////////////////////////////////////////////////
-    ///
+    ////////////////////
     /// MS3D_Comment_t
-    ///
-    /////////////////////////////////////////////////////////////////
     struct MS3D_Comment_t
     { 
       /// index of the group, material or joint.
@@ -234,11 +225,8 @@ namespace Phoenix
       /// the comment itself, sComment[iCommentLength].
       char *sComment;				
     } PACKED;
-    /////////////////////////////////////////////////////////////////
-    ///
+    ////////////////////
     /// MS3D_Vertex_ex_t
-    ///
-    /////////////////////////////////////////////////////////////////
     struct  MS3D_Vertex_ex_t
     {
       /// index of the joint or -1, With -1 weight is ignored.
@@ -258,7 +246,6 @@ namespace Phoenix
       /// indicates does this model have data loaded.
       int  m_bHasBeenLoaded;
     public:
-
       /// Vertex array size.
       WORD m_nNumVertices;
       /// Triangle array size.
