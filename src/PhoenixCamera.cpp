@@ -318,7 +318,10 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ
   {
     fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
   }
-  return CVector3<float>(fH * fAspect * fNormX, fH * fNormY, -fZInEye);
+  // GetOrthoPlanes()[3]... will make all orthogonal views work too. ie. ortho(0,1,0,1).
+  return CVector3<float>(fH * fAspect * fNormX + ((GetOrthoPlanes()[3] + GetOrthoPlanes()[2])*0.5f), 
+			 fH * fNormY + ((GetOrthoPlanes()[1] + GetOrthoPlanes()[0])*0.5f),
+			 -fZInEye);
   
 }
 /////////////////////////////////////////////////////////////////
@@ -378,15 +381,17 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   float fH;
   if ( IsOrthogonal())
   {
+
     fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
   } 
   else
   {
     fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
   }
+  // GetOrthoPlanes()[3]... will make all orthogonal views work too. ie. ortho(0,1,0,1).
   CVector4<float> vTmp;
-  vTmp[0] = fH * fAspect * fNormX;
-  vTmp[1] = fH * fNormY;
+  vTmp[0] = fH * fAspect * fNormX + ((GetOrthoPlanes()[3] + GetOrthoPlanes()[2])*0.5f);
+  vTmp[1] = fH * fNormY + ((GetOrthoPlanes()[1] + GetOrthoPlanes()[0])*0.5f);
   vTmp[2] = -fZInEye;
   vTmp[3] = 1.0f;
   
