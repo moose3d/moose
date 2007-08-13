@@ -65,6 +65,10 @@ CQuaternion::CreateFromAxisAnglesRad( const CVector3<float> &vValues )
   *this = qCombined;
 }
 /////////////////////////////////////////////////////////////////
-
-
-
+std::ostream & 
+Phoenix::Math::operator<<(std::ostream &stream, const CQuaternion & qQuat)
+{
+  stream << qQuat(0) << "," << qQuat(1) << "," << qQuat(2) << "," << qQuat(3) << std::endl;
+  return stream;
+}
+/////////////////////////////////////////////////////////////////
