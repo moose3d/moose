@@ -20,3 +20,4 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixCollision.h"
+#include "PhoenixMilkshapeLoader.h"
