@@ -26,45 +26,33 @@ void
 Phoenix::Volume::COrientedBox::CalculateCorners()
 {
   CVector3<float> vTmp;
-  CVector3<float> vTmp2;
 
-  vTmp = GetCorner( TOP_LEFT_FRONT );
-  
   vTmp =  GetPosition();
   vTmp += GetForwardVector()*GetHalfLength();
   vTmp -= GetRightVector()*GetHalfWidth(); 
   vTmp += GetUpVector()*GetHalfHeight(); 
+  
+  GetCorner( TOP_LEFT_FRONT ) = vTmp;
+  vTmp += GetRightVector()*GetWidth();
+  GetCorner( TOP_RIGHT_FRONT ) = vTmp;
 
-  vTmp2 = vTmp;
+  vTmp += -GetForwardVector()*GetLength();
+  GetCorner( TOP_RIGHT_BACK ) = vTmp;
 
-  vTmp = GetCorner( TOP_RIGHT_FRONT );
-  vTmp2 += GetRightVector()*GetWidth();
-  vTmp = vTmp2;
-  
-  vTmp = GetCorner( TOP_RIGHT_BACK );
-  vTmp2 += -GetForwardVector()*GetLength();
-  vTmp = vTmp2;
-  
-  vTmp = GetCorner( TOP_LEFT_BACK );
-  vTmp2 += -GetRightVector()*GetWidth();
-  vTmp = vTmp2;
+  vTmp += -GetRightVector()*GetWidth();
+  GetCorner( TOP_LEFT_BACK ) = vTmp;
 
-  vTmp = GetCorner( BOTTOM_LEFT_BACK );
-  vTmp2 += -GetUpVector()*GetHeight();
-  vTmp = vTmp2;
-  
-  vTmp = GetCorner( BOTTOM_RIGHT_BACK );
-  vTmp2 += GetRightVector()*GetWidth();
-  vTmp = vTmp2;
-  
-  vTmp = GetCorner( BOTTOM_RIGHT_FRONT );
-  vTmp2 += GetForwardVector()*GetLength();
-  vTmp = vTmp2;
-  
-  vTmp = GetCorner( BOTTOM_LEFT_FRONT );
-  vTmp2 += -GetRightVector()*GetWidth();
-  vTmp = vTmp2;  
+  vTmp += -GetUpVector()*GetHeight();
+  GetCorner( BOTTOM_LEFT_BACK ) = vTmp;
 
+  vTmp += GetRightVector()*GetWidth();
+  GetCorner( BOTTOM_RIGHT_BACK ) = vTmp;
+
+  vTmp += GetForwardVector()*GetLength();
+  GetCorner( BOTTOM_RIGHT_FRONT ) = vTmp;
+
+  vTmp += -GetRightVector()*GetWidth();
+  GetCorner( BOTTOM_LEFT_FRONT ) = vTmp;
 }
 /////////////////////////////////////////////////////////////////
 const float *
@@ -77,7 +65,7 @@ CVector3<float>
 Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner )
 {
   CVector3<float> m_vVector;
-  m_vVector.UseExternalData( &m_aCorners[tCorner] );
+  m_vVector.UseExternalData( &m_aCorners[tCorner*3] );
   return m_vVector;
 }
 /////////////////////////////////////////////////////////////////
