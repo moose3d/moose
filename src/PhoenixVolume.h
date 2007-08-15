@@ -108,6 +108,9 @@ namespace Phoenix
       COrientedBox() : CAxisAlignedBox()
       {
 	memset(m_aCorners,0,sizeof(float)*24);
+	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
+			Phoenix::Math::CVector3<float>(0,0,1),
+			Phoenix::Math::CVector3<float>(1,0,0));
       }
       ////////////////////
       /// Index operator for accessing box planes.
