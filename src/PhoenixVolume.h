@@ -123,7 +123,7 @@ namespace Phoenix
       void operator=( const CAxisAlignedBox & box )
       {
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
-			Phoenix::Math::CVector3<float>(0,0,-1),
+			Phoenix::Math::CVector3<float>(0,0,1),
 			Phoenix::Math::CVector3<float>(1,0,0));
 	SetPosition( box.GetPosition());
 	SetWidth( box.GetWidth());
