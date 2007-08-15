@@ -418,3 +418,335 @@ TEST(PlaneIntersectsBox)
   CHECK( PlaneIntersectsBox( plane, box ) == 0 );
 }
 /////////////////////////////////////////////////////////////////
+TEST(TriangleIntersectsOBB_AABB_Like)
+{
+
+  COrientedBox box;
+  CVector3<float> vTriangle[3];
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+  ////////////////////
+  /// Check along Y-axis
+  vTriangle[0][0] = -0.5f;
+  vTriangle[0][1] = 2.0f;
+  vTriangle[0][2] = 0.0f;
+
+  vTriangle[1][0] = 0.5f;
+  vTriangle[1][1] = 2.0f;
+  vTriangle[1][2] = 0.0f;
+
+  vTriangle[2][0] = 0.5f;
+  vTriangle[2][1] = 3.0f;
+  vTriangle[2][2] = 0.0f;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-0.999f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-0.001f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+  
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-2.999f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-0.5f,-2.0f,0.0f);
+  vTriangle[1] = CVector3<float>( 0.5f,-2.0f,0.0f);
+  vTriangle[2] = CVector3<float>( 0.5f,-1.0f,0.0f);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-0.001f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-5.00f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  ////////////////////
+  /// Check along X-axis 
+  vTriangle[0][0] = -3.0f;
+  vTriangle[0][1] = -0.5f;
+  vTriangle[0][2] = 0.0f;
+
+  vTriangle[1][0] = -2.0f;
+  vTriangle[1][1] = -0.5f;
+  vTriangle[1][2] =  0.0f;
+
+  vTriangle[2][0] = -2.0f;
+  vTriangle[2][1] =  0.5f;
+  vTriangle[2][2] =  0.0f;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0.999f,0, 0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0.001f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+  
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(2.999f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>( 1.0f,-0.5f,0.0f);
+  vTriangle[1] = CVector3<float>( 2.0f,-0.5f,0.0f);
+  vTriangle[2] = CVector3<float>( 2.0f, 0.5f,0.0f);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0.001f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(5.00f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  ////////////////////
+  /// Check along Z-axis 
+  vTriangle[0][0] =  0.0f;
+  vTriangle[0][1] = -0.5f;
+  vTriangle[0][2] = -3.0f;
+
+  vTriangle[1][0] =  0.0f;
+  vTriangle[1][1] = -0.5f;
+  vTriangle[1][2] = -2.0f;
+  
+  vTriangle[2][0] =  0.0f;
+  vTriangle[2][1] =  0.5f;
+  vTriangle[2][2] = -2.0f;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0, 0, 0.999f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,0.001f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+  
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,2.999f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>( 0.0f,-0.5f, 1.0f);
+  vTriangle[1] = CVector3<float>( 0.0f,-0.5f, 2.0f);
+  vTriangle[2] = CVector3<float>( 0.0f, 0.5f, 2.0f);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,0.001f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,5.00f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+}
+/////////////////////////////////////////////////////////////////
+TEST(TriangleIntersectsOBB_AABB_Like_Miss)
+{
+
+  COrientedBox box;
+  CVector3<float> vTriangle[3];
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+  ////////////////////
+  /// Check along Y-axis
+  vTriangle[0][0] = -0.5f;
+  vTriangle[0][1] = 2.0f;
+  vTriangle[0][2] = 5.0f;
+
+  vTriangle[1][0] = 0.5f;
+  vTriangle[1][1] = 2.0f;
+  vTriangle[1][2] = 5.0f;
+
+  vTriangle[2][0] = 0.5f;
+  vTriangle[2][1] = 3.0f;
+  vTriangle[2][2] = 5.0f;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-0.999f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-0.001f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+  
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-2.999f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>(-0.5f,-2.0f,5.0f);
+  vTriangle[1] = CVector3<float>( 0.5f,-2.0f,5.0f);
+  vTriangle[2] = CVector3<float>( 0.5f,-1.0f,5.0f);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-0.001f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,-5.00f,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  ////////////////////
+  /// Check along X-axis 
+  vTriangle[0][0] = -3.0f;
+  vTriangle[0][1] = -0.5f;
+  vTriangle[0][2] = 5.0f;
+
+  vTriangle[1][0] = -2.0f;
+  vTriangle[1][1] = -0.5f;
+  vTriangle[1][2] =  5.0f;
+
+  vTriangle[2][0] = -2.0f;
+  vTriangle[2][1] =  0.5f;
+  vTriangle[2][2] =  5.0f;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0.999f,0, 0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0.001f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+  
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(2.999f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>( 1.0f,-0.5f,5.0f);
+  vTriangle[1] = CVector3<float>( 2.0f,-0.5f,5.0f);
+  vTriangle[2] = CVector3<float>( 2.0f, 0.5f,5.0f);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0.001f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(5.00f,0,0);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  ////////////////////
+  /// Check along Z-axis 
+  vTriangle[0][0] =  5.0f;
+  vTriangle[0][1] = -0.5f;
+  vTriangle[0][2] = -3.0f;
+
+  vTriangle[1][0] =  5.0f;
+  vTriangle[1][1] = -0.5f;
+  vTriangle[1][2] = -2.0f;
+  
+  vTriangle[2][0] =  5.0f;
+  vTriangle[2][1] =  0.5f;
+  vTriangle[2][2] = -2.0f;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0, 0, 0.999f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,0.001f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+  
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,2.999f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>( 5.0f,-0.5f, 1.0f);
+  vTriangle[1] = CVector3<float>( 5.0f,-0.5f, 2.0f);
+  vTriangle[2] = CVector3<float>( 5.0f, 0.5f, 2.0f);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,0.001f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  for(int i=0;i<3;i++)
+  {
+    vTriangle[i] += CVector3<float>(0,0,5.00f);
+  }
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+}
+/////////////////////////////////////////////////////////////////
