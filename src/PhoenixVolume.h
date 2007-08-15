@@ -95,7 +95,8 @@ namespace Phoenix
     /// The class for Oriented Box. Forward vector will be the principal axis,
     /// right vector the second and up the third. Dimensions: length = forward,
     /// width = right, height = up.
-    class COrientedBox : public CAxisAlignedBox, public Phoenix::Spatial::COrientable
+    class COrientedBox : public CAxisAlignedBox, 
+			 public Phoenix::Spatial::COrientable
     {
     protected:
       /// Planes oriented along the box walls.
@@ -111,6 +112,7 @@ namespace Phoenix
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
 			Phoenix::Math::CVector3<float>(0,0,1),
 			Phoenix::Math::CVector3<float>(1,0,0));
+	m_qRotation.Identity();
       }
       ////////////////////
       /// Index operator for accessing box planes.
@@ -147,6 +149,7 @@ namespace Phoenix
 	SetWidth( box.GetWidth());
 	SetHeight( box.GetHeight());
 	SetLength( box.GetLength());
+	m_qRotation = box.m_qRotation;
 	CalculateCorners();
 	CalculatePlanes();
       }
