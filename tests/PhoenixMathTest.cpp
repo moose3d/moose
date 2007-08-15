@@ -80,9 +80,7 @@ TEST(CMatrix2x2_Inverse)
 
   CHECK( InverseMatrix( mId, mInv ) == 0 );
   CHECK_ARRAY_CLOSE( aIdentity, mInv.GetArray(), 4, 0.002f);
-  CVector3<float> vec1(1,0,0);
-  CVector3<float> vec2(0,1,0);
-  RotationArc( vec1, vec2);
+  
 }
 /////////////////////////////////////////////////////////////////
 TEST(CMatrix4x4_Multiply_Vector4)
@@ -98,5 +96,19 @@ TEST(CMatrix4x4_Multiply_Vector4)
   vectorTest = matrix * vector;
   CHECK_ARRAY_CLOSE( vResult.GetArray(), vectorTest.GetArray(), 4, 0.001f);
 
+}
+/////////////////////////////////////////////////////////////////
+TEST(RotationArc)
+{
+  CVector3<float> vec1(1,0,0);
+  CVector3<float> vec2(0,1,0);
+  CQuaternion q = RotationArc( vec1, vec2);  
+  CVector3<float> vRes = vec1;
+
+  RotateVector( q, vRes );
+  CHECK_ARRAY_CLOSE( vec2.GetArray(), vRes.GetArray(), 3, 0.001f);
+  
+  
+  
 }
 /////////////////////////////////////////////////////////////////
