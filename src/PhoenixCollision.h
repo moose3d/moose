@@ -74,6 +74,24 @@ namespace Phoenix
     /// \returns Closest position on ray to given point.
     CVector3<float> ClosestPointOnRay( const CVector3<float> &vPoint,
     				       const Phoenix::Math::CRay &ray);
+    ////////////////////
+    /// Checks whether a plane and box intersect.
+    /// \param plane A plane.
+    /// \param box An oriented box.
+    /// \returns Non-zero on intersect, zero otherwise.
+    int PlaneIntersectsBox( const Phoenix::Math::CPlane &plane,
+			    const Phoenix::Volume::COrientedBox &box );
+    ////////////////////
+    /// Checks whether a triangle and oriented box intersect.
+    /// \param vVertex0 First corner of triangle.
+    /// \param vVertex1 Second corner of triangle.
+    /// \param vVertex2 Third corner of triangle.
+    /// \param box Oriented box.
+    /// \returns non-zero on intersect, zero otherwise.
+    int TriangleIntersectsOBB( Phoenix::Math::CVector3<float> vVertex0,
+			       Phoenix::Math::CVector3<float> vVertex1,
+			       Phoenix::Math::CVector3<float> vVertex2,
+			       const Phoenix::Volume::COrientedBox &box );
 
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 /*     char SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo); */
