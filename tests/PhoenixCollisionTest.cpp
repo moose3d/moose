@@ -4,6 +4,7 @@
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Collision;
 using namespace Phoenix::Math;
+using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 TEST(LineIntersectsPlane_Origo)
 {
@@ -353,5 +354,67 @@ TEST(ClosestPointOnRay)
   
   vResult = ClosestPointOnRay( vPoint, ray);
   CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f);
+}
+/////////////////////////////////////////////////////////////////
+TEST(PlaneIntersectsBox)
+{
+
+  CVector3<float> vNormal(0,1,0);
+  CVector3<float> vPoint( 0,0,0);
+  CVector3<float> vUp(0,1,0), vRight(1,0,0), vFwd(0,0,-1);
+  // Create plane
+  CPlane plane;
+  plane.Calculate( vNormal, vPoint );
+  // Create OBB
+  COrientedBox box;
+  box.SetPosition(0,5.0f,0);
+  box.SetOrientation( vUp, vFwd, vRight );
+  box.SetWidth(1.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(3.0f);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  
+  CHECK( PlaneIntersectsBox( plane, box ) == 0 );
+
+  box.SetPosition(0,1.001f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 0 );
+
+  box.SetPosition(0,1.000f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 1 );
+
+  box.SetPosition(0,0.999f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 1 );
+
+  box.SetPosition(0,0.000f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 1 );
+
+  box.SetPosition(0,-0.999f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 1 );
+
+  box.SetPosition(0,-1.000f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 1 );
+
+  box.SetPosition(0,-1.001f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 0 );
+  
+  box.SetPosition(0,-5.000f,0);
+  box.CalculateCorners();
+  box.CalculatePlanes();
+  CHECK( PlaneIntersectsBox( plane, box ) == 0 );
 }
 /////////////////////////////////////////////////////////////////
