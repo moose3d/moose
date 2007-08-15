@@ -76,7 +76,9 @@ namespace Phoenix
     }; // CPolytope
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) box.
-    class CAxisAlignedBox : public Phoenix::Spatial::CPositional, public Phoenix::Spatial::CDimensional, public Phoenix::Volume::CPolytope
+    class CAxisAlignedBox : public Phoenix::Spatial::CPositional, 
+			    public Phoenix::Spatial::CDimensional, 
+			    public Phoenix::Volume::CPolytope
     {
     public:
       ////////////////////
@@ -90,18 +92,16 @@ namespace Phoenix
                              CDimensional( fWidth, fHeight, fLength) {  }
     };
     /////////////////////////////////////////////////////////////////
-    // The class for Oriented Box. Forward vector will be the principal axis,
-    // right vector the second and up the third. Dimensions: length = forward,
-    // width = right, height = up.
-    /////////////////////////////////////////////////////////////////
-
+    /// The class for Oriented Box. Forward vector will be the principal axis,
+    /// right vector the second and up the third. Dimensions: length = forward,
+    /// width = right, height = up.
     class COrientedBox : public CAxisAlignedBox, public Phoenix::Spatial::COrientable
     {
     protected:
-
-      Phoenix::Math::CPlane    m_Planes[6];    // planes oriented along the box walls
-      float     m_aCorners[24]; // The corners of the box, 3 floats, 8 corners
-
+      /// Planes oriented along the box walls.
+      Phoenix::Math::CPlane    m_Planes[6];    
+      /// Corners of box, 3 floats, 8 corners
+      float     m_aCorners[24]; 
     public:
       ////////////////////
       /// Constructor.
@@ -109,11 +109,17 @@ namespace Phoenix
       {
 	memset(m_aCorners,0,sizeof(float)*24);
       }
-      
+      ////////////////////
+      /// Index operator for accessing box planes.
+      /// \param iPlane Plane id.
+      /// \returns One of box planes.
       inline Phoenix::Math::CPlane &operator[](BBOX_PLANE_TYPE iPlane)
       {
 	return m_Planes[iPlane];
       }
+      ////////////////////
+      /// Assignment operator for creating OBB from AABB.
+      /// \param box Axis-aligned bounding box reference.
       void operator=( const CAxisAlignedBox & box )
       {
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
@@ -126,6 +132,9 @@ namespace Phoenix
 	CalculateCorners();
 	CalculatePlanes();
       }
+      ////////////////////
+      /// Assignment operator for OBBs.
+      /// \param box Oriented bounding box reference.
       void operator=( const COrientedBox & box )
       {
 	SetOrientation( box.GetUpVector(),
@@ -138,16 +147,33 @@ namespace Phoenix
 	CalculateCorners();
 	CalculatePlanes();
       }
-      COrientedBox &SetOrientation(const Phoenix::Math::CVector3<float> &vUp, 
-				      const Phoenix::Math::CVector3<float> &vForward,
-				      const Phoenix::Math::CVector3<float> &vRight);
-
+      ////////////////////
+      /// Sets orientation of this box.
+      /// \param vUp Up vector.
+      /// \param vForward Forward vector.
+      /// \param vRight Right vector.
+      void SetOrientation(const Phoenix::Math::CVector3<float> &vUp, 
+			  const Phoenix::Math::CVector3<float> &vForward,
+			  const Phoenix::Math::CVector3<float> &vRight);
+      ////////////////////
+      /// Returns corners of this box as float array.
+      /// \returns Pointer to beginning of array.
       const float * GetCorners() const;
+      ////////////////////
+      /// Calculates corners of this box.
       void CalculateCorners();
+      /// Calculates planes of this box.
       void CalculatePlanes();
-
+      ////////////////////
+      /// Returns specific corner as vector.
+      /// \param tCorner Corner index.
+      /// \returns CVector3<float>.
       CVector3<float> GetCorner( BBOX_CORNER_TYPE tCorner );
-    
+      ////////////////////
+      /// Stream output.
+      /// \param stream Output stream.
+      /// \param box Box to be printed.
+      /// \returns Reference to outputstream.
       friend std::ostream& operator<<( std::ostream &stream, COrientedBox box )
       {
 	stream << std::endl

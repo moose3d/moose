@@ -1,7 +1,7 @@
 #include "PhoenixVolume.h"
 using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
-Phoenix::Volume::COrientedBox &
+void
 Phoenix::Volume::COrientedBox::SetOrientation(const CVector3<float> &vUp, 
 					      const CVector3<float> &vForward,
 					      const CVector3<float> &vRight)
@@ -9,7 +9,6 @@ Phoenix::Volume::COrientedBox::SetOrientation(const CVector3<float> &vUp,
   m_vUpward  = vUp;
   m_vRight   = vRight;
   m_vForward = vForward;
-  return *this;
 }
 /////////////////////////////////////////////////////////////////
 void 
