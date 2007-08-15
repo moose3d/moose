@@ -1028,11 +1028,22 @@ Phoenix::Math::RotationArc( CVector3<float> v0, CVector3<float> v1)
   CVector3<float> vCross = v0.Cross(v1);
   
   float  fDot = v0.Dot(v1);
-  float  fS   = sqrtf((1.0f+fDot)*2.0f);
-  float  f1DivS = 1.0f / fS;
   
-  return CQuaternion(vCross[0] * f1DivS,  vCross[1] * f1DivS,   vCross[2] * f1DivS,
-		     fS * 0.5f );
+  if ( QUITE_CLOSE_TO(fDot, -1.0f))
+  {
+    // Pick arbitrary axis and rotate 180 degrees over it.
+    CQuaternion q;
+    q.CreateFromAxisAngleRad( vCross, Math::PI);
+    return q;
+  }
+  else
+  {
+    float  fS   = sqrtf((1.0f+fDot)*2.0f);
+    float  f1DivS = 1.0f / fS;
+    
+    return CQuaternion(vCross[0] * f1DivS,  vCross[1] * f1DivS,   
+		       vCross[2] * f1DivS,  fS * 0.5f );
+  }
 }
 /////////////////////////////////////////////////////////////////
 float 
