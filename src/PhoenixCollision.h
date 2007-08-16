@@ -81,6 +81,14 @@ namespace Phoenix
     /// \returns Non-zero on intersect, zero otherwise.
     int PlaneIntersectsBox( const Phoenix::Math::CPlane &plane,
 			    const Phoenix::Volume::COrientedBox &box );
+
+    ////////////////////
+    /// Checks whether a plane and box intersect.
+    /// \param plane A plane.
+    /// \param box An axis-aligned box.
+    /// \returns Non-zero on intersect, zero otherwise.
+    int PlaneIntersectsBox( const Phoenix::Math::CPlane &plane,
+			    const Phoenix::Volume::CAxisAlignedBox &box );
     ////////////////////
     /// Checks whether a triangle and oriented box intersect.
     /// \param vVertex0 First corner of triangle.
