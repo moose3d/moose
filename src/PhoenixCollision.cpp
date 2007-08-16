@@ -433,11 +433,21 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength()) return 0;
 
 
+  ////////////////////
+  // There might be some advantages in using AABB for PlaneIntersectsBox,
+  // try this when you try to optimize further.
+  ////////////////////
+  // CAxisAlignedBox aabb;
+  //   aabb.SetPosition(0,0,0);
+  //   aabb.SetWidth( box.GetWidth());
+  //   aabb.SetHeight( box.GetHeight());
+  //   aabb.SetLength( box.GetLength());
+  ////////////////////
+
   // Check if box intersects triangle plane, if not -> fail
   CPlane plane;
   vVertex1 = (vVertex1_Orig - vVertex0_Orig).Cross(vVertex2_Orig-vVertex1_Orig);
   plane.Calculate( vVertex1, vVertex0_Orig);
-
   if ( !PlaneIntersectsBox( plane, box )) 
   {
     return 0;
