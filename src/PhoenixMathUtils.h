@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #define EPSILON 0.000001f
 #define TOO_CLOSE_TO_ZERO(FLOAT_VALUE) ( fabs(FLOAT_VALUE)< EPSILON )
-#define QUITE_CLOSE_TO( VALUE, ANOTHER_VALUE ) ( (VALUE - ANOTHER_VALUE) < EPSILON )
+#define QUITE_CLOSE_TO( VALUE, ANOTHER_VALUE ) ( fabsf((VALUE - ANOTHER_VALUE)) < EPSILON )
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
 {

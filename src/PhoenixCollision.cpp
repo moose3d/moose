@@ -1,5 +1,6 @@
 #include "PhoenixMath.h"
 #include "PhoenixCollision.h"
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
@@ -195,9 +196,9 @@ inline int AxisTestX( const COrientedBox &box,
 		      const CVector3<float> &vOne, 
 		      const CVector3<float> &vThree )
 {
-  float p0 = (-vEdge(2)*vOne(1)) + (vEdge(1)*vOne(2));
-  float p2 =  vEdge(1)*vThree(2) +  vEdge(2)*vThree(1);
-  float fR = fAbsY * box.GetHalfHeight() + fAbsZ * box.GetHalfLength();
+  float p0 =  vEdge(1)*vOne(2)   -  vEdge(2)*vOne(1);
+  float p2 =  vEdge(1)*vThree(2) -  vEdge(2)*vThree(1);
+  float fR =  fAbsY * box.GetHalfHeight() + fAbsZ * box.GetHalfLength();
   float fMin, fMax;
 
   if ( p0 < p2 )
@@ -221,8 +222,8 @@ inline int AxisTestY( const COrientedBox &box,
 		      const CVector3<float> &vOne, 
 		      const CVector3<float> &vThree )
 {
-  float p0 = (-vEdge(2)*vOne(0)) + (vEdge(0)*vOne(2));
-  float p2 =  vEdge(2)*vThree(0) -  vEdge(0)*vThree(2);
+  float p0 = vEdge(2)*vOne(0)   -  vEdge(0)*vOne(2);
+  float p2 = vEdge(2)*vThree(0) -  vEdge(0)*vThree(2);
   float fR = fAbsX * box.GetHalfWidth() + fAbsZ * box.GetHalfLength();
   float fMin, fMax;
 
@@ -321,52 +322,104 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
 					   CVector3<float> vVertex2,
 					   const COrientedBox &box )
 {
-  // "Move" box into origo.
+  // "Move" box into origo by translating and rotating vertices.
   vVertex0 -= box.GetPosition();
   vVertex1 -= box.GetPosition();
   vVertex2 -= box.GetPosition();
 
+  /// SCREW THIS, just do matrix
+  /// f w d     v0
+  /// r g t  x  v1   and there you have it,
+  /// u p w     v2 
+  using std::cerr;
+  using std::endl;
+  
+  CMatrix4x4<float> mRotation( box.GetForwardVector()(0), box.GetForwardVector()(1), box.GetForwardVector()(2), 0,
+			       box.GetUpVector()(0),      box.GetUpVector()(1),      box.GetUpVector()(2),      0,
+			       box.GetRightVector()(0),   box.GetRightVector()(1),   box.GetRightVector()(2),   0,
+			       0,0,0,1);
+  mRotation.Transpose();
+
+  vVertex0 = Rotate( vVertex0, mRotation );
+  vVertex1 = Rotate( vVertex1, mRotation );
+  vVertex2 = Rotate( vVertex2, mRotation );
+  
   // Calculate triangle edges.
   CVector3<float> vEdge0 = vVertex1 - vVertex0;
   CVector3<float> vEdge1 = vVertex2 - vVertex1;
   CVector3<float> vEdge2 = vVertex0 - vVertex2;
   
-  float fEdgeX;
-  float fEdgeY = fabsf( vEdge0(2) );
-  float fEdgeZ = fabsf( vEdge0(1) );
-  if ( !AxisTestX( box, vEdge0, fEdgeY, fEdgeZ, vVertex0, vVertex2) ) return 0;
+  float fAx;
+  float fAy = fabsf( vEdge0(2) );
+  float fAz = fabsf( vEdge0(1) );
+  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) ) 
+  {
 
-  fEdgeY = fabsf( vEdge1(2) );
-  fEdgeZ = fabsf( vEdge1(1) );
-  if ( !AxisTestX( box, vEdge1, fEdgeY, fEdgeZ, vVertex0, vVertex2) ) return 0;
+    return 0;
+  }
 
-  fEdgeY = fabsf( vEdge2(2) );
-  fEdgeZ = fabsf( vEdge2(1) );
-  if ( !AxisTestX( box, vEdge2, fEdgeY, fEdgeZ, vVertex0, vVertex2) ) return 0;
+  fAy = fabsf( vEdge1(2) );
+  fAz = fabsf( vEdge1(1) );
+  if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) ) 
+  {
+
+    return 0;
+  }
+
+  fAy = fabsf( vEdge2(2) );
+  fAz = fabsf( vEdge2(1) );
+  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex0, vVertex2) ) 
+  {
+
+    return 0;
+  }
   
-  fEdgeX = fabsf( vEdge0(2));
-  fEdgeZ = fabsf( vEdge0(0) );
-  if ( !AxisTestY( box, vEdge0, fEdgeX, fEdgeZ, vVertex0, vVertex2) ) return 0;
+  fAx = fabsf( vEdge0(2));
+  fAz = fabsf( vEdge0(0) );
+  if ( !AxisTestY( box, vEdge0, fAx, fAz, vVertex0, vVertex2) ) 
+  {
 
-  fEdgeX = fabsf( vEdge1(2));
-  fEdgeZ = fabsf( vEdge1(0));
-  if ( !AxisTestY( box, vEdge1, fEdgeX, fEdgeZ, vVertex0, vVertex2) ) return 0;
+    return 0;
+  }
 
-  fEdgeX = fabsf( vEdge2(2));
-  fEdgeZ = fabsf( vEdge2(0));
-  if ( !AxisTestY( box, vEdge2, fEdgeX, fEdgeZ, vVertex0, vVertex2) ) return 0;
+  fAx = fabsf( vEdge1(2));
+  fAz = fabsf( vEdge1(0));
+  if ( !AxisTestY( box, vEdge1, fAx, fAz, vVertex0, vVertex2) ) 
+  {
+    return 0;
+  }
+
+  fAx = fabsf( vEdge2(2));
+  fAz = fabsf( vEdge2(0));
+  if ( !AxisTestY( box, vEdge2, fAx, fAz, vVertex0, vVertex2) ) 
+  {
+
+    return 0;
+  }
   
-  fEdgeX = fabsf( vEdge0(1));
-  fEdgeY = fabsf( vEdge0(0));
-  if ( !AxisTestZ( box, vEdge0, fEdgeX, fEdgeY, vVertex0, vVertex2) ) return 0;
+  fAx = fabsf( vEdge0(1));
+  fAy = fabsf( vEdge0(0));
+  if ( !AxisTestZ( box, vEdge0, fAx, fAy, vVertex0, vVertex2) ) 
+  {
 
-  fEdgeX = fabsf( vEdge1(1));
-  fEdgeY = fabsf( vEdge1(0));
-  if ( !AxisTestZ( box, vEdge1, fEdgeX, fEdgeY, vVertex0, vVertex2) ) return 0;
+    return 0;
+  }
 
-  fEdgeX = fabsf( vEdge2(1));
-  fEdgeY = fabsf( vEdge2(0));
-  if ( !AxisTestZ( box, vEdge2, fEdgeX, fEdgeY, vVertex0, vVertex2) ) return 0;
+  fAx = fabsf( vEdge1(1));
+  fAy = fabsf( vEdge1(0));
+  if ( !AxisTestZ( box, vEdge1, fAx, fAy, vVertex0, vVertex2) ) 
+  {
+
+    return 0;
+  }
+
+  fAx = fabsf( vEdge2(1));
+  fAy = fabsf( vEdge2(0));
+  if ( !AxisTestZ( box, vEdge2, fAx, fAy, vVertex0, vVertex2) ) 
+  {
+
+    return 0;
+  }
   
   float fMin, fMax;
   // Test X-direction triangle AABB bs box
@@ -379,12 +432,19 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   FindMinMax( vVertex0(2), vVertex1(2), vVertex2(2), fMin, fMax);
   if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength()) return 0;
 
-  
+
+  // Transform vertex back, otherwise final check is invalid (wrong plane)
+  vVertex0 += box.GetPosition();
+
   // Check if box intersects triangle plane, if not -> fail
   CPlane plane;
   vVertex1 = vEdge0.Cross(vEdge1);
   plane.Calculate( vVertex1, vVertex0);
-  if ( !PlaneIntersectsBox( plane, box )) return 0;
+  if ( !PlaneIntersectsBox( plane, box )) 
+  {
+
+    return 0;
+  }
   
   return 1;
 }
@@ -413,51 +473,6 @@ Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
   return ( fDistance <= fValue);
 }
 /////////////////////////////////////////////////////////////////
-/*======================== X-tests ========================*/
-#define AXISTEST_X01(a, b, fa, fb)			   \
-	p0 = a*v0[Y] - b*v0[Z];			       	   \
-	p2 = a*v2[Y] - b*v2[Z];			       	   \
-        if(p0<p2) {min=p0; max=p2;} else {min=p2; max=p0;} \
-	rad = fa * boxhalfsize[Y] + fb * boxhalfsize[Z];   \
-	if(min>rad || max<-rad) return 0;
-
-#define AXISTEST_X2(a, b, fa, fb)			   \
-	p0 = a*v0[Y] - b*v0[Z];			           \
-	p1 = a*v1[Y] - b*v1[Z];			       	   \
-        if(p0<p1) {min=p0; max=p1;} else {min=p1; max=p0;} \
-	rad = fa * boxhalfsize[Y] + fb * boxhalfsize[Z];   \
-	if(min>rad || max<-rad) return 0;
-
-/*======================== Y-tests ========================*/
-#define AXISTEST_Y02(a, b, fa, fb)			   \
-	p0 = -a*v0[X] + b*v0[Z];		      	   \
-	p2 = -a*v2[X] + b*v2[Z];	       	       	   \
-        if(p0<p2) {min=p0; max=p2;} else {min=p2; max=p0;} \
-	rad = fa * boxhalfsize[X] + fb * boxhalfsize[Z];   \
-	if(min>rad || max<-rad) return 0;
-
-#define AXISTEST_Y1(a, b, fa, fb)			   \
-	p0 = -a*v0[X] + b*v0[Z];		      	   \
-	p1 = -a*v1[X] + b*v1[Z];	     	       	   \
-        if(p0<p1) {min=p0; max=p1;} else {min=p1; max=p0;} \
-	rad = fa * boxhalfsize[X] + fb * boxhalfsize[Z];   \
-	if(min>rad || max<-rad) return 0;
-
-/*======================== Z-tests ========================*/
-#define AXISTEST_Z12(a, b, fa, fb)			   \
-	p1 = a*v1[X] - b*v1[Y];			           \
-	p2 = a*v2[X] - b*v2[Y];			       	   \
-        if(p2<p1) {min=p2; max=p1;} else {min=p1; max=p2;} \
-	rad = fa * boxhalfsize[X] + fb * boxhalfsize[Y];   \
-	if(min>rad || max<-rad) return 0;
-
-#define AXISTEST_Z0(a, b, fa, fb)			   \
-	p0 = a*v0[X] - b*v0[Y];				   \
-	p1 = a*v1[X] - b*v1[Y];			           \
-        if(p0<p1) {min=p0; max=p1;} else {min=p1; max=p0;} \
-	rad = fa * boxhalfsize[X] + fb * boxhalfsize[Y];   \
-	if(min>rad || max<-rad) return 0;
-
 // int triBoxOverlap(float boxcenter[3],float boxhalfsize[3],float triverts[3][3])
 
 // {

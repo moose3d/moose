@@ -1,6 +1,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixQuaternion.h"
 #include <math.h>
+#include <iostream>
 using Phoenix::Math::CQuaternion;
 /////////////////////////////////////////////////////////////////
 CQuaternion 
@@ -35,7 +36,6 @@ CQuaternion::CreateFromAxisAngleRad ( float fX, float fY, float fZ, float fRad )
   m_pValues[1] = fY * sinThetaDiv2 ;
   m_pValues[2] = fZ * sinThetaDiv2 ;
   m_pValues[3] = cosf( thetaDiv2 );  
-
 }
 /////////////////////////////////////////////////////////////////
 void 
