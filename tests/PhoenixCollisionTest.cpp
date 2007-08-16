@@ -5,6 +5,9 @@
 using namespace Phoenix::Collision;
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
+using std::cerr;
+using std::endl;
+const float SQRT_2 = 1.41421356237f;
 /////////////////////////////////////////////////////////////////
 TEST(LineIntersectsPlane_Origo)
 {
@@ -427,6 +430,8 @@ TEST(TriangleIntersectsOBB_AABB_Like)
   box.SetWidth(2.0f);
   box.SetHeight(2.0f);
   box.SetLength(2.0f);
+  box.SetPosition(0,0,0);
+
   ////////////////////
   /// Check along Y-axis
   vTriangle[0][0] = -0.5f;
@@ -593,6 +598,8 @@ TEST(TriangleIntersectsOBB_AABB_Like_Miss)
   box.SetWidth(2.0f);
   box.SetHeight(2.0f);
   box.SetLength(2.0f);
+
+  box.SetPosition(0,0,0);
   ////////////////////
   /// Check along Y-axis
   vTriangle[0][0] = -0.5f;
@@ -626,7 +633,7 @@ TEST(TriangleIntersectsOBB_AABB_Like_Miss)
     vTriangle[i] += CVector3<float>(0,-2.999f,0);
   }
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
-
+  
   vTriangle[0] = CVector3<float>(-0.5f,-2.0f,5.0f);
   vTriangle[1] = CVector3<float>( 0.5f,-2.0f,5.0f);
   vTriangle[2] = CVector3<float>( 0.5f,-1.0f,5.0f);
@@ -748,5 +755,46 @@ TEST(TriangleIntersectsOBB_AABB_Like_Miss)
     vTriangle[i] += CVector3<float>(0,0,5.00f);
   }
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+}
+/////////////////////////////////////////////////////////////////
+TEST(TriangleIntersectsOBB)
+{
+
+  COrientedBox box;
+  CVector3<float> vTriangle[3];
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  box.RotateAroundUp( 45.0f );
+  
+  ////////////////////
+  /// Check along Y-axis
+  vTriangle[0][0] = -1.0f;
+  vTriangle[0][1] = 0.0f;
+  vTriangle[0][2] = 2.0f;
+
+  vTriangle[1][0] = 1.0f;
+  vTriangle[1][1] = 0.0f;
+  vTriangle[1][2] = 2.0f;
+
+  vTriangle[2][0] = 1.0f;
+  vTriangle[2][1] = 0.0f;
+  vTriangle[2][2] = 4.0f;  
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+  vTriangle[0][0] = -1.0f;
+  vTriangle[0][1] = 0.0f;
+  vTriangle[0][2] = SQRT_2-0.001;
+
+  vTriangle[1][0] = 1.0f;
+  vTriangle[1][1] = 0.0f;
+  vTriangle[1][2] = SQRT_2-0.001;
+
+  vTriangle[2][0] = 1.0f;
+  vTriangle[2][1] = 0.0f;
+  vTriangle[2][2] = SQRT_2+1.999f;  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
 }
 /////////////////////////////////////////////////////////////////
