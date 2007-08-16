@@ -1,4 +1,5 @@
 #include "../src/PhoenixCollision.h"
+#include "../src/PhoenixMath.h"
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 /////////////////////////////////////////////////////////////////
@@ -757,7 +758,7 @@ TEST(TriangleIntersectsOBB_AABB_Like_Miss)
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
 }
 /////////////////////////////////////////////////////////////////
-TEST(TriangleIntersectsOBB)
+TEST(TriangleIntersectsOBB_BoxRotated)
 {
 
   COrientedBox box;
@@ -766,35 +767,130 @@ TEST(TriangleIntersectsOBB)
   box.SetWidth(2.0f);
   box.SetHeight(2.0f);
   box.SetLength(2.0f);
-
-  box.RotateAroundUp( 45.0f );
   
-  ////////////////////
-  /// Check along Y-axis
-  vTriangle[0][0] = -1.0f;
-  vTriangle[0][1] = 0.0f;
-  vTriangle[0][2] = 2.0f;
+  box.RotateAroundUp( -45.0f );
+  
+  CVector4<float> vVertex0(-1,0,2,1);
+  CVector4<float> vVertex1( 1,0,2,1);
+  CVector4<float> vVertex2( 1,0,4,1);
+  CVector4<float> vResult;
+  
+  CMatrix4x4<float> mRotation(  box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
+				box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
+				box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
+				0,                         0,                     0,                          1 );
+  mRotation.Transpose();
+  vResult = mRotation * vVertex0;
+  cerr << "v0 rotated: " << vResult << endl;
+  vResult = mRotation * vVertex1;
+  cerr << "v1 rotated: " << vResult << endl;
+  vResult = mRotation * vVertex2;
+  cerr << "v2 rotated: " << vResult << endl;
+  CVector3<float> v0; v0[0] = vVertex0(0); v0[1] = vVertex0(1); v0[2] = vVertex0(2);
+  CVector3<float> v1; v1[0] = vVertex1(0); v1[1] = vVertex1(1); v1[2] = vVertex1(2);
+  CVector3<float> v2; v2[0] = vVertex2(0); v2[1] = vVertex2(1); v2[2] = vVertex2(2);
+  CVector3<float> vRes;
 
-  vTriangle[1][0] = 1.0f;
-  vTriangle[1][1] = 0.0f;
-  vTriangle[1][2] = 2.0f;
-
-  vTriangle[2][0] = 1.0f;
-  vTriangle[2][1] = 0.0f;
-  vTriangle[2][2] = 4.0f;  
-
+  vRes = Rotate( v0, mRotation);
+  cerr << "v0 rotated: " << vRes << endl;
+  vRes = Rotate( v1, mRotation);
+  cerr << "v1 rotated: " << vRes << endl;
+  vRes = Rotate( v2, mRotation);
+  cerr << "v2 rotated: " << vRes << endl;
+  
+  vTriangle[0] = v0;
+  vTriangle[1] = v1;
+  vTriangle[2] = v2;
+  
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
-  vTriangle[0][0] = -1.0f;
-  vTriangle[0][1] = 0.0f;
-  vTriangle[0][2] = SQRT_2-0.001;
 
-  vTriangle[1][0] = 1.0f;
-  vTriangle[1][1] = 0.0f;
-  vTriangle[1][2] = SQRT_2-0.001;
+  vTriangle[0] = CVector3<float>(-1,0,SQRT_2+0.001f);
+  vTriangle[1] = CVector3<float>( 1,0,SQRT_2+0.001f);
+  vTriangle[2] = CVector3<float>(-1,0,SQRT_2+2.0f+0.001f);
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
 
-  vTriangle[2][0] = 1.0f;
-  vTriangle[2][1] = 0.0f;
-  vTriangle[2][2] = SQRT_2+1.999f;  
+  vTriangle[0] = CVector3<float>(-1,0,SQRT_2);
+  vTriangle[1] = CVector3<float>( 1,0,SQRT_2);
+  vTriangle[2] = CVector3<float>(-1,0,SQRT_2+2.0f);
+  
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-1.0f-SQRT_2+0.001f);
+  vTriangle[1] = CVector3<float>( 1,0,-1.0f-SQRT_2+0.001f);
+  vTriangle[2] = CVector3<float>(-1,0, 1.0f-SQRT_2+0.001f);
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-1.0f-SQRT_2);
+  vTriangle[1] = CVector3<float>( 1,0,-1.0f-SQRT_2);
+  vTriangle[2] = CVector3<float>(-1,0, 1.0f-SQRT_2);
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-1.0f-SQRT_2-0.001f);
+  vTriangle[1] = CVector3<float>( 1,0,-1.0f-SQRT_2-0.001f);
+  vTriangle[2] = CVector3<float>(-1,0, 1.0f-SQRT_2-0.001f);
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-23.0f);
+  vTriangle[1] = CVector3<float>( 1,0,-23.0f);
+  vTriangle[2] = CVector3<float>(-1,0,-21.0f);
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+}
+/////////////////////////////////////////////////////////////////
+TEST(TriangleIntersectsOBB_BoxRotated_Translated)
+{
+
+  COrientedBox box;
+  CVector3<float> vTriangle[3];
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+  CVector3<float> vPosition(0,0,-0.3);
+  box.SetPosition( vPosition);
+  box.RotateAroundUp( -45.0f );
+  
+  CVector3<float> vVertex0(-1,0,2);
+  CVector3<float> vVertex1( 1,0,2);
+  CVector3<float> vVertex2( 1,0,4);
+  
+  vTriangle[0] = vVertex0 + vPosition;
+  vTriangle[1] = vVertex1 + vPosition;
+  vTriangle[2] = vVertex2 + vPosition;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>(-1,0,SQRT_2+0.001f) + vPosition;
+  vTriangle[1] = CVector3<float>( 1,0,SQRT_2+0.001f) + vPosition;
+  vTriangle[2] = CVector3<float>(-1,0,SQRT_2+2.0f+0.001f) + vPosition;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>(-1,0,SQRT_2) + vPosition;
+  vTriangle[1] = CVector3<float>( 1,0,SQRT_2) + vPosition;
+  vTriangle[2] = CVector3<float>(-1,0,SQRT_2+2.0f) + vPosition;
+  
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-1.0f-SQRT_2+0.001f) + vPosition;
+  vTriangle[1] = CVector3<float>( 1,0,-1.0f-SQRT_2+0.001f) + vPosition;
+  vTriangle[2] = CVector3<float>(-1,0, 1.0f-SQRT_2+0.001f) + vPosition;
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-1.0f-SQRT_2) + vPosition;;
+  vTriangle[1] = CVector3<float>( 1,0,-1.0f-SQRT_2) + vPosition;;
+  vTriangle[2] = CVector3<float>(-1,0, 1.0f-SQRT_2) + vPosition;;
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-1.0f-SQRT_2-0.001f) + vPosition;
+  vTriangle[1] = CVector3<float>( 1,0,-1.0f-SQRT_2-0.001f) + vPosition;
+  vTriangle[2] = CVector3<float>(-1,0, 1.0f-SQRT_2-0.001f) + vPosition;
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
+  vTriangle[0] = CVector3<float>(-1,0,-23.0f) + vPosition;
+  vTriangle[1] = CVector3<float>( 1,0,-23.0f) + vPosition;
+  vTriangle[2] = CVector3<float>(-1,0,-21.0f) + vPosition;
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
+
 }
 /////////////////////////////////////////////////////////////////
