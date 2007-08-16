@@ -322,24 +322,30 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
 					   CVector3<float> vVertex2,
 					   const COrientedBox &box )
 {
+  
+  CVector3<float> vVertex0_Orig = vVertex0;
+  CVector3<float> vVertex1_Orig = vVertex1;
+  CVector3<float> vVertex2_Orig = vVertex2;
+
   // "Move" box into origo by translating and rotating vertices.
   vVertex0 -= box.GetPosition();
   vVertex1 -= box.GetPosition();
   vVertex2 -= box.GetPosition();
+  
 
   /// SCREW THIS, just do matrix
-  /// f w d     v0
-  /// r g t  x  v1   and there you have it,
-  /// u p w     v2 
+  ///( r u f) -1    v0
+  ///( g p w)    x  v1   and there you have it,
+  ///( t w d)       v2 
   using std::cerr;
   using std::endl;
   
-  CMatrix4x4<float> mRotation( box.GetForwardVector()(0), box.GetForwardVector()(1), box.GetForwardVector()(2), 0,
-			       box.GetUpVector()(0),      box.GetUpVector()(1),      box.GetUpVector()(2),      0,
-			       box.GetRightVector()(0),   box.GetRightVector()(1),   box.GetRightVector()(2),   0,
-			       0,0,0,1);
+  CMatrix4x4<float> mRotation( box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
+			       box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
+			       box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
+			       0,                         0,                     0,                          1 );
   mRotation.Transpose();
-
+  
   vVertex0 = Rotate( vVertex0, mRotation );
   vVertex1 = Rotate( vVertex1, mRotation );
   vVertex2 = Rotate( vVertex2, mRotation );
@@ -354,7 +360,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   float fAz = fabsf( vEdge0(1) );
   if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) ) 
   {
-
     return 0;
   }
 
@@ -362,7 +367,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge1(1) );
   if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) ) 
   {
-
     return 0;
   }
 
@@ -370,7 +374,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge2(1) );
   if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex0, vVertex2) ) 
   {
-
     return 0;
   }
   
@@ -378,7 +381,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge0(0) );
   if ( !AxisTestY( box, vEdge0, fAx, fAz, vVertex0, vVertex2) ) 
   {
-
     return 0;
   }
 
@@ -393,7 +395,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge2(0));
   if ( !AxisTestY( box, vEdge2, fAx, fAz, vVertex0, vVertex2) ) 
   {
-
     return 0;
   }
   
@@ -401,7 +402,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAy = fabsf( vEdge0(0));
   if ( !AxisTestZ( box, vEdge0, fAx, fAy, vVertex0, vVertex2) ) 
   {
-
     return 0;
   }
 
@@ -433,16 +433,13 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength()) return 0;
 
 
-  // Transform vertex back, otherwise final check is invalid (wrong plane)
-  vVertex0 += box.GetPosition();
-
   // Check if box intersects triangle plane, if not -> fail
   CPlane plane;
-  vVertex1 = vEdge0.Cross(vEdge1);
-  plane.Calculate( vVertex1, vVertex0);
+  vVertex1 = (vVertex1_Orig - vVertex0_Orig).Cross(vVertex2_Orig-vVertex1_Orig);
+  plane.Calculate( vVertex1, vVertex0_Orig);
+
   if ( !PlaneIntersectsBox( plane, box )) 
   {
-
     return 0;
   }
   
@@ -468,6 +465,30 @@ Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
   fValue += fTmp;
 
   fTmp = fabsf(box.GetHalfHeight()*(vNormal.Dot(box.GetUpVector())));
+  fValue += fTmp;
+
+  return ( fDistance <= fValue);
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
+					const CAxisAlignedBox &box )
+{
+  /// Calculate |distance| from box center to plane
+  float fDistance = fabsf(PointDistanceFromPlane( box.GetPosition(), plane));
+
+  // Using separate axis theorem (SAT), perform checking.
+  CVector3<float> vNormal;
+  vNormal.UseExternalData(const_cast<CPlane &>(plane).GetArray());
+
+  float fValue;
+  float fTmp = fabsf(box.GetHalfLength()*vNormal(2));
+  fValue = fTmp;
+
+  fTmp = fabsf(box.GetHalfWidth()*vNormal(1));
+  fValue += fTmp;
+
+  fTmp = fabsf(box.GetHalfHeight()*vNormal(0));
   fValue += fTmp;
 
   return ( fDistance <= fValue);
