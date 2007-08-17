@@ -5,9 +5,9 @@
 using namespace Phoenix::Math;
 using namespace Phoenix::Spatial;
 /////////////////////////////////////////////////////////////////
-Phoenix::Spatial::COrientable::COrientable() : m_vRight(0.0f,0.0f,1.0f),
+Phoenix::Spatial::COrientable::COrientable() : m_vRight( 1.0f,0.0f,0.0f),
 					       m_vUpward(0.0f,1.0f,0.0f),
-					       m_vForward(1.0f,0.0f,0.0f),
+					       m_vForward(0.0f,0.0f,-1.0f),
 					       m_qRotation(0.0f,0.0f,0.0f,1.0f)
 {
   SetRotationChanged(1);
@@ -16,13 +16,13 @@ Phoenix::Spatial::COrientable::COrientable() : m_vRight(0.0f,0.0f,1.0f),
 void
 Phoenix::Spatial::COrientable::Reset()
 {
-  m_vForward[0] = 1.0f;
+  m_vForward[0] = 0.0f;
   m_vForward[1] = 0.0f;
-  m_vForward[2] = 0.0f;
+  m_vForward[2] = -1.0f;
 
-  m_vRight[0] = 0.0f;
+  m_vRight[0] = 1.0f;
   m_vRight[1] = 0.0f;
-  m_vRight[2] = 1.0f;
+  m_vRight[2] = 0.0f;
 
   m_vUpward[0] = 0.0f;
   m_vUpward[1] = 1.0f;
