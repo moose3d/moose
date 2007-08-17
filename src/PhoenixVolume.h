@@ -110,7 +110,7 @@ namespace Phoenix
       {
 	memset(m_aCorners,0,sizeof(float)*24);
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
-			Phoenix::Math::CVector3<float>(0,0,1),
+			Phoenix::Math::CVector3<float>(0,0,-1),
 			Phoenix::Math::CVector3<float>(1,0,0));
 	m_qRotation.Identity();
       }
@@ -128,7 +128,7 @@ namespace Phoenix
       void operator=( const CAxisAlignedBox & box )
       {
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
-			Phoenix::Math::CVector3<float>(0,0,1),
+			Phoenix::Math::CVector3<float>(0,0,-1),
 			Phoenix::Math::CVector3<float>(1,0,0));
 	SetPosition( box.GetPosition());
 	SetWidth( box.GetWidth());
@@ -183,9 +183,9 @@ namespace Phoenix
       friend std::ostream& operator<<( std::ostream &stream, COrientedBox box )
       {
 	stream << std::endl
-	       << "R = " << box.GetForwardVector() << ", scale " << box.GetLength() << std::endl
-	       << "S = " << box.GetRightVector()   << ", scale " << box.GetWidth() << std::endl
-	       << "T = " << box.GetUpVector()      << ", scale " << box.GetHeight() << std::endl
+	       << "F = " << box.GetForwardVector() << ", scale " << box.GetLength() << std::endl
+	       << "R = " << box.GetRightVector()   << ", scale " << box.GetWidth() << std::endl
+	       << "U = " << box.GetUpVector()      << ", scale " << box.GetHeight() << std::endl
 	       << "C = " << box.GetPosition() << std::endl;
 	stream << "TLF:" << CVector3<float>(box.GetCorner(TOP_LEFT_FRONT)) << std::endl;
 	stream << "TLB:" << CVector3<float>(box.GetCorner(TOP_LEFT_BACK)) << std::endl;
