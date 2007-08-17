@@ -894,3 +894,61 @@ TEST(TriangleIntersectsOBB_BoxRotated_Translated)
 
 }
 /////////////////////////////////////////////////////////////////
+TEST(TriangleIntersectsOBB_RealWorldExample )
+{
+
+  COrientedBox box;
+  CVector3<float> vTriangle[3];
+  /*box.SetOrientation( CVector3<float>(0,1,0),
+		      CVector3<float>(0,0,-1),
+		      CVector3<float>(1,0,0));*/
+  box.RotateAroundUp(90.0f);
+  box.SetWidth(1.0f);
+  box.SetHeight(1.0f);
+  box.SetLength(99.9f);
+  CVector3<float> vPosition(0,0,-38.05f);
+  box.SetPosition( vPosition);
+  box.CalculateCorners();
+
+  // F = 0,0,-1, scale 99.9
+//   R = 1,0,0, scale 1
+//   U = 0,1,0, scale 1
+//   C = 0,0,-38.05
+//   TLF:-0.5,0.5,-88
+//   TLB:-0.5,0.5,11.9
+//   TRF:0.5,0.5,-88
+//   TRB:0.5,0.5,11.9
+//   BLF:-0.5,-0.5,-88
+//   BLB:-0.5,-0.5,11.9
+//   BRF:0.5,-0.5,-88
+//   BRB:0.5,-0.5,11.9
+  cerr << box << endl;
+
+  CMatrix4x4<float> mRotation( box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
+			       box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
+			       box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
+			       0,                         0,                     0,                          1 );
+  mRotation.Transpose();
+
+  CVector3<float> vRes;
+
+  
+  vTriangle[0] = CVector3<float>(-1,-1,0);
+  vTriangle[1] = CVector3<float>(1,-1,0);
+  vTriangle[2] = CVector3<float>(1,1,0);
+
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+  
+  vTriangle[0] = CVector3<float>(-1,-1,0);
+  vTriangle[1] = CVector3<float>(1,1,0);
+  vTriangle[2] = CVector3<float>(-1,1,0);
+
+  vRes = Rotate( vTriangle[0], mRotation );
+  cerr << "Rotated v0 :" << vRes << endl;
+  vRes = Rotate( vTriangle[1], mRotation );
+  cerr << "Rotated v1 :" << vRes << endl;
+  vRes = Rotate( vTriangle[2], mRotation );
+  cerr << "Rotated v2 :" << vRes << endl;
+  CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
+}
+/////////////////////////////////////////////////////////////////
