@@ -251,11 +251,11 @@ inline int AxisTestZ( const COrientedBox &box,
 		      const CVector3<float> &vThree )
 {
 
-  float p0 = (-vEdge(1)*vOne(0)) - vEdge(0)*vOne(1);
-  float p2 = (-vEdge(1)*vThree(0)) - vEdge(0)*vThree(1);
+  float p0 = vEdge(0)*vOne(1) - vEdge(1)*vOne(0);
+  float p2 = vEdge(0)*vThree(1) - vEdge(1)*vThree(0); 
   float fR = fAbsX * box.GetHalfWidth() + fAbsY * box.GetHalfHeight();
   float fMin, fMax;
-
+  
   if ( p0 < p2 )
   {
     fMin = p0;
@@ -331,12 +331,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   vVertex0 -= box.GetPosition();
   vVertex1 -= box.GetPosition();
   vVertex2 -= box.GetPosition();
-  
 
-  /// SCREW THIS, just do matrix
-  ///( r u f) -1    v0
-  ///( g p w)    x  v1   and there you have it,
-  ///( t w d)       v2 
   using std::cerr;
   using std::endl;
   
@@ -354,12 +349,16 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   CVector3<float> vEdge0 = vVertex1 - vVertex0;
   CVector3<float> vEdge1 = vVertex2 - vVertex1;
   CVector3<float> vEdge2 = vVertex0 - vVertex2;
-  
+
+
   float fAx;
   float fAy = fabsf( vEdge0(2) );
   float fAz = fabsf( vEdge0(1) );
+  
+  
   if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) ) 
   {
+    cerr << "fail 1" << endl;
     return 0;
   }
 
@@ -367,13 +366,15 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge1(1) );
   if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) ) 
   {
+    cerr << "fail 2" << endl;
     return 0;
   }
 
   fAy = fabsf( vEdge2(2) );
   fAz = fabsf( vEdge2(1) );
-  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex0, vVertex2) ) 
+  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) ) 
   {
+    cerr << "fail 3" << endl;
     return 0;
   }
   
@@ -381,6 +382,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge0(0) );
   if ( !AxisTestY( box, vEdge0, fAx, fAz, vVertex0, vVertex2) ) 
   {
+    cerr << "fail 4" << endl;
     return 0;
   }
 
@@ -388,13 +390,15 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAz = fabsf( vEdge1(0));
   if ( !AxisTestY( box, vEdge1, fAx, fAz, vVertex0, vVertex2) ) 
   {
+    cerr << "fail 5" << endl;
     return 0;
   }
 
   fAx = fabsf( vEdge2(2));
   fAz = fabsf( vEdge2(0));
-  if ( !AxisTestY( box, vEdge2, fAx, fAz, vVertex0, vVertex2) ) 
+  if ( !AxisTestY( box, vEdge2, fAx, fAz, vVertex1, vVertex2) ) 
   {
+    cerr << "fail 6" << endl;
     return 0;
   }
   
@@ -402,6 +406,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAy = fabsf( vEdge0(0));
   if ( !AxisTestZ( box, vEdge0, fAx, fAy, vVertex0, vVertex2) ) 
   {
+    cerr << "fail 7" << endl;
     return 0;
   }
 
@@ -409,28 +414,40 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAy = fabsf( vEdge1(0));
   if ( !AxisTestZ( box, vEdge1, fAx, fAy, vVertex0, vVertex2) ) 
   {
-
+    cerr << "fail 8" << endl;
     return 0;
   }
 
   fAx = fabsf( vEdge2(1));
   fAy = fabsf( vEdge2(0));
-  if ( !AxisTestZ( box, vEdge2, fAx, fAy, vVertex0, vVertex2) ) 
+  if ( !AxisTestZ( box, vEdge2, fAx, fAy, vVertex1, vVertex2) ) 
   {
-
+    cerr << "fail 9" << endl;
     return 0;
   }
   
   float fMin, fMax;
   // Test X-direction triangle AABB bs box
   FindMinMax( vVertex0(0), vVertex1(0), vVertex2(0), fMin, fMax);
-  if ( fMin > box.GetHalfWidth() || fMax < -box.GetHalfWidth()) return 0;
+  if ( fMin > box.GetHalfWidth() || fMax < -box.GetHalfWidth()) 
+  {
+    cerr << "fail 10" << endl;
+    return 0;
+  }
   // Test Y-direction triangle AABB vs box
   FindMinMax( vVertex0(1), vVertex1(1), vVertex2(1), fMin, fMax);
-  if ( fMin > box.GetHalfHeight() || fMax < -box.GetHalfHeight()) return 0;
+  if ( fMin > box.GetHalfHeight() || fMax < -box.GetHalfHeight()) 
+  {
+    cerr << "fail 11" << endl;
+    return 0;
+  }
   // Test Z-direction triangle AABB vs box
   FindMinMax( vVertex0(2), vVertex1(2), vVertex2(2), fMin, fMax);
-  if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength()) return 0;
+  if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength()) 
+  {
+    cerr << "fail 12" << endl;
+    return 0;
+  }
 
 
   ////////////////////
@@ -450,6 +467,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   plane.Calculate( vVertex1, vVertex0_Orig);
   if ( !PlaneIntersectsBox( plane, box )) 
   {
+    cerr << "fail 13" << endl;
     return 0;
   }
   
