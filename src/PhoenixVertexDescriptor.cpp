@@ -7,6 +7,7 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
   switch ( GetType() )
   {
   case ELEMENT_TYPE_VERTEX_3F:
+  case ELEMENT_TYPE_NORMAL_3F:
     m_pData = new float[3*nNumElements];
     break;
   case ELEMENT_TYPE_TEX_2F:
@@ -111,6 +112,7 @@ Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_ATTRIB_3F:
   case ELEMENT_TYPE_ATTRIB_4F:
   case ELEMENT_TYPE_COLOR_3F:
+  case ELEMENT_TYPE_NORMAL_3F:
     delete reinterpret_cast<float *>(m_pData);
     break;
   case ELEMENT_TYPE_COLOR_4UB:

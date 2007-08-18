@@ -21,3 +21,4 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixCollision.h"
 #include "PhoenixMilkshapeLoader.h"
+#include "PhoenixLight.h"

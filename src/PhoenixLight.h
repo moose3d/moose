@@ -2,13 +2,13 @@
 #define __PhoenixLight_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
-#include "PhoenixMath.h"
+#include "PhoenixSpatial.h"
+#include "PhoenixMathGeometry.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
   {
-    
     enum LIGHT_TYPE 
     {
       SPOTLIGHT = 0,
@@ -47,15 +47,27 @@ namespace Phoenix
       ////////////////////
       /// Sets brightness value.
       /// \param fValue Brightness value.
-      void SetBrightness( float fValue )
+      void SetBrightness( float fValue );
       ////////////////////
       /// Returns brightness value.
       /// \returns Brightness value.
-      float GetBrightness() const
+      float GetBrightness() const;
     public:
       ////////////////////
       /// Default constructor.
-      CLight();
+      CLight()
+      {
+	SetPosition(0.0f,0.0f,0.0f);
+	SetDirection(0.0f,0.0f,-1.0f);
+	SetEnabled(1);
+	SetSpotAngle(0.0f);
+	SetSpotExponent(0.0f);
+	SetType(DIRECTIONAL);
+	SetQuadraticAttenuation(0.0f);
+	SetLinearAttenuation(0.0f);
+	SetConstantAttenuation(0.0f);
+	SetBrightness(0.0f);
+      }
       ////////////////////
       /// Sets spot angle.
       /// \param fAngle Angle in degrees.
@@ -64,6 +76,14 @@ namespace Phoenix
       /// Returns spot angle.
       /// \returns  Angle in degrees.
       float GetSpotAngle() const;
+      ////////////////////
+      /// Sets spot angle.
+      /// \param fValue Exponent value.
+      void SetSpotExponent( float fValue );
+      ////////////////////
+      /// Returns spot exponent.
+      /// \returns  Exponent value.
+      float GetSpotExponent() const;
       ////////////////////
       /// Sets light type.
       /// \param tType LIGHT_TYPE.
@@ -115,7 +135,7 @@ namespace Phoenix
       ////////////////////
       /// Returns specular color.
       /// \returns Reference to color vector.
-      Phoenix::Math::CVector4<unsigned char> & GetSpecularColor() const;
+      const Phoenix::Math::CVector4<unsigned char> & GetSpecularColor() const;
       ////////////////////
       /// Assigns specular color.
       /// \param vColor Color vector.
@@ -124,19 +144,6 @@ namespace Phoenix
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CLight::CLight()
-{
-  SetPosition(0.0f,0.0f,0.0f);
-  SetDirection(0.0f,0.0f,-1.0f);
-  SetEnabled(1);
-  SetSpotAngle(0.0f);
-  SetSpotExponent(0.0f);
-  SetType(DIRECTIONAL);
-  SetQuadraticAttenuation(0.0f);
-  SetLinearAttenuation(0.0f);
-  SetConstantAttenuation(0.0f);
-  SetBrightness(0.0f);
-}
 /////////////////////////////////////////////////////////////////
 inline void 
 Phoenix::Graphics::CLight::SetSpotAngle( float fAngle )
@@ -148,6 +155,18 @@ inline float
 Phoenix::Graphics::CLight::GetSpotAngle() const
 {
   return m_fSpotAngle;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetSpotExponent( float fValue )
+{
+  m_fSpotExponent    = fValue;
+}
+/////////////////////////////////////////////////////////////////
+inline float 
+Phoenix::Graphics::CLight::GetSpotExponent() const
+{
+  return m_fSpotExponent;
 }
 /////////////////////////////////////////////////////////////////
 inline void 
@@ -234,14 +253,14 @@ Phoenix::Graphics::CLight::SetAmbientColor(const Phoenix::Math::CVector4<unsigne
   m_vAmbientColor = vColor;
 }
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Math::CVector4<unsigned char> & 
-Phoenix::Graphics::CLight::GetAmbientColor() const
+inline const Phoenix::Math::CVector4<unsigned char> & 
+Phoenix::Graphics::CLight::GetSpecularColor() const
 {
   return m_vSpecular;
 }
 /////////////////////////////////////////////////////////////////
 inline void 
-Phoenix::Graphics::CLight::SetAmbientColor(Phoenix::Math::CVector4<unsigned char> & vColor) 
+Phoenix::Graphics::CLight::SetSpecularColor(Phoenix::Math::CVector4<unsigned char> & vColor) 
 {
   m_vSpecular = vColor;
 }
