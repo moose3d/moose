@@ -334,11 +334,12 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
 
   using std::cerr;
   using std::endl;
-  
+  // Create rotation for oriented box.
   CMatrix4x4<float> mRotation( box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
 			       box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
 			       box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
 			       0,                         0,                     0,                          1 );
+  // Inverse rotation; transpose is sufficient for rotation matrices.
   mRotation.Transpose();
   
   vVertex0 = Rotate( vVertex0, mRotation );
@@ -349,106 +350,43 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   CVector3<float> vEdge0 = vVertex1 - vVertex0;
   CVector3<float> vEdge1 = vVertex2 - vVertex1;
   CVector3<float> vEdge2 = vVertex0 - vVertex2;
-
-
-  float fAx;
+  
+  ////////////////////
+  // These have been slightly optimized by calculating absolute values only once.
+  float fAx = fabsf( vEdge0(0) );
   float fAy = fabsf( vEdge0(2) );
   float fAz = fabsf( vEdge0(1) );
+  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  return 0; 
+  if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  return 0;
+  if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  return 0;
   
-  
-  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) ) 
-  {
-    cerr << "fail 1" << endl;
-    return 0;
-  }
-
+  fAx = fabsf( vEdge1(0) );
   fAy = fabsf( vEdge1(2) );
   fAz = fabsf( vEdge1(1) );
-  if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) ) 
-  {
-    cerr << "fail 2" << endl;
-    return 0;
-  }
+  if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) )  return 0;  
+  if ( !AxisTestY( box, vEdge1, fAy, fAx, vVertex0, vVertex2) )  return 0;
+  if ( !AxisTestZ( box, vEdge1, fAz, fAx, vVertex0, vVertex2) )  return 0;
 
+  fAx = fabsf( vEdge2(0) );
   fAy = fabsf( vEdge2(2) );
   fAz = fabsf( vEdge2(1) );
-  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) ) 
-  {
-    cerr << "fail 3" << endl;
-    return 0;
-  }
-  
-  fAx = fabsf( vEdge0(2));
-  fAz = fabsf( vEdge0(0) );
-  if ( !AxisTestY( box, vEdge0, fAx, fAz, vVertex0, vVertex2) ) 
-  {
-    cerr << "fail 4" << endl;
-    return 0;
-  }
+  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) )  return 0; 
+  if ( !AxisTestY( box, vEdge2, fAy, fAx, vVertex1, vVertex2) )  return 0;
+  if ( !AxisTestZ( box, vEdge2, fAz, fAx, vVertex1, vVertex2) )  return 0;
 
-  fAx = fabsf( vEdge1(2));
-  fAz = fabsf( vEdge1(0));
-  if ( !AxisTestY( box, vEdge1, fAx, fAz, vVertex0, vVertex2) ) 
-  {
-    cerr << "fail 5" << endl;
-    return 0;
-  }
-
-  fAx = fabsf( vEdge2(2));
-  fAz = fabsf( vEdge2(0));
-  if ( !AxisTestY( box, vEdge2, fAx, fAz, vVertex1, vVertex2) ) 
-  {
-    cerr << "fail 6" << endl;
-    return 0;
-  }
-  
-  fAx = fabsf( vEdge0(1));
-  fAy = fabsf( vEdge0(0));
-  if ( !AxisTestZ( box, vEdge0, fAx, fAy, vVertex0, vVertex2) ) 
-  {
-    cerr << "fail 7" << endl;
-    return 0;
-  }
-
-  fAx = fabsf( vEdge1(1));
-  fAy = fabsf( vEdge1(0));
-  if ( !AxisTestZ( box, vEdge1, fAx, fAy, vVertex0, vVertex2) ) 
-  {
-    cerr << "fail 8" << endl;
-    return 0;
-  }
-
-  fAx = fabsf( vEdge2(1));
-  fAy = fabsf( vEdge2(0));
-  if ( !AxisTestZ( box, vEdge2, fAx, fAy, vVertex1, vVertex2) ) 
-  {
-    cerr << "fail 9" << endl;
-    return 0;
-  }
   
   float fMin, fMax;
   // Test X-direction triangle AABB bs box
   FindMinMax( vVertex0(0), vVertex1(0), vVertex2(0), fMin, fMax);
-  if ( fMin > box.GetHalfWidth() || fMax < -box.GetHalfWidth()) 
-  {
-    cerr << "fail 10" << endl;
-    return 0;
-  }
+  if ( fMin > box.GetHalfWidth() || fMax < -box.GetHalfWidth())  return 0;
+
   // Test Y-direction triangle AABB vs box
   FindMinMax( vVertex0(1), vVertex1(1), vVertex2(1), fMin, fMax);
-  if ( fMin > box.GetHalfHeight() || fMax < -box.GetHalfHeight()) 
-  {
-    cerr << "fail 11" << endl;
-    return 0;
-  }
+  if ( fMin > box.GetHalfHeight() || fMax < -box.GetHalfHeight())  return 0;
+
   // Test Z-direction triangle AABB vs box
   FindMinMax( vVertex0(2), vVertex1(2), vVertex2(2), fMin, fMax);
-  if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength()) 
-  {
-    cerr << "fail 12" << endl;
-    return 0;
-  }
-
+  if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength())  return 0;
 
   ////////////////////
   // There might be some advantages in using AABB for PlaneIntersectsBox,
@@ -467,7 +405,6 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   plane.Calculate( vVertex1, vVertex0_Orig);
   if ( !PlaneIntersectsBox( plane, box )) 
   {
-    cerr << "fail 13" << endl;
     return 0;
   }
   
