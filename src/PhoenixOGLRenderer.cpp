@@ -182,8 +182,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
   case ELEMENT_TYPE_NORMAL_3F:
-    glEnableClientState( GL_NORMAL_ARRAY );
     glNormalPointer( GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    glEnableClientState( GL_NORMAL_ARRAY );
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_UNIFORM_2F:
@@ -941,9 +941,9 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int 
   case DIRECTIONAL:
     // if we have directional light, the position parameter 
     // actually defines the direction
-    aTempVector[0] = light.GetDirection()(0);
-    aTempVector[1] = light.GetDirection()(1);
-    aTempVector[2] = light.GetDirection()(2);
+    aTempVector[0] = -light.GetDirection()(0);
+    aTempVector[1] = -light.GetDirection()(1);
+    aTempVector[2] = -light.GetDirection()(2);
     aTempVector[3] = 0.0f;
     glLightf(iLightID, GL_SPOT_CUTOFF, 180.0);
 
@@ -986,25 +986,25 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int 
   glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
 
   // Set diffuse RGBA intensity 
-  aiTempVector[0] = light.GetDiffuseColor()(0);
-  aiTempVector[1] = light.GetDiffuseColor()(1);
-  aiTempVector[2] = light.GetDiffuseColor()(2);
-  aiTempVector[3] = light.GetDiffuseColor()(3);
-  glLightiv(iLightID, GL_DIFFUSE, aiTempVector);
+  aTempVector[0] = (float)light.GetDiffuseColor()(0)/255.0f;
+  aTempVector[1] = (float)light.GetDiffuseColor()(1)/255.0f;
+  aTempVector[2] = (float)light.GetDiffuseColor()(2)/255.0f;
+  aTempVector[3] = (float)light.GetDiffuseColor()(3)/255.0f;
+  glLightfv(iLightID, GL_DIFFUSE, aTempVector);
 
   // Set ambient RGBA intensity
-  aiTempVector[0] = light.GetAmbientColor()(0);
-  aiTempVector[1] = light.GetAmbientColor()(1);
-  aiTempVector[2] = light.GetAmbientColor()(2);
-  aiTempVector[3] = light.GetAmbientColor()(3);
-  glLightiv(iLightID, GL_AMBIENT, aiTempVector);
+  aTempVector[0] = (float)light.GetAmbientColor()(0)/255.0f;
+  aTempVector[1] = (float)light.GetAmbientColor()(1)/255.0f;
+  aTempVector[2] = (float)light.GetAmbientColor()(2)/255.0f;
+  aTempVector[3] = (float)light.GetAmbientColor()(3)/255.0f;
+  glLightfv(iLightID, GL_AMBIENT, aTempVector);
 
   // Set specular RGBA intensity
-  aiTempVector[0] = light.GetSpecularColor()(0);
-  aiTempVector[1] = light.GetSpecularColor()(1);
-  aiTempVector[2] = light.GetSpecularColor()(2);
-  aiTempVector[3] = light.GetSpecularColor()(3);
-  glLightiv(iLightID, GL_SPECULAR, aiTempVector);
+  aTempVector[0] = (float)light.GetSpecularColor()(0)/255.0f;
+  aTempVector[1] = (float)light.GetSpecularColor()(1)/255.0f;
+  aTempVector[2] = (float)light.GetSpecularColor()(2)/255.0f;
+  aTempVector[3] = (float)light.GetSpecularColor()(3)/255.0f;
+  glLightfv(iLightID, GL_SPECULAR, aTempVector);
 }
 /////////////////////////////////////////////////////////////////
 void 
