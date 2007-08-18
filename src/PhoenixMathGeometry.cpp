@@ -1111,18 +1111,6 @@ std::ostream& operator<<( std::ostream &stream, CPlane plane )
 //   }
 // }
 // /////////////////////////////////////////////////////////////////
-// int
-// Geometry::PointIntersectsOBB( const COrientedBox &obBox, 
-// 			      const CVector3<float> &vPoint )
-// {
-  
-//   CVector3<float> vPos = vPoint - obBox.GetPosition();
-//   if ( fabs(vPos.Dot(obBox.GetForwardVector())) > obBox.GetHalfLength()) return 0;
-//   if ( fabs(vPos.Dot(obBox.GetRightVector())) > obBox.GetHalfWidth()) return 0;
-//   if ( fabs(vPos.Dot(obBox.GetUpVector())) > obBox.GetHalfHeight()) return 0;
-//   return 1;
-// }
-// /////////////////////////////////////////////////////////////////
 // int 
 // Geometry::RayIntersectsOBB( const CVector3<float> &vRayStart, 
 // 			    const CVector3<float> &vRayDir,

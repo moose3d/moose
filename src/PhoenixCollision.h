@@ -101,6 +101,14 @@ namespace Phoenix
 			       Phoenix::Math::CVector3<float> vVertex2,
 			       const Phoenix::Volume::COrientedBox &box );
 
+    ////////////////////
+    /// Checks whether point is inside oriented box.
+    /// \param vPoint The point to be checked.
+    /// \param obBox An oriented box.
+    /// \returns non-zero on intersect, zero otherwise.
+    int   PointIntersectsOBB( const CVector3<float> &vPoint,
+			      const Phoenix::Volume::COrientedBox &obBox );
+
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 /*     char SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo); */
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
@@ -161,7 +169,7 @@ namespace Phoenix
 
     
     
-/*     //int   PointIntersectsOBB( const Phoenix::Volume::COrientedBox &obBox, const CVector3<float> &vPoint ); */
+
 /*     // Returns true if point is inside the volume limited by the planes in kDop. */
 /*     //  char	PointWithinKDOP( CVector3<float> &vPoint, Phoenix::Volume::CPolytope &kDop); */
     
