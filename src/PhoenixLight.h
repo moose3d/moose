@@ -1,171 +1,250 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-
-#ifndef __GSE_light_h__
-#define __GSE_light_h__
-
-#include "GSE_structures.h"
-#include "GSE_Configuration.h"
-
-class GSE_LightMgr;
-
-class GSE_Light : public GSE_Object, public GSE_Positional
+#ifndef __PhoenixLight_h__
+#define __PhoenixLight_h__
+/////////////////////////////////////////////////////////////////
+#include "PhoenixCore.h"
+#include "PhoenixMath.h"
+/////////////////////////////////////////////////////////////////
+namespace Phoenix
 {
-  friend class GSE_LightMgr;
- public:
-  // GSE_LightType defines does the light emit in 
-  // every direction or is is a spotlight.
-  typedef enum {
-    SPOTLIGHT = 0,
-    DIRECTIONAL = 1,
-    POINTLIGHT = 2
-  } GSE_LightType;
-
-  // GSE_LightLocation defines how distant the light is; 
-  // ie. sun might ne DIRECTIONAL, lightbulb POINTLIGHT.
-
-  // @see GSE_Lighttype
-  GSE_LightType		m_iLightType;
-
-  // The diffuse color for this light
-  GSE_Color	m_vDiffuseColor;
-  // The ambient color for this light
-  GSE_Color	m_vAmbientColor;
-  // The specular component for this light
-  GSE_Color	m_vSpecular;
-  
-  // The direction of this light, used when type is DIRECTIONAL or
-  // SPOTLIGHT
-  GSE_Vector3	m_vDirection;
-
-  // accepted values [0.0 .. 90.0],180
-  float		m_fSpotAngle;
-  float		m_fSpotExponent;
-
-  int		m_bEnabled;
-  // The attenuation values
-  float		m_fQuadraticAttenuation;
-  float		m_fLinearAttenuation;
-  float		m_fConstantAttenuation;
-  /// Distance to be used when determining closest lights to an object.
-  float		m_fBrightness;
- protected:
-  // The default constructor.
-  GSE_Light() : m_vDirection(-GSE_Vector3::GetWorldZ())
+  namespace Graphics
   {
-    m_fSpotAngle    = 0.0;
-    m_fSpotExponent = 0.0;
-    m_iLightType    = DIRECTIONAL;
-    m_bEnabled      = 1;
-    m_fQuadraticAttenuation = 0.0;
-    m_fLinearAttenuation    = 0.0;
-    m_fConstantAttenuation  = 0.0;
-    m_fBrightness = 0.0f;
-  }
- public:
-  inline int IsEnabled() const
-  {
-    return m_bEnabled;
-  }
-  inline void SetEnabled(int bFlag )
-  {
-    m_bEnabled = bFlag;
-  }
+    
+    enum LIGHT_TYPE 
+    {
+      SPOTLIGHT = 0,
+      DIRECTIONAL,
+      POINTLIGHT
+    };
+    ////////////////////
+    /// Class for lights.
+    class CLight : public Phoenix::Spatial::CPositional,
+                   public Phoenix::Spatial::COneDirectional,
+                   public Phoenix::Core::CEnableable
+    {
+    protected:
+      /// Light type.
+      LIGHT_TYPE   m_tLightType;
+      /// Diffuse color for this light
+      Phoenix::Math::CVector4<unsigned char> m_vDiffuseColor;
+      /// Ambient color for this light
+      Phoenix::Math::CVector4<unsigned char> m_vAmbientColor;
+      /// Specular component for this light
+      Phoenix::Math::CVector4<unsigned char> m_vSpecular;
+      /// Spot angle; accepted values [0.0 .. 90.0],180
+      float		m_fSpotAngle;
+      /// Spot exponent value.
+      float		m_fSpotExponent;
+      // Attenuation; v*distance²
+      float		m_fQuadraticAttenuation;
+      // Attenuation; v*distance
+      float		m_fLinearAttenuation;
+      // Attenuation; v
+      float		m_fConstantAttenuation;
+      /// Distance to be used when determining closest lights to an object.
+      float		m_fBrightness;
 
-};
-
-//
-// The Singleton manager class for every light
-//
-class GSE_LightMgr : public GSE_Container<GSE_Light>,
-		     public GSE_Singleton< GSE_LightMgr >,
-		     protected GSE_Configuration
+    protected:
+      ////////////////////
+      /// Sets brightness value.
+      /// \param fValue Brightness value.
+      void SetBrightness( float fValue )
+      ////////////////////
+      /// Returns brightness value.
+      /// \returns Brightness value.
+      float GetBrightness() const
+    public:
+      ////////////////////
+      /// Default constructor.
+      CLight();
+      ////////////////////
+      /// Sets spot angle.
+      /// \param fAngle Angle in degrees.
+      void SetSpotAngle( float fAngle );
+      ////////////////////
+      /// Returns spot angle.
+      /// \returns  Angle in degrees.
+      float GetSpotAngle() const;
+      ////////////////////
+      /// Sets light type.
+      /// \param tType LIGHT_TYPE.
+      void SetType( LIGHT_TYPE tType );
+      ////////////////////
+      /// Returns light type.
+      /// \returns One of LIGHT_TYPEs.
+      LIGHT_TYPE GetType() const;
+      ////////////////////
+      /// Sets constant attenuation.
+      /// \param fValue Constant attenuation value.
+      void SetConstantAttenuation(float fValue );
+      ////////////////////
+      /// Returns constant attenuation.
+      /// \returns Constant attenuation value.
+      float GetConstantAttenuation() const;
+      ////////////////////
+      /// Sets linear attenuation.
+      /// \param fValue Linear attenuation value.
+      void SetLinearAttenuation(float fValue );
+      ////////////////////
+      /// Returns linear attenuation.
+      /// \returns Linear attenuation value.
+      float GetLinearAttenuation() const;
+      ////////////////////
+      /// Sets quadratic attenuation.
+      /// \param fValue Quadratic attenuation value.
+      void SetQuadraticAttenuation(float fValue );
+      ////////////////////
+      /// Returns quadratic attenuation.
+      /// \returns Quadratic attenuation value.
+      float GetQuadraticAttenuation() const;
+      ////////////////////
+      /// Returns diffuse color.
+      /// \returns Reference to color vector.
+      const Phoenix::Math::CVector4<unsigned char> & GetDiffuseColor() const;
+      ////////////////////
+      /// Assigns diffuse color.
+      /// \param vColor Color vector.
+      void SetDiffuseColor(const Phoenix::Math::CVector4<unsigned char> &vColor);
+      ////////////////////
+      /// Returns diffuse color.
+      /// \returns Reference to color vector.
+      const Phoenix::Math::CVector4<unsigned char> & GetAmbientColor() const;
+      ////////////////////
+      /// Assigns ambient color.
+      /// \param vColor Color vector.
+      void SetAmbientColor(const Phoenix::Math::CVector4<unsigned char> & vColor);
+      ////////////////////
+      /// Returns specular color.
+      /// \returns Reference to color vector.
+      Phoenix::Math::CVector4<unsigned char> & GetSpecularColor() const;
+      ////////////////////
+      /// Assigns specular color.
+      /// \param vColor Color vector.
+      void SetSpecularColor(Phoenix::Math::CVector4<unsigned char> & vColor);
+    };
+  }; // namespace Graphics
+}; // namespace Phoenix
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CLight::CLight()
 {
-  friend class GSE_Singleton<GSE_LightMgr>;
- private:
-  
-  // The default constructor, private due the Singleton nature.
-  GSE_LightMgr() : GSE_Container<GSE_Light>(), GSE_Configuration() 
-  {
-    SetSectionString("Light");
-    SetSectionEndString("}");
-    SetWarningsEnabled(false);
-  }
-  ~GSE_LightMgr() {}
-  
- public:
-  GSE_Light *CreateLight()
-  {
-    GSE_Light *pLight = new GSE_Light();
-    GSE_Container<GSE_Light>::Add( pLight );
-    return pLight;
-  }
-  GSE_Light *GetLightFromFile( const char *szFilename, const char *szLightname = NULL)
-  {
-    string strLightName;
-    GSE_Light *pLight = NULL;
-
-    if ( ReadConfig(szFilename) )
-    {
-      return NULL;
-    }
-    else if ( GetNodeCount() > 1 ) // Check there was some options
-    {
-      if ( szLightname != NULL )
-      {
-	strLightName = szLightname;
-      } 
-      else
-      {
-	// Grab the first light
-	strLightName = GetChildren("").front();
-      }
-      pLight = CreateLight();
-      string strType = GetString(strLightName+"|Type");
-
-      if      ( strType == "Point" )        pLight->m_iLightType = GSE_Light::POINTLIGHT;
-      else if ( strType == "Spot" )	    pLight->m_iLightType = GSE_Light::SPOTLIGHT;
-      else if ( strType == "Directional" )  pLight->m_iLightType = GSE_Light::DIRECTIONAL;
-      else				    pLight->m_iLightType = GSE_Light::POINTLIGHT;
-
-      
-      pLight->SetPosition(       GSE_Vector3(GetVector<3>(strLightName+"|Position").m_pValues));
-      pLight->m_vDiffuseColor  = GSE_Color(GetVector<4>(strLightName+"|DiffuseColor").m_pValues);
-      pLight->m_vAmbientColor  = GSE_Color(GetVector<4>(strLightName+"|AmbientColor").m_pValues);
-      pLight->m_vSpecular      = GSE_Color(GetVector<4>(strLightName+"|SpecularColor").m_pValues);
-      pLight->m_vDirection     = GSE_Vector3(GetVector<3>(strLightName+"|Direction").m_pValues);
-
-      pLight->m_fSpotAngle	       = GetFloat(strLightName+"|SpotAngle");
-      pLight->m_fSpotExponent	       = GetFloat(strLightName+"|SpotExponent");
-      pLight->m_bEnabled	       = GetBoolean(strLightName+"|Enabled");
-      pLight->m_fQuadraticAttenuation  = GetFloat(strLightName+"|AttQuadratic");
-      pLight->m_fLinearAttenuation     = GetFloat(strLightName+"|AttLinear");
-      pLight->m_fConstantAttenuation   = GetFloat(strLightName+"|AttConstant");
-    }
-    Reset();
-    return pLight;
-  }
-  
-  //static GSE_LightMgr * GetManager();
-  
-};
-
+  SetPosition(0.0f,0.0f,0.0f);
+  SetDirection(0.0f,0.0f,-1.0f);
+  SetEnabled(1);
+  SetSpotAngle(0.0f);
+  SetSpotExponent(0.0f);
+  SetType(DIRECTIONAL);
+  SetQuadraticAttenuation(0.0f);
+  SetLinearAttenuation(0.0f);
+  SetConstantAttenuation(0.0f);
+  SetBrightness(0.0f);
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetSpotAngle( float fAngle )
+{
+  m_fSpotAngle    = fAngle;
+}
+/////////////////////////////////////////////////////////////////
+inline float 
+Phoenix::Graphics::CLight::GetSpotAngle() const
+{
+  return m_fSpotAngle;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetType( LIGHT_TYPE tType )
+{
+  m_tLightType = tType;
+}
+/////////////////////////////////////////////////////////////////
+inline Phoenix::Graphics::LIGHT_TYPE 
+Phoenix::Graphics::CLight::GetType() const
+{
+  return m_tLightType;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetConstantAttenuation(float fValue )
+{
+  m_fConstantAttenuation = fValue;
+}
+/////////////////////////////////////////////////////////////////
+inline float 
+Phoenix::Graphics::CLight::GetConstantAttenuation() const
+{
+  return m_fConstantAttenuation;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetLinearAttenuation(float fValue )
+{
+  m_fLinearAttenuation = fValue;
+}
+/////////////////////////////////////////////////////////////////
+inline float 
+Phoenix::Graphics::CLight::GetLinearAttenuation() const
+{
+  return m_fLinearAttenuation;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetQuadraticAttenuation(float fValue )
+{
+  m_fQuadraticAttenuation = fValue;
+}
+/////////////////////////////////////////////////////////////////
+inline float 
+Phoenix::Graphics::CLight::GetQuadraticAttenuation() const
+{
+  return m_fQuadraticAttenuation;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetBrightness( float fValue )
+{
+  m_fBrightness = fValue;
+}
+/////////////////////////////////////////////////////////////////
+inline float
+Phoenix::Graphics::CLight::GetBrightness() const
+{
+  return m_fBrightness;
+}
+/////////////////////////////////////////////////////////////////
+inline const Phoenix::Math::CVector4<unsigned char> & 
+Phoenix::Graphics::CLight::GetDiffuseColor() const
+{
+  return m_vDiffuseColor;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetDiffuseColor(const Phoenix::Math::CVector4<unsigned char> &vColor)
+{
+  m_vDiffuseColor = vColor;
+}
+/////////////////////////////////////////////////////////////////
+inline const Phoenix::Math::CVector4<unsigned char> & 
+Phoenix::Graphics::CLight::GetAmbientColor() const
+{
+  return m_vAmbientColor;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetAmbientColor(const Phoenix::Math::CVector4<unsigned char> & vColor)
+{
+  m_vAmbientColor = vColor;
+}
+/////////////////////////////////////////////////////////////////
+inline Phoenix::Math::CVector4<unsigned char> & 
+Phoenix::Graphics::CLight::GetAmbientColor() const
+{
+  return m_vSpecular;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::CLight::SetAmbientColor(Phoenix::Math::CVector4<unsigned char> & vColor) 
+{
+  m_vSpecular = vColor;
+}
+/////////////////////////////////////////////////////////////////
 #endif
+/////////////////////////////////////////////////////////////////
