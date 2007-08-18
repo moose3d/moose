@@ -950,3 +950,139 @@ TEST(TriangleIntersectsOBB_RealWorldExample )
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
 }
 /////////////////////////////////////////////////////////////////
+TEST(PointIntersectsOBB )
+{
+
+  COrientedBox box;
+  CVector3<float> vPoint;
+
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+  box.SetPosition(0,0,0);
+  // Check y-axis
+  vPoint = CVector3<float>(0,2,0);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[1] = 1.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[1] = 1.000f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[1] = 0.999f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[1] = -0.999f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[1] = -1.000f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[1] = -1.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[1] = -2.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  // Check x-axis
+  vPoint = CVector3<float>(2,0,0);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[0] = 1.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[0] = 1.000f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[0] = 0.999f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[0] = -0.999f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[0] = -1.000f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[0] = -1.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[0] = -2.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  // Check x-axis
+  vPoint = CVector3<float>(0,0,2);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[2] = 1.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[2] = 1.000f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[2] = 0.999f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[2] = -0.999f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[2] = -1.000f;
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint[2] = -1.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint[2] = -2.001f;
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+
+  // Check corners
+  vPoint = CVector3<float>(2,2,2);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(1.001,1.001,1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(1.000,1.000,1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(0.999,0.999,0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-0.999,-0.999,-0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-1.000,-1.000,-1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-1.001,-1.001,-1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(-2.001,-2.001,-2.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+
+  // Check corners
+  vPoint = CVector3<float>(-2,2,2);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(-1.001,1.001,1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(-1.000,1.000,1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-0.999,0.999,0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(0.999,-0.999,-0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(1.000,-1.000,-1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(1.001,-1.001,-1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(2.001,-2.001,-2.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+
+  // Check corners
+  vPoint = CVector3<float>(2,-2,2);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(1.001,-1.001,1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(1.000,-1.000,1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(0.999,-0.999,0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-0.999,0.999,-0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-1.000,1.000,-1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-1.001,1.001,-1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(-2.001,2.001,-2.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+
+  // Check corners
+  vPoint = CVector3<float>(2,2,-2);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(1.001,1.001,-1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(1.000,1.000,-1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(0.999,0.999,-0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-0.999,0-.999,0.999);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-1.000,-1.000,1.000);
+  CHECK( PointIntersectsOBB( vPoint, box ) != 0 );
+  vPoint = CVector3<float>(-1.001,-1.001,1.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+  vPoint = CVector3<float>(-2.001,-2.001,2.001);
+  CHECK( PointIntersectsOBB( vPoint, box ) == 0 );
+
+}
+/////////////////////////////////////////////////////////////////
