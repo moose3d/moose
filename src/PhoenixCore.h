@@ -41,6 +41,26 @@ namespace Phoenix
       inline int IsNull() const { return m_bIsNull; }
     };
     /////////////////////////////////////////////////////////////////
+    class CEnableable
+    {
+    private:
+      /// Is object enabled.
+      int		m_bEnabled;
+    protected:
+      ////////////////////
+      /// Default constructor. Disables object.
+      CEnableable() : m_bEnabled(0) { }
+    public:
+      ////////////////////
+      /// Returns is object enabled or disabled.
+      /// \returns true for enabled, false for disabled.
+      int IsEnabled() const {   return m_bEnabled; }
+      ////////////////////
+      /// Sets object enabled or disabled.
+      /// \param bFlag Boolean flag - true for enabling, false for disabling.
+      void SetEnabled(int bFlag ) { m_bEnabled = bFlag; }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
     class CTimer 
     {
