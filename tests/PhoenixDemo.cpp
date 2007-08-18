@@ -129,16 +129,19 @@ int main()
   CVector3<float> vMove(0,0,0.2f);
 
   CLight light;
-  light.SetPosition(0,15.0f,15.0f);
-
-  CVector3<float> vDir(0,-1,-1);
+  light.SetPosition(-1.0f,-1.0f,15.0f);
+  light.SetSpotAngle(1.0f);
+  CVector3<float> vDir(0,0,-1);
   vDir.Normalize();
   light.SetDirection( vDir );
-  light.SetType(DIRECTIONAL);
+  light.SetType(SPOTLIGHT);
   light.SetConstantAttenuation(0.0f);
-  CVector4<unsigned char> vColor(255,255,255,255);
+  light.SetLinearAttenuation(0.00f);
+  light.SetQuadraticAttenuation(0.001f);
+  CVector4<unsigned char> vColor(155,155,155,255);
   light.SetDiffuseColor(vColor);
-  light.SetAmbientColor(vColor);
+  light.SetAmbientColor(vColor = CVector4<unsigned char>(10,10,10,255));
+  light.SetSpecularColor(vColor = CVector4<unsigned char>(255,255,255,255));
   CModel model;
   model.SetVertexHandle( hVertexHandle );
   model.SetIndexHandle( hIndexHandle );
@@ -205,6 +208,9 @@ int main()
     
     pOglRenderer->CommitState( STATE_LIGHTING );
     pOglRenderer->CommitLight( light );
+
+    glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 1 );
+    glEnable(GL_COLOR_MATERIAL);
     glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
     // Draw colored triangle
     pOglRenderer->CommitVertexDescriptor( pVertices );
