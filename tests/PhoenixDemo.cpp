@@ -69,6 +69,20 @@ int main()
   pTexCoords->GetPointer<float>()[5] = 1.0f;
   pTexCoords->GetPointer<float>()[6] = 1.0f;
   pTexCoords->GetPointer<float>()[7] = 0.0f;
+  ////////////////////
+  CVertexDescriptor *pNormals = new CVertexDescriptor( ELEMENT_TYPE_NORMAL_3F, 4);
+  pNormals->GetPointer<float>()[0] = 0.0f;
+  pNormals->GetPointer<float>()[1] = 0.0f;
+  pNormals->GetPointer<float>()[2] = 1.0f;
+  pNormals->GetPointer<float>()[3] = 0.0f;
+  pNormals->GetPointer<float>()[4] = 0.0f;
+  pNormals->GetPointer<float>()[5] = 1.0f;
+  pNormals->GetPointer<float>()[6] = 0.0f;
+  pNormals->GetPointer<float>()[7] = 0.0f;
+  pNormals->GetPointer<float>()[8] = 1.0f;
+  pNormals->GetPointer<float>()[9] = 0.0f;
+  pNormals->GetPointer<float>()[10] = 0.0f;
+  pNormals->GetPointer<float>()[11] = 1.0f;
 
   CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_STRIP, 4 );
   pIndices->GetPointer<unsigned short int>()[0] = 0;
@@ -114,6 +128,17 @@ int main()
   SDL_Event event;
   CVector3<float> vMove(0,0,0.2f);
 
+  CLight light;
+  light.SetPosition(0,15.0f,15.0f);
+
+  CVector3<float> vDir(0,-1,-1);
+  vDir.Normalize();
+  light.SetDirection( vDir );
+  light.SetType(DIRECTIONAL);
+  light.SetConstantAttenuation(0.0f);
+  CVector4<unsigned char> vColor(255,255,255,255);
+  light.SetDiffuseColor(vColor);
+  light.SetAmbientColor(vColor);
   CModel model;
   model.SetVertexHandle( hVertexHandle );
   model.SetIndexHandle( hIndexHandle );
@@ -129,7 +154,8 @@ int main()
   model.AddTextureFilter( MAG_LINEAR, 1 );
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-  CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/vertex.glsl"), std::string("Resources/Shaders/fragment.glsl") );
+  CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/vertex.glsl"), 
+						 std::string("Resources/Shaders/fragment.glsl") );
   assert(pShader != NULL );
   while( g_bLoop )
   {
@@ -175,14 +201,22 @@ int main()
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
+
+    
+    pOglRenderer->CommitState( STATE_LIGHTING );
+    pOglRenderer->CommitLight( light );
+    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
     // Draw colored triangle
     pOglRenderer->CommitVertexDescriptor( pVertices );
     pOglRenderer->CommitVertexDescriptor( pColors );
+    pOglRenderer->CommitVertexDescriptor( pNormals );
     pOglRenderer->CommitPrimitive( pIndices );
+    pOglRenderer->DisableState( STATE_LIGHTING );
+    pOglRenderer->DisableLight( 0 );
     // Draw textured / transparent triangle
     //pOglRenderer->CommitTexture( 0, pTexture );
     glPushMatrix();
-    glTranslatef(1.0f,0,0);
+    glTranslatef(2.5f,0,0);
     // glEnable(GL_ALPHA_TEST);
 //     glAlphaFunc( GL_GREATER, 0.3f);
 //     glTranslatef( 0,0,0.3f);
