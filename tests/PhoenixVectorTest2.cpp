@@ -1,6 +1,8 @@
 #include "../src/PhoenixVector2.h"
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
@@ -237,8 +239,11 @@ TEST(CVector2_PrefixScalingOperator)
 /////////////////////////////////////////////////////////////////
 TEST(CVector2_StreamOutput)
 {
+  const char szResult[] = { "1.0,2.0" };
   CVector2<float> vector(1.0f,2.0f);
-  std::cerr << vector << std::endl;
+  std::ostringstream stream;
+  stream << std::setiosflags(std::ios::fixed) << std::setprecision(1) << vector << std::endl;
+  CHECK_ARRAY_EQUAL( szResult, stream.str().c_str(), 7 );
 }
 /////////////////////////////////////////////////////////////////
 
