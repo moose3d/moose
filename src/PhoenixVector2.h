@@ -62,6 +62,13 @@ namespace Phoenix
 	return m_pValues;
       }
       ////////////////////
+      /// Returns values as array.
+      /// \returns pointer to array of values.
+      inline const TYPE * GetArray() const
+      {
+	return m_pValues;
+      }
+      ////////////////////
       /// The parametrized constructor copies data from an existing array.
       inline void Set( TYPE *pArray )
       {
