@@ -22,7 +22,17 @@ namespace Phoenix
       /// It is with the programmer to utilize this correctly.
       TYPE *m_pValues; 
     public:
-      inline TYPE * GetArray()
+      ////////////////////
+      /// Returns values as array.
+      /// \returns pointer to array of values.
+      inline TYPE * GetArray() 
+      {
+	return m_pValues;
+      }
+      ////////////////////
+      /// Returns values as array.
+      /// \returns pointer to array of values.
+      inline const TYPE * GetArray() const
       {
 	return m_pValues;
       }
