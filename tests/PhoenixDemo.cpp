@@ -160,6 +160,7 @@ int main()
   CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/vertex.glsl"), 
 						 std::string("Resources/Shaders/fragment.glsl") );
   assert(pShader != NULL );
+  float fAngle = 0.0f;
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -204,19 +205,60 @@ int main()
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
-
     
     pOglRenderer->CommitState( STATE_LIGHTING );
     pOglRenderer->CommitLight( light );
-
+    
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 1 );
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    glEnable(GL_DEPTH_TEST);
+
     // Draw colored triangle
     pOglRenderer->CommitVertexDescriptor( pVertices );
     pOglRenderer->CommitVertexDescriptor( pColors );
     pOglRenderer->CommitVertexDescriptor( pNormals );
+    
+    glPushMatrix();
+
+    glRotatef(fAngle,1,0,0);
+    fAngle += 0.03174f;
     pOglRenderer->CommitPrimitive( pIndices );
+
+    
+
+
+    glPushMatrix();
+     glTranslatef(1.0,0,-1.0);
+     glRotatef(90.0f, 0,1,0);
+     pOglRenderer->CommitPrimitive( pIndices );
+    glPopMatrix();
+    
+    glPushMatrix();
+     glTranslatef(-1.0,0,-1.0);
+     glRotatef(-90.0f, 0,1,0);
+     pOglRenderer->CommitPrimitive( pIndices );
+    glPopMatrix();
+
+    glPushMatrix();
+     glTranslatef(0,0,-1.0);
+     glRotatef(180.0f, 0,1,0);
+     pOglRenderer->CommitPrimitive( pIndices );
+    glPopMatrix();
+
+    glPushMatrix();
+     glTranslatef(0,-1.0,-1.0);
+     glRotatef(90.0f, 1,0,0);
+     pOglRenderer->CommitPrimitive( pIndices );
+    glPopMatrix();
+
+    glPushMatrix();
+     glTranslatef(0,1.0,-1.0);
+     glRotatef(-90.0f, 1,0,0);
+     pOglRenderer->CommitPrimitive( pIndices );
+    glPopMatrix();
+    
+    glPopMatrix();
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->DisableLight( 0 );
     // Draw textured / transparent triangle
