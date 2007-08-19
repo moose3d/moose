@@ -66,6 +66,9 @@ namespace Phoenix
 	SetQuadraticAttenuation(0.0f);
 	SetLinearAttenuation(0.0f);
 	SetConstantAttenuation(0.0f);
+	SetDiffuseColor( CVector4<unsigned char>(125,125,125,255));
+	SetAmbientColor( CVector4<unsigned char>(25,25,25,255));
+	SetSpecularColor( CVector4<unsigned char>(225,225,225,255));
 	SetBrightness(0.0f);
       }
       ////////////////////
@@ -139,7 +142,7 @@ namespace Phoenix
       ////////////////////
       /// Assigns specular color.
       /// \param vColor Color vector.
-      void SetSpecularColor(Phoenix::Math::CVector4<unsigned char> & vColor);
+      void SetSpecularColor(const Phoenix::Math::CVector4<unsigned char> & vColor);
     };
   }; // namespace Graphics
 }; // namespace Phoenix
@@ -260,7 +263,7 @@ Phoenix::Graphics::CLight::GetSpecularColor() const
 }
 /////////////////////////////////////////////////////////////////
 inline void 
-Phoenix::Graphics::CLight::SetSpecularColor(Phoenix::Math::CVector4<unsigned char> & vColor) 
+Phoenix::Graphics::CLight::SetSpecularColor(const Phoenix::Math::CVector4<unsigned char> & vColor) 
 {
   m_vSpecular = vColor;
 }
