@@ -935,7 +935,6 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int 
   GLenum iLightID = GL_LIGHT0+nLightId;
   glEnable(iLightID);
   float aTempVector[4];
-  int   aiTempVector[4];
   switch ( light.GetType())
   {
   case DIRECTIONAL:
