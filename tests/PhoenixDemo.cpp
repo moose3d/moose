@@ -130,14 +130,14 @@ int main()
 
   CLight light;
   light.SetPosition(-1.0f,-1.0f,15.0f);
-  light.SetSpotAngle(1.0f);
+  light.SetSpotExponent(128.0f);
   CVector3<float> vDir(0,0,-1);
   vDir.Normalize();
   light.SetDirection( vDir );
-  light.SetType(SPOTLIGHT);
+  light.SetType(POINTLIGHT);
   light.SetConstantAttenuation(0.0f);
   light.SetLinearAttenuation(0.00f);
-  light.SetQuadraticAttenuation(0.001f);
+  light.SetQuadraticAttenuation(0.01f);
   CVector4<unsigned char> vColor(155,155,155,255);
   light.SetDiffuseColor(vColor);
   light.SetAmbientColor(vColor = CVector4<unsigned char>(10,10,10,255));
@@ -159,6 +159,9 @@ int main()
 
   CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/vertex.glsl"), 
 						 std::string("Resources/Shaders/fragment.glsl") );
+  
+  CShader *pShaderPerPixel = pOglRenderer->CreateShader( std::string("Resources/Shaders/pointlight_vertex.glsl"), 
+							 std::string("Resources/Shaders/pointlight_frag.glsl") );
   assert(pShader != NULL );
   float fAngle = 0.0f;
   while( g_bLoop )
@@ -218,7 +221,7 @@ int main()
     pOglRenderer->CommitVertexDescriptor( pVertices );
     pOglRenderer->CommitVertexDescriptor( pColors );
     pOglRenderer->CommitVertexDescriptor( pNormals );
-    
+    pOglRenderer->CommitShader( pShaderPerPixel );
     glPushMatrix();
 
     glRotatef(fAngle,1,0,0);
