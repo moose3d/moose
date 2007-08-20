@@ -4,6 +4,7 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
 							 unsigned int nNumElements)
 {
   m_nType = nType;
+  m_nSize = nNumElements;
   switch ( GetType() )
   {
   case ELEMENT_TYPE_VERTEX_3F:
