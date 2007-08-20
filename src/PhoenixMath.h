@@ -79,8 +79,25 @@ namespace Phoenix
     
 
     // Constructs a Row-Major TBN (Tangent, Bitangent, Normal)-matrix for bump mapping
-    CMatrix3x3<float> GetTBNMatrix( Phoenix::Math::CVector3<float> vPoint0, Phoenix::Math::CVector3<float> vPoint1, Phoenix::Math::CVector3<float> vPoint2,
-				    Phoenix::Math::CVector2<float> vTexCoord0, Phoenix::Math::CVector2<float> vTexCoord2, Phoenix::Math::CVector2<float> vTexCoord3);
+    CMatrix3x3<float> GetTBNMatrix( Phoenix::Math::CVector3<float> vPoint0, 
+				    Phoenix::Math::CVector3<float> vPoint1, 
+				    Phoenix::Math::CVector3<float> vPoint2,
+				    Phoenix::Math::CVector2<float> vTexCoord0, 
+				    Phoenix::Math::CVector2<float> vTexCoord2, 
+				    Phoenix::Math::CVector2<float> vTexCoord3);
+
+    ////////////////////
+    /// Constructs tangent array of 4-vectors for bump mapping. w-coordinate indicates handedness (1.0f or -1.0f).
+    /// \param vertices Vertex coordinates.
+    /// \param normals Vertex normals
+    /// \param texCoords Texture coordinates for base texture.
+    /// \param indices Index array which defines shapes of model (Must be TRI_LIST).
+    /// \param tangents CVertexDescriptor where tangents are stored. Must be allocated beforehand with type ELEMENT_TYPE_ATTRIB_4F.
+    void CalculateTangentArray( const Phoenix::Graphics::CVertexDescriptor &vertices,
+				const Phoenix::Graphics::CVertexDescriptor &normals,
+				const Phoenix::Graphics::CVertexDescriptor &texCoords,
+				const Phoenix::Graphics::CIndexArray &indices,
+				Phoenix::Graphics::CVertexDescriptor &tangents);
 
     // Returns the determinant of the 4x4 float matrix
     float	Det(const Phoenix::Math::CMatrix4x4<float> &mMatrix);
