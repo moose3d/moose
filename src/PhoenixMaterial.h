@@ -65,7 +65,7 @@ namespace Phoenix
       ////////////////////
       /// Returns shininess factor.
       /// \returns Shininess value, range 0.0-1.0f
-      float	    GetShininess();
+      float	    GetShininess() const;
       ////////////////////
       /// Assigns shininess factor.
       /// \param fShininess Shininess value, 0.0-1.0f.
@@ -74,56 +74,56 @@ namespace Phoenix
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Math::<float> &
+inline const Phoenix::Math::CVector4<float> &
 Phoenix::Graphics::CMaterial::GetDiffuse() const
 {
   return m_vDiffuse;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Phoenix::Graphics::CMaterial::SetDiffuse( const Phoenix::Math::<float> & vDiffuse)
+Phoenix::Graphics::CMaterial::SetDiffuse( const Phoenix::Math::CVector4<float> & vDiffuse)
 {
   m_vDiffuse = vDiffuse;
 }
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Math::<float> &
+inline const Phoenix::Math::CVector4<float> &
 Phoenix::Graphics::CMaterial::GetAmbient() const
 {
   return m_vAmbient;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Phoenix::Graphics::CMaterial::SetAmbient( const Phoenix::Math::<float> & vAmbient )
+Phoenix::Graphics::CMaterial::SetAmbient( const Phoenix::Math::CVector4<float> & vAmbient )
 {
   m_vAmbient = vAmbient;
 }
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Math::<float> &
+inline const Phoenix::Math::CVector4<float> &
 Phoenix::Graphics::CMaterial::GetSpecular() const
 {
   return m_vSpecular;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Phoenix::Graphics::CMaterial::SetSpecular( const Phoenix::Math::<float> & vSpecular)
+Phoenix::Graphics::CMaterial::SetSpecular( const Phoenix::Math::CVector4<float> & vSpecular)
 {
   m_vSpecular = vSpecular;
 }
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Math::<float> &
+inline const Phoenix::Math::CVector4<float> &
 Phoenix::Graphics::CMaterial::GetEmission() const
 {
   return m_vEmission;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Phoenix::Graphics::CMaterial::SetEmission( const Phoenix::Math::<float> & vEmission)
+Phoenix::Graphics::CMaterial::SetEmission( const Phoenix::Math::CVector4<float> & vEmission)
 {
   m_vEmission = vEmission;
 }
 /////////////////////////////////////////////////////////////////
 inline float
-Phoenix::Graphics::CMaterial::GetShininess()
+Phoenix::Graphics::CMaterial::GetShininess() const
 {
   return m_fShininess;
 }
