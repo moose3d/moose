@@ -84,17 +84,20 @@ int main()
   pNormals->GetPointer<float>()[10] = 0.0f;
   pNormals->GetPointer<float>()[11] = 1.0f;
 
-  CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_STRIP, 4 );
+  CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, 6 );
   pIndices->GetPointer<unsigned short int>()[0] = 0;
   pIndices->GetPointer<unsigned short int>()[1] = 1;
   pIndices->GetPointer<unsigned short int>()[2] = 2;
-  pIndices->GetPointer<unsigned short int>()[3] = 3;
-
+  pIndices->GetPointer<unsigned short int>()[3] = 1;
+  pIndices->GetPointer<unsigned short int>()[4] = 3;
+  pIndices->GetPointer<unsigned short int>()[5] = 2;
   COglRenderer *pOglRenderer = new COglRenderer();
   string strTexFilename("Resources/Textures/painting.tga");
   string strTexFilename2("Resources/Textures/lightmap.tga");
   COglTexture *pTexture  = pOglRenderer->CreateTexture(strTexFilename);
   COglTexture *pTexture2 = pOglRenderer->CreateTexture(strTexFilename2);
+  COglTexture *pTextureRock = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/wall_transparent.tga"));
+  COglTexture *pTextureBump = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/wall_normal.tga"));
   assert( pTexture2 != NULL);
   VERTEX_HANDLE hVertexHandle;
   VERTEX_HANDLE hTexCoordHandle;
@@ -129,19 +132,21 @@ int main()
   CVector3<float> vMove(0,0,0.2f);
 
   CLight light;
-  light.SetPosition(-1.0f,-1.0f,15.0f);
-  light.SetSpotExponent(128.0f);
+  light.SetPosition(0,0.0f,3.0f);
+  light.SetSpotExponent(1.0f);
   CVector3<float> vDir(0,0,-1);
   vDir.Normalize();
   light.SetDirection( vDir );
-  light.SetType(POINTLIGHT);
+  light.SetType(SPOTLIGHT);
   light.SetConstantAttenuation(0.0f);
-  light.SetLinearAttenuation(0.00f);
+  light.SetLinearAttenuation(0.01f);
   light.SetQuadraticAttenuation(0.01f);
+  light.SetSpotAngle(1.0f);
   CVector4<unsigned char> vColor(155,155,155,255);
   light.SetDiffuseColor(vColor);
   light.SetAmbientColor(vColor = CVector4<unsigned char>(10,10,10,255));
   light.SetSpecularColor(vColor = CVector4<unsigned char>(255,255,255,255));
+  
   CModel model;
   model.SetVertexHandle( hVertexHandle );
   model.SetIndexHandle( hIndexHandle );
@@ -160,10 +165,22 @@ int main()
   CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/vertex.glsl"), 
 						 std::string("Resources/Shaders/fragment.glsl") );
   
-  CShader *pShaderPerPixel = pOglRenderer->CreateShader( std::string("Resources/Shaders/pointlight_vertex.glsl"), 
-							 std::string("Resources/Shaders/pointlight_frag.glsl") );
+
+  CShader *pBumpShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/bump_vertex.glsl"), 
+						     std::string("Resources/Shaders/bump_frag.glsl") );
+  CVertexDescriptor *pTangents = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, 4);
+  CalculateTangentArray( *pVertices, *pNormals, *pTexCoords, *pIndices, *pTangents );
   assert(pShader != NULL );
+  assert(pBumpShader != NULL );
+
+
+  CMaterial material;
+  material.SetDiffuse( CVector4<float>(0.86,0.86,0.86,1.0f));
+  material.SetAmbient( CVector4<float>(0.26,0.26,0.26,1.0f));
+  material.SetSpecular( CVector4<float>(1,1,1,1));
+  material.SetShininess( 0.101f);
   float fAngle = 0.0f;
+  float fMagnitude = 2.0f;
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -199,69 +216,60 @@ int main()
 	{
 	  camera.Elevate( -0.3f );
 	} 
+	else if ( event.key.keysym.sym == SDLK_RETURN )
+	{
+	  std::cerr << camera.GetPosition() << std::endl;
+	  std::cerr << camera.GetViewMatrix() << std::endl;
+	}
 	break;
       default:
 	break;
       }
     }
     
+    ////////////////////
+    // Rotate light using  angle.
+    light.SetPosition( fMagnitude * sinf(fAngle), fMagnitude * cosf(fAngle), light.GetPosition()[2]);
+    fAngle += 0.004f;
+    if ( fAngle > 360.0f ) fAngle -= 360.0f;
+    glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
+    glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-    pOglRenderer->CommitCamera( camera );
-    
     pOglRenderer->CommitState( STATE_LIGHTING );
-    pOglRenderer->CommitLight( light );
     
-    glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 1 );
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
-    glEnable(GL_DEPTH_TEST);
 
+    
+    
+
+    pOglRenderer->CommitCamera( camera );
+    pOglRenderer->CommitLight( light );    
+    
+    //glEnable(GL_COLOR_MATERIAL);
+    //glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    //glEnable(GL_DEPTH_TEST);
+    
+    
+    pOglRenderer->CommitMaterial( material );
+    pOglRenderer->CommitShader( pBumpShader );
+    pOglRenderer->CommitUniformShaderParam( *pBumpShader, "colorMap" , 0 );
+    pOglRenderer->CommitUniformShaderParam( *pBumpShader, "normalMap" , 1 );
+    pOglRenderer->CommitShaderParam( *pBumpShader, "vTangent", *pTangents);
+    pOglRenderer->CommitUniformShaderParam( *pBumpShader, "invRadius", 0.11f);
     // Draw colored triangle
     pOglRenderer->CommitVertexDescriptor( pVertices );
-    pOglRenderer->CommitVertexDescriptor( pColors );
+    //pOglRenderer->CommitVertexDescriptor( pColors );
     pOglRenderer->CommitVertexDescriptor( pNormals );
-    pOglRenderer->CommitShader( pShaderPerPixel );
-    glPushMatrix();
-
-    glRotatef(fAngle,1,0,0);
-    fAngle += 0.03174f;
+    pOglRenderer->CommitVertexDescriptor( pTexCoords );
+    pOglRenderer->CommitVertexDescriptor( pTexCoords, 1);
+    pOglRenderer->CommitTexture( 0, pTextureRock );
+    pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+    pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
+    pOglRenderer->CommitTexture( 1, pTextureBump );
+    pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+    pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
     pOglRenderer->CommitPrimitive( pIndices );
 
-    
-
-
-    glPushMatrix();
-     glTranslatef(1.0,0,-1.0);
-     glRotatef(90.0f, 0,1,0);
-     pOglRenderer->CommitPrimitive( pIndices );
-    glPopMatrix();
-    
-    glPushMatrix();
-     glTranslatef(-1.0,0,-1.0);
-     glRotatef(-90.0f, 0,1,0);
-     pOglRenderer->CommitPrimitive( pIndices );
-    glPopMatrix();
-
-    glPushMatrix();
-     glTranslatef(0,0,-1.0);
-     glRotatef(180.0f, 0,1,0);
-     pOglRenderer->CommitPrimitive( pIndices );
-    glPopMatrix();
-
-    glPushMatrix();
-     glTranslatef(0,-1.0,-1.0);
-     glRotatef(90.0f, 1,0,0);
-     pOglRenderer->CommitPrimitive( pIndices );
-    glPopMatrix();
-
-    glPushMatrix();
-     glTranslatef(0,1.0,-1.0);
-     glRotatef(-90.0f, 1,0,0);
-     pOglRenderer->CommitPrimitive( pIndices );
-    glPopMatrix();
-    
-    glPopMatrix();
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->DisableLight( 0 );
     // Draw textured / transparent triangle
