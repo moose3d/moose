@@ -90,7 +90,7 @@ namespace Phoenix
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
-      inline TYPE operator()( unsigned int nIndex ) const
+      inline TYPE operator()( unsigned int nIndex ) const __attribute__((deprecated))
       {
 	return m_pValues[nIndex];
       }
