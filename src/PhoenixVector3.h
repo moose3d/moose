@@ -110,6 +110,13 @@ namespace Phoenix
 	return m_pValues[iIndex];
       }
       ////////////////////
+      /// [] operator to help accessing the values, 
+      /// \returns returns reference to value at index iIndex.
+      inline const TYPE & operator[](unsigned int iIndex) const
+      {
+	return m_pValues[iIndex];
+      }
+      ////////////////////
       /// The assignment operator.
       /// \returns reference to this object.
       inline void operator=(const CVector3 & vVector)
