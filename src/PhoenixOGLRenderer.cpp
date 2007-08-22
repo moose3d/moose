@@ -979,11 +979,14 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int 
       
     break;
   }
+
+
   // Set the light position
   glLightfv(iLightID, GL_POSITION, aTempVector);
+  
   // Set the intensity distribution of the light.
   glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
-
+  
   // Set diffuse RGBA intensity 
   aTempVector[0] = (float)light.GetDiffuseColor()(0)/255.0f;
   aTempVector[1] = (float)light.GetDiffuseColor()(1)/255.0f;
@@ -1032,5 +1035,16 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
     glEnable(GL_LIGHTING);
     break;
   }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitMaterial( const Phoenix::Graphics::CMaterial & material, int iFace )
+{
+  GLenum glFace = iFace ? GL_BACK : GL_FRONT;
+  glMaterialfv( glFace, GL_DIFFUSE,   material.GetDiffuse().GetArray());
+  glMaterialfv( glFace, GL_AMBIENT,   material.GetAmbient().GetArray());
+  glMaterialfv( glFace, GL_SPECULAR,  material.GetSpecular().GetArray());
+  glMaterialfv( glFace, GL_EMISSION,  material.GetEmission().GetArray());
+  glMaterialf(  glFace, GL_SHININESS, material.GetShininess()*128.0f);
 }
 /////////////////////////////////////////////////////////////////

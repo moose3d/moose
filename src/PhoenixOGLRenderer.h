@@ -10,6 +10,7 @@
 #include "PhoenixModel.h"
 #include "PhoenixShader.h"
 #include "PhoenixLight.h"
+#include "PhoenixMaterial.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -253,6 +254,11 @@ namespace Phoenix
       /// Disables render state.
       /// \param tState Render state to be disabled.
       void DisableState( STATE_TYPE tState);
+      ////////////////////
+      /// Commits material.
+      /// \param material Material to be used.
+      /// \param iFace For which face material is applied, 0 for front, non-zero for back. By default, front.
+      void CommitMaterial( const Phoenix::Graphics::CMaterial &material, int iFace = 0 );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
