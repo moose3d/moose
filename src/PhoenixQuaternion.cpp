@@ -17,11 +17,11 @@ CQuaternion::operator * ( const CQuaternion & qQuat ) const
   vTmp1.UseExternalData( m_pValues );
   vTmp2.UseExternalData( qQuat.m_pValues );
   
-  vResult =  vTmp1 * qQuat(3);
+  vResult =  vTmp1 * qQuat[3];
   vResult += vTmp2 * At(3);
   vResult += vTmp1.Cross(vTmp2);
-  return CQuaternion( vResult(0), vResult(1), vResult(2), 
-		      (qQuat(3) * At(3)) - vTmp1.Dot(vTmp2) );
+  return CQuaternion( vResult[0], vResult[1], vResult[2], 
+		      (qQuat[3] * At(3)) - vTmp1.Dot(vTmp2) );
   
 }
 /////////////////////////////////////////////////////////////////
@@ -43,9 +43,9 @@ CQuaternion::CreateFromAxisAngles( const CVector3<float> &vValues )
 {
   CQuaternion qX,qY,qZ,qTemp;
   
-  qX.CreateFromAxisAngle( 1,0,0, vValues(0));
-  qY.CreateFromAxisAngle( 0,1,0, vValues(1));
-  qZ.CreateFromAxisAngle( 0,0,1, vValues(2));
+  qX.CreateFromAxisAngle( 1,0,0, vValues[0]);
+  qY.CreateFromAxisAngle( 0,1,0, vValues[1]);
+  qZ.CreateFromAxisAngle( 0,0,1, vValues[2]);
   qTemp = qZ * qY;
   qZ = qTemp * qX;
   *this = qZ;
@@ -57,9 +57,9 @@ CQuaternion::CreateFromAxisAnglesRad( const CVector3<float> &vValues )
 {
   CQuaternion qX,qY,qZ,qCombined;
 
-  qX.CreateFromAxisAngleRad( 1,0,0, vValues(0));
-  qY.CreateFromAxisAngleRad( 0,1,0, vValues(1));
-  qZ.CreateFromAxisAngleRad( 0,0,1, vValues(2));
+  qX.CreateFromAxisAngleRad( 1,0,0, vValues[0]);
+  qY.CreateFromAxisAngleRad( 0,1,0, vValues[1]);
+  qZ.CreateFromAxisAngleRad( 0,0,1, vValues[2]);
   qCombined = qZ * qY * qX;
   
   *this = qCombined;
@@ -68,7 +68,7 @@ CQuaternion::CreateFromAxisAnglesRad( const CVector3<float> &vValues )
 std::ostream & 
 Phoenix::Math::operator<<(std::ostream &stream, const CQuaternion & qQuat)
 {
-  stream << qQuat(0) << "," << qQuat(1) << "," << qQuat(2) << "," << qQuat(3) << std::endl;
+  stream << qQuat[0] << "," << qQuat[1] << "," << qQuat[2] << "," << qQuat[3];
   return stream;
 }
 /////////////////////////////////////////////////////////////////

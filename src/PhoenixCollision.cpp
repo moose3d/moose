@@ -16,8 +16,8 @@ Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
   CVector3<float> vNormal;
   vNormal.UseExternalData( const_cast<CPlane &>(plane).GetArray());
   
-  fDistanceOne = vNormal.Dot( line.GetStart() ) + plane(3);
-  fDistanceTwo = vNormal.Dot( line.GetEnd() ) + plane(3);
+  fDistanceOne = vNormal.Dot( line.GetStart() ) + plane[3];
+  fDistanceTwo = vNormal.Dot( line.GetEnd() ) + plane[3];
   
   ////////////////////
   // if other distance is positive and other negative, we have collision.
@@ -29,7 +29,7 @@ Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
   {
     CVector3<float> vDir = line.GetEnd()-line.GetStart();
     vDir.Normalize();
-    float fNumerator = -(vNormal.Dot(line.GetStart()) + plane(3));
+    float fNumerator = -(vNormal.Dot(line.GetStart()) + plane[3]);
     // The vNormal · vDir = cos( angle( vNormal, vDir ))
     float fDenominator = vNormal.Dot(vDir);
     // Check that line is not in the plane completely, and if it is, we return some
@@ -64,7 +64,7 @@ Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
   CVector3<float> vNormal;
   vNormal.UseExternalData( const_cast<CPlane &>(plane).GetArray() );
   // The negated distance of the vPoint1 from the plane 
-  float fNumerator = -(vNormal.Dot(ray.GetPosition()) + plane(3));
+  float fNumerator = -(vNormal.Dot(ray.GetPosition()) + plane[3]);
   // The vNormal · vDir = cos( angle( vNormal, vDir ))
   float fDenominator = vNormal.Dot(ray.GetDirection());
   
@@ -178,7 +178,7 @@ Phoenix::Collision::PointDistanceFromPlane( const CVector3<float> &vPoint, const
 {
   CVector3<float> vNormal;
   vNormal.UseExternalData(const_cast<CPlane &>(plane).GetArray());
-  return vNormal.Dot(vPoint) + plane(3);
+  return vNormal.Dot(vPoint) + plane[3];
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float> 
@@ -196,8 +196,8 @@ inline int AxisTestX( const COrientedBox &box,
 		      const CVector3<float> &vOne, 
 		      const CVector3<float> &vThree )
 {
-  float p0 =  vEdge(1)*vOne(2)   -  vEdge(2)*vOne(1);
-  float p2 =  vEdge(1)*vThree(2) -  vEdge(2)*vThree(1);
+  float p0 =  vEdge[1]*vOne[2]   -  vEdge[2]*vOne[1];
+  float p2 =  vEdge[1]*vThree[2] -  vEdge[2]*vThree[1];
   float fR =  fAbsY * box.GetHalfHeight() + fAbsZ * box.GetHalfLength();
   float fMin, fMax;
 
@@ -222,8 +222,8 @@ inline int AxisTestY( const COrientedBox &box,
 		      const CVector3<float> &vOne, 
 		      const CVector3<float> &vThree )
 {
-  float p0 = vEdge(2)*vOne(0)   -  vEdge(0)*vOne(2);
-  float p2 = vEdge(2)*vThree(0) -  vEdge(0)*vThree(2);
+  float p0 = vEdge[2]*vOne[0]   -  vEdge[0]*vOne[2];
+  float p2 = vEdge[2]*vThree[0] -  vEdge[0]*vThree[2];
   float fR = fAbsX * box.GetHalfWidth() + fAbsZ * box.GetHalfLength();
   float fMin, fMax;
 
@@ -251,8 +251,8 @@ inline int AxisTestZ( const COrientedBox &box,
 		      const CVector3<float> &vThree )
 {
 
-  float p0 = vEdge(0)*vOne(1) - vEdge(1)*vOne(0);
-  float p2 = vEdge(0)*vThree(1) - vEdge(1)*vThree(0); 
+  float p0 = vEdge[0]*vOne[1] - vEdge[1]*vOne[0];
+  float p2 = vEdge[0]*vThree[1] - vEdge[1]*vThree[0]; 
   float fR = fAbsX * box.GetHalfWidth() + fAbsY * box.GetHalfHeight();
   float fMin, fMax;
   
@@ -335,9 +335,9 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   using std::cerr;
   using std::endl;
   // Create rotation for oriented box.
-  CMatrix4x4<float> mRotation( box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
-			       box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
-			       box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
+  CMatrix4x4<float> mRotation( box.GetRightVector()[0],   box.GetUpVector()[0],  box.GetForwardVector()[0],  0,
+			       box.GetRightVector()[1],   box.GetUpVector()[1],  box.GetForwardVector()[1],  0,         
+			       box.GetRightVector()[2],   box.GetUpVector()[2],  box.GetForwardVector()[2],  0,
 			       0,                         0,                     0,                          1 );
   // Inverse rotation; transpose is sufficient for rotation matrices.
   mRotation.Transpose();
@@ -353,23 +353,23 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   
   ////////////////////
   // These have been slightly optimized by calculating absolute values only once.
-  float fAx = fabsf( vEdge0(0) );
-  float fAy = fabsf( vEdge0(2) );
-  float fAz = fabsf( vEdge0(1) );
+  float fAx = fabsf( vEdge0[0] );
+  float fAy = fabsf( vEdge0[2] );
+  float fAz = fabsf( vEdge0[1] );
   if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  return 0; 
   if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  return 0;
   
-  fAx = fabsf( vEdge1(0) );
-  fAy = fabsf( vEdge1(2) );
-  fAz = fabsf( vEdge1(1) );
+  fAx = fabsf( vEdge1[0] );
+  fAy = fabsf( vEdge1[2] );
+  fAz = fabsf( vEdge1[1] );
   if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) )  return 0;  
   if ( !AxisTestY( box, vEdge1, fAy, fAx, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge1, fAz, fAx, vVertex0, vVertex2) )  return 0;
 
-  fAx = fabsf( vEdge2(0) );
-  fAy = fabsf( vEdge2(2) );
-  fAz = fabsf( vEdge2(1) );
+  fAx = fabsf( vEdge2[0] );
+  fAy = fabsf( vEdge2[2] );
+  fAz = fabsf( vEdge2[1] );
   if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) )  return 0; 
   if ( !AxisTestY( box, vEdge2, fAy, fAx, vVertex1, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge2, fAz, fAx, vVertex1, vVertex2) )  return 0;
@@ -377,15 +377,15 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   
   float fMin, fMax;
   // Test X-direction triangle AABB bs box
-  FindMinMax( vVertex0(0), vVertex1(0), vVertex2(0), fMin, fMax);
+  FindMinMax( vVertex0[0], vVertex1[0], vVertex2[0], fMin, fMax);
   if ( fMin > box.GetHalfWidth() || fMax < -box.GetHalfWidth())  return 0;
 
   // Test Y-direction triangle AABB vs box
-  FindMinMax( vVertex0(1), vVertex1(1), vVertex2(1), fMin, fMax);
+  FindMinMax( vVertex0[1], vVertex1[1], vVertex2[1], fMin, fMax);
   if ( fMin > box.GetHalfHeight() || fMax < -box.GetHalfHeight())  return 0;
 
   // Test Z-direction triangle AABB vs box
-  FindMinMax( vVertex0(2), vVertex1(2), vVertex2(2), fMin, fMax);
+  FindMinMax( vVertex0[2], vVertex1[2], vVertex2[2], fMin, fMax);
   if ( fMin > box.GetHalfLength() || fMax < -box.GetHalfLength())  return 0;
 
   ////////////////////
@@ -447,13 +447,13 @@ Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
   vNormal.UseExternalData(const_cast<CPlane &>(plane).GetArray());
 
   float fValue;
-  float fTmp = fabsf(box.GetHalfLength()*vNormal(2));
+  float fTmp = fabsf(box.GetHalfLength()*vNormal[2]);
   fValue = fTmp;
 
-  fTmp = fabsf(box.GetHalfWidth()*vNormal(1));
+  fTmp = fabsf(box.GetHalfWidth()*vNormal[1]);
   fValue += fTmp;
 
-  fTmp = fabsf(box.GetHalfHeight()*vNormal(0));
+  fTmp = fabsf(box.GetHalfHeight()*vNormal[0]);
   fValue += fTmp;
 
   return ( fDistance <= fValue);

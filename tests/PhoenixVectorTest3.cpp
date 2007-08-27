@@ -21,15 +21,15 @@ TEST(CVector3)
   CVector3<float> vectorInit(g_aResultOne[0], g_aResultOne[1], g_aResultOne[2]);
   /// Test with first data set
   CHECK_ARRAY_CLOSE(  g_aResultOne,  vectorInit.GetArray(), 3, 0.001f);
-  CHECK_CLOSE( g_aResultOne[0], vectorInit(0), 0.001f);
-  CHECK_CLOSE( g_aResultOne[1], vectorInit(1), 0.001f);
-  CHECK_CLOSE( g_aResultOne[2], vectorInit(2), 0.001f);
+  CHECK_CLOSE( g_aResultOne[0], vectorInit[0], 0.001f);
+  CHECK_CLOSE( g_aResultOne[1], vectorInit[1], 0.001f);
+  CHECK_CLOSE( g_aResultOne[2], vectorInit[2], 0.001f);
   /// Test with another data set
   CVector3<float> vectorInit2(g_aResultTwo[0], g_aResultTwo[1], g_aResultTwo[2]);
   CHECK_ARRAY_CLOSE(  g_aResultTwo,  vectorInit2.GetArray(), 3, 0.001f);
-  CHECK_CLOSE( g_aResultTwo[0], vectorInit2(0), 0.001f);
-  CHECK_CLOSE( g_aResultTwo[1], vectorInit2(1), 0.001f);
-  CHECK_CLOSE( g_aResultTwo[2], vectorInit2(2), 0.001f);
+  CHECK_CLOSE( g_aResultTwo[0], vectorInit2[0], 0.001f);
+  CHECK_CLOSE( g_aResultTwo[1], vectorInit2[1], 0.001f);
+  CHECK_CLOSE( g_aResultTwo[2], vectorInit2[2], 0.001f);
  
 }
 /////////////////////////////////////////////////////////////////
@@ -57,9 +57,9 @@ TEST(CVector3_OperatorParenthesis)
 {
   CVector3<float> vectorInit1;
   vectorInit1.Set(g_aResultTwo);
-  CHECK_CLOSE(  g_aResultTwo[0],  vectorInit1(0),  0.001f);
-  CHECK_CLOSE(  g_aResultTwo[1],  vectorInit1(1),  0.001f);
-  CHECK_CLOSE(  g_aResultTwo[2],  vectorInit1(2),  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[0],  vectorInit1[0],  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[1],  vectorInit1[1],  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[2],  vectorInit1[2],  0.001f);
 }
 /////////////////////////////////////////////////////////////////
 TEST(CVector3_OperatorAt)

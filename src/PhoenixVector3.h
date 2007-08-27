@@ -90,10 +90,10 @@ namespace Phoenix
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
-      inline TYPE operator()( unsigned int nIndex ) const __attribute__((deprecated))
-      {
-	return m_pValues[nIndex];
-      }
+      /* inline TYPE operator()( unsigned int nIndex ) const __attribute__((deprecated)) */
+/*       { */
+/* 	return m_pValues[nIndex]; */
+/*       } */
       ////////////////////
       /// Returns value of an element.
       /// \param nIndex Element index.
@@ -175,9 +175,9 @@ namespace Phoenix
       /// \returns CVector3 cross product.
       inline CVector3 Cross( const CVector3 & vVector ) const
       {
-	return CVector3(   (m_pValues[1] * vVector(2)) - (m_pValues[2] * vVector(1)),
-			   -((m_pValues[0] * vVector(2)) - (m_pValues[2] * vVector(0))),
-			   (m_pValues[0] * vVector(1)) - (m_pValues[1] * vVector(0)));
+	return CVector3(   (m_pValues[1] * vVector[2]) - (m_pValues[2] * vVector[1]),
+			   -((m_pValues[0] * vVector[2]) - (m_pValues[2] * vVector[0])),
+			   (m_pValues[0] * vVector[1]) - (m_pValues[1] * vVector[0]));
 	
       }
       ////////////////////
@@ -241,9 +241,9 @@ namespace Phoenix
       /// \return Resulting vector.
       inline CVector3 operator-(const CVector3 & vVector) const
       {
-	return CVector3( m_pValues[0]-vVector(0),
-			 m_pValues[1]-vVector(1),
-			 m_pValues[2]-vVector(2) );
+	return CVector3( m_pValues[0]-vVector[0],
+			 m_pValues[1]-vVector[1],
+			 m_pValues[2]-vVector[2] );
       }
       ////////////////////
       /// Addition operator.
@@ -251,9 +251,9 @@ namespace Phoenix
       /// \returns sum vector.
       inline CVector3 operator+( const CVector3 & vVector) const
       {
-	return CVector3(m_pValues[0] + vVector(0),
-			m_pValues[1] + vVector(1),
-			m_pValues[2] + vVector(2));
+	return CVector3(m_pValues[0] + vVector[0],
+			m_pValues[1] + vVector[1],
+			m_pValues[2] + vVector[2]);
       }
       ////////////////////
       /// Sum with assigning.
@@ -301,7 +301,7 @@ namespace Phoenix
       /// \returns reference to std::ostream
       friend std::ostream& operator<<(std::ostream &stream, const CVector3 &vVector)
       {
-	stream << vVector(0) << "," << vVector(1) << "," << vVector(2);
+	stream << vVector[0] << "," << vVector[1] << "," << vVector[2];
 	return stream;
       }
 

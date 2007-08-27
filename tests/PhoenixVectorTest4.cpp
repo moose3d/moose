@@ -20,17 +20,17 @@ TEST(CVector4)
   CVector4<float> vectorInit(g_aResultOne[0], g_aResultOne[1], g_aResultOne[2], g_aResultOne[3]);
   /// Test with first data set
   CHECK_ARRAY_CLOSE(  g_aResultOne,  vectorInit.GetArray(), 4, 0.001f);
-  CHECK_CLOSE( g_aResultOne[0], vectorInit(0), 0.001f);
-  CHECK_CLOSE( g_aResultOne[1], vectorInit(1), 0.001f);
-  CHECK_CLOSE( g_aResultOne[2], vectorInit(2), 0.001f);
-  CHECK_CLOSE( g_aResultOne[3], vectorInit(3), 0.001f);
+  CHECK_CLOSE( g_aResultOne[0], vectorInit[0], 0.001f);
+  CHECK_CLOSE( g_aResultOne[1], vectorInit[1], 0.001f);
+  CHECK_CLOSE( g_aResultOne[2], vectorInit[2], 0.001f);
+  CHECK_CLOSE( g_aResultOne[3], vectorInit[3], 0.001f);
   /// Test with another data set
   CVector4<float> vectorInit2(g_aResultTwo[0], g_aResultTwo[1], g_aResultTwo[2], g_aResultTwo[3]);
   CHECK_ARRAY_CLOSE(  g_aResultTwo,  vectorInit2.GetArray(), 4, 0.001f);
-  CHECK_CLOSE( g_aResultTwo[0], vectorInit2(0), 0.001f);
-  CHECK_CLOSE( g_aResultTwo[1], vectorInit2(1), 0.001f);
-  CHECK_CLOSE( g_aResultTwo[2], vectorInit2(2), 0.001f);
-  CHECK_CLOSE( g_aResultTwo[3], vectorInit2(3), 0.001f);
+  CHECK_CLOSE( g_aResultTwo[0], vectorInit2[0], 0.001f);
+  CHECK_CLOSE( g_aResultTwo[1], vectorInit2[1], 0.001f);
+  CHECK_CLOSE( g_aResultTwo[2], vectorInit2[2], 0.001f);
+  CHECK_CLOSE( g_aResultTwo[3], vectorInit2[3], 0.001f);
 }
 /////////////////////////////////////////////////////////////////
 TEST(CVector4_Copy)
@@ -57,10 +57,10 @@ TEST(CVector4_OperatorParenthesis)
 {
   CVector4<float> vectorInit1;
   vectorInit1.Set(g_aResultTwo);
-  CHECK_CLOSE(  g_aResultTwo[0],  vectorInit1(0),  0.001f);
-  CHECK_CLOSE(  g_aResultTwo[1],  vectorInit1(1),  0.001f);
-  CHECK_CLOSE(  g_aResultTwo[2],  vectorInit1(2),  0.001f);
-  CHECK_CLOSE(  g_aResultTwo[3],  vectorInit1(3),  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[0],  vectorInit1[0],  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[1],  vectorInit1[1],  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[2],  vectorInit1[2],  0.001f);
+  CHECK_CLOSE(  g_aResultTwo[3],  vectorInit1[3],  0.001f);
 }
 /////////////////////////////////////////////////////////////////
 TEST(CVector4_OperatorAt)

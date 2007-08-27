@@ -329,20 +329,20 @@ CVector3<float>
 Phoenix::Graphics::CCamera::EyeToWorld( const CVector3<float> &vPosition )
 {
   CVector4<float> vTmp;
-  vTmp[0] = vPosition(0);
-  vTmp[1] = vPosition(1);
-  vTmp[2] = vPosition(2);
+  vTmp[0] = vPosition[0];
+  vTmp[1] = vPosition[1];
+  vTmp[2] = vPosition[2];
   vTmp[3] = 1.0f;
   
   vTmp = m_mViewInv * vTmp;
 
-  if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) )
+  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
   {
-    vTmp[0] /= vTmp(3);
-    vTmp[1] /= vTmp(3);
-    vTmp[2] /= vTmp(3);
+    vTmp[0] /= vTmp[3];
+    vTmp[1] /= vTmp[3];
+    vTmp[2] /= vTmp[3];
   }
-  return CVector3<float>(vTmp(0),vTmp(1),vTmp(2));
+  return CVector3<float>(vTmp[0],vTmp[1],vTmp[2]);
 
 }
 /////////////////////////////////////////////////////////////////
@@ -414,11 +414,11 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition,
 					      const CVector2<int> &vStartPoint,
 					      const CVector2<int> &vEndPoint )
 {
-  CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint(0), 
-						    vStartPoint(1),
+  CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint[0], 
+						    vStartPoint[1],
 						    0.0f);
-  CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint(0), 
-						   vStartPoint(1),
+  CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint[0], 
+						   vStartPoint[1],
 						   1.0f);
   CLine line;
   line.SetStart( vOrig );
@@ -430,8 +430,8 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition,
   /////////////////////////////////////////////////////////////////
   if ( Collision::LineIntersectsSphere( line, &vIntersection0, NULL, sphere) >= 1)
   {
-    vOrig = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1), 0.0f);
-    vEnd = WindowCoordinatesToWorld( vEndPoint(0), vEndPoint(1),  1.0f);
+    vOrig = WindowCoordinatesToWorld( vEndPoint[0], vEndPoint[1], 0.0f);
+    vEnd = WindowCoordinatesToWorld( vEndPoint[0], vEndPoint[1],  1.0f);
     line.SetStart( vOrig );
     line.SetEnd( vEnd );
     /////////////////////////////////////////////////////////////////
@@ -460,28 +460,28 @@ Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPo
   
   CVector4<float> vTmp;
 
-  vTmp[0] = vPosition(0);
-  vTmp[1] = vPosition(1);
-  vTmp[2] = vPosition(2);
+  vTmp[0] = vPosition[0];
+  vTmp[1] = vPosition[1];
+  vTmp[2] = vPosition[2];
   vTmp[3] = 1.0f;
 
   vTmp = GetViewMatrix() * vTmp;
   vTmp = GetProjectionMatrix() * vTmp;
   
-  if ( !TOO_CLOSE_TO_ZERO(vTmp(3)) ) 
+  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) ) 
   {
     vTmp[0] /= vTmp[3];
     vTmp[1] /= vTmp[3];
     vTmp[2] /= vTmp[3];
   }
   
-  vTmp[0] = vTmp(0) * 0.5f + 0.5f;
-  vTmp[1] = vTmp(1) * 0.5f + 0.5f;
-  vTmp[2] = vTmp(2) * 0.5f + 0.5f;
+  vTmp[0] = vTmp[0] * 0.5f + 0.5f;
+  vTmp[1] = vTmp[1] * 0.5f + 0.5f;
+  vTmp[2] = vTmp[2] * 0.5f + 0.5f;
   
-  return CVector3<float>(m_aViewport[0] + vTmp(0) * m_aViewport[2],
-			 m_aViewport[1] + vTmp(1) * m_aViewport[3],
-			 vTmp(2));
+  return CVector3<float>(m_aViewport[0] + vTmp[0] * m_aViewport[2],
+			 m_aViewport[1] + vTmp[1] * m_aViewport[3],
+			 vTmp[2]);
   
 }
 /////////////////////////////////////////////////////////////////

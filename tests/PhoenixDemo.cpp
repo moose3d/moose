@@ -178,7 +178,7 @@ int main()
   material.SetDiffuse( CVector4<float>(0.86,0.86,0.86,1.0f));
   material.SetAmbient( CVector4<float>(0.26,0.26,0.26,1.0f));
   material.SetSpecular( CVector4<float>(1,1,1,1));
-  material.SetShininess( 1.0101f);
+  material.SetShininess( 0.0101f);
   float fAngle = 0.0f;
   float fMagnitude = 2.0f;
   while( g_bLoop )
@@ -263,16 +263,17 @@ int main()
     pOglRenderer->CommitVertexDescriptor( pTexCoords );
     pOglRenderer->CommitVertexDescriptor( pTexCoords, 1);
     pOglRenderer->CommitTexture( 0, pTextureRock );
-    pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
-    pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
+    //pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+    //pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
     pOglRenderer->CommitTexture( 1, pTextureBump );
-    pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
-    pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
-    glPushMatrix();
+    //pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+    //pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
+
 
     //glRotatef( 40.0f, 0,1,0);
     //glTranslatef( 2,0,0);
       pOglRenderer->CommitPrimitive( pIndices );
+    glPushMatrix();
     glPopMatrix();
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->DisableLight( 0 );

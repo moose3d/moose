@@ -25,17 +25,17 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
 //          ¦                                                     ¦
 //
 
-  float xx = qQuat(0) * qQuat(0);
-  float yy = qQuat(1) * qQuat(1);
-  float zz = qQuat(2) * qQuat(2);
+  float xx = qQuat[0] * qQuat[0];
+  float yy = qQuat[1] * qQuat[1];
+  float zz = qQuat[2] * qQuat[2];
   
-  float xy = qQuat(0) * qQuat(1);
-  float xz = qQuat(0) * qQuat(2);
-  float yz = qQuat(1) * qQuat(2);
+  float xy = qQuat[0] * qQuat[1];
+  float xz = qQuat[0] * qQuat[2];
+  float yz = qQuat[1] * qQuat[2];
   
-  float wz = qQuat(3) * qQuat(2);
-  float wy = qQuat(3) * qQuat(1);
-  float wx = qQuat(3) * qQuat(0);
+  float wz = qQuat[3] * qQuat[2];
+  float wy = qQuat[3] * qQuat[1];
+  float wx = qQuat[3] * qQuat[0];
   
   mMatrix(0,0) = 1.0 - yy - yy - zz - zz;
   mMatrix(0,1) = xy + xy - wz - wz;
@@ -59,12 +59,12 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
 
 }
 /////////////////////////////////////////////////////////////////
-std::ostream & 
-operator<<(std::ostream &stream, const CQuaternion & qQuat)
-{
-  stream << qQuat(0) << "," <<qQuat(1) << "," <<qQuat(2) << "," << qQuat(3);
-  return stream;
-}
+// std::ostream & 
+// operator<<(std::ostream &stream, const CQuaternion & qQuat)
+// {
+//   stream << qQuat(0) << "," <<qQuat(1) << "," <<qQuat(2) << "," << qQuat(3);
+//   return stream;
+// }
 /////////////////////////////////////////////////////////////////
 CQuaternion 
 Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation )
@@ -101,7 +101,7 @@ Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation )
 CMatrix4x4<float> 
 Phoenix::Math::RotationMatrix(const CVector3<float> & vAxis, float fRadians)
 {
-  return RotationMatrix( vAxis(0), vAxis(1), vAxis(2), fRadians );
+  return RotationMatrix( vAxis[0], vAxis[1], vAxis[2], fRadians );
 }
 /////////////////////////////////////////////////////////////////
 CMatrix4x4<float> 
@@ -148,7 +148,7 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians)
   CMatrix4x4<float> mTemp;
   mTemp.IdentityMatrix();
   mResult = uuT + (mTemp - uuT)*fCosAlpha + mS;
-  mResult(3,3) = 1.0;
+  mResult(3,3) = 1.0f;
 
   return mResult;
 }
@@ -156,9 +156,9 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians)
 CMatrix4x4<float>
 Phoenix::Math::RotationMatrix( const CVector3<float> &vRadians)
 {
-  return RotationMatrix( vRadians(0), 
-			 vRadians(1),
-			 vRadians(2));
+  return RotationMatrix( vRadians[0], 
+			 vRadians[1],
+			 vRadians[2]);
 }
 /////////////////////////////////////////////////////////////////
 CMatrix4x4<float>
@@ -208,8 +208,8 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
   //  | Bx By Bz |     Q1.s*Q2.t - Q2.s*Q1.t    | -Q2.s  Q1.s | | Q2.x Q2.y Q2.z |
   //
   //  ----------------------------------------------------------
-  float fDenominator = (vQTex1(0) * vQTex2(1)) - (vQTex2(0) * vQTex1(1));
-  float fCoefficient = 0.0;
+  float fDenominator = (vQTex1[0] * vQTex2[1]) - (vQTex2[0] * vQTex1[1]);
+  float fCoefficient = 0.0f;
 
   if ( TOO_CLOSE_TO_ZERO(fCoefficient))
   {
@@ -223,19 +223,19 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
     CVector3<float> vNormal(0.0f, 0.0f, 1.0f);
     fCoefficient = 1.0f / fDenominator;
 
-    CVector3<float> vTangent( vQTex2(1) * vQ1(0) +
-			      -vQTex1(1) * vQ2(0),
-			      vQTex2(1) * vQ1(1) +
-			      -vQTex1(1) * vQ2(1),
-			      vQTex2(1) * vQ1(2) +
-			      -vQTex1(1) * vQ2(2) );
+    CVector3<float> vTangent( vQTex2[1] * vQ1[0] +
+			      -vQTex1[1] * vQ2[0],
+			      vQTex2[1] * vQ1[1] +
+			      -vQTex1[1] * vQ2[1],
+			      vQTex2[1] * vQ1[2] +
+			      -vQTex1[1] * vQ2[2] );
 
-    CVector3<float> vBitangent( -vQTex2(0) * vQ1(0) +
-				vQTex1(0) * vQ2(0),
-				-vQTex2(0) * vQ1(1) +
-				vQTex1(0) * vQ2(1),
-				-vQTex2(0) * vQ1(2) +
-				vQTex1(0) * vQ2(2)) ;
+    CVector3<float> vBitangent( -vQTex2[0] * vQ1[0] +
+				vQTex1[0] * vQ2[0],
+				-vQTex2[0] * vQ1[1] +
+				vQTex1[0] * vQ2[1],
+				-vQTex2[0] * vQ1[2] +
+				vQTex1[0] * vQ2[2]) ;
 
     vTangent   *= fCoefficient;
     vBitangent *= fCoefficient;
@@ -698,17 +698,17 @@ Phoenix::Math::TranslateInverse(CVector3<float> v, CMatrix4x4<float> m)
 CVector3<float> 
 Phoenix::Math::Rotate( const CVector3<float> & v, const CMatrix4x4<float> &m)
 {
-  return CVector3<float>(m.At(0,0) * v(0) + m.At(0,1) * v(1) + m.At(0,2) * v(2),
-			 m.At(1,0) * v(0) + m.At(1,1) * v(1) + m.At(1,2) * v(2),
-			 m.At(2,0) * v(0) + m.At(2,1) * v(1) + m.At(2,2) * v(2));
+  return CVector3<float>(m.At(0,0) * v[0] + m.At(0,1) * v[1] + m.At(0,2) * v[2],
+			 m.At(1,0) * v[0] + m.At(1,1) * v[1] + m.At(1,2) * v[2],
+			 m.At(2,0) * v[0] + m.At(2,1) * v[1] + m.At(2,2) * v[2]);
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float> 
 Phoenix::Math::Transform( const CVector3<float> &v, const CMatrix4x4<float> &m)
 {
-#define T_X    v(0)
-#define T_Y    v(1)
-#define T_Z    v(2)
+#define T_X    v[0]
+#define T_Y    v[1]
+#define T_Z    v[2]
 #define m00  m.At(0,0)
 #define m01  m.At(0,1)
 #define m02  m.At(0,2)
@@ -746,17 +746,17 @@ CVector3<float>
 Phoenix::Math::MultiplyFromRight( CMatrix3x3<float> mMatrix, CVector3<float> &vVector)
 {
 
-  return CVector3<float>( mMatrix(0,0) * vVector(0) + 
-			  mMatrix(0,1) * vVector(1) + 
-			  mMatrix(0,2) * vVector(2),
+  return CVector3<float>( mMatrix(0,0) * vVector[0] + 
+			  mMatrix(0,1) * vVector[1] + 
+			  mMatrix(0,2) * vVector[2],
 			  
-			  mMatrix(1,0) * vVector(0) + 
-			  mMatrix(1,1) * vVector(1) + 
-			  mMatrix(1,2) * vVector(2),
+			  mMatrix(1,0) * vVector[0] + 
+			  mMatrix(1,1) * vVector[1] + 
+			  mMatrix(1,2) * vVector[2],
 			  
-			  mMatrix(2,0) * vVector(0) + 
-			  mMatrix(2,1) * vVector(1) + 
-			  mMatrix(2,2) * vVector(2) );
+			  mMatrix(2,0) * vVector[0] + 
+			  mMatrix(2,1) * vVector[1] + 
+			  mMatrix(2,2) * vVector[2] );
 
 }
 /////////////////////////////////////////////////////////////////
@@ -832,11 +832,11 @@ Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix )
 void 
 Phoenix::Math::RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector)
 {
-  CQuaternion qVect(vVector(0),vVector(1),vVector(2),0.0f);
+  CQuaternion qVect(vVector[0],vVector[1],vVector[2],0.0f);
   CQuaternion qResult = qRotation * qVect * qRotation.GetInverse();
-  vVector[0] = qResult(0);
-  vVector[1] = qResult(1);
-  vVector[2] = qResult(2);
+  vVector[0] = qResult[0];
+  vVector[1] = qResult[1];
+  vVector[2] = qResult[2];
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float> 
@@ -865,16 +865,16 @@ Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
 						 CVector3<float> &vAxis,
 						 float &fAngleInDegrees )
 {
-  float fCosAngle = qQuat(4);
+  float fCosAngle = qQuat[4];
   float fSinAngle = sqrt( 1.0f - fCosAngle * fCosAngle );
   
   /// If denominator is too close to zero.
   if ( fabs(fSinAngle < EPSILON)) fSinAngle = 1;
   /// The axis.
   float f1DivSinAngle = 1.0f / fSinAngle;
-  vAxis[0] = qQuat(0) * f1DivSinAngle;
-  vAxis[1] = qQuat(1) * f1DivSinAngle;
-  vAxis[2] = qQuat(2) * f1DivSinAngle;
+  vAxis[0] = qQuat[0] * f1DivSinAngle;
+  vAxis[1] = qQuat[1] * f1DivSinAngle;
+  vAxis[2] = qQuat[2] * f1DivSinAngle;
   /// The angle
   fAngleInDegrees = Rad2Deg(acosf( fCosAngle )) * 2.0f;
 
@@ -915,7 +915,7 @@ Phoenix::Math::RemoveRowAndColumn(CMatrix4x4<float> mMatrix,
 /////////////////////////////////////////////////////////////////    
 CMatrix2x2<float> 
 Phoenix::Math::RemoveRowAndColumn(CMatrix3x3<float> mMatrix, 
-					 unsigned int iRowSkip, 
+				 unsigned int iRowSkip, 
 				  unsigned int iColSkip)
 {
   
@@ -1179,9 +1179,9 @@ Phoenix::Math::AngleBetweenVectors( const CVector3<float> &vVect1, const CVector
 Phoenix::Math::CVector4<float>
 Phoenix::Math::operator*( const CMatrix4x4<float> &mMatrix, const CVector4<float> &vVector )
 {
-  return CVector4<float>( mMatrix.At(0,0) * vVector(0) + mMatrix.At(0,1) * vVector(1) + mMatrix.At(0,2) * vVector(2) + mMatrix.At(0,3) * vVector(3),
-			  mMatrix.At(1,0) * vVector(0) + mMatrix.At(1,1) * vVector(1) + mMatrix.At(1,2) * vVector(2) + mMatrix.At(1,3) * vVector(3),
-			  mMatrix.At(2,0) * vVector(0) + mMatrix.At(2,1) * vVector(1) + mMatrix.At(2,2) * vVector(2) + mMatrix.At(2,3) * vVector(3),
-			  mMatrix.At(3,0) * vVector(0) + mMatrix.At(3,1) * vVector(1) + mMatrix.At(3,2) * vVector(2) + mMatrix.At(3,3) * vVector(3) );
+  return CVector4<float>( mMatrix.At(0,0) * vVector[0] + mMatrix.At(0,1) * vVector[1] + mMatrix.At(0,2) * vVector[2] + mMatrix.At(0,3) * vVector[3],
+			  mMatrix.At(1,0) * vVector[0] + mMatrix.At(1,1) * vVector[1] + mMatrix.At(1,2) * vVector[2] + mMatrix.At(1,3) * vVector[3],
+			  mMatrix.At(2,0) * vVector[0] + mMatrix.At(2,1) * vVector[1] + mMatrix.At(2,2) * vVector[2] + mMatrix.At(2,3) * vVector[3],
+			  mMatrix.At(3,0) * vVector[0] + mMatrix.At(3,1) * vVector[1] + mMatrix.At(3,2) * vVector[2] + mMatrix.At(3,3) * vVector[3] );
 }
 /////////////////////////////////////////////////////////////////

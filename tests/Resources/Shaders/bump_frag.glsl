@@ -29,9 +29,7 @@ void main (void)
 	
 	vec4 vSpecular = gl_LightSource[0].specular * gl_FrontMaterial.specular * 
 					 specular;	
-	if ( texture2D(colorMap, texCoord).a == 0.0 ){
-		vSpecular = vec4(0,0,0,0);
-	} 
+	
 	gl_FragColor = ( vAmbient*base + vDiffuse*base + vSpecular) * att;
 
 }

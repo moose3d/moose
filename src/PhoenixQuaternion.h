@@ -49,7 +49,7 @@ namespace Phoenix
       /// \param fDegrees Rotation angle in degrees.
       inline void CreateFromAxisAngle( const CVector3<float> & vValues, float fDegrees )
       {
-	CreateFromAxisAngleRad( vValues(0),  vValues(1), vValues(2), Deg2Rad(fDegrees) );
+	CreateFromAxisAngleRad( vValues[0],  vValues[1], vValues[2], Deg2Rad(fDegrees) );
       }
       ////////////////////
       /// Creates quaternion from axis angle in radians
@@ -57,7 +57,7 @@ namespace Phoenix
       /// \param fRad Rotation angle in radians.
       inline void CreateFromAxisAngleRad ( const CVector3<float> & vValues, float fRad )
       {
-	CreateFromAxisAngleRad( vValues(0), vValues(1), vValues(2), fRad);
+	CreateFromAxisAngleRad( vValues[0], vValues[1], vValues[2], fRad);
       }
       ////////////////////
       /// Creates quaternion from axis angle in radians
@@ -82,17 +82,17 @@ namespace Phoenix
       CQuaternion operator * ( const CQuaternion & qQuat ) const;
       inline CQuaternion operator+( const CQuaternion & qQuat ) const 
       {
-	return CQuaternion( m_pValues[0] + qQuat(0),
-			    m_pValues[1] + qQuat(1),
-			    m_pValues[2] + qQuat(2),
-			    m_pValues[3] + qQuat(3));
+	return CQuaternion( m_pValues[0] + qQuat[0],
+			    m_pValues[1] + qQuat[1],
+			    m_pValues[2] + qQuat[2],
+			    m_pValues[3] + qQuat[3]);
       }
       inline CQuaternion operator-( const CQuaternion & qQuat ) const 
       {
-	return CQuaternion( m_pValues[0] - qQuat(0),
-			    m_pValues[1] - qQuat(1),
-			    m_pValues[2] - qQuat(2),
-			    m_pValues[3] - qQuat(3));
+	return CQuaternion( m_pValues[0] - qQuat[0],
+			    m_pValues[1] - qQuat[1],
+			    m_pValues[2] - qQuat[2],
+			    m_pValues[3] - qQuat[3]);
       }
       inline CQuaternion operator-() const 
       {
@@ -108,10 +108,10 @@ namespace Phoenix
       /// \returns Scaled quaternion.
       inline friend CQuaternion operator*( float fValue, const CQuaternion & qQuat )
       {
-	return CQuaternion(qQuat(0) * fValue,
-			   qQuat(1) * fValue,
-			   qQuat(2) * fValue,
-			   qQuat(3) * fValue);
+	return CQuaternion(qQuat[0] * fValue,
+			   qQuat[1] * fValue,
+			   qQuat[2] * fValue,
+			   qQuat[3] * fValue);
       }    
       ////////////////////
       /// Returns the magnitude of the Quaternion.

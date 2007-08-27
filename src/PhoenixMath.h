@@ -59,9 +59,9 @@ namespace Phoenix
     /// \returns Translation Matrix.
     inline CMatrix4x4<float> TranslationMatrix(const Phoenix::Math::CVector3<float> &vValues)
     {
-      return CMatrix4x4<float>( 1,0,0, vValues(0),
-				0,1,0, vValues(1),
-				0,0,1, vValues(2),
+      return CMatrix4x4<float>( 1,0,0, vValues[0],
+				0,1,0, vValues[1],
+				0,0,1, vValues[2],
 				0,0,0, 1);
 
     }

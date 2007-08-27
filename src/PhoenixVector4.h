@@ -97,13 +97,20 @@ namespace Phoenix
 	return m_pValues[iIndex];
       }
       ////////////////////
+      /// [] operator to help accessing the values, 
+      /// \returns returns reference to value at index iIndex.
+      inline const TYPE & operator[](unsigned int iIndex) const
+      {
+	return m_pValues[iIndex];
+      }
+      ////////////////////
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
-      inline TYPE operator()( unsigned int nIndex ) const
-      {
-	return m_pValues[nIndex];
-      }
+      /* inline TYPE operator()( unsigned int nIndex ) const */
+/*       { */
+/* 	return m_pValues[nIndex]; */
+/*       } */
       ////////////////////
       /// Returns value of an element.
       /// \param nIndex Element index.
@@ -243,10 +250,10 @@ namespace Phoenix
       /// \return Resulting vector.
       inline CVector4 operator-(const CVector4 & vVector) const
       {
-	return CVector4( m_pValues[0]-vVector(0),
-			 m_pValues[1]-vVector(1),
-			 m_pValues[2]-vVector(2),
-			 m_pValues[3]-vVector(3));
+	return CVector4( m_pValues[0]-vVector[0],
+			 m_pValues[1]-vVector[1],
+			 m_pValues[2]-vVector[2],
+			 m_pValues[3]-vVector[3]);
       }
       ////////////////////
       /// Addition operator.
@@ -254,10 +261,10 @@ namespace Phoenix
       /// \returns sum vector.
       inline CVector4 operator+( const CVector4 & vVector) const
       {
-	return CVector4(m_pValues[0] + vVector(0),
-			m_pValues[1] + vVector(1),
-			m_pValues[2] + vVector(2),
-			m_pValues[3] + vVector(3));
+	return CVector4(m_pValues[0] + vVector[0],
+			m_pValues[1] + vVector[1],
+			m_pValues[2] + vVector[2],
+			m_pValues[3] + vVector[3]);
       }
       ////////////////////
       /// Sum with assigning.
@@ -309,7 +316,7 @@ namespace Phoenix
       /// \returns reference to std::ostream
       friend std::ostream& operator<<(std::ostream &stream, const CVector4 &vVector)
       {
-	stream << vVector(0) << "," << vVector(1) << "," << vVector(2) << "," << vVector(3);
+	stream << vVector[0] << "," << vVector[1] << "," << vVector[2] << "," << vVector[3];
 	return stream;
       }
       

@@ -60,7 +60,7 @@ void
 Phoenix::Spatial::COrientable::RotateAroundZ( float degrees ) 
 {
 
-  CQuaternion q; q.CreateFromAxisAngle( 0.0, 0.0, 1.0, degrees );
+  CQuaternion q; q.CreateFromAxisAngle( 0.0f, 0.0f, 1.0f, degrees );
   m_qRotation = q * m_qRotation;
   RotateAllDirections( q );
   SetRotationChanged(1);
@@ -70,7 +70,7 @@ Phoenix::Spatial::COrientable::RotateAroundZ( float degrees )
 void
 Phoenix::Spatial::COrientable::Rotate( const CVector3<float> &vAngles )
 {
-  Rotate( vAngles(0), vAngles(1), vAngles(2));
+  Rotate( vAngles[0], vAngles[1], vAngles[2]);
 
 }
 /////////////////////////////////////////////////////////////////
@@ -97,9 +97,9 @@ Phoenix::Spatial::COrientable::RotateAroundRight( float fDegrees )
 
   /* get rotations using local m_vRight */
   CQuaternion q; 
-  q.CreateFromAxisAngle( m_vRight(0), 
-			 m_vRight(1), 
-			 m_vRight(2), 
+  q.CreateFromAxisAngle( m_vRight[0], 
+			 m_vRight[1], 
+			 m_vRight[2], 
 			 fDegrees );
   
   m_qRotation = q * m_qRotation;
@@ -114,9 +114,9 @@ Phoenix::Spatial::COrientable::RotateAroundUp( float fDegrees )
 
   /* get rotations using local m_vUpward */
   CQuaternion q;
-  q.CreateFromAxisAngle( m_vUpward(0), 
-			 m_vUpward(1), 
-			 m_vUpward(2), 
+  q.CreateFromAxisAngle( m_vUpward[0], 
+			 m_vUpward[1], 
+			 m_vUpward[2], 
 			 fDegrees );
   
   m_qRotation = q * m_qRotation;  
@@ -131,8 +131,8 @@ Phoenix::Spatial::COrientable::RotateAroundForward( float fDegrees )
 {
   
   /* get rotations using local m_vForward */
-  CQuaternion q; q.CreateFromAxisAngle( m_vForward(0), m_vForward(1),
-					m_vForward(2), fDegrees );
+  CQuaternion q; q.CreateFromAxisAngle( m_vForward[0], m_vForward[1],
+					m_vForward[2], fDegrees );
   m_qRotation = q * m_qRotation;
   RotateVector(q,m_vRight);
   RotateVector(q,m_vUpward);
@@ -142,7 +142,7 @@ Phoenix::Spatial::COrientable::RotateAroundForward( float fDegrees )
 void
 Phoenix::Spatial::COrientable::RotateLocal( CVector3<float> &vAngles )
 {
-  RotateLocal( vAngles(0), vAngles(1), vAngles(2));
+  RotateLocal( vAngles[0], vAngles[1], vAngles[2]);
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -151,19 +151,19 @@ Phoenix::Spatial::COrientable::RotateLocal( float fRightAngle, float fUpAngle, f
 
 
   /* Get the Rotations from LOCAL axis */
-  CQuaternion qOne; qOne.CreateFromAxisAngle( m_vRight(0),
-					      m_vRight(1),
-					      m_vRight(2), 
+  CQuaternion qOne; qOne.CreateFromAxisAngle( m_vRight[0],
+					      m_vRight[1],
+					      m_vRight[2], 
 					      fRightAngle );
   
-  CQuaternion qTwo; qTwo.CreateFromAxisAngle( m_vUpward(0), 
-					      m_vUpward(1),
-					      m_vUpward(2),
+  CQuaternion qTwo; qTwo.CreateFromAxisAngle( m_vUpward[0], 
+					      m_vUpward[1],
+					      m_vUpward[2],
 					      fUpAngle );
   qOne = qTwo * qOne;
-  qTwo.CreateFromAxisAngle( m_vForward(0), 
-			    m_vForward(1),
-			    m_vForward(2),
+  qTwo.CreateFromAxisAngle( m_vForward[0], 
+			    m_vForward[1],
+			    m_vForward[2],
 			    fForwardAngle );
   qOne = qTwo * qOne;
   /* Apply the combined rotation to each vector */
@@ -184,9 +184,9 @@ Phoenix::Spatial::COrientable::SetDirectionForwardUp( CVector3<float> f, CVector
   m_vRight.Normalize();
   // To ensure numerical stability
   CVector3<float> vDiff = f - u;
-  if ( vDiff(0) < 0.0001f &&
-       vDiff(1) < 0.0001f &&
-       vDiff(2) < 0.0001f )
+  if ( vDiff[0] < 0.0001f &&
+       vDiff[1] < 0.0001f &&
+       vDiff[2] < 0.0001f )
   {
     m_qRotation.CreateFromAxisAngle( m_vRight, 180.0f);
   }

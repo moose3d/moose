@@ -86,10 +86,10 @@ namespace Phoenix
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
-      inline TYPE operator()( unsigned int nIndex ) const
-      {
-	return m_pValues[nIndex];
-      }
+      /* inline TYPE operator()( unsigned int nIndex ) const */
+/*       { */
+/* 	return m_pValues[nIndex]; */
+/*       } */
       ////////////////////
       /// Returns value of an element.
       /// \param nIndex Element index.
@@ -102,6 +102,13 @@ namespace Phoenix
       /// [] operator to help accessing the values, 
       /// \returns returns reference to value at index iIndex.
       inline TYPE & operator[](unsigned int iIndex)
+      {
+	return m_pValues[iIndex];
+      }
+      ////////////////////
+      /// [] operator to help accessing the values, 
+      /// \returns returns reference to value at index iIndex.
+      inline const TYPE & operator[](unsigned int iIndex) const
       {
 	return m_pValues[iIndex];
       }
@@ -201,8 +208,8 @@ namespace Phoenix
       /// \return Resulting vector.
       inline CVector2 operator-(const CVector2 & vVector) const
       {
-	return CVector2( m_pValues[0]-vVector(0),
-			 m_pValues[1]-vVector(1));
+	return CVector2( m_pValues[0]-vVector[0],
+			 m_pValues[1]-vVector[1]);
       }
       ////////////////////
       /// Addition operator.
@@ -210,8 +217,8 @@ namespace Phoenix
       /// \returns sum vector.
       inline CVector2 operator+( const CVector2 & vVector) const
       {
-	return CVector2(m_pValues[0] + vVector(0),
-			m_pValues[1] + vVector(1));
+	return CVector2(m_pValues[0] + vVector[0],
+			m_pValues[1] + vVector[1]);
       }
       ////////////////////
       /// Sum with assigning.
@@ -255,7 +262,7 @@ namespace Phoenix
       /// \returns reference to std::ostream
       friend std::ostream& operator<<(std::ostream &stream, const CVector2 &vVector)
       {
-	stream << vVector(0) << "," << vVector(1) ;
+	stream << vVector[0] << "," << vVector[1] ;
 	return stream;
       }
 

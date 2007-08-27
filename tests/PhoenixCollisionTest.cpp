@@ -775,9 +775,9 @@ TEST(TriangleIntersectsOBB_BoxRotated)
   CVector4<float> vVertex2( 1,0,4,1);
   CVector4<float> vResult;
   
-  CMatrix4x4<float> mRotation(  box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
-				box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
-				box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
+  CMatrix4x4<float> mRotation(  box.GetRightVector()[0],   box.GetUpVector()[0],  box.GetForwardVector()[0],  0,
+				box.GetRightVector()[1],   box.GetUpVector()[1],  box.GetForwardVector()[1],  0,         
+				box.GetRightVector()[2],   box.GetUpVector()[2],  box.GetForwardVector()[2],  0,
 				0,                         0,                     0,                          1 );
   mRotation.Transpose();
   vResult = mRotation * vVertex0;
@@ -786,9 +786,9 @@ TEST(TriangleIntersectsOBB_BoxRotated)
   //cerr << "v1 rotated: " << vResult << endl;
   vResult = mRotation * vVertex2;
   //cerr << "v2 rotated: " << vResult << endl;
-  CVector3<float> v0; v0[0] = vVertex0(0); v0[1] = vVertex0(1); v0[2] = vVertex0(2);
-  CVector3<float> v1; v1[0] = vVertex1(0); v1[1] = vVertex1(1); v1[2] = vVertex1(2);
-  CVector3<float> v2; v2[0] = vVertex2(0); v2[1] = vVertex2(1); v2[2] = vVertex2(2);
+  CVector3<float> v0; v0[0] = vVertex0[0]; v0[1] = vVertex0[1]; v0[2] = vVertex0[2];
+  CVector3<float> v1; v1[0] = vVertex1[0]; v1[1] = vVertex1[1]; v1[2] = vVertex1[2];
+  CVector3<float> v2; v2[0] = vVertex2[0]; v2[1] = vVertex2[1]; v2[2] = vVertex2[2];
   CVector3<float> vRes;
 
   vRes = Rotate( v0, mRotation);
@@ -922,9 +922,9 @@ TEST(TriangleIntersectsOBB_RealWorldExample )
 //   BRB:0.5,-0.5,11.9
   
 
-  CMatrix4x4<float> mRotation( box.GetRightVector()(0),   box.GetUpVector()(0),  box.GetForwardVector()(0),  0,
-			       box.GetRightVector()(1),   box.GetUpVector()(1),  box.GetForwardVector()(1),  0,         
-			       box.GetRightVector()(2),   box.GetUpVector()(2),  box.GetForwardVector()(2),  0,
+  CMatrix4x4<float> mRotation( box.GetRightVector()[0],   box.GetUpVector()[0],  box.GetForwardVector()[0],  0,
+			       box.GetRightVector()[1],   box.GetUpVector()[1],  box.GetForwardVector()[1],  0,         
+			       box.GetRightVector()[2],   box.GetUpVector()[2],  box.GetForwardVector()[2],  0,
 			       0,                         0,                     0,                          1 );
   mRotation.Transpose();
 
