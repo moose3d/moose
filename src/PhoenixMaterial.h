@@ -131,7 +131,18 @@ Phoenix::Graphics::CMaterial::GetShininess() const
 inline void
 Phoenix::Graphics::CMaterial::SetShininess( float fShininess)
 {
-  m_fShininess = fShininess;
+  if ( fShininess > 1.0f ) 
+  {
+    m_fShininess = 1.0f;
+  } 
+  else if ( fShininess < 0.0f )
+  {
+    m_fShininess = 0.0f;
+  }
+  else
+  {
+    m_fShininess = fShininess;
+  }
 }
 /////////////////////////////////////////////////////////////////
 #endif
