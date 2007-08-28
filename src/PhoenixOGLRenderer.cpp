@@ -881,51 +881,55 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
       glUniformMatrix4fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
       break;
     default:
-      {
-	glEnableVertexAttribArray(iLoc);
-	switch ( vParam.GetType())
-	{
-	case ELEMENT_TYPE_ATTRIB_1F:
-	  glVertexAttribPointer(iLoc, 1, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_2F:
-	  glVertexAttribPointer(iLoc, 2, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_3F:
-	  glVertexAttribPointer(iLoc, 3, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_4F:
-	  glVertexAttribPointer(iLoc, 4, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_1I:
-	  glVertexAttribPointer(iLoc, 1, GL_INT, 0, 0, vParam.GetPointer<int>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_2I:
-	  glVertexAttribPointer(iLoc, 2, GL_INT, 0, 0, vParam.GetPointer<int>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_3I:
-	  glVertexAttribPointer(iLoc, 3, GL_INT, 0, 0, vParam.GetPointer<int>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_4I:
-	  glVertexAttribPointer(iLoc, 4, GL_INT, 0, 0, vParam.GetPointer<int>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_1UB:
-	  glVertexAttribPointer(iLoc, 1, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_2UB:
-	  glVertexAttribPointer(iLoc, 2, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_3UB:
-	  glVertexAttribPointer(iLoc, 3, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-	  break;
-	case ELEMENT_TYPE_ATTRIB_4UB:
-	  glVertexAttribPointer(iLoc, 4, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-	  break;
-	default:
-	  break;
-	}
-      }
+      break;
+    
     } 
+  } 
+  else if ( (iLoc = glGetAttribLocation(shader.GetProgram(), strParamName)) != -1 );
+  {
+    
+    glEnableVertexAttribArray(iLoc);
+    switch ( vParam.GetType())
+    {
+    case ELEMENT_TYPE_ATTRIB_1F:
+      glVertexAttribPointer(iLoc, 1, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_2F:
+      glVertexAttribPointer(iLoc, 2, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_3F:
+      glVertexAttribPointer(iLoc, 3, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_4F:
+      glVertexAttribPointer(iLoc, 4, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_1I:
+      glVertexAttribPointer(iLoc, 1, GL_INT, 0, 0, vParam.GetPointer<int>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_2I:
+      glVertexAttribPointer(iLoc, 2, GL_INT, 0, 0, vParam.GetPointer<int>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_3I:
+      glVertexAttribPointer(iLoc, 3, GL_INT, 0, 0, vParam.GetPointer<int>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_4I:
+      glVertexAttribPointer(iLoc, 4, GL_INT, 0, 0, vParam.GetPointer<int>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_1UB:
+      glVertexAttribPointer(iLoc, 1, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_2UB:
+      glVertexAttribPointer(iLoc, 2, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_3UB:
+      glVertexAttribPointer(iLoc, 3, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+      break;
+    case ELEMENT_TYPE_ATTRIB_4UB:
+      glVertexAttribPointer(iLoc, 4, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+      break;
+    default:
+      break;
+    }
   }
 }
 /////////////////////////////////////////////////////////////////
