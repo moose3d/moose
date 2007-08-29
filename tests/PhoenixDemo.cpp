@@ -98,6 +98,10 @@ int main()
   COglTexture *pTexture2 = pOglRenderer->CreateTexture(strTexFilename2);
   COglTexture *pTextureRock = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/wall_transparent.tga"));
   COglTexture *pTextureBump = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/wall_normal.tga"));
+  
+  COglTexture *pTextureShip = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/spaceship.tga"));
+  COglTexture *pTextureShipBump = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/spaceship_normal.tga"));
+
   assert( pTexture2 != NULL);
   VERTEX_HANDLE hVertexHandle;
   VERTEX_HANDLE hTexCoordHandle;
@@ -179,6 +183,13 @@ int main()
   material.SetAmbient( CVector4<float>(0.26,0.26,0.26,1.0f));
   material.SetSpecular( CVector4<float>(1,1,1,1));
   material.SetShininess( 0.8000000f);
+
+  CMaterial materialShip;
+  materialShip.SetDiffuse( CVector4<float>(0.86,0.86,0.86,1.0f));
+  materialShip.SetAmbient( CVector4<float>(0.26,0.26,0.26,1.0f));
+  materialShip.SetSpecular( CVector4<float>(0.15f,0.15f,0.15f,1.0f));
+  materialShip.SetShininess( 0.138f);
+
   float fAngle = 0.0f;
   float fMagnitude = 2.0f;
   while( g_bLoop )
@@ -272,9 +283,20 @@ int main()
 
     //glRotatef( 40.0f, 0,1,0);
     //glTranslatef( 2,0,0);
-      pOglRenderer->CommitPrimitive( pIndices );
+    pOglRenderer->CommitPrimitive( pIndices );
+
     glPushMatrix();
+      glTranslatef(-2.5f,0,0);
+      pOglRenderer->CommitTexture( 0, pTextureShip );
+      pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+      pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
+      pOglRenderer->CommitTexture( 1, pTextureShipBump );
+      pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+      pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
+      pOglRenderer->CommitMaterial( materialShip );
+      pOglRenderer->CommitPrimitive( pIndices );
     glPopMatrix();
+
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->DisableLight( 0 );
     // Draw textured / transparent triangle
