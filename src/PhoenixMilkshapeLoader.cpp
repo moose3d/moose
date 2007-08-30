@@ -6,6 +6,7 @@
 using std::fstream;
 using std::ios;
 using namespace Phoenix::Data;
+using namespace Phoenix::Graphics;
 using std::cerr;
 using std::endl;
 /////////////////////////////////////////////////////////////////
@@ -576,5 +577,34 @@ Phoenix::Data::CMilkshapeLoader::Handle_Joints( unsigned char *pWorkBuffer)
     } 
   }
   return pWorkBuffer;
+}
+/////////////////////////////////////////////////////////////////
+CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::CreateVertexArray() const
+{
+  
+}
+/////////////////////////////////////////////////////////////////
+CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::CreateNormalArray() const
+{
+
+}
+/////////////////////////////////////////////////////////////////
+CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::CreateTexCoordArray() const
+{
+
+}
+/////////////////////////////////////////////////////////////////
+CVertexDesctiptor * 
+Phoenix::Data::CMilkshapeLoader::CreateColorArray() const
+{
+}
+/////////////////////////////////////////////////////////////////
+CIndexArray       * 
+Phoenix::Data::CMilkshapeLoader::CreateIndexArray( Phoenix::Graphics::PRIMITIVE_TYPE tType ) const
+{
+  
 }
 /////////////////////////////////////////////////////////////////
