@@ -1,6 +1,8 @@
 #ifndef __PhoenixMilkshapeLoader_h__
 #define __PhoenixMilkshapeLoader_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
 #include <iostream>
 #include <string>
 /////////////////////////////////////////////////////////////////
@@ -301,7 +303,29 @@ namespace Phoenix
       /// \param  sFilename Path to file as string.
       /// \returns Non-zero on error, zero otherwise.
       int Load(const std::string &sFilename);
-  
+      ////////////////////
+      /// Creates vertexdescriptor with vertex position data.
+      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_VERTEX_3F.
+      Phoenix::Graphics::CVertexDescriptor * CreateVertexArray() const;
+      ////////////////////
+      /// Creates vertexdescriptor with vertex normal data.
+      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_NORMAL_3F.
+      Phoenix::Graphics::CVertexDescriptor * CreateNormalArray() const;
+      ////////////////////
+      /// Creates vertexdescriptor with texture coordinate data.
+      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_TEX_2F.
+      Phoenix::Graphics::CVertexDescriptor * CreateTexCoordArray() const;
+      ////////////////////
+      /// Creates vertexdescriptor with vertex color data.
+      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_COLOR_4UB .
+      Phoenix::Graphics::CVertexDesctiptor * CreateColorArray() const;
+      ////////////////////
+      /// Creates indexarray for current vertex set.
+      /// \param tType Only PRIMITIVE_TRI_LIST and PRIMITIVE_TRI_STRIP are accepted. If PRIMITIVE_TRI_STRIP is 
+      ///  passed, then loader will attempt to stripify triangles using some algorithm. If stripification 
+      ///  does not succeed, CIndexArray is returned with type PRIMITIVE_TRI_LIST.
+      /// \returns Pointer to CIndexArray with type as PRIMITIVE_TRI_LIST or PRIMITIVE_TRI_STRIP.
+      Phoenix::Graphics::CIndexArray       * CreateIndexArray( Phoenix::Graphics::PRIMITIVE_TYPE tType ) const;
     private:
       ////////////////////
       /// Initializes the model structures.
@@ -342,7 +366,6 @@ namespace Phoenix
       /// Processes Joints.
       /// \param pWorkBuffer Byte buffer where data is read from.
       unsigned char *Handle_Joints( unsigned char *pWorkBuffer);
-
     };
     //////////////////////////////////////////////////////////////// 
   }; // namespace Data
