@@ -1,4 +1,7 @@
 #include "PhoenixModel.h"
+#include <tri_stripper.h>
+#include <sstream>
+/////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
@@ -157,3 +160,94 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CM
   stream << (model.m_ShaderHandle.IsNull() ? "(null)" : "" ) << endl;
   return stream;
 }
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CModel::Stripify()
+{
+  triangle_stripper::indices triangleIndices;
+  CIndexArray *pIndices = NULL;
+
+  if ( GetIndexHandles().size() > 0 )
+  {
+    pIndices = g_DefaultIndexManager->GetResource( GetIndexHandles()[0] );
+    if ( pIndices == NULL ) return;
+  }
+  
+  for(unsigned int i=0;i<pIndices->GetNumIndices();i++)
+  {
+    if ( pIndices->IsShortIndices())
+    {
+      triangleIndices.push_back(pIndices->GetPointer<unsigned short int>()[i]);
+    }
+    else
+    {
+      triangleIndices.push_back(pIndices->GetPointer<unsigned int>()[i]);
+    }
+  }
+  triangle_stripper::primitive_vector primitiveVector;
+  triangle_stripper::tri_stripper triStripper( triangleIndices );
+  
+  triStripper.SetMinStripSize(2);
+  triStripper.SetCacheSize(16);
+  triStripper.SetBackwardSearch(false);
+  triStripper.Strip( &primitiveVector );
+  
+  unsigned int nStripCount = 0;
+  unsigned int nListCount = 0;
+  unsigned int nListLength = 0;
+  unsigned int nStripAvgLength = 0;
+  for( unsigned int i=0;i<primitiveVector.size();i++)
+  {
+    if( primitiveVector[i].Type == triangle_stripper::TRIANGLE_STRIP)
+    {
+      nStripCount++;
+      nStripAvgLength += primitiveVector[i].Indices.size();
+    }
+    else
+    {
+      nListCount++;
+      nListLength += primitiveVector[i].Indices.size();
+    }
+  }
+  nStripAvgLength /= nStripCount;
+  cerr << "Created " << nStripCount << " strips. Average length " << nStripAvgLength << endl;
+  cerr << "Created " << nListCount << " lists. " << nListLength << " vertices left unstripped." << endl;
+  pIndices = NULL;
+  std::string strArrayName;
+  strArrayName = g_DefaultIndexManager->GetResourceName( GetIndexHandles()[0] );
+  // for each batch of primitives
+  for( unsigned int i=0;i<primitiveVector.size();i++)
+  {
+    // Check which type of primitive we got
+    if ( primitiveVector[i].Type == triangle_stripper::TRIANGLE_STRIP )
+    {
+      pIndices = new CIndexArray(PRIMITIVE_TRI_STRIP, primitiveVector[i].Indices.size());
+    }
+    else
+    {
+      pIndices = new CIndexArray(PRIMITIVE_TRI_LIST, primitiveVector[i].Indices.size());
+    }
+    // Copy indices into indexarray
+    for(unsigned int p=0;p<primitiveVector[i].Indices.size();p++)
+    {
+      if (pIndices->IsShortIndices())
+      {
+	pIndices->GetPointer<unsigned short int>()[p] = primitiveVector[i].Indices[p];
+      }
+      else
+      {
+	pIndices->GetPointer<unsigned int>()[p] = primitiveVector[i].Indices[p];
+      }
+    }
+    // Create new resource and handle
+    std::ostringstream stream;
+    stream << strArrayName << "_" << i ;
+    INDEX_HANDLE handle;
+    assert( g_DefaultIndexManager->Create(pIndices, stream.str(), handle) == 0);
+    GetIndexHandles().push_back(handle);
+  }
+  // Remove original triangle list handle.
+  if ( primitiveVector.size() > 0 )  { g_DefaultIndexManager->Release( GetIndexHandles()[0]);  }
+  
+}
+/////////////////////////////////////////////////////////////////
