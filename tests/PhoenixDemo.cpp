@@ -222,7 +222,7 @@ int main()
   fighterModel.AddTextureFilter( ENV_REPLACE, 0 );
   fighterModel.AddTextureFilter( MIN_MIP_LINEAR, 0 );
   fighterModel.AddTextureFilter( MAG_LINEAR, 0 );
-
+  fighterModel.Stripify();
   float fAngle = 0.0f;
   float fMagnitude = 2.0f;
   while( g_bLoop )
