@@ -1,4 +1,5 @@
 #include "PhoenixModel.h"
+using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
@@ -10,13 +11,19 @@ Phoenix::Graphics::CModel::CModel()
 Phoenix::Graphics::CModel::~CModel()
 {
   // nullify all handles
-  for(unsigned int i=0;i<8;i++)
+  for(unsigned int i=0;i<TEXTURE_HANDLE_COUNT;i++)
   {
-    m_aTextureHandles[i].Nullify();
+    g_DefaultTextureManager->Release(m_aTextureHandles[i]);
   }
-  m_VertexDescriptorHandle.Nullify();
-  m_IndexArrayHandle.Nullify();
-  m_ShaderHandle.Nullify();
+
+  g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
+
+  for(unsigned int i=0;i<GetIndexHandles().size();i++)
+  {
+    g_DefaultIndexManager->Release(GetIndexHandles()[i]);
+  }
+
+  g_DefaultShaderManager->Release(m_ShaderHandle);
 }
 /////////////////////////////////////////////////////////////////
 TEXTURE_HANDLE
@@ -50,16 +57,22 @@ Phoenix::Graphics::CModel::SetVertexHandle(VERTEX_HANDLE handle)
   m_VertexDescriptorHandle = handle; 
 }
 /////////////////////////////////////////////////////////////////
-INDEX_HANDLE
-Phoenix::Graphics::CModel::GetIndexHandle() const
+std::vector<INDEX_HANDLE> &
+Phoenix::Graphics::CModel::GetIndexHandles()
 {
-  return m_IndexArrayHandle;
+  return m_vecIndexArrayHandles;
+}
+/////////////////////////////////////////////////////////////////
+const std::vector<INDEX_HANDLE> &
+Phoenix::Graphics::CModel::GetIndexHandles() const
+{
+  return m_vecIndexArrayHandles;
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::SetIndexHandle(INDEX_HANDLE handle) 
+Phoenix::Graphics::CModel::AddIndexHandle(INDEX_HANDLE handle) 
 {
-  m_IndexArrayHandle = handle; 
+  m_vecIndexArrayHandles.push_back(handle); 
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -134,8 +147,12 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CM
   }
   stream << "VERTEX_HANDLE = " << model.m_VertexDescriptorHandle.GetIndex();
   stream << (model.m_VertexDescriptorHandle.IsNull() ? "(null)" : "" ) << endl;
-  stream << "INDEX_HANDLE = "  << model.m_IndexArrayHandle.GetIndex();
-  stream << (model.m_IndexArrayHandle.IsNull() ? "(null)" : "" ) << endl;
+
+  for( unsigned int i=0;i<model.GetIndexHandles().size();i++)
+  {
+    stream << "INDEX_HANDLE = "  << model.GetIndexHandles()[i].GetIndex();
+    stream << (model.GetIndexHandles()[i].IsNull() ? "(null)" : "" ) << endl;
+  }
   stream << "SHADER_HANDLE = " << model.m_ShaderHandle.GetIndex();
   stream << (model.m_ShaderHandle.IsNull() ? "(null)" : "" ) << endl;
   return stream;
