@@ -1,5 +1,8 @@
+/////////////////////////////////////////////////////////////////
 #include "PhoenixMilkshapeLoader.h"
 #include <fstream>
+#include <vector>
+//#include <tri_stripper.h>
 /////////////////////////////////////////////////////////////////
 #define DELETE(OBJ) if(OBJ != NULL ) delete OBJ; OBJ=NULL;
 /////////////////////////////////////////////////////////////////
@@ -7,8 +10,11 @@ using std::fstream;
 using std::ios;
 using namespace Phoenix::Data;
 using namespace Phoenix::Graphics;
+using Phoenix::Spatial::CVertex;
 using std::cerr;
 using std::endl;
+using std::vector;
+
 /////////////////////////////////////////////////////////////////
 Phoenix::Data::CMilkshapeLoader::CMilkshapeLoader()
 {
@@ -148,6 +154,12 @@ Phoenix::Data::CMilkshapeLoader::Init()
   m_pJoints = NULL;
   m_pVertexWeights = NULL;
   m_bHasBeenLoaded = 0;
+
+  m_pPositions = NULL;
+  m_pNormals = NULL;
+  m_pColors = NULL;
+  m_pTexCoords = NULL;
+  m_pIndices = NULL;
 }
 /////////////////////////////////////////////////////////////////
 // Frees the memory reserved by the model 
@@ -175,6 +187,12 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
   
   DELETE(m_pJoints);
   DELETE(m_pVertexWeights);  
+  DELETE(m_pPositions);
+  DELETE(m_pNormals);
+  DELETE(m_pColors);
+  DELETE(m_pTexCoords);
+  DELETE(m_pIndices);
+
   
   m_Animationdata.fAnimationFPS = 0.0;
   m_Animationdata.fCurrentTime = 0.0;
@@ -579,32 +597,112 @@ Phoenix::Data::CMilkshapeLoader::Handle_Joints( unsigned char *pWorkBuffer)
   return pWorkBuffer;
 }
 /////////////////////////////////////////////////////////////////
-CVertexDescriptor * 
-Phoenix::Data::CMilkshapeLoader::CreateVertexArray() const
+void
+Phoenix::Data::CMilkshapeLoader::GenerateModelData()
 {
-  
-}
-/////////////////////////////////////////////////////////////////
-CVertexDescriptor * 
-Phoenix::Data::CMilkshapeLoader::CreateNormalArray() const
-{
+  vector<CVertex> vecVertices;
+  vector<unsigned int> vecIndices;
+  CreateTriangleList( vecVertices, vecIndices);
+  cerr << "createTirnalgeList done" << endl;
+  // triangle_stripper::indices triangleIndices;
+  //   for(unsigned int i=0;i<vecIndices.size();i++)
+//   {
+//     triangleIndices.push_back(vecIndices[i]);
+//   }
+//   triangle_stripper::primitive_vector primitiveVector;
+//   triangle_stripper::tri_stripper triStripper( triangleIndices );
 
-}
-/////////////////////////////////////////////////////////////////
-CVertexDescriptor * 
-Phoenix::Data::CMilkshapeLoader::CreateTexCoordArray() const
-{
+//   triStripper.SetMinStripSize(2);
+//   triStripper.SetCacheSize(16);
+//   triStripper.SetBackwardSearch(false);
+//   triStripper.Strip( &primitiveVector );
+  m_pPositions = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, vecVertices.size());
+  m_pNormals = new CVertexDescriptor(ELEMENT_TYPE_NORMAL_3F, vecVertices.size());
+  m_pTexCoords = new CVertexDescriptor(ELEMENT_TYPE_TEX_2F, vecVertices.size());
+  m_pIndices = new CIndexArray(PRIMITIVE_TRI_LIST, vecIndices.size());
+  unsigned int nIndex = 0;
+  cerr << "allocs done for " << vecVertices.size() << " vertices." << endl;
 
+  for(unsigned int i=0;i<vecVertices.size();i++)
+  {
+    nIndex = i*3;
+    m_pPositions->GetPointer<float>()[nIndex]   = vecVertices[i].m_vPosition[0];
+    m_pPositions->GetPointer<float>()[nIndex+1] = vecVertices[i].m_vPosition[1];
+    m_pPositions->GetPointer<float>()[nIndex+2] = vecVertices[i].m_vPosition[2];
+
+    m_pNormals->GetPointer<float>()[nIndex]   = vecVertices[i].m_vNormal[0];
+    m_pNormals->GetPointer<float>()[nIndex+1] = vecVertices[i].m_vNormal[1];
+    m_pNormals->GetPointer<float>()[nIndex+2] = vecVertices[i].m_vNormal[2];
+    
+    nIndex = i*2;
+    m_pTexCoords->GetPointer<float>()[nIndex]   = vecVertices[i].m_vTexCoord[0];
+    m_pTexCoords->GetPointer<float>()[nIndex+1] = vecVertices[i].m_vTexCoord[1];
+
+  }
+  cerr << "vertexdescriptors done" << endl;
+  for(unsigned int i=0;i<vecIndices.size();i++)
+  {
+    if ( m_pIndices->IsShortIndices() )
+    {
+      m_pIndices->GetPointer<unsigned short int>()[i] = vecIndices[i];
+    }
+    else
+    {
+      m_pIndices->GetPointer<unsigned int>()[i] = vecIndices[i];
+    }
+  }
+  cerr << "all done" << endl;
 }
 /////////////////////////////////////////////////////////////////
-CVertexDesctiptor * 
-Phoenix::Data::CMilkshapeLoader::CreateColorArray() const
-{
+#define CREATE_VERTEX( VERTEX, TRIANGLE, T_VERTEXINDEX ) {			   \
+											   \
+ VERTEX.m_vPosition.Set(m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex); \
+ VERTEX.m_vNormal.Set(TRIANGLE.vertexNormals[T_VERTEXINDEX]);				   \
+ VERTEX.m_vTexCoord[0]=TRIANGLE.s[T_VERTEXINDEX];					   \
+ VERTEX.m_vTexCoord[1]=TRIANGLE.t[T_VERTEXINDEX];					   \
+ /*VERTEX.m_iBoneId = m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].boneId;*/	   \
+ 											   \
 }
 /////////////////////////////////////////////////////////////////
-CIndexArray       * 
-Phoenix::Data::CMilkshapeLoader::CreateIndexArray( Phoenix::Graphics::PRIMITIVE_TYPE tType ) const
+void 
+Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
+						     vector<unsigned int> &vecIndices)
 {
-  
-}
+  vecVertices.clear();
+  vecIndices.clear();
+  for(unsigned int nT=0; nT<m_nNumTriangles; nT++)
+  {
+    struct MS3D_Triangle_t triangle;
+    triangle = m_pTriangles[nT];
+    
+
+    for( unsigned int nV=0;nV<3;nV++)
+    {
+      CVertex vertex;    
+      CREATE_VERTEX( vertex, triangle, nV );
+
+      // Check does the vertex exist in the list already
+      bool bFoundVertex = false;
+      unsigned int nIndex = 0;
+      for( ; nIndex < vecVertices.size(); nIndex++ )
+      {
+	if ( vecVertices[nIndex] == vertex ) 
+	{
+	  bFoundVertex = true;
+	  break;
+	} 
+      }
+      
+      if ( bFoundVertex )
+      {
+	vecIndices.push_back( nIndex );
+      }
+      else
+      {
+	vecVertices.push_back( vertex );
+	vecIndices.push_back( vecVertices.size() - 1 );
+      }
+    } // for each vertex in triangle
+  } // for each triangle
+}  // separatevertices
 /////////////////////////////////////////////////////////////////
