@@ -3,8 +3,10 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
+#include "PhoenixSpatial.h"
 #include <iostream>
 #include <string>
+#include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -247,6 +249,16 @@ namespace Phoenix
     private:
       /// indicates does this model have data loaded.
       int  m_bHasBeenLoaded;
+      /// Vertex positions.
+      Phoenix::Graphics::CVertexDescriptor *m_pPositions;
+      /// Vertex normals.
+      Phoenix::Graphics::CVertexDescriptor *m_pNormals;
+      /// Vertex colors.
+      Phoenix::Graphics::CVertexDescriptor *m_pColors;
+      /// Vertex texture coordinates.
+      Phoenix::Graphics::CVertexDescriptor *m_pTexCoords;
+      /// Triangle indices (either for strip or list)
+      Phoenix::Graphics::CIndexArray *m_pIndices;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
@@ -286,6 +298,7 @@ namespace Phoenix
       //MS3D_Comment_t  *m_pMaterialComments;
       //MS3D_Comment_t  *m_pJointComments;
       //MS3D_Comment_t  *m_pModelComments;
+    public:
       ////////////////////
       /// Constructor.
       CMilkshapeLoader();
@@ -293,40 +306,59 @@ namespace Phoenix
       /// Desctructor.
       ~CMilkshapeLoader();
       ////////////////////
-      /// Copy constructor (since model has pointer members).
-      CMilkshapeLoader( const CMilkshapeLoader &ref);
-      ////////////////////
-      /// Assignment operator ( since model has pointer members).
-      CMilkshapeLoader &operator=( CMilkshapeLoader obj );
-      ////////////////////
       /// Loads the model data from file.
       /// \param  sFilename Path to file as string.
       /// \returns Non-zero on error, zero otherwise.
       int Load(const std::string &sFilename);
       ////////////////////
-      /// Creates vertexdescriptor with vertex position data.
-      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_VERTEX_3F.
-      Phoenix::Graphics::CVertexDescriptor * CreateVertexArray() const;
-      ////////////////////
-      /// Creates vertexdescriptor with vertex normal data.
-      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_NORMAL_3F.
-      Phoenix::Graphics::CVertexDescriptor * CreateNormalArray() const;
-      ////////////////////
-      /// Creates vertexdescriptor with texture coordinate data.
-      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_TEX_2F.
-      Phoenix::Graphics::CVertexDescriptor * CreateTexCoordArray() const;
-      ////////////////////
-      /// Creates vertexdescriptor with vertex color data.
-      /// \returns Pointer to CVertexDescriptor with type as ELEMENT_TYPE_COLOR_4UB .
-      Phoenix::Graphics::CVertexDesctiptor * CreateColorArray() const;
-      ////////////////////
-      /// Creates indexarray for current vertex set.
-      /// \param tType Only PRIMITIVE_TRI_LIST and PRIMITIVE_TRI_STRIP are accepted. If PRIMITIVE_TRI_STRIP is 
-      ///  passed, then loader will attempt to stripify triangles using some algorithm. If stripification 
-      ///  does not succeed, CIndexArray is returned with type PRIMITIVE_TRI_LIST.
-      /// \returns Pointer to CIndexArray with type as PRIMITIVE_TRI_LIST or PRIMITIVE_TRI_STRIP.
-      Phoenix::Graphics::CIndexArray       * CreateIndexArray( Phoenix::Graphics::PRIMITIVE_TYPE tType ) const;
+      /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
+      void GenerateModelData();
+      /////////////////////////////////////////////////////////////////
+      /// Creates new vertex for every occasion where position is same
+      /// but normal and/or texture coordinate is different.
+      /// \param vecVertices Vector of new vertices.
+      /// \param vecIndices Vector of new indices representing triangle list.
+      void CreateTriangleList( std::vector<Phoenix::Spatial::CVertex> &vecVertices, std::vector<unsigned int> &vecIndices);
+
+      inline Phoenix::Graphics::CVertexDescriptor * GetVertices() const 
+      {
+	return m_pPositions;
+      }
+      inline Phoenix::Graphics::CVertexDescriptor * GetNormals() const
+      {
+	return m_pNormals;
+      }
+      inline Phoenix::Graphics::CVertexDescriptor * GetTexCoords() const
+      {
+	return m_pTexCoords;
+      }
+      inline Phoenix::Graphics::CIndexArray * GetIndices() const
+      {
+	return m_pIndices;
+      }
+      inline void ResetVertices()
+      {
+	m_pPositions = NULL;
+      }
+      inline void ResetNormals()
+      {
+	m_pNormals = NULL;
+      }
+      inline void ResetTexCoords()
+      {
+	m_pTexCoords = NULL;
+      }
+      inline void ResetIndices()
+      {
+	m_pIndices = NULL;
+      }
     private:
+      ////////////////////
+      /// Copy constructor (since model has pointer members).
+      CMilkshapeLoader( const CMilkshapeLoader &ref);
+      ////////////////////
+      /// Assignment operator ( since model has pointer members).
+      CMilkshapeLoader &operator=( CMilkshapeLoader obj );
       ////////////////////
       /// Initializes the model structures.
       void		Init();
