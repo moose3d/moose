@@ -174,7 +174,7 @@ namespace Phoenix
 	if ( handle.IsNull()) return;
 
 	typename std::list<HANDLE *>::iterator it = m_lstHandles.begin();
-	for( ; it < m_lstHandles.end(); it++)
+	for( ; it != m_lstHandles.end(); it++)
 	{
 	  // If handle address matches, nullify and delete.
 	  if ( (*it) == &handle )
@@ -405,6 +405,7 @@ template<typename OBJECTTYPE, typename HANDLE>
 inline void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Release( HANDLE &handle )
 {
+  if ( handle.IsNull() ) return;
   m_vecObjects[handle.GetIndex()]->InvalidateHandle( handle );
   handle.Nullify();
 }
