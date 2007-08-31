@@ -472,7 +472,7 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
   CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
-  CIndexArray *pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandle());
+  CIndexArray *pIndices = NULL;
   
   // Commit textures
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
@@ -506,8 +506,15 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   }
   // check and commit resources
   if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
-  if ( pIndices  != NULL ) { CommitPrimitive ( pIndices );         }
   
+  for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
+  {
+    pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandles()[n] );
+    if ( pIndices  != NULL ) 
+    { 
+      CommitPrimitive ( pIndices );         
+    }
+  }
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -1027,6 +1034,9 @@ Phoenix::Graphics::COglRenderer::DisableState( STATE_TYPE tState )
   case STATE_LIGHTING:
     glDisable(GL_LIGHTING);
     break;
+  case STATE_DEPTH_TEST:
+    glDisable(GL_DEPTH_TEST);
+    break;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -1037,6 +1047,9 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
   {
   case STATE_LIGHTING:
     glEnable(GL_LIGHTING);
+    break;
+  case STATE_DEPTH_TEST:
+    glEnable(GL_DEPTH_TEST);
     break;
   }
 }
