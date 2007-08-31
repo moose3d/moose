@@ -603,19 +603,8 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
   vector<CVertex> vecVertices;
   vector<unsigned int> vecIndices;
   CreateTriangleList( vecVertices, vecIndices);
-  cerr << "createTirnalgeList done" << endl;
-  // triangle_stripper::indices triangleIndices;
-  //   for(unsigned int i=0;i<vecIndices.size();i++)
-//   {
-//     triangleIndices.push_back(vecIndices[i]);
-//   }
-//   triangle_stripper::primitive_vector primitiveVector;
-//   triangle_stripper::tri_stripper triStripper( triangleIndices );
 
-//   triStripper.SetMinStripSize(2);
-//   triStripper.SetCacheSize(16);
-//   triStripper.SetBackwardSearch(false);
-//   triStripper.Strip( &primitiveVector );
+
   m_pPositions = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, vecVertices.size());
   m_pNormals = new CVertexDescriptor(ELEMENT_TYPE_NORMAL_3F, vecVertices.size());
   m_pTexCoords = new CVertexDescriptor(ELEMENT_TYPE_TEX_2F, vecVertices.size());

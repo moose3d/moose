@@ -107,8 +107,15 @@ namespace Phoenix
       /// \param tTexFilter TEXTURE_FILTER to insert.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1. By default, it is first (zero).
       void   AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId = 0 );
-      
+      ////////////////////
+      /// Debugging output.
+      /// \param stream Output stream.
+      /// \param model Model object.
+      /// \returns Reference to output stream.
       friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CModel & model );
+      ////////////////////
+      /// Creates triangle strips from triangle list.
+      void Stripify();
     };
   }; // namespace Graphics
 }; // namespace Phoenix
