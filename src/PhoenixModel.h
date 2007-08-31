@@ -17,7 +17,7 @@ using Phoenix::Default::TEXTURE_HANDLE;
 using Phoenix::Default::VERTEX_HANDLE;
 using Phoenix::Default::INDEX_HANDLE;
 using Phoenix::Default::SHADER_HANDLE;
-using std::vector;
+
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -28,12 +28,19 @@ namespace Phoenix
     class CModel
     {
     protected:
-
+      /// Handle to textures.
       TEXTURE_HANDLE   	m_aTextureHandles[TEXTURE_HANDLE_COUNT];
+      /// Handle to texture coordinates.
       VERTEX_HANDLE     m_aTextureCoordinateHandles[TEXTURE_HANDLE_COUNT];
-      vector<TEXTURE_FILTER> m_aTextureFilters[TEXTURE_HANDLE_COUNT];
+      /// Texture filters for each texture.
+      std::vector<TEXTURE_FILTER> m_aTextureFilters[TEXTURE_HANDLE_COUNT];
+      /// Handle to vertices. (position data)
       VERTEX_HANDLE    	m_VertexDescriptorHandle;
-      INDEX_HANDLE      m_IndexArrayHandle;
+      /// Handle to vertex normals.
+      VERTEX_HANDLE     m_VertexNormalHandle;
+      /// Handle to index arrays for triangle list and/or Triangle strips.
+      std::vector<INDEX_HANDLE> m_vecIndexArrayHandles;
+      /// Handle to a shader
       SHADER_HANDLE     m_ShaderHandle;
     public:
       ////////////////////
@@ -61,13 +68,17 @@ namespace Phoenix
       /// \param handle Handle to vertex descriptor.
       void		SetVertexHandle( VERTEX_HANDLE handle );
       ////////////////////
-      /// Returns handle to index array.
-      /// \returns INDEX_HANDLE.
-      INDEX_HANDLE	GetIndexHandle() const;
+      /// Returns reference to a vector with handles to index arrays.
+      /// \returns vector consisting of INDEX_HANDLEs.
+      std::vector<INDEX_HANDLE>	& GetIndexHandles();
       ////////////////////
-      /// Sets index array handle.
+      /// Returns reference to a vector with handles to index arrays.
+      /// \returns vector consisting of INDEX_HANDLEs.
+      const std::vector<INDEX_HANDLE>	& GetIndexHandles() const;
+      ////////////////////
+      /// Adds index array handle to a vector.
       /// \param handle Handle to index array.
-      void		SetIndexHandle( INDEX_HANDLE handle );
+      void		AddIndexHandle( INDEX_HANDLE handle );
       ////////////////////
       /// Returns handle to shader.
       /// \returns SHADER_HANDLE.
