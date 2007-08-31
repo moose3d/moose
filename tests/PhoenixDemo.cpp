@@ -94,6 +94,8 @@ int main()
   COglRenderer *pOglRenderer = new COglRenderer();
   string strTexFilename("Resources/Textures/painting.tga");
   string strTexFilename2("Resources/Textures/lightmap.tga");
+  string strTexFighter="Resources/Textures/wilko.tga";
+
   COglTexture *pTexture  = pOglRenderer->CreateTexture(strTexFilename);
   COglTexture *pTexture2 = pOglRenderer->CreateTexture(strTexFilename2);
   COglTexture *pTextureRock = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/wall_transparent.tga"));
@@ -101,12 +103,15 @@ int main()
   
   COglTexture *pTextureShip = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/spaceship.tga"));
   COglTexture *pTextureShipBump = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/spaceship_normal.tga"));
-
+  
+  
+  COglTexture *pTextureFighter = pOglRenderer->CreateTexture( strTexFighter );
   assert( pTexture2 != NULL);
   VERTEX_HANDLE hVertexHandle;
   VERTEX_HANDLE hTexCoordHandle;
   TEXTURE_HANDLE hTextureHandle;
   TEXTURE_HANDLE hTextureHandle2;
+  TEXTURE_HANDLE hFighterTexture;
   INDEX_HANDLE hIndexHandle;
   string strVertexTest("VertexTest");
   string strTexCoords("TexCoordTest");
@@ -126,6 +131,8 @@ int main()
   // check that index resource actually exists
   assert( g_DefaultIndexManager->GetResource( hIndexHandle ) != NULL );
 
+  string strFighterTextureName = "fighter_texture";
+  assert( g_DefaultTextureManager->Create( pTextureFighter, strFighterTextureName, hFighterTexture ) == 0);
   CCamera camera;
   camera.SetPosition( 0,0,2.0f);
   camera.SetViewport( 0,0, 640, 480 );
@@ -134,7 +141,7 @@ int main()
   camera.SetFieldOfView( 45.0f);
   SDL_Event event;
   CVector3<float> vMove(0,0,0.2f);
-
+  
   CLight light;
   light.SetPosition(0,0.0f,3.0f);
   light.SetSpotExponent(1.0f);
@@ -153,7 +160,7 @@ int main()
   
   CModel model;
   model.SetVertexHandle( hVertexHandle );
-  model.SetIndexHandle( hIndexHandle );
+  model.AddIndexHandle( hIndexHandle );
   model.SetTextureHandle( hTextureHandle );
   model.SetTextureHandle( hTextureHandle2, 1 );
   model.SetTextureCoordinateHandle( hTexCoordHandle );
@@ -189,6 +196,32 @@ int main()
   materialShip.SetAmbient( CVector4<float>(0.26,0.26,0.26,1.0f));
   materialShip.SetSpecular( CVector4<float>(0.15f,0.15f,0.15f,1.0f));
   materialShip.SetShininess( 0.138f);
+
+
+  Phoenix::Data::CMilkshapeLoader loader;
+  std::string name("Resources/Models/fighter1.ms3d");
+  assert ( loader.Load( name ) == 0 && "Could not open model file!");
+  loader.GenerateModelData();
+
+  CModel fighterModel;
+  VERTEX_HANDLE hFighterVertices;
+  VERTEX_HANDLE hFighterTexCoords;
+  INDEX_HANDLE  hFighterIndices;
+
+  assert(g_DefaultVertexManager->Create( loader.GetVertices(), (name="fighter_vertices"), hFighterVertices ) == 0);  
+  assert(g_DefaultVertexManager->Create( loader.GetTexCoords(), (name="fighter_texcoords"), hFighterTexCoords )== 0);
+  assert( g_DefaultIndexManager->Create( loader.GetIndices(), (name="fighter_indices"), hFighterIndices ) == 0);
+  loader.ResetVertices();
+  loader.ResetTexCoords();
+  loader.ResetIndices();
+  fighterModel.SetVertexHandle( hFighterVertices );
+  fighterModel.AddIndexHandle( hFighterIndices );
+
+  fighterModel.SetTextureCoordinateHandle( hFighterTexCoords );
+  fighterModel.SetTextureHandle( hFighterTexture, 0 );
+  fighterModel.AddTextureFilter( ENV_REPLACE, 0 );
+  fighterModel.AddTextureFilter( MIN_MIP_LINEAR, 0 );
+  fighterModel.AddTextureFilter( MAG_LINEAR, 0 );
 
   float fAngle = 0.0f;
   float fMagnitude = 2.0f;
@@ -248,11 +281,6 @@ int main()
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitState( STATE_LIGHTING );
-    
-
-    
-    
-
     pOglRenderer->CommitCamera( camera );
     pOglRenderer->CommitLight( light );    
     
@@ -323,14 +351,22 @@ int main()
     pOglRenderer->CommitModel( model );
     pOglRenderer->CommitShader( NULL );
     glPopMatrix();
+
+
+
+    
     
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
+    pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX1_ARRAY );
     pOglRenderer->DisableTexture( 0, pTexture );
     pOglRenderer->DisableTexture( 1, pTexture );
+    pOglRenderer->CommitState( STATE_DEPTH_TEST );
+    pOglRenderer->CommitModel( fighterModel );
+    
     pOglRenderer->Finalize();
-
+    
     //sleep(1);
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
