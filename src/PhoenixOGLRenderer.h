@@ -31,7 +31,8 @@ namespace Phoenix
     };
     enum STATE_TYPE
     {
-      STATE_LIGHTING = 0
+      STATE_LIGHTING = 0,
+      STATE_DEPTH_TEST
     };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
