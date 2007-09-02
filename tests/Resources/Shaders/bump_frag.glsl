@@ -9,6 +9,7 @@ void main (void)
 {
 	float distSqr = dot(lightVec, lightVec);
 	float att = clamp(1.0 - invRadius * sqrt(distSqr), 0.0, 1.0);
+	att = 1.0; 
 	vec3 lVec = lightVec * inversesqrt(distSqr);
 
 	vec3 vVec = normalize(eyeVec);
@@ -17,7 +18,7 @@ void main (void)
 
 	vec3 bump = normalize( texture2D(normalMap, texCoord).xyz * 2.0 - 1.0);
 
-	vec4 vAmbient = gl_LightSource[0].ambient * gl_FrontMaterial.ambient;
+	vec4 vAmbient = gl_LightSource[0].ambient * gl_FrontMaterial.ambient + gl_LightModel.ambient * gl_FrontMaterial.ambient;
 
 	float diffuse = max( dot(lVec, bump), 0.0 );
 	

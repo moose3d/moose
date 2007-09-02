@@ -9,6 +9,7 @@
 #include "PhoenixDefaultEntities.h"
 #include <vector>
 #include <iostream>
+#include <utility>
 /////////////////////////////////////////////////////////////////
 using Phoenix::Graphics::CVertexDescriptor;
 using Phoenix::Graphics::CIndexArray;
@@ -17,7 +18,6 @@ using Phoenix::Default::TEXTURE_HANDLE;
 using Phoenix::Default::VERTEX_HANDLE;
 using Phoenix::Default::INDEX_HANDLE;
 using Phoenix::Default::SHADER_HANDLE;
-
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -42,6 +42,8 @@ namespace Phoenix
       std::vector<INDEX_HANDLE> m_vecIndexArrayHandles;
       /// Handle to a shader
       SHADER_HANDLE     m_ShaderHandle;
+      /// Shader parameters
+      vector< std::pair<std::string, VERTEX_HANDLE > > m_vShaderParams;
     public:
       ////////////////////
       /// Constructor.
@@ -68,6 +70,14 @@ namespace Phoenix
       /// \param handle Handle to vertex descriptor.
       void		SetVertexHandle( VERTEX_HANDLE handle );
       ////////////////////
+      /// Sets vertex descriptor handle.
+      /// \param handle Handle to vertex descriptor.
+      void		SetNormalHandle( VERTEX_HANDLE handle );
+      ////////////////////
+      /// Returns handle to vertex descriptor.
+      /// \returns VERTEX_HANDLE.
+      VERTEX_HANDLE     GetNormalHandle() const;
+      ////////////////////
       /// Returns reference to a vector with handles to index arrays.
       /// \returns vector consisting of INDEX_HANDLEs.
       std::vector<INDEX_HANDLE>	& GetIndexHandles();
@@ -88,6 +98,15 @@ namespace Phoenix
       /// \param handle Handle to shader.
       void		SetShaderHandle( SHADER_HANDLE handle );
       ////////////////////
+      /// Inserts shader parameter with name.
+      /// \param sName Parameter name in shaders.
+      /// \param handle Handle to vertexdescriptor.
+      void		SetShaderParameter( const char *sName, VERTEX_HANDLE handle );
+      ////////////////////
+      /// Returns reference to shader parameters.
+      /// \returns Vector of string-VERTEX_HANDLE pairs.
+      std::vector< std::pair<std::string, VERTEX_HANDLE> > & GetShaderParameters();
+      ////////////////////
       /// Sets texture coordinate vertexdescriptor handle.
       /// \param handle Handle to vertexdescriptor with texture coordinates.
       /// \param nId To which texture unit these coordinates are applied. By default the first (zero).
@@ -106,16 +125,13 @@ namespace Phoenix
       /// Adds texture filter to given texture.
       /// \param tTexFilter TEXTURE_FILTER to insert.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1. By default, it is first (zero).
-      void   AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId = 0 );
+      void		AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId = 0 );
       ////////////////////
       /// Debugging output.
       /// \param stream Output stream.
       /// \param model Model object.
       /// \returns Reference to output stream.
       friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CModel & model );
-      ////////////////////
-      /// Creates triangle strips from triangle list.
-      void Stripify();
     };
   }; // namespace Graphics
 }; // namespace Phoenix

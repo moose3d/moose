@@ -257,8 +257,8 @@ namespace Phoenix
       Phoenix::Graphics::CVertexDescriptor *m_pColors;
       /// Vertex texture coordinates.
       Phoenix::Graphics::CVertexDescriptor *m_pTexCoords;
-      /// Triangle indices (either for strip or list)
-      Phoenix::Graphics::CIndexArray *m_pIndices;
+      /// Vector of triangle indices (either a strip with one list or just a list).
+      std::vector<Phoenix::Graphics::CIndexArray *> m_vecIndices;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
@@ -312,6 +312,8 @@ namespace Phoenix
       int Load(const std::string &sFilename);
       ////////////////////
       /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
+      /// Remember to call ResetVertices(), ResetNormals(), etc. if you have created a resource
+      /// from those pointers. Remember to use ALL or NONE indices, otherwise memory leak will occur.
       void GenerateModelData();
       /////////////////////////////////////////////////////////////////
       /// Creates new vertex for every occasion where position is same
@@ -319,7 +321,7 @@ namespace Phoenix
       /// \param vecVertices Vector of new vertices.
       /// \param vecIndices Vector of new indices representing triangle list.
       void CreateTriangleList( std::vector<Phoenix::Spatial::CVertex> &vecVertices, std::vector<unsigned int> &vecIndices);
-
+      
       inline Phoenix::Graphics::CVertexDescriptor * GetVertices() const 
       {
 	return m_pPositions;
@@ -332,9 +334,9 @@ namespace Phoenix
       {
 	return m_pTexCoords;
       }
-      inline Phoenix::Graphics::CIndexArray * GetIndices() const
+      inline std::vector<Phoenix::Graphics::CIndexArray *> & GetIndices() 
       {
-	return m_pIndices;
+	return m_vecIndices;
       }
       inline void ResetVertices()
       {
@@ -350,8 +352,11 @@ namespace Phoenix
       }
       inline void ResetIndices()
       {
-	m_pIndices = NULL;
+	GetIndices().clear();
       }
+      ////////////////////
+      /// Creates triangle strips from triangle list.
+      void Stripify();
     private:
       ////////////////////
       /// Copy constructor (since model has pointer members).

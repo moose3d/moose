@@ -352,6 +352,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename )
   case 32:
     iGLInternalFormat = 4;
     iGLformat = GL_RGBA;
+    std::cerr << "Texture " << strFilename << " has alpha channel." <<  std::endl;
     break;
   default:
     delete pImage;
@@ -503,10 +504,22 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   {
     CShader *pShader = g_DefaultShaderManager->GetResource(model.GetShaderHandle());
     CommitShader( pShader );
+
+    for(unsigned int nSP=0; nSP< model.GetShaderParameters().size(); nSP++)
+    {
+      CVertexDescriptor *pParam = g_DefaultVertexManager->GetResource( model.GetShaderParameters()[nSP].second );
+      if ( pParam )
+      {
+	cerr << "Commiting parameter" << endl;
+	CommitShaderParam( *pShader, model.GetShaderParameters()[nSP].first, *pParam );
+      }
+    }
+
   }
   // check and commit resources
   if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
-  
+  CVertexDescriptor *pNormals = g_DefaultVertexManager->GetResource(model.GetNormalHandle());
+  if ( pNormals != NULL ) { CommitVertexDescriptor( pNormals ); }
   for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
   {
     pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandles()[n] );
@@ -892,7 +905,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
     
     } 
   } 
-  else if ( (iLoc = glGetAttribLocation(shader.GetProgram(), strParamName)) != -1 );
+  else if ( (iLoc = glGetAttribLocation(shader.GetProgram(), strParamName)) != -1 )
   {
     
     glEnableVertexAttribArray(iLoc);
@@ -937,6 +950,10 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
     default:
       break;
     }
+  }
+  else
+  {
+    cerr << "No such parameter '" << strParamName << "' in this shader!" << endl;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -1037,6 +1054,9 @@ Phoenix::Graphics::COglRenderer::DisableState( STATE_TYPE tState )
   case STATE_DEPTH_TEST:
     glDisable(GL_DEPTH_TEST);
     break;
+  case STATE_ALPHA_TEST:
+    glDisable(GL_ALPHA_TEST);
+    break;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -1050,6 +1070,9 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
     break;
   case STATE_DEPTH_TEST:
     glEnable(GL_DEPTH_TEST);
+    break;
+  case STATE_ALPHA_TEST:
+    glEnable(GL_ALPHA_TEST);
     break;
   }
 }

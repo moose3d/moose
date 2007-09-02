@@ -279,7 +279,7 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
   memset( pTangents, 0, sizeof(float)*vertices.GetSize()*6);
   
   unsigned int nTriCount = indices.GetNumIndices() / 3;
-  assert( nTriCount == 2);
+
   int bUseShort = indices.IsShortIndices();
   unsigned int i1,i2,i3;
   unsigned int idx;

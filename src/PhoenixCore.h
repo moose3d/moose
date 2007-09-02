@@ -17,10 +17,10 @@ namespace Phoenix
 {
   namespace Core 
   {
-    using namespace Phoenix::Core;
     /// magic number for hash table size and other stuff, too.
     const unsigned int PHOENIX_MAGIC_NUMBER = 33;
     /////////////////////////////////////////////////////////////////
+    /// Nullable entity.
     class CNullable
     {
     private:

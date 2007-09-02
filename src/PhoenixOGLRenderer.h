@@ -32,7 +32,59 @@ namespace Phoenix
     enum STATE_TYPE
     {
       STATE_LIGHTING = 0,
-      STATE_DEPTH_TEST
+      STATE_DEPTH_TEST,
+      STATE_ALPHA_TEST
+    };
+    enum ALPHA_TEST_TYPE
+    {
+      ALPHA_ALWAYS = 0,
+      ALPHA_NEVER,
+      ALPHA_LESS,
+      ALPHA_EQUAL,
+      ALPHA_LESS_OR_EQUAL,
+      ALPHA_GREATER,
+      ALPHA_NOT_EQUAL,
+      ALPHA_GREATER_OR_EQUAL
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Class grouping alpha testing properties.
+    class CAlphaTestOperation : public Phoenix::Core::CEnableable
+    {
+    private:
+      ALPHA_TEST_TYPE m_tTestType;
+      float	      m_fRefValue;
+    public:
+      ////////////////////
+      /// Constructor.
+      CAlphaTestOperation() : m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
+      ////////////////////
+      /// Assigns test type.
+      /// \param tType ALPHA_TEST_TYPE.
+      inline void SetTest( ALPHA_TEST_TYPE tType )
+      { 
+	m_tTestType = tType; 
+      }
+      ////////////////////
+      /// Returns current alpha test.
+      /// \returns Current ALPHA_TEST_TYPE.
+      inline ALPHA_TEST_TYPE GetTest() const 
+      { 
+	return m_tTestType; 
+      }
+      ////////////////////
+      /// Assigns reference value.
+      /// \param fValue Reference value to be set.
+      inline void SetReference( float fValue )
+      {
+	m_fRefValue = fValue;
+      }
+      ////////////////////
+      /// Returns reference value.
+      /// \brief Returns current reference value.
+      inline float GetReference () const
+      {
+	return m_fRefValue;
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
@@ -120,6 +172,7 @@ namespace Phoenix
     protected:
       /// Supported features.
       Phoenix::Graphics::COglRendererFeatures *m_pFeatures;
+      CAlphaTestOperation m_AlphaTest;
     public:
       ////////////////////
       /// Default constructor
