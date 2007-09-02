@@ -40,22 +40,22 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
   mMatrix(0,0) = 1.0 - yy - yy - zz - zz;
   mMatrix(0,1) = xy + xy - wz - wz;
   mMatrix(0,2) = xz + xz + wy + wy;
-  mMatrix(0,3) = 0.0;
+  mMatrix(0,3) = 0.0f;
   
   mMatrix(1,0) = xy + xy + wz + wz;
   mMatrix(1,1) = 1.0f - xx - xx - zz - zz;
   mMatrix(1,2) = yz + yz - wx - wx;
-  mMatrix(1,3) = 0.0;
+  mMatrix(1,3) = 0.0f;
   
   mMatrix(2,0) = xz + xz - wy - wy;
   mMatrix(2,1) = yz + yz + wx + wx;
   mMatrix(2,2) = 1.0 - xx - xx - yy - yy;
-  mMatrix(2,3) = 0.0;
+  mMatrix(2,3) = 0.0f;
   
-  mMatrix(3,0) = 0.0;
-  mMatrix(3,1) = 0.0;
-  mMatrix(3,2) = 0.0;
-  mMatrix(3,3) = 1.0;
+  mMatrix(3,0) = 0.0f;
+  mMatrix(3,1) = 0.0f;
+  mMatrix(3,2) = 0.0f;
+  mMatrix(3,3) = 1.0f;
 
 }
 /////////////////////////////////////////////////////////////////
@@ -273,13 +273,11 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
   assert( normals.GetType() == ELEMENT_TYPE_NORMAL_3F );
   assert( tangents.GetType() == ELEMENT_TYPE_ATTRIB_4F );
   assert( tangents.GetSize() == vertices.GetSize());
+
   float *pTangents = new float[vertices.GetSize()*6];
   float *pTangents2 = pTangents + (vertices.GetSize()*3);
   memset( pTangents, 0, sizeof(float)*vertices.GetSize()*6);
-
-  //Vector3D *tan1 = new Vector3D[vertexCount * 2];
-  //Vector3D *tan2 = tan1 + vertexCount;
-  //ClearMemory(tan1, vertexCount * sizeof(Vector3D) * 2);
+  
   unsigned int nTriCount = indices.GetNumIndices() / 3;
   assert( nTriCount == 2);
   int bUseShort = indices.IsShortIndices();
@@ -343,43 +341,29 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
     vTmp.UseExternalData( &pTangents2[i2*3] );    vTmp += vTdir;
     vTmp.UseExternalData( &pTangents2[i3*3] );    vTmp += vTdir;
 
-    //tan1[i1] += sdir;
-    //tan1[i2] += sdir;
-    //tan1[i3] += sdir;
-        
-    //tan2[i1] += tdir;
-    //tan2[i2] += tdir;
-    //tan2[i3] += tdir;
-        
-    //triangle++;
   }
 
   for (unsigned int a = 0; a < vertices.GetSize(); a++)
   {
-    //const Vector3D& n = normal[a];
-    //const Vector3D& t = tan1[a];
 
     v1.UseExternalData( &normals.GetPointer<float>()[a*3]);
     v2.UseExternalData( &pTangents[a*3] );
     vTangent.UseExternalData( &tangents.GetPointer<float>()[a*4]); 
 
     // Gram-Schmidt orthogonalize
-    //tangent[a] = (t - n * Dot(n, t)).Normalize();
     vTmp2 = v2 - (v1 * (v1.Dot(v2)));
     vTmp2.Normalize();
     vTangent[0] = vTmp2[0];
     vTangent[1] = vTmp2[1];
     vTangent[2] = vTmp2[2];
+
     // Calculate handedness
-    //tangent[a].w = (Dot(Cross(n, t), tan2[a]) < 0.0F) ? -1.0F : 1.0F;
     vTmp.UseExternalData( &pTangents2[a*3] );
     vTangent[3] = v1.Cross(v2).Dot( vTmp) < 0.0f ? -1.0f : 1.0f;
   }
   delete pTangents;
   pTangents = pTangents2 = NULL;
 }
-
-
 ////////////////////
 /// Returns the determinant of the 4x4 float matrix.
 float 
