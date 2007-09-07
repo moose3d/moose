@@ -5,14 +5,14 @@
 # The native linux c++ compiler
 LINUX_CC=g++
 DEBUG_FLAGS=#-DDEBUG #-DDEBUG_PRINT_INSANE 
-INCLUDE_DIR=-I/home/entity/workdir/phoenix/src -I../../tristripper-1.1.0-beta-5/include/
+INCLUDE_DIR=-I/home/entity/workdir/phoenix/src -I../../tristripper/include/
 LINUX_CFLAGS=-Wall -c `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
 	-mmmx -m3dnow -msse -mfpmath=387
-LDFLAGS_LINUX=-Wall -lGLU -lGLee -lSDL_image \
+LDFLAGS_LINUX=-Wall -lGLU -lGLee \
 		`sdl-config --libs` `freetype-config --libs` \
-		-lavformat -lavcodec  -l3ds -L../../tristripper-1.1.0-beta-5/lib -ltristripper
+		-lavformat -lavcodec  -l3ds -L../../tristripper/lib -ltristripper
 
 #/////////////////////////////////////////////////////////////////
 SRC=$(OBJ:.o=.cpp)
