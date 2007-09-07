@@ -1,11 +1,11 @@
 #/////////////////////////////////////////////////////////////////
 # file: Makefile
-# desc: The Makefile for GSE library
+# desc: The Makefile for Phoenix library
 #/////////////////////////////////////////////////////////////////
 # The native linux c++ compiler
 LINUX_CC=g++
 DEBUG_FLAGS=#-DDEBUG #-DDEBUG_PRINT_INSANE 
-INCLUDE_DIR=-I/home/entity/workdir/phoenix/src -I../../tristripper/include/
+§INCLUDE_DIR=-I/home/entity/workdir/phoenix/src -I../../tristripper/include/
 LINUX_CFLAGS=-Wall -c `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
