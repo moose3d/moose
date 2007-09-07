@@ -104,8 +104,16 @@ namespace Phoenix
       void Update()
       {
 	gettimeofday(&m_TimeVal, NULL);
-	unsigned int nTime = (m_TimeVal.tv_sec * 1000) + m_TimeVal.tv_usec;
+	unsigned int nTime = (m_TimeVal.tv_sec * 1000) + (m_TimeVal.tv_usec / 1000);
 	SetCurrentTimeMS( nTime );
+      }
+      ////////////////////
+      /// Updates start time.
+      void Reset()
+      {
+	gettimeofday(&m_TimeVal, NULL);
+	unsigned int nTime = (m_TimeVal.tv_sec * 1000) + (m_TimeVal.tv_usec / 1000);
+	SetStartTimeMS( nTime );
       }
       ////////////////////
       /// Returns the passed time in milliseconds.
@@ -178,6 +186,13 @@ namespace Phoenix
       inline void ResetFrames()
       {
 	m_nFrameCount = 0;
+      }
+      ////////////////////
+      /// Resets counter, frame count to zero, start time = current time.
+      void Reset() 
+      {
+	CTimer::Reset();
+	ResetFrames();
       }
       ////////////////////
       /// Returns how many frames per second have been processed.
