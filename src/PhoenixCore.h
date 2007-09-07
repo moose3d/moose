@@ -9,6 +9,7 @@
 #include <map>
 #include <list>
 #include <assert.h>
+#include <sys/time.h>
 /////////////////////////////////////////////////////////////////
 using std::string;
 using std::vector;
@@ -69,6 +70,8 @@ namespace Phoenix
       unsigned int m_nPassedTimeMS;
       /// The starting time in milliseconds where passed time is calculated from.
       unsigned int m_nStartTimeMS;
+      /// Time value for Update().
+      struct timeval m_TimeVal;
     public:
       ////////////////////
       /// The constructor.
@@ -97,6 +100,14 @@ namespace Phoenix
 	else			  m_nPassedTimeMS = nTimeMS - m_nStartTimeMS;
       }
       ////////////////////
+      /// Updates current time.
+      void Update()
+      {
+	gettimeofday(&m_TimeVal, NULL);
+	unsigned int nTime = (m_TimeVal.tv_sec * 1000) + m_TimeVal.tv_usec;
+	SetCurrentTimeMS( nTime );
+      }
+      ////////////////////
       /// Returns the passed time in milliseconds.
       /// \returns unsigned int the passed time relative to starting time.
       inline unsigned int GetPassedTimeMS()
@@ -110,12 +121,13 @@ namespace Phoenix
       /// \returns true, if nTimeMS milliseconds have passed, false if not.
       inline int HasPassedMS( unsigned int nTimeMS )
       {
+	Update();
 	return ( m_nPassedTimeMS >= nTimeMS );
       }
     
     };
     /////////////////////////////////////////////////////////////////
-    /// The FPS Counter class for reporting framerate.
+    /// A FPS Counter class for reporting framerate.
     class CFpsCounter : public CTimer
     {
     protected:
