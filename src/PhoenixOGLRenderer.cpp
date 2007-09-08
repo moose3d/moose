@@ -504,22 +504,28 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   {
     CShader *pShader = g_DefaultShaderManager->GetResource(model.GetShaderHandle());
     CommitShader( pShader );
-
+    CVertexDescriptor *pParam = NULL;
+    // Go through all parameters and commit them
     for(unsigned int nSP=0; nSP< model.GetShaderParameters().size(); nSP++)
     {
-      CVertexDescriptor *pParam = g_DefaultVertexManager->GetResource( model.GetShaderParameters()[nSP].second );
-      if ( pParam )
+      pParam = g_DefaultVertexManager->GetResource( model.GetShaderParameters()[nSP].second );
+      if ( pParam != NULL )
       {
-	cerr << "Commiting parameter" << endl;
 	CommitShaderParam( *pShader, model.GetShaderParameters()[nSP].first, *pParam );
       }
     }
 
   }
   // check and commit resources
-  if ( pVertices != NULL ) { CommitVertexDescriptor ( pVertices ); }
+  if ( pVertices != NULL ) 
+  { 
+    CommitVertexDescriptor ( pVertices ); 
+  }
   CVertexDescriptor *pNormals = g_DefaultVertexManager->GetResource(model.GetNormalHandle());
-  if ( pNormals != NULL ) { CommitVertexDescriptor( pNormals ); }
+  if ( pNormals != NULL ) 
+  { 
+    CommitVertexDescriptor( pNormals ); 
+  }
   for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
   {
     pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandles()[n] );
