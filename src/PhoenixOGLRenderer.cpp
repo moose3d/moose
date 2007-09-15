@@ -801,6 +801,7 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
     string strLog;
     GetProgramInfoLog(pShader->GetProgram(), strLog);
     std::cerr << strLog << std::endl;
+    delete pShader;
     return NULL;
   }
   
