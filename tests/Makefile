@@ -5,6 +5,8 @@ all: unit
 unit: $(UNIT_OBJ)
 demo:
 	g++ -Wall -I../src `sdl-config --cflags` PhoenixDemo.cpp -lPhoenix `sdl-config --libs`
+volumeline:
+	g++ -Wall -I../src `sdl-config --cflags` PhoenixVolumeLineDemo.cpp -lPhoenix `sdl-config --libs`
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean
