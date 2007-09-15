@@ -1,4 +1,5 @@
+uniform sampler2D beamTexture;
 void main()
 {
-	gl_FragColor = vec4(0,1,0,1);
+	gl_FragColor = texture2D(beamTexture,gl_TexCoord[0].st);
 }
