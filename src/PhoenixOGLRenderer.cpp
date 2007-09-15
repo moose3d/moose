@@ -787,6 +787,7 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
   // check that shader code exists
   if ( !bHasShader )
   {
+    delete pShader;
     return NULL;
   }
   
