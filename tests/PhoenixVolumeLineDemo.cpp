@@ -23,8 +23,8 @@ int main()
   string strVertexTest("VertexTest");
   string tmpName;
   CVector3<float> vStartPos(0,0,0);
-  CVector3<float> vEndPos(3,0,0);
-  CVector3<float> vDir = vEndPos - vStartPos;
+  CVector3<float> vEndPos(13,0,0);
+  //CVector3<float> vDir = vEndPos - vStartPos;
   float fThickness = 0.25f;
   ////////////////////
   CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 4 );
@@ -56,25 +56,36 @@ int main()
   
   CVertexDescriptor *pLineDirAndThickness = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, 4);
   
-  pLineDirAndThickness->GetPointer<float>()[0] = vDir[0];
-  pLineDirAndThickness->GetPointer<float>()[1] = vDir[1];
-  pLineDirAndThickness->GetPointer<float>()[2] = vDir[2];
+  pLineDirAndThickness->GetPointer<float>()[0] = vEndPos[0];
+  pLineDirAndThickness->GetPointer<float>()[1] = vEndPos[1];
+  pLineDirAndThickness->GetPointer<float>()[2] = vEndPos[2];
   pLineDirAndThickness->GetPointer<float>()[3] = fThickness;
 
-  pLineDirAndThickness->GetPointer<float>()[4] = vDir[0];
-  pLineDirAndThickness->GetPointer<float>()[5] = vDir[1];
-  pLineDirAndThickness->GetPointer<float>()[6] = vDir[2];
+  pLineDirAndThickness->GetPointer<float>()[4] = vEndPos[0];
+  pLineDirAndThickness->GetPointer<float>()[5] = vEndPos[1];
+  pLineDirAndThickness->GetPointer<float>()[6] = vEndPos[2];
   pLineDirAndThickness->GetPointer<float>()[7] = -fThickness;
 
-  pLineDirAndThickness->GetPointer<float>()[8] =  -vDir[0];
-  pLineDirAndThickness->GetPointer<float>()[9] =  -vDir[1];
-  pLineDirAndThickness->GetPointer<float>()[10] = -vDir[2];
+  pLineDirAndThickness->GetPointer<float>()[8] =  vStartPos[0];
+  pLineDirAndThickness->GetPointer<float>()[9] =  vStartPos[1];
+  pLineDirAndThickness->GetPointer<float>()[10] = vStartPos[2];
   pLineDirAndThickness->GetPointer<float>()[11] = fThickness;
 
-  pLineDirAndThickness->GetPointer<float>()[12] = -vDir[0];
-  pLineDirAndThickness->GetPointer<float>()[13] = -vDir[1];
-  pLineDirAndThickness->GetPointer<float>()[14] = -vDir[2];
+  pLineDirAndThickness->GetPointer<float>()[12] = vStartPos[0];
+  pLineDirAndThickness->GetPointer<float>()[13] = vStartPos[1];
+  pLineDirAndThickness->GetPointer<float>()[14] = vStartPos[2];
   pLineDirAndThickness->GetPointer<float>()[15] = -fThickness;
+
+  ////////////////////
+  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 4 );
+  pTexCoords->GetPointer<float>()[0] = 0.0f;
+  pTexCoords->GetPointer<float>()[1] = 0.0f;
+  pTexCoords->GetPointer<float>()[2] = 0.0f;
+  pTexCoords->GetPointer<float>()[3] = 1.0f;
+  pTexCoords->GetPointer<float>()[4] = 1.0f;
+  pTexCoords->GetPointer<float>()[5] = 1.0f;
+  pTexCoords->GetPointer<float>()[6] = 1.0f;
+  pTexCoords->GetPointer<float>()[7] = 0.0f;
   
   VERTEX_HANDLE hVertexHandle;
   INDEX_HANDLE hIndexHandle;
@@ -109,12 +120,15 @@ int main()
   
   VERTEX_HANDLE hCameraPos, hLinedirThickness;
   assert(g_DefaultVertexManager->Create( pCameraPos, "cameraPosParam", hCameraPos ) == 0);  
-  assert(g_DefaultVertexManager->Create( pLineDirAndThickness, "linedirThicknessParam", hLinedirThickness ) == 0);  
+  assert(g_DefaultVertexManager->Create( pLineDirAndThickness, "endposThicknessParam", hLinedirThickness ) == 0);  
 
   float fAngle = 0.0f;
   float fMagnitude = 12.0f;
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
+  
+  COglTexture *pBeamTexture = pOglRenderer->CreateTexture( std::string("Resources/Textures/beam.tga"));
+  
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -169,13 +183,18 @@ int main()
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
-
+    pOglRenderer->CommitTexture( 0, pBeamTexture );
     pOglRenderer->CommitShader( pShader );
     pOglRenderer->CommitShaderParam( *pShader, "cameraPos" , *pCameraPos );
-    pOglRenderer->CommitShaderParam( *pShader, "linedirThickness" , *pLineDirAndThickness);
+    pOglRenderer->CommitShaderParam( *pShader, "endposThickness" , *pLineDirAndThickness);
+    pOglRenderer->CommitUniformShaderParam( *pShader, "beamTexture" , 0 );
+
     //pOglRenderer->CommitColor( vWhite );    
     // Draw colored triangle
+
+    pOglRenderer->CommitVertexDescriptor( pTexCoords );
     pOglRenderer->CommitVertexDescriptor( pVertices );
+
     //pOglRenderer->CommitVertexDescriptor( pColors );
     
     pOglRenderer->CommitPrimitive( pIndices );
