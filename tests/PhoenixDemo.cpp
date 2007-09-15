@@ -23,8 +23,8 @@ int main()
   string strTexFilename2("Resources/Textures/lightmap.tga");
   string strTexFighterBump="/home/entity/omega_normal.tga";
 #ifdef OMEGA 
-  string strTexFighter="/home/entity/omega.tga";
-  std::string name("/home/entity/omega.ms3d");
+  string strTexFighter="Resources/Textures/omega.tga";
+  std::string name("Resources/Models/omega.ms3d");
 #else
   string strTexFighter="Resources/Textures/wilko.tga";
   std::string name("Resources/Models/fighter1.ms3d");
