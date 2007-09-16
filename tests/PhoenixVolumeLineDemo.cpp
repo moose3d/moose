@@ -78,16 +78,16 @@ public:
 
     if ( pTexCoords == 0 )
     {
-     pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 4 );
-     pTexCoords->GetPointer<float>()[0] = 0.0f;
-     pTexCoords->GetPointer<float>()[1] = 0.0f;
-     pTexCoords->GetPointer<float>()[2] = 0.0f;
-     pTexCoords->GetPointer<float>()[3] = 1.0f;
-     pTexCoords->GetPointer<float>()[4] = 1.0f;
-     pTexCoords->GetPointer<float>()[5] = 1.0f;
-     pTexCoords->GetPointer<float>()[6] = 1.0f;
-     pTexCoords->GetPointer<float>()[7] = 0.0f;
-     assert( g_DefaultVertexManager->Create( pTexCoords, strEnergyBeamTexCoords, GetTextureCoordinateHandle()) == 0 );
+      pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 4 );
+      pTexCoords->GetPointer<float>()[0] = 0.0f;
+      pTexCoords->GetPointer<float>()[1] = 0.0f;
+      pTexCoords->GetPointer<float>()[2] = 0.0f;
+      pTexCoords->GetPointer<float>()[3] = 1.0f;
+      pTexCoords->GetPointer<float>()[4] = 1.0f;
+      pTexCoords->GetPointer<float>()[5] = 1.0f;
+      pTexCoords->GetPointer<float>()[6] = 1.0f;
+      pTexCoords->GetPointer<float>()[7] = 0.0f;
+      assert( g_DefaultVertexManager->Create( pTexCoords, strEnergyBeamTexCoords, GetTextureCoordinateHandle()) == 0 );
     }
     else
     {
@@ -99,17 +99,26 @@ public:
   /// Destructor.
   ~CEnergyBeam()
   {
+    std::string killname;
+    
     g_DefaultShaderManager->Release( GetShaderHandle() );
     g_DefaultVertexManager->Release( GetTextureCoordinateHandle());
-    g_DefaultIndexManager->Release( GetIndexHandles()[0] );    
+    g_DefaultIndexManager->Release( GetIndexHandles()[0] );
 
-    g_DefaultVertexManager->Destroy( g_DefaultVertexManager->GetResourceName(GetVertexHandle()));
-    g_DefaultVertexManager->Destroy( g_DefaultVertexManager->GetResourceName(GetShaderParameters()[0].second) );
+    killname = g_DefaultVertexManager->GetResourceName(GetVertexHandle());
+    g_DefaultVertexManager->Destroy( killname );
+    
+    killname = g_DefaultVertexManager->GetResourceName(GetShaderParameters()[0].second);
+    g_DefaultVertexManager->Destroy( killname );
+
+    killname = g_DefaultVertexManager->GetResourceName(GetShaderParameters()[1].second);
+    g_DefaultVertexManager->Destroy( killname );
 
     for(unsigned int n=0;n<TEXTURE_HANDLE_COUNT;n++)
     {
       g_DefaultTextureManager->Release( GetTextureHandle(n) );
     }
+
   }
   ////////////////////
   /// Initializes energy beam.
@@ -220,16 +229,23 @@ int main()
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
   
   COglTexture *pBeamTexture = pOglRenderer->CreateTexture( std::string("Resources/Textures/beam.tga"));
-  TEXTURE_HANDLE hTexture;
-  assert( g_DefaultTextureManager->Create( pBeamTexture, "EnergyBeamTexture_Red", hTexture) == 0);
-
+  COglTexture *pBeamTexture2 = pOglRenderer->CreateTexture( std::string("Resources/Textures/beam2.tga"));
   
-  CEnergyBeam beam;
-  beam.Initialize( vStartPos, vEndPos, fThickness );
-  beam.SetTextureHandle( hTexture );
-  beam.AddTextureFilter( MIN_MIP_LINEAR );
-  beam.AddTextureFilter( MAG_LINEAR );
-  beam.AddTextureFilter( S_WRAP_REPEAT );
+  CEnergyBeam *pBeam, *pBeam2;
+  pBeam = new CEnergyBeam();
+  pBeam2 = new CEnergyBeam();
+  pBeam->Initialize( vStartPos, vEndPos, fThickness );
+  assert( g_DefaultTextureManager->Create( pBeamTexture, "EnergyBeamTexture_Red", pBeam->GetTextureHandle()) == 0);
+  pBeam->AddTextureFilter( MIN_MIP_LINEAR );
+  pBeam->AddTextureFilter( MAG_LINEAR );
+  pBeam->AddTextureFilter( S_WRAP_REPEAT );
+  
+  pBeam2->Initialize( vStartPos, vEndPos, fThickness );
+  assert( g_DefaultTextureManager->Create( pBeamTexture2, "EnergyBeamTexture_Another", pBeam2->GetTextureHandle()) == 0);
+  pBeam2->AddTextureFilter( MIN_MIP_LINEAR );
+  pBeam2->AddTextureFilter( MAG_LINEAR );
+  pBeam2->AddTextureFilter( S_WRAP_REPEAT );
+  
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -280,20 +296,35 @@ int main()
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
 
-    pOglRenderer->CommitModel( beam );
-
+    pOglRenderer->CommitModel( *pBeam );
+    pOglRenderer->CommitModel( *pBeam2 );
     
     pOglRenderer->Finalize();
     vStartPos[2] = cosf(fAngle) * 2.0f;
     vStartPos[1] = sinf(fAngle) * 2.0f;
     
-    beam.Initialize(vStartPos, vEndPos, fThickness );
+    pBeam->Initialize(vStartPos, vEndPos, fThickness );
+
+    vStartPos[2] = cosf(-fAngle) * 1.0f;
+    vStartPos[1] = sinf(fAngle) * 1.0f;
+    
+    pBeam2->Initialize(vStartPos, vEndPos, fThickness );
+    
     //sleep(1);
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
     fAngle += 0.001f;
-    beam.IncreaseTime(0.005f);
+    pBeam->IncreaseTime(0.005f);
+    pBeam2->IncreaseTime(0.005f);
+    
   }
+  delete pBeam;
+  delete pBeam2;
+  
+
+
+
   CSDLScreen::DestroyInstance();
+
   return 0;
 }
