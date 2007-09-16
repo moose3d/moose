@@ -44,6 +44,8 @@ namespace Phoenix
       SHADER_HANDLE     m_ShaderHandle;
       /// Shader parameters
       vector< std::pair<std::string, VERTEX_HANDLE > > m_vShaderParams;
+      vector< std::pair<std::string, int> >   m_vShaderIntParams;
+      vector< std::pair<std::string, float> > m_vShaderFloatParams;
     public:
       ////////////////////
       /// Constructor.
@@ -55,7 +57,7 @@ namespace Phoenix
       /// Returns handle to Texture.
       /// \param nId Which texture unit is handled. By default it is zero, the first.
       /// \returns TEXTURE_HANDLE
-      TEXTURE_HANDLE    GetTextureHandle( unsigned int nId = 0) const;
+      TEXTURE_HANDLE    & GetTextureHandle( unsigned int nId = 0);
       ////////////////////
       /// Sets texture handle.
       /// \param nId Which texture unit is handled. By default it is zero, the first.
@@ -64,7 +66,7 @@ namespace Phoenix
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE     GetVertexHandle() const;
+      VERTEX_HANDLE     & GetVertexHandle();
       ////////////////////
       /// Sets vertex descriptor handle.
       /// \param handle Handle to vertex descriptor.
@@ -76,7 +78,7 @@ namespace Phoenix
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE     GetNormalHandle() const;
+      VERTEX_HANDLE    & GetNormalHandle();
       ////////////////////
       /// Returns reference to a vector with handles to index arrays.
       /// \returns vector consisting of INDEX_HANDLEs.
@@ -92,7 +94,7 @@ namespace Phoenix
       ////////////////////
       /// Returns handle to shader.
       /// \returns SHADER_HANDLE.
-      SHADER_HANDLE	GetShaderHandle() const;
+      SHADER_HANDLE  & GetShaderHandle();
       ////////////////////
       /// Sets shader handle.
       /// \param handle Handle to shader.
@@ -103,9 +105,27 @@ namespace Phoenix
       /// \param handle Handle to vertexdescriptor.
       void		SetShaderParameter( const char *sName, VERTEX_HANDLE handle );
       ////////////////////
+      /// Inserts shader parameter with name.
+      /// \param sName Parameter name in shaders.
+      /// \param fValue Parameter value.
+      void		SetShaderParameter( const char *sName, float fValue );
+      ////////////////////
+      /// Inserts shader parameter with name.
+      /// \param sName Parameter name in shaders.
+      /// \param iValue Parameter value.
+      void		SetShaderParameter( const char *sName, int iValue );
+      ////////////////////
       /// Returns reference to shader parameters.
       /// \returns Vector of string-VERTEX_HANDLE pairs.
       std::vector< std::pair<std::string, VERTEX_HANDLE> > & GetShaderParameters();
+      ////////////////////
+      /// Returns reference to shader parameters.
+      /// \returns Vector of string-int pairs.
+      std::vector< std::pair<std::string, int> > & GetShaderIntParameters();
+      ////////////////////
+      /// Returns reference to shader parameters.
+      /// \returns Vector of string-float pairs.
+      std::vector< std::pair<std::string, float> > & GetShaderFloatParameters();
       ////////////////////
       /// Sets texture coordinate vertexdescriptor handle.
       /// \param handle Handle to vertexdescriptor with texture coordinates.
@@ -115,7 +135,7 @@ namespace Phoenix
       /// Returns handle to Texture Coordinate vertex descriptor.
       /// \param nId From which texture unit these coordinates are retrieved. By default, the first one (zero).
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE     GetTextureCoordinateHandle( unsigned int nId = 0 );
+      VERTEX_HANDLE & GetTextureCoordinateHandle( unsigned int nId = 0 );
       ////////////////////
       /// Returns texture filters for given texture.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1.  By default, it is first (zero).
