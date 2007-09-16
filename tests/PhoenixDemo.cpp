@@ -21,7 +21,7 @@ int main()
   }
   string strTexFilename("Resources/Textures/painting.tga");
   string strTexFilename2("Resources/Textures/lightmap.tga");
-  string strTexFighterBump="/home/entity/omega_normal.tga";
+  string strTexFighterBump="Resources/Textures/omega_normal.tga";
 #ifdef OMEGA 
   string strTexFighter="Resources/Textures/omega.tga";
   std::string name("Resources/Models/omega.ms3d");
