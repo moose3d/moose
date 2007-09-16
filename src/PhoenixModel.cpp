@@ -15,16 +15,21 @@ Phoenix::Graphics::CModel::~CModel()
   for(unsigned int i=0;i<TEXTURE_HANDLE_COUNT;i++)
   {
     g_DefaultTextureManager->Release(m_aTextureHandles[i]);
+    g_DefaultVertexManager->Release(m_aTextureCoordinateHandles[i]);
   }
-
+  
   g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
-
+  g_DefaultVertexManager->Release( m_VertexNormalHandle );
   for(unsigned int i=0;i<GetIndexHandles().size();i++)
   {
     g_DefaultIndexManager->Release(GetIndexHandles()[i]);
   }
-
   g_DefaultShaderManager->Release(m_ShaderHandle);
+
+  for(unsigned int i=0;i<m_vShaderParams.size();i++)
+  {
+    g_DefaultVertexManager->Release(m_vShaderParams[i].second);
+  }
 }
 /////////////////////////////////////////////////////////////////
 TEXTURE_HANDLE &
