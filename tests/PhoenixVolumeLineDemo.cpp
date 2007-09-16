@@ -10,6 +10,166 @@ using namespace Phoenix::Spatial;
 using namespace Phoenix::Window;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
+class CEnergyBeam : public Phoenix::Graphics::CModel
+{
+private:
+  static unsigned int m_nNumBeams;
+  std::string m_strName;
+  CVertexDescriptor *m_pTimeParam;
+public:
+  ////////////////////
+  /// Constructor.
+  CEnergyBeam()
+  {
+    unsigned int nNum = m_nNumBeams++;
+    std::string shadername("EnergyBeamShader");
+    // Allocate proper shader.
+    assert( g_DefaultShaderManager->AttachHandle( shadername, GetShaderHandle() ) == 0);
+    
+    // Create name for resources.
+    std::ostringstream stream;
+    stream << "EnergyBeam_" << nNum;
+    m_strName = stream.str();
+
+    // Create vertices for beam
+    CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 4);
+    assert(g_DefaultVertexManager->Create( pVertices, m_strName, GetVertexHandle() ) == 0);
+    
+    // Create index array or use existing one.
+    std::string strBeamShaderIndices("EnergyBeamShaderIndices");
+    CIndexArray *pIndices = g_DefaultIndexManager->GetResource( strBeamShaderIndices);
+    AddIndexHandle(INDEX_HANDLE());    
+    if ( pIndices == NULL)
+    {
+      CIndexArray *pIndices = new CIndexArray( PRIMITIVE_QUAD_LIST, 4 );
+      pIndices->GetPointer<unsigned short int>()[0] = 0;
+      pIndices->GetPointer<unsigned short int>()[1] = 1;
+      pIndices->GetPointer<unsigned short int>()[2] = 2;
+      pIndices->GetPointer<unsigned short int>()[3] = 3;
+
+      g_DefaultIndexManager->Create( pIndices, strBeamShaderIndices, GetIndexHandles().back());
+    }
+    else
+    {
+      g_DefaultIndexManager->AttachHandle( strBeamShaderIndices, GetIndexHandles().back() );
+    }
+    
+    std::ostringstream stream2;
+    stream2 << "EnergyBeam_" << nNum << "_params";
+    
+    m_pTimeParam = new CVertexDescriptor( ELEMENT_TYPE_UNIFORM_1F, 1 );
+    m_pTimeParam->GetPointer<float>()[0] = 0.0f;
+    
+    /// Create shader parameters.
+    CVertexDescriptor *pEndposThickness = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, 4);
+    SetShaderParameter( "endposThickness", VERTEX_HANDLE());
+    assert(g_DefaultVertexManager->Create( pEndposThickness, stream2.str(), GetShaderParameters().back().second ) == 0);
+    SetShaderParameter( "beamTexture", 0);
+    
+    std::ostringstream stream3;
+    stream3 << "EnergyBeam_" << nNum << "_time";
+    SetShaderParameter( "time", VERTEX_HANDLE());
+    assert(g_DefaultVertexManager->Create( m_pTimeParam, stream3.str(), GetShaderParameters().back().second ) == 0);
+    
+    ////////////////////
+    /// Create texture coordinates or attach to them if they already exist.
+    string strEnergyBeamTexCoords("EnergyBeamTexCoords");    
+    CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource( strEnergyBeamTexCoords );
+
+    if ( pTexCoords == 0 )
+    {
+     pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 4 );
+     pTexCoords->GetPointer<float>()[0] = 0.0f;
+     pTexCoords->GetPointer<float>()[1] = 0.0f;
+     pTexCoords->GetPointer<float>()[2] = 0.0f;
+     pTexCoords->GetPointer<float>()[3] = 1.0f;
+     pTexCoords->GetPointer<float>()[4] = 1.0f;
+     pTexCoords->GetPointer<float>()[5] = 1.0f;
+     pTexCoords->GetPointer<float>()[6] = 1.0f;
+     pTexCoords->GetPointer<float>()[7] = 0.0f;
+     assert( g_DefaultVertexManager->Create( pTexCoords, strEnergyBeamTexCoords, GetTextureCoordinateHandle()) == 0 );
+    }
+    else
+    {
+      g_DefaultVertexManager->AttachHandle( strEnergyBeamTexCoords, GetTextureCoordinateHandle());
+    }
+    
+  }
+  ////////////////////
+  /// Destructor.
+  ~CEnergyBeam()
+  {
+    g_DefaultShaderManager->Release( GetShaderHandle() );
+    g_DefaultVertexManager->Release( GetTextureCoordinateHandle());
+    g_DefaultIndexManager->Release( GetIndexHandles()[0] );    
+
+    g_DefaultVertexManager->Destroy( g_DefaultVertexManager->GetResourceName(GetVertexHandle()));
+    g_DefaultVertexManager->Destroy( g_DefaultVertexManager->GetResourceName(GetShaderParameters()[0].second) );
+
+    for(unsigned int n=0;n<TEXTURE_HANDLE_COUNT;n++)
+    {
+      g_DefaultTextureManager->Release( GetTextureHandle(n) );
+    }
+  }
+  ////////////////////
+  /// Initializes energy beam.
+  /// \param vStartPos Start position.
+  /// \param vEndPos End position.
+  /// \param fThickness Beam thickness value (total width = thickness * 2 ).
+  void Initialize( const Phoenix::Math::CVector3<float> & vStartPos, const Phoenix::Math::CVector3<float> &vEndPos, float fThickness )
+  {
+    
+    CVertexDescriptor *pEndposThickness = g_DefaultVertexManager->GetResource( Phoenix::Graphics::CModel::GetShaderParameters()[0].second  );
+    
+    pEndposThickness->GetPointer<float>()[0] = vEndPos[0];
+    pEndposThickness->GetPointer<float>()[1] = vEndPos[1];
+    pEndposThickness->GetPointer<float>()[2] = vEndPos[2];
+    pEndposThickness->GetPointer<float>()[3] = fThickness;
+
+    pEndposThickness->GetPointer<float>()[4] = vEndPos[0];
+    pEndposThickness->GetPointer<float>()[5] = vEndPos[1];
+    pEndposThickness->GetPointer<float>()[6] = vEndPos[2];
+    pEndposThickness->GetPointer<float>()[7] = -fThickness;
+
+    pEndposThickness->GetPointer<float>()[8] =  vStartPos[0];
+    pEndposThickness->GetPointer<float>()[9] =  vStartPos[1];
+    pEndposThickness->GetPointer<float>()[10] = vStartPos[2];
+    pEndposThickness->GetPointer<float>()[11] = fThickness;
+
+    pEndposThickness->GetPointer<float>()[12] = vStartPos[0];
+    pEndposThickness->GetPointer<float>()[13] = vStartPos[1];
+    pEndposThickness->GetPointer<float>()[14] = vStartPos[2];
+    pEndposThickness->GetPointer<float>()[15] = -fThickness;
+
+    CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource( m_strName );
+
+    pVertices->GetPointer<float>()[0] = vStartPos[0];
+    pVertices->GetPointer<float>()[1] = vStartPos[1];
+    pVertices->GetPointer<float>()[2] = vStartPos[2];
+
+    pVertices->GetPointer<float>()[3] = vStartPos[0];
+    pVertices->GetPointer<float>()[4] = vStartPos[1];
+    pVertices->GetPointer<float>()[5] = vStartPos[2];
+
+    pVertices->GetPointer<float>()[6] = vEndPos[0];
+    pVertices->GetPointer<float>()[7] = vEndPos[1];
+    pVertices->GetPointer<float>()[8] = vEndPos[2];
+
+    pVertices->GetPointer<float>()[9] = vEndPos[0];
+    pVertices->GetPointer<float>()[10] = vEndPos[1];
+    pVertices->GetPointer<float>()[11] = vEndPos[2];
+  }
+  ////////////////////
+  /// Adds value to passed time.
+  /// \param fValue Time passed.
+  void IncreaseTime( float fValue )
+  {
+    m_pTimeParam->GetPointer<float>()[0] += fValue;
+  }
+};
+// Initialize beam count.
+unsigned int CEnergyBeam::m_nNumBeams = 0;
+/////////////////////////////////////////////////////////////////
 int g_bLoop = 1;
 int main()
 {
@@ -27,72 +187,9 @@ int main()
   //CVector3<float> vDir = vEndPos - vStartPos;
   float fThickness = 0.25f;
   ////////////////////
-  CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 4 );
 
-  pVertices->GetPointer<float>()[0] = vStartPos[0];
-  pVertices->GetPointer<float>()[1] = vStartPos[1];
-  pVertices->GetPointer<float>()[2] = vStartPos[2];
-  
-  pVertices->GetPointer<float>()[3] = vStartPos[0];
-  pVertices->GetPointer<float>()[4] = vStartPos[1];
-  pVertices->GetPointer<float>()[5] = vStartPos[2];
-
-  pVertices->GetPointer<float>()[6] = vEndPos[0];
-  pVertices->GetPointer<float>()[7] = vEndPos[1];
-  pVertices->GetPointer<float>()[8] = vEndPos[2];
-  
-  pVertices->GetPointer<float>()[9] =  vEndPos[0];
-  pVertices->GetPointer<float>()[10] = vEndPos[1];
-  pVertices->GetPointer<float>()[11] = vEndPos[2];
-  
-  CIndexArray *pIndices = new CIndexArray( PRIMITIVE_QUAD_LIST, 4 );
-  pIndices->GetPointer<unsigned short int>()[0] = 0;
-  pIndices->GetPointer<unsigned short int>()[1] = 1;
-  pIndices->GetPointer<unsigned short int>()[2] = 2;
-  pIndices->GetPointer<unsigned short int>()[3] = 3;
-  
   COglRenderer *pOglRenderer = new COglRenderer();
   
-  
-  CVertexDescriptor *pLineDirAndThickness = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, 4);
-  
-  pLineDirAndThickness->GetPointer<float>()[0] = vEndPos[0];
-  pLineDirAndThickness->GetPointer<float>()[1] = vEndPos[1];
-  pLineDirAndThickness->GetPointer<float>()[2] = vEndPos[2];
-  pLineDirAndThickness->GetPointer<float>()[3] = fThickness;
-
-  pLineDirAndThickness->GetPointer<float>()[4] = vEndPos[0];
-  pLineDirAndThickness->GetPointer<float>()[5] = vEndPos[1];
-  pLineDirAndThickness->GetPointer<float>()[6] = vEndPos[2];
-  pLineDirAndThickness->GetPointer<float>()[7] = -fThickness;
-
-  pLineDirAndThickness->GetPointer<float>()[8] =  vStartPos[0];
-  pLineDirAndThickness->GetPointer<float>()[9] =  vStartPos[1];
-  pLineDirAndThickness->GetPointer<float>()[10] = vStartPos[2];
-  pLineDirAndThickness->GetPointer<float>()[11] = fThickness;
-
-  pLineDirAndThickness->GetPointer<float>()[12] = vStartPos[0];
-  pLineDirAndThickness->GetPointer<float>()[13] = vStartPos[1];
-  pLineDirAndThickness->GetPointer<float>()[14] = vStartPos[2];
-  pLineDirAndThickness->GetPointer<float>()[15] = -fThickness;
-
-  ////////////////////
-  CVertexDescriptor *pTexCoords = new CVertexDescriptor( ELEMENT_TYPE_TEX_2F, 4 );
-  pTexCoords->GetPointer<float>()[0] = 0.0f;
-  pTexCoords->GetPointer<float>()[1] = 0.0f;
-  pTexCoords->GetPointer<float>()[2] = 0.0f;
-  pTexCoords->GetPointer<float>()[3] = 1.0f;
-  pTexCoords->GetPointer<float>()[4] = 1.0f;
-  pTexCoords->GetPointer<float>()[5] = 1.0f;
-  pTexCoords->GetPointer<float>()[6] = 1.0f;
-  pTexCoords->GetPointer<float>()[7] = 0.0f;
-  
-  VERTEX_HANDLE hVertexHandle;
-  INDEX_HANDLE hIndexHandle;
-  
-  // Create vertex resource
-  assert( g_DefaultVertexManager->Create( pVertices, "lineVertices", hVertexHandle ) == 0);
-  assert( g_DefaultIndexManager->Create( pIndices, "lineIndices", hIndexHandle ) == 0);
 
   CCamera camera;
   camera.SetPosition( 0,0,2.0f);
@@ -111,16 +208,11 @@ int main()
   
   assert( pShader != NULL ) ;
   SHADER_HANDLE hShaderHandle;
-  assert(g_DefaultShaderManager->Create( pShader, "lineShader", hShaderHandle) == 0 );
-
-  CVertexDescriptor *pCameraPos = new CVertexDescriptor(ELEMENT_TYPE_UNIFORM_3F,1);
-  pCameraPos->GetPointer<float>()[0] = camera.GetPosition()[0];
-  pCameraPos->GetPointer<float>()[1] = camera.GetPosition()[1];
-  pCameraPos->GetPointer<float>()[2] = camera.GetPosition()[2];
+  assert(g_DefaultShaderManager->Create( pShader, "EnergyBeamShader", hShaderHandle) == 0 );
   
-  VERTEX_HANDLE hCameraPos, hLinedirThickness;
-  assert(g_DefaultVertexManager->Create( pCameraPos, "cameraPosParam", hCameraPos ) == 0);  
-  assert(g_DefaultVertexManager->Create( pLineDirAndThickness, "endposThicknessParam", hLinedirThickness ) == 0);  
+
+  
+
 
   float fAngle = 0.0f;
   float fMagnitude = 12.0f;
@@ -128,7 +220,16 @@ int main()
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
   
   COglTexture *pBeamTexture = pOglRenderer->CreateTexture( std::string("Resources/Textures/beam.tga"));
+  TEXTURE_HANDLE hTexture;
+  assert( g_DefaultTextureManager->Create( pBeamTexture, "EnergyBeamTexture_Red", hTexture) == 0);
+
   
+  CEnergyBeam beam;
+  beam.Initialize( vStartPos, vEndPos, fThickness );
+  beam.SetTextureHandle( hTexture );
+  beam.AddTextureFilter( MIN_MIP_LINEAR );
+  beam.AddTextureFilter( MAG_LINEAR );
+  beam.AddTextureFilter( S_WRAP_REPEAT );
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -174,43 +275,24 @@ int main()
 	break;
       }
     }
-    pCameraPos->GetPointer<float>()[0] = camera.GetPosition()[0];
-    pCameraPos->GetPointer<float>()[1] = camera.GetPosition()[1];
-    pCameraPos->GetPointer<float>()[2] = camera.GetPosition()[2];
-
     
-    //CVector4<unsigned char> vWhite(255,255,255,255);
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
-    pOglRenderer->CommitTexture( 0, pBeamTexture );
-    pOglRenderer->CommitShader( pShader );
-    pOglRenderer->CommitShaderParam( *pShader, "cameraPos" , *pCameraPos );
-    pOglRenderer->CommitShaderParam( *pShader, "endposThickness" , *pLineDirAndThickness);
-    pOglRenderer->CommitUniformShaderParam( *pShader, "beamTexture" , 0 );
 
-    //pOglRenderer->CommitColor( vWhite );    
-    // Draw colored triangle
+    pOglRenderer->CommitModel( beam );
 
-    pOglRenderer->CommitVertexDescriptor( pTexCoords );
-    pOglRenderer->CommitVertexDescriptor( pVertices );
-
-    //pOglRenderer->CommitVertexDescriptor( pColors );
-    
-    pOglRenderer->CommitPrimitive( pIndices );
-
-    /*    glBegin(GL_QUADS);
-      glVertex3f(0,1,0);
-      glVertex3f(0,0,0);
-      glVertex3f(3,0,0);
-      glVertex3f(3,1,0);
-      glEnd(); */
     
     pOglRenderer->Finalize();
+    vStartPos[2] = cosf(fAngle) * 2.0f;
+    vStartPos[1] = sinf(fAngle) * 2.0f;
     
+    beam.Initialize(vStartPos, vEndPos, fThickness );
     //sleep(1);
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
+    fAngle += 0.001f;
+    beam.IncreaseTime(0.005f);
   }
   CSDLScreen::DestroyInstance();
   return 0;
