@@ -199,6 +199,7 @@ namespace Phoenix
 	typename std::list<HANDLE *>::iterator it = m_lstHandles.begin();
 	for( ; it != m_lstHandles.end(); it++)
 	{
+	  if ( *it == NULL ) continue;
 	  (*it)->Nullify();
 	}
 	m_lstHandles.clear();
@@ -545,7 +546,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
   
   if ( pHashItem == NULL ) return;
   unsigned int nIndex = pHashItem->GetObject().GetIndex();
-
+  
   if ( nIndex < m_vecObjects.size() - 1 )
   {
     // Remove resource (invalidates also handles)
@@ -555,10 +556,10 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
 
     // Remove extra pointer.
     m_vecObjects.pop_back();    
-    
+
     // Update handle indices.
     m_vecObjects[nIndex]->UpdateAllHandles(nIndex);
-    
+
     // Remove key from hash table.
     m_pResourceHash->Delete( strName );
     
