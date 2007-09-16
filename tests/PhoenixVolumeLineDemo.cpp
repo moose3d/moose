@@ -236,13 +236,13 @@ int main()
   pBeam2 = new CEnergyBeam();
   pBeam->Initialize( vStartPos, vEndPos, fThickness );
   assert( g_DefaultTextureManager->Create( pBeamTexture, "EnergyBeamTexture_Red", pBeam->GetTextureHandle()) == 0);
-  pBeam->AddTextureFilter( MIN_MIP_LINEAR );
+  pBeam->AddTextureFilter( MIN_NEAREST );
   pBeam->AddTextureFilter( MAG_LINEAR );
   pBeam->AddTextureFilter( S_WRAP_REPEAT );
   
   pBeam2->Initialize( vStartPos, vEndPos, fThickness );
   assert( g_DefaultTextureManager->Create( pBeamTexture2, "EnergyBeamTexture_Another", pBeam2->GetTextureHandle()) == 0);
-  pBeam2->AddTextureFilter( MIN_MIP_LINEAR );
+  pBeam2->AddTextureFilter( MIN_NEAREST );
   pBeam2->AddTextureFilter( MAG_LINEAR );
   pBeam2->AddTextureFilter( S_WRAP_REPEAT );
   
@@ -295,6 +295,9 @@ int main()
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
+    
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_ONE, GL_ONE);
 
     pOglRenderer->CommitModel( *pBeam );
     pOglRenderer->CommitModel( *pBeam2 );
@@ -314,8 +317,8 @@ int main()
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
     fAngle += 0.001f;
-    pBeam->IncreaseTime(0.005f);
-    pBeam2->IncreaseTime(0.005f);
+    pBeam->IncreaseTime(0.025f);
+    pBeam2->IncreaseTime(0.025f);
     
   }
   delete pBeam;
