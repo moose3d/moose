@@ -514,7 +514,16 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
 	CommitShaderParam( *pShader, model.GetShaderParameters()[nSP].first, *pParam );
       }
     }
-
+    // Go through all int parameters and commit them
+    for(unsigned int nSP=0; nSP< model.GetShaderIntParameters().size(); nSP++)
+    {
+      CommitUniformShaderParam( *pShader, model.GetShaderIntParameters()[nSP].first, model.GetShaderIntParameters()[nSP].second );
+    }
+    // Go through all float parameters and commit them
+    for(unsigned int nSP=0; nSP< model.GetShaderFloatParameters().size(); nSP++)
+    {
+      CommitUniformShaderParam( *pShader, model.GetShaderFloatParameters()[nSP].first, model.GetShaderFloatParameters()[nSP].second );
+    }
   }
   // check and commit resources
   if ( pVertices != NULL ) 
