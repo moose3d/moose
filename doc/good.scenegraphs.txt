@@ -1,0 +1,17 @@
+Rules of thumb to get an efficient scenegraph:
+
+A) Don't use an SG for visibility determination. That's not its job. A good SG is 
+not necessarilly a good spatial tree.
+B) Don't use an SG for collision queries. Same reasoning as above.
+C) Don't use a fixed partitioning scheme (eg. octree) for an SG. Use variable node trees.
+D) Don't build your SG on spatial relationships. Build it on logical relationships.
+
+The most important point being, that an SG is abstract structure to represent relationships between objects 
+(often hierarchical attachements, such as in character animation). 
+
+It is not a structure to do visibility culling, nor will it do collision queries. 
+An SG is a highly abstract logical access structure to your scene data. 
+It is used to efficiently connect gameplay, physics, animation and AI systems to the graphics engine.
+
+In short, don't confuse a scenegraph with a spatial culling/localization struture such as an 
+octree/BSP/ABT/KdT/etc. They are two totally different and unrelated concepts.
