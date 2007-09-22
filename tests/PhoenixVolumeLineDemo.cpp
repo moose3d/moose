@@ -27,10 +27,10 @@ public:
     assert( g_DefaultShaderManager->AttachHandle( shadername, GetShaderHandle() ) == 0);
     
     // Create name for resources.
-    std::ostringstream stream;
+    std::stringstream stream;
     stream << "EnergyBeam_" << nNum;
     m_strName = stream.str();
-
+    
     // Create vertices for beam
     CVertexDescriptor *pVertices = new CVertexDescriptor( ELEMENT_TYPE_VERTEX_3F, 4);
     assert(g_DefaultVertexManager->Create( pVertices, m_strName, GetVertexHandle() ) == 0);
@@ -54,22 +54,22 @@ public:
       g_DefaultIndexManager->AttachHandle( strBeamShaderIndices, GetIndexHandles().back() );
     }
     
-    std::ostringstream stream2;
-    stream2 << "EnergyBeam_" << nNum << "_params";
-    
+    stream.str("");
+    stream << "EnergyBeam_" << nNum << "_params";
+    std::cerr << "Stream contents is : " << stream.str() << std::endl;
     m_pTimeParam = new CVertexDescriptor( ELEMENT_TYPE_UNIFORM_1F, 1 );
     m_pTimeParam->GetPointer<float>()[0] = 0.0f;
     
     /// Create shader parameters.
     CVertexDescriptor *pEndposThickness = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, 4);
     SetShaderParameter( "endposThickness", VERTEX_HANDLE());
-    assert(g_DefaultVertexManager->Create( pEndposThickness, stream2.str(), GetShaderParameters().back().second ) == 0);
+    assert(g_DefaultVertexManager->Create( pEndposThickness, stream.str(), GetShaderParameters().back().second ) == 0);
     SetShaderParameter( "beamTexture", 0);
     
-    std::ostringstream stream3;
-    stream3 << "EnergyBeam_" << nNum << "_time";
+    stream.str("");
+    stream << "EnergyBeam_" << nNum << "_time";
     SetShaderParameter( "time", VERTEX_HANDLE());
-    assert(g_DefaultVertexManager->Create( m_pTimeParam, stream3.str(), GetShaderParameters().back().second ) == 0);
+    assert(g_DefaultVertexManager->Create( m_pTimeParam, stream.str(), GetShaderParameters().back().second ) == 0);
     
     ////////////////////
     /// Create texture coordinates or attach to them if they already exist.
@@ -295,10 +295,10 @@ int main()
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitCamera( camera );
-    
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_ONE, GL_ONE);
 
+    pOglRenderer->CommitState( STATE_BLENDING);
+    pOglRenderer->CommitBlending( BLEND_SRC_ONE, BLEND_DST_ONE );
+    
     pOglRenderer->CommitModel( *pBeam );
     pOglRenderer->CommitModel( *pBeam2 );
     
@@ -312,7 +312,7 @@ int main()
     vStartPos[1] = sinf(fAngle) * 1.0f;
     
     pBeam2->Initialize(vStartPos, vEndPos, fThickness );
-    
+    pOglRenderer->DisableState( STATE_BLENDING);
     //sleep(1);
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
