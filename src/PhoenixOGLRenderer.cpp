@@ -1065,15 +1065,8 @@ Phoenix::Graphics::COglRenderer::DisableState( STATE_TYPE tState )
 {
   switch(tState)
   {
-  case STATE_LIGHTING:
-    glDisable(GL_LIGHTING);
-    break;
-  case STATE_DEPTH_TEST:
-    glDisable(GL_DEPTH_TEST);
-    break;
-  case STATE_ALPHA_TEST:
-    glDisable(GL_ALPHA_TEST);
-    break;
+  default:
+    glDisable(static_cast<GLenum>(tState));
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -1082,14 +1075,8 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
 {
   switch(tState)
   {
-  case STATE_LIGHTING:
-    glEnable(GL_LIGHTING);
-    break;
-  case STATE_DEPTH_TEST:
-    glEnable(GL_DEPTH_TEST);
-    break;
-  case STATE_ALPHA_TEST:
-    glEnable(GL_ALPHA_TEST);
+  default:
+    glEnable(static_cast<GLenum>(tState));
     break;
   }
 }
@@ -1103,5 +1090,17 @@ Phoenix::Graphics::COglRenderer::CommitMaterial( const Phoenix::Graphics::CMater
   glMaterialfv( glFace, GL_SPECULAR,  material.GetSpecular().GetArray());
   glMaterialfv( glFace, GL_EMISSION,  material.GetEmission().GetArray());
   glMaterialf(  glFace, GL_SHININESS, material.GetShininess()*128.0f);
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitAlpha(  Phoenix::Graphics::ALPHA_TEST_TYPE tType, float fReference )
+{
+  glAlphaFunc( static_cast<GLenum>(tType), fReference);
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitBlending( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination)
+{
+  glBlendFunc( static_cast<GLenum>(tSource),static_cast<GLenum>(tDestination));
 }
 /////////////////////////////////////////////////////////////////
