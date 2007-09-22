@@ -12,6 +12,9 @@
 #include "PhoenixLight.h"
 #include "PhoenixMaterial.h"
 /////////////////////////////////////////////////////////////////
+#include <GL/GLee.h>
+#include <GL/gl.h>
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
@@ -31,20 +34,79 @@ namespace Phoenix
     };
     enum STATE_TYPE
     {
-      STATE_LIGHTING = 0,
-      STATE_DEPTH_TEST,
-      STATE_ALPHA_TEST
+      STATE_LIGHTING = GL_LIGHTING,
+      STATE_DEPTH_TEST = GL_DEPTH_TEST,
+      STATE_ALPHA_TEST = GL_ALPHA_TEST,
+      STATE_BLENDING   = GL_BLEND
     };
     enum ALPHA_TEST_TYPE
     {
-      ALPHA_ALWAYS = 0,
-      ALPHA_NEVER,
-      ALPHA_LESS,
-      ALPHA_EQUAL,
-      ALPHA_LESS_OR_EQUAL,
-      ALPHA_GREATER,
-      ALPHA_NOT_EQUAL,
-      ALPHA_GREATER_OR_EQUAL
+      ALPHA_ALWAYS           = GL_ALWAYS,
+      ALPHA_NEVER	     = GL_NEVER,
+      ALPHA_LESS	     = GL_LESS,
+      ALPHA_EQUAL	     = GL_EQUAL,
+      ALPHA_LESS_OR_EQUAL    = GL_LEQUAL,
+      ALPHA_GREATER	     = GL_GREATER,
+      ALPHA_NOT_EQUAL	     = GL_NOTEQUAL,
+      ALPHA_GREATER_OR_EQUAL = GL_GEQUAL
+    };
+    enum BLEND_SRC_TYPE
+    {
+      BLEND_SRC_ZERO                = GL_ZERO,     
+      BLEND_SRC_ONE                 = GL_ONE,
+      BLEND_SRC_DST_COLOR           = GL_DST_COLOR,
+      BLEND_SRC_ONE_MINUS_DST_COLOR = GL_ONE_MINUS_DST_COLOR,
+      BLEND_SRC_SRC_ALPHA           = GL_SRC_ALPHA,
+      BLEND_SRC_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,
+      BLEND_SRC_DST_ALPHA           = GL_DST_ALPHA,
+      BLEND_SRC_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA,
+      BLEND_SRC_SRC_ALPHA_SATURATE  = GL_SRC_ALPHA_SATURATE
+    };
+    enum BLEND_DST_TYPE
+    {
+      BLEND_DST_ZERO		    = GL_ZERO,
+      BLEND_DST_ONE		    = GL_ONE,
+      BLEND_DST_SRC_COLOR	    = GL_SRC_COLOR,
+      BLEND_DST_ONE_MINUS_SRC_COLOR = GL_ONE_MINUS_SRC_COLOR,
+      BLEND_DST_SRC_ALPHA	    = GL_SRC_ALPHA,
+      BLEND_DST_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,    
+      BLEND_DST_DST_ALPHA	    = GL_DST_ALPHA,
+      BLEND_DST_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Class for grouping blending operations. 
+    class CBlendingOperation : public Phoenix::Core::CEnableable
+    {
+    private:
+      BLEND_SRC_TYPE m_tBlendSrcType;
+      BLEND_DST_TYPE m_tBlendDstType;
+    public:
+      ////////////////////
+      /// Constructor. 
+      CBlendingOperation() : Phoenix::Core::CEnableable(), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
+      ////////////////////
+      /// Assigns src operation for blending.
+      /// \param tType Blending source operation;
+      inline void SetSourceOperation( BLEND_SRC_TYPE tType)
+      {
+	m_tBlendSrcType = tType;
+      }
+      ////////////////////
+      /// Assigns dest operation for blending.
+      /// \param tType Blending dest operation;
+      inline void SetDestinationOperation( BLEND_DST_TYPE tType)
+      {
+	m_tBlendDstType = tType;
+      }
+      ////////////////////
+      /// Assigns operations for blending.
+      /// \param tSource Source operation.
+      /// \param tDestination Destination operation.
+      inline void SetOperation( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination )
+      {
+	m_tBlendSrcType = tSource;
+	m_tBlendDstType = tDestination;
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Class grouping alpha testing properties.
@@ -172,7 +234,8 @@ namespace Phoenix
     protected:
       /// Supported features.
       Phoenix::Graphics::COglRendererFeatures *m_pFeatures;
-      CAlphaTestOperation m_AlphaTest;
+      /// Alpha test operation
+      CAlphaTestOperation		       m_AlphaTest;
     public:
       ////////////////////
       /// Default constructor
@@ -313,6 +376,17 @@ namespace Phoenix
       /// \param material Material to be used.
       /// \param iFace For which face material is applied, 0 for front, non-zero for back. By default, front.
       void CommitMaterial( const Phoenix::Graphics::CMaterial &material, int iFace = 0 );
+      ////////////////////
+      /// Commits alpha comparison.
+      /// \param tType Alpha test
+      /// \param fReference Reference value, which fragment alpha is compared to. By default, it is zero.
+      void CommitAlpha( ALPHA_TEST_TYPE tType, float fReference = 0.0f );
+      ////////////////////
+      /// Commits blending.
+      /// \param tSource Source operation.
+      /// \param tDestination Destination operation.
+      void CommitBlending( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination);
+
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
