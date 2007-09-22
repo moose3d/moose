@@ -22,3 +22,4 @@
 #include "PhoenixCollision.h"
 #include "PhoenixMilkshapeLoader.h"
 #include "PhoenixLight.h"
+#include "PhoenixGraph.h"
