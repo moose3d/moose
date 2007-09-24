@@ -1,6 +1,8 @@
 #ifndef __PhoenixMathUtils_h__
 #define __PhoenixMathUtils_h__
 /////////////////////////////////////////////////////////////////
+#include <math.h>
+/////////////////////////////////////////////////////////////////
 #define EPSILON 0.000001f
 #define TOO_CLOSE_TO_ZERO(FLOAT_VALUE) ( fabs(FLOAT_VALUE)< EPSILON )
 #define QUITE_CLOSE_TO( VALUE, ANOTHER_VALUE ) ( fabsf((VALUE - ANOTHER_VALUE)) < EPSILON )
@@ -12,7 +14,8 @@ namespace Phoenix
     /// The handy PI constants
     const float PI     = 3.14159265358979323f;
     const float PIdiv2 = 1.57079632679489661f;
-
+    /// 1.0 / logf(2)
+    const float OneDivLogN2 = 1.44269504088896340737f;
     ////////////////////
     /// Convertes degrees to radians.
     /// \param fDegrees degree which will be converted.
@@ -29,6 +32,12 @@ namespace Phoenix
     {
       return fRadians*57.2957795201f;
     }    
+    ////////////////////
+    /// Calculates logarithm in two base.
+    inline float Log2( float fValue )
+    {
+      return logf( fValue ) * OneDivLogN2;
+    }
   }; // namespace Math
 }; //namespace Phoenix
 /////////////////////////////////////////////////////////////////

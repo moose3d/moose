@@ -23,3 +23,4 @@
 #include "PhoenixMilkshapeLoader.h"
 #include "PhoenixLight.h"
 #include "PhoenixGraph.h"
+#include "PhoenixOctree.h"

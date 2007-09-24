@@ -77,7 +77,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) box.
     class CAxisAlignedBox : public Phoenix::Spatial::CPositional, 
-			    public Phoenix::Spatial::CDimensional, 
+                            public Phoenix::Spatial::CDimensional3D, 
 			    public Phoenix::Volume::CPolytope
     {
     public:
@@ -89,7 +89,7 @@ namespace Phoenix
       CAxisAlignedBox( const CVector3<float> &vCenter, 
 		       float fWidth, float fHeight,  float fLength ) : 
                              CPositional( vCenter ), 
-                             CDimensional( fWidth, fHeight, fLength) {  }
+                             CDimensional3D( fWidth, fHeight, fLength) {  }
     };
     /////////////////////////////////////////////////////////////////
     /// The class for Oriented Box. Forward vector will be the principal axis,

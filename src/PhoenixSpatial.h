@@ -174,7 +174,7 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
-    /// \brief The generic orientable object. Contains base vectors
+    /// Generic orientable object. Contains base vectors
     /// which are rotated using the provided methods.
     class COrientable
     {
@@ -334,31 +334,20 @@ namespace Phoenix
 	Phoenix::Math::RotateVector(q, m_vUpward);
       }
     }; // COrientable
-    /////////////////////////////////////////////////////////////////
-    /// A class which provides dimensions in 3D. Width, height and length.
-    class CDimensional
+
+    ////////////////////
+    /// A class which provides dimensions in 1D (or n-dimensional object with equivalent size in all dimensions.
+    class CDimensional1D
     {
     protected:
       /// The width.
       float m_fWidth;
-      /// The height.
-      float m_fHeight;
-      /// The length.
-      float m_fLength;
-      /// Length * 0.5
-      float m_fHalfLength;
-      /// Height * 0.5
-      float m_fHalfHeight;
       /// Width * 0.5
       float m_fHalfWidth;
       ////////////////////
-      /// The constructor. Initializes paramaters.
-      CDimensional() : 
+      /// Constructor. Initializes paramaters.
+      CDimensional1D() : 
       m_fWidth(0.0f), 
-      m_fHeight(0.0f), 
-      m_fLength(0.0f),
-      m_fHalfLength(0.0f),
-      m_fHalfHeight(0.0f),
       m_fHalfWidth(0.0f)
       {
     
@@ -366,13 +355,9 @@ namespace Phoenix
       ////////////////////
       /// The parametrized constructor. 
       /// \param fWidth The width of the object
-      /// \param fHeight The height of the object
-      /// \param fLength The length of the object
-      CDimensional( float fWidth, float fHeight, float fLength ) 
+      CDimensional1D( float fWidth )
       {
 	SetWidth(fWidth);
-	SetHeight(fHeight);
-	SetLength(fLength);
       }
     public:
       ////////////////////
@@ -384,6 +369,50 @@ namespace Phoenix
 	m_fHalfWidth = m_fWidth * 0.5f;
       }
       ////////////////////
+      /// Returns the width.
+      /// \returns The width.
+      inline float GetWidth() const
+      {	
+	return m_fWidth;
+      }
+      ////////////////////
+      /// Returns half of the width
+      /// \returns half of the width
+      inline float GetHalfWidth() const 
+      {
+	return m_fHalfWidth;
+      }
+      
+    }; // CDimensional1D
+    /////////////////////////////////////////////////////////////////
+    /// A class which provides dimensions in 2D - width, height.
+    class CDimensional2D : public CDimensional1D
+    {
+    protected:
+      /// The height.
+      float m_fHeight;
+      /// Height * 0.5
+      float m_fHalfHeight;
+      ////////////////////
+      /// The constructor. Initializes paramaters.
+      CDimensional2D() : 
+      CDimensional1D(),
+      m_fHeight(0.0f), 
+      m_fHalfHeight(0.0f)
+      {
+	
+      }
+      ////////////////////
+      /// The parametrized constructor. 
+      /// \param fWidth The width of the object
+      /// \param fHeight The height of the object
+      CDimensional2D( float fWidth, float fHeight) 
+      {
+	SetWidth(fWidth);
+	SetHeight(fHeight);
+      }
+    public:
+      ////////////////////
       /// Assigns the height.
       /// \param fHeight The value for height.
       inline void SetHeight( float fHeight )    
@@ -391,6 +420,51 @@ namespace Phoenix
 	m_fHeight = fHeight;
 	m_fHalfHeight = m_fHeight * 0.5f;
       }
+      ////////////////////
+      /// Returns the height.
+      /// \returns The height.
+      inline float GetHeight() const
+      {	
+	return m_fHeight;
+      }
+      ////////////////////
+      /// Returns half of the height
+      /// \returns half of the height
+      inline float GetHalfHeight() const 
+      {
+	return m_fHalfHeight;
+      }
+    }; // CDimensional2D
+    /////////////////////////////////////////////////////////////////
+    /// A class which provides dimensions in 3D - width, height and length.
+    class CDimensional3D : public CDimensional2D
+    {
+    protected:
+      /// The length.
+      float m_fLength;
+      /// Length * 0.5
+      float m_fHalfLength;
+      ////////////////////
+      /// The constructor. Initializes paramaters.
+      CDimensional3D() : 
+      CDimensional2D(),
+      m_fLength(0.0f),
+      m_fHalfLength(0.0f)
+      {
+    
+      }
+      ////////////////////
+      /// The parametrized constructor. 
+      /// \param fWidth The width of the object
+      /// \param fHeight The height of the object
+      /// \param fLength The length of the object
+      CDimensional3D( float fWidth, float fHeight, float fLength ) 
+      {
+	SetWidth(fWidth);
+	SetHeight(fHeight);
+	SetLength(fLength);
+      }
+    public:
       ////////////////////
       /// Assigns the length.
       /// \param fLength The value for length.
@@ -407,41 +481,13 @@ namespace Phoenix
 	return m_fLength;
       }
       ////////////////////
-      /// Returns the height.
-      /// \returns The height.
-      inline float GetHeight() const
-      {	
-	return m_fHeight;
-      }
-      ////////////////////
-      /// Returns the width.
-      /// \returns The width.
-      inline float GetWidth() const
-      {	
-	return m_fWidth;
-      }
-      ////////////////////
-      /// Returns half of the width
-      /// \returns half of the width
-      inline float GetHalfWidth() const 
-      {
-	return m_fHalfWidth;
-      }
-      ////////////////////
-      /// Returns half of the height
-      /// \returns half of the height
-      inline float GetHalfHeight() const 
-      {
-	return m_fHalfHeight;
-      }
-      ////////////////////
       /// Returns half of the length
       /// \returns half of the length
       inline float GetHalfLength() const 
       {
 	return m_fHalfLength;
       }
-    }; // CDimensional
+    }; // CDimensional3D
   }; // namespace Spatial
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
