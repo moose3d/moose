@@ -113,7 +113,14 @@ namespace Phoenix
 	m_pAllNodes = new COctreeNode<TYPE>[nNodeCount];
 	
 	Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);
-	
+	for(unsigned int i=1;i<nNodeCount;i++)
+	{
+	  int diff = &m_pAllNodes[i] - &m_pAllNodes[i-1];
+	  if ( diff != 1)
+	  {
+	    std::cerr << "diff is: " << diff << std::endl;
+	  }
+	}
       }
       ////////////////////
       /// Returns depth of tree.
@@ -169,18 +176,17 @@ namespace Phoenix
       /// \returns Pointer to node.
       inline COctreeNode<TYPE> * GetNode( unsigned int nLevel, float fX, float fY, float fZ )
       {
-	unsigned int nNodeCountPrevLevels = (unsigned int)(1-floorf(powf(8.0f,nLevel))/-7);
-
+	unsigned int nNodeCountPrevLevels = (unsigned int)( (1-(unsigned int)floorf(powf(8,nLevel)))/-7);
 	unsigned int nDimensions = (unsigned int)powf(8.0f, ((float)nLevel) *0.333333333333333f);
-	std::cerr << "Dimensions: " << nDimensions << std::endl;
-	unsigned int nNodeCountThisLevel = (unsigned int)powf(8.0f, nLevel);
-	std::cerr << "#nodes: " << nNodeCountThisLevel << std::endl;
-	unsigned int nX = static_cast<unsigned int>(floorf( ((fX * m_fOneDivWorldSize) + 0.5f)* nNodeCountThisLevel ));
-	unsigned int nY = static_cast<unsigned int>(floorf( ((fY * m_fOneDivWorldSize) + 0.5f)* nNodeCountThisLevel ));
-	unsigned int nZ = static_cast<unsigned int>(floorf( ((fZ * m_fOneDivWorldSize) + 0.5f)* nNodeCountThisLevel ));
-	
-	return &m_pAllNodes[nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ];
+	float fDimensions = (float)nDimensions;
+	unsigned int nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+	unsigned int nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+	unsigned int nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+	unsigned int nTotalIndex = nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
+	//std::cerr << "final index : " << nTotalIndex << std::endl;
+	return &m_pAllNodes[nTotalIndex];
       }
+      
     protected:
       ////////////////////
       /// Sets world size.
@@ -204,92 +210,87 @@ namespace Phoenix
       void Initialize( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition, COctreeNode<TYPE> *pNode)
       {
 	pNode->SetPosition( vPosition );
-	float fEdgeLengthChild = GetEdgeLength( nLevel ) * 0.5f;
+	pNode->SetWidth( GetEdgeLength( nLevel ));
+
+	float fChildCenterPosDiff = pNode->GetWidth() * 0.25f;
 
 	COctreeNode<TYPE> *pChild = NULL;
 	// When desired levels have been reached, we stop recursion.
 	if ( (nLevel + 1) >= m_nDepth ) return;
 
 	Phoenix::Math::CVector3<float> vNewPos;
-	
+
+	////////////////////
 	// 1st	
-	vNewPos[0] = vPosition[0] - fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] - fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] - fEdgeLengthChild;
+	// calculate center positions for each child node 
+	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
+	// Get correct node from next level
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+	// Set child/parent pointers
 	pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_BACK, pChild);
 	pChild->SetParent( pNode );
+	// Initialize child recursively.
 	Initialize( nLevel + 1, vNewPos, pChild);
 
 	// 2nd	
-	vNewPos[0] = vPosition[0] - fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] - fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] + fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_FRONT, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
 
-
-
 	// 3rd	
-	vNewPos[0] = vPosition[0] - fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] + fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] - fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_BACK, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
-
-
 	// 4th
-	vNewPos[0] = vPosition[0] - fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] + fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] + fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_FRONT, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
-
-
 	// 5th	
-	vNewPos[0] = vPosition[0] + fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] - fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] - fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::TOP_LEFT_BACK, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
-
 	// 6th	
-	vNewPos[0] = vPosition[0] + fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] - fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] + fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::TOP_LEFT_FRONT, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
-
-
 	// 7th	
-	vNewPos[0] = vPosition[0] + fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] + fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] - fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_BACK, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
-
-
 	// 8th	
-	vNewPos[0] = vPosition[0] + fEdgeLengthChild;
-	vNewPos[1] = vPosition[1] + fEdgeLengthChild;
-	vNewPos[2] = vPosition[2] + fEdgeLengthChild;
+	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
 	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 	pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_FRONT, pChild);
 	pChild->SetParent( pNode );
 	Initialize( nLevel + 1, vNewPos, pChild);
-
       }
     };
   } // namespace Spatial
