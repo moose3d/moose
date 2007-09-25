@@ -113,14 +113,7 @@ namespace Phoenix
 	m_pAllNodes = new COctreeNode<TYPE>[nNodeCount];
 	
 	Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);
-	for(unsigned int i=1;i<nNodeCount;i++)
-	{
-	  int diff = &m_pAllNodes[i] - &m_pAllNodes[i-1];
-	  if ( diff != 1)
-	  {
-	    std::cerr << "diff is: " << diff << std::endl;
-	  }
-	}
+	
       }
       ////////////////////
       /// Returns depth of tree.
@@ -209,10 +202,11 @@ namespace Phoenix
       
       void Initialize( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition, COctreeNode<TYPE> *pNode)
       {
+	float fEdgeLength  = GetEdgeLength( nLevel );
 	pNode->SetPosition( vPosition );
-	pNode->SetWidth( GetEdgeLength( nLevel ));
-
-	float fChildCenterPosDiff = pNode->GetWidth() * 0.25f;
+	pNode->SetWidth( 2.0f*fEdgeLength);
+	
+	float fChildCenterPosDiff = fEdgeLength * 0.25f;
 
 	COctreeNode<TYPE> *pChild = NULL;
 	// When desired levels have been reached, we stop recursion.
