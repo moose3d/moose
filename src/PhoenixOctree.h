@@ -34,7 +34,7 @@ namespace Phoenix
       BACK   = 5
     };
     /////////////////////////////////////////////////////////////////
-    /// Generic Octree class template.
+    /// Octreenode class template.
     template<typename TYPE>
     class COctreeNode : public Phoenix::Spatial::CDimensional1D,
                         public Phoenix::Spatial::CPositional
@@ -87,13 +87,13 @@ namespace Phoenix
       /// Returns a list of objects in this node.      
       /// \returns Reference to a list of objects.
       std::list< TYPE > & GetObjects();
-
-      void SetParent( COctreeNode *pNode )
-      {
-	m_pParent = pNode;
-      }
+      ////////////////////
+      /// Assigns parent node.
+      /// \param pNode Pointer to parent node.
+      void SetParent( COctreeNode *pNode );
     };/// class COctreeNode
-    
+    /////////////////////////////////////////////////////////////////
+    /// Octree class template.
     template<typename TYPE>
     class COctree : protected Phoenix::Spatial::CDimensional1D
     {
@@ -104,62 +104,34 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      COctree( unsigned int nDepth, float fWorldSize ) 
-      {
-	unsigned int nNodeCount = (unsigned int)((1-powf(8,nDepth))/-7);
-	SetMaxDepth(nDepth);
-	SetWorldSize(fWorldSize);
-	// Allocate array for all nodes
-	m_pAllNodes = new COctreeNode<TYPE>[nNodeCount];
-	
-	Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);
-	
-      }
+      COctree( unsigned int nDepth, float fWorldSize );
       ////////////////////
       /// Returns depth of tree.
       /// \param fRadius Bounding sphere radius.
       /// \returns Lowest level of tree to accomodate radius.
-      unsigned int GetObjectDepth( float fRadius )
-      {
-	return static_cast<unsigned int>(floorf( Phoenix::Math::Log2( GetWorldSize()/fRadius)));
-      }
+      unsigned int GetObjectDepth( float fRadius );
       ////////////////////
       /// Returns world size.
       /// \returns World size.
-      inline float GetWorldSize() const
-      {
-	return GetWidth();
-      }
+      float GetWorldSize() const;
       ////////////////////
       /// Returns world size / 2
       /// \returns Half of world size.
-      inline float GetWorldHalfSize() const
-      {
-	return GetHalfWidth();
-      }
+      float GetWorldHalfSize() const;
       ////////////////////
       /// Returns edge length of octree cube at tree depth.
       /// \param nDepth From which depth the edge length is retrieved.
       /// \returns Edge length.
-      inline float GetEdgeLength( unsigned int nDepth )
-      {
-	return GetWorldSize() / powf(2, nDepth);
-      }
+      float GetEdgeLength( unsigned int nDepth );
       ////////////////////
       /// Returns index of closest node to position value at depth.
       /// \param fValue Coordinate value, in range of (-world / 2.0, world/2.0)
       /// \param nDepth From which tree depth value is determined.
-      inline unsigned int GetIndex( float fValue, unsigned nDepth )
-      {
-	unsigned int nDimensions = floorf(((float)nDepth) *0.333333333333333f);
-	if ( fValue >= GetWorldHalfSize()) return nDimensions-1;
-	else if ( fValue <= -GetWorldHalfSize()) return 0;
-	return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* powf(8.0f, nDimensions)));
-      }
-      inline COctreeNode<TYPE> *GetRoot()
-      {
-	return &m_pAllNodes[0];
-      }
+      unsigned int GetIndex( float fValue, unsigned nDepth );
+      ////////////////////
+      /// Returns root node.
+      /// \returns Pointer to root node.
+      COctreeNode<TYPE> *GetRoot();
       ////////////////////
       /// Returns node at desired level, closest to given coordinates.
       /// \param nLevel Desired depth level
@@ -167,125 +139,26 @@ namespace Phoenix
       /// \param fY Y-coordinate. Must be +-World/2
       /// \param fZ Z-coordinate. Must be +-World/2
       /// \returns Pointer to node.
-      inline COctreeNode<TYPE> * GetNode( unsigned int nLevel, float fX, float fY, float fZ )
-      {
-	unsigned int nNodeCountPrevLevels = (unsigned int)( (1-(unsigned int)floorf(powf(8,nLevel)))/-7);
-	unsigned int nDimensions = (unsigned int)powf(8.0f, ((float)nLevel) *0.333333333333333f);
-	float fDimensions = (float)nDimensions;
-	unsigned int nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-	unsigned int nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-	unsigned int nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-	unsigned int nTotalIndex = nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
-	//std::cerr << "final index : " << nTotalIndex << std::endl;
-	return &m_pAllNodes[nTotalIndex];
-      }
-      
+      COctreeNode<TYPE> * GetNode( unsigned int nLevel, float fX, float fY, float fZ );
+
     protected:
       ////////////////////
       /// Sets world size.
       /// \param fSize Size of world.
-      inline void SetWorldSize( float fSize )
-      {
-	SetWidth(fSize);
-	if ( TOO_CLOSE_TO_ZERO(fSize))
-	  m_fOneDivWorldSize = 0.0f;
-	else
-	  m_fOneDivWorldSize = 1.0f / fSize;
-      }
+      void SetWorldSize( float fSize );
       ////////////////////
       /// Sets maximum depth of this tree.
       /// \parm nDepth Max depth.
-      inline void SetMaxDepth( unsigned int nDepth )
-      {
-	m_nDepth = nDepth;
-      }
-      
-      void Initialize( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition, COctreeNode<TYPE> *pNode)
-      {
-	float fEdgeLength  = GetEdgeLength( nLevel );
-	pNode->SetPosition( vPosition );
-	pNode->SetWidth( 2.0f*fEdgeLength);
-	
-	float fChildCenterPosDiff = fEdgeLength * 0.25f;
+      void SetMaxDepth( unsigned int nDepth );
 
-	COctreeNode<TYPE> *pChild = NULL;
-	// When desired levels have been reached, we stop recursion.
-	if ( (nLevel + 1) >= m_nDepth ) return;
-
-	Phoenix::Math::CVector3<float> vNewPos;
-
-	////////////////////
-	// 1st	
-	// calculate center positions for each child node 
-	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
-	// Get correct node from next level
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	// Set child/parent pointers
-	pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_BACK, pChild);
-	pChild->SetParent( pNode );
-	// Initialize child recursively.
-	Initialize( nLevel + 1, vNewPos, pChild);
-
-	// 2nd	
-	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_FRONT, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-
-	// 3rd	
-	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_BACK, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-	// 4th
-	vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_FRONT, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-	// 5th	
-	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::TOP_LEFT_BACK, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-	// 6th	
-	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::TOP_LEFT_FRONT, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-	// 7th	
-	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_BACK, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-	// 8th	
-	vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
-	vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
-	vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
-	pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-	pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_FRONT, pChild);
-	pChild->SetParent( pNode );
-	Initialize( nLevel + 1, vNewPos, pChild);
-      }
+      ////////////////////
+      /// Initializes nodes recursively.
+      /// \param nLevel Which level is used.
+      /// \param vPosition Center position for node.
+      /// \param pNode Which node is initialized.
+      void Initialize( unsigned int nLevel, 
+		       const Phoenix::Math::CVector3<float> & vPosition, 
+		       COctreeNode<TYPE> *pNode);
     };
   } // namespace Spatial
 } // namespace Phoenix
@@ -392,6 +265,191 @@ Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode<TYPE> *
 Phoenix::Spatial::COctreeNode<TYPE>::GetNeighbor( Phoenix::Spatial::OCTREE_NEIGHBOR iNeighbor )
 {
   return m_pNeighbors[iNeighbor];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+Phoenix::Spatial::COctreeNode<TYPE>::SetParent( Phoenix::Spatial::COctreeNode *pNode )
+{
+  m_pParent = pNode;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nDepth, float fWorldSize )
+{
+  unsigned int nNodeCount = (unsigned int)((1-powf(8,nDepth))/-7);
+  SetMaxDepth(nDepth);
+  SetWorldSize(fWorldSize);
+  // Allocate array for all nodes
+  m_pAllNodes = new COctreeNode<TYPE>[nNodeCount];
+  
+  Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline unsigned int 
+Phoenix::Spatial::COctree<TYPE>::GetObjectDepth( float fRadius )
+{
+  return static_cast<unsigned int>(floorf( Phoenix::Math::Log2( GetWorldSize()/fRadius)));
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline float 
+Phoenix::Spatial::COctree<TYPE>::GetWorldSize() const
+{
+  return GetWidth();
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline float 
+Phoenix::Spatial::COctree<TYPE>::GetWorldHalfSize() const
+{
+  return GetHalfWidth();
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline float 
+Phoenix::Spatial::COctree<TYPE>::GetEdgeLength( unsigned int nDepth )
+{
+  return GetWorldSize() / powf(2, nDepth);
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline unsigned int 
+Phoenix::Spatial::COctree<TYPE>::GetIndex( float fValue, unsigned nDepth )
+{
+  unsigned int nDimensions = floorf(((float)nDepth) *0.333333333333333f);
+  if ( fValue >= GetWorldHalfSize()) return nDimensions-1;
+  else if ( fValue <= -GetWorldHalfSize()) return 0;
+  return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* powf(8.0f, nDimensions)));  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline Phoenix::Spatial::COctreeNode<TYPE> *
+Phoenix::Spatial::COctree<TYPE>::GetRoot()
+{
+  return &m_pAllNodes[0];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline Phoenix::Spatial::COctreeNode<TYPE> *
+Phoenix::Spatial::COctree<TYPE>::GetNode( unsigned int nLevel, float fX, float fY, float fZ )
+{
+  unsigned int nNodeCountPrevLevels = (unsigned int)( (1-(unsigned int)floorf(powf(8,nLevel)))/-7);
+  unsigned int nDimensions = (unsigned int)powf(8.0f, ((float)nLevel) *0.333333333333333f);
+  float fDimensions = (float)nDimensions;
+  unsigned int nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  unsigned int nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  unsigned int nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  unsigned int nTotalIndex = nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
+  //std::cerr << "final index : " << nTotalIndex << std::endl;
+  return &m_pAllNodes[nTotalIndex];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline void
+Phoenix::Spatial::COctree<TYPE>::SetWorldSize( float fSize )
+{
+  SetWidth(fSize);
+  if ( TOO_CLOSE_TO_ZERO(fSize))
+    m_fOneDivWorldSize = 0.0f;
+  else
+    m_fOneDivWorldSize = 1.0f / fSize;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline void
+Phoenix::Spatial::COctree<TYPE>::SetMaxDepth( unsigned int nDepth )
+{
+  m_nDepth = nDepth;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+void 
+Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition, COctreeNode<TYPE> *pNode)
+{
+  float fEdgeLength  = GetEdgeLength( nLevel );
+  pNode->SetPosition( vPosition );
+  pNode->SetWidth( 2.0f*fEdgeLength);
+	
+  float fChildCenterPosDiff = fEdgeLength * 0.25f;
+
+  COctreeNode<TYPE> *pChild = NULL;
+  // When desired levels have been reached, we stop recursion.
+  if ( (nLevel + 1) >= m_nDepth ) return;
+
+  Phoenix::Math::CVector3<float> vNewPos;
+
+  ////////////////////
+  // 1st	
+  // calculate center positions for each child node 
+  vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
+  // Get correct node from next level
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  // Set child/parent pointers
+  pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_BACK, pChild);
+  pChild->SetParent( pNode );
+  // Initialize child recursively.
+  Initialize( nLevel + 1, vNewPos, pChild);
+
+  // 2nd	
+  vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_FRONT, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
+
+  // 3rd	
+  vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_BACK, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
+  // 4th
+  vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_FRONT, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
+  // 5th	
+  vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::TOP_LEFT_BACK, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
+  // 6th	
+  vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::TOP_LEFT_FRONT, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
+  // 7th	
+  vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_BACK, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
+  // 8th	
+  vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
+  vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
+  vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
+  pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
+  pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_FRONT, pChild);
+  pChild->SetParent( pNode );
+  Initialize( nLevel + 1, vNewPos, pChild);
 }
 /////////////////////////////////////////////////////////////////
 #endif
