@@ -6,6 +6,8 @@ using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
+#define PLANE_DOT_POS( PLANE, POS ) (PLANE[0]*POS[0] + PLANE[1]*POS[1] + PLANE[2]*POS[2] + PLANE[3])
+/////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFrustum::CFrustum()
 {
 
@@ -36,20 +38,66 @@ Phoenix::Graphics::CFrustum::SetPlane(FRUSTUM_PLANE nIndex, CPlane &vPlane)
 {
   *(m_aPlanes[nIndex]) = vPlane;
 }
+/////////////////////////////////////////////////////////////////
 CPlane &
 Phoenix::Graphics::CFrustum::GetPlane( FRUSTUM_PLANE nIndex )
 {
   return *(m_aPlanes[nIndex]);
 }
+/////////////////////////////////////////////////////////////////
 CVector3<float>
 Phoenix::Graphics::CFrustum::GetCorner( FRUSTUM_CORNER nIndex )
 {
   return m_aCorners[nIndex];
 }
+/////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::CFrustum::SetCorner( FRUSTUM_CORNER nIndex, const CVector3<float> & vPoint )
 {
   m_aCorners[nIndex] = vPoint;  
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox )
+{
+
+  CVector3<float> vNormal;
+  CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
+  float fEffectiveRadius;
+
+  for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
+  {  
+    CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
+    vNormal.UseExternalData( plane.GetArray());
+    fEffectiveRadius = (aaBox.GetHalfWidth()*vX).Dot(vNormal) + (aaBox.GetHalfHeight()*vY).Dot(vNormal) + (aaBox.GetHalfLength()*vZ).Dot(vNormal);
+    if( PLANE_DOT_POS(plane, aaBox.GetPosition()) <= -fEffectiveRadius) return 0;    
+  }
+  
+  // Frustum intersects box.
+  return 1;
+
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aaCube )
+{
+
+  CVector3<float> vNormal;
+  CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
+  float fEffectiveRadius;
+  CVector3<float> vHalfWidthX = aaCube.GetHalfWidth()*vX;
+  CVector3<float> vHalfWidthY = aaCube.GetHalfWidth()*vY;
+  CVector3<float> vHalfWidthZ = aaCube.GetHalfWidth()*vZ;
+
+  for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
+  {  
+    CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
+    vNormal.UseExternalData( plane.GetArray());
+    fEffectiveRadius = vHalfWidthX.Dot(vNormal) + (vHalfWidthY).Dot(vNormal) + (vHalfWidthZ).Dot(vNormal);
+    if( PLANE_DOT_POS(plane, aaCube.GetPosition()) <= -fEffectiveRadius) return 0;    
+  }
+  // Frustum intersects cube.
+  return 1;
 }
 /////////////////////////////////////////////////////////////////
 // Phoenix::Graphics::CFrustum::CFrustumIntersection_t
@@ -218,3 +266,4 @@ Phoenix::Graphics::CFrustum::SetCorner( FRUSTUM_CORNER nIndex, const CVector3<fl
 //   return INTERSECTION;
 // }
 
+#undef PLANE_DOT_POS
