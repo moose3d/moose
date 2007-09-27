@@ -83,6 +83,17 @@ namespace Phoenix
       /// \param nIndex The index of the corner to be set.
       /// \param vPoint The value which is assigned.
       void		SetCorner( FRUSTUM_CORNER nIndex, const Phoenix::Math::CVector3<float> &vPoint );
+
+      ////////////////////
+      /// Checks does AABB intersect this frustum.
+      /// \param aaBox Box to be checked.
+      /// \returns Non-zero on intersection.
+      /// \returns Zero otherwise.
+      int IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox );
+      ////////////////////
+      /// Checks does AACube intersect this frustum.
+      /// 
+      int IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aacube );
       ////////////////////
       /// Determines whether frustum and sphere intersect.
       /// \param sphere The sphere to be checked against.
