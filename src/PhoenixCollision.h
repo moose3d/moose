@@ -109,6 +109,18 @@ namespace Phoenix
     int   PointIntersectsOBB( const CVector3<float> &vPoint,
 			      const Phoenix::Volume::COrientedBox &obBox );
 
+    ////////////////////
+    /// Calculates collision point between three planes.
+    /// \param plane1 First plane.
+    /// \param plane2 Second plane.
+    /// \param plane3 Third plane.
+    /// \param vCollisionPoint Point of collision.
+    /// \returns Non-zero if planes do not intersect in a single point. Value of vCollisionPoint is undetermined.
+    /// \returns Zero if planes intersect in a single point. Value of vCollisionPoint is set to that point.
+    int  CollisionPoint3Planes( const Phoenix::Math::CPlane & plane1,
+				const Phoenix::Math::CPlane & plane2,
+				const Phoenix::Math::CPlane & plane3,
+				Phoenix::Math::CVector3<float> &vCollisionPoint);
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 /*     char SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo); */
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
