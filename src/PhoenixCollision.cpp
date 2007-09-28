@@ -473,3 +473,26 @@ Phoenix::Collision::PointIntersectsOBB( const CVector3<float> &vPoint,
   return 1;
 }
 /////////////////////////////////////////////////////////////////
+int  
+Phoenix::Collision::CollisionPoint3Planes( const Phoenix::Math::CPlane & plane1,
+					   const Phoenix::Math::CPlane & plane2,
+					   const Phoenix::Math::CPlane & plane3,
+					   Phoenix::Math::CVector3<float> &vCollisionPoint)
+{
+  CMatrix3x3<float> mMatrix( plane1[0], plane1[1], plane1[2], 
+			     plane2[0], plane2[1], plane2[2], 
+			     plane3[0], plane3[1], plane3[2] );
+  
+  CMatrix3x3<float> mInverse;
+  CVector3<float> vVect(-plane1[3], -plane2[3], -plane3[3]);
+  
+  if ( InverseMatrix( mMatrix, mInverse ) )
+  {
+    return 1;
+  }
+  
+  vCollisionPoint = mInverse * vVect;
+
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
