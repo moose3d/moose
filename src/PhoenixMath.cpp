@@ -1169,3 +1169,11 @@ Phoenix::Math::operator*( const CMatrix4x4<float> &mMatrix, const CVector4<float
 			  mMatrix.At(3,0) * vVector[0] + mMatrix.At(3,1) * vVector[1] + mMatrix.At(3,2) * vVector[2] + mMatrix.At(3,3) * vVector[3] );
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Math::CVector3<float>
+Phoenix::Math::operator*( const CMatrix3x3<float> &mMatrix, const CVector3<float> &vVector )
+{
+  return CVector3<float>( mMatrix.At(0,0) * vVector[0] + mMatrix.At(0,1) * vVector[1] + mMatrix.At(0,2) * vVector[2],
+			  mMatrix.At(1,0) * vVector[0] + mMatrix.At(1,1) * vVector[1] + mMatrix.At(1,2) * vVector[2],
+			  mMatrix.At(2,0) * vVector[0] + mMatrix.At(2,1) * vVector[1] + mMatrix.At(2,2) * vVector[2] );
+}
+/////////////////////////////////////////////////////////////////
