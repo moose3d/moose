@@ -237,8 +237,14 @@ namespace Phoenix
     /// Multiplies vector with matrix from left side.
     /// \param mMatrix Multiplier matrix.
     /// \param vVector Vector to be multiplied.
-    /// \returns CVector4<float> Resulting vector.
+    /// \returns Resulting vector.
     CVector4<float> operator*( const CMatrix4x4<float> &mMatrix, const CVector4<float> &vVector);
+    ////////////////////
+    /// Multiplies vector with matrix from left side.
+    /// \param mMatrix Multiplier matrix.
+    /// \param vVector Vector to be multiplied.
+    /// \returns Resulting vector.
+    CVector3<float> operator*( const CMatrix3x3<float> &mMatrix, const CVector3<float> &vVector);
   }; // namespace Math
 }; // namespace Phoenix
 #endif
