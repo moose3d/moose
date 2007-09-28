@@ -1086,3 +1086,79 @@ TEST(PointIntersectsOBB )
 
 }
 /////////////////////////////////////////////////////////////////
+TEST( CollisionPoint3Planes )
+{
+  CPlane plane1, plane2, plane3;
+
+  CVector3<float> vCenter(0,0,0);
+  CVector3<float> vReal(0,0,0);
+  CVector3<float> vResult;
+  // Situation when intersection point is origo
+  plane1.Calculate( CVector3<float>(1,0,0), vCenter);
+  plane2.Calculate( CVector3<float>(0,1,0), vCenter);
+  plane3.Calculate( CVector3<float>(0,0,1), vCenter);
+
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) == 0 );
+  CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f );
+
+  // Situation when intersection point is arbitrary point
+  vCenter[0] = 10.01f;
+  vCenter[1] = -310.0f;
+  vCenter[2] = 0.567f;
+  vReal = vCenter;
+  
+  plane1.Calculate( CVector3<float>(1,0,0), vCenter);
+  plane2.Calculate( CVector3<float>(0,1,0), vCenter);
+  plane3.Calculate( CVector3<float>(0,0,1), vCenter);
+  
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) == 0 );
+  CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f );
+  vCenter[0] = 0.0f;
+  vCenter[1] = 0.0f;
+  vCenter[2] = 0.0f;
+
+  vReal = vCenter;
+  // Situation where planes are not aligned with axes
+  plane1.Calculate( CVector3<float>(1,1,0), vCenter);
+  plane2.Calculate( CVector3<float>(1,0,1), vCenter);
+  plane3.Calculate( CVector3<float>(0,1,1), vCenter);
+  
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) == 0 );
+  CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f );
+  
+  vCenter[0] = 10.0f;
+  vCenter[1] = 20.0f;
+  vCenter[2] = -30.0f;
+
+  vReal = vCenter;
+  // Situation where planes are not aligned with axes
+  plane1.Calculate( CVector3<float>(1,1,0), vCenter);
+  plane2.Calculate( CVector3<float>(1,0,1), vCenter);
+  plane3.Calculate( CVector3<float>(0,1,1), vCenter);
+  
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) == 0 );
+  CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f );
+
+  /////////////////////////////////////////////////////////////////
+  // Situations when normal vectors are in same plane (no intersection)
+  // normals in XY plane
+  plane1.Calculate( CVector3<float>(1,10,0), vCenter);
+  plane2.Calculate( CVector3<float>(1,1,0), vCenter);
+  plane3.Calculate( CVector3<float>(-1,0.3,0), vCenter);
+
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) != 0 );
+  // normals in YZ plane
+  plane1.Calculate( CVector3<float>(0,1,10), vCenter);
+  plane2.Calculate( CVector3<float>(0,1,1), vCenter);
+  plane3.Calculate( CVector3<float>(0,-1,0.3), vCenter);
+
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) != 0 );
+
+  // normals in XZ plane
+  plane1.Calculate( CVector3<float>(1,0,10), vCenter);
+  plane2.Calculate( CVector3<float>(1,0,1), vCenter);
+  plane3.Calculate( CVector3<float>(-1,0,0.3), vCenter);
+
+  CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) != 0 );
+}
+/////////////////////////////////////////////////////////////////
