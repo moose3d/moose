@@ -4,6 +4,7 @@
 #include "PhoenixCamera.h"
 #include "PhoenixCollision.h"
 #include "PhoenixVolume.h"
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
@@ -127,70 +128,68 @@ Phoenix::Graphics::CCamera::Frustum()
 // As described in 
 // http://www.flipcode.com/articles/article_frustumculling.shtml
 //
-// void
-// Phoenix::Graphics::CCamera::CalculateBoundingSphere()
-// {
-//   float fViewLen = m_fFarClipping - m_fNearClipping;
-//   float fHeight = fViewLen * tan(Deg2Rad(m_fFieldOfView) * 0.5f);
-//   float fWidth = fHeight;
+void
+Phoenix::Graphics::CCamera::CalculateBoundingSphere()
+{
+  float fViewLen = GetFarClipping() - GetNearClipping();
+  float fHeight = fViewLen * tan(Deg2Rad(m_fFieldOfView) * 0.5f);
+  float fWidth = fHeight;
+  
+  // halfway point between near/far planes starting at the origin and 
+  // extending along the z axis
+  CVector3<float> vP(0.0f, 0.0f, m_fNearClipping + fViewLen * 0.5f);
 
-//   // halfway point between near/far planes starting at the origin and 
-//   // extending along the z axis
-//   CVector3<float> vP(0.0f, 0.0f, m_fNearClipping + fViewLen * 0.5f);
-
-//   // the calculate far corner of the frustum
-//   CVector3<float> vQ(fWidth, fHeight, fViewLen);
+  // the calculate far corner of the frustum
+  CVector3<float> vQ(fWidth, fHeight, fViewLen);
   
-//   // the vector between P and Q
-//   CVector3<float> vDiff = vP - vQ;
+  // the vector between P and Q
+  CVector3<float> vDiff = vP - vQ;
   
-//   // the radius becomes the length of this vector
-//   //m_FrustumSphere.SetRadius( vDiff.Length());
+  // the radius becomes the length of this vector
+  m_FrustumSphere.SetRadius( vDiff.Length());
   
-//   // calculate the center of the sphere
-//   //m_FrustumSphere.SetPosition( GetPosition() + (GetForwardVector() * (fViewLen * 0.5f + m_fNearClipping)));
+  // calculate the center of the sphere
+  m_FrustumSphere.SetPosition( GetPosition() + (GetForwardVector() * (fViewLen * 0.5f + m_fNearClipping)));
   
-// }
+}
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CCamera::CalculateBoundingCone()
-// {
-  
-//   float fHalfHeight = m_aViewport[3] * 0.5f; // Half of the screen height
-//   float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
-
-//   // calculate the length of the fov triangle
-//   float fDepth  = fHalfHeight / tanf(Deg2Rad(m_fFieldOfView) * 0.5f);
-
-//   // calculate the corner of the screen
-//   float fCorner = sqrt(fHalfWidth * fHalfWidth + fHalfHeight * fHalfHeight);
-  
-//   // now calculate the new fov
-//   float fFov = atan(fCorner / fDepth);
-  
-//   // apply to the cone
-//   //m_FrustumCone.SetDirection(GetForwardVector());
-//   //m_FrustumCone.SetPosition(GetPosition());
-//   //m_FrustumCone.SetAngle(fFov);
-
-// }
-/////////////////////////////////////////////////////////////////
-// CCone &
-// Phoenix::Graphics::CCamera::FrustumCone()
-// {
-//   return m_FrustumCone;
-// }
-// /////////////////////////////////////////////////////////////////
-// CSphere &
-// Phoenix::Graphics::CCamera::FrustumSphere()
-// {
-//   return m_FrustumSphere;
-// }
-/////////////////////////////////////////////////////////////////
-// Handy operator override  for debug printing
-std::ostream &operator<<(std::ostream &stream, CCamera &obj)
+void
+Phoenix::Graphics::CCamera::CalculateBoundingCone()
 {
   
+  float fHalfHeight = m_aViewport[3] * 0.5f; // Half of the screen height
+  float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
+
+  // calculate the length of the fov triangle
+  float fDepth  = fHalfHeight / tanf(Deg2Rad(m_fFieldOfView) * 0.5f);
+
+  // calculate the corner of the screen
+  float fCorner = sqrt(fHalfWidth * fHalfWidth + fHalfHeight * fHalfHeight);
+  
+  // now calculate the new fov
+  float fFov = atan(fCorner / fDepth);
+  
+  // apply to the cone
+  m_FrustumCone.SetDirection(GetForwardVector());
+  m_FrustumCone.SetPosition(GetPosition());
+  m_FrustumCone.SetAngle(fFov);
+}
+/////////////////////////////////////////////////////////////////
+CCone &
+Phoenix::Graphics::CCamera::FrustumCone()
+{
+  return m_FrustumCone;
+}
+/////////////////////////////////////////////////////////////////
+CSphere &
+Phoenix::Graphics::CCamera::FrustumSphere()
+{
+  return m_FrustumSphere;
+}
+/////////////////////////////////////////////////////////////////
+// Handy operator override  for debug printing
+std::ostream &operator<<(std::ostream &stream, const CCamera &obj)
+{
   stream << "position: " << obj.GetPosition() << endl
 	 << "forward: " << obj.GetForwardVector() << endl
 	 << "up: "      << obj.GetUpVector() << endl
@@ -252,7 +251,7 @@ Phoenix::Graphics::CCamera::UpdateProjection()
     m_mProjection(0,2) = 0.0f;
     m_mProjection(1,1) = (2.0f * fNear ) / (fH + fH );
     m_mProjection(1,2) = 0.0f; // (t+b) / (t-b) 
-    m_mProjection(2,2) = -(fFar + fNear ) / ( fFar - fNear );
+    m_mProjection(2,2) = -((fFar + fNear ) / ( fFar - fNear ));
     m_mProjection(2,3) = (-2.0f * fFar * fNear) / (fFar - fNear );
     m_mProjection(3,2) = -1.0f;
     m_mProjection(3,3) = 0.0;
@@ -488,83 +487,372 @@ Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPo
 void 
 Phoenix::Graphics::CCamera::CalculateFrustum()
 {
-  // Left clipping plane
-  CMatrix4x4<float> mCombo;
-  mCombo = GetProjectionMatrix() * GetViewMatrix();
+  float fE = 1.0f / tanf( Deg2Rad(GetFieldOfView()) * 0.5f );
+  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+  float f1DivSqrtEPow2plus1 = 1.0f / sqrtf( (fE * fE) + 1.0f);
+  float f1DivSqrtEPow2plusAspectPow2 = 1.0f / sqrtf( (fE * fE) + (fAspect * fAspect));
   
-  m_Frustum.GetPlane(LEFT)[0] = mCombo(0,3) + mCombo(0,0);
-  m_Frustum.GetPlane(LEFT)[1] = mCombo(1,3) + mCombo(1,0);
-
-  m_Frustum.GetPlane(LEFT)[2] = mCombo(2,3) + mCombo(2,0);
-  m_Frustum.GetPlane(LEFT)[3] = mCombo(3,3) + mCombo(3,0);
-
-  // p_planes[0].a = comboMatrix._14 + comboMatrix._11;
-//   p_planes[0].b = comboMatrix._24 + comboMatrix._21;
-//   p_planes[0].c = comboMatrix._34 + comboMatrix._31;
-//   p_planes[0].d = comboMatrix._44 + comboMatrix._41;
-
-  // Right clipping plane
-  m_Frustum.GetPlane(RIGHT)[0] = mCombo(0,3) - mCombo(0,0);
-  m_Frustum.GetPlane(RIGHT)[1] = mCombo(1,3) - mCombo(1,0);
-  m_Frustum.GetPlane(RIGHT)[2] = mCombo(2,3) - mCombo(2,0);
-  m_Frustum.GetPlane(RIGHT)[3] = mCombo(3,3) - mCombo(3,0);
-  // p_planes[1].a = comboMatrix._14 - comboMatrix._11;
-//   p_planes[1].b = comboMatrix._24 - comboMatrix._21;
-//   p_planes[1].c = comboMatrix._34 - comboMatrix._31;
-//   p_planes[1].d = comboMatrix._44 - comboMatrix._41;
-  // Top clipping plane
-  m_Frustum.GetPlane(TOP)[0] = mCombo(0,3) - mCombo(0,1);
-  m_Frustum.GetPlane(TOP)[1] = mCombo(1,3) - mCombo(1,1);
-  m_Frustum.GetPlane(TOP)[2] = mCombo(2,3) - mCombo(2,1);
-  m_Frustum.GetPlane(TOP)[3] = mCombo(3,3) - mCombo(3,1);
-//   p_planes[2].a = comboMatrix._14 - comboMatrix._12;
-//   p_planes[2].b = comboMatrix._24 - comboMatrix._22;
-//   p_planes[2].c = comboMatrix._34 - comboMatrix._32;
-//   p_planes[2].d = comboMatrix._44 - comboMatrix._42;
-  // Bottom clipping plane
-  m_Frustum.GetPlane(BOTTOM)[0] = mCombo(0,3) + mCombo(0,1);
-  m_Frustum.GetPlane(BOTTOM)[1] = mCombo(1,3) + mCombo(1,1);
-  m_Frustum.GetPlane(BOTTOM)[2] = mCombo(2,3) + mCombo(2,1);
-  m_Frustum.GetPlane(BOTTOM)[3] = mCombo(3,3) + mCombo(3,1);
-  // p_planes[3].a = comboMatrix._14 + comboMatrix._12;
-//   p_planes[3].b = comboMatrix._24 + comboMatrix._22;
-//   p_planes[3].c = comboMatrix._34 + comboMatrix._32;
-//   p_planes[3].d = comboMatrix._44 + comboMatrix._42;
-
   // Near clipping plane
-  m_Frustum.GetPlane(BACK)[0] = mCombo(0,2);
-  m_Frustum.GetPlane(BACK)[1] = mCombo(1,2);
-  m_Frustum.GetPlane(BACK)[2] = mCombo(2,2);
-  m_Frustum.GetPlane(BACK)[3] = mCombo(3,2);
-
-//   p_planes[4].a = comboMatrix._13;
-//   p_planes[4].b = comboMatrix._23;
-//   p_planes[4].c = comboMatrix._33;
-//   p_planes[4].d = comboMatrix._43;
-  // Far clipping plane
-  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[0] = mCombo(0,3) - mCombo(0,2);
-  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[1] = mCombo(1,3) - mCombo(1,2);
-  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[2] = mCombo(2,3) - mCombo(2,2);
-  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[3] = mCombo(3,3) - mCombo(3,2);
+  m_Frustum.GetPlane(BACK)[0] = 0.0f;
+  m_Frustum.GetPlane(BACK)[1] = 0.0f;
+  m_Frustum.GetPlane(BACK)[2] = -1.0f;
+  m_Frustum.GetPlane(BACK)[3] = -GetNearClipping();
   
-  // p_planes[5].a = comboMatrix._14 - comboMatrix._13;
-//   p_planes[5].b = comboMatrix._24 - comboMatrix._23;
-//   p_planes[5].c = comboMatrix._34 - comboMatrix._33;
-//   p_planes[5].d = comboMatrix._44 - comboMatrix._43;
-  // Normalize the plane equations, if requested
-  // if (normalize == true)
-//   {
-//     NormalizePlane(p_planes[0]);
-//     NormalizePlane(p_planes[1]);
-//     NormalizePlane(p_planes[2]);
-//     NormalizePlane(p_planes[3]);
-//     NormalizePlane(p_planes[4]);
-//     NormalizePlane(p_planes[5]);
-//   }
-  m_Frustum.GetPlane(TOP).Normalize();
-  m_Frustum.GetPlane(BOTTOM).Normalize();
-  m_Frustum.GetPlane(LEFT).Normalize();
-  m_Frustum.GetPlane(RIGHT).Normalize();
-  m_Frustum.GetPlane(BACK).Normalize();
-  m_Frustum.GetPlane(Phoenix::Volume::FRONT).Normalize();
+  // Far clipping plane
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[0] = 0.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[1] = 0.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[2] = 1.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::FRONT)[3] = GetFarClipping();
+  
+  // Left clipping plane
+  m_Frustum.GetPlane(Phoenix::Volume::LEFT)[0] = fE * f1DivSqrtEPow2plus1;
+  m_Frustum.GetPlane(Phoenix::Volume::LEFT)[1] = 0.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::LEFT)[2] = -f1DivSqrtEPow2plus1;
+  m_Frustum.GetPlane(Phoenix::Volume::LEFT)[3] = 0.0f;
+  
+  // Right clipping plane
+  m_Frustum.GetPlane(Phoenix::Volume::RIGHT)[0] = -(fE *f1DivSqrtEPow2plus1);
+  m_Frustum.GetPlane(Phoenix::Volume::RIGHT)[1] = 0.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::RIGHT)[2] = -f1DivSqrtEPow2plus1; 
+  m_Frustum.GetPlane(Phoenix::Volume::RIGHT)[3] = 0.0f;
+
+  // Bottom clipping plane
+  m_Frustum.GetPlane(Phoenix::Volume::BOTTOM)[0] = 0.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::BOTTOM)[1] = fE *f1DivSqrtEPow2plusAspectPow2;
+  m_Frustum.GetPlane(Phoenix::Volume::BOTTOM)[2] = -fAspect *f1DivSqrtEPow2plusAspectPow2;
+  m_Frustum.GetPlane(Phoenix::Volume::BOTTOM)[3] = 0.0f;
+
+  // Top clipping plane
+  m_Frustum.GetPlane(Phoenix::Volume::TOP)[0] = 0.0f;
+  m_Frustum.GetPlane(Phoenix::Volume::TOP)[1] = -fE *f1DivSqrtEPow2plusAspectPow2;
+  m_Frustum.GetPlane(Phoenix::Volume::TOP)[2] = -fAspect *f1DivSqrtEPow2plusAspectPow2;
+  m_Frustum.GetPlane(Phoenix::Volume::TOP)[3] = 0.0f;
+  // Planes are transformed like any other vector, but with the exception that 
+  // we use inverse transpose of transformation matrix (M^-1)^T.
+  // we would transform it by ((inverse view)^-1)^T = view^T.
+  CVector4<float> vTmp;
+  CMatrix4x4<float> vTranspose = GetViewMatrix().GetTransposition();
+#define CONVERT_TO_WORLD_SPACE( PLANE ) {\
+  vTmp = vTranspose * static_cast<CVector4<float> >(PLANE);	\
+  PLANE[0] = vTmp[0]; 						\
+  PLANE[1] = vTmp[1]; 						\
+  PLANE[2] = vTmp[2]; 						\
+  PLANE[3] = vTmp[3];                                           \
 }
+ 
+  CONVERT_TO_WORLD_SPACE(m_Frustum.GetPlane( Phoenix::Volume::BOTTOM));
+  CONVERT_TO_WORLD_SPACE(m_Frustum.GetPlane( Phoenix::Volume::TOP));
+  CONVERT_TO_WORLD_SPACE(m_Frustum.GetPlane( Phoenix::Volume::LEFT));
+  CONVERT_TO_WORLD_SPACE(m_Frustum.GetPlane( Phoenix::Volume::RIGHT));
+  CONVERT_TO_WORLD_SPACE(m_Frustum.GetPlane( Phoenix::Volume::FRONT));
+  CONVERT_TO_WORLD_SPACE(m_Frustum.GetPlane( Phoenix::Volume::BACK));
+
+
+//   std::cerr << "Phoenix LEFT: " << m_Frustum.GetPlane(LEFT) << std::endl;
+//   std::cerr << "Phoenix RIGHT: " << m_Frustum.GetPlane(RIGHT) << std::endl;
+//   std::cerr << "Phoenix TOP: " << m_Frustum.GetPlane(TOP) << std::endl;
+//   std::cerr << "Phoenix BOTTOM: " << m_Frustum.GetPlane(BOTTOM) << std::endl;
+//   std::cerr << "Phoenix BACK: " << m_Frustum.GetPlane(BACK) << std::endl;
+//   std::cerr << "Phoenix FRONT: " << m_Frustum.GetPlane(FRONT) << std::endl;  
+
+  // Calculate corners
+  CVector3<float> vCorner;
+  
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+				 m_Frustum.GetPlane(BACK),
+				 m_Frustum.GetPlane(LEFT),
+				 vCorner ) == 0);
+
+
+  m_Frustum.SetCorner( CFrustum::TOP_NEAR_LEFT, vCorner );
+  
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+				 m_Frustum.GetPlane(BACK),
+				 m_Frustum.GetPlane(RIGHT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::TOP_NEAR_RIGHT, vCorner );
+  
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+				 m_Frustum.GetPlane(FRONT),
+				 m_Frustum.GetPlane(LEFT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::TOP_FAR_LEFT, vCorner );
+
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+				 m_Frustum.GetPlane(FRONT),
+				 m_Frustum.GetPlane(RIGHT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::TOP_FAR_RIGHT, vCorner );
+  
+  
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+				 m_Frustum.GetPlane(BACK),
+				 m_Frustum.GetPlane(LEFT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::BOTTOM_NEAR_LEFT, vCorner );
+  
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+				 m_Frustum.GetPlane(BACK),
+				 m_Frustum.GetPlane(RIGHT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::BOTTOM_NEAR_RIGHT, vCorner );
+  
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+				 m_Frustum.GetPlane(FRONT),
+				 m_Frustum.GetPlane(LEFT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::BOTTOM_FAR_LEFT, vCorner );
+
+  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+				 m_Frustum.GetPlane(FRONT),
+				 m_Frustum.GetPlane(RIGHT),
+				 vCorner ) == 0);
+  
+  m_Frustum.SetCorner( CFrustum::BOTTOM_FAR_RIGHT, vCorner);
+  
+
+}
+  // Float clip[16];
+//   float modl[16], proj[16];
+//   glGetFloatv( GL_PROJECTION_MATRIX, proj );
+//   glGetFloatv( GL_MODELVIEW_MATRIX,  modl );
+
+//   clip[ 0] = modl[ 0] * proj[ 0] + modl[ 1] * proj[ 4] + modl[ 2] * proj[ 8] + modl[ 3] * proj[12];
+//   clip[ 1] = modl[ 0] * proj[ 1] + modl[ 1] * proj[ 5] + modl[ 2] * proj[ 9] + modl[ 3] * proj[13];
+//   clip[ 2] = modl[ 0] * proj[ 2] + modl[ 1] * proj[ 6] + modl[ 2] * proj[10] + modl[ 3] * proj[14];
+//   clip[ 3] = modl[ 0] * proj[ 3] + modl[ 1] * proj[ 7] + modl[ 2] * proj[11] + modl[ 3] * proj[15];
+  
+//   clip[ 4] = modl[ 4] * proj[ 0] + modl[ 5] * proj[ 4] + modl[ 6] * proj[ 8] + modl[ 7] * proj[12];
+//   clip[ 5] = modl[ 4] * proj[ 1] + modl[ 5] * proj[ 5] + modl[ 6] * proj[ 9] + modl[ 7] * proj[13];
+//   clip[ 6] = modl[ 4] * proj[ 2] + modl[ 5] * proj[ 6] + modl[ 6] * proj[10] + modl[ 7] * proj[14];
+//   clip[ 7] = modl[ 4] * proj[ 3] + modl[ 5] * proj[ 7] + modl[ 6] * proj[11] + modl[ 7] * proj[15];
+  
+//   clip[ 8] = modl[ 8] * proj[ 0] + modl[ 9] * proj[ 4] + modl[10] * proj[ 8] + modl[11] * proj[12];
+//   clip[ 9] = modl[ 8] * proj[ 1] + modl[ 9] * proj[ 5] + modl[10] * proj[ 9] + modl[11] * proj[13];
+//   clip[10] = modl[ 8] * proj[ 2] + modl[ 9] * proj[ 6] + modl[10] * proj[10] + modl[11] * proj[14];
+//   clip[11] = modl[ 8] * proj[ 3] + modl[ 9] * proj[ 7] + modl[10] * proj[11] + modl[11] * proj[15];
+  
+//   clip[12] = modl[12] * proj[ 0] + modl[13] * proj[ 4] + modl[14] * proj[ 8] + modl[15] * proj[12];
+//   clip[13] = modl[12] * proj[ 1] + modl[13] * proj[ 5] + modl[14] * proj[ 9] + modl[15] * proj[13];
+//   clip[14] = modl[12] * proj[ 2] + modl[13] * proj[ 6] + modl[14] * proj[10] + modl[15] * proj[14];
+//   clip[15] = modl[12] * proj[ 3] + modl[13] * proj[ 7] + modl[14] * proj[11] + modl[15] * proj[15];
+//   cerr << "opengl SHOULD be" << endl;
+//   for( unsigned int r=0;r<4;r++)
+//   {
+//     for(unsigned int c=0;c<4;c++)
+//     {
+//       cerr << clip[r*4+c] << " ";
+//     }
+//     cerr << endl;
+//   }
+//   CMatrix4x4<float> mClip, mModelv, mProj;
+//   float *pClipArray = mClip.GetArray();
+  
+//   glGetFloatv( GL_PROJECTION_MATRIX, mProj.GetArray() );
+//   glGetFloatv( GL_MODELVIEW_MATRIX,  mModelv.GetArray() );
+//   mClip = mModelv * mProj; 
+  
+//   // calculate RIGHT plane
+//   CPlane tmpPlane;
+
+
+
+
+
+  
+
+  
+//   //std::cerr << "Phoenix planes: " << std::endl;
+  
+//   // Left clipping plane
+//   m_Frustum.GetPlane(LEFT)[0] = mCombo(3,0) + mCombo(0,0);
+//   m_Frustum.GetPlane(LEFT)[1] = mCombo(3,1) + mCombo(0,1);
+//   m_Frustum.GetPlane(LEFT)[2] = mCombo(3,2) + mCombo(0,2);
+//   m_Frustum.GetPlane(LEFT)[3] = mCombo(3,3) + mCombo(0,3);
+
+//   // Right clipping plane
+//   m_Frustum.GetPlane(RIGHT)[0] = mCombo(3,0) - mCombo(0,0);
+//   m_Frustum.GetPlane(RIGHT)[1] = mCombo(3,1) - mCombo(0,1);
+//   m_Frustum.GetPlane(RIGHT)[2] = mCombo(3,2) - mCombo(0,2);
+//   m_Frustum.GetPlane(RIGHT)[3] = mCombo(3,3) - mCombo(0,3);
+
+//   // Top clipping plane
+//   m_Frustum.GetPlane(TOP)[0] = mCombo(3,0) - mCombo(1,0);
+//   m_Frustum.GetPlane(TOP)[1] = mCombo(3,1) - mCombo(1,1);
+//   m_Frustum.GetPlane(TOP)[2] = mCombo(3,2) - mCombo(1,2);
+//   m_Frustum.GetPlane(TOP)[3] = mCombo(3,3) - mCombo(1,3);
+
+//   // Bottom clipping plane
+//   m_Frustum.GetPlane(BOTTOM)[0] = mCombo(3,0) + mCombo(1,0);
+//   m_Frustum.GetPlane(BOTTOM)[1] = mCombo(3,1) + mCombo(1,1);
+//   m_Frustum.GetPlane(BOTTOM)[2] = mCombo(3,2) + mCombo(1,2);
+//   m_Frustum.GetPlane(BOTTOM)[3] = mCombo(3,3) + mCombo(1,3);
+
+//   // Near clipping plane
+//   m_Frustum.GetPlane(BACK)[0] = mCombo(3,0) + mCombo(2,0);
+//   m_Frustum.GetPlane(BACK)[1] = mCombo(3,1) + mCombo(2,1);
+//   m_Frustum.GetPlane(BACK)[2] = mCombo(3,2) + mCombo(2,2);
+//   m_Frustum.GetPlane(BACK)[3] = mCombo(3,3) + mCombo(2,3);
+
+//   // Far clipping plane
+//   m_Frustum.GetPlane(Phoenix::Volume::FRONT)[0] = mCombo(3,0) - mCombo(2,0);
+//   m_Frustum.GetPlane(Phoenix::Volume::FRONT)[1] = mCombo(3,1) - mCombo(2,1);
+//   m_Frustum.GetPlane(Phoenix::Volume::FRONT)[2] = mCombo(3,2) - mCombo(2,2);
+//   m_Frustum.GetPlane(Phoenix::Volume::FRONT)[3] = mCombo(3,3) - mCombo(2,3);
+
+
+//   // Normalize the plane equations, if requested
+//   // if (normalize == true)
+// //   {
+// //     NormalizePlane(p_planes[0]);
+// //     NormalizePlane(p_planes[1]);
+// //     NormalizePlane(p_planes[2]);
+// //     NormalizePlane(p_planes[3]);
+// //     NormalizePlane(p_planes[4]);
+// //     NormalizePlane(p_planes[5]);
+// //   }
+
+//   std::cerr << "*Phoenix LEFT: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(LEFT)) << std::endl;
+//   std::cerr << "*Phoenix RIGHT: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(RIGHT)) << std::endl;
+//   std::cerr << "*Phoenix TOP: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(TOP)) << std::endl;
+//   std::cerr << "*Phoenix BOTTOM: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(BOTTOM)) << std::endl;
+//   std::cerr << "*Phoenix BACK: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(BACK)) << std::endl;
+//   std::cerr << "*Phoenix FRONT: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(FRONT)) << std::endl;  
+
+//   m_Frustum.GetPlane(TOP).Normalize();
+//   m_Frustum.GetPlane(BOTTOM).Normalize();
+//   m_Frustum.GetPlane(LEFT).Normalize();
+//   m_Frustum.GetPlane(RIGHT).Normalize();
+//   m_Frustum.GetPlane(BACK).Normalize();
+//   m_Frustum.GetPlane(Phoenix::Volume::FRONT).Normalize();
+
+//   std::cerr << "Phoenix LEFT: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(LEFT)) << std::endl;
+//   std::cerr << "Phoenix RIGHT: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(RIGHT)) << std::endl;
+//   std::cerr << "Phoenix TOP: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(TOP)) << std::endl;
+//   std::cerr << "Phoenix BOTTOM: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(BOTTOM)) << std::endl;
+//   std::cerr << "Phoenix BACK: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(BACK)) << std::endl;
+//   std::cerr << "Phoenix FRONT: " << static_cast<CVector4<float> >(m_Frustum.GetPlane(FRONT)) << std::endl;  
+
+//   CVector3<float> vCorner;
+  
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+// 				 m_Frustum.GetPlane(BACK),
+// 				 m_Frustum.GetPlane(LEFT),
+// 				 vCorner ) == 0);
+
+
+//   m_Frustum.SetCorner( CFrustum::TOP_NEAR_LEFT, vCorner );
+  
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+// 				 m_Frustum.GetPlane(BACK),
+// 				 m_Frustum.GetPlane(RIGHT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::TOP_NEAR_RIGHT, vCorner );
+  
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+// 				 m_Frustum.GetPlane(FRONT),
+// 				 m_Frustum.GetPlane(LEFT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::TOP_FAR_LEFT, vCorner );
+
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+// 				 m_Frustum.GetPlane(FRONT),
+// 				 m_Frustum.GetPlane(RIGHT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::TOP_FAR_RIGHT, vCorner );
+  
+  
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+// 				 m_Frustum.GetPlane(BACK),
+// 				 m_Frustum.GetPlane(LEFT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::BOTTOM_NEAR_LEFT, vCorner );
+  
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+// 				 m_Frustum.GetPlane(BACK),
+// 				 m_Frustum.GetPlane(RIGHT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::BOTTOM_NEAR_RIGHT, vCorner );
+  
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+// 				 m_Frustum.GetPlane(FRONT),
+// 				 m_Frustum.GetPlane(LEFT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::BOTTOM_FAR_LEFT, vCorner );
+
+//   assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+// 				 m_Frustum.GetPlane(FRONT),
+// 				 m_Frustum.GetPlane(RIGHT),
+// 				 vCorner ) == 0);
+  
+//   m_Frustum.SetCorner( CFrustum::BOTTOM_FAR_RIGHT, vCorner);
+  
+
+
+//   //cerr << "OGL mv " << mModelv << endl;
+//   //cerr << "OGL proj " << mProj << endl;
+//   //cerr << "my mv " << pCamera->GetView() << endl;
+//   //cerr << "my proj " << pCamera->GetProjection() << endl;
+//   //exit(1);
+  
+//   //pCamera->Frustum().SetPlane( GSE_Frustum::RIGHT, tmpPlane );
+  
+//   // calculate RIGHT plane
+//   tmpPlane[0] = pClipArray[3]  - pClipArray[0];
+//   tmpPlane[1] = pClipArray[7]  - pClipArray[4];
+//   tmpPlane[2] = pClipArray[11] - pClipArray[8];
+//   tmpPlane[3] = pClipArray[15] - pClipArray[12];
+//   tmpPlane.Normalize();
+//   std::cerr << "OpenGL RIGHT: " << static_cast<CVector4<float> >(tmpPlane) << std::endl;
+
+//   // // calculate LEFT plane
+//   tmpPlane[0] = pClipArray[3]  + pClipArray[0];
+//   tmpPlane[1] = pClipArray[7]  + pClipArray[4];
+//   tmpPlane[2] = pClipArray[11] + pClipArray[8];
+//   tmpPlane[3] = pClipArray[15] + pClipArray[12];
+//   tmpPlane.Normalize();
+//   std::cerr << "OpenGL LEFT: " << static_cast<CVector4<float> >(tmpPlane) << std::endl;
+
+//   // calculate BOTTOM plane
+//   tmpPlane[0] = pClipArray[ 3] + pClipArray[ 1];
+//   tmpPlane[1] = pClipArray[ 7] + pClipArray[ 5];
+//   tmpPlane[2] = pClipArray[11] + pClipArray[ 9];
+//   tmpPlane[3] = pClipArray[15] + pClipArray[13];
+//   tmpPlane.Normalize();
+//   std::cerr << "OpenGL BOTTOM: " << static_cast<CVector4<float> >(tmpPlane) << std::endl;
+
+//   // calculate TOP plane
+//   tmpPlane[0] = pClipArray[ 3] - pClipArray[ 1];
+//   tmpPlane[1] = pClipArray[ 7] - pClipArray[ 5];
+//   tmpPlane[2] = pClipArray[11] - pClipArray[ 9];
+//   tmpPlane[3] = pClipArray[15] - pClipArray[13];
+//   tmpPlane.Normalize();
+//   std::cerr << "OpenGL TOP: " << static_cast<CVector4<float> >(tmpPlane) << std::endl;
+
+//   // calculate FAR plane
+//   tmpPlane[0] = pClipArray[ 3] - pClipArray[ 2];
+//   tmpPlane[1] = pClipArray[ 7] - pClipArray[ 6];
+//   tmpPlane[2] = pClipArray[11] - pClipArray[10];
+//   tmpPlane[3] = pClipArray[15] - pClipArray[14];
+//   //tmpPlane.Normalize();
+//   std::cerr << "OpenGL FAR: " << tmpPlane << std::endl;
+  
+//   // calculate NEAR plane
+//   tmpPlane[0] = pClipArray[ 3] + pClipArray[ 2];
+//   tmpPlane[1] = pClipArray[ 7] + pClipArray[ 6];
+//   tmpPlane[2] = pClipArray[11] + pClipArray[10];
+//   tmpPlane[3] = pClipArray[15] + pClipArray[14];
+//   //tmpPlane.Normalize();
+//   std::cerr << "OpenGL NEAR: " << tmpPlane << std::endl;
