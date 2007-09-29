@@ -92,6 +92,20 @@ namespace Phoenix
                              CDimensional3D( fWidth, fHeight, fLength) {  }
     };
     /////////////////////////////////////////////////////////////////
+    /// Class for axis-aligned (x,y,z) cube.
+    class CAxisAlignedCube : public Phoenix::Spatial::CPositional, 
+                             public Phoenix::Spatial::CDimensional1D
+    {
+    public:
+      ////////////////////
+      /// The constuctor.
+      CAxisAlignedCube()    {}
+      ////////////////////x
+      /// The parametrized constructor.
+      CAxisAlignedCube( const CVector3<float> &vCenter, float fEdgeLength ) : 
+      CPositional( vCenter ), CDimensional1D( fEdgeLength ) {  }
+    };
+    /////////////////////////////////////////////////////////////////
     /// The class for Oriented Box. Forward vector will be the principal axis,
     /// right vector the second and up the third. Dimensions: length = forward,
     /// width = right, height = up.
@@ -218,7 +232,7 @@ namespace Phoenix
       }
       /////////////////////////////////////////////////////////////////
       /// The parametrized constructor.
-      CSphere( CVector3<float> vPosition, float fRadius ) : CPositional( vPosition )
+      CSphere( const CVector3<float> & vPosition, float fRadius ) : CPositional( vPosition )
       {
 	m_fRadius = fRadius;
 	m_fRadiusSqr = m_fRadius * m_fRadius;
