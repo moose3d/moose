@@ -10,6 +10,8 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    /////////////////////////////////////////////////////////////////
+    /// Camera class.
     class CCamera : public CPositional, public COrientable
     {
     protected:
@@ -26,8 +28,7 @@ namespace Phoenix
       int		m_bLensFlaresEnabled;
       /// Is the orthogonal view enabled
       int		m_bOrtho;
-      /// The coordinates for left, right, bottom and top clipping planes
-      /// in orthogonal mode
+      /// The coordinates for left, right, bottom and top clipping planes in orthogonal mode
       float		m_aOrthoPlanes[4];
       /// View frustum for this camera
       CFrustum		m_Frustum;
@@ -41,92 +42,175 @@ namespace Phoenix
       Phoenix::Math::CMatrix4x4<float> m_mViewInv;
       /// Is the projection changed
       int		 m_bProjectionChanged;
-  
+      /// Bounding sphere for frustum.
+      Phoenix::Volume::CSphere m_FrustumSphere;
+      /// Bounding sphere for cone.
+      Phoenix::Volume::CCone m_FrustumCone;
     public:
-  
-      // The default constructor
+      ////////////////////
+      /// Default constructor
       CCamera();
-      // The default deconstructor
+      ////////////////////
+      /// Destructor.
       ~CCamera();
-      // Sets the Field of view.
+      ////////////////////
+      /// Sets the Field of view.
+      /// \param fDegrees Field of view in degrees.
       void SetFieldOfView(float fDegrees);
-      // Sets the orthogonal view left, right, bottom and top plane locations.
+      ////////////////////
+      /// Sets the orthogonal view left, right, bottom and top plane locations.
+      /// \param fLeft Left plane distance.
+      /// \param fRight Right plane distance.
+      /// \param fBottom Bottom plane distance.
+      /// \param fTop Top plane distance.
       void SetViewOrtho( float fLeft, float fRight, float fBottom, float fTop );
-      // Sets the Viewport for this camera
+      ////////////////////
+      /// Sets viewport for this camera.
+      /// \param iX X-coordinate of lower-left corner.
+      /// \param iY Y-coordinate of lower-left corner.
+      /// \param iWidth Width of viewport.
+      /// \param iHeight Height of viewport.
       void SetViewport( int iX, int iY, int iWidth, int iHeight);
-      // Sets the Near Clipping plane.
+      ////////////////////
+      /// Sets near clipping plane.
+      /// \param fNearClipping Near clipping plane distance
       void SetNearClipping(float fNearClipping);
-      // Sets the Far clipping plane
+      ////////////////////
+      /// Sets the Far clipping plane
+      /// \param fFarClipping Far clipping plane distance
       void SetFarClipping(float fFarClipping);
-      // Returns the Near clipping plane distance.
+      ////////////////////
+      /// Returns near clipping plane distance.
+      /// \returns Near clipping plane distance.
       float GetNearClipping();
-      // Returns the Far clipping plane distance
+      ////////////////////
+      /// Returns the Far clipping plane distance.
+      /// \returns Far clipping plane distance.
       float GetFarClipping();
-      // Returns the array of Viewport settings
+      ////////////////////
+      /// Returns the array of viewport settings.
+      /// \returns Pointer to int array
       int * GetViewport();
-      // Returns the Field Of View angle
+      ////////////////////
+      /// Returns field of view angle.
+      /// \returns field of view in degrees.
       float GetFieldOfView();
-      // Returns true if lens flares are enabled.
+      ////////////////////
+      /// Returns true if lens flares are enabled.
+      /// \returns Non-zero if true
+      /// \returns Zero if false
       int IsLensFlaresEnabled();
-      // Sets lens flares enabled or disabled according the bFlag.
+      ////////////////////
+      /// Sets lens flares enabled or disabled according the bFlag.
+      /// \param bFlag Non-zero to enable, zero to disable.
       void SetLensFlaresEnabled(int bFlag);
-      // For debugging
-      friend std::ostream &operator<<(std::ostream &stream, CCamera &obj);
-      // Returns the reference to frustum object
+      ////////////////////
+      /// Prints out info about camera into stream.
+      /// \param stream output stream
+      /// \param obj Camera.
+      friend std::ostream &operator<<(std::ostream &stream, const CCamera &obj);
+      ////////////////////
+      /// Returns reference to frustum object
+      /// \returns Reference to frustum
       CFrustum &Frustum();
+      ////////////////////
+      /// Calculates frustum.
       void CalculateFrustum();
-      // Calculates the bounding sphere for the frustum.
-      //void CalculateBoundingSphere();
-      // Calculates the bounding cone for the frustum
-      //void CalculateBoundingCone();
-      // Returns reference to the bounding cone
-      //CCone   &FrustumCone();
-      // Returns reference to the bounding sphere
-      //CSphere &FrustumSphere();
-      // Returns true if orthogonal mode is on
+      ////////////////////
+      /// Calculates the bounding sphere for the frustum.
+      void CalculateBoundingSphere();
+      ////////////////////
+      /// Calculates the bounding cone for the frustum
+      void CalculateBoundingCone();
+      ////////////////////
+      /// Returns reference to the bounding cone
+      /// \returns Reference to cone.
+      Phoenix::Volume::CCone   &FrustumCone();
+      ////////////////////
+      /// Returns reference to the bounding sphere.
+      /// \returns Reference to sphere.
+      Phoenix::Volume::CSphere &FrustumSphere();
+      ////////////////////
+      /// Returns true if orthogonal mode is on
+      /// \returns Non-zero camera view is orthogonal
+      /// \returns Zero if camera view is perspective.
       int IsOrthogonal();
-      // Returns the pointer to orthogonal plane coordinates
+      ////////////////////
+      /// Returns the pointer to orthogonal plane coordinates.
+      /// \param Pointer to array of ortho plane values.
       float *GetOrthoPlanes();
-      /// Rotates the camera around a point in space.
+      ////////////////////
+      /// Rotates camera around a point in space.
+      /// \param vPoint Point around which rotation occurs.
+      /// \param q Rotation quaternion.
       void RotateAroundPoint( const Phoenix::Math::CVector3<float> & vPoint, const Phoenix::Math::CQuaternion & q);
-      /// Returns the projection matrix.
+      ////////////////////
+      /// Returns projection matrix.
+      /// \returns Reference to projection matrix.
       inline const Phoenix::Math::CMatrix4x4<float> & GetProjectionMatrix() const
       {
 	return m_mProjection;
       }
-      /// Returns the view matrix.
+      ////////////////////
+      /// Returns view matrix.
+      /// \returns Refernce to view matrix.
       inline const Phoenix::Math::CMatrix4x4<float> & GetViewMatrix() const
       {
 	return m_mView;
       }
-      // Updates the projection matrix
+      ////////////////////
+      /// Returns projection matrix.
+      /// \returns Reference to projection matrix.
+      inline Phoenix::Math::CMatrix4x4<float> & GetProjectionMatrix()
+      {
+	return m_mProjection;
+      }
+      ////////////////////
+      /// Returns view matrix.
+      /// \returns Refernce to view matrix.
+      inline Phoenix::Math::CMatrix4x4<float> & GetViewMatrix()
+      {
+	return m_mView;
+      }
+      ////////////////////
+      /// Recalculates projection matrix
       void UpdateProjection();
-      // Updates the view matrix
+      ////////////////////
+      /// Recalculates view matrix
       void UpdateView();
+      ////////////////////
+      /// Returns inverse view matrix.
+      /// \returns Reference to inverse view matrix.
       inline Phoenix::Math::CMatrix4x4<float> & GetInvView() 
       {
 	return m_mViewInv;
       }
-      inline  Phoenix::Math::CMatrix4x4<float> & GetView() 
-      {
-	return m_mView;
-      }
+      ////////////////////
+      /// Returns inverse projection matrix.
+      /// \returns Reference to inverse projection matrix.
       inline  Phoenix::Math::CMatrix4x4<float> & GetInvProjection() 
       {
 	return m_mProjectionInv;
       }
-      inline  Phoenix::Math::CMatrix4x4<float> & GetProjection() 
-      {
-	return m_mProjection;
-      }
+      ////////////////////
+      /// Checks does projection need updating.
+      /// \returns Non-zero if changed.
+      /// \returns Zero if not changed.
       inline int IsProjectionChanged() const
       {
 	return m_bProjectionChanged;
       }
+      ////////////////////
+      /// Checks does view need updating.
+      /// \returns Non-zero if changed.
+      /// \returns Zero if not changed.
       inline int IsViewChanged() const
       {
 	return (IsPositionChanged() || IsRotationChanged());
       }
+      ////////////////////
+      /// Sets projection change flag.
+      /// \param bFlag boolean.
       inline void SetProjectionChanged(int bFlag )
       {
 	m_bProjectionChanged = bFlag;
