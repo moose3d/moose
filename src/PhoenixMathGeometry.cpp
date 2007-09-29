@@ -36,11 +36,11 @@ Phoenix::Math::CPlane::Normalize()
     m_pValues[0] *= fLength;
     m_pValues[1] *= fLength;
     m_pValues[2] *= fLength;
-    m_pValues[3] *= fLength;
+    //m_pValues[3] *= fLength;
   } 
   else
   {
-    m_pValues[0] = m_pValues[1] = m_pValues[2] = m_pValues[3] = 0.0f;
+    m_pValues[0] = m_pValues[1] = m_pValues[2] = 0.0f;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -60,7 +60,8 @@ Phoenix::Math::CPlane::Calculate( CVector3<float> vNormal, const CVector3<float>
   m_pValues[3] = -(vNormal.Dot(vPoint));
 }
 /////////////////////////////////////////////////////////////////
-std::ostream& operator<<( std::ostream &stream, CPlane plane )
+std::ostream& 
+Phoenix::Math::operator<<( std::ostream &stream, const CPlane &plane )
 {
   stream << "(" << plane[0] << "," << plane[1] << "," << plane[2] << "," << plane[3] ;
   return stream;
