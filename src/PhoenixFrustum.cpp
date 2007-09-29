@@ -10,7 +10,6 @@ using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFrustum::CFrustum()
 {
-
   // Add planes to the list 
   CPlane top,bottom,left,right,near,far;
 
@@ -69,7 +68,9 @@ Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAligned
   {  
     CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
     vNormal.UseExternalData( plane.GetArray());
-    fEffectiveRadius = (aaBox.GetHalfWidth()*vX).Dot(vNormal) + (aaBox.GetHalfHeight()*vY).Dot(vNormal) + (aaBox.GetHalfLength()*vZ).Dot(vNormal);
+    fEffectiveRadius = fabsf((aaBox.GetHalfWidth() *vX).Dot(vNormal)) + 
+                       fabsf((aaBox.GetHalfHeight()*vY).Dot(vNormal)) + 
+                       fabsf((aaBox.GetHalfLength()*vZ).Dot(vNormal));
     if( PLANE_DOT_POS(plane, aaBox.GetPosition()) <= -fEffectiveRadius) return 0;    
   }
   
@@ -88,14 +89,20 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
   CVector3<float> vHalfWidthX = aaCube.GetHalfWidth()*vX;
   CVector3<float> vHalfWidthY = aaCube.GetHalfWidth()*vY;
   CVector3<float> vHalfWidthZ = aaCube.GetHalfWidth()*vZ;
-
+  
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {  
     CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
     vNormal.UseExternalData( plane.GetArray());
-    fEffectiveRadius = vHalfWidthX.Dot(vNormal) + (vHalfWidthY).Dot(vNormal) + (vHalfWidthZ).Dot(vNormal);
+    fEffectiveRadius = fabsf(vHalfWidthX.Dot(vNormal)) + 
+                       fabsf(vHalfWidthY.Dot(vNormal)) + 
+                       fabsf(vHalfWidthZ.Dot(vNormal));
+    /*std::cerr << "planea " 
+	      << iPlane << " effectiveradius" << fEffectiveRadius << " and dotpos: "
+	      << PLANE_DOT_POS(plane, aaCube.GetPosition()) << std::endl;*/
     if( PLANE_DOT_POS(plane, aaCube.GetPosition()) <= -fEffectiveRadius) return 0;    
   }
+
   // Frustum intersects cube.
   return 1;
 }
