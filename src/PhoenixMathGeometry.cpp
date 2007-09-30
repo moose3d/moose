@@ -36,7 +36,7 @@ Phoenix::Math::CPlane::Normalize()
     m_pValues[0] *= fLength;
     m_pValues[1] *= fLength;
     m_pValues[2] *= fLength;
-    //m_pValues[3] *= fLength;
+    m_pValues[3] *= fLength;
   } 
   else
   {
@@ -918,70 +918,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CPlane &plane )
 //   return 0;
 // }
 // /////////////////////////////////////////////////////////////////
-// int
-// Geometry::SphereIntersectsAxisAlignedBox( const CSphere &sphere, 
-// 					  const CAxisAlignedBox &aaBox)
-// {
-//   float fDistance = 0.0f;
-//   float fTmp = 0.0f;
-//   /////////////////////////////////////////////////////////////////
-//   // Test for X axis
-//   float fAxisMax = aaBox.GetPosition().m_pValues[0] + aaBox.GetWidth();
-//   float fAxisMin = aaBox.GetPosition().m_pValues[0] - aaBox.GetWidth();
-//   float fAxisCenter = sphere.GetPosition().m_pValues[0];
 
-//   if ( fAxisCenter < fAxisMin )
-//   {
-//     fTmp = fAxisCenter - fAxisMin;
-//     fDistance += ( fTmp * fTmp );
-//   } 
-//   else if ( fAxisCenter > fAxisMax )
-//   {
-//     fTmp =  fAxisCenter - fAxisMax;
-//     fDistance += ( fTmp * fTmp );
-//   }
-//   /////////////////////////////////////////////////////////////////
-//   // Test for Y axis
-//   fAxisMax = aaBox.GetPosition().m_pValues[1] + aaBox.GetHeight();
-//   fAxisMin = aaBox.GetPosition().m_pValues[1] - aaBox.GetHeight();
-//   fAxisCenter = sphere.GetPosition().m_pValues[1];
-//   if ( fAxisCenter < fAxisMin )
-//   {
-//     fTmp = fAxisCenter - fAxisMin;
-//     fDistance += ( fTmp * fTmp );
-//   } 
-//   else if ( fAxisCenter > fAxisMax )
-//   {
-//     fTmp =  fAxisCenter - fAxisMax;
-//     fDistance += ( fTmp * fTmp );
-//   }
-//   /////////////////////////////////////////////////////////////////
-//   // Test for Z axis
-//   fAxisMax = aaBox.GetPosition().m_pValues[2] + aaBox.GetLength();
-//   fAxisMin = aaBox.GetPosition().m_pValues[2] - aaBox.GetLength();
-//   fAxisCenter = sphere.GetPosition().m_pValues[2];
-//   if ( fAxisCenter < fAxisMin )
-//   {
-//     fTmp = fAxisCenter - fAxisMin;
-//     fDistance += ( fTmp * fTmp );
-//   } 
-//   else if ( fAxisCenter > fAxisMax )
-//   {
-//     fTmp =  fAxisCenter - fAxisMax;
-//     fDistance += ( fTmp * fTmp );
-//   }
-//   /////////////////////////////////////////////////////////////////
-//   // Actual test, if the sum of squared distances is less than the squared
-//   // radius, we have overlapping.
-//   if ( fDistance > sphere.GetRadiusSqr()) 
-//   {
-//     return 0;
-//   }
-//   else 
-//   {
-//     return 1;
-//   }
-// }
 // /////////////////////////////////////////////////////////////////
 // CPlaneIntersection
 // Geometry::PlaneIntersectsAABB( const CPlane &rPlane,  const CAxisAlignedBox &rAABB)
