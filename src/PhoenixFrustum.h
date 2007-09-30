@@ -97,10 +97,10 @@ namespace Phoenix
       ////////////////////
       /// Determines whether frustum and sphere intersect.
       /// \param sphere The sphere to be checked against.
-      /// \returns INSIDE if frustum surrounds the sphere completely.
-      ///          OUTSIDE if the sphere is outside all frustum planes.
-      ///          INTERSECTION if the sphere intersects the any of the frustum planes.
-      // CFrustumIntersection_t	IntersectsSphere( const CSphere &sphere );
+      /// \returns 0 if the sphere is outside all frustum planes.
+      /// \returns 1 if the sphere intersects the any of the frustum planes.
+      //  \returns 2 if frustum surrounds the sphere completely.
+      int	IntersectsSphere( const Phoenix::Volume::CSphere &sphere );
       ////////////////////
       /// Determines whether frustum and oriented box  intersect.
       /// \param obBox The oriented box to be checked against.
