@@ -121,6 +121,26 @@ namespace Phoenix
 				const Phoenix::Math::CPlane & plane2,
 				const Phoenix::Math::CPlane & plane3,
 				Phoenix::Math::CVector3<float> &vCollisionPoint);
+    ////////////////////
+    /// Checks does a sphere and a plane intersect.
+    /// \param plane Plane object.
+    /// \param sphere Sphere object.
+    /// \param fCenterDistance Distance of sphere center into plane.
+    /// \returns <0 If sphere is completely on negative half-side of plane.
+    /// \returns 0 If sphere intersects plane
+    /// \returns >1 If sphere is completely on positive half-side of plane.
+    int SphereIntersectsPlane( const Phoenix::Math::CPlane &plane, 
+			       const Phoenix::Volume::CSphere &sphere, 
+			       float &fCenterDistance); 
+    ////////////////////
+    /// Checks does sphere intersect axis-aligned cube.
+    /// \param sphere A sphere
+    /// \param aaCube A cube
+    /// \returns Zero if sphere and cube do not intersect.
+    /// \returns Non-zero if sphere and cube intersect.
+    int SphereIntersectsAACube( const Phoenix::Volume::CSphere &sphere,  
+				const Phoenix::Volume::CAxisAlignedCube &aaCube);
+    
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 /*     char SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo); */
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
@@ -170,7 +190,7 @@ namespace Phoenix
     
 /*     //INTERSECTION_TYPE  SphereIntersectsPolytone( const Phoenix::Volume::CSphere &Sphere, const Phoenix::Volume::CPolytope &kDop ); */
 /*     //INTERSECTION_TYPE  OrientedBoxIntersectsPolytope( const Phoenix::Volume::COrientedBox &obBox, const Phoenix::Volume::CPolytope &kDop ); */
-/*     //INTERSECTION_TYPE  SphereIntersectsPlane( Phoenix::Math::CPlane &plane, const Phoenix::Volume::CSphere &sphere, float &fCenterDistance); */
+
     
     
 /*     //CVector3<float> ClosestPointOnLine( const CVector3<float> &vPoint, */
