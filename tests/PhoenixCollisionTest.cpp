@@ -1162,3 +1162,94 @@ TEST( CollisionPoint3Planes )
   CHECK( CollisionPoint3Planes( plane1, plane2, plane3, vResult ) != 0 );
 }
 /////////////////////////////////////////////////////////////////
+TEST(SphereIntersectsPlane)
+{
+  CPlane plane;
+  plane.Calculate( CVector3<float>(1,0,0), CVector3<float>(2,0,0));
+
+  CSphere sphere;
+  sphere.SetPosition(0,0,0);
+  sphere.SetRadius(1.0f);
+  float fTmp;
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) != 0);
+
+  sphere.SetPosition(0.9,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) != 0);
+
+  sphere.SetPosition(0.999,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) != 0);
+
+  sphere.SetPosition(1.0,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(1.001,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(1.99,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(1.999,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(2.0,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(2.999,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(3.0,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) == 0);
+
+  sphere.SetPosition(3.001,0,0);
+  CHECK( SphereIntersectsPlane( plane, sphere, fTmp) != 0);
+
+}
+/////////////////////////////////////////////////////////////////
+TEST(SphereIntersectsCube)
+{
+  CSphere sphere;
+  sphere.SetRadius(1.0f);
+
+
+  CAxisAlignedCube cube;
+  cube.SetPosition(0,0,0);
+  cube.SetWidth(1.0f);
+
+
+  sphere.SetPosition(2,0,0);  
+  CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+
+  sphere.SetPosition(1.51,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+
+  sphere.SetPosition(1.501,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+
+  sphere.SetPosition(1.5,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 1);
+
+  sphere.SetPosition(1.499,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 1);
+
+  sphere.SetPosition(0,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 1);
+
+  sphere.SetPosition(-1.49,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 1);
+
+  sphere.SetPosition(-1.499,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 1);
+
+  sphere.SetPosition(-1.5,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 1);
+
+  sphere.SetPosition(-1.501,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+
+  sphere.SetPosition(-1.51,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+
+  sphere.SetPosition(-2.0,0,0);
+  CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+}
+/////////////////////////////////////////////////////////////////
