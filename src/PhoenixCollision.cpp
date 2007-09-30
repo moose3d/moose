@@ -5,6 +5,8 @@
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Collision;
+using std::cerr;
+using std::endl;
 /////////////////////////////////////////////////////////////////
 LINE_PLANE_INTERSECTION
 Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
@@ -494,5 +496,94 @@ Phoenix::Collision::CollisionPoint3Planes( const Phoenix::Math::CPlane & plane1,
   vCollisionPoint = mInverse * vVect;
 
   return 0;
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Collision::SphereIntersectsPlane( const Phoenix::Math::CPlane &plane, 
+					   const Phoenix::Volume::CSphere &sphere, 
+					   float &fCenterDistance)
+{
+
+  CVector3<float> vNormal;
+  vNormal.UseExternalData(const_cast<Phoenix::Math::CPlane &>(plane).GetArray());
+  float fDistance = vNormal.Dot(sphere.GetPosition()) + plane[3];
+  fCenterDistance = fDistance;
+  // Check does sphere intersect
+  if ( fabs(fDistance) <= sphere.GetRadius())
+  {
+    return 0;
+  } // if not, check is it on positive half-side 
+  else if ( fDistance > sphere.GetRadius())
+  {
+    return 1;
+  }
+  // It is on negative half-side.
+  return -1;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere, 
+					    const CAxisAlignedCube &aaBox)
+{
+  float fDistance = 0.0f;
+  float fTmp = 0.0f;
+  /////////////////////////////////////////////////////////////////
+  // Test for X axis
+  float fAxisMax = aaBox.GetPosition()[0] + aaBox.GetHalfWidth();
+  float fAxisMin = aaBox.GetPosition()[0] - aaBox.GetHalfWidth();
+  float fAxisCenter = sphere.GetPosition()[0];
+
+  if ( fAxisCenter < fAxisMin )
+  {
+    fTmp = fAxisCenter - fAxisMin;
+    fDistance += ( fTmp * fTmp );
+  } 
+  else if ( fAxisCenter > fAxisMax )
+  {
+    fTmp =  fAxisCenter - fAxisMax;
+    fDistance += ( fTmp * fTmp );
+  }
+  /////////////////////////////////////////////////////////////////
+  // Test for Y axis
+  fAxisMax = aaBox.GetPosition()[1] + aaBox.GetHalfWidth();
+  fAxisMin = aaBox.GetPosition()[1] - aaBox.GetHalfWidth();
+  fAxisCenter = sphere.GetPosition()[1];
+  if ( fAxisCenter < fAxisMin )
+  {
+    fTmp = fAxisCenter - fAxisMin;
+    fDistance += ( fTmp * fTmp );
+  } 
+  else if ( fAxisCenter > fAxisMax )
+  {
+    fTmp =  fAxisCenter - fAxisMax;
+    fDistance += ( fTmp * fTmp );
+  }
+  /////////////////////////////////////////////////////////////////
+  // Test for Z axis
+  fAxisMax = aaBox.GetPosition()[2] + aaBox.GetHalfWidth();
+  fAxisMin = aaBox.GetPosition()[2] - aaBox.GetHalfWidth();
+  fAxisCenter = sphere.GetPosition()[2];
+  if ( fAxisCenter < fAxisMin )
+  {
+    fTmp = fAxisCenter - fAxisMin;
+    fDistance += ( fTmp * fTmp );
+  } 
+  else if ( fAxisCenter > fAxisMax )
+  {
+    fTmp =  fAxisCenter - fAxisMax;
+    fDistance += ( fTmp * fTmp );
+  }
+  /////////////////////////////////////////////////////////////////
+  // Actual test, if the sum of squared distances is less than the squared
+  // radius, we have overlapping.
+  if ( fDistance > sphere.GetRadiusSqr()) 
+  {
+    return 0;
+  }
+  else 
+  {
+    return 1;
+  }
+
 }
 /////////////////////////////////////////////////////////////////
