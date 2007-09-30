@@ -458,12 +458,12 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glViewport(pViewport[0], pViewport[1], pViewport[2], pViewport[3]);
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity();
-  glMultMatrixf( camera.GetProjection().GetTransposition().GetArray());
+  glMultMatrixf( camera.GetProjectionMatrix().GetTransposition().GetArray());
   ////////////////////
   /// Set up proper position.
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glMultMatrixf( camera.GetView().GetTransposition().GetArray());
+  glMultMatrixf( camera.GetViewMatrix().GetTransposition().GetArray());
 }
 /////////////////////////////////////////////////////////////////
 void
