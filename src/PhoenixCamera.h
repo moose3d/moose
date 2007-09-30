@@ -117,7 +117,7 @@ namespace Phoenix
       /// Calculates frustum.
       void CalculateFrustum();
       ////////////////////
-      /// Calculates the bounding sphere for the frustum.
+      /// Calculates the bounding sphere for the frustum. Not optimal.
       void CalculateBoundingSphere();
       ////////////////////
       /// Calculates the bounding cone for the frustum
