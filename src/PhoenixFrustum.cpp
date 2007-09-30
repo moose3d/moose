@@ -1,4 +1,5 @@
 #include "PhoenixFrustum.h"
+#include "PhoenixCollision.h"
 #include <list>
 /////////////////////////////////////////////////////////////////
 using std::list;
@@ -86,6 +87,7 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
   CVector3<float> vNormal;
   CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
   float fEffectiveRadius;
+
   CVector3<float> vHalfWidthX = aaCube.GetHalfWidth()*vX;
   CVector3<float> vHalfWidthY = aaCube.GetHalfWidth()*vY;
   CVector3<float> vHalfWidthZ = aaCube.GetHalfWidth()*vZ;
@@ -135,58 +137,32 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
 
 // }
 // /////////////////////////////////////////////////////////////////
-// Phoenix::Graphics::CFrustum::CFrustumIntersection_t
-// Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere )
-// {
-  
-//   Geometry::CPlaneIntersection iRel;
-//   float fTmp = 0.0f;
-
-//   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++){
-
-//     iRel = Geometry::SphereIntersectsPlane( GetPlane( (CFrustumPlane)iPlane ), sphere, fTmp);
-   
-//     // If the object is behind of any of the planes, 
-//     // then it is outside the frustum
-//     if (iRel == Geometry::BEHIND){
-// #ifdef DEBUG
-//       Core::CLogger::Error() << "Sphere outside plane " << GetPlane((CFrustumPlane)iPlane) ;
-//       switch((CFrustumPlane)iPlane)
-//       {
-//       case TOP:
-// 	Core::CLogger::Error() << "TOP" << endl;
-// 	break;
-//       case BOTTOM:
-// 	Core::CLogger::Error() << "BOTTOM" << endl;
-// 	break;
-//       case LEFT:
-// 	Core::CLogger::Error() << "LEFT" << endl;
-// 	break;
-//       case RIGHT:
-// 	Core::CLogger::Error() << "RIGHT" << endl;
-// 	break;
-//       case BACK:
-// 	Core::CLogger::Error() << "BACK" << endl;
-// 	break;
-//       case FRONT:
-// 	Core::CLogger::Error() << "FRONT" << endl;
-// 	break;
-//       }
-// #endif
-//       return OUTSIDE;
-
-//     }
-//     // If the object intersects any of the planes, 
-//     // then it is intersecting the frustum
-//     if (iRel == Geometry::INTERSECTS) {
-//       return INTERSECTION;
-//     }
-//   }  
-//   // if we end up here, the object is neither behind or intersecting of any of the 
-//   // planes. Hence, it is inside.
-//   return INSIDE;
-  
-// }
+int
+Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere )
+{
+  float fDistance = 0.0f;
+  int iType = 0;
+  for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
+  {
+    
+    iType = Phoenix::Collision::SphereIntersectsPlane( GetPlane( (FRUSTUM_PLANE)iPlane ), sphere, fDistance);
+    // If the object is behind of any of the planes, 
+    // then it is outside the frustum
+    if (iType < 0)
+    {
+      return 0;
+    }
+    // If the object intersects any of the planes, 
+    // then it is intersecting the frustum
+    if (iType == 0) 
+    {
+      return 1;
+    }
+  }  
+  // if we end up here, the object is neither behind or intersecting of any of the 
+  // planes. Hence, it is inside.
+  return 2;
+}
 
 
 // Phoenix::Graphics::CFrustum::CFrustumIntersection_t
