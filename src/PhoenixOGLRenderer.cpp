@@ -1104,3 +1104,89 @@ Phoenix::Graphics::COglRenderer::CommitBlending( BLEND_SRC_TYPE tSource, BLEND_D
   glBlendFunc( static_cast<GLenum>(tSource),static_cast<GLenum>(tDestination));
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skybox, Phoenix::Graphics::CCamera &camera )
+{
+
+  // Get view matrix, reset translation part
+  Phoenix::Math::CMatrix4x4<float> mView = camera.GetViewMatrix();
+  mView(0,3) = 0.0f;
+  mView(1,3) = 0.0f;
+  mView(2,3) = 0.0f;
+
+  std::vector<INDEX_HANDLE>::iterator it = skybox.GetIndexHandles().begin();
+  glPushMatrix();
+  glLoadMatrixf( mView.GetTransposition().GetArray());
+  
+  COglTexture *pTexture = NULL;
+  CIndexArray *pIndices = NULL;
+
+  CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource(skybox.GetTextureCoordinateHandle(0));
+  CVertexDescriptor *pVertices  = g_DefaultVertexManager->GetResource(skybox.GetVertexHandle());  
+  if ( pVertices  != NULL ) 
+  {
+    CommitVertexDescriptor( pVertices );
+  }
+  
+  if ( pTexCoords != NULL ) CommitVertexDescriptor( pTexCoords );
+  /////////////////////////////////////////////////////////////////
+  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(0) );
+  pIndices = g_DefaultIndexManager->GetResource(*it);
+  it++;
+  if (pTexture) CommitTexture( 0, pTexture ); 
+  // // Apply texture filters.
+//   std::vector<TEXTURE_FILTER> &vecFilters = skybox.GetTextureFilters(0);
+//   for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
+//   {
+//     CommitFilter( vecFilters[nFilter], pTexture->GetType() );
+//   }
+  if ( pIndices ) CommitPrimitive( pIndices );
+
+
+  /////////////////////////////////////////////////////////////////
+
+  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(1) );
+  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  it++;
+  if ( pTexture ) CommitTexture( 0, pTexture ); 
+  if ( pIndices ) CommitPrimitive( pIndices );
+
+  /////////////////////////////////////////////////////////////////
+
+  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(2) );
+  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  it++;
+  if (pTexture) CommitTexture( 0, pTexture ); 
+  if ( pIndices )  CommitPrimitive( pIndices );
+  
+//   /////////////////////////////////////////////////////////////////
+
+  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(3) );
+  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  it++;
+  if (pTexture) CommitTexture( 0, pTexture );
+  if ( pIndices )  CommitPrimitive( pIndices );
+  
+//   /////////////////////////////////////////////////////////////////
+
+  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(4) );
+  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  it++;
+  if (pTexture) 
+  {
+    CommitTexture( 0, pTexture ); 
+    
+  }
+  if ( pIndices )  CommitPrimitive( pIndices );
+
+//   /////////////////////////////////////////////////////////////////
+
+  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(5) );
+  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  
+  if (pTexture) CommitTexture( 0, pTexture ); 
+  if ( pIndices )  CommitPrimitive( pIndices );
+
+  glPopMatrix();
+}
+/////////////////////////////////////////////////////////////////
