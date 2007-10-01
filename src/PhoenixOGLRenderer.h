@@ -11,6 +11,7 @@
 #include "PhoenixShader.h"
 #include "PhoenixLight.h"
 #include "PhoenixMaterial.h"
+#include "PhoenixSkybox.h"
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -262,7 +263,7 @@ namespace Phoenix
       ////////////////////
       /// Sets color for drawing.
       /// \param vColor RGBA Color vector.
-      void CommitColor( Phoenix::Math::CVector4<unsigned char> &vColor );
+      void CommitColor( const Phoenix::Math::CVector4<unsigned char> &vColor );
       ////////////////////
       /// Disable client states, such as vertex array.
       /// \param tType CLIENT_STATE_TYPE to be disabled.
@@ -386,14 +387,18 @@ namespace Phoenix
       /// \param tSource Source operation.
       /// \param tDestination Destination operation.
       void CommitBlending( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination);
-
+      ////////////////////
+      /// Commits skybox.
+      /// \param skybox Skybox to be committed for rendering.
+      /// \param camera Current camera where skybox will be applied.
+      void CommitSkybox( Phoenix::Graphics::CSkybox & skybox, Phoenix::Graphics::CCamera &camera );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline void 
-Phoenix::Graphics::COglRenderer::CommitColor( CVector4<unsigned char> &vColor )
+Phoenix::Graphics::COglRenderer::CommitColor( const CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
 }

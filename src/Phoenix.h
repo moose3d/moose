@@ -25,3 +25,4 @@
 #include "PhoenixGraph.h"
 #include "PhoenixOctree.h"
 #include "PhoenixCollector.h"
+#include "PhoenixSkybox.h"
