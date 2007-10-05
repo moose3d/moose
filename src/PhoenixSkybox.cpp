@@ -1,4 +1,10 @@
 #include "PhoenixSkybox.h"
+#include "PhoenixVertexDescriptor.h"
+#include <iostream>
+#include <assert.h>
+/////////////////////////////////////////////////////////////////
+using std::cerr;
+using std::endl;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::CSkybox() : CModel()
 {
