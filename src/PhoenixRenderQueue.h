@@ -44,20 +44,20 @@ namespace Phoenix
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Graphics::CRenderQueue::CRenderQueue()
+Phoenix::Graphics::CRenderQueue<TYPE>::CRenderQueue()
 {
   
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Graphics::CRenderQueue::~CRenderQueue()
+Phoenix::Graphics::CRenderQueue<TYPE>::~CRenderQueue()
 {
   
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 unsigned int 
-Phoenix::Graphics::CRenderQueue::CollectObjects( const Phoenix::Graphics::CCamera &camera, 
+Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, 
 						 const Phoenix::Spatial::COctree<TYPE> &octree)
 {
   std::list< Phoenix::Spatial::COctree<TYPE> *> lstNodePtrs;
@@ -80,7 +80,7 @@ Phoenix::Graphics::CRenderQueue::CollectObjects( const Phoenix::Graphics::CCamer
       {
 	m_lstObjects.push_back( *it );
       }
-      // If there's objects left in children, push them into nod
+      // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
       {
 	INSERT( TOP_LEFT_FRONT );
@@ -99,12 +99,13 @@ Phoenix::Graphics::CRenderQueue::CollectObjects( const Phoenix::Graphics::CCamer
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 void
-Phoenix::Graphics::CRenderQueue::Render( Phoenix::Graphics::COglRenderer &renderer )
+Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &ogl )
 {
   typename std::list<TYPE>::iterator it = m_lstObjects.begin();
   for( ; it != m_lstObjects.end(); it++)
   {
     // determine type and call proper command from renderer.
+    ogl.CommitModel( *it );
   }
 }
 /////////////////////////////////////////////////////////////////
