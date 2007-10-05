@@ -4,6 +4,8 @@
 #include "PhoenixResourceManager.h"
 #include "PhoenixTexture.h"
 #include "PhoenixShader.h"
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
