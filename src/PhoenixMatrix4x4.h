@@ -290,7 +290,16 @@ namespace Phoenix
       {
 	return m_aValues[(iRow*4)+iCol];
       }
-      
+      ////////////////////
+      /// Returns reference to value logically located at the
+      /// iRow:th row and iCol:th column of the matrix. 
+      /// \param iRow Row id. Must be 0-3.
+      /// \param iCol Column id. Must be 0-3.
+      /// \returns reference to value at matrix[ iRow, iCol ].
+      inline const TYPE &operator()( unsigned int iRow, unsigned int iCol ) const
+      {
+	return m_aValues[(iRow*4)+iCol];
+      }
       ////////////////////
       /// Transposes matrix.
       void Transpose()
