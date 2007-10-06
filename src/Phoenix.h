@@ -26,3 +26,6 @@
 #include "PhoenixOctree.h"
 #include "PhoenixSkybox.h"
 #include "PhoenixRenderQueue.h"
+#include "PhoenixGameObject.h"
+#include "PhoenixTranform.h"
+
