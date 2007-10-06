@@ -88,6 +88,16 @@ namespace Phoenix
       /// \returns Reference to a list of objects.
       std::list< TYPE > & GetObjects();
       ////////////////////
+      /// Deletes given object from this node.
+      /// \param object Object to be removed.
+      /// \returns Zero if successfull.
+      /// \returns Non-zero if unsuccessfull.
+      int DeleteObject( TYPE & object );
+      ////////////////////
+      /// Adds object to this node.
+      /// \param object Object to be removed.
+      void AddObject( TYPE & object );
+      ////////////////////
       /// Assigns parent node.
       /// \param pNode Pointer to parent node.
       void SetParent( COctreeNode *pNode );
@@ -143,6 +153,20 @@ namespace Phoenix
       /// \param nDepth From which tree depth value is determined.
       unsigned int GetIndex( float fValue, unsigned nDepth );
       ////////////////////
+      /// Returns index of closest node to position value at depth.
+      /// \param nLevel Desired depth level
+      /// \param fX X-coordinate. Must be +-World/2
+      /// \param fY Y-coordinate. Must be +-World/2
+      /// \param fZ Z-coordinate. Must be +-World/2
+      /// \returns Index in 1-dimensional array.
+      unsigned int GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ );
+      ////////////////////
+      /// Returns index of closest node to position value at depth.
+      /// \param nLevel Desired depth level
+      /// \param vPosition Object position.
+      /// \returns Index in 1-dimensional array.
+      unsigned int GetIndex1D( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition );
+      ////////////////////
       /// Returns root node.
       /// \returns Pointer to root node.
       COctreeNode<TYPE> *GetRoot();
@@ -158,7 +182,9 @@ namespace Phoenix
       /// Inserts object into tree.
       /// \param object Reference to object to be inserted.
       /// \param boundingSphere Bounding sphere of object.
-      void InsertObject( const TYPE & object, const Phoenix::Volume::CSphere & boundingSphere);
+      /// \returns Index where object was inserted.
+      unsigned int InsertObject( const TYPE & object, 
+				 const Phoenix::Volume::CSphere & boundingSphere);
       ////////////////////
       /// Delets object from tree.
       /// \param object Reference to object to be removed.
@@ -166,6 +192,11 @@ namespace Phoenix
       /// \returns 1 On error.
       /// \returns 0 Otherwise.
       int  DeleteObject( const TYPE & object, const Phoenix::Volume::CSphere & boundingSphere);
+      ////////////////////
+      /// Returns node at index.
+      /// \param nIndex From which index node is returned.
+      /// \returns Pointer to OctreeNode.
+      COctreeNode<TYPE> * GetNodeAt(unsigned int nIndex);
     protected:
       ////////////////////
       /// Sets world size.
@@ -311,6 +342,31 @@ Phoenix::Spatial::COctreeNode<TYPE>::GetObjects()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
+int
+Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( TYPE & object)
+{
+  int iRetval = 1;
+  typename std::list< TYPE >::iterator it = m_lstObjects.begin();
+  for( ; it != m_lstObjects.end(); it++)
+  {
+    if ( *it == object )
+    {
+      m_lstObjects.erase( it );
+      iRetval = 0;
+      break;
+    }
+  }
+  return iRetval;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+void
+Phoenix::Spatial::COctreeNode<TYPE>::AddObject( TYPE &object )
+{
+  m_lstObjects.push_back(object);
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
 void
 Phoenix::Spatial::COctreeNode<TYPE>::SetNeighbor( Phoenix::Spatial::OCTREE_NEIGHBOR iNeighbor, COctreeNode<TYPE> *pNode )
 {
@@ -395,19 +451,30 @@ Phoenix::Spatial::COctree<TYPE>::GetRoot()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline Phoenix::Spatial::COctreeNode<TYPE> *
-Phoenix::Spatial::COctree<TYPE>::GetNode( unsigned int nLevel, float fX, float fY, float fZ )
+inline unsigned int 
+Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ )
 {
   unsigned int nNodeCountPrevLevels = (unsigned int)floor( (1-powf(8,nLevel))/-7);
-  //std::cerr << "at level : " << nLevel << " #prevnodes : " << nNodeCountPrevLevels << std::endl;
-  unsigned int nDimensions = (unsigned int)powf(8.0f, ((float)nLevel) *0.333333333333333f);
-  float fDimensions = (float)nDimensions;
+  float fDimensions = powf(8.0f, ((float)nLevel) *0.333333333333333f);
+  unsigned int nDimensions = (unsigned int)fDimensions;
   unsigned int nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
   unsigned int nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
   unsigned int nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-  unsigned int nTotalIndex = nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
-  //std::cerr << "final index : " << nTotalIndex << std::endl;
-  return &m_pAllNodes[nTotalIndex];
+  return nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline unsigned int 
+Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition )
+{
+  return GetIndex1D(nLevel, vPosition[0], vPosition[1], vPosition[2]);
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline Phoenix::Spatial::COctreeNode<TYPE> *
+Phoenix::Spatial::COctree<TYPE>::GetNode( unsigned int nLevel, float fX, float fY, float fZ )
+{
+  return &m_pAllNodes[GetIndex1D(nLevel, fX, fY, fZ)];
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -440,7 +507,7 @@ void
 Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition, COctreeNode<TYPE> *pNode)
 {
   //std::cerr << "Starting init of : " << pNode << " at level " << nLevel << std::endl;
-  float fEdgeLength  = GetEdgeLength( nLevel );
+  float fEdgeLength = GetEdgeLength( nLevel );
   pNode->SetPosition( vPosition );
   pNode->SetWidth( 2.0f*fEdgeLength);
   
@@ -530,15 +597,17 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-void
+unsigned int
 Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, const Phoenix::Volume::CSphere & boundingSphere)
 {
   unsigned int nLevel = GetObjectDepth( boundingSphere.GetRadius());
   if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
-  COctreeNode<TYPE> *pNode = GetNode( nLevel, 
-				      boundingSphere.GetPosition()[0], 
-				      boundingSphere.GetPosition()[1], 
-				      boundingSphere.GetPosition()[2]);
+  
+  unsigned int nIndex  = GetIndex1D( nLevel, 
+				     boundingSphere.GetPosition()[0], 
+				     boundingSphere.GetPosition()[1], 
+				     boundingSphere.GetPosition()[2]);
+  COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
   
   if ( pNode->GetObjects().size() == 0)
   {
@@ -546,18 +615,17 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, const Phoeni
     pNode = pNode->GetParent();
     while ( pNode != NULL )
     {
-      std::cerr << " Currently processing " << pNode << std::endl;
+      //std::cerr << " Currently processing " << pNode << std::endl;
       pNode->CheckDoChildrenContainObjects();
       pNode = pNode->GetParent();
-
     }
-    
   }
   else
   {
     pNode->GetObjects().push_back( object );
   }
   
+  return nIndex;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -566,24 +634,20 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
 {
   int iRetval = 1;
   unsigned int nLevel = GetObjectDepth( boundingSphere.GetRadius());
- if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
+
+  if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
+  
   COctreeNode<TYPE> *pNode = GetNode( nLevel, 
 				      boundingSphere.GetPosition()[0], 
 				      boundingSphere.GetPosition()[1], 
 				      boundingSphere.GetPosition()[2]);
   // No objects, no deleting.
-  if ( pNode->GetObjects().empty() ) return 1;
-  
-  typename std::list<TYPE>::iterator it = pNode->GetObjects().begin();
-  for( ; it != pNode->GetObjects().end();it++)
+  if ( pNode->GetObjects().empty() ) 
   {
-    if ( *it == object )
-    {
-      pNode->GetObjects().erase(it);
-      iRetval = 0;
-      break;
-    }
+    return iRetval;
   }
+  // Delete it
+  iRetval = pNode->DeleteObject( object );
   
   if ( pNode->GetObjects().empty() )
   {
@@ -597,6 +661,13 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
   }
 
   return iRetval;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+Phoenix::Spatial::COctreeNode<TYPE> * 
+Phoenix::Spatial::COctree<TYPE>::GetNodeAt(unsigned int nIndex)
+{
+  return &m_pAllNodes[nIndex];
 }
 /////////////////////////////////////////////////////////////////
 #endif
