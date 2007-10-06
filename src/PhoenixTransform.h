@@ -63,6 +63,9 @@ namespace Phoenix
       /// \param fY Y axis translation.
       /// \param fZ Z axis translation.
       void SetTranslation( float fX, float fY, float fZ );
+      ////////////////////
+      /// Returns current translation as vector.
+      const CVector3<float> & GetTranslation() const;
       ////////////////////  
       /// Assigns rotation values.
       /// \param mMatrix rotation matrix.

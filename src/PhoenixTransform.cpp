@@ -112,3 +112,9 @@ Phoenix::Math::CTransform::Rotate( const CQuaternion & q )
   m_bChanged = 1;
 }
 /////////////////////////////////////////////////////////////////
+const Phoenix::Math::CVector3<float> & 
+Phoenix::Math::CTransform::GetTranslation() const
+{
+  return m_vTranslation;
+}
+/////////////////////////////////////////////////////////////////
