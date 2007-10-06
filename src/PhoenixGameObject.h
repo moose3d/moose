@@ -1,0 +1,27 @@
+#ifndef __PhoenixGameObject_h__
+#define __PhoenixGameObject_h__
+/////////////////////////////////////////////////////////////////
+#include "PhoenixModel.h"
+/////////////////////////////////////////////////////////////////
+namespace Phoenix
+{
+  namespace Scene
+  {
+    /////////////////////////////////////////////////////////////////
+    /// GameObject class; base for every object in a game.
+    class CGameObject
+    {
+    private:
+      Phoenix::Graphics::CModel m_Model;
+    public:
+      ////////////////////
+      /// Constructor.
+      CGameObject();
+      ////////////////////
+      /// Destructor.
+      ~CGameObject();
+    };
+  }; // namespace Scene
+}; // namespace Phoenix
+/////////////////////////////////////////////////////////////////
+#endif
