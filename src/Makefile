@@ -16,12 +16,12 @@ LDFLAGS_LINUX=-Wall -lGLU -lGLee \
 
 #/////////////////////////////////////////////////////////////////
 SRC=$(OBJ:.o=.cpp)
-OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o \\
-PhoenixSDLScreen.o PhoenixOGLRenderer.o PhoenixTGAImage.o \\
-PhoenixVertexDescriptor.o PhoenixVolume.o PhoenixFrustum.o \\
-PhoenixCamera.o PhoenixMathGeometry.o PhoenixTexture.o PhoenixModel.o \\
-PhoenixShader.o PhoenixCollision.o PhoenixMilkshapeLoader.o PhoenixSkybox.o \\
-PhoenixGameObject.o
+OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o \
+ PhoenixSDLScreen.o PhoenixOGLRenderer.o PhoenixTGAImage.o \
+ PhoenixVertexDescriptor.o PhoenixVolume.o PhoenixFrustum.o \
+ PhoenixCamera.o PhoenixMathGeometry.o PhoenixTexture.o PhoenixModel.o \
+ PhoenixShader.o PhoenixCollision.o PhoenixMilkshapeLoader.o PhoenixSkybox.o \
+ PhoenixGameObject.o
 #/////////////////////////////////////////////////////////////////
 all:  linux
 
