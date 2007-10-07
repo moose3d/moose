@@ -77,13 +77,13 @@ namespace Phoenix
       void SetRotation( const CQuaternion &qRotation );
       ////////////////////  
       /// Assigns rotation values.
-      /// \param fX X-axis rotation.
-      /// \param fY Y-axis rotation.
-      /// \param fZ Z-axis rotation.
-      void SetRotation( float fX, float fY, float fZ );
+      /// \param fXrad X-axis rotation in Radians.
+      /// \param fYrad Y-axis rotation in Radians.
+      /// \param fZrad Z-axis rotation in Radians.
+      void SetRotation( float fXrad, float fYrad, float fZrad );
       ////////////////////  
       /// Assigns rotation values.
-      /// \param vAxisAngles vector with euler rotation angles.
+      /// \param vAxisAngles vector with euler rotation angles in Radians.
       void SetRotation( const CVector3<float> &vAxisAngles );
       ////////////////////
       /// Returns rotation quaternion.
