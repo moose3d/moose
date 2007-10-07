@@ -107,8 +107,16 @@ TEST(RotationArc)
 
   RotateVector( q, vRes );
   CHECK_ARRAY_CLOSE( vec2.GetArray(), vRes.GetArray(), 3, 0.001f);
-  
-  
+}
+/////////////////////////////////////////////////////////////////
+TEST(RotationMatrixToQuaternion)
+{
+  CMatrix4x4<float> mMatrix, mMatrixRes;
+  CQuaternion q;
+  mMatrix = RotationMatrix( 1, 4, -5);
+  q = RotationMatrixToQuaternion( mMatrix );
+  QuaternionToMatrix( q, mMatrixRes );
+  CHECK_ARRAY_CLOSE( mMatrix.GetArray(), mMatrixRes.GetArray(), 16, 0.001f);
   
 }
 /////////////////////////////////////////////////////////////////
