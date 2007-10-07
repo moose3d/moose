@@ -82,6 +82,12 @@ Phoenix::Math::CTransform::SetRotation( const CVector3<float> &vAxisAngles )
   SetRotation( vAxisAngles[0], vAxisAngles[1], vAxisAngles[2] );
 }
 /////////////////////////////////////////////////////////////////
+const Phoenix::Math::CQuaternion &
+Phoenix::Math::CTransform::GetRotation( ) const
+{
+  return m_qRotation;
+}
+/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::CTransform::SetScaling( float fScale )
 {
