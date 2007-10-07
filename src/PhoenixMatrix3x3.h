@@ -50,6 +50,14 @@ namespace Phoenix
 	return m_aValues;
       }
       ////////////////////
+      // Returns a singledimensional array of floats in Row-Major mode.
+      // The values of the first row are listed first,
+      // then the second row, etc.
+      const TYPE *GetArray() const
+      {
+	return m_aValues;
+      }
+      ////////////////////
       /// The effective operation of this * mMatrix.
       /// This multiplies mMatrix from the left side.
       /// \param mMatrix right side of multiplication.
