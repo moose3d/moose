@@ -84,6 +84,11 @@ namespace Phoenix
       /// Assigns rotation values.
       /// \param vAxisAngles vector with euler rotation angles.
       void SetRotation( const CVector3<float> &vAxisAngles );
+      ////////////////////
+      /// Returns rotation quaternion.
+      /// \returns Quaternion.
+      const CQuaternion & GetRotation() const;
+      ////////////////////
       /// Assigns scaling factor.
       /// \param fScale the factor.
       void SetScaling( float fScale );
