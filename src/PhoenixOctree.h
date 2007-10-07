@@ -92,11 +92,11 @@ namespace Phoenix
       /// \param object Object to be removed.
       /// \returns Zero if successfull.
       /// \returns Non-zero if unsuccessfull.
-      int DeleteObject( TYPE & object );
+      int DeleteObject( const TYPE & object );
       ////////////////////
       /// Adds object to this node.
       /// \param object Object to be removed.
-      void AddObject( TYPE & object );
+      void AddObject( const TYPE & object );
       ////////////////////
       /// Assigns parent node.
       /// \param pNode Pointer to parent node.
@@ -343,7 +343,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::GetObjects()
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 int
-Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( TYPE & object)
+Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( const TYPE & object)
 {
   int iRetval = 1;
   typename std::list< TYPE >::iterator it = m_lstObjects.begin();
@@ -361,7 +361,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( TYPE & object)
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 void
-Phoenix::Spatial::COctreeNode<TYPE>::AddObject( TYPE &object )
+Phoenix::Spatial::COctreeNode<TYPE>::AddObject( const TYPE &object )
 {
   m_lstObjects.push_back(object);
 }
