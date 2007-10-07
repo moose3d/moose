@@ -65,6 +65,7 @@ namespace Phoenix
       void SetTranslation( float fX, float fY, float fZ );
       ////////////////////
       /// Returns current translation as vector.
+      /// \returns Translation vector.
       const CVector3<float> & GetTranslation() const;
       ////////////////////  
       /// Assigns rotation values.
