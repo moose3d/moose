@@ -89,6 +89,12 @@ Phoenix::Math::CTransform::SetScaling( float fScale )
   m_bChanged = 1;
 }
 /////////////////////////////////////////////////////////////////
+float
+Phoenix::Math::CTransform::GetScaling() const
+{
+  return m_fScaling;
+}
+/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::CTransform::Move( const CVector3<float> &vVector )
 {
