@@ -1190,3 +1190,16 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitTransform( const Phoenix::Math::CTransform &transform )
+{
+  glPushMatrix();
+  glMultMatrixf( const_cast<Phoenix::Math::CTransform &>(transform).GetMatrix().GetTransposition().GetArray());
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::RollbackTransform()
+{
+  glPopMatrix();
+}
+/////////////////////////////////////////////////////////////////
