@@ -87,6 +87,10 @@ namespace Phoenix
       /// Assigns scaling factor.
       /// \param fScale the factor.
       void SetScaling( float fScale );
+      ////////////////////
+      /// Returns uniform scaling factor.
+      /// \returns Scaling factor.
+      float GetScaling() const;
       /// Appends given vector to current transform.
       /// \param vVector Vector to be applied.
       void Move( const CVector3<float> &vVector );
