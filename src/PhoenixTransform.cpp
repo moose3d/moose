@@ -1,7 +1,9 @@
 #include "PhoenixTransform.h"
 #include "PhoenixMath.h"
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
+using namespace std;
 /////////////////////////////////////////////////////////////////
 // void 
 // CTransform::AddHook( CMatrix4x4f *pMatrix)
@@ -20,7 +22,7 @@ Phoenix::Math::CTransform::GetMatrix()
     // Concatenate transforms 
     m_mTransform =  UniformScaleMatrix(m_fScaling) * 
                     TranslationMatrix( m_vTranslation )  * 
-                    m_mTransform;
+                     m_mTransform;
     m_bChanged = 0;
   }
   return  m_mTransform;
@@ -64,13 +66,14 @@ Phoenix::Math::CTransform::SetRotation( const CQuaternion &qRotation )
   m_qRotation = qRotation;
   m_bChanged = 1;  
 }
+/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::CTransform::SetRotation( float fX, float fY, float fZ )
 {
   CQuaternion qX,qY,qZ;
-  qX.CreateFromAxisAngle(1,0,0,fX);
-  qY.CreateFromAxisAngle(0,1,0,fY);
-  qZ.CreateFromAxisAngle(0,0,1,fZ);
+  qX.CreateFromAxisAngleRad(1,0,0,fX);
+  qY.CreateFromAxisAngleRad(0,1,0,fY);
+  qZ.CreateFromAxisAngleRad(0,0,1,fZ);
   
   m_qRotation = qZ * qY * qX;
   m_bChanged = 1;  
