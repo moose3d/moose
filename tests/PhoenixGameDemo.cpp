@@ -107,10 +107,11 @@ int main()
   loader.ResetTexCoords();
   loader.ResetNormals();
   loader.ResetIndices();
+  CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(gameobject.GetModel().GetVertexHandle()));
+  CSphere sphere = CalculateBoundingSphereTight( *pVD);
+  gameobject.GetBoundingSphere() = sphere;
 
-  gameobject.GetBoundingSphere() = CalculateBoundingSphereTight( 
-				      *(g_DefaultVertexManager->GetResource(gameobject.GetModel().GetVertexHandle())));
-  
+  std::cerr << "bounding sphere;" << sphere << std::endl;
   gameobject.GetTransform().SetTranslation( 0,-10,0);  
   
   while( g_bLoop )
