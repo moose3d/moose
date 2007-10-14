@@ -100,7 +100,10 @@ Phoenix::Volume::CCone::CCone( const CVector3<float> &vPos, const CVector3<float
 Phoenix::Volume::CSphere 
 Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vd )
 {
-  if ( vd.GetType() != ELEMENT_TYPE_VERTEX_3F ) return CSphere();
+  if ( vd.GetType() != ELEMENT_TYPE_VERTEX_3F ) 
+  {
+    return CSphere(CVector3<float>(0,0,0), 0.0f);
+  }
 
   // Minimum and maximum values for each coordinates.
   CVector3<float> vMaxValues;
@@ -108,7 +111,7 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
   unsigned int nNumVertices = vd.GetSize() * 3;
   
   float *pVertices = vd.GetPointer<float>();
-
+  
   for ( unsigned int v = 0;v<nNumVertices; v++)
   {
     float fTempX = pVertices[(v*3)];
@@ -161,8 +164,12 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
 {
 
   // The returned sphere
+
+  if ( vd.GetType() != ELEMENT_TYPE_VERTEX_3F ) 
+  {
+    return CSphere( CVector3<float>(0,0,0), 0.0f);
+  }
   CSphere sphere;
-  if ( vd.GetType() != ELEMENT_TYPE_VERTEX_3F ) return sphere;
   unsigned int nNumVertices = vd.GetSize() * 3;
   
   float fLambda1,fLambda2,fLambda3;  
@@ -230,7 +237,6 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   // For each vertex
   for ( unsigned int v = 0;v<nNumVertices; v++)
   {
-    
     vTemp.UseExternalData( &(vd.GetPointer<float>()[v*3]));
 
     float fDist = ((vTemp - sphere.GetPosition()).Length());
