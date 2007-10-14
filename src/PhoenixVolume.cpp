@@ -108,7 +108,7 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
   // Minimum and maximum values for each coordinates.
   CVector3<float> vMaxValues;
   CVector3<float> vMinValues;
-  unsigned int nNumVertices = vd.GetSize() * 3;
+  unsigned int nNumVertices = vd.GetSize();
   
   float *pVertices = vd.GetPointer<float>();
   
@@ -118,6 +118,8 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
     float fTempY = pVertices[(v*3)+1];
     float fTempZ = pVertices[(v*3)+2];
 
+    std::cerr << "current pos: (" << fTempX << "," << fTempY << "," << fTempZ << ")" << std::endl;
+    
     if ( v == 0 )
     {
       vMaxValues[0] = vMinValues[0] = fTempX;
@@ -128,10 +130,11 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
     {
       STORE_MAX_MIN(fTempX, vMaxValues[0], vMinValues[0]);
       STORE_MAX_MIN(fTempY, vMaxValues[1], vMinValues[1]);
-      STORE_MAX_MIN(fTempZ, vMaxValues[1], vMinValues[1]);
+      STORE_MAX_MIN(fTempZ, vMaxValues[2], vMinValues[2]);
     }
   }
-
+  std::cerr << "Min extent: " << vMinValues << std::endl;
+  std::cerr << "Max extent: " << vMaxValues << std::endl;
   CSphere sphere;
   sphere.SetPosition( (vMaxValues + vMinValues ) / 2 );
   CVector3<float> vDist = vMaxValues - vMinValues;
@@ -170,7 +173,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
     return CSphere( CVector3<float>(0,0,0), 0.0f);
   }
   CSphere sphere;
-  unsigned int nNumVertices = vd.GetSize() * 3;
+  unsigned int nNumVertices = vd.GetSize();
   
   float fLambda1,fLambda2,fLambda3;  
   
