@@ -117,8 +117,6 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
     float fTempX = pVertices[(v*3)];
     float fTempY = pVertices[(v*3)+1];
     float fTempZ = pVertices[(v*3)+2];
-
-    std::cerr << "current pos: (" << fTempX << "," << fTempY << "," << fTempZ << ")" << std::endl;
     
     if ( v == 0 )
     {
@@ -133,8 +131,7 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
       STORE_MAX_MIN(fTempZ, vMaxValues[2], vMinValues[2]);
     }
   }
-  std::cerr << "Min extent: " << vMinValues << std::endl;
-  std::cerr << "Max extent: " << vMaxValues << std::endl;
+
   CSphere sphere;
   sphere.SetPosition( (vMaxValues + vMinValues ) / 2 );
   CVector3<float> vDist = vMaxValues - vMinValues;
