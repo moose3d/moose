@@ -12,6 +12,7 @@
 #include "PhoenixLight.h"
 #include "PhoenixMaterial.h"
 #include "PhoenixSkybox.h"
+#include "PhoenixTransform.h"
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -392,6 +393,13 @@ namespace Phoenix
       /// \param skybox Skybox to be committed for rendering.
       /// \param camera Current camera where skybox will be applied.
       void CommitSkybox( Phoenix::Graphics::CSkybox & skybox, Phoenix::Graphics::CCamera &camera );
+      ////////////////////
+      /// Commits transform.
+      /// \param transform Transform to be applied.
+      void CommitTransform( const Phoenix::Math::CTransform &transform );
+      ////////////////////
+      /// Rolls back transform.
+      void RollbackTransform();
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
