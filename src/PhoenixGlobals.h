@@ -23,5 +23,6 @@ namespace Phoenix
 }
   }
 }
+#define PHOENIX_DEPRECATED __attribute__((deprecated))
 /////////////////////////////////////////////////////////////////
 #endif
