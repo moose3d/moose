@@ -15,6 +15,7 @@ using namespace Phoenix::Scene;
 using namespace Phoenix::Volume;
 using std::cerr;
 using std::endl; 
+#define g_PhoenixModelManager (CResourceManager<CModel, CHandle<CModel> >::GetInstance())
 /////////////////////////////////////////////////////////////////
 int g_bLoop = 1;
 class CSpatialGraph : public COctree<Phoenix::Scene::CGameObject *>
@@ -87,19 +88,22 @@ int main()
   loader.GenerateModelData();
   loader.Stripify();
   
-  assert(g_DefaultVertexManager->Create( loader.GetVertices(),  "fighter_vertices",  gameobject.GetModel().GetVertexHandle() ) == 0);  
-  assert(g_DefaultVertexManager->Create( loader.GetTexCoords(), "fighter_texcoords", gameobject.GetModel().GetTextureCoordinateHandle() )== 0);
-  assert(g_DefaultVertexManager->Create( loader.GetNormals(),   "fighter_normals",   gameobject.GetModel().GetNormalHandle() )== 0);
+  CModel *pModel = new CModel();//g_PhoenixModelManager->GetResource(gameobject.GetModelHandle());
+  
+  assert(g_DefaultVertexManager->Create( loader.GetVertices(),  "fighter_vertices",  pModel->GetVertexHandle() ) == 0);  
+  assert(g_DefaultVertexManager->Create( loader.GetTexCoords(), "fighter_texcoords", pModel->GetTextureCoordinateHandle() )== 0);
+  assert(g_DefaultVertexManager->Create( loader.GetNormals(),   "fighter_normals",   pModel->GetNormalHandle() )== 0);
 
   // create resources for indices.
   for(unsigned int i=0;i<loader.GetIndices().size();i++)
   {
     std::ostringstream stream;
     stream << "fighter_indices" << i;
-    gameobject.GetModel().AddIndexHandle( INDEX_HANDLE() );    
+    pModel->AddIndexHandle( INDEX_HANDLE() );    
+
     assert( g_DefaultIndexManager->Create( loader.GetIndices()[i], 
 					   stream.str(), 
-					   gameobject.GetModel().GetIndexHandles().back() ) == 0);
+					   pModel->GetIndexHandles().back() ) == 0);
 
   }  
 
@@ -107,13 +111,16 @@ int main()
   loader.ResetTexCoords();
   loader.ResetNormals();
   loader.ResetIndices();
-  CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(gameobject.GetModel().GetVertexHandle()));
+  
+
+  CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(pModel->GetVertexHandle()));
   CSphere sphere = CalculateBoundingSphereTight( *pVD);
   gameobject.GetBoundingSphere() = sphere;
 
   std::cerr << "bounding sphere;" << sphere << std::endl;
   gameobject.GetTransform().SetTranslation( 0,-10,0);  
-  
+  assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", gameobject.GetModelHandle()) == 0);
+
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -155,7 +162,7 @@ int main()
     pOglRenderer->CommitCamera( camera );
     pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
     pOglRenderer->CommitTransform( gameobject.GetTransform());
-    pOglRenderer->CommitModel( gameobject.GetModel());
+    pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
     pOglRenderer->RollbackTransform();
     
     camera.UpdateProjection();
