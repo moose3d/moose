@@ -16,7 +16,8 @@ namespace Phoenix
     {
     private:
       /// Model object
-      Phoenix::Graphics::CModel		m_Model;
+      //Phoenix::Graphics::CModel		m_Model;
+      Phoenix::Core::CHandle<Phoenix::Graphics::CModel>    m_hModel;
       /// World tranform 
       Phoenix::Math::CTransform		m_Transform;
       /// Model bounding sphere
@@ -33,13 +34,13 @@ namespace Phoenix
       /// Destructor.
       ~CGameObject();
       ////////////////////
-      /// Returns model.
-      /// \returns Model object reference.
-      Phoenix::Graphics::CModel & GetModel();
+      /// Returns model handle.
+      /// \returns Model handle reference.
+      Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle();
       ////////////////////
-      /// Returns model.
-      /// \returns Model object reference.
-      const Phoenix::Graphics::CModel & GetModel() const;
+      /// Returns model handle.
+      /// \returns Model handle reference.
+      const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle() const;
       ////////////////////
       /// Returns world transform for this object.
       /// \returns Transform reference.
@@ -69,16 +70,16 @@ namespace Phoenix
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Graphics::CModel & 
-Phoenix::Scene::CGameObject::GetModel()
+inline Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
+Phoenix::Scene::CGameObject::GetModelHandle()
 {
-  return m_Model;
+  return m_hModel;
 }
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Graphics::CModel & 
-Phoenix::Scene::CGameObject::GetModel() const
+inline const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
+Phoenix::Scene::CGameObject::GetModelHandle() const
 {
-  return m_Model;
+  return m_hModel;
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Math::CTransform & 
