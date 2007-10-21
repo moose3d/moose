@@ -22,7 +22,7 @@ namespace Phoenix
     /// \return Radian equiavlent for degrees.
     inline float Deg2Rad( float fDegrees ) 
     {
-      return fDegrees*0.0174532925f;
+      return fDegrees*0.01745329251994329572f;
     }
     ////////////////////
     /// Convertes radians to degrees.
@@ -30,7 +30,7 @@ namespace Phoenix
     /// \return Degree equiavlent for radian.
     inline float Rad2Deg( float fRadians )
     {
-      return fRadians*57.2957795201f;
+      return fRadians*57.29577951308232103113f;
     }    
     ////////////////////
     /// Calculates logarithm in two base.
