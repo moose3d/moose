@@ -94,7 +94,7 @@ namespace Phoenix
       ////////////////////
       /// Returns field of view angle.
       /// \returns field of view in degrees.
-      float GetFieldOfView();
+      float GetFieldOfView() const;
       ////////////////////
       /// Returns true if lens flares are enabled.
       /// \returns Non-zero if true
