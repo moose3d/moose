@@ -142,23 +142,30 @@ Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere )
 {
   float fDistance = 0.0f;
   int iType = 0;
+  int bIntersection = 0;
+
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {
-    
     iType = Phoenix::Collision::SphereIntersectsPlane( GetPlane( (FRUSTUM_PLANE)iPlane ), sphere, fDistance);
-    // If the object is behind of any of the planes, 
+
+    // If the object is behind of any of the planes (on negative half-side), 
     // then it is outside the frustum
     if (iType < 0)
     {
       return 0;
     }
+
     // If the object intersects any of the planes, 
-    // then it is intersecting the frustum
+    // then might be intersecting the frustum
     if (iType == 0) 
     {
-      return 1;
+      bIntersection = 1;
     }
   }  
+  // If sphere intersected one or more planes, it is partially in frustum.
+  if ( bIntersection )
+    return 1;
+  
   // if we end up here, the object is neither behind or intersecting of any of the 
   // planes. Hence, it is inside.
   return 2;
