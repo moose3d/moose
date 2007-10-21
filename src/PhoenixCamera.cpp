@@ -96,7 +96,7 @@ Phoenix::Graphics::CCamera::GetNearClipping()
 }
 /////////////////////////////////////////////////////////////////
 float
-Phoenix::Graphics::CCamera::GetFieldOfView()
+Phoenix::Graphics::CCamera::GetFieldOfView() const
 {
   return m_fFieldOfView;
 }
@@ -132,7 +132,7 @@ void
 Phoenix::Graphics::CCamera::CalculateBoundingSphere()
 {
   float fViewLen = GetFarClipping() - GetNearClipping();
-  float fHeight = fViewLen * tan(Deg2Rad(m_fFieldOfView) * 0.5f);
+  float fHeight = fViewLen * tan(Deg2Rad(GetFieldOfView()) * 0.5f);
   float fWidth = fHeight;
   
   // halfway point between near/far planes starting at the origin and 
@@ -161,7 +161,7 @@ Phoenix::Graphics::CCamera::CalculateBoundingCone()
   float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
 
   // calculate the length of the fov triangle
-  float fDepth  = fHalfHeight / tanf(Deg2Rad(m_fFieldOfView) * 0.5f);
+  float fDepth  = fHalfHeight / tanf(Deg2Rad(GetFieldOfView()) * 0.5f);
 
   // calculate the corner of the screen
   float fCorner = sqrt(fHalfWidth * fHalfWidth + fHalfHeight * fHalfHeight);
@@ -208,10 +208,23 @@ Phoenix::Graphics::CCamera::RotateAroundPoint( const CVector3<float> & vPoint, c
 void 
 Phoenix::Graphics::CCamera::UpdateProjection() 
 {
-  float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * GetNearClipping(); 
+  // OpenGL projection matrix is calculated using vertical field of view.
+  float fAspect = (float)m_aViewport[3]/(float)m_aViewport[2];
+  
+  ////////////////////
+  /// Old code; just for reminder
+  //float fE = 1.0f / tanf(Deg2Rad(GetFieldOfView()) * 0.5f);
+  //float fFieldOfViewVertical = atanf(fAspect/fE);
+  //float fH = tanf( Deg2Rad( (GetFieldOfView()) * 0.5f )) * GetNearClipping(); 
+  //float fH = tanf( fFieldOfViewVertical) * GetNearClipping(); 
+  //float fH = (fAspect/fE) * GetNearClipping(); 
+  ////////////////////
+  float fH = (fAspect*tanf(Deg2Rad(GetFieldOfView()) * 0.5f)) * GetNearClipping(); 
+
   float fW = fH * (float)m_aViewport[2]/(float)m_aViewport[3];
   float fFar = m_fFarClipping;
   float fNear = m_fNearClipping;
+
   //             l   r   b    t   n      f
   // glFrustum( -fW, fW, -fH, fH, fNear, fFar );
   m_mProjection.ZeroMatrix();
@@ -488,8 +501,9 @@ void
 Phoenix::Graphics::CCamera::CalculateFrustum()
 {
   float fE = 1.0f / tanf( Deg2Rad(GetFieldOfView()) * 0.5f );
-  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
-  float f1DivSqrtEPow2plus1 = 1.0f / sqrtf( (fE * fE) + 1.0f);
+  // This is as specified in math for 3d game progrm. & comp. graphics. (height/width)
+  float fAspect = (float)m_aViewport[3]/(float)m_aViewport[2]; 
+  float f1DivSqrtEPow2plus1 = 1.0f / sqrtf( (fE * fE) + 1.0f); 
   float f1DivSqrtEPow2plusAspectPow2 = 1.0f / sqrtf( (fE * fE) + (fAspect * fAspect));
   
   // Near clipping plane
