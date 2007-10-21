@@ -1203,3 +1203,16 @@ Phoenix::Graphics::COglRenderer::RollbackTransform()
   glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, int bWireframe )
+{
+  GLUquadric *pQuadric = gluNewQuadric();
+  glPushMatrix();
+  gluQuadricDrawStyle( pQuadric, GLU_SILHOUETTE );
+    glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
+    gluSphere(pQuadric, sphere.GetRadius(), 16, 16);
+  glPopMatrix();
+  gluDeleteQuadric(pQuadric);
+  pQuadric = NULL;
+}
+/////////////////////////////////////////////////////////////////
