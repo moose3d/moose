@@ -400,6 +400,11 @@ namespace Phoenix
       ////////////////////
       /// Rolls back transform.
       void RollbackTransform();
+      ////////////////////
+      /// Renders a sphere.
+      /// \param sphere Sphere to be rendered.
+      /// \param bWireframe Is sphere rendered as wireframe. Default true.
+      void CommitSphere( const Phoenix::Volume::CSphere &sphere, int bWireframe = 1 );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
