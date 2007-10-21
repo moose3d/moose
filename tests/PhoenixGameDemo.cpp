@@ -54,6 +54,60 @@ public:
   }
 };
 /////////////////////////////////////////////////////////////////
+void DrawFrustum( CCamera &camera )
+{
+
+  CFrustum &frustum = camera.Frustum();
+  Phoenix::Volume::CSphere &sphere = camera.FrustumSphere();
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glDisable(GL_CULL_FACE);
+
+//   std::cerr << "NEAR :" << frustum.GetPlane(Phoenix::Volume::BACK) << std::endl;
+//   std::cerr << "FAR :" << frustum.GetPlane(Phoenix::Volume::FRONT) << std::endl;
+//   std::cerr << "TOP :" << frustum.GetPlane(Phoenix::Volume::TOP) << std::endl;
+//   std::cerr << "BOTTOM :" << frustum.GetPlane(Phoenix::Volume::BOTTOM) << std::endl;
+//   std::cerr << "LEFT :" << frustum.GetPlane(Phoenix::Volume::LEFT) << std::endl;
+//   std::cerr << "RIGHT :" << frustum.GetPlane(Phoenix::Volume::RIGHT) << std::endl;
+
+  glColor3f(1,0,0);
+  glBegin(GL_QUADS);
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_NEAR_LEFT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_NEAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_FAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_FAR_LEFT).GetArray());
+
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_NEAR_LEFT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_NEAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_FAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_FAR_LEFT).GetArray());
+    
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_NEAR_LEFT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_NEAR_LEFT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_FAR_LEFT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_FAR_LEFT).GetArray());
+
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_NEAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_NEAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::TOP_FAR_RIGHT).GetArray());
+    glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_FAR_RIGHT).GetArray());
+
+  glEnd();
+  glColor3f(0,1,0);
+  GLUquadric * q = gluNewQuadric();
+  //cerr << "sphere radius: " << sphere.GetRadius() << endl;
+  //cerr << "sphere pos: " << sphere.GetPosition() << endl;
+  gluQuadricDrawStyle(q, GLU_SILHOUETTE);
+  glPushMatrix();
+    glTranslatef( sphere.GetPosition()[0], 
+		  sphere.GetPosition()[1],
+		  sphere.GetPosition()[2]);
+    glRotatef( 90.0f, 1, 0, 0);
+    gluDisk(q, 1.0, sphere.GetRadius(), 24, 24);
+  glPopMatrix();
+  gluDeleteQuadric(q);
+}
+
+/////////////////////////////////////////////////////////////////
 int main()
 {
   
@@ -65,10 +119,18 @@ int main()
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,10.0f);
-  camera.SetViewport( 0,0, 640, 480 );
+  camera.SetViewport( 480,340, 160, 120 );
   camera.SetNearClipping( 0.1f);
-  camera.SetFarClipping( 800.0f );
-  camera.SetFieldOfView( 45.0f);
+  camera.SetFarClipping( 100.0f );
+  camera.SetFieldOfView( 43.0f);
+
+  CCamera camera2;
+  camera2.SetPosition( 0, 50.0f, 0.0f);
+  camera2.SetViewport( 0,0, 640, 480 );
+  camera2.SetNearClipping( 0.1f);
+  camera2.SetFarClipping( 800.0f );
+  camera2.SetViewOrtho( -200,200, -150, 150);
+  camera2.RotateAroundRight( -90.0 );
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   
@@ -114,13 +176,14 @@ int main()
   
 
   CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(pModel->GetVertexHandle()));
-  CSphere sphere = CalculateBoundingSphereTight( *pVD);
+  CSphere sphere = CalculateBoundingSphere( *pVD);
   gameobject.GetBoundingSphere() = sphere;
 
   std::cerr << "bounding sphere;" << sphere << std::endl;
   gameobject.GetTransform().SetTranslation( 0,-10,0);  
   assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", gameobject.GetModelHandle()) == 0);
-
+  //sphere.SetPosition(sphere.GetPosition() + CVector3<float>(0,-10,0));
+  
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -142,11 +205,11 @@ int main()
 	} 
 	else if ( event.key.keysym.sym == SDLK_LEFT )
 	{
-	  camera.RotateAroundUp( 2.93f );
+	  camera.RotateAroundUp( 0.1f );
 	}      
 	else if ( event.key.keysym.sym == SDLK_RIGHT )
 	{
-	  camera.RotateAroundUp( -2.93f );
+	  camera.RotateAroundUp( -0.1f );
 	} 
 	break;
       default:
@@ -161,9 +224,44 @@ int main()
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->CommitCamera( camera );
     pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
-    pOglRenderer->CommitTransform( gameobject.GetTransform());
+    pOglRenderer->CommitTransform( gameobject.GetTransform() );
     pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
     pOglRenderer->RollbackTransform();
+   
+
+    
+    if ( camera.Frustum().IntersectsSphere( sphere ) == 0)
+    {
+      pOglRenderer->CommitColor( CVector4<unsigned char>(255,0,0,255));
+    }
+    else 
+    {
+      pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
+    }
+    
+    pOglRenderer->CommitSphere( sphere, 0 );
+
+
+    pOglRenderer->CommitCamera( camera2 );
+    pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
+    pOglRenderer->CommitTransform( gameobject.GetTransform() );
+    pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
+    pOglRenderer->RollbackTransform();
+    DrawFrustum( camera );
+
+    
+    if ( camera.Frustum().IntersectsSphere( sphere ) == 0)
+    {
+      pOglRenderer->CommitColor( CVector4<unsigned char>(255,0,0,255));
+    }
+    else 
+    {
+      pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
+    }
+    
+    pOglRenderer->CommitSphere( sphere, 0 );
+
+
     
     camera.UpdateProjection();
     camera.UpdateView();
