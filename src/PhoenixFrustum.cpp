@@ -45,6 +45,12 @@ Phoenix::Graphics::CFrustum::GetPlane( FRUSTUM_PLANE nIndex )
   return *(m_aPlanes[nIndex]);
 }
 /////////////////////////////////////////////////////////////////
+const CPlane &
+Phoenix::Graphics::CFrustum::GetPlane( FRUSTUM_PLANE nIndex ) const
+{
+  return *(m_aPlanes[nIndex]);
+}
+/////////////////////////////////////////////////////////////////
 CVector3<float>
 Phoenix::Graphics::CFrustum::GetCorner( FRUSTUM_CORNER nIndex )
 {
@@ -58,7 +64,7 @@ Phoenix::Graphics::CFrustum::SetCorner( FRUSTUM_CORNER nIndex, const CVector3<fl
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox )
+Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox ) const
 {
 
   CVector3<float> vNormal;
@@ -67,8 +73,8 @@ Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAligned
 
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {  
-    CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
-    vNormal.UseExternalData( plane.GetArray());
+    const CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
+    vNormal.UseExternalData( const_cast<float *>(plane.GetArray()));
     fEffectiveRadius = fabsf((aaBox.GetHalfWidth() *vX).Dot(vNormal)) + 
                        fabsf((aaBox.GetHalfHeight()*vY).Dot(vNormal)) + 
                        fabsf((aaBox.GetHalfLength()*vZ).Dot(vNormal));
@@ -81,7 +87,7 @@ Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAligned
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aaCube )
+Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aaCube ) const
 {
 
   CVector3<float> vNormal;
@@ -94,8 +100,8 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
   
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {  
-    CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
-    vNormal.UseExternalData( plane.GetArray());
+    const CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
+    vNormal.UseExternalData( const_cast<float *>(plane.GetArray()));
     fEffectiveRadius = fabsf(vHalfWidthX.Dot(vNormal)) + 
                        fabsf(vHalfWidthY.Dot(vNormal)) + 
                        fabsf(vHalfWidthZ.Dot(vNormal));
@@ -138,7 +144,7 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
 // }
 // /////////////////////////////////////////////////////////////////
 int
-Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere )
+Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere ) const
 {
   float fDistance = 0.0f;
   int iType = 0;
