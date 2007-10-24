@@ -92,7 +92,7 @@ namespace Phoenix
       int IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox );
       ////////////////////
       /// Checks does AACube intersect this frustum.
-      /// 
+      /// \returns non-zero on intersection, zero otherwise.
       int IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aacube );
       ////////////////////
       /// Determines whether frustum and sphere intersect.
