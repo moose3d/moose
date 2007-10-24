@@ -29,11 +29,23 @@ namespace Phoenix
       /// \param octree Octree that contains objects.
       /// \returns Number of collected objects.
       unsigned int CollectObjects( const Phoenix::Graphics::CCamera &camera, 
-				   const Phoenix::Spatial::COctree<TYPE> &octree);
+				   Phoenix::Spatial::COctree<TYPE> &octree);
       ////////////////////
-      /// Renders current queue using renderer.
+      /// Renders current queue using renderer and given adapter.
       /// \param renderer OpenGL renderer.
-      void Render( Phoenix::Graphics::COglRenderer &renderer );
+      template<class ADAPTER_CLASS> 
+      void Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS &rAdapter)
+      {
+	typename std::list<TYPE>::iterator it = m_lstObjects.begin();
+	for( ; it != m_lstObjects.end(); it++)
+	{
+	  rAdapter.Commit(renderer, *it);
+	  //ogl.CommitModel( *it );
+	}      
+      }
+      ////////////////////
+      /// Clears current queue.
+      void Clear();
     };
   }
 }
@@ -58,21 +70,22 @@ Phoenix::Graphics::CRenderQueue<TYPE>::~CRenderQueue()
 template<typename TYPE>
 unsigned int 
 Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, 
-						 const Phoenix::Spatial::COctree<TYPE> &octree)
+						       Phoenix::Spatial::COctree<TYPE> &octree)
 {
-  std::list< Phoenix::Spatial::COctree<TYPE> *> lstNodePtrs;
+  std::list< Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
   lstNodePtrs.push_back(octree.GetRoot());
   unsigned int nObjCount = 0;
-
+  Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
   while(!lstNodePtrs.empty())
   {
     // Pop first node from list
-    Phoenix::Spatial::COctreeNode<TYPE> *pNode = lstNodePtrs.front();
+    pNode = lstNodePtrs.front();
     lstNodePtrs.pop_front();
-
+    //std::cerr << "processing node : " << pNode << std::endl;
     // Check does cube intersect frustum
     if ( camera.Frustum().IntersectsCube(*pNode))
     {
+      //std::cerr << "Camera intersects!" << std::endl;
       // insert objects from this node into list
       nObjCount += pNode->GetObjects().size();
       typename std::list<TYPE>::iterator it = pNode->GetObjects().begin();
@@ -99,14 +112,9 @@ Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 void
-Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &ogl )
+Phoenix::Graphics::CRenderQueue<TYPE>::Clear()
 {
-  typename std::list<TYPE>::iterator it = m_lstObjects.begin();
-  for( ; it != m_lstObjects.end(); it++)
-  {
-    // determine type and call proper command from renderer.
-    ogl.CommitModel( *it );
-  }
+  m_lstObjects.clear();
 }
 /////////////////////////////////////////////////////////////////
 #endif
