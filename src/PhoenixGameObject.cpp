@@ -1,8 +1,8 @@
 #include "PhoenixGameObject.h"
 /////////////////////////////////////////////////////////////////
-Phoenix::Scene::CGameObject::CGameObject()
+Phoenix::Scene::CGameObject::CGameObject() : m_bHasMoved(0)
 {
-
+  
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::~CGameObject()
