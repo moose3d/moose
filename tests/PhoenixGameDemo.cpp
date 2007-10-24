@@ -28,7 +28,12 @@ public:
   /// 
   void InsertObject( CGameObject *pGameObject )
   {
-    COctree<Phoenix::Scene::CGameObject *>::InsertObject( pGameObject, pGameObject->GetBoundingSphere());
+    
+    CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
+
+    CSphere sphere = pGameObject->GetBoundingSphere();
+    sphere.SetPosition( sphere.GetPosition() + vTmp );
+    COctree<Phoenix::Scene::CGameObject *>::InsertObject( pGameObject, sphere);
   }
   ////////////////////
   /// 
@@ -40,8 +45,9 @@ public:
   /// 
   void Update( Phoenix::Scene::CGameObject *pGameObject )
   {
-    const CVector3<float> &vTmp = pGameObject->GetTransform().GetTranslation();
-    
+    CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
+    vTmp += pGameObject->GetBoundingSphere().GetPosition();
+
     unsigned int nLevel = COctree<Phoenix::Scene::CGameObject *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
     unsigned int nIndex = COctree<Phoenix::Scene::CGameObject *>::GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
     // If object has changed spatial location enough
@@ -106,7 +112,17 @@ void DrawFrustum( CCamera &camera )
   glPopMatrix();
   gluDeleteQuadric(q);
 }
-
+/////////////////////////////////////////////////////////////////
+class CGameObjectOGLAdapter 
+{
+public:
+  void Commit( COglRenderer &renderer, const CGameObject *pObject)
+  {
+    renderer.CommitColor( CVector4<unsigned char>(255,255,255,255));
+    renderer.CommitTransform( pObject->GetTransform() );
+    renderer.CommitModel( *g_PhoenixModelManager->GetResource(pObject->GetModelHandle()));
+  }
+};
 /////////////////////////////////////////////////////////////////
 int main()
 {
@@ -119,7 +135,8 @@ int main()
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,10.0f);
-  camera.SetViewport( 480,340, 160, 120 );
+  //camera.SetViewport( 480,340, 160, 120 );
+  camera.SetViewport( 0,0, 640, 480 );
   camera.SetNearClipping( 0.1f);
   camera.SetFarClipping( 100.0f );
   camera.SetFieldOfView( 43.0f);
@@ -139,9 +156,11 @@ int main()
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
   
-  CGameObject gameobject;
+  CGameObject *pGameObject = new CGameObject();
+  CGameObjectOGLAdapter oglAdapter;
   
-
+  Phoenix::Graphics::CRenderQueue<CGameObject *> *pRenderQueue = new Phoenix::Graphics::CRenderQueue<CGameObject *>();
+  
   /////////////////////////////////////////////////////////////////
   /// Model loading code
   Phoenix::Data::CMilkshapeLoader loader;
@@ -176,14 +195,16 @@ int main()
   
 
   CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(pModel->GetVertexHandle()));
-  CSphere sphere = CalculateBoundingSphere( *pVD);
-  gameobject.GetBoundingSphere() = sphere;
+  CSphere sphere = CalculateBoundingSphereTight( *pVD);
+  pGameObject->GetBoundingSphere() = sphere;
 
   std::cerr << "bounding sphere;" << sphere << std::endl;
-  gameobject.GetTransform().SetTranslation( 0,-10,0);  
-  assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", gameobject.GetModelHandle()) == 0);
-  //sphere.SetPosition(sphere.GetPosition() + CVector3<float>(0,-10,0));
-  
+  pGameObject->GetTransform().SetTranslation( 0,-10,0);  
+  assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", pGameObject->GetModelHandle()) == 0);
+  sphere.SetPosition(sphere.GetPosition() + CVector3<float>(0,-10,0));
+
+  CSpatialGraph *pSpatialGraph = new CSpatialGraph();
+  pSpatialGraph->InsertObject( pGameObject);
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -205,63 +226,33 @@ int main()
 	} 
 	else if ( event.key.keysym.sym == SDLK_LEFT )
 	{
-	  camera.RotateAroundUp( 0.1f );
+	  camera.RotateAroundUp( 1.1f );
 	}      
 	else if ( event.key.keysym.sym == SDLK_RIGHT )
 	{
-	  camera.RotateAroundUp( -0.1f );
+	  camera.RotateAroundUp( -1.1f );
 	} 
 	break;
       default:
 	break;
       }
     }
-
+    pRenderQueue->Clear();
+    cerr << "Collected: " << pRenderQueue->CollectObjects( camera, *pSpatialGraph ) << endl;
+    
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
     glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->CommitCamera( camera );
-    pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
-    pOglRenderer->CommitTransform( gameobject.GetTransform() );
-    pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
+    //pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
+    //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
+    //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
+    pRenderQueue->Render<CGameObjectOGLAdapter>( *pOglRenderer, oglAdapter );
+    
     pOglRenderer->RollbackTransform();
-   
-
     
-    if ( camera.Frustum().IntersectsSphere( sphere ) == 0)
-    {
-      pOglRenderer->CommitColor( CVector4<unsigned char>(255,0,0,255));
-    }
-    else 
-    {
-      pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
-    }
-    
-    pOglRenderer->CommitSphere( sphere, 0 );
-
-
-    pOglRenderer->CommitCamera( camera2 );
-    pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
-    pOglRenderer->CommitTransform( gameobject.GetTransform() );
-    pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
-    pOglRenderer->RollbackTransform();
-    DrawFrustum( camera );
-
-    
-    if ( camera.Frustum().IntersectsSphere( sphere ) == 0)
-    {
-      pOglRenderer->CommitColor( CVector4<unsigned char>(255,0,0,255));
-    }
-    else 
-    {
-      pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
-    }
-    
-    pOglRenderer->CommitSphere( sphere, 0 );
-
-
     
     camera.UpdateProjection();
     camera.UpdateView();
