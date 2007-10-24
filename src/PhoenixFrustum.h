@@ -74,6 +74,11 @@ namespace Phoenix
       /// \returns The requested plane.
       Phoenix::Math::CPlane	&GetPlane( FRUSTUM_PLANE nIndex );
       ////////////////////
+      /// Return a reference to the plane.
+      /// \param nIndex The index of the plane desired.
+      /// \returns The requested plane.
+      const Phoenix::Math::CPlane	&GetPlane( FRUSTUM_PLANE nIndex ) const;
+      ////////////////////
       /// Returns a corner of the frustum.
       /// \param nIndex The index of the corner.
       /// \returns CVector3 with the position of the desired corner.
@@ -89,18 +94,18 @@ namespace Phoenix
       /// \param aaBox Box to be checked.
       /// \returns Non-zero on intersection.
       /// \returns Zero otherwise.
-      int IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox );
+      int IntersectsAABB( const Phoenix::Volume::CAxisAlignedBox &aaBox ) const;
       ////////////////////
       /// Checks does AACube intersect this frustum.
       /// \returns non-zero on intersection, zero otherwise.
-      int IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aacube );
+      int IntersectsCube( const Phoenix::Volume::CAxisAlignedCube &aacube ) const;
       ////////////////////
       /// Determines whether frustum and sphere intersect.
       /// \param sphere The sphere to be checked against.
       /// \returns 0 if the sphere is outside all frustum planes.
       /// \returns 1 if the sphere intersects the any of the frustum planes.
       //  \returns 2 if frustum surrounds the sphere completely.
-      int	IntersectsSphere( const Phoenix::Volume::CSphere &sphere );
+      int	IntersectsSphere( const Phoenix::Volume::CSphere &sphere ) const;
       ////////////////////
       /// Determines whether frustum and oriented box  intersect.
       /// \param obBox The oriented box to be checked against.
