@@ -124,6 +124,12 @@ Phoenix::Graphics::CCamera::Frustum()
 {
   return m_Frustum;
 }
+const Phoenix::Graphics::CFrustum &
+Phoenix::Graphics::CCamera::Frustum() const
+{
+  return m_Frustum;
+}
+/////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 // As described in 
 // http://www.flipcode.com/articles/article_frustumculling.shtml

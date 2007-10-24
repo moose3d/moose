@@ -88,6 +88,10 @@ namespace Phoenix
       /// \returns Reference to a list of objects.
       std::list< TYPE > & GetObjects();
       ////////////////////
+      /// Returns a list of objects in this node.      
+      /// \returns Reference to a list of objects.
+      const std::list< TYPE > & GetObjects() const;
+      ////////////////////
       /// Deletes given object from this node.
       /// \param object Object to be removed.
       /// \returns Zero if successfull.
@@ -113,6 +117,12 @@ namespace Phoenix
       ////////////////////
       /// Checks do child nodes contain nodes.
       void CheckDoChildrenContainObjects();
+      ////////////////////
+      ///  Checks does this node have objects in it.
+      /// \returns non-zero, if it does.
+      /// \returns zero otherwise.
+      int HasObjects() const;
+      
     };/// class COctreeNode
     /////////////////////////////////////////////////////////////////
     /// Octree class template.
@@ -170,6 +180,10 @@ namespace Phoenix
       /// Returns root node.
       /// \returns Pointer to root node.
       COctreeNode<TYPE> *GetRoot();
+      ////////////////////
+      /// Returns root node.
+      /// \returns Pointer to root node.
+      const COctreeNode<TYPE> *GetRoot() const;
       ////////////////////
       /// Returns node at desired level, closest to given coordinates.
       /// \param nLevel Desired depth level
@@ -278,7 +292,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::~COctreeNode()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Spatial::COctreeNode<TYPE> *
+inline Phoenix::Spatial::COctreeNode<TYPE> *
 Phoenix::Spatial::COctreeNode<TYPE>::GetChild( Phoenix::Spatial::OCTREE_SECTION iSection )
 {
   return m_pChildren[iSection];
@@ -302,19 +316,20 @@ Phoenix::Spatial::COctreeNode<TYPE>::CheckDoChildrenContainObjects()
   }
   else
   {
-    m_bChildrenContainObjects = (m_pChildren[TOP_LEFT_BACK]->ChildrenContainObjects()      ||
-				 m_pChildren[TOP_RIGHT_FRONT]->ChildrenContainObjects()    ||
-				 m_pChildren[TOP_RIGHT_BACK]->ChildrenContainObjects()     ||
-				 m_pChildren[BOTTOM_LEFT_FRONT]->ChildrenContainObjects()  ||
-				 m_pChildren[BOTTOM_LEFT_BACK]->ChildrenContainObjects()   ||
-				 m_pChildren[BOTTOM_RIGHT_FRONT]->ChildrenContainObjects() ||
-				 m_pChildren[BOTTOM_RIGHT_BACK]->ChildrenContainObjects() );
+    m_bChildrenContainObjects = (m_pChildren[TOP_LEFT_FRONT]->HasObjects()     || m_pChildren[TOP_LEFT_FRONT]->ChildrenContainObjects()     ||
+				 m_pChildren[TOP_LEFT_BACK]->HasObjects()      || m_pChildren[TOP_LEFT_BACK]->ChildrenContainObjects()      ||
+				 m_pChildren[TOP_RIGHT_FRONT]->HasObjects()    || m_pChildren[TOP_RIGHT_FRONT]->ChildrenContainObjects()    ||
+				 m_pChildren[TOP_RIGHT_BACK]->HasObjects()     || m_pChildren[TOP_RIGHT_BACK]->ChildrenContainObjects()     ||
+				 m_pChildren[BOTTOM_LEFT_FRONT]->HasObjects()  || m_pChildren[BOTTOM_LEFT_FRONT]->ChildrenContainObjects()  ||
+				 m_pChildren[BOTTOM_LEFT_BACK]->HasObjects()   || m_pChildren[BOTTOM_LEFT_BACK]->ChildrenContainObjects()   ||
+				 m_pChildren[BOTTOM_RIGHT_FRONT]->HasObjects() || m_pChildren[BOTTOM_RIGHT_FRONT]->ChildrenContainObjects() ||
+				 m_pChildren[BOTTOM_RIGHT_BACK]->HasObjects()  || m_pChildren[BOTTOM_RIGHT_BACK]->ChildrenContainObjects() );
   }
   
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-void
+inline void
 Phoenix::Spatial::COctreeNode<TYPE>::SetChild( Phoenix::Spatial::OCTREE_SECTION iSection, COctreeNode<TYPE> *pNode)
 {
   m_pChildren[iSection] = pNode;
@@ -322,21 +337,28 @@ Phoenix::Spatial::COctreeNode<TYPE>::SetChild( Phoenix::Spatial::OCTREE_SECTION 
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 void
-Phoenix::Spatial::COctreeNode<TYPE>::DeleteNode( Phoenix::Spatial::OCTREE_SECTION iSection )
+inline Phoenix::Spatial::COctreeNode<TYPE>::DeleteNode( Phoenix::Spatial::OCTREE_SECTION iSection )
 {
   DELETE(m_pChildren[iSection]);
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Spatial::COctreeNode<TYPE> **
+inline Phoenix::Spatial::COctreeNode<TYPE> **
 Phoenix::Spatial::COctreeNode<TYPE>::GetNodes(){
 
   return m_pChildren;
 } 
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-std::list< TYPE > & 
+inline std::list< TYPE > & 
 Phoenix::Spatial::COctreeNode<TYPE>::GetObjects()
+{
+  return m_lstObjects;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline const std::list< TYPE > & 
+Phoenix::Spatial::COctreeNode<TYPE>::GetObjects() const
 {
   return m_lstObjects;
 }
@@ -360,21 +382,21 @@ Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( const TYPE & object)
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-void
+inline void
 Phoenix::Spatial::COctreeNode<TYPE>::AddObject( const TYPE &object )
 {
   m_lstObjects.push_back(object);
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-void
+inline void
 Phoenix::Spatial::COctreeNode<TYPE>::SetNeighbor( Phoenix::Spatial::OCTREE_NEIGHBOR iNeighbor, COctreeNode<TYPE> *pNode )
 {
   m_pNeighbors[iNeighbor] = pNode;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode<TYPE> * 
+inline Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode<TYPE> * 
 Phoenix::Spatial::COctreeNode<TYPE>::GetNeighbor( Phoenix::Spatial::OCTREE_NEIGHBOR iNeighbor )
 {
   return m_pNeighbors[iNeighbor];
@@ -446,6 +468,13 @@ Phoenix::Spatial::COctree<TYPE>::GetIndex( float fValue, unsigned nDepth )
 template<typename TYPE>
 inline Phoenix::Spatial::COctreeNode<TYPE> *
 Phoenix::Spatial::COctree<TYPE>::GetRoot()
+{
+  return &m_pAllNodes[0];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline const Phoenix::Spatial::COctreeNode<TYPE> *
+Phoenix::Spatial::COctree<TYPE>::GetRoot() const
 {
   return &m_pAllNodes[0];
 }
@@ -608,14 +637,14 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, const Phoeni
 				     boundingSphere.GetPosition()[1], 
 				     boundingSphere.GetPosition()[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
-  
+  std::cerr << "pushed object into" << pNode  << std::endl;
   if ( pNode->GetObjects().size() == 0)
   {
     pNode->GetObjects().push_back( object );
     pNode = pNode->GetParent();
     while ( pNode != NULL )
     {
-      //std::cerr << " Currently processing " << pNode << std::endl;
+      std::cerr << " Currently processing " << pNode << std::endl;
       pNode->CheckDoChildrenContainObjects();
       pNode = pNode->GetParent();
     }
@@ -664,10 +693,17 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Spatial::COctreeNode<TYPE> * 
+inline Phoenix::Spatial::COctreeNode<TYPE> * 
 Phoenix::Spatial::COctree<TYPE>::GetNodeAt(unsigned int nIndex)
 {
   return &m_pAllNodes[nIndex];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline int 
+Phoenix::Spatial::COctreeNode<TYPE>::HasObjects() const
+{
+  return !GetObjects().empty();
 }
 /////////////////////////////////////////////////////////////////
 #endif

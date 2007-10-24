@@ -114,6 +114,10 @@ namespace Phoenix
       /// \returns Reference to frustum
       CFrustum &Frustum();
       ////////////////////
+      /// Returns reference to frustum object
+      /// \returns Reference to frustum
+      const CFrustum &Frustum() const;
+      ////////////////////
       /// Calculates frustum.
       void CalculateFrustum();
       ////////////////////
