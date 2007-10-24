@@ -26,6 +26,8 @@ namespace Phoenix
       //Phoenix::Volume::COrientedBox	m_BoundingBox;
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
+      /// Has this object moved.
+      int				m_bHasMoved;
     public:
       ////////////////////
       /// Constructor.
@@ -65,7 +67,14 @@ namespace Phoenix
       /// Sets spatial index of this node.
       /// \param nIndex New index.
       void SetSpatialIndex( unsigned int nIndex );
-      
+      ////////////////////
+      /// Chech has object moved .
+      /// \returns non-zero if moved, zero otherwise.
+      int HasMoved() const;
+      ////////////////////
+      /// Set object moved / unmoved.
+      /// \param bFlag Non-zero for move, zero for not moved.
+      void SetMoved(int bFlag);
     };
   }; // namespace Scene
 }; // namespace Phoenix
@@ -116,6 +125,18 @@ inline void
 Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
 {
   m_nSpatialIndex = nIndex;
+}
+/////////////////////////////////////////////////////////////////
+inline int 
+Phoenix::Scene::CGameObject::HasMoved() const
+{
+  return m_bHasMoved;
+}
+/////////////////////////////////////////////////////////////////
+inline int 
+Phoenix::Scene::CGameObject::SetMoved(int bFlag) const
+{
+  m_bHasMoved = bFlag;
 }
 /////////////////////////////////////////////////////////////////
 #endif
