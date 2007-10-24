@@ -27,7 +27,7 @@ namespace Phoenix
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
       /// Has this object moved.
-      int				m_bHasMoved;
+      //int				m_bHasMoved;
     public:
       ////////////////////
       /// Constructor.
@@ -70,11 +70,11 @@ namespace Phoenix
       ////////////////////
       /// Chech has object moved .
       /// \returns non-zero if moved, zero otherwise.
-      int HasMoved() const;
+      //int HasMoved() const;
       ////////////////////
       /// Set object moved / unmoved.
       /// \param bFlag Non-zero for move, zero for not moved.
-      void SetMoved(int bFlag);
+      //void SetMoved(int bFlag);
     };
   }; // namespace Scene
 }; // namespace Phoenix
@@ -127,16 +127,16 @@ Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
   m_nSpatialIndex = nIndex;
 }
 /////////////////////////////////////////////////////////////////
-inline int 
-Phoenix::Scene::CGameObject::HasMoved() const
-{
-  return m_bHasMoved;
-}
-/////////////////////////////////////////////////////////////////
-inline int 
-Phoenix::Scene::CGameObject::SetMoved(int bFlag) const
-{
-  m_bHasMoved = bFlag;
-}
+/* inline int  */
+/* Phoenix::Scene::CGameObject::HasMoved() const */
+/* { */
+/*   return m_bHasMoved; */
+/* } */
+/* ///////////////////////////////////////////////////////////////// */
+/* inline int  */
+/* Phoenix::Scene::CGameObject::SetMoved(int bFlag) const */
+/* { */
+/*   m_bHasMoved = bFlag; */
+/* } */
 /////////////////////////////////////////////////////////////////
 #endif
