@@ -145,23 +145,21 @@ namespace Phoenix
 #endif
     ////////////////////
     /// Vertex class for some cases where it is easier to handle things as a blob.
-    class CVertex
+    class CVertex : public Phoenix::Spatial::CPositional
     {
     public:
-      /// Vertex position.
-      Phoenix::Math::CVector3<float> m_vPosition;
       /// Vertex normal.
       Phoenix::Math::CVector3<float> m_vNormal;
       /// Vertex texture coordinates.
       Phoenix::Math::CVector2<float> m_vTexCoord;
       /// Vertex color.
-      Phoenix::Math::CVector3<unsigned char> m_vColor;
+      Phoenix::Math::CVector4<unsigned char> m_vColor;
       ////////////////////
       /// The equality comparison operator.
       /// \param vert CVertex object which this is compared against.
       bool operator==( CVertex vert)
       {
-	return (m_vPosition == vert.m_vPosition &&
+	return (GetPosition() == vert.GetPosition() &&
 		m_vNormal   == vert.m_vNormal   &&
 		m_vTexCoord == vert.m_vTexCoord && 
 		m_vColor    == vert.m_vColor );
@@ -171,6 +169,50 @@ namespace Phoenix
       bool operator< (CVertex vert)
       {
 	return m_vPosition[1] < vert.m_vPosition[1];
+      }
+      ////////////////////
+      /// Assigns normal vector.
+      /// \param vNormal Normal vector.
+      inline void SetNormal( const Phoenix::Math::CVector3<float> &vNormal )
+      {
+	m_vNormal = vNormal;
+      }
+      ////////////////////
+      /// Returns normal vector.
+      /// \returns Normal vector reference.
+      inline const Phoenix::Math::CVector3<float> GetNormal() const
+      {
+	return m_vNormal;
+      }
+      ////////////////////
+      /// Sets texture coordinate.
+      /// \param fS S-coordinate.
+      /// \param fT T-coordinate.
+      void SetTextureCoordinates( float fS, float fT )
+      {
+	m_vTexCoord[0] = fS;
+	m_vTexCoord[1] = fT;
+      }
+      ////////////////////
+      /// Returns texture coordinates.
+      /// \returns Texture coordinate vector.
+      const Phoenix::Math::CVector2<float> & GetTextureCoordinates() const
+      {
+	return m_vTexCoord;
+      }
+      ////////////////////
+      /// Returns color vector.
+      /// \return Color vector.
+      const Phoenix::Math::CVector4<unsigned char> & GetColor() const
+      {
+	return m_vColor;
+      }
+      ////////////////////
+      /// Assigns color vector.
+      /// \param vColor Color to be assigned.
+      void SetColor( const Phoenix::Math::CVector4<unsigned char> & vColor )
+      {
+	m_vColor = vColor;
       }
     };
     /////////////////////////////////////////////////////////////////
