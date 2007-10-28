@@ -153,7 +153,7 @@ namespace Phoenix
       /// \returns Half of world size.
       float GetWorldHalfSize() const;
       ////////////////////
-      /// Returns edge length of octree cube at tree depth.
+      /// Returns edge length of normal (non-loose) octree cube at given depth.
       /// \param nDepth From which depth the edge length is retrieved.
       /// \returns Edge length.
       float GetEdgeLength( unsigned int nDepth );
@@ -165,15 +165,15 @@ namespace Phoenix
       ////////////////////
       /// Returns index of closest node to position value at depth.
       /// \param nLevel Desired depth level
-      /// \param fX X-coordinate. Must be +-World/2
-      /// \param fY Y-coordinate. Must be +-World/2
-      /// \param fZ Z-coordinate. Must be +-World/2
+      /// \param fX X-coordinate. Must be within +-World/2
+      /// \param fY Y-coordinate. Must be within +-World/2
+      /// \param fZ Z-coordinate. Must be within +-World/2
       /// \returns Index in 1-dimensional array.
       unsigned int GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ );
       ////////////////////
       /// Returns index of closest node to position value at depth.
       /// \param nLevel Desired depth level
-      /// \param vPosition Object position.
+      /// \param vPosition Object position, must be within +-World/2.
       /// \returns Index in 1-dimensional array.
       unsigned int GetIndex1D( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition );
       ////////////////////
@@ -199,6 +199,16 @@ namespace Phoenix
       /// \returns Index where object was inserted.
       unsigned int InsertObject( const TYPE & object, 
 				 const Phoenix::Volume::CSphere & boundingSphere);
+
+      ////////////////////
+      /// Inserts object into tree.
+      /// \param object Reference to object to be inserted.
+      /// \param vPosition Position of bounding sphere of the object.
+      /// \param fRadius Radius of bounding sphere.
+      /// \returns Index where object was inserted.
+      unsigned int InsertObject( const TYPE & object, 
+				 const Phoenix::Math::CVector3<float> & vPosition,
+				 float fRadius);
       ////////////////////
       /// Delets object from tree.
       /// \param object Reference to object to be removed.
@@ -626,16 +636,25 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-unsigned int
+inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, const Phoenix::Volume::CSphere & boundingSphere)
 {
-  unsigned int nLevel = GetObjectDepth( boundingSphere.GetRadius());
+  return InsertObject( object, boundingSphere.GetPosition(), boundingSphere.GetRadius());
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+unsigned int
+Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, 
+					       const Phoenix::Math::CVector3<float> & vPosition,
+					       float fRadius)
+{
+  unsigned int nLevel = GetObjectDepth( fRadius);
   if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
   
   unsigned int nIndex  = GetIndex1D( nLevel, 
-				     boundingSphere.GetPosition()[0], 
-				     boundingSphere.GetPosition()[1], 
-				     boundingSphere.GetPosition()[2]);
+				     vPosition[0], 
+				     vPosition[1], 
+				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
   std::cerr << "pushed object into" << pNode  << std::endl;
   if ( pNode->GetObjects().size() == 0)
