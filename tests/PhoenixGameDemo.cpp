@@ -29,17 +29,23 @@ public:
   void InsertObject( CGameObject *pGameObject )
   {
     
-    CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
-
-    CSphere sphere = pGameObject->GetBoundingSphere();
-    sphere.SetPosition( sphere.GetPosition() + vTmp );
-    COctree<Phoenix::Scene::CGameObject *>::InsertObject( pGameObject, sphere);
+    unsigned int nSpatialIndex = COctree<Phoenix::Scene::CGameObject *>::InsertObject( 
+				  pGameObject, 
+				  pGameObject->GetBoundingSphere().GetPosition() + pGameObject->GetTransform().GetTranslation(),
+				  pGameObject->GetBoundingSphere().GetRadius());
+    
+    pGameObject->SetSpatialIndex( nSpatialIndex );
+    cerr << "object inserted into " << nSpatialIndex << endl;
   }
   ////////////////////
   /// 
   void DeleteObject( CGameObject *pGameObject )
   {
-    COctree<Phoenix::Scene::CGameObject *>::GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
+    COctreeNode<Phoenix::Scene::CGameObject *> *pNode = COctree<Phoenix::Scene::CGameObject *>::GetNodeAt( pGameObject->GetSpatialIndex());
+    if ( pNode != NULL )
+    {
+      pNode->DeleteObject( pGameObject );
+    }
   }
   ////////////////////
   /// 
@@ -47,7 +53,18 @@ public:
   {
     CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
     vTmp += pGameObject->GetBoundingSphere().GetPosition();
+    float fWorldHalfSizeNeg = -GetWorldHalfSize();
+    float fWorldHalfSizePos =  GetWorldHalfSize()-0.001f;
 
+    if ( vTmp[0] > fWorldHalfSizePos ) vTmp[0] = fWorldHalfSizePos;
+    else if ( vTmp[0] < fWorldHalfSizeNeg ) vTmp[0] = fWorldHalfSizeNeg;
+
+    if ( vTmp[1] > fWorldHalfSizePos ) vTmp[1] = fWorldHalfSizePos;
+    else if ( vTmp[1] < fWorldHalfSizeNeg ) vTmp[1] = fWorldHalfSizeNeg;
+
+    if ( vTmp[2] > fWorldHalfSizePos ) vTmp[2] = fWorldHalfSizePos;
+    else if ( vTmp[2] < fWorldHalfSizeNeg ) vTmp[2] = fWorldHalfSizeNeg;
+ 
     unsigned int nLevel = COctree<Phoenix::Scene::CGameObject *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
     unsigned int nIndex = COctree<Phoenix::Scene::CGameObject *>::GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
     // If object has changed spatial location enough
@@ -56,6 +73,8 @@ public:
       // remove pointer from previous node
       GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
       GetNodeAt( nIndex )->GetObjects().push_back( pGameObject );
+      cerr << "inserted object into " << nIndex << endl;
+      pGameObject->SetSpatialIndex( nIndex );
     }
   }
 };
@@ -152,7 +171,6 @@ int main()
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   
   COglRenderer *pOglRenderer = new COglRenderer();
-  COctree<float> *pOctree = new COctree<float>(5,100.0f);
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
   
@@ -197,7 +215,7 @@ int main()
   CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(pModel->GetVertexHandle()));
   CSphere sphere = CalculateBoundingSphereTight( *pVD);
   pGameObject->GetBoundingSphere() = sphere;
-
+  
   std::cerr << "bounding sphere;" << sphere << std::endl;
   pGameObject->GetTransform().SetTranslation( 0,-10,0);  
   assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", pGameObject->GetModelHandle()) == 0);
@@ -237,8 +255,13 @@ int main()
 	break;
       }
     }
+    pGameObject->GetTransform().Move( 0.01f,0,0); 
+    pSpatialGraph->Update( pGameObject );
+
+    cerr << "pos: " << pGameObject->GetTransform().GetTranslation() << endl;
     pRenderQueue->Clear();
-    cerr << "Collected: " << pRenderQueue->CollectObjects( camera, *pSpatialGraph ) << endl;
+    int nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
+    //cerr << "Collected: " << nCollected << endl;
     
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
     glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
@@ -250,9 +273,7 @@ int main()
     //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
     //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
     pRenderQueue->Render<CGameObjectOGLAdapter>( *pOglRenderer, oglAdapter );
-    
-    pOglRenderer->RollbackTransform();
-    
+    //pOglRenderer->RollbackTransform();
     
     camera.UpdateProjection();
     camera.UpdateView();
