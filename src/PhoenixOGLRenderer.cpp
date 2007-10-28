@@ -1222,6 +1222,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
 					     const Phoenix::Spatial::CVertex &vertexThree,
 					     const Phoenix::Spatial::CVertex &vertexFour)
 {
+  // Handy macro for multiple similar commands
 #define COMMIT_VERTEX( V ) {			\
   glColor4ubv( V.GetColor().GetArray() );	\
   glTexCoord2f( V.GetTextureCoordinates()[0],	\
@@ -1229,11 +1230,13 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
   glNormal3fv( V.GetNormal().GetArray() );	\
   glVertex3fv( V.GetPosition().GetArray() );	\
 }
-  COMMIT_VERTEX( vertexOne );
-  COMMIT_VERTEX( vertexTwo );
-  COMMIT_VERTEX( vertexThree );
-  COMMIT_VERTEX( vertexFour );
 
+  glBegin(GL_QUADS);
+    COMMIT_VERTEX( vertexOne );
+    COMMIT_VERTEX( vertexTwo );
+    COMMIT_VERTEX( vertexThree );
+    COMMIT_VERTEX( vertexFour );
+  glEnd();
 #undef COMMIT_VERTEX
 }
 /////////////////////////////////////////////////////////////////
