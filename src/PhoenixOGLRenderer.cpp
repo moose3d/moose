@@ -1216,3 +1216,24 @@ Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &s
   pQuadric = NULL;
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &vertexOne,
+					     const Phoenix::Spatial::CVertex &vertexTwo,
+					     const Phoenix::Spatial::CVertex &vertexThree,
+					     const Phoenix::Spatial::CVertex &vertexFour)
+{
+#define COMMIT_VERTEX( V ) {			\
+  glColor4ubv( V.GetColor().GetArray() );	\
+  glTexCoord2f( V.GetTextureCoordinates()[0],	\
+		V.GetTextureCoordinates()[1]);	\
+  glNormal3fv( V.GetNormal().GetArray() );	\
+  glVertex3fv( V.GetPosition().GetArray() );	\
+}
+  COMMIT_VERTEX( vertexOne );
+  COMMIT_VERTEX( vertexTwo );
+  COMMIT_VERTEX( vertexThree );
+  COMMIT_VERTEX( vertexFour );
+
+#undef COMMIT_VERTEX
+}
+/////////////////////////////////////////////////////////////////

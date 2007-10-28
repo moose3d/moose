@@ -13,6 +13,7 @@
 #include "PhoenixMaterial.h"
 #include "PhoenixSkybox.h"
 #include "PhoenixTransform.h"
+#include "PhoenixSpatial.h"
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -405,6 +406,16 @@ namespace Phoenix
       /// \param sphere Sphere to be rendered.
       /// \param bWireframe Is sphere rendered as wireframe. Default true.
       void CommitSphere( const Phoenix::Volume::CSphere &sphere, int bWireframe = 1 );
+      ////////////////////
+      /// Renders a quad with texcoords, color and normal. Vertices must be given in counter-clockwise order.
+      /// \param vertexOne First vertex.
+      /// \param vertexTwo Second vertex.
+      /// \param vertexThree Third vertex.
+      /// \param vertexFour Fourth vertex.
+      void CommitQuad( const Phoenix::Spatial::CVertex &vertexOne,
+		       const Phoenix::Spatial::CVertex &vertexTwo,
+		       const Phoenix::Spatial::CVertex &vertexThree,
+		       const Phoenix::Spatial::CVertex &vertexFour);
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
