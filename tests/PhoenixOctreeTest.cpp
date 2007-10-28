@@ -26,5 +26,27 @@ TEST( COctree )
   CHECK( pOctree->DeleteObject(  fTmp, sphere ) != 0);
   CHECK( pOctree->DeleteObject( fTmp2, sphere2) != 0);
 } 
+/////////////////////////////////////////////////////////////////
+TEST( COctree_GetIndex1D )
+{
+  float fTmp = 1.0;
+  float fTmp2 = 2.0;
+  CVector3<float> vPos(99.999,-10,0);
+  CVector3<float> vPosNeg(-100.0,-10,0);
+  COctree<float> *pOctree = new COctree<float>( 4, 200.0f);
+  CHECK_CLOSE( 200.0f, pOctree->GetEdgeLength( 0 ), 0.001f);
+  CHECK_CLOSE( 100.0f, pOctree->GetEdgeLength( 1 ), 0.001f);
+  CHECK_CLOSE( 50.0f, pOctree->GetEdgeLength( 2 ), 0.001f);
+  CHECK_CLOSE( 25.0f, pOctree->GetEdgeLength( 3 ), 0.001f);
+  //cerr << "edge length at 1 : " << pOctree->GetEdgeLength( 1 ) << endl;
+  
+  unsigned int nDepth = 4;//pOctree->GetObjectDepth(23.56f);
+  unsigned int nIndex = pOctree->GetIndex1D( nDepth, vPos);
+  //cerr << "depth:" << nDepth << ", index: " << nIndex << endl;
+  nIndex = pOctree->GetIndex1D( nDepth, vPosNeg);
+  //cerr << "depth:" << nDepth << ", index: " << nIndex << endl;
+  
+  
 
-
+} 
+/////////////////////////////////////////////////////////////////
