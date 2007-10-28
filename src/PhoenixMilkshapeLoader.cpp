@@ -626,17 +626,17 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
   for(unsigned int i=0;i<vecVertices.size();i++)
   {
     nIndex = i*3;
-    m_pPositions->GetPointer<float>()[nIndex]   = vecVertices[i].m_vPosition[0];
-    m_pPositions->GetPointer<float>()[nIndex+1] = vecVertices[i].m_vPosition[1];
-    m_pPositions->GetPointer<float>()[nIndex+2] = vecVertices[i].m_vPosition[2];
+    m_pPositions->GetPointer<float>()[nIndex]   = vecVertices[i].GetPosition()[0];
+    m_pPositions->GetPointer<float>()[nIndex+1] = vecVertices[i].GetPosition()[1];
+    m_pPositions->GetPointer<float>()[nIndex+2] = vecVertices[i].GetPosition()[2];
 
-    m_pNormals->GetPointer<float>()[nIndex]   = vecVertices[i].m_vNormal[0];
-    m_pNormals->GetPointer<float>()[nIndex+1] = vecVertices[i].m_vNormal[1];
-    m_pNormals->GetPointer<float>()[nIndex+2] = vecVertices[i].m_vNormal[2];
+    m_pNormals->GetPointer<float>()[nIndex]   = vecVertices[i].GetNormal()[0];
+    m_pNormals->GetPointer<float>()[nIndex+1] = vecVertices[i].GetNormal()[1];
+    m_pNormals->GetPointer<float>()[nIndex+2] = vecVertices[i].GetNormal()[2];
     
     nIndex = i*2;
-    m_pTexCoords->GetPointer<float>()[nIndex]   = vecVertices[i].m_vTexCoord[0];
-    m_pTexCoords->GetPointer<float>()[nIndex+1] = vecVertices[i].m_vTexCoord[1];
+    m_pTexCoords->GetPointer<float>()[nIndex]   = vecVertices[i].GetTextureCoordinates()[0];
+    m_pTexCoords->GetPointer<float>()[nIndex+1] = vecVertices[i].GetTextureCoordinates()[1];
 
   }
   
@@ -656,8 +656,10 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
 }
 /////////////////////////////////////////////////////////////////
 #define CREATE_VERTEX( VERTEX, TRIANGLE, T_VERTEXINDEX ) {			   \
-											   \
- VERTEX.m_vPosition.Set(m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex); \
+										   \
+ VERTEX.SetPosition(m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex[0],  \
+		    m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex[1],  \
+		    m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex[2]); \
  VERTEX.m_vNormal.Set(TRIANGLE.vertexNormals[T_VERTEXINDEX]);				   \
  VERTEX.m_vTexCoord[0]=TRIANGLE.s[T_VERTEXINDEX];					   \
  VERTEX.m_vTexCoord[1]=TRIANGLE.t[T_VERTEXINDEX];					   \
