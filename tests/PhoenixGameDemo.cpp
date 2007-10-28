@@ -55,7 +55,7 @@ public:
     vTmp += pGameObject->GetBoundingSphere().GetPosition();
     float fWorldHalfSizeNeg = -GetWorldHalfSize();
     float fWorldHalfSizePos =  GetWorldHalfSize()-0.001f;
-
+    // Sanity check - coordinates must be kept within world
     if ( vTmp[0] > fWorldHalfSizePos ) vTmp[0] = fWorldHalfSizePos;
     else if ( vTmp[0] < fWorldHalfSizeNeg ) vTmp[0] = fWorldHalfSizeNeg;
 
