@@ -30,9 +30,7 @@ namespace Phoenix
       PRIMITIVE_TYPE m_nType;
       void *	   m_pIndexData;
     public:
-
-
-      /////////////////////////////////////////////////////////////////
+      ////////////////////
       /// The constructor.
       CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), m_nType(nType)
       {
@@ -40,7 +38,7 @@ namespace Phoenix
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
 	  
       }
-      /////////////////////////////////////////////////////////////////
+      ////////////////////
       /// The destructor.
       ~CIndexArray()
       {
