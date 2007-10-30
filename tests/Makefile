@@ -13,6 +13,8 @@ octreedemo:
 	 g++ -Wall -I../src `sdl-config --cflags` PhoenixOctreeDemo.cpp -lPhoenix `sdl-config --libs`
 gamedemo:
 	 g++ -Wall -I../src `sdl-config --cflags` PhoenixGameDemo.cpp -lPhoenix `sdl-config --libs`
+galaxydemo:
+	 g++ -Wall -I../src `sdl-config --cflags` PhoenixGalaxyDemo.cpp -lPhoenix `sdl-config --libs`
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean
