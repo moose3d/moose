@@ -304,7 +304,7 @@ int main()
       pOglRenderer->CommitVertexDescriptor( pVertexDescriptor );
       pOglRenderer->CommitVertexDescriptor( pTexCoords );
       pOglRenderer->CommitShader(pBillBoardShader);
-        pOglRenderer->CommitShaderParam( *pBillBoardShader, "camerapos", *pShaderAttrib);
+      //pOglRenderer->CommitShaderParam( *pBillBoardShader, "camerapos", *pShaderAttrib);
         pOglRenderer->CommitShaderParam( *pBillBoardShader, "dirWidth", *pShaderAttrib2);
         pOglRenderer->CommitUniformShaderParam( *pBillBoardShader, "beamTexture", 0 );
         pOglRenderer->CommitPrimitive( pIndices );
