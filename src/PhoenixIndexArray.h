@@ -20,6 +20,10 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
+    /// \todo Add VBO index into this; it will make things draw faster.
+    /// \todo Also it allows very to use it if VBOs are supported and 
+    /// \todo draw things as normal if they aren't. Also an indicator for 
+    /// \todo updating the cache would be necessary.
     class CIndexArray
     {
     public:
