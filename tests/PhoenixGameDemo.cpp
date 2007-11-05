@@ -115,7 +115,7 @@ void DrawFrustum( CCamera &camera )
     glVertex3fv( frustum.GetCorner(CFrustum::TOP_NEAR_RIGHT).GetArray());
     glVertex3fv( frustum.GetCorner(CFrustum::TOP_FAR_RIGHT).GetArray());
     glVertex3fv( frustum.GetCorner(CFrustum::BOTTOM_FAR_RIGHT).GetArray());
-
+    
   glEnd();
   glColor3f(0,1,0);
   GLUquadric * q = gluNewQuadric();
@@ -140,6 +140,7 @@ public:
     renderer.CommitColor( CVector4<unsigned char>(255,255,255,255));
     renderer.CommitTransform( pObject->GetTransform() );
     renderer.CommitModel( *g_PhoenixModelManager->GetResource(pObject->GetModelHandle()));
+    renderer.RollbackTransform();
   }
 };
 /////////////////////////////////////////////////////////////////
@@ -177,7 +178,8 @@ int main()
   CGameObject *pGameObject = new CGameObject();
   CGameObjectOGLAdapter oglAdapter;
   
-  Phoenix::Graphics::CRenderQueue<CGameObject *> *pRenderQueue = new Phoenix::Graphics::CRenderQueue<CGameObject *>();
+  Phoenix::Graphics::CRenderQueue<CGameObject *> *pRenderQueue = 
+      new Phoenix::Graphics::CRenderQueue<CGameObject *>();
   
   /////////////////////////////////////////////////////////////////
   /// Model loading code
@@ -189,9 +191,9 @@ int main()
   
   CModel *pModel = new CModel();//g_PhoenixModelManager->GetResource(gameobject.GetModelHandle());
   
-  assert(g_DefaultVertexManager->Create( loader.GetVertices(),  "fighter_vertices",  pModel->GetVertexHandle() ) == 0);  
-  assert(g_DefaultVertexManager->Create( loader.GetTexCoords(), "fighter_texcoords", pModel->GetTextureCoordinateHandle() )== 0);
-  assert(g_DefaultVertexManager->Create( loader.GetNormals(),   "fighter_normals",   pModel->GetNormalHandle() )== 0);
+  assert(g_DefaultVertexManager->Create( loader.GetVertices(),  "fighter_vertices",  pModel->GetVertexHandle() )            == 0);  
+  assert(g_DefaultVertexManager->Create( loader.GetTexCoords(), "fighter_texcoords", pModel->GetTextureCoordinateHandle() ) == 0);
+  assert(g_DefaultVertexManager->Create( loader.GetNormals(),   "fighter_normals",   pModel->GetNormalHandle() )            == 0);
 
   // create resources for indices.
   for(unsigned int i=0;i<loader.GetIndices().size();i++)
@@ -211,7 +213,6 @@ int main()
   loader.ResetNormals();
   loader.ResetIndices();
   
-
   CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(pModel->GetVertexHandle()));
   CSphere sphere = CalculateBoundingSphereTight( *pVD);
   pGameObject->GetBoundingSphere() = sphere;
@@ -219,12 +220,18 @@ int main()
   std::cerr << "bounding sphere;" << sphere << std::endl;
   pGameObject->GetTransform().SetTranslation( 0,-10,0);  
   assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", pGameObject->GetModelHandle()) == 0);
-  sphere.SetPosition(sphere.GetPosition() + CVector3<float>(0,-10,0));
-
+  
   CSpatialGraph *pSpatialGraph = new CSpatialGraph();
   pSpatialGraph->InsertObject( pGameObject);
+  
+  CFpsCounter fpsCounter;
+  fpsCounter.Reset();
+  unsigned int nCollected = 0;
+  int bChange = 0;
+  
   while( g_bLoop )
   {
+    fpsCounter.Update();
     while ( SDL_PollEvent(&event ))
     {
       switch(event.type)
@@ -255,12 +262,12 @@ int main()
 	break;
       }
     }
-    pGameObject->GetTransform().Move( 0.01f,0,0); 
+    //pGameObject->GetTransform().Move( 0.01f,0,0); 
     pSpatialGraph->Update( pGameObject );
-
-    cerr << "pos: " << pGameObject->GetTransform().GetTranslation() << endl;
+    
+    
     pRenderQueue->Clear();
-    int nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
+    nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
     //cerr << "Collected: " << nCollected << endl;
     
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
@@ -273,15 +280,37 @@ int main()
     //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
     //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
     pRenderQueue->Render<CGameObjectOGLAdapter>( *pOglRenderer, oglAdapter );
-    //pOglRenderer->RollbackTransform();
     
-    camera.UpdateProjection();
-    camera.UpdateView();
-    camera.CalculateFrustum();    
-    camera.CalculateBoundingSphere();
-    camera.CalculateBoundingCone();
+    //pOglRenderer->RollbackTransform();
+
+    if ( camera.IsProjectionChanged() ) 
+    {
+      camera.UpdateProjection();
+      bChange = 1;
+    }
+    
+    if ( camera.IsPositionChanged() ) 
+    {
+      camera.UpdateView();
+      bChange = 1;
+    }
+
+    if ( bChange )
+    {
+      camera.CalculateFrustum();    
+      camera.CalculateBoundingSphere();
+      camera.CalculateBoundingCone();
+      bChange = 0;
+    }
     pOglRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
+    fpsCounter++;
+    if ( fpsCounter.HasPassedMS(1000) )
+    {
+      cerr << "FPS: " << fpsCounter << ", with visible objects #"<< nCollected <<endl;
+      fpsCounter.Reset();
+    }
+
   }
   CSDLScreen::DestroyInstance();
   return 0;
