@@ -21,14 +21,8 @@ int main()
   }
   string strTexFilename("Resources/Textures/painting.tga");
   string strTexFilename2("Resources/Textures/lightmap.tga");
-  string strTexFighterBump="/home/entity/omega_normal.tga";
-#ifdef OMEGA 
-  string strTexFighter="/home/entity/omega.tga";
-  std::string name("/home/entity/omega.ms3d");
-#else
-  string strTexFighter="Resources/Textures/wilko.tga";
-  std::string name("Resources/Models/fighter1.ms3d");
-#endif    
+  string strTexFighterBump="Resources/Textures/omega_normal.tga";
+
   string strVertexTest("VertexTest");
   string strTexCoords("TexCoordTest");
   string strIndexTest("IndexTest");
@@ -120,33 +114,18 @@ int main()
   COglTexture *pTextureShip = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/spaceship.tga"));
   COglTexture *pTextureShipBump = pOglRenderer->CreateTexture((strTexFilename2="Resources/Textures/spaceship_normal.tga"));
  
-  COglTexture *pTextureFighter = pOglRenderer->CreateTexture( strTexFighter );
+
   COglTexture *pTextureFighterBump = pOglRenderer->CreateTexture( strTexFighterBump );
   
   assert( pTexture2 != NULL);
-  VERTEX_HANDLE hVertexHandle;
-  VERTEX_HANDLE hTexCoordHandle;
-  TEXTURE_HANDLE hTextureHandle;
-  TEXTURE_HANDLE hTextureHandle2;
-  TEXTURE_HANDLE hFighterTexture;
+
 
   INDEX_HANDLE hIndexHandle;
 
-  // Create vertex resource
-  assert( g_DefaultVertexManager->Create( pVertices, strVertexTest, hVertexHandle ) == 0);
-  // create texture coordinate resource
-  assert( g_DefaultVertexManager->Create( pTexCoords, strTexCoords, hTexCoordHandle ) == 0);
-  // create index array resource
-  assert( g_DefaultIndexManager->Create( pIndices, strIndexTest, hIndexHandle ) == 0);
-  // create texture resource
-  assert( g_DefaultTextureManager->Create( pTexture, strTextureTest, hTextureHandle ) == 0);
-  // create another texture resource 
-  assert( g_DefaultTextureManager->Create( pTexture2, strTextureTest2, hTextureHandle2 ) == 0);
-  // check that index resource actually exists
-  assert( g_DefaultIndexManager->GetResource( hIndexHandle ) != NULL );
 
-  string strFighterTextureName = "fighter_texture";
-  assert( g_DefaultTextureManager->Create( pTextureFighter, strFighterTextureName, hFighterTexture ) == 0);
+  
+
+  
   
   
   CCamera camera;
@@ -174,19 +153,7 @@ int main()
   light.SetAmbientColor(vColor = CVector4<unsigned char>(10,10,10,255));
   light.SetSpecularColor(vColor = CVector4<unsigned char>(255,255,255,255));
   
-  CModel model;
-  model.SetVertexHandle( hVertexHandle );
-  model.AddIndexHandle( hIndexHandle );
-  model.SetTextureHandle( hTextureHandle );
-  model.SetTextureHandle( hTextureHandle2, 1 );
-  model.SetTextureCoordinateHandle( hTexCoordHandle );
-  model.SetTextureCoordinateHandle( hTexCoordHandle, 1);
-  model.AddTextureFilter( ENV_REPLACE, 0 );
-  model.AddTextureFilter( MIN_MIP_LINEAR, 0 );
-  model.AddTextureFilter( MAG_LINEAR, 0 );
-  model.AddTextureFilter( ENV_MODULATE, 1 );
-  model.AddTextureFilter( MIN_MIP_LINEAR, 1 );
-  model.AddTextureFilter( MAG_LINEAR, 1 );
+
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 
@@ -206,52 +173,8 @@ int main()
   materialShip.SetShininess( 0.138f);
 
 
-  Phoenix::Data::CMilkshapeLoader loader;
-
-  assert ( loader.Load( name ) == 0 && "Could not open model file!");
-  loader.GenerateModelData();
-
-  CVertexDescriptor *pOmegaTangents = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, loader.GetVertices()->GetSize());
-  CalculateTangentArray( *loader.GetVertices(), 
-			 *loader.GetNormals(), 
-			 *loader.GetTexCoords(), 
-			 *(loader.GetIndices()[0]), 
-			 *pOmegaTangents);
-  loader.Stripify();
   
-  CModel fighterModel;
-  VERTEX_HANDLE hFighterVertices;
-  VERTEX_HANDLE hFighterTexCoords;
-  INDEX_HANDLE  hFighterIndices;
-  VERTEX_HANDLE hFighterTangents;
-  VERTEX_HANDLE hFighterNormals;
 
-  assert(g_DefaultVertexManager->Create( loader.GetVertices(), (tmpName="fighter_vertices"), hFighterVertices ) == 0);  
-  assert(g_DefaultVertexManager->Create( loader.GetTexCoords(), (tmpName="fighter_texcoords"), hFighterTexCoords )== 0);
-  assert(g_DefaultVertexManager->Create( loader.GetNormals(), (tmpName="fighter_normals"), hFighterNormals )== 0);
-  assert(g_DefaultVertexManager->Create( pOmegaTangents, (tmpName="fighter_tangents"), hFighterTangents )== 0);
-  
-  // create resources for indices.
-  for(unsigned int i=0;i<loader.GetIndices().size();i++)
-  {
-    std::ostringstream stream;
-    stream << "fighter_indices" << i;
-    assert( g_DefaultIndexManager->Create( loader.GetIndices()[i], stream.str(), hFighterIndices ) == 0);
-    fighterModel.AddIndexHandle( hFighterIndices );
-  }
-
-  loader.ResetVertices();
-  loader.ResetTexCoords();
-  loader.ResetIndices();
-
-  fighterModel.SetVertexHandle( hFighterVertices );
-  fighterModel.SetNormalHandle( hFighterNormals );
-  fighterModel.SetTextureCoordinateHandle( hFighterTexCoords );
-  fighterModel.SetTextureHandle( hFighterTexture, 0 );
-  fighterModel.AddTextureFilter( ENV_REPLACE, 0 );
-  fighterModel.AddTextureFilter( MIN_MIP_LINEAR, 0 );
-  fighterModel.AddTextureFilter( MAG_LINEAR, 0 );
-    
   float fAngle = 0.0f;
   float fMagnitude = 12.0f;
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
@@ -355,15 +278,15 @@ int main()
 
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->DisableLight( 0 );
-    // Draw textured / transparent triangle
-    //pOglRenderer->CommitTexture( 0, pTexture );
+    // Draw textured / transparent 
+    pOglRenderer->CommitTexture( 0, pTexture );
     glPushMatrix();
     glTranslatef(2.5f,0,0);
     // glEnable(GL_ALPHA_TEST);
 //     glAlphaFunc( GL_GREATER, 0.3f);
 //     glTranslatef( 0,0,0.3f);
 
-    //pOglRenderer->CommitVertexDescriptor( pTexCoords );
+    pOglRenderer->CommitVertexDescriptor( pTexCoords );
     pOglRenderer->DisableClientState( CLIENT_STATE_COLOR_ARRAY );
     pOglRenderer->DisableClientState( CLIENT_STATE_VERTEX_ARRAY );
     //pOglRenderer->DisableClientState( CLIENT_STATE_TEX0_ARRAY );
@@ -371,9 +294,9 @@ int main()
     CVector4<unsigned char> vWhite(255,255,255,255);
     pOglRenderer->CommitColor( vWhite );
 
-    //pOglRenderer->CommitTexture( 0, pTexture );
-    //pOglRenderer->CommitPrimitive( pIndices );
-    pOglRenderer->CommitModel( model );
+    pOglRenderer->CommitTexture( 0, pTexture );
+    pOglRenderer->CommitPrimitive( pIndices );
+
     pOglRenderer->CommitShader( NULL );
     glPopMatrix();
     
@@ -383,15 +306,9 @@ int main()
     pOglRenderer->DisableClientState( CLIENT_STATE_TEX1_ARRAY );
     pOglRenderer->DisableTexture( 0, pTexture );
     pOglRenderer->DisableTexture( 1, pTexture );
-    pOglRenderer->CommitState( STATE_DEPTH_TEST );
-    pOglRenderer->CommitState( STATE_ALPHA_TEST );
+    
 
-    glPushMatrix();
-    glRotatef( fAngle*4.0f, 0, 1, 0 );
-    glEnable(GL_CULL_FACE);
-    pOglRenderer->CommitModel( fighterModel );
-    glDisable(GL_CULL_FACE);
-    glPopMatrix();
+
     pOglRenderer->DisableState( STATE_ALPHA_TEST );
     pOglRenderer->DisableState( STATE_DEPTH_TEST );
     pOglRenderer->Finalize();
