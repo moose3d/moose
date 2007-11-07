@@ -416,6 +416,16 @@ namespace Phoenix
 		       const Phoenix::Spatial::CVertex &vertexTwo,
 		       const Phoenix::Spatial::CVertex &vertexThree,
 		       const Phoenix::Spatial::CVertex &vertexFour);
+      ////////////////////
+      /// Creates cache for VertexDescriptor, or updates existing if necessary.
+      /// \param rVertexDescriptor Reference to VertexDescriptor.
+      /// \returns zero on success.
+      /// \returns non-zero on error.
+      int CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor );
+      ////////////////////
+      /// Creates cache for VertexDescriptor.
+      /// \param rVertexDescriptor Reference to VertexDescriptor.
+      void RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics

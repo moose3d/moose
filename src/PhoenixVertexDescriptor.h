@@ -2,6 +2,7 @@
 #define __PhoenixVertexDescriptor_h__
 /////////////////////////////////////////////////////////////////
 #include <stdlib.h>
+#include <PhoenixCore.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
 {
@@ -41,11 +42,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
-    /// \todo Add VBO index into this; it will make things draw faster.
-    /// \todo Also it allows very to use it if VBOs are supported and 
-    /// \todo draw things as normal if they aren't.Also an indicator for 
-    /// \todo updating the cache would be necessary.
-    class CVertexDescriptor
+    class CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>
     {  
     protected:
       /// number of elements.
@@ -85,7 +82,6 @@ namespace Phoenix
       {
 	return m_nSize;
       }
-      
     };
   };  // end namespace Graphics
 };// end namespace Phoenix

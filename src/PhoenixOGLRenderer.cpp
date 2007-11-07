@@ -161,29 +161,77 @@ Phoenix::Graphics::COglRenderer::Finalize()
 void 
 Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
+  // implemantation does not take into account if VBO is not supported.
+
   switch( pBuffer->GetType() )
   {
   case ELEMENT_TYPE_VERTEX_3F:
     glEnableClientState( GL_VERTEX_ARRAY );
-    glVertexPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glVertexPointer( 3, GL_FLOAT, 0, 0);
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glVertexPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
     break;
   case ELEMENT_TYPE_COLOR_4UB:
     glEnableClientState( GL_COLOR_ARRAY );
-    glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
+    }
     break;
   case ELEMENT_TYPE_COLOR_3F:
     glEnableClientState( GL_COLOR_ARRAY );
-    glColorPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glColorPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glColorPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
     break;
   case ELEMENT_TYPE_TEX_2F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
     else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
-    glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
     break;
   case ELEMENT_TYPE_NORMAL_3F:
-    glNormalPointer( GL_FLOAT, 0, pBuffer->GetPointer<float>());
     glEnableClientState( GL_NORMAL_ARRAY );
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glNormalPointer( GL_FLOAT, 0, 0);
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
+      glNormalPointer( GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_UNIFORM_2F:
@@ -1238,5 +1286,47 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
     COMMIT_VERTEX( vertexFour );
   glEnd();
 #undef COMMIT_VERTEX
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
+{
+  if ( !m_pFeatures->HasVertexBufferObject() ) return 1;
+  
+  if(  !rVertexDescriptor.IsCached() )
+  {
+    glGenBuffersARB(1, &rVertexDescriptor.GetCache());
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, rVertexDescriptor.GetCache());
+    glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
+		     sizeof(float)*3*rVertexDescriptor.GetSize(), 
+		     rVertexDescriptor.GetPointer<float>(), 
+		     GL_STATIC_DRAW_ARB);
+
+    // Prepare for case that data does not fit
+    if ( glGetError() == GL_OUT_OF_MEMORY )
+    {
+      glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
+    }
+    else
+    {
+      rVertexDescriptor.SetState(Phoenix::Core::CACHE_UP2DATE);
+    }
+    // Unset current cache buffer.
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+  }
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
+{
+  if ( !m_pFeatures->HasVertexBufferObject() ) return;
+  
+  if(  !rVertexDescriptor.IsCached() )
+  {
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+    glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
+    rVertexDescriptor.SetState(Phoenix::Core::CACHE_NOCACHE);
+  }
 }
 /////////////////////////////////////////////////////////////////
