@@ -214,6 +214,8 @@ int main()
   loader.ResetIndices();
   
   CVertexDescriptor *pVD = (g_DefaultVertexManager->GetResource(pModel->GetVertexHandle()));
+  pOglRenderer->CommitCache( *pVD );
+  
   CSphere sphere = CalculateBoundingSphereTight( *pVD);
   pGameObject->GetBoundingSphere() = sphere;
   
@@ -279,10 +281,11 @@ int main()
     //pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
     //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
     //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
-    pRenderQueue->Render<CGameObjectOGLAdapter>( *pOglRenderer, oglAdapter );
+    for(int i=0;i<160;i++)
+      pRenderQueue->Render<CGameObjectOGLAdapter>( *pOglRenderer, oglAdapter );
     
     //pOglRenderer->RollbackTransform();
-
+      
     if ( camera.IsProjectionChanged() ) 
     {
       camera.UpdateProjection();
@@ -295,7 +298,7 @@ int main()
       bChange = 1;
     }
 
-    if ( bChange )
+    if ( 1 || bChange )
     {
       camera.CalculateFrustum();    
       camera.CalculateBoundingSphere();
@@ -312,6 +315,7 @@ int main()
     }
 
   }
+  pOglRenderer->RollbackCache( *pVD );
   CSDLScreen::DestroyInstance();
   return 0;
 }
