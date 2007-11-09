@@ -189,6 +189,30 @@ void DrawFrustum( CCamera &camera )
   glPopMatrix();
   gluDeleteQuadric(q);
 }
+void DrawSpheres( CCamera &camera, std::list<Phoenix::Volume::CSphere> &listOfSpheres )
+{
+
+  GLUquadric * q = gluNewQuadric();
+  gluQuadricDrawStyle(q, GLU_SILHOUETTE);
+  std::list<Phoenix::Volume::CSphere>::iterator it = listOfSpheres.begin();
+  for( ; it != listOfSpheres.end(); it++)
+  {
+
+    glPushMatrix();
+    glTranslatef( (*it).GetPosition()[0], 
+		  (*it).GetPosition()[1],
+		  (*it).GetPosition()[2]);
+    glRotatef( 90.0f, 1, 0, 0);
+
+    if ( Phoenix::Collision::SphereIntersectsSphere( camera.FrustumSphere(), *it ) && camera.Frustum().IntersectsSphere( *it ))
+      glColor3f(1.0,1.0,0);
+    else
+      glColor3f(0,0.5,0);
+    gluDisk(q, 0.0, (*it).GetRadius(), 24, 24);
+    glPopMatrix();
+  }
+  gluDeleteQuadric(q);
+}
 /////////////////////////////////////////////////////////////////
 int g_bLoop = 1;
 int main()
@@ -229,6 +253,14 @@ int main()
   pOctreeNode->SetWidth( 20.0f);
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
+  std::list<Phoenix::Volume::CSphere> listOfSpheres;
+  for(int i=0;i<10;i++)
+    for(int j=0;j<10;j++)
+      {
+
+	listOfSpheres.push_back( Phoenix::Volume::CSphere(CVector3<float>(i*25-100,0,j*25-100),20));
+      }
+	
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -274,7 +306,9 @@ int main()
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->DisableState( STATE_LIGHTING );
     pOglRenderer->CommitCamera( camera );
-
+    
+    
+    
     test.UpdateProjection();
     test.UpdateView();
     test.CalculateFrustum();    
@@ -283,9 +317,11 @@ int main()
     CVector4<unsigned char> color(255,255,255,255);
     pOglRenderer->CommitColor(color );
     DrawFrustum( test);
-    g_nDrawnNodes = 0;
-    DrawOctree( pOctree->GetRoot(), test );
 
+    g_nDrawnNodes = 0;
+    //DrawOctree( pOctree->GetRoot(), test );
+
+    DrawSpheres( test, listOfSpheres);
     pOglRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
   }
