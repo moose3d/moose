@@ -228,7 +228,7 @@ int main()
   test.SetPosition( 0.0f, 0.0f,0.0f);
   test.SetViewport( 0,0, 640, 480 );
   test.SetNearClipping( 0.1f);
-  test.SetFarClipping( 20.0f );
+  test.SetFarClipping( 120.0f );
   test.SetViewOrtho( -200,200, -150, 150);
   test.SetFieldOfView( 45.0f);
 
@@ -246,7 +246,7 @@ int main()
   COglRenderer *pOglRenderer = new COglRenderer();
   
 
-  COctree<float> *pOctree = new COctree<float>(5,100.0f);
+  COctree<float> *pOctree = new COctree<float>(4,100.0f);
   
   COctreeNode<float> *pOctreeNode = new COctreeNode<float>();
   pOctreeNode->SetPosition( 0, 0, 0 );
@@ -319,9 +319,9 @@ int main()
     DrawFrustum( test);
 
     g_nDrawnNodes = 0;
-    //DrawOctree( pOctree->GetRoot(), test );
-
-    DrawSpheres( test, listOfSpheres);
+    DrawOctree( pOctree->GetRoot(), test );
+    
+    //DrawSpheres( test, listOfSpheres);
     pOglRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
   }
