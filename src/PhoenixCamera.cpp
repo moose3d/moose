@@ -193,6 +193,18 @@ Phoenix::Graphics::CCamera::FrustumSphere()
   return m_FrustumSphere;
 }
 /////////////////////////////////////////////////////////////////
+const CCone &
+Phoenix::Graphics::CCamera::FrustumCone() const
+{
+  return m_FrustumCone;
+}
+/////////////////////////////////////////////////////////////////
+const CSphere &
+Phoenix::Graphics::CCamera::FrustumSphere() const
+{
+  return m_FrustumSphere;
+}
+/////////////////////////////////////////////////////////////////
 // Handy operator override  for debug printing
 std::ostream &operator<<(std::ostream &stream, const CCamera &obj)
 {
