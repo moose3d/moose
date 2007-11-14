@@ -135,6 +135,14 @@ namespace Phoenix
       /// \returns Reference to sphere.
       Phoenix::Volume::CSphere &FrustumSphere();
       ////////////////////
+      /// Returns reference to the bounding cone
+      /// \returns Reference to cone.
+      const Phoenix::Volume::CCone   &FrustumCone() const;
+      ////////////////////
+      /// Returns reference to the bounding sphere.
+      /// \returns Reference to sphere.
+      const Phoenix::Volume::CSphere &FrustumSphere() const;
+      ////////////////////
       /// Returns true if orthogonal mode is on
       /// \returns Non-zero camera view is orthogonal
       /// \returns Zero if camera view is perspective.
