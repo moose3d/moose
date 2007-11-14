@@ -295,15 +295,39 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
   // Check data type and render.
   if ( pIndexBuffer->IsShortIndices() )   
   {
-    glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
-		    GL_UNSIGNED_SHORT, 
-		    pIndexBuffer->GetPointer<unsigned short int>());
+    // Draw cached
+    if ( pIndexBuffer->IsCached())
+    {
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
+      glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
+		      GL_UNSIGNED_SHORT,  0);
+    }
+    else // Draw uncached
+    {
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+      glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
+		      GL_UNSIGNED_SHORT, 
+		      pIndexBuffer->GetPointer<unsigned short int>());
+    }
   }
   else
   {
-    glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
-		    GL_UNSIGNED_INT, 
-		    pIndexBuffer->GetPointer<unsigned int>());
+    // Draw cached
+    if ( pIndexBuffer->IsCached())
+    {
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
+      glDrawElements( glPrimitive, 
+		      pIndexBuffer->GetNumIndices(), 
+		      GL_UNSIGNED_INT,  0);
+    }
+    else // Draw uncached
+    {
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+      glDrawElements( glPrimitive, 
+		      pIndexBuffer->GetNumIndices(), 
+		      GL_UNSIGNED_INT, 
+		      pIndexBuffer->GetPointer<unsigned int>());
+    }
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -1317,6 +1341,46 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   return 0;
 }
 /////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray )
+{
+  if ( !m_pFeatures->HasVertexBufferObject() ) return 1;
+  
+  if(  !rIndexArray.IsCached() )
+  {
+
+    glGenBuffersARB(1, &rIndexArray.GetCache());
+    glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, rIndexArray.GetCache());
+
+    if ( rIndexArray.IsShortIndices() )
+    {
+      glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 
+		       sizeof(unsigned short int)*rIndexArray.GetNumIndices(), 
+		       rIndexArray.GetPointer<unsigned short int>(), 
+		       GL_STATIC_DRAW_ARB);
+    } 
+    else 
+    {
+      glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 
+		       sizeof(unsigned int)*rIndexArray.GetNumIndices(), 
+		       rIndexArray.GetPointer<unsigned int>(), 
+		       GL_STATIC_DRAW_ARB);
+    }
+    // Prepare for case that data does not fit
+    if ( glGetError() == GL_OUT_OF_MEMORY )
+    {
+      glDeleteBuffersARB( 1, &(rIndexArray.GetCache()));
+    }
+    else
+    {
+      rIndexArray.SetState(Phoenix::Core::CACHE_UP2DATE);
+    }
+    // Unset current cache buffer.
+    glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+  }
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
 {
@@ -1327,6 +1391,19 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescri
     glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
     glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
     rVertexDescriptor.SetState(Phoenix::Core::CACHE_NOCACHE);
+  }
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray )
+{
+  if ( !m_pFeatures->HasVertexBufferObject() ) return;
+  
+  if(  !rIndexArray.IsCached() )
+  {
+    glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+    glDeleteBuffersARB( 1, &rIndexArray.GetCache());
+    rIndexArray.SetState(Phoenix::Core::CACHE_NOCACHE);
   }
 }
 /////////////////////////////////////////////////////////////////
