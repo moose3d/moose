@@ -141,8 +141,16 @@ namespace Phoenix
     int SphereIntersectsAACube( const Phoenix::Volume::CSphere &sphere,  
 				const Phoenix::Volume::CAxisAlignedCube &aaCube);
     
+    ////////////////////
+    /// Checks do two spheres intersect.
+    /// \param sphereOne First sphere
+    /// \param sphereTwo Second sphere
+    /// \returns Zero if spheres do not intersect.
+    /// \returns Non-zero if spheres intersect.
+    int SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, 
+				const Phoenix::Volume::CSphere &sphereTwo );
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
-/*     char SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo); */
+
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
 /*     //char SphereIntersectsOrientedBox( const CSphere &sphere, const COrientedBox &obBox); */
     
