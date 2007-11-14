@@ -469,10 +469,10 @@ template<typename TYPE>
 inline unsigned int 
 Phoenix::Spatial::COctree<TYPE>::GetIndex( float fValue, unsigned nDepth )
 {
-  unsigned int nDimensions = floorf(((float)nDepth) *0.333333333333333f);
+  unsigned int nDimensions = (unsigned int)powf(8.0f, floorf(((float)nDepth) *0.333333333333333f));
   if ( fValue >= GetWorldHalfSize()) return nDimensions-1;
   else if ( fValue <= -GetWorldHalfSize()) return 0;
-  return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* powf(8.0f, nDimensions)));  
+  return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* nDimensions));  
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -494,11 +494,27 @@ inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ )
 {
   unsigned int nNodeCountPrevLevels = (unsigned int)floor( (1-powf(8,nLevel))/-7);
+
+  // How many cubes there are per axis, ie. level 0 = 1, level 1 = 2, level 2 = 4, ...
   float fDimensions = powf(8.0f, ((float)nLevel) *0.333333333333333f);
   unsigned int nDimensions = (unsigned int)fDimensions;
-  unsigned int nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-  unsigned int nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-  unsigned int nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  
+  unsigned int nX;
+  unsigned int nY;
+  unsigned int nZ;
+  // Sanity checks, too large coordinate will set indices way beyond array limits.
+  if (      fX >=  GetWorldHalfSize()) nX = nDimensions - 1;
+  else if ( fX <= -GetWorldHalfSize()) nX = 0;
+  else      nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  
+  if (      fY >=  GetWorldHalfSize()) nY = nDimensions - 1;
+  else if ( fY <= -GetWorldHalfSize()) nY = 0;
+  else	    nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  
+  if (      fZ >=  GetWorldHalfSize()) nZ = nDimensions - 1;
+  else if ( fZ <= -GetWorldHalfSize()) nZ = 0;
+  else      nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
+  
   return nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
 }
 /////////////////////////////////////////////////////////////////
@@ -656,20 +672,25 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
 				     vPosition[1], 
 				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
-  std::cerr << "pushed object into" << pNode  << std::endl;
+  //std::cerr << "pushed object " << pNode  << std::endl;
+  
+
   if ( pNode->GetObjects().size() == 0)
   {
+    //std::cerr << "okay: " << pNode  << std::endl;
     pNode->GetObjects().push_back( object );
+    //std::cerr << "okay2: " << pNode  << std::endl;
     pNode = pNode->GetParent();
     while ( pNode != NULL )
     {
-      std::cerr << " Currently processing " << pNode << std::endl;
+      //std::cerr << " Currently processing " << pNode << std::endl;
       pNode->CheckDoChildrenContainObjects();
       pNode = pNode->GetParent();
     }
   }
   else
   {
+    //std::cerr << "already objects"  << std::endl;
     pNode->GetObjects().push_back( object );
   }
   
