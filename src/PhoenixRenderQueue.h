@@ -76,6 +76,8 @@ Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::
   lstNodePtrs.push_back(octree.GetRoot());
   unsigned int nObjCount = 0;
   Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
+  Phoenix::Volume::CSphere sphere;
+
   while(!lstNodePtrs.empty())
   {
     // Pop first node from list
@@ -86,12 +88,21 @@ Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::
     if ( camera.Frustum().IntersectsCube(*pNode))
     {
       //std::cerr << "Camera intersects!" << std::endl;
+      
       // insert objects from this node into list
-      nObjCount += pNode->GetObjects().size();
+
       typename std::list<TYPE>::iterator it = pNode->GetObjects().begin();
       for( ; it!=pNode->GetObjects().end();it++)
       {
-	m_lstObjects.push_back( *it );
+	sphere = (*it)->GetBoundingSphere();
+	sphere.Move( (*it)->GetTransform().GetTranslation() );
+
+	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
+	     camera.Frustum().IntersectsSphere( sphere))
+	{
+	  m_lstObjects.push_back( *it );
+	  nObjCount++;
+	}
       }
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
