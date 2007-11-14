@@ -587,3 +587,17 @@ Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere,
 
 }
 /////////////////////////////////////////////////////////////////
+int
+Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo )
+{
+  // Get the separating axis
+  CVector3<float> vSepAxis = sphereOne.GetPosition() - sphereTwo.GetPosition();
+
+  // Get the sum of the radii
+  float fSumOfRadii = sphereOne.GetRadius() + sphereTwo.GetRadius();
+  fSumOfRadii = fSumOfRadii * fSumOfRadii;
+  // if the distance between the centers is less than the sum
+  // of the radii, then we have an intersection
+  return (vSepAxis.LengthSqr() < fSumOfRadii);
+}
+/////////////////////////////////////////////////////////////////
