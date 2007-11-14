@@ -423,9 +423,20 @@ namespace Phoenix
       /// \returns non-zero on error.
       int CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor );
       ////////////////////
-      /// Creates cache for VertexDescriptor.
+      /// Creates cache for IndexArray, or updates existing if necessary.
+      /// \param rIndexArray Reference to IndexArray.
+      /// \returns zero on success.
+      /// \returns non-zero on error.
+      int CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray );
+      ////////////////////
+      /// Removes existing cache from VertexDescriptor.
       /// \param rVertexDescriptor Reference to VertexDescriptor.
       void RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor );
+      ////////////////////
+      /// Removes existing cache from IndexArray.
+      /// \param rIndexArray Reference to IndexArray.
+      void RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray );
+
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
