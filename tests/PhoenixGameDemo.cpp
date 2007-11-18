@@ -17,19 +17,47 @@ using std::cerr;
 using std::endl; 
 #define g_PhoenixModelManager (CResourceManager<CModel, CHandle<CModel> >::GetInstance())
 /////////////////////////////////////////////////////////////////
+enum OBJECT_TYPE 
+{
+  O_TYPE_ORDINARY = 0,
+  O_TYPE_LOD = 1
+};
+/////////////////////////////////////////////////////////////////
+class CGameLODObject : public Phoenix::Scene::CGameObject<OBJECT_TYPE>
+{
+private:
+  CHandle<CModel> m_aLodHandle[5];
+public:
+  ////////////////////
+  CGameLODObject()
+  { 
+    SetType(O_TYPE_LOD); 
+  }
+  ////////////////////
+  inline CHandle<CModel> & GetModelHandle( unsigned int nLevel ) 
+  {
+    return m_aLodHandle[nLevel];
+  }
+  ////////////////////
+  inline const CHandle<CModel> & GetModelHandle( unsigned int nLevel )  const
+  {
+    return m_aLodHandle[nLevel];
+  }
+};
+/////////////////////////////////////////////////////////////////
 int g_bLoop = 1;
-class CSpatialGraph : public COctree<Phoenix::Scene::CGameObject *>
+class CSpatialGraph : public COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>
 {
 public:
   ////////////////////
   /// 
-  CSpatialGraph() : COctree<Phoenix::Scene::CGameObject *>(4,400){}
+  CSpatialGraph() : COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>(4,1200){}
   ////////////////////
   /// 
-  void InsertObject( CGameObject *pGameObject )
+  void InsertObject( CGameObject<OBJECT_TYPE> *pGameObject )
   {
     assert(pGameObject!=NULL);
-    unsigned int nSpatialIndex = COctree<Phoenix::Scene::CGameObject *>::InsertObject( 
+    unsigned int nSpatialIndex = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::InsertObject( 
 				  pGameObject, 
 				  pGameObject->GetBoundingSphere().GetPosition() + pGameObject->GetTransform().GetTranslation(),
 				  pGameObject->GetBoundingSphere().GetRadius());
@@ -39,9 +67,9 @@ public:
   }
   ////////////////////
   /// 
-  void DeleteObject( CGameObject *pGameObject )
+  void DeleteObject( CGameObject<OBJECT_TYPE> *pGameObject )
   {
-    COctreeNode<Phoenix::Scene::CGameObject *> *pNode = COctree<Phoenix::Scene::CGameObject *>::GetNodeAt( pGameObject->GetSpatialIndex());
+    COctreeNode<Phoenix::Scene::CGameObject<OBJECT_TYPE> *> *pNode = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetNodeAt( pGameObject->GetSpatialIndex());
     if ( pNode != NULL )
     {
       pNode->DeleteObject( pGameObject );
@@ -49,15 +77,15 @@ public:
   }
   ////////////////////
   /// 
-  void Update( Phoenix::Scene::CGameObject *pGameObject )
+  void Update( Phoenix::Scene::CGameObject<OBJECT_TYPE> *pGameObject )
   {
     CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
     vTmp += pGameObject->GetBoundingSphere().GetPosition();
     float fWorldHalfSizeNeg = -GetWorldHalfSize();
     float fWorldHalfSizePos =  GetWorldHalfSize()-0.001f;
  
-    unsigned int nLevel = COctree<Phoenix::Scene::CGameObject *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
-    unsigned int nIndex = COctree<Phoenix::Scene::CGameObject *>::GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
+    unsigned int nLevel = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
+    unsigned int nIndex = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
     // If object has changed spatial location enough
     if ( pGameObject->GetSpatialIndex() != nIndex)
     {
@@ -136,7 +164,7 @@ public:
   }
   ////////////////////
   ///
-  void Commit( COglRenderer &renderer, const CGameObject *pObject)
+  void Commit( COglRenderer &renderer, const CGameObject<OBJECT_TYPE> *pObject)
   {
     //renderer.CommitColor( CVector4<unsigned char>(255,255,255,255));
     CVector3<float> vDiff;
@@ -146,15 +174,17 @@ public:
     } 
     unsigned int nLength = (unsigned int)vDiff.Length();
     renderer.CommitTransform( pObject->GetTransform() );
-    if ( nLength < 40 )
+    if ( nLength < 140 )
       renderer.CommitModel( *g_PhoenixModelManager->GetResource(pObject->GetModelHandle()));
     else
     {
-      CModel &model = *g_PhoenixModelManager->GetResource(pObject->GetModelHandle());
+      CModel &model = *g_PhoenixModelManager->GetResource( static_cast<const CGameLODObject *>(pObject)->GetModelHandle(0));
       // Retrieve resources
       COglTexture *pTexture = NULL;
       CVertexDescriptor *pTemp = NULL;
       CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
+
+      assert( pVertices != NULL );
       CIndexArray *pIndices = NULL;
   
       // Commit textures
@@ -217,42 +247,20 @@ public:
       { 
 	renderer.CommitVertexDescriptor( pNormals ); 
       }
-      unsigned int nMax;
-      if ( nLength > 400)
-      {
-	nMax = 10;
-      } 
-      else  if ( nLength > 300 )
-      {
-	nMax = 200;
-      }
-      else  if ( nLength > 200 )
-      {
-	nMax = 500;
-      }
-      else if ( nLength > 100 )
-      {
-	nMax = 700;
-      }
-      else 
-      {
-	nMax = 1690;
-      }
-      unsigned int nCurrentCount = 0;
+
       for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
       {
 	pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandles()[n] );
 	
-	if ( nCurrentCount >= nMax ) break;
 
 	if ( pIndices  != NULL ) 
 	{ 
 	  renderer.CommitPrimitive ( pIndices );         
-	  nCurrentCount += pIndices->GetNumIndices()-2;
+	  
 	}
 	
       }
-
+      
     }
     renderer.RollbackTransform();
     //m_bFirstTime = 0;
@@ -304,11 +312,12 @@ int main()
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
   
-  CGameObject *pGameObject = new CGameObject();
+  CGameObject<OBJECT_TYPE> *pGameObject = new CGameObject<OBJECT_TYPE>();
+  CGameObject<OBJECT_TYPE> *pGameObjectLod2 = new CGameObject<OBJECT_TYPE>();
   CGameObjectOGLAdapter oglAdapter;
   
-  Phoenix::Graphics::CRenderQueue<CGameObject *> *pRenderQueue = 
-      new Phoenix::Graphics::CRenderQueue<CGameObject *>();
+  Phoenix::Graphics::CRenderQueue<CGameObject<OBJECT_TYPE> *> *pRenderQueue = 
+      new Phoenix::Graphics::CRenderQueue<CGameObject<OBJECT_TYPE> *>();
 
 
   /////////////////////////////////////////////////////////////////
@@ -355,12 +364,55 @@ int main()
   pGameObject->GetTransform().SetTranslation( 0,-10,0);  
   assert( g_PhoenixModelManager->Create( pModel, "OmegaModel", 
 					 pGameObject->GetModelHandle()) == 0);
-  
+  COglTexture *pTexture = pOglRenderer->CreateTexture("Resources/Textures/omega.tga");
+  assert(g_DefaultTextureManager->Create( pTexture, "omega_texture", pModel->GetTextureHandle()) == 0);
   CSpatialGraph *pSpatialGraph = new CSpatialGraph();
-  pSpatialGraph->InsertObject( pGameObject );
+  //pSpatialGraph->InsertObject( pGameObject );
   
   oglAdapter.SetCamera( camera);
 
+  CModel *pModelLod2 = new CModel();
+
+
+  Phoenix::Data::CMilkshapeLoader loader2;
+  name = "Resources/Models/omega_simple.ms3d";
+  assert ( loader2.Load( name ) == 0 && "Could not open model file!");
+  cerr << "Calling GenerateModelData" << endl;
+  loader2.GenerateModelData();
+  cerr << "Finished Calling GenerateModelData" << endl;
+
+
+
+  assert(g_DefaultTextureManager->AttachHandle( "omega_texture", pModelLod2->GetTextureHandle()) == 0);
+  
+  assert(g_DefaultVertexManager->Create( loader2.GetVertices(),  "fighter_vertices_lod2",  pModelLod2->GetVertexHandle() )            == 0);  
+  assert(g_DefaultVertexManager->Create( loader2.GetTexCoords(), "fighter_texcoords_lod2", pModelLod2->GetTextureCoordinateHandle() ) == 0);
+  assert(g_DefaultVertexManager->Create( loader2.GetNormals(),   "fighter_normals_lod2",   pModelLod2->GetNormalHandle() )            == 0);
+
+  assert( g_PhoenixModelManager->Create( pModelLod2, "OmegaModelLod2", 
+					 pGameObjectLod2->GetModelHandle()) == 0);
+  
+  pVD = (g_DefaultVertexManager->GetResource(pModelLod2->GetVertexHandle()));
+  pOglRenderer->CommitCache( *pVD );
+
+  // create resources for indices.
+  for(unsigned int i=0;i<loader2.GetIndices().size();i++)
+  {
+    std::ostringstream stream;
+    stream << "fighter_indices_lod2_" << i;
+    pModelLod2->AddIndexHandle( INDEX_HANDLE() );    
+
+    assert( g_DefaultIndexManager->Create( loader2.GetIndices()[i], 
+					   stream.str(), 
+					   pModelLod2->GetIndexHandles().back() ) == 0);
+    
+    pOglRenderer->CommitCache(*loader2.GetIndices()[i]);
+    
+  }  
+  loader2.ResetVertices();
+  loader2.ResetTexCoords();
+  loader2.ResetNormals();
+  loader2.ResetIndices();
   // Shove in about 512 objects
 #define INSERT_OBJ
 #ifdef INSERT_OBJ
@@ -368,11 +420,12 @@ int main()
     for(unsigned int h=0;h<8;h++)
       for(unsigned int d=0;d<8;d++)
       {
-	CGameObject *pTemp = new CGameObject();
-	pTemp->GetTransform().SetTranslation( -200.0f+w*45,-200.0f+h*45,-200.0f+d*45);  
+	//CGameObject<OBJECT_TYPE> *pTemp = new CGameObject<OBJECT_TYPE>();
+	CGameLODObject *pTemp = new CGameLODObject();
+	pTemp->GetTransform().SetTranslation( -200.0f+w*145,-200.0f+h*145,-200.0f+d*145);  
 	pTemp->GetBoundingSphere() = sphere;
-	g_PhoenixModelManager->AttachHandle( "OmegaModel", pTemp->GetModelHandle());
-	
+	g_PhoenixModelManager->AttachHandle( "OmegaModel", static_cast<CGameObject<OBJECT_TYPE> *>(pTemp)->GetModelHandle());
+	g_PhoenixModelManager->AttachHandle( "OmegaModelLod2", pTemp->GetModelHandle(0));
 	pSpatialGraph->InsertObject(pTemp);
 	//std::cerr << "inserting " << std::endl;
       }
@@ -383,7 +436,11 @@ int main()
   int bChange = 0;
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
   glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
+  SDL_WM_GrabInput(SDL_GRAB_ON);
+  SDL_WarpMouse( (int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f) );
   
+  CVector2<int> vMousePos((int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f)) ;
+
   while( g_bLoop )
   {
     fpsCounter.Update();
@@ -396,22 +453,33 @@ int main()
 	{
 	  g_bLoop = 0;
 	}
-	else if ( event.key.keysym.sym == SDLK_UP )
+	else if ( event.key.keysym.sym == SDLK_w )
 	{
 	  camera.Move( 1.3f );
 	}      
-	else if ( event.key.keysym.sym == SDLK_DOWN )
+	else if ( event.key.keysym.sym == SDLK_s )
 	{
 	  camera.Move( -1.3f );
 	} 
-	else if ( event.key.keysym.sym == SDLK_LEFT )
+	else if ( event.key.keysym.sym == SDLK_a )
 	{
-	  camera.RotateAroundUp( 1.1f );
+	  camera.Strafe( -1.1f );
 	}      
-	else if ( event.key.keysym.sym == SDLK_RIGHT )
+	else if ( event.key.keysym.sym == SDLK_d )
 	{
-	  camera.RotateAroundUp( -1.1f );
+	  camera.Strafe( 1.1f );
 	} 
+	break;
+      case SDL_MOUSEMOTION:
+	{
+	  CVector2<int> vMousePosCurrent(event.motion.x, event.motion.y);
+	  CVector2<int> vMouseDiff = vMousePos - vMousePosCurrent;
+	  vMousePos = vMousePosCurrent;
+	  cerr << "mousediff:" << vMouseDiff << endl;
+	  camera.RotateAroundUp(vMouseDiff[0]);
+	  camera.RotateAroundRight(vMouseDiff[1]);	
+
+	}
 	break;
       default:
 	break;
@@ -447,6 +515,7 @@ int main()
 
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+    pOglRenderer->CommitState( STATE_DEPTH_TEST );
     nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
     pOglRenderer->CommitCamera( camera );
     //pOglRenderer->DisableState( STATE_LIGHTING );
@@ -473,5 +542,6 @@ int main()
   }
   pOglRenderer->RollbackCache( *pVD );
   CSDLScreen::DestroyInstance();
+  SDL_WM_GrabInput(SDL_GRAB_OFF);
   return 0;
 }
