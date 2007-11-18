@@ -358,18 +358,10 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   float fAx = fabsf( vEdge0[0] );
   float fAy = fabsf( vEdge0[2] );
   float fAz = fabsf( vEdge0[1] );
-
-  cerr << "fAx: " << fAx << endl;
-  cerr << "fAy: " << fAy << endl;
-  cerr << "fAz: " << fAz << endl;
-
-  cerr << "vEdge0 " << vEdge0 << endl;
-  cerr << "vVertex0 " << vVertex0 << endl;
-  cerr << "vVertex2 " << vVertex2 << endl;
   
-  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  { cerr << "1.1" << endl; return 0; }
-  if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  { cerr << "1.2" << endl; return 0; }
-  if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  { cerr << "1.3" << endl; return 0; }
+  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  return 0;
+  if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  return 0;
+  if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  return 0;
 
   fAx = fabsf( vEdge1[0] );
   fAy = fabsf( vEdge1[2] );
