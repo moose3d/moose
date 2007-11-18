@@ -352,19 +352,29 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   CVector3<float> vEdge0 = vVertex1 - vVertex0;
   CVector3<float> vEdge1 = vVertex2 - vVertex1;
   CVector3<float> vEdge2 = vVertex0 - vVertex2;
-  
+
   ////////////////////
   // These have been slightly optimized by calculating absolute values only once.
   float fAx = fabsf( vEdge0[0] );
   float fAy = fabsf( vEdge0[2] );
   float fAz = fabsf( vEdge0[1] );
-  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  return 0; 
-  if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  return 0;
-  if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  return 0;
+
+  cerr << "fAx: " << fAx << endl;
+  cerr << "fAy: " << fAy << endl;
+  cerr << "fAz: " << fAz << endl;
+
+  cerr << "vEdge0 " << vEdge0 << endl;
+  cerr << "vVertex0 " << vVertex0 << endl;
+  cerr << "vVertex2 " << vVertex2 << endl;
   
+  if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  { cerr << "1.1" << endl; return 0; }
+  if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  { cerr << "1.2" << endl; return 0; }
+  if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  { cerr << "1.3" << endl; return 0; }
+
   fAx = fabsf( vEdge1[0] );
   fAy = fabsf( vEdge1[2] );
   fAz = fabsf( vEdge1[1] );
+
   if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) )  return 0;  
   if ( !AxisTestY( box, vEdge1, fAy, fAx, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge1, fAz, fAx, vVertex0, vVertex2) )  return 0;
@@ -372,10 +382,10 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAx = fabsf( vEdge2[0] );
   fAy = fabsf( vEdge2[2] );
   fAz = fabsf( vEdge2[1] );
+
   if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) )  return 0; 
   if ( !AxisTestY( box, vEdge2, fAy, fAx, vVertex1, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge2, fAz, fAx, vVertex1, vVertex2) )  return 0;
-
   
   float fMin, fMax;
   // Test X-direction triangle AABB bs box

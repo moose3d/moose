@@ -21,7 +21,7 @@ OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o \
  PhoenixVertexDescriptor.o PhoenixVolume.o PhoenixFrustum.o \
  PhoenixCamera.o PhoenixMathGeometry.o PhoenixTexture.o PhoenixModel.o \
  PhoenixShader.o PhoenixCollision.o PhoenixMilkshapeLoader.o PhoenixSkybox.o \
- PhoenixGameObject.o PhoenixTransform.o
+ PhoenixTransform.o
 #/////////////////////////////////////////////////////////////////
 all:  linux
 
