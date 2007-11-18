@@ -12,12 +12,14 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
+    template <typename TYPE>
     class CGameObject
     {
     private:
       /// Model object
-      //Phoenix::Graphics::CModel		m_Model;
       Phoenix::Core::CHandle<Phoenix::Graphics::CModel>    m_hModel;
+      /// Object type
+      TYPE				m_Type;
       /// World tranform 
       Phoenix::Math::CTransform		m_Transform;
       /// Model bounding sphere
@@ -26,8 +28,6 @@ namespace Phoenix
       //Phoenix::Volume::COrientedBox	m_BoundingBox;
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
-      /// Has this object moved.
-      //int				m_bHasMoved;
     public:
       ////////////////////
       /// Constructor.
@@ -68,75 +68,97 @@ namespace Phoenix
       /// \param nIndex New index.
       void SetSpatialIndex( unsigned int nIndex );
       ////////////////////
-      /// Chech has object moved .
-      /// \returns non-zero if moved, zero otherwise.
-      //int HasMoved() const;
+      /// Returns the type of this object.
+      /// \returns object type
+      const TYPE GetType() const;
       ////////////////////
-      /// Set object moved / unmoved.
-      /// \param bFlag Non-zero for move, zero for not moved.
-      //void SetMoved(int bFlag);
+      /// Sets object type.
+      /// \param type Object type.
+      void SetType(TYPE type);
     };
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
+Phoenix::Scene::CGameObject<TYPE>::CGameObject() : m_Type((TYPE)0)
+{
+  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+Phoenix::Scene::CGameObject<TYPE>::~CGameObject()
+{
+  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject::GetModelHandle()
+Phoenix::Scene::CGameObject<TYPE>::GetModelHandle()
 {
   return m_hModel;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject::GetModelHandle() const
+Phoenix::Scene::CGameObject<TYPE>::GetModelHandle() const
 {
   return m_hModel;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline Phoenix::Math::CTransform & 
-Phoenix::Scene::CGameObject::GetTransform()
+Phoenix::Scene::CGameObject<TYPE>::GetTransform()
 {
   return m_Transform;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline const Phoenix::Math::CTransform & 
-Phoenix::Scene::CGameObject::GetTransform() const
+Phoenix::Scene::CGameObject<TYPE>::GetTransform() const
 {
   return m_Transform;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline Phoenix::Volume::CSphere & 
-Phoenix::Scene::CGameObject::GetBoundingSphere()
+Phoenix::Scene::CGameObject<TYPE>::GetBoundingSphere()
 {
   return m_BoundingSphere;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline const Phoenix::Volume::CSphere & 
-Phoenix::Scene::CGameObject::GetBoundingSphere() const
+Phoenix::Scene::CGameObject<TYPE>::GetBoundingSphere() const
 {
   return m_BoundingSphere;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline unsigned int 
-Phoenix::Scene::CGameObject::GetSpatialIndex() const 
+Phoenix::Scene::CGameObject<TYPE>::GetSpatialIndex() const 
 {
   return m_nSpatialIndex;
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
 inline void 
-Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
+Phoenix::Scene::CGameObject<TYPE>::SetSpatialIndex( unsigned int nIndex )
 {
   m_nSpatialIndex = nIndex;
 }
 /////////////////////////////////////////////////////////////////
-/* inline int  */
-/* Phoenix::Scene::CGameObject::HasMoved() const */
-/* { */
-/*   return m_bHasMoved; */
-/* } */
-/* ///////////////////////////////////////////////////////////////// */
-/* inline int  */
-/* Phoenix::Scene::CGameObject::SetMoved(int bFlag) const */
-/* { */
-/*   m_bHasMoved = bFlag; */
-/* } */
+template<typename TYPE>
+inline const TYPE
+Phoenix::Scene::CGameObject<TYPE>::GetType() const
+{
+  return m_Type;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline void
+Phoenix::Scene::CGameObject<TYPE>::SetType(TYPE type) 
+{
+  m_Type = type;
+}
 /////////////////////////////////////////////////////////////////
 #endif
