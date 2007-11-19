@@ -53,7 +53,7 @@ namespace Phoenix
     
 	stream.str("");
 	stream << "EnergyBeam_" << nNum << "_params";
-	std::cerr << "Stream contents is : " << stream.str() << std::endl;
+	//std::cerr << "Stream contents is : " << stream.str() << std::endl;
 	m_pTimeParam = new CVertexDescriptor( ELEMENT_TYPE_UNIFORM_1F, 1 );
 	m_pTimeParam->GetPointer<float>()[0] = 0.0f;
     
