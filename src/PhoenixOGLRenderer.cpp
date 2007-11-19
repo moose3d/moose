@@ -2,6 +2,7 @@
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <string.h>
 #include <list>
 #include <iostream>
 #include "PhoenixGlobals.h"
@@ -694,7 +695,7 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
 }
 /////////////////////////////////////////////////////////////////
 int
-LoadFile( const std::string & strFilename, std::string &sContents )
+LoadFile( const char * szFilename, std::string &sContents )
 {
 
   // Temporary container for line 
@@ -702,7 +703,7 @@ LoadFile( const std::string & strFilename, std::string &sContents )
   // The file stream 
   ifstream fsFile;
   // open file 
-  fsFile.open( strFilename.c_str(), ios::in );
+  fsFile.open( szFilename, ios::in );
   // test for failure 
   if ( fsFile.is_open() ) 
   {
@@ -717,7 +718,7 @@ LoadFile( const std::string & strFilename, std::string &sContents )
   } 
   else 
   {
-    std::cerr << "The file " << strFilename
+    std::cerr << "The file " << szFilename
 	      << " couldn't be opened."  << std::endl;
     return 1;
   }
@@ -782,7 +783,13 @@ GetProgramInfoLog( unsigned int nProg, std::string &strInfoLog )
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CShader * 
-Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std::string strFragmentShader )
+Phoenix::Graphics::COglRenderer::CreateShader( const std::string & strVertexShader, const std::string & strFragmentShader )
+{
+  return CreateShader(strVertexShader.c_str(), strFragmentShader.c_str());
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShader * 
+Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, const char * szFragmentShader )
 {
 
   int bHasShader = 0;
@@ -800,11 +807,11 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
 
   ////////////////////
   // Vertex shader loading
-  if ( strVertexShader.size() > 0 )
+  if ( szVertexShader != NULL && strlen(szVertexShader) > 0 )
   {
-    if ( LoadFile( strVertexShader, strVSSource ))
+    if ( LoadFile( szVertexShader, strVSSource ))
     {
-      std::cerr << "Failed to load vertex shader '" << strVertexShader << "'" << std::endl;
+      std::cerr << "Failed to load vertex shader '" << szVertexShader << "'" << std::endl;
     }
     else
     {
@@ -833,11 +840,11 @@ Phoenix::Graphics::COglRenderer::CreateShader( std::string strVertexShader, std:
   }
   ////////////////////
   // Fragment shader loading 
-  if ( strFragmentShader.size() > 0 )
+  if ( szFragmentShader != NULL && strlen(szFragmentShader) > 0 )
   {
-    if ( LoadFile( strFragmentShader, strFSSource ))
+    if ( LoadFile( szFragmentShader, strFSSource ))
     {
-      std::cerr << "Failed to load fragment shader '" << strFragmentShader << "'" << std::endl;
+      std::cerr << "Failed to load fragment shader '" << szFragmentShader << "'" << std::endl;
     }
     else
     {
