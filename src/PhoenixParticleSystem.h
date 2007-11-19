@@ -2,8 +2,11 @@
 #ifndef __PhoenixParticleSystem_h__
 #define __PhoenixParticleSystem_h__
 /////////////////////////////////////////////////////////////////
+#include <PhoenixGlobals.h>
 #include <PhoenixVector3.h>
 #include <PhoenixVolume.h>
+#include <PhoenixVertexDescriptor.h>
+#include <PhoenixIndexArray.h>
 #include <list>
 #include <iostream>
 namespace Phoenix 
@@ -119,8 +122,12 @@ namespace Phoenix
       int IsAlive() const;
       /////////////////////////////////////////////////////////////////
     }; // CParticleSystem
+
+
     /////////////////////////////////////////////////////////////////
     // Policies for ParticleSystems.
+    /////////////////////////////////////////////////////////////////
+
     /////////////////////////////////////////////////////////////////
     /// CompletePolicy for handling size, color, velocity, energy, and position.
     template < class PARTICLE_TYPE, class ColorPolicy, class SizePolicy, class VelocityPolicy, 

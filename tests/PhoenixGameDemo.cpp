@@ -20,7 +20,36 @@ using std::endl;
 enum OBJECT_TYPE 
 {
   O_TYPE_ORDINARY = 0,
-  O_TYPE_LOD = 1
+  O_TYPE_LOD = 1,
+  O_TYPE_PS = 2
+};
+/////////////////////////////////////////////////////////////////
+typedef CParticleSystem<35,CNullPolicy<CParticle>,CNullPolicy<CParticle>,CParticle> CExplosion;
+
+class CGamePSObject : public Phoenix::Scene::CGameObject<OBJECT_TYPE>
+{
+private:
+  CVertexDescriptor *m_pVertexDescriptor;
+  CExplosion         m_Explosion;
+public:
+  ////////////////////
+  /// 
+  CGamePSObject()  
+  {
+    SetType(O_TYPE_PS);
+    m_pVertexDescriptor = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, m_Explosion.GetMaxParticles());
+  }
+  ////////////////////
+  ///
+  ~CGamePSObject( )
+  {
+    delete m_pVertexDescriptor;
+  }
+  
+  void UpdateRenderableData()
+  {
+
+  }
 };
 /////////////////////////////////////////////////////////////////
 class CGameLODObject : public Phoenix::Scene::CGameObject<OBJECT_TYPE>

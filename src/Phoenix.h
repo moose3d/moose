@@ -28,4 +28,4 @@
 #include "PhoenixRenderQueue.h"
 #include "PhoenixGameObject.h"
 #include "PhoenixTransform.h"
-
+#include "PhoenixParticleSystem.h"
