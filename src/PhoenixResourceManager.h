@@ -270,6 +270,18 @@ namespace Phoenix
       /// \returns zero on success, non-zero on error.
       int Create( OBJECTTYPE *pType, const char *szStrName, HANDLE &Handle );
       ////////////////////
+      /// Creates new resource to pointer, named strName.
+      /// \param pType Pointer to object.
+      /// \param strName Name for this resource.
+      /// \returns zero on success, non-zero on error.
+      int Create( OBJECTTYPE *pType, const std::string &strName );
+      ////////////////////
+      /// Creates new resource to pointer, named strName.
+      /// \param pType Pointer to object.
+      /// \param szStrName Name for this resource.
+      /// \returns zero on success, non-zero on error.
+      int Create( OBJECTTYPE *pType, const char *szStrName );
+      ////////////////////
       /// Attaches handle to resource.
       /// \warning Remember to use ACTUAL handle that resides in final position in the memory.
       /// \warning Otherwise, you WILL get nasty segfaults and handles start pointing
@@ -356,42 +368,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
 							    const std::string &strName, 
 							    HANDLE &Handle )
 {
-  if ( m_pResourceHash == NULL )
-  {
-    Initialize();
-  }
-  if ( m_pResourceHash->Find(strName)==NULL )
-  {
-    // Create resource object
-    CResource<OBJECTTYPE,HANDLE> *pResource = new CResource<OBJECTTYPE,HANDLE>();
-    pResource->SetObject(pType);
-    pResource->SetName( strName );
-
-    // Insert object into manager and get its index
-    m_vecObjects.push_back( pResource );
-    unsigned int nIndex = m_vecObjects.size() - 1;
-
-    // Create object with name and index mapping
-    CResourceName resourceName;
-    resourceName.SetName( strName );
-    resourceName.SetIndex( nIndex );
-
-    // Put string-> resourcename into hashtable.
-    CHashItem<std::string,CResourceName> hashItem;
-    hashItem.SetKey(strName);
-    hashItem.SetObject(resourceName);
-    
-    m_pResourceHash->Insert( hashItem );
-    Handle.Initialize( nIndex );
-    // Add handle to list of handles to be updated. 
-    m_vecObjects[nIndex]->ValidateHandle( Handle );
-    return 0;
-  } 
-  else
-  {
-    Handle.Nullify();
-  }
-  return -1;
+  return Create(pType, strName.c_str(), Handle );
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
@@ -437,6 +414,53 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
   {
     Handle.Nullify();
   }
+  return -1;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+int
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType, 
+							    const std::string &strName)
+{
+  return Create(pType, strName.c_str() );
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+int
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType, 
+							    const char *szStrName)
+{
+  // more comp
+  std::string strName(szStrName);
+  if ( m_pResourceHash == NULL )
+  {
+    Initialize();
+  }
+  if ( m_pResourceHash->Find(strName)==NULL )
+  {
+    // Create resource object
+    CResource<OBJECTTYPE,HANDLE> *pResource = new CResource<OBJECTTYPE,HANDLE>();
+    pResource->SetObject(pType);
+    pResource->SetName( strName );
+
+    // Insert object into manager and get its index
+    m_vecObjects.push_back( pResource );
+    unsigned int nIndex = m_vecObjects.size() - 1;
+
+    // Create object with name and index mapping
+    CResourceName resourceName;
+    resourceName.SetName( strName );
+    resourceName.SetIndex( nIndex );
+
+    // Put string-> resourcename into hashtable.
+    CHashItem<std::string,CResourceName> hashItem;
+    hashItem.SetKey(strName);
+    hashItem.SetObject(resourceName);
+    
+    m_pResourceHash->Insert( hashItem );
+    return 0;
+  } 
+  
   return -1;
 }
 /////////////////////////////////////////////////////////////////
