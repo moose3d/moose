@@ -7,6 +7,7 @@
 using namespace Phoenix::Core;
 /////////////////////////////////////////////////////////////////
 typedef CResourceManager<int, CHandle<int> > CIntResourceMgr;
+#define UINT unsigned int
 /////////////////////////////////////////////////////////////////
 TEST( PhoenixResourceManager )
 {
@@ -53,6 +54,33 @@ TEST( PhoenixResourceManager_Create )
   
 }
 /////////////////////////////////////////////////////////////////
+TEST( PhoenixResourceManager_Create_NoHandle )
+{
+
+  CIntResourceMgr *pMgr = CIntResourceMgr::GetInstance();
+  CHandle<int> handle;
+  int *pResource = new int;
+  *pResource = 4;
+  CHandle<int> handleNotFound;
+  CHandle<int> handleNotFound2;
+  handleNotFound2.Initialize(65);
+  ////////////////////
+  std::string strResName("resourcetest");
+  std::string strSearch("resourcetest");
+  std::string strSearchNotFound("thisIsNotHere");
+  ////////////////////
+  CHECK_EQUAL( 0, pMgr->Create( pResource, strResName ));
+  CHECK_EQUAL( 0, pMgr->AttachHandle( "resourcetest", handle) );
+  
+  CHECK( pMgr->GetResource( handle ) == pResource );
+  CHECK( pMgr->GetResource( strSearch) ==  pResource );
+  CHECK( pMgr->GetResource( strSearchNotFound) ==  NULL );
+  CHECK( pMgr->GetResource( handleNotFound ) == NULL );
+  CHECK( pMgr->GetResource( handleNotFound2 ) == NULL );
+  
+  CIntResourceMgr::DestroyInstance();
+  
+}
 /////////////////////////////////////////////////////////////////
 TEST( PhoenixResourceManager_Delete )
 {
@@ -94,10 +122,10 @@ TEST( PhoenixResourceManager_Delete )
   CHECK( pMgr->GetResource( handle5 ) == NULL );
   CHECK( pMgr->GetResource( handleNull ) == NULL );
 
-  CHECK_EQUAL( 0, handle1.GetIndex());
-  CHECK_EQUAL( 1, handle2.GetIndex());
-  CHECK_EQUAL( 2, handle3.GetIndex());
-  CHECK_EQUAL( 3, handle4.GetIndex());
+  CHECK_EQUAL( (UINT)0, handle1.GetIndex());
+  CHECK_EQUAL( (UINT)1, handle2.GetIndex());
+  CHECK_EQUAL( (UINT)2, handle3.GetIndex());
+  CHECK_EQUAL( (UINT)3, handle4.GetIndex());
   const char *szName = "one";
   CHECK_ARRAY_EQUAL( szName, pMgr->GetResourceName( handle1 ).c_str(), 3);
   const char *szName2 = "two";
@@ -116,9 +144,10 @@ TEST( PhoenixResourceManager_Delete )
   CHECK( pMgr->GetResource( handle5 ) == NULL );
   CHECK( pMgr->GetResource( handleNull ) == NULL );
   CHECK( handle1.IsNull());
-  CHECK_EQUAL( 1, handle2.GetIndex());
-  CHECK_EQUAL( 2, handle3.GetIndex());
-  CHECK_EQUAL( 0, handle4.GetIndex());
+  CHECK_EQUAL( (UINT)1, handle2.GetIndex());
+  CHECK_EQUAL( (UINT)2, handle3.GetIndex());
+  CHECK_EQUAL( (UINT)0, handle4.GetIndex());
   
+  CIntResourceMgr::DestroyInstance();
 }
 /////////////////////////////////////////////////////////////////
