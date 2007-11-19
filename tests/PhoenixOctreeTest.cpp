@@ -29,8 +29,7 @@ TEST( COctree )
 /////////////////////////////////////////////////////////////////
 TEST( COctree_GetIndex1D )
 {
-  float fTmp = 1.0;
-  float fTmp2 = 2.0;
+
   CVector3<float> vPos(99.999,-10,0);
   CVector3<float> vPosNeg(-100.0,-10,0);
   COctree<float> *pOctree = new COctree<float>( 4, 200.0f);
