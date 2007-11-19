@@ -810,9 +810,9 @@ TEST(TriangleIntersectsOBB_BoxRotated)
   
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 0 );
 
-  vTriangle[0] = CVector3<float>(-1,0,SQRT_2);
-  vTriangle[1] = CVector3<float>( 1,0,SQRT_2);
-  vTriangle[2] = CVector3<float>(-1,0,SQRT_2+2.0f);
+  vTriangle[0] = CVector3<float>(-1,0,SQRT_2-0.001f);
+  vTriangle[1] = CVector3<float>( 1,0,SQRT_2-0.001f);
+  vTriangle[2] = CVector3<float>(-1,0,SQRT_2+1.999f);
   
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
 
