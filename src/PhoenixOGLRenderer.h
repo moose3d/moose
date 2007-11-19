@@ -314,7 +314,13 @@ namespace Phoenix
       /// \param strVertexShader Path to vertex shader source.
       /// \param strFragmentShader Path to fragment shader source.
       /// \returns Pointer to shader object. NULL if shader could not be created.
-      Phoenix::Graphics::CShader * CreateShader( std::string strVertexShader, std::string strFragmentShader );
+      Phoenix::Graphics::CShader * CreateShader( const std::string & strVertexShader, const std::string & strFragmentShader );
+      ////////////////////
+      /// Creates a shader from files.
+      /// \param szVertexShader Path to vertex shader source.
+      /// \param szFragmentShader Path to fragment shader source.
+      /// \returns Pointer to shader object. NULL if shader could not be created.
+      Phoenix::Graphics::CShader * CreateShader( const char * szVertexShader, const char * szFragmentShader );
       ////////////////////
       /// Commits shader.
       /// \param pShader Shader object. If NULL, default rendering pipeline is activated.
