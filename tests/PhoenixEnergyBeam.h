@@ -7,6 +7,8 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    /////////////////////////////////////////////////////////////////
+    /// Class for energy beams.
     class CEnergyBeam : public Phoenix::Graphics::CModel
     {
     private:
@@ -126,7 +128,7 @@ namespace Phoenix
       {
     
 	CVertexDescriptor *pEndposThickness = g_DefaultVertexManager->GetResource( Phoenix::Graphics::CModel::GetShaderParameters()[0].second  );
-    
+
 	pEndposThickness->GetPointer<float>()[0] = vEndPos[0];
 	pEndposThickness->GetPointer<float>()[1] = vEndPos[1];
 	pEndposThickness->GetPointer<float>()[2] = vEndPos[2];
