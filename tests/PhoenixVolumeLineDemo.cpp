@@ -10,7 +10,72 @@ using namespace Phoenix::Math;
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Window;
 using namespace Phoenix::Graphics;
+///////////////////////////////////////////////////////////////// 
+#define PLASMA_TEXTURE "EnergyBeamTexture_Plasma"
+#define LASER_TEXTURE "EnergyBeamTexture_Laser"
+class CPlasmaBeam : public CEnergyBeam 
+{
+private:
+  
+public:
+  ////////////////////
+  /// Constructor.
+  CPlasmaBeam()
+  {
+    g_DefaultTextureManager->AttachHandle(PLASMA_TEXTURE, GetTextureHandle());
+    AddTextureFilter( MIN_NEAREST );
+    AddTextureFilter( MAG_LINEAR );
+    AddTextureFilter( S_WRAP_REPEAT );
+  }
+  ////////////////////
+  /// Creates necessary resources for this class.
+  static void CreateResources( Phoenix::Graphics::COglRenderer &renderer )
+  {
+    COglTexture *pBeamTexture = renderer.CreateTexture( "Resources/Textures/beam.tga");
+    assert( g_DefaultTextureManager->Create( pBeamTexture, PLASMA_TEXTURE) == 0);
+    
+    CShader *pShader = g_DefaultShaderManager->GetResource("EnergyBeamShader");
+    if ( pShader == NULL )
+    {
+      pShader = renderer.CreateShader( std::string("Resources/Shaders/line_vertex.glsl"), 
+					    std::string("Resources/Shaders/line_frag.glsl") );
+      assert( pShader != NULL ) ;
+      assert(g_DefaultShaderManager->Create( pShader, "EnergyBeamShader") == 0 );
+    }
+
+  }
+};
 /////////////////////////////////////////////////////////////////
+class CLaserBeam : public CEnergyBeam 
+{
+private:
+  
+public:
+  ////////////////////
+  /// Constructor.
+  CLaserBeam()
+  {
+    g_DefaultTextureManager->AttachHandle(LASER_TEXTURE, GetTextureHandle());
+    AddTextureFilter( MIN_NEAREST );
+    AddTextureFilter( MAG_LINEAR );
+    AddTextureFilter( S_WRAP_REPEAT );
+  }
+  ////////////////////
+  /// Creates necessary resources for this class.
+  static void CreateResources( Phoenix::Graphics::COglRenderer &renderer )
+  {
+    COglTexture *pBeamTexture = renderer.CreateTexture( "Resources/Textures/beam2.tga");
+    assert( g_DefaultTextureManager->Create( pBeamTexture, LASER_TEXTURE) == 0);
+    CShader *pShader = g_DefaultShaderManager->GetResource("EnergyBeamShader");
+    if ( pShader == NULL )
+    {
+      pShader = renderer.CreateShader( std::string("Resources/Shaders/line_vertex.glsl"), 
+				       std::string("Resources/Shaders/line_frag.glsl") );
+      assert( pShader != NULL ) ;
+      assert(g_DefaultShaderManager->Create( pShader, "EnergyBeamShader") == 0 );
+    }
+  }
+};
 
 /////////////////////////////////////////////////////////////////
 int g_bLoop = 1;
@@ -46,14 +111,9 @@ int main()
   
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-  CShader *pShader = pOglRenderer->CreateShader( std::string("Resources/Shaders/line_vertex.glsl"), 
-						 std::string("Resources/Shaders/line_frag.glsl") );
   
-  assert( pShader != NULL ) ;
-  SHADER_HANDLE hShaderHandle;
-  assert(g_DefaultShaderManager->Create( pShader, "EnergyBeamShader", hShaderHandle) == 0 );
-  
-
+  CPlasmaBeam::CreateResources( *pOglRenderer );
+  CLaserBeam::CreateResources( *pOglRenderer );
   
 
 
@@ -62,23 +122,15 @@ int main()
   float afAmbient[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, afAmbient );
   
-  COglTexture *pBeamTexture = pOglRenderer->CreateTexture( std::string("Resources/Textures/beam.tga"));
-  COglTexture *pBeamTexture2 = pOglRenderer->CreateTexture( std::string("Resources/Textures/beam2.tga"));
   
-  CEnergyBeam *pBeam, *pBeam2;
-  pBeam = new CEnergyBeam();
-  pBeam2 = new CEnergyBeam();
+  
+  
+  CPlasmaBeam *pBeam;
+  CLaserBeam *pBeam2;
+  pBeam = new CPlasmaBeam();
+  pBeam2 = new CLaserBeam();
   pBeam->Initialize( vStartPos, vEndPos, fThickness );
-  assert( g_DefaultTextureManager->Create( pBeamTexture, "EnergyBeamTexture_Red", pBeam->GetTextureHandle()) == 0);
-  pBeam->AddTextureFilter( MIN_NEAREST );
-  pBeam->AddTextureFilter( MAG_LINEAR );
-  pBeam->AddTextureFilter( S_WRAP_REPEAT );
-  
   pBeam2->Initialize( vStartPos, vEndPos, fThickness );
-  assert( g_DefaultTextureManager->Create( pBeamTexture2, "EnergyBeamTexture_Another", pBeam2->GetTextureHandle()) == 0);
-  pBeam2->AddTextureFilter( MIN_NEAREST );
-  pBeam2->AddTextureFilter( MAG_LINEAR );
-  pBeam2->AddTextureFilter( S_WRAP_REPEAT );
   
   while( g_bLoop )
   {
