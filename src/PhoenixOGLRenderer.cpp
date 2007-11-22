@@ -300,13 +300,13 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     if ( pIndexBuffer->IsCached())
     {
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
-      glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
+      glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
 		      GL_UNSIGNED_SHORT,  0);
     }
     else // Draw uncached
     {
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-      glDrawElements( glPrimitive, pIndexBuffer->GetNumIndices(), 
+      glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
 		      GL_UNSIGNED_SHORT, 
 		      pIndexBuffer->GetPointer<unsigned short int>());
     }
@@ -318,14 +318,14 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     {
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
       glDrawElements( glPrimitive, 
-		      pIndexBuffer->GetNumIndices(), 
+		      pIndexBuffer->GetDrawableCount(), 
 		      GL_UNSIGNED_INT,  0);
     }
     else // Draw uncached
     {
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
       glDrawElements( glPrimitive, 
-		      pIndexBuffer->GetNumIndices(), 
+		      pIndexBuffer->GetDrawableCount(), 
 		      GL_UNSIGNED_INT, 
 		      pIndexBuffer->GetPointer<unsigned int>());
     }
@@ -1144,6 +1144,9 @@ Phoenix::Graphics::COglRenderer::DisableState( STATE_TYPE tState )
 {
   switch(tState)
   {
+  case STATE_DEPTH_WRITE:
+    glDepthMask(GL_FALSE);
+    break;
   default:
     glDisable(static_cast<GLenum>(tState));
   }
@@ -1154,6 +1157,9 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
 {
   switch(tState)
   {
+  case STATE_DEPTH_WRITE:
+    glDepthMask(GL_TRUE);
+    break;
   default:
     glEnable(static_cast<GLenum>(tState));
     break;
