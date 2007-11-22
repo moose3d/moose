@@ -25,21 +25,27 @@ namespace Phoenix
     class CIndexArray : public Phoenix::Core::CCacheable<unsigned int>
     {
     protected:
-
+      /// Number of indices in this array.
       unsigned int m_nNumIndices;
+      /// Primitive type for this array.
       PRIMITIVE_TYPE m_nType;
+      /// Actual index data.
       void *	   m_pIndexData;
+      /// Number of indices to be drawn from beginning.
+      unsigned int m_nNumDrawableIndices;
+      
     public:
       ////////////////////
-      /// The constructor.
-      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), m_nType(nType)
+      /// Constructor. Initializes index count and sets drawable indices to max indices.
+      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), 
+								     m_nType(nType), 
+								     m_nNumDrawableIndices(nNumIndices)
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
-	  
       }
       ////////////////////
-      /// The destructor.
+      /// Destructor.
       ~CIndexArray()
       {
 	if ( IsShortIndices())
@@ -79,6 +85,24 @@ namespace Phoenix
       inline int GetPrimitiveType() const
       {
 	return m_nType;
+      }
+      ////////////////////
+      /// Returns the number of drawable indices.
+      /// \returns Number of indices that is allowed to be drawn.
+      inline unsigned int GetDrawableCount() const
+      {
+	return m_nNumDrawableIndices;
+      }
+      ////////////////////
+      /// Sets the number of drawable indices.
+      /// \param nCount Number of indices that is allowed to be drawn.
+      inline void SetDrawableCount( unsigned int nCount ) 
+      {
+	// Safety check 
+	if ( nCount > GetNumIndices())
+	  m_nNumDrawableIndices = GetNumIndices();
+	else
+	  m_nNumDrawableIndices = nCount;
       }
     };
     /////////////////////////////////////////////////////////////////
