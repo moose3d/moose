@@ -202,7 +202,7 @@ int main()
     //sleep(1);
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
-    fAngle += 0.001f;
+    fAngle += 0.00001f;
     pBeam->IncreaseTime(0.025f);
     pBeam2->IncreaseTime(0.025f);
     
