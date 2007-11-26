@@ -40,7 +40,9 @@ namespace Phoenix
       STATE_LIGHTING = GL_LIGHTING,
       STATE_DEPTH_TEST = GL_DEPTH_TEST,
       STATE_ALPHA_TEST = GL_ALPHA_TEST,
-      STATE_BLENDING   = GL_BLEND
+      STATE_BLENDING   = GL_BLEND,
+      STATE_DEPTH_WRITE = GL_TRUE,
+      STATE_FACECULLING = GL_CULL_FACE
     };
     enum ALPHA_TEST_TYPE
     {
@@ -75,6 +77,13 @@ namespace Phoenix
       BLEND_DST_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,    
       BLEND_DST_DST_ALPHA	    = GL_DST_ALPHA,
       BLEND_DST_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA
+    };
+    /////////////////////////////////////////////////////////////////
+    /// BufferType
+    enum BUFFER_TYPE 
+    { 
+      COLOR_BUFFER = 0,
+      DEPTH_BUFFER = 1
     };
     /////////////////////////////////////////////////////////////////
     /// Class for grouping blending operations. 
@@ -223,13 +232,6 @@ namespace Phoenix
       void Init();
     };
     
-    /////////////////////////////////////////////////////////////////
-    /// BufferType
-    enum BUFFER_TYPE 
-    { 
-      COLOR_BUFFER = 0,
-      DEPTH_BUFFER = 1
-    };
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
     class COglRenderer
@@ -442,7 +444,11 @@ namespace Phoenix
       /// Removes existing cache from IndexArray.
       /// \param rIndexArray Reference to IndexArray.
       void RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray );
-
+      ////////////////////
+      /// Creates a framebuffer for given texture.
+      /// \param rTexture Reference to texture 
+      /// \param bDepthBuffer Should depthbuffer be created for this framebuffer.
+      //void CommitFramebuffer( Phoenix::Graphics::COglTexture & rTexture, int bDepthBuffer = 0 )
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
