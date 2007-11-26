@@ -41,10 +41,10 @@ namespace Phoenix
 	if ( pIndices == NULL)
 	{
 	  CIndexArray *pIndices = new CIndexArray( PRIMITIVE_QUAD_LIST, 4 );
-	  pIndices->GetPointer<unsigned short int>()[0] = 0;
-	  pIndices->GetPointer<unsigned short int>()[1] = 1;
-	  pIndices->GetPointer<unsigned short int>()[2] = 2;
-	  pIndices->GetPointer<unsigned short int>()[3] = 3;
+	  pIndices->GetPointer<unsigned short int>()[0] = 3;
+	  pIndices->GetPointer<unsigned short int>()[1] = 2;
+	  pIndices->GetPointer<unsigned short int>()[2] = 1;
+	  pIndices->GetPointer<unsigned short int>()[3] = 0;
 
 	  g_DefaultIndexManager->Create( pIndices, strBeamShaderIndices, GetIndexHandles().back());
 	}
