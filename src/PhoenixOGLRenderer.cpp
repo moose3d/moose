@@ -1420,3 +1420,9 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray &
   }
 }
 /////////////////////////////////////////////////////////////////
+// void
+// Phoenix::Graphics::COglRenderer::CommitFramebuffer( Phoenix::Graphics::COglTexture & rTexture, int bDepthBuffer = 0 )
+// {
+  
+// }
+/////////////////////////////////////////////////////////////////
