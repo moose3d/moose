@@ -387,8 +387,8 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
   }
   if ( GetAliveCount() > 0 )
   {
-    Phoenix::Math::CVector3<float> vMaxValues( m_aParticles[0].GetPosition() );
-    Phoenix::Math::CVector3<float> vMinValues( m_aParticles[0].GetPosition() );
+    Phoenix::Math::CVector3<float> vMaxValues( m_aParticles[0].m_vPosition );
+    Phoenix::Math::CVector3<float> vMinValues( m_aParticles[0].m_vPosition );
     Phoenix::Math::CVector3<float> vPos;
     Phoenix::Math::CVector3<float> vExtents;    
     float m_fMaxSize = m_aParticles[0].m_fSize;
@@ -402,9 +402,9 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 	m_fMaxSize = p.m_fSize;
       }
       //cerr << "particle pos : " << p.m_vPosition << endl;
-      STORE_MAX_MIN(p.GetPosition()[0], vMaxValues[0], vMinValues[0]);
-      STORE_MAX_MIN(p.GetPosition()[1], vMaxValues[1], vMinValues[1]);
-      STORE_MAX_MIN(p.GetPosition()[2], vMaxValues[2], vMinValues[2]);
+      STORE_MAX_MIN(p.m_vPosition[0], vMaxValues[0], vMinValues[0]);
+      STORE_MAX_MIN(p.m_vPosition[1], vMaxValues[1], vMinValues[1]);
+      STORE_MAX_MIN(p.m_vPosition[2], vMaxValues[2], vMinValues[2]);
     }
     m_fMaxSize *= 0.5f;
     /// Increase the volume so the all drawn polygons fit in
