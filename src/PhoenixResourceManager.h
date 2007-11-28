@@ -58,6 +58,14 @@ namespace Phoenix
       {
 	return (handle.GetIndex() == GetIndex());
       }
+      ////////////////////
+      /// Comparison for handles by indices.
+      /// \param handle Another handle.
+      /// \returns boolean true if index is smaller index of given handle.
+      bool operator<( const CHandle<TAG> & handle ) const
+      {
+	return ( GetIndex() < handle.GetIndex() );
+      }
     };
     ////////////////////
     /// Resource Name class. This is used in Hash table.
