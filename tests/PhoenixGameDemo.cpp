@@ -371,28 +371,22 @@ public:
   {
     CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
     vTmp += pGameObject->GetBoundingSphere().GetPosition();
-    float fWorldHalfSizeNeg = -GetWorldHalfSize();
-    float fWorldHalfSizePos =  GetWorldHalfSize()-0.001f;
-    cerr << "BoundingSphere radius is: " << pGameObject->GetBoundingSphere().GetRadius()  << endl;
+
     unsigned int nLevel = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
-    cerr << "level is " << nLevel << endl;
     unsigned int nIndex = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
 
-    cerr << "object goes to " << vTmp << endl;
     // If object has changed spatial location enough
     if ( pGameObject->GetSpatialIndex() != nIndex)
     {
-      // remove pointer from previous node
-      cerr << " Node in " << pGameObject->GetSpatialIndex() << " has " <<       GetNodeAt( pGameObject->GetSpatialIndex())->GetObjects().size() << " objects" << endl;
-      cerr << "node ptr: " << GetNodeAt( pGameObject->GetSpatialIndex()) << endl;
+      // Remove from  previous location
       GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
-      cerr << "DeleteObject completeed" << endl;
-      cerr << "inserting object into " << nIndex << endl;
+      // Insert into new
       GetNodeAt( nIndex )->AddObject( pGameObject );
+      // Update child statuses up to root.
       PropagateChildrenStatus( GetNodeAt( nIndex ));
-      cerr << "inserted object into " << nIndex << endl;
+      // Store new spatial index.
       pGameObject->SetSpatialIndex( nIndex );
-      cerr << "Object near position: " << GetNodeAt( nIndex )->GetPosition() << endl;
+
     }
   }
 };
@@ -555,13 +549,21 @@ public:
   }
 };
 /////////////////////////////////////////////////////////////////
+enum SPACESHIP_CLASS
+{
+  SHIP_CLASS_SOVEREIGN = 0,
+  SHIP_CLASS_OMEGA = 1
+};
+/////////////////////////////////////////////////////////////////
 /// Baseclass for every spaceship in the system.
 class CSpaceShip : public CGameObject<OBJECT_TYPE>
 {
 protected:
   /// Default Bounding sphere for each class.
   static Phoenix::Volume::CSphere m_Sphere;
+  SPACESHIP_CLASS m_nShipClass;
 public:
+
   ////////////////////
   /// Constructor.
   CSpaceShip() 
@@ -574,6 +576,18 @@ public:
   {
     // Release model handle
     g_PhoenixModelManager->Release( GetModelHandle() );
+  }
+  ////////////////////
+  /// Get Type
+  SPACESHIP_CLASS GetShipClass() const
+  {
+    return m_nShipClass;
+  }
+  ////////////////////
+  /// Set type.
+  void SetShipClass( SPACESHIP_CLASS shipClass )
+  {
+    m_nShipClass = shipClass;
   }
 };
 /// Static members must be initialized.
@@ -605,6 +619,7 @@ public:
     CModel *pModel = g_PhoenixModelManager->GetResource( SOVEREIGN_RESOURCE );
     pModel->AddTextureFilter(MIN_MIP_LINEAR);
     pModel->AddTextureFilter(MAG_LINEAR);
+    SetShipClass( SHIP_CLASS_SOVEREIGN );
 
   }
   ////////////////////
@@ -729,6 +744,7 @@ public:
     CModel *pModel = g_PhoenixModelManager->GetResource( OMEGA_RESOURCE );
     pModel->AddTextureFilter(MIN_MIP_LINEAR);
     pModel->AddTextureFilter(MAG_LINEAR);
+    SetShipClass( SHIP_CLASS_OMEGA );
   }
   ////////////////////
   /// Allocates proper resources for omega class ships.
@@ -793,7 +809,34 @@ public:
     g_PhoenixModelManager->Destroy( OMEGA_RESOURCE );
   }
 };
-
+/////////////////////////////////////////////////////////////////
+#define g_ShipManager (CResourceManager<CSpaceShip, CHandle<CSpaceShip> >::GetInstance())
+typedef CHandle<CSpaceShip> SHIP_HANDLE;
+/////////////////////////////////////////////////////////////////
+/// A class which works as an update adapter for SpaceShip objects.
+class CSpaceShipUpdaterAdapter 
+{
+protected:
+  CSpatialGraph *m_pGraph;
+public:
+  CSpaceShipUpdaterAdapter( CSpatialGraph *pGraph )
+  {
+    m_pGraph = pGraph;
+  }
+  inline void Update( CSpaceShip *pShip, unsigned int nTimeMS )
+  {
+    switch( pShip->GetShipClass())
+    {
+    case SHIP_CLASS_SOVEREIGN:
+      static_cast<CSovereignClass *>(pShip)->Update( nTimeMS );
+      break;
+    case SHIP_CLASS_OMEGA:
+      //static_cast<COmegaClass *>(pShip)->Update( nTimeMS );
+      break;
+    }
+    m_pGraph->Update( pShip );
+  }
+};
 /////////////////////////////////////////////////////////////////
 int main()
 {
@@ -852,29 +895,10 @@ int main()
   /////////////////////////////////////////////////////////////////
   COglTexture *pExplosionTexture = pOglRenderer->CreateTexture("Resources/Textures/explosion.tga");
   CShader *pPsShader = pOglRenderer->CreateShader( "Resources/Shaders/ps_vertex.glsl", "Resources/Shaders/ps_frag.glsl");  
-  // Shove in about 512 objects
-  //#define INSERT_OBJ
-#ifdef INSERT_OBJ
-  for(unsigned int w=0;w<8;w++)
-    for(unsigned int h=0;h<8;h++)
-      for(unsigned int d=0;d<8;d++)
-      {
-	//CGameObject<OBJECT_TYPE> *pTemp = new CGameObject<OBJECT_TYPE>();
-	CGameLODObject *pTemp = new CGameLODObject();
-	pTemp->GetTransform().SetTranslation( -200.0f+w*145,-200.0f+h*145,-200.0f+d*145);  
-	pTemp->GetBoundingSphere() = sphere;
-	g_PhoenixModelManager->AttachHandle( "OmegaModel", static_cast<CGameObject<OBJECT_TYPE> *>(pTemp)->GetModelHandle());
-	g_PhoenixModelManager->AttachHandle( "OmegaModelLod2", pTemp->GetModelHandle(0));
-	pSpatialGraph->InsertObject(pTemp);
-	//std::cerr << "inserting " << std::endl;
-      }
-#endif
-  
-  
   CFpsCounter fpsCounter;
   fpsCounter.Reset();
   unsigned int nCollected = 0;
-  int bChange = 0;
+
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
   glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
   SDL_WM_GrabInput(SDL_GRAB_ON);
@@ -885,6 +909,18 @@ int main()
   CLaserBeam *pBeam = new CLaserBeam();
   
   pBeam->Initialize( pSovereign->GetTransform().GetTranslation(), pOmega->GetTransform().GetTranslation(), 0.95f );
+
+
+  SHIP_HANDLE hEnterprise, hBackgammon;
+  g_ShipManager->Create( pSovereign, "Enterprise", hEnterprise);
+  g_ShipManager->Create( pOmega,     "Backgammon", hBackgammon );
+
+  CSpaceShipUpdaterAdapter shipAdapter( pSpatialGraph );
+  
+  CObjectUpdater<CSpaceShip> shipUpdater;
+  shipUpdater.Manage( hEnterprise );
+  shipUpdater.Manage( hBackgammon );
+
   // Clear event queue
   while ( SDL_PollEvent(&event ));
   
@@ -893,6 +929,7 @@ int main()
 
   CTimer timer;
   timer.Reset();
+  int bChanged = 0;
   while( g_bLoop )
   {
     fpsCounter.Update();
@@ -921,16 +958,16 @@ int main()
 	{
 	  camera.Strafe( 1.1f );
 	} 
-	else if ( event.key.keysym.sym == SDLK_RIGHT )
-	{
-	  pSovereign->GetTransform().Move(0,0,1);
-	  pSpatialGraph->Update( pSovereign );
-	} 
-	else if ( event.key.keysym.sym == SDLK_LEFT )
-	{
-	  pSovereign->GetTransform().Move(0,0,-1);
-	  pSpatialGraph->Update( pSovereign );
-	}
+	// else if ( event.key.keysym.sym == SDLK_RIGHT )
+// 	{
+// 	  pSovereign->GetTransform().Move(0,0,1);
+// 	  pSpatialGraph->Update( pSovereign );
+// 	} 
+// 	else if ( event.key.keysym.sym == SDLK_LEFT )
+// 	{
+// 	  pSovereign->GetTransform().Move(0,0,-1);
+// 	  pSpatialGraph->Update( pSovereign );
+// 	}
 	break;
       case SDL_MOUSEMOTION:
 	{
@@ -947,33 +984,20 @@ int main()
 	break;
       }
     }
-    //pGameObject->GetTransform().Move( 0.01f,0,0); 
-    //pSpatialGraph->Update( pGameObject );
-    
-    
-    pRenderQueue->Clear();
 
+    pRenderQueue->Clear();
     //cerr << "Collected: " << nCollected << endl;
     
-    
-    
-
-    
-    if ( camera.IsProjectionChanged() ) 
+    if ( camera.IsProjectionChanged() )  {   bChanged = 1; camera.UpdateProjection();    }
+    if ( camera.IsViewChanged() )     {      bChanged = 1; camera.UpdateView();          }
+    if ( bChanged )
     {
-      camera.UpdateProjection();
+      camera.CalculateFrustum();    
+      camera.CalculateBoundingSphere();
+      camera.CalculateBoundingCone();
+      bChanged = 0;
     }
-    
-    if ( camera.IsViewChanged() ) 
-    {
-      camera.UpdateView();
-    }
-    
 
-    camera.CalculateFrustum();    
-    camera.CalculateBoundingSphere();
-    camera.CalculateBoundingCone();
-    bChange = 0;
 
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
@@ -1000,12 +1024,13 @@ int main()
     pBeam->IncreaseTime(0.001f);
     
 
-    if ( timer.HasPassedMS(5) ){
+    if ( timer.HasPassedMS(5) )
+    {
       pParticleSystem->Update(timer.GetPassedTimeMS());
       //pSovereign->Update(timer.GetPassedTimeMS());
       //pSpatialGraph->Update( pSovereign );
+      shipUpdater.Update( shipAdapter, timer.GetPassedTimeMS());
       timer.Reset();
-
     }
     pParticleSystem->UpdateRenderableData();
     pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
@@ -1023,14 +1048,11 @@ int main()
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter++;
 
-
-
     if ( fpsCounter.HasPassedMS(1000) )
     {
       cerr << "FPS: " << fpsCounter << ", with visible objects #"<< nCollected <<endl;
       fpsCounter.Reset();
       pParticleSystem->Init( );
-
     }
     
   }
@@ -1057,3 +1079,22 @@ int main()
   pOglRenderer->CommitPrimitive( pParticleSystem->GetIndices());
   glDisable(GL_POINT_SPRITE_ARB);
 */
+
+//   // Shove in about 512 objects
+//   //#define INSERT_OBJ
+// #ifdef INSERT_OBJ
+//   for(unsigned int w=0;w<8;w++)
+//     for(unsigned int h=0;h<8;h++)
+//       for(unsigned int d=0;d<8;d++)
+//       {
+// 	//CGameObject<OBJECT_TYPE> *pTemp = new CGameObject<OBJECT_TYPE>();
+// 	CGameLODObject *pTemp = new CGameLODObject();
+// 	pTemp->GetTransform().SetTranslation( -200.0f+w*145,-200.0f+h*145,-200.0f+d*145);  
+// 	pTemp->GetBoundingSphere() = sphere;
+// 	g_PhoenixModelManager->AttachHandle( "OmegaModel", static_cast<CGameObject<OBJECT_TYPE> *>(pTemp)->GetModelHandle());
+// 	g_PhoenixModelManager->AttachHandle( "OmegaModelLod2", pTemp->GetModelHandle(0));
+// 	pSpatialGraph->InsertObject(pTemp);
+// 	//std::cerr << "inserting " << std::endl;
+//       }
+// #endif
+  
