@@ -29,3 +29,4 @@
 #include "PhoenixGameObject.h"
 #include "PhoenixTransform.h"
 #include "PhoenixParticleSystem.h"
+#include "PhoenixObjectUpdater.h"
