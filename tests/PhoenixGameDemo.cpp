@@ -4,6 +4,7 @@
 #include <sstream>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <tcl.h>
 #include "PhoenixEnergyBeam.h"
 using std::string;
 /////////////////////////////////////////////////////////////////
@@ -349,9 +350,9 @@ public:
 				  pGameObject, 
 				  pGameObject->GetBoundingSphere().GetPosition() + pGameObject->GetTransform().GetTranslation(),
 				  pGameObject->GetBoundingSphere().GetRadius());
-    
+    cerr << "object  " << pGameObject << endl;
     pGameObject->SetSpatialIndex( nSpatialIndex );
-    //cerr << "object inserted into " << nSpatialIndex << endl;
+    cerr << "object inserted into " << nSpatialIndex << endl;
   }
   ////////////////////
   /// 
@@ -371,16 +372,23 @@ public:
     vTmp += pGameObject->GetBoundingSphere().GetPosition();
     float fWorldHalfSizeNeg = -GetWorldHalfSize();
     float fWorldHalfSizePos =  GetWorldHalfSize()-0.001f;
- 
+    cerr << "BoundingSphere radius is: " << pGameObject->GetBoundingSphere().GetRadius()  << endl;
     unsigned int nLevel = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
+    cerr << "level is " << nLevel << endl;
     unsigned int nIndex = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
+
+    cerr << "object goes to " << vTmp << endl;
     // If object has changed spatial location enough
     if ( pGameObject->GetSpatialIndex() != nIndex)
     {
       // remove pointer from previous node
+      cerr << " Node in " << pGameObject->GetSpatialIndex() << " has " <<       GetNodeAt( pGameObject->GetSpatialIndex())->GetObjects().size() << " objects" << endl;
+      cerr << "node ptr: " << GetNodeAt( pGameObject->GetSpatialIndex()) << endl;
       GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
+      cerr << "DeleteObject completeed" << endl;
+      cerr << "inserting object into " << nIndex << endl;
       GetNodeAt( nIndex )->GetObjects().push_back( pGameObject );
-      //cerr << "inserted object into " << nIndex << endl;
+      cerr << "inserted object into " << nIndex << endl;
       pGameObject->SetSpatialIndex( nIndex );
     }
   }
@@ -580,8 +588,10 @@ CSphere CSpaceShip::m_Sphere = CSphere();
 class CSovereignClass : public CSpaceShip
 {
 protected:
-
+  static Tcl_Interp *pInterp;
+  static CSovereignClass *m_pCurrentObject;
 public:
+
   ////////////////////
   /// Constructor.
   CSovereignClass()
@@ -589,6 +599,19 @@ public:
     g_PhoenixModelManager->AttachHandle( SOVEREIGN_RESOURCE, GetModelHandle() );
     SetType(O_TYPE_ORDINARY);
     GetBoundingSphere() = CSovereignClass::m_Sphere;
+    CModel *pModel = g_PhoenixModelManager->GetResource( SOVEREIGN_RESOURCE );
+    pModel->AddTextureFilter(MIN_MIP_LINEAR);
+    pModel->AddTextureFilter(MAG_LINEAR);
+
+  }
+  ////////////////////
+  void Update( unsigned int nTimeMS )
+  {
+    if ( pInterp )
+    {
+      m_pCurrentObject = this;
+      assert(Tcl_Eval(pInterp, "playComputer") == TCL_OK );
+    }
   }
   ////////////////////
   /// Allocates proper resources for sovereign class ships.
@@ -630,7 +653,16 @@ public:
     loader.ResetTexCoords();
     loader.ResetNormals();
     loader.ResetIndices();
+    
+    pInterp = Tcl_CreateInterp();
+    assert( pInterp != NULL );
 
+    assert(Tcl_CreateObjCommand( pInterp, "MoveShip",
+				 MoveShip, (ClientData)0,
+				 NULL) != NULL );
+
+    int status = Tcl_EvalFile(pInterp, "Resources/Scripts/PlayComputer.tcl");
+    assert( status == TCL_OK );
   }  
   ////////////////////
   /// Releases resources held by this class.
@@ -644,12 +676,34 @@ public:
       rOglRenderer.RollbackCache( *pTemp );    
 
     if ( pIndices )
-      rOglRenderer.RollbackCache( *pTemp );    
+      rOglRenderer.RollbackCache( *pIndices );    
     
     // release model itself
     g_PhoenixModelManager->Destroy( SOVEREIGN_RESOURCE );
+    
+    if ( pInterp )
+      Tcl_DeleteInterp( pInterp );
+  }
+  /////////////////////////////////////////////////////////////////
+  static int MoveShip( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
+  {
+    if ( m_pCurrentObject != NULL )
+    {
+      double dX, dY, dZ;
+      
+      Tcl_GetDoubleFromObj( pInterp, objv[1], &dX );
+      Tcl_GetDoubleFromObj( pInterp, objv[2], &dY );
+      Tcl_GetDoubleFromObj( pInterp, objv[3], &dZ );
+
+      m_pCurrentObject->GetTransform().Move( dX, dY,dZ);
+
+    }
+    Tcl_ResetResult( pInterp );
+    return TCL_OK;
   }
 };
+CSovereignClass *CSovereignClass::m_pCurrentObject = NULL;
+Tcl_Interp * CSovereignClass::pInterp = NULL;
 /////////////////////////////////////////////////////////////////
 #define OMEGA_MODEL "Resources/Models/omega.ms3d"
 #define OMEGA_VERTICES "omega_vertices"
@@ -661,8 +715,6 @@ public:
 /////////////////////////////////////////////////////////////////
 class COmegaClass : public CSpaceShip
 {
-protected:
-
 public:
   ////////////////////
   /// Constructor.
@@ -671,6 +723,9 @@ public:
     g_PhoenixModelManager->AttachHandle( OMEGA_RESOURCE, GetModelHandle() );
     SetType(O_TYPE_ORDINARY);
     GetBoundingSphere() = m_Sphere;
+    CModel *pModel = g_PhoenixModelManager->GetResource( OMEGA_RESOURCE );
+    pModel->AddTextureFilter(MIN_MIP_LINEAR);
+    pModel->AddTextureFilter(MAG_LINEAR);
   }
   ////////////////////
   /// Allocates proper resources for omega class ships.
@@ -729,12 +784,13 @@ public:
       rOglRenderer.RollbackCache( *pTemp );    
 
     if ( pIndices )
-      rOglRenderer.RollbackCache( *pTemp );    
+      rOglRenderer.RollbackCache( *pIndices );    
     
     // release model itself
     g_PhoenixModelManager->Destroy( OMEGA_RESOURCE );
   }
 };
+
 /////////////////////////////////////////////////////////////////
 int main()
 {
@@ -786,6 +842,10 @@ int main()
   CSovereignClass *pSovereign = new CSovereignClass();
   pSovereign->GetTransform().SetTranslation( 10, 0,0);
   pSpatialGraph->InsertObject( pSovereign );
+  cerr << "we're ok" << endl;
+  //pSovereign->GetTransform().SetTranslation( 40, 0,0);
+  //pSpatialGraph->Update( pSovereign );
+  //cerr << "here too. we're ok" << endl;
   /////////////////////////////////////////////////////////////////
   COglTexture *pExplosionTexture = pOglRenderer->CreateTexture("Resources/Textures/explosion.tga");
   CShader *pPsShader = pOglRenderer->CreateShader( "Resources/Shaders/ps_vertex.glsl", "Resources/Shaders/ps_frag.glsl");  
@@ -832,7 +892,6 @@ int main()
   timer.Reset();
   while( g_bLoop )
   {
-    fpsCounter.Update();
     fpsCounter.Update();
     while ( SDL_PollEvent(&event ))
     {
@@ -930,7 +989,10 @@ int main()
 
     if ( timer.HasPassedMS(5) ){
       pParticleSystem->Update(timer.GetPassedTimeMS());
+      pSovereign->Update(timer.GetPassedTimeMS());
+      pSpatialGraph->Update( pSovereign );
       timer.Reset();
+
     }
     pParticleSystem->UpdateRenderableData();
     pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
@@ -947,14 +1009,21 @@ int main()
     pOglRenderer->CommitShader( NULL );    
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter++;
+
+
+
     if ( fpsCounter.HasPassedMS(1000) )
     {
       cerr << "FPS: " << fpsCounter << ", with visible objects #"<< nCollected <<endl;
       fpsCounter.Reset();
       pParticleSystem->Init( );
-    }
 
+    }
+    
   }
+
+  CSovereignClass::ReleaseResources(*pOglRenderer);
+  COmegaClass::ReleaseResources(*pOglRenderer);
   //pOglRenderer->RollbackCache( *pVD );
   CSDLScreen::DestroyInstance();
   SDL_WM_GrabInput(SDL_GRAB_OFF);

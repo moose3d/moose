@@ -12,7 +12,7 @@ volumeline:
 octreedemo:
 	 g++ -Wall -I../src `sdl-config --cflags` PhoenixOctreeDemo.cpp -lPhoenix `sdl-config --libs`
 gamedemo:
-	 g++ -Wall -I../src `sdl-config --cflags` PhoenixGameDemo.cpp -lPhoenix `sdl-config --libs`
+	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixGameDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 particledemo:
 	 g++ -Wall -I../src `sdl-config --cflags` PhoenixParticleSystemDemo.cpp -lPhoenix `sdl-config --libs`
 galaxydemo:
