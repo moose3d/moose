@@ -23,13 +23,23 @@ namespace Phoenix
       /// Destructor.
       ~CObjectUpdater();
       ////////////////////
-      /// Updates all objects assigned to updater.
-      /// /param nTimeMS Passed time in milliseconds since last Update().
-      void Update( unsigned int nTimeMS );
+      void Update( unsigned int nTimeMS = 0 );
       ////////////////////
-      /// Assigns given object as updateable.
-      void AssignObject( const Phoenix::Core::CHandle<TYPE> & hResource);
-      
+      /// Updates all objects assigned to updater.
+      /// \param rAdapter Adapter object which does the actual updating.
+      /// \param nTimeMS Passed time in milliseconds since last Update().
+      template<class ADAPTER> void Update( ADAPTER &rAdapter, unsigned int nTimeMS = 0 )
+      {
+        for(size_t n=0;n<m_vecUpdateables.size();n++)
+	{
+	  TYPE *pTemp = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->GetResource(m_vecUpdateables[n]);
+	  rAdapter.Update( pTemp, nTimeMS );
+	} 
+      }
+      ////////////////////
+      /// Begins managing given object.
+      /// \param hResource Handle to an object which will be updated.
+      void Manage( const Phoenix::Core::CHandle<TYPE> & hResource);
     };
   }
 };
@@ -43,32 +53,22 @@ Phoenix::Core::CObjectUpdater<TYPE>::CObjectUpdater()
 template<class TYPE>
 Phoenix::Core::CObjectUpdater<TYPE>::~CObjectUpdater()
 {
+  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> > *pManager = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance();
   for(size_t n=0;n<m_vecUpdateables.size();n++)
   {
-    Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::Release(m_vecUpdateables[n]);
+    pManager->Release(m_vecUpdateables[n]);
   }
   m_vecUpdateables.clear();
 }
 /////////////////////////////////////////////////////////////////
 template<class TYPE>
-void
-Phoenix::Core::CObjectUpdater<TYPE>::Update( unsigned int nTimeMS )
-{
-  for(size_t n=0;n<m_vecUpdateables.size();n++)
-  {
-    TYPE *pTemp = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetResource(m_vecUpdateables[n]);
-    pTemp->Update( nTimeMS );
-  }
-}
-/////////////////////////////////////////////////////////////////
-template<class TYPE>
 inline void
-Phoenix::Core::CObjectUpdater<TYPE>::AssignObject( const Phoenix::Core::CHandle<TYPE> &hResource )
+Phoenix::Core::CObjectUpdater<TYPE>::Manage( const Phoenix::Core::CHandle<TYPE> &hResource )
 {
   m_vecUpdateables.push_back( Phoenix::Core::CHandle<TYPE>() );
-  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::AttachHandle(
-				  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetResourceName( hResource ),
-				  m_vecUpdateables.back());
+  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->AttachHandle(
+    Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->GetResourceName( hResource ),
+      m_vecUpdateables.back());
   
 }
 /////////////////////////////////////////////////////////////////
