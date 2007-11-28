@@ -383,6 +383,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( const TYPE & object)
   {
     if ( *it == object )
     {
+      std::cerr << "erasing " << *it << std::endl;
       m_lstObjects.erase( it );
       iRetval = 0;
       break;
@@ -441,7 +442,8 @@ template<typename TYPE>
 inline unsigned int 
 Phoenix::Spatial::COctree<TYPE>::GetObjectDepth( float fRadius )
 {
-  return static_cast<unsigned int>(floorf( Phoenix::Math::Log2( GetWorldSize()/fRadius)));
+  unsigned int nDepth = static_cast<unsigned int>(floorf( Phoenix::Math::Log2( GetWorldSize()/fRadius)));
+  return nDepth < GetMaxDepth() ? nDepth : GetMaxDepth();
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -493,7 +495,8 @@ template<typename TYPE>
 inline unsigned int 
 Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ )
 {
-  unsigned int nNodeCountPrevLevels = (unsigned int)floor( (1-powf(8,nLevel))/-7);
+  if ( nLevel == 0 ) return 0;
+  unsigned int nNodeCountPrevLevels = (unsigned int)floor( (1-powf(8,nLevel-1))/-7);
 
   // How many cubes there are per axis, ie. level 0 = 1, level 1 = 2, level 2 = 4, ...
   float fDimensions = powf(8.0f, ((float)nLevel) *0.333333333333333f);
@@ -502,6 +505,7 @@ Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, floa
   unsigned int nX;
   unsigned int nY;
   unsigned int nZ;
+  //std::cerr << "GetIndex1D: " << GetWorldHalfSize() << std::endl;
   // Sanity checks, too large coordinate will set indices way beyond array limits.
   if (      fX >=  GetWorldHalfSize()) nX = nDimensions - 1;
   else if ( fX <= -GetWorldHalfSize()) nX = 0;
@@ -672,14 +676,14 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
 				     vPosition[1], 
 				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
-  //std::cerr << "pushed object " << pNode  << std::endl;
+  std::cerr << "pushed object " << pNode  << std::endl;
   
 
   if ( pNode->GetObjects().size() == 0)
   {
-    //std::cerr << "okay: " << pNode  << std::endl;
+    std::cerr << "okay: " << pNode  << std::endl;
     pNode->GetObjects().push_back( object );
-    //std::cerr << "okay2: " << pNode  << std::endl;
+    std::cerr << "okay2: " << pNode  << std::endl;
     pNode = pNode->GetParent();
     while ( pNode != NULL )
     {
@@ -690,8 +694,10 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
   }
   else
   {
-    //std::cerr << "already objects"  << std::endl;
+    std::cerr << "already objects"  << std::endl;
+
     pNode->GetObjects().push_back( object );
+    
   }
   
   return nIndex;
