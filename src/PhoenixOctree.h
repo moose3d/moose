@@ -136,9 +136,9 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      /// \param nDepth Maximum depth of this tree.
+      /// \param nNumLevels Maximum number of levels in this tree.
       /// \param fWorldSize Max world size.
-      COctree( unsigned int nDepth, float fWorldSize );
+      COctree( unsigned int nNumLevels, float fWorldSize );
       ////////////////////
       /// Returns depth of tree.
       /// \param fRadius Bounding sphere radius.
@@ -221,6 +221,10 @@ namespace Phoenix
       /// \param nIndex From which index node is returned.
       /// \returns Pointer to OctreeNode.
       COctreeNode<TYPE> * GetNodeAt(unsigned int nIndex);
+      ////////////////////
+      /// Updates child statuses from this node towards root.
+      /// \param pNode Recently added child node.
+      void PropagateChildrenStatus( COctreeNode<TYPE> *pNode );
     protected:
       ////////////////////
       /// Sets world size.
@@ -383,7 +387,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::DeleteObject( const TYPE & object)
   {
     if ( *it == object )
     {
-      std::cerr << "erasing " << *it << std::endl;
+      //std::cerr << "erasing " << *it << std::endl;
       m_lstObjects.erase( it );
       iRetval = 0;
       break;
@@ -428,10 +432,11 @@ Phoenix::Spatial::COctreeNode<TYPE>::GetParent()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nDepth, float fWorldSize )
+Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nNumLevels, float fWorldSize )
 {
-  unsigned int nNodeCount = (unsigned int)((1-powf(8,nDepth))/-7);
-  SetMaxDepth(nDepth);
+  unsigned int nNodeCount = (unsigned int)((1-powf(8,nNumLevels))/-7);
+  // Maximum depth will be levels-1, ie. 4 = { 0, 1, 2, 3 }
+  SetMaxDepth(nNumLevels-1);
   SetWorldSize(fWorldSize);
   // Allocate array for all nodes
   m_pAllNodes = new COctreeNode<TYPE>[nNodeCount];
@@ -472,7 +477,7 @@ inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetIndex( float fValue, unsigned nDepth )
 {
   unsigned int nDimensions = (unsigned int)powf(8.0f, floorf(((float)nDepth) *0.333333333333333f));
-  if ( fValue >= GetWorldHalfSize()) return nDimensions-1;
+  if (      fValue >= GetWorldHalfSize()-0.001f) return nDimensions-1;
   else if ( fValue <= -GetWorldHalfSize()) return 0;
   return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* nDimensions));  
 }
@@ -495,8 +500,8 @@ template<typename TYPE>
 inline unsigned int 
 Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ )
 {
-  if ( nLevel == 0 ) return 0;
-  unsigned int nNodeCountPrevLevels = (unsigned int)floor( (1-powf(8,nLevel-1))/-7);
+  //if ( nLevel == 0 ) return 0;
+  unsigned int nNodeCountPrevLevels = (unsigned int)floor( (1-powf(8,nLevel))/-7);
 
   // How many cubes there are per axis, ie. level 0 = 1, level 1 = 2, level 2 = 4, ...
   float fDimensions = powf(8.0f, ((float)nLevel) *0.333333333333333f);
@@ -507,15 +512,15 @@ Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, floa
   unsigned int nZ;
   //std::cerr << "GetIndex1D: " << GetWorldHalfSize() << std::endl;
   // Sanity checks, too large coordinate will set indices way beyond array limits.
-  if (      fX >=  GetWorldHalfSize()) nX = nDimensions - 1;
+  if (      fX >=  GetWorldHalfSize()-0.001f) nX = nDimensions - 1;
   else if ( fX <= -GetWorldHalfSize()) nX = 0;
   else      nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
   
-  if (      fY >=  GetWorldHalfSize()) nY = nDimensions - 1;
+  if (      fY >=  GetWorldHalfSize()-0.001f) nY = nDimensions - 1;
   else if ( fY <= -GetWorldHalfSize()) nY = 0;
   else	    nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
   
-  if (      fZ >=  GetWorldHalfSize()) nZ = nDimensions - 1;
+  if (      fZ >=  GetWorldHalfSize()-0.001f) nZ = nDimensions - 1;
   else if ( fZ <= -GetWorldHalfSize()) nZ = 0;
   else      nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
   
@@ -574,7 +579,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
 
   COctreeNode<TYPE> *pChild = NULL;
   // When desired levels have been reached, we stop recursion.
-  if ( (nLevel + 1) >= m_nDepth ) return;
+  if ( nLevel == GetMaxDepth() ) return;
 
   Phoenix::Math::CVector3<float> vNewPos;
   
@@ -584,8 +589,8 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
-
-
+  
+  
   // Get correct node from next level
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 
@@ -669,28 +674,20 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
 					       float fRadius)
 {
   unsigned int nLevel = GetObjectDepth( fRadius);
-  if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
+  //if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
   
   unsigned int nIndex  = GetIndex1D( nLevel, 
 				     vPosition[0], 
 				     vPosition[1], 
 				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
-  std::cerr << "pushed object " << pNode  << std::endl;
+  std::cerr << "pushing object into " << pNode  << " at index:" << nIndex << std::endl;
   
 
   if ( pNode->GetObjects().size() == 0)
   {
-    std::cerr << "okay: " << pNode  << std::endl;
     pNode->GetObjects().push_back( object );
-    std::cerr << "okay2: " << pNode  << std::endl;
-    pNode = pNode->GetParent();
-    while ( pNode != NULL )
-    {
-      //std::cerr << " Currently processing " << pNode << std::endl;
-      pNode->CheckDoChildrenContainObjects();
-      pNode = pNode->GetParent();
-    }
+    PropagateChildrenStatus( pNode );
   }
   else
   {
@@ -710,7 +707,7 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
   int iRetval = 1;
   unsigned int nLevel = GetObjectDepth( boundingSphere.GetRadius());
 
-  if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
+  //if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
   
   COctreeNode<TYPE> *pNode = GetNode( nLevel, 
 				      boundingSphere.GetPosition()[0], 
@@ -727,12 +724,7 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
   if ( pNode->GetObjects().empty() )
   {
     pNode->CheckDoChildrenContainObjects();
-    pNode = pNode->GetParent();
-    while ( pNode != NULL )
-    {
-      pNode->CheckDoChildrenContainObjects();
-      pNode = pNode->GetParent();
-    }
+    PropagateChildrenStatus( pNode );
   }
 
   return iRetval;
@@ -743,6 +735,19 @@ inline Phoenix::Spatial::COctreeNode<TYPE> *
 Phoenix::Spatial::COctree<TYPE>::GetNodeAt(unsigned int nIndex)
 {
   return &m_pAllNodes[nIndex];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline void
+Phoenix::Spatial::COctree<TYPE>::PropagateChildrenStatus( Phoenix::Spatial::COctreeNode<TYPE> *pNode )
+{
+  if ( pNode == NULL ) return;
+  pNode = pNode->GetParent();
+  while( pNode != NULL )
+  {
+    pNode->CheckDoChildrenContainObjects();
+    pNode = pNode->GetParent();
+  }
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>

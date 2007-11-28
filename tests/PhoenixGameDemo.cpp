@@ -353,6 +353,7 @@ public:
     cerr << "object  " << pGameObject << endl;
     pGameObject->SetSpatialIndex( nSpatialIndex );
     cerr << "object inserted into " << nSpatialIndex << endl;
+    cerr << "object near " << m_pAllNodes[nSpatialIndex].GetPosition() << endl;
   }
   ////////////////////
   /// 
@@ -387,9 +388,11 @@ public:
       GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
       cerr << "DeleteObject completeed" << endl;
       cerr << "inserting object into " << nIndex << endl;
-      GetNodeAt( nIndex )->GetObjects().push_back( pGameObject );
+      GetNodeAt( nIndex )->AddObject( pGameObject );
+      PropagateChildrenStatus( GetNodeAt( nIndex ));
       cerr << "inserted object into " << nIndex << endl;
       pGameObject->SetSpatialIndex( nIndex );
+      cerr << "Object near position: " << GetNodeAt( nIndex )->GetPosition() << endl;
     }
   }
 };
@@ -802,7 +805,7 @@ int main()
   }
   
   CCamera camera;
-  camera.SetPosition( 0, 0.0f,10.0f);
+  camera.SetPosition( 75, 75.0f,75.0f);
   //camera.SetViewport( 480,340, 160, 120 );
   camera.SetViewport( 0,0, 640, 480 );
   camera.SetNearClipping( 0.1f);
@@ -918,6 +921,16 @@ int main()
 	{
 	  camera.Strafe( 1.1f );
 	} 
+	else if ( event.key.keysym.sym == SDLK_RIGHT )
+	{
+	  pSovereign->GetTransform().Move(0,0,1);
+	  pSpatialGraph->Update( pSovereign );
+	} 
+	else if ( event.key.keysym.sym == SDLK_LEFT )
+	{
+	  pSovereign->GetTransform().Move(0,0,-1);
+	  pSpatialGraph->Update( pSovereign );
+	}
 	break;
       case SDL_MOUSEMOTION:
 	{
@@ -989,8 +1002,8 @@ int main()
 
     if ( timer.HasPassedMS(5) ){
       pParticleSystem->Update(timer.GetPassedTimeMS());
-      pSovereign->Update(timer.GetPassedTimeMS());
-      pSpatialGraph->Update( pSovereign );
+      //pSovereign->Update(timer.GetPassedTimeMS());
+      //pSpatialGraph->Update( pSovereign );
       timer.Reset();
 
     }
