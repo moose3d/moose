@@ -34,15 +34,7 @@ namespace Phoenix
       /// Renders current queue using renderer and given adapter.
       /// \param renderer OpenGL renderer.
       template<class ADAPTER_CLASS> 
-      void Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS &rAdapter)
-      {
-	typename std::list<TYPE>::iterator it = m_lstObjects.begin();
-	for( ; it != m_lstObjects.end(); it++)
-	{
-	  rAdapter.Commit(renderer, *it);
-	  //ogl.CommitModel( *it );
-	}      
-      }
+      void Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS &rAdapter);
       ////////////////////
       /// Clears current queue.
       void Clear();
@@ -126,6 +118,19 @@ void
 Phoenix::Graphics::CRenderQueue<TYPE>::Clear()
 {
   m_lstObjects.clear();
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+template<class ADAPTER_CLASS> 
+void 
+Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS &rAdapter)
+{
+  typename std::list<TYPE>::iterator it = m_lstObjects.begin();
+  for( ; it != m_lstObjects.end(); it++)
+  {
+    rAdapter.Commit(renderer, *it);
+    //ogl.CommitModel( *it );
+  }      
 }
 /////////////////////////////////////////////////////////////////
 #endif
