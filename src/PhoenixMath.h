@@ -177,7 +177,7 @@ namespace Phoenix
       Type val = max - min ;
       if ( min == max)
 	return min;
-      return  min + (Type)( (val *rand()) / (RAND_MAX+1) );
+      return  min + (Type)( val *(rand() / (RAND_MAX+1.0f)));
     }
     
     ////////////////////
