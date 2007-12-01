@@ -556,17 +556,19 @@ enum SPACESHIP_CLASS
 };
 /////////////////////////////////////////////////////////////////
 /// Baseclass for every spaceship in the system.
-class CSpaceShip : public CGameObject<OBJECT_TYPE>
+class CSpaceShip : public CGameObject<OBJECT_TYPE>,
+		   public COrientable
 {
 protected:
   /// Default Bounding sphere for each class.
-  static Phoenix::Volume::CSphere m_Sphere;
-  SPACESHIP_CLASS m_nShipClass;
+  static Phoenix::Volume::CSphere	m_Sphere;
+  SPACESHIP_CLASS			m_nShipClass;
+  float					m_fSpeed;
 public:
 
   ////////////////////
   /// Constructor.
-  CSpaceShip() 
+  CSpaceShip() : m_fSpeed(0.0f)
   {
     
   }
@@ -630,6 +632,7 @@ public:
       m_pCurrentObject = this;
       assert(Tcl_Eval(pInterp, "playComputer") == TCL_OK );
     }
+    
   }
   ////////////////////
   /// Allocates proper resources for sovereign class ships.
@@ -675,10 +678,13 @@ public:
     pInterp = Tcl_CreateInterp();
     assert( pInterp != NULL );
 
-    assert(Tcl_CreateObjCommand( pInterp, "MoveShip",
-				 MoveShip, (ClientData)0,
-				 NULL) != NULL );
 
+    assert(Tcl_CreateObjCommand( pInterp, "Rotate",
+				 Rotate, (ClientData)0,
+				 NULL) != NULL );
+    assert(Tcl_CreateObjCommand( pInterp, "MoveForward",
+				 MoveForward, (ClientData)0,
+				 NULL) != NULL );
     int status = Tcl_EvalFile(pInterp, "Resources/Scripts/PlayComputer.tcl");
     assert( status == TCL_OK );
   }  
@@ -703,7 +709,22 @@ public:
       Tcl_DeleteInterp( pInterp );
   }
   /////////////////////////////////////////////////////////////////
-  static int MoveShip( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
+  static int MoveForward( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
+  {
+    if ( m_pCurrentObject != NULL )
+    {
+      double dSpeed;
+      
+      Tcl_GetDoubleFromObj( pInterp, objv[1], &dSpeed );
+      
+      m_pCurrentObject->GetTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed);
+      
+    }
+    Tcl_ResetResult( pInterp );
+    return TCL_OK;
+  }
+  /////////////////////////////////////////////////////////////////
+  static int Rotate( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
   {
     if ( m_pCurrentObject != NULL )
     {
@@ -712,9 +733,16 @@ public:
       Tcl_GetDoubleFromObj( pInterp, objv[1], &dX );
       Tcl_GetDoubleFromObj( pInterp, objv[2], &dY );
       Tcl_GetDoubleFromObj( pInterp, objv[3], &dZ );
+      CQuaternion qRot[4];
 
-      m_pCurrentObject->GetTransform().Move( dX, dY,dZ);
-
+      qRot[0].CreateFromAxisAngle( m_pCurrentObject->GetRightVector(), dX );
+      qRot[1].CreateFromAxisAngle( m_pCurrentObject->GetUpVector(), dY );
+      qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ );
+      qRot[3] = qRot[2] * qRot[1] * qRot[0];
+      // Append rotation to direction vectors and transform
+      m_pCurrentObject->GetTransform().Rotate( qRot[3] );
+      m_pCurrentObject->AppendToRotation( qRot[3] );
+      
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
