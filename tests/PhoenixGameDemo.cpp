@@ -6,6 +6,7 @@
 #include <GL/glu.h>
 #include <tcl.h>
 #include "PhoenixEnergyBeam.h"
+
 using std::string;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
@@ -39,20 +40,26 @@ public:
 template <class PARTICLE_TYPE>
 class CRandomVelocity
 {
-  
+public:
+  float	m_fMinSpeed;
+  float m_fMaxSpeed;
 public:
   /// Velocity vector.
   Phoenix::Math::CVector3<float> m_vVelocity ;
   /// Default constructor.
-  CRandomVelocity() :m_vVelocity(0,0,0) {}
+  CRandomVelocity() : m_fMinSpeed(0.0f), m_fMaxSpeed(0.0f), m_vVelocity(0,0,0){}
 
   /// Modifies given particle.
   /// \param p particle which values are to be modified.
   inline void operator()(PARTICLE_TYPE &p) const
   {
-    p.m_vVelocity[0] = Phoenix::Math::GetRandom<float>(2.5f, 2.71f) * (Phoenix::Math::GetRandom<float>(0.0f, 1.0f) < 0.5f ? 1.0f : -1.0f);
-    p.m_vVelocity[1] = Phoenix::Math::GetRandom<float>(2.5f, 2.71f) * (Phoenix::Math::GetRandom<float>(0.0f, 1.0f) < 0.5f ? 1.0f : -1.0f); 
-    p.m_vVelocity[2] = Phoenix::Math::GetRandom<float>(2.5f, 2.71f) * (Phoenix::Math::GetRandom<float>(0.0f, 1.0f) < 0.5f ? 1.0f : -1.0f);
+    float fVal1 = Phoenix::Math::GetRandom<float>(0.0f, 1.0f) < 0.5f ? -1.0f : 1.0f;
+    float fVal2 = Phoenix::Math::GetRandom<float>(0.0f, 1.0f) < 0.5f ? -1.0f : 1.0f;
+    float fVal3 = Phoenix::Math::GetRandom<float>(0.0f, 1.0f) < 0.5f ? -1.0f : 1.0f;
+    //cerr << " values " << fVal1 << "," << fVal2 << "," << fVal3 << "," << endl;
+    p.m_vVelocity[0] = Phoenix::Math::GetRandom<float>(m_fMinSpeed, m_fMaxSpeed) * ( fVal1 );
+    p.m_vVelocity[1] = Phoenix::Math::GetRandom<float>(m_fMinSpeed, m_fMaxSpeed) * ( fVal2 ); 
+    p.m_vVelocity[2] = Phoenix::Math::GetRandom<float>(m_fMinSpeed, m_fMaxSpeed) * ( fVal3 );
   } 
 };
 /////////////////////////////////////////////////////////////////
@@ -69,126 +76,77 @@ public:
   /// \param p particle which values are to be modified.
   inline void operator()(PARTICLE_TYPE &p) const
   {
-    //p.m_fSize = Phoenix::Math::GetRandom<float>(2.0f, 4.05f);
-    p.m_fSize = 1.5f;
+    p.m_fSize = Phoenix::Math::GetRandom<float>(2.0f, 4.05f);
+    //p.m_fSize = 1.5f;
   } 
 };
 /////////////////////////////////////////////////////////////////
 template <class PARTICLE_TYPE>
-class CEnergyPolicy
+class CConstantSize
 {
-private:
-  unsigned int m_PassedTime;
 public:
-  
+
+  float m_fSize;
+  /// Default constructor.
+  CConstantSize() : m_fSize(0.0f) { }
+
+  /// Modifies given particle.
+  /// \param p particle which values are to be modified.
+  inline void operator()(PARTICLE_TYPE &p) const
+  {
+    p.m_fSize = m_fSize;
+  } 
+};
+/////////////////////////////////////////////////////////////////
+template <class PARTICLE_TYPE>
+class CIncreaseSizePolicy : public CSecondPolicyBase
+{
+protected:
+
+public:
+  float m_fSize;
+  /// Default constructor.
+  CIncreaseSizePolicy() {}
+
+  /// Modifies given particle.
+  /// \param p particle which values are to be modified.
+  inline void operator()(PARTICLE_TYPE &p) const
+  {
+    p.m_fSize += 3.25f * GetPassedTime();
+
+  } 
+};
+/////////////////////////////////////////////////////////////////
+template <class PARTICLE_TYPE>
+class CEnergyPolicy : public CSecondPolicyBase
+{
+public:
+  float m_fEnergyDecrease;
   /// Default constructor.
   CEnergyPolicy() {}
-  /// Prepares this policy according to given time parameter.
-  /// \param nPassedTimeInMS Passed time in milliseconds.
-  inline void Prepare( unsigned int nPassedTimeInMS ){ m_PassedTime = nPassedTimeInMS;}
+  ////////////////////
   /// Modifies given particle.
   /// \param p particle which values are to be modified.
   inline void operator()(PARTICLE_TYPE &p) const
   {
-    p.m_fEnergy -= 0.125f*((float)m_PassedTime)*0.001f;
+    p.m_fEnergy -= m_fEnergyDecrease*GetPassedTime();
   } 
 };
-template <class PARTICLE_TYPE>
 /////////////////////////////////////////////////////////////////
-class CSizeIncrese
-{
-private:
-  unsigned int m_PassedTime;
-public:
-  
-  /// Default constructor.
-  CSizeIncrese() {}
-  /// Prepares this policy according to given time parameter.
-  /// \param nPassedTimeInMS Passed time in milliseconds.
-  inline void Prepare( unsigned int nPassedTimeInMS ){ m_PassedTime = nPassedTimeInMS;}
-  /// Modifies given particle.
-  /// \param p particle which values are to be modified.
-  inline void operator()(PARTICLE_TYPE &p) const
-  {
-    //p.m_fSize += 0.0225f*((float)m_PassedTime)*0.001f;
-   
-  } 
-};
 template <class PARTICLE_TYPE>
-class CGravityActionWithCollision
+class CPositionPolicy : public CSecondPolicyBase
 {
-private:
-  /// Gravity values.
-  Phoenix::Math::CVector3<float> m_vGravity;
-
-  /// Passed time in seconds.
-  float m_fPassedTimeInSec;
 public:
-  CPlane m_Plane;
   /// Default constructor.
-  CGravityActionWithCollision() : m_vGravity(0,-9.81f,0),m_fPassedTimeInSec(0.0f) { m_Plane.Calculate(CVector3<float>(0,1,0), CVector3<float>(0,0,0)); }
-  /// Prepares this policy according to given time parameter.
-  /// \param nPassedTimeInMS Passed time in milliseconds.
-  inline void Prepare( unsigned int nPassedTimeInMS )
-  {
-    m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f;
-  }
+  CPositionPolicy() { }
+  
   /// Modifies given particle.
   /// \param particle a particle which values are to be modified.
   inline void operator()(PARTICLE_TYPE &particle ) 
   {
-    particle.m_vOldPosition = particle.m_vPosition;
-    particle.m_vVelocity += m_vGravity * m_fPassedTimeInSec;
-    particle.m_vPosition += particle.m_vVelocity * m_fPassedTimeInSec;
-
-    if ( Phoenix::Collision::PointDistanceFromPlane( particle.m_vPosition, m_Plane) > 0.0f)
-    {
-      return;
-    }
-    //-----------------------------------------------------------------
-    //
-    // The new velocity vector of a particle that is bouncing off
-    // a plane is computed as follows:
-    //
-    // Vn = (N.V) * N
-    // Vt = V - Vn
-    // Vp = Vt - Kr * Vn
-    //
-    // Where:
-    // 
-    // .  = Dot product operation
-    // N  = The normal of the plane from which we bounced
-    // V  = Velocity vector prior to bounce
-    // Vn = Normal force
-    // Kr = The coefficient of restitution ( Ex. 1 = Full Bounce, 
-    //      0 = Particle Sticks )
-    // Vp = New velocity vector after bounce
-    //
-    //-----------------------------------------------------------------
-    
-    particle.m_vPosition = particle.m_vOldPosition;
-
-    
-    // vector3f Vn = vector3f::dotProduct( m_vNormal, 
-    // 					pParticle->m_vCurVel ) * pPlane->m_vNormal;
-    
-    //vector3f Vt = pParticle->m_vCurVel - Vn;
-    //vector3f Vp = Vt - Vn;
-
-    //pParticle->m_vCurVel = Vp;
-    CVector3<float> vNormal(m_Plane[0], m_Plane[1], m_Plane[2]);
-    CVector3<float> vNormalForce = vNormal.Dot( particle.m_vVelocity ) * vNormal * 0.75f;
-    particle.m_vVelocity = particle.m_vVelocity - vNormalForce - vNormalForce;
-    particle.m_vPosition += particle.m_vVelocity * m_fPassedTimeInSec;
+    particle.m_vPosition += particle.m_vVelocity * GetPassedTime();
   }
-  /// Sets gravity vector.
-  /// \param vDir a gravity vector.
-  inline void SetGravity( const Phoenix::Math::CVector3<float> &vDir )
-  {
-    m_vGravity = vDir;
-  }
-
-}; // end of CGravityAction
+}; // end of CPositionPolicy
 
 /////////////////////////////////////////////////////////////////
 typedef CParticleSystem<50,
@@ -200,21 +158,42 @@ typedef CParticleSystem<50,
 					CNullPolicy<CRotatingParticle> >,
 			CCompletePolicy<CRotatingParticle, 
 					CNullPolicy<CRotatingParticle>,
-					CSizeIncrese<CRotatingParticle>,
-					CGravityActionWithCollision<CRotatingParticle>,
+					CIncreaseSizePolicy<CRotatingParticle>,
+					CNullPolicy<CRotatingParticle>,
 					CEnergyPolicy<CRotatingParticle>,
-					CNullPolicy<CRotatingParticle> >,
+					CPositionPolicy<CRotatingParticle> >,
 			CRotatingParticle> CExplosion;
+typedef CParticleSystem<150,
+			CCompletePolicy<CRotatingParticle, 
+					CNullPolicy<CRotatingParticle>,
+					CConstantSize<CRotatingParticle>,
+					CRandomVelocity<CRotatingParticle>,
+					CEnergyInitializer<CRotatingParticle>,
+					CNullPolicy<CRotatingParticle> >,
+			CCompletePolicy<CRotatingParticle, 
+					CNullPolicy<CRotatingParticle>,
+					CNullPolicy<CRotatingParticle>,
+					CNullPolicy<CRotatingParticle>,
+					CEnergyPolicy<CRotatingParticle>,
+					CPositionPolicy<CRotatingParticle> >,
+			CRotatingParticle> CExplosionDebris;
 /////////////////////////////////////////////////////////////////
 /// 
 class CGamePSObject : public Phoenix::Scene::CGameObject<OBJECT_TYPE>
 {
 private:
   CVertexDescriptor *m_pVertexDescriptor;
+  CVertexDescriptor *m_pVertexDescriptorDebris;
   CVertexDescriptor *m_pShaderData;
+  CVertexDescriptor *m_pShaderDataDebris;
   CIndexArray *m_pIndices;
-  CExplosion         m_Explosion;
+  CIndexArray *m_pIndicesDebris;
 
+  CExplosion         m_Explosion;
+  CExplosionDebris   m_ExplosionDebris;
+  unsigned int	     m_nPassedTimeMS;
+  unsigned int	     m_bSecondDone;
+  CVector3<float>    m_vOrigPosition;
 public:
   ////////////////////
   /// 
@@ -222,13 +201,26 @@ public:
   {
     SetType(O_TYPE_PS);
     unsigned int nNumIndices = m_Explosion.GetMaxParticles()*4;
+
     m_pVertexDescriptor = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, nNumIndices);
     m_pShaderData = new CVertexDescriptor(ELEMENT_TYPE_ATTRIB_4F, nNumIndices);
     m_pIndices = new CIndexArray( PRIMITIVE_QUAD_LIST, nNumIndices);
-    
-    // Make initial size 5
+
+    unsigned int nNumIndicesDebris  = m_ExplosionDebris.GetMaxParticles()*4;
+    m_pVertexDescriptorDebris = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, nNumIndicesDebris);
+    m_pShaderDataDebris = new CVertexDescriptor(ELEMENT_TYPE_ATTRIB_4F, nNumIndicesDebris);
+    m_pIndicesDebris = new CIndexArray( PRIMITIVE_QUAD_LIST, nNumIndicesDebris);    
+
+    // Set initial size 
     m_Explosion.m_InitializePolicy.m_SizePolicy.m_fSize = 1.0f;
+    m_Explosion.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.35f;
+    m_Explosion.m_InitializePolicy.m_VelocityPolicy.m_fMinSpeed = 0.5f;
+    m_Explosion.m_InitializePolicy.m_VelocityPolicy.m_fMaxSpeed = 1.75f;
     
+    m_ExplosionDebris.m_InitializePolicy.m_SizePolicy.m_fSize = 0.50f;
+    m_ExplosionDebris.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.52f;
+    m_ExplosionDebris.m_InitializePolicy.m_VelocityPolicy.m_fMinSpeed = 0.75f;
+    m_ExplosionDebris.m_InitializePolicy.m_VelocityPolicy.m_fMaxSpeed = 7.15f;
     if ( m_pIndices->IsShortIndices())
     {
       for(unsigned short int i=0;i<nNumIndices;i++)
@@ -243,13 +235,35 @@ public:
 	m_pIndices->GetPointer<unsigned int>()[i]=i;
       }
     }
+    if ( m_pIndicesDebris->IsShortIndices())
+    {
+      for(unsigned short int i=0;i<nNumIndicesDebris;i++)
+      {
+	m_pIndicesDebris->GetPointer<unsigned short int>()[i]=i;
+      }
+    } 
+    else 
+    {
+      for(size_t i=0;i<nNumIndicesDebris;i++)
+      {
+	m_pIndicesDebris->GetPointer<unsigned int>()[i]=i;
+      }
+    }
+    m_nPassedTimeMS = 0;
   }
+
+  
+  
   ////////////////////
   ///
   ~CGamePSObject( )
   {
     delete m_pVertexDescriptor;
     delete m_pShaderData;
+    delete m_pIndices;
+    delete m_pVertexDescriptorDebris;
+    delete m_pShaderDataDebris;
+    delete m_pIndicesDebris;
   }
   ////////////////////
   ///
@@ -270,7 +284,7 @@ public:
       m_pShaderData->GetPointer<float>()[nShaderDataIndex]    = -1;
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+1]  = 1;
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+2]  = m_Explosion.GetParticles()[i].m_fEnergy; 
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+3]  = m_Explosion.GetParticles()[i].m_fSize;;
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+3]  = m_Explosion.GetParticles()[i].m_fSize;
 
       m_pVertexDescriptor->GetPointer<float>()[nIndex+3] = m_Explosion.GetParticles()[i].m_vPosition[0];
       m_pVertexDescriptor->GetPointer<float>()[nIndex+4] = m_Explosion.GetParticles()[i].m_vPosition[1];
@@ -298,17 +312,81 @@ public:
 
     }
     m_pIndices->SetDrawableCount( m_Explosion.GetAliveCount()*4 );
+    /////////////////////////////////////////////////////////////////
+    // debris
+    /////////////////////////////////////////////////////////////////
+    nIndex = 0;
+    nShaderDataIndex = 0;
+    for(size_t i=0;i<m_ExplosionDebris.GetAliveCount();i++)
+    {
+      // number of coords for one quad 4*3
+      nIndex = i*12;
+      // number of data slots for four quads 4*4
+      nShaderDataIndex = i*16;
+      
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex]   = m_ExplosionDebris.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+1] = m_ExplosionDebris.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+2] = m_ExplosionDebris.GetParticles()[i].m_vPosition[2];
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex]    = -1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+1]  = 1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+2]  = m_ExplosionDebris.GetParticles()[i].m_fEnergy; 
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+3]  = m_ExplosionDebris.GetParticles()[i].m_fSize;
+
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+3] = m_ExplosionDebris.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+4] = m_ExplosionDebris.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+5] = m_ExplosionDebris.GetParticles()[i].m_vPosition[2];
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+4]  = -1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+5]  = -1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+6]  = m_ExplosionDebris.GetParticles()[i].m_fEnergy; 
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+7]  = m_ExplosionDebris.GetParticles()[i].m_fSize;;
+
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+6] = m_ExplosionDebris.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+7] = m_ExplosionDebris.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+8] = m_ExplosionDebris.GetParticles()[i].m_vPosition[2];
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+8]   =  1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+9]   = -1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+10]  = m_ExplosionDebris.GetParticles()[i].m_fEnergy; 
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+11]  = m_ExplosionDebris.GetParticles()[i].m_fSize;;
+
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+9]  = m_ExplosionDebris.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+10] = m_ExplosionDebris.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptorDebris->GetPointer<float>()[nIndex+11] = m_ExplosionDebris.GetParticles()[i].m_vPosition[2];
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+12]  = 1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+13]  = 1;
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+14]  = m_ExplosionDebris.GetParticles()[i].m_fEnergy; 
+      m_pShaderDataDebris->GetPointer<float>()[nShaderDataIndex+15]  = m_ExplosionDebris.GetParticles()[i].m_fSize;
+      
+    }
+    m_pIndicesDebris->SetDrawableCount( m_ExplosionDebris.GetAliveCount()*4 );
+    
   }
   void Update( unsigned int nMS )
   {
     m_Explosion.Update(nMS);
+    m_ExplosionDebris.Update(nMS);
+    m_nPassedTimeMS+=nMS;
+    if ( m_Explosion.IsAlive() && !m_bSecondDone && m_nPassedTimeMS > 750 )
+    {
+      m_ExplosionDebris.Init(25, m_vOrigPosition);
+      m_bSecondDone = 1;
+    }
+      
   }
   CVertexDescriptor * GetVertices() { return m_pVertexDescriptor; }
   CIndexArray * GetIndices() { return m_pIndices; }
   CVertexDescriptor * GetShaderData() { return m_pShaderData; }
-  void Init()
+
+  CVertexDescriptor * GetVerticesDebris() { return m_pVertexDescriptorDebris; }
+  CIndexArray * GetIndicesDebris() { return m_pIndicesDebris; }
+  CVertexDescriptor * GetShaderDataDebris() { return m_pShaderDataDebris; }
+  
+  void Init( const CVector3<float> &vPosition )
   {
-    m_Explosion.Init(5, CVector3<float>(0,10,0));
+    m_nPassedTimeMS = 0;
+    m_Explosion.Init(5, vPosition );
+    m_ExplosionDebris.Init(65, vPosition );
+    m_bSecondDone = 0;
+    m_vOrigPosition = vPosition;
   }
 };
 /////////////////////////////////////////////////////////////////
@@ -560,8 +638,10 @@ class CSpaceShip : public CGameObject<OBJECT_TYPE>,
 		   public COrientable
 {
 protected:
-  /// Default Bounding sphere for each class.
+  /// Default Bounding sphere for each ship.
   static Phoenix::Volume::CSphere	m_Sphere;
+  /// Default bounding box for each ship
+  static Phoenix::Volume::COrientedBox  m_Box;
   SPACESHIP_CLASS			m_nShipClass;
   float					m_fSpeed;
 public:
@@ -594,6 +674,7 @@ public:
 };
 /// Static members must be initialized.
 CSphere CSpaceShip::m_Sphere = CSphere();
+COrientedBox CSpaceShip::m_Box = COrientedBox();
 /////////////////////////////////////////////////////////////////
 #define SOVEREIGN_MODEL "Resources/Models/1701-e.ms3d"
 #define SOVEREIGN_VERTICES "sovereign_vertices"
@@ -618,6 +699,7 @@ public:
     g_PhoenixModelManager->AttachHandle( SOVEREIGN_RESOURCE, GetModelHandle() );
     SetType(O_TYPE_ORDINARY);
     GetBoundingSphere() = CSovereignClass::m_Sphere;
+    GetBoundingBox() = CSovereignClass::m_Box;
     CModel *pModel = g_PhoenixModelManager->GetResource( SOVEREIGN_RESOURCE );
     pModel->AddTextureFilter(MIN_MIP_LINEAR);
     pModel->AddTextureFilter(MAG_LINEAR);
@@ -668,7 +750,7 @@ public:
     
     // Calculate bounding sphere
     CSovereignClass::m_Sphere = CalculateBoundingSphereTight( *(loader.GetVertices()));
-
+    CSovereignClass::m_Box = CalculateOrientedBoundingBox( *(loader.GetVertices()));
     // Tell loader not to free these resources, they are managed.
     loader.ResetVertices();
     loader.ResetTexCoords();
@@ -866,6 +948,51 @@ public:
   }
 };
 /////////////////////////////////////////////////////////////////
+void 
+DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<OBJECT_TYPE> *pObject )
+{
+  COrientedBox box = pObject->GetBoundingBox();
+  box.AppendToRotation( pObject->GetTransform().GetRotation());
+  box.SetPosition( box.GetPosition() + pObject->GetTransform().GetTranslation());
+  box.CalculatePlanes();
+  box.CalculateCorners();
+  CVector3<float> vMin, vMax;
+  CVector3<float> vTemp;
+  vMin = camera.WorldCoordinatesToScreen( box.GetCorner( Phoenix::Volume::TOP_LEFT_BACK ));
+
+
+  vMax = vMin;
+  vMin[2] = vMax[2] = 0.0f;
+
+  for( unsigned int i=1;i<8;i++)
+  {
+    vTemp = camera.WorldCoordinatesToScreen( box.GetCorner( (BBOX_CORNER_TYPE)i ));
+    for(unsigned int n=0;n<2;n++)
+    {
+      if ( vTemp[n] > vMax[n] ) vMax[n] = vTemp[n];
+      else if ( vTemp[n] < vMin[n] ) vMin[n] = vTemp[n];
+    }
+    
+  }
+  
+
+  pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
+  glPolygonMode( GL_FRONT, GL_LINE );
+  glBegin(GL_QUADS);
+  glVertex3fv(vMin.GetArray());
+    glVertex3fv(CVector3<float>(vMax[0], vMin[1], 0.0f).GetArray()); 
+    glVertex3fv(vMax.GetArray());
+    glVertex3fv(CVector3<float>(vMin[0], vMax[1], 0.0f).GetArray());
+    /*glVertex3f(100,100,0);
+    glVertex3f(300,100,0);
+    glVertex3f(300,300,0);
+    glVertex3f(100,300,0);*/
+  glEnd();
+  glPolygonMode( GL_FRONT, GL_FILL );
+  pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
+
+}
+/////////////////////////////////////////////////////////////////
 int main()
 {
   
@@ -884,12 +1011,12 @@ int main()
   camera.SetFieldOfView( 43.0f);
 
   CCamera camera2;
-  camera2.SetPosition( 0, 250.0f, 0.0f);
-  camera2.SetViewport( 480,360, 160, 120 );
-  camera2.SetNearClipping( 0.1f);
-  camera2.SetFarClipping( 800.0f );
-  camera2.SetViewOrtho( -800,800, -800, 400);
-  camera2.RotateAroundRight( -90.0 );
+  camera2.SetPosition( 0, 0.0f, 0.0f);
+  camera2.SetViewport( 0,0, 640, 480 );
+  camera2.SetNearClipping( -1.0f);
+  camera2.SetFarClipping( 10.0f );
+  camera2.SetViewOrtho( 0,640, 0, 480);
+  //camera2.RotateAroundRight( -90.0 );
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   
@@ -954,10 +1081,14 @@ int main()
   
   CGamePSObject *pParticleSystem = new CGamePSObject();
   pOglRenderer->CommitState( STATE_FACECULLING );
-
+  
   CTimer timer;
   timer.Reset();
   int bChanged = 0;
+
+  
+  
+
   while( g_bLoop )
   {
     fpsCounter.Update();
@@ -986,6 +1117,11 @@ int main()
 	{
 	  camera.Strafe( 1.1f );
 	} 
+	else if ( event.key.keysym.sym == SDLK_RETURN )
+	{
+	  pParticleSystem->Init( pSovereign->GetTransform().GetTranslation() + pSovereign->GetForwardVector());
+	  pBeam->SetEnabled(1);
+	}
 	// else if ( event.key.keysym.sym == SDLK_RIGHT )
 // 	{
 // 	  pSovereign->GetTransform().Move(0,0,1);
@@ -1033,7 +1169,8 @@ int main()
 
     nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
     pOglRenderer->CommitCamera( camera );
-    //pOglRenderer->DisableState( STATE_LIGHTING );
+    pOglRenderer->DisableState( STATE_LIGHTING );
+    
     //pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
     //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
     //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
@@ -1042,14 +1179,16 @@ int main()
 
     pOglRenderer->CommitState( STATE_BLENDING);
     pOglRenderer->DisableState( STATE_DEPTH_WRITE );
-    pOglRenderer->CommitBlending( BLEND_SRC_ONE, BLEND_DST_ONE );
-    pOglRenderer->CommitModel(*pBeam);
+    //BLEND_SRC_ONE
+    pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE );
+    if ( pBeam->IsEnabled())
+      pOglRenderer->CommitModel(*pBeam);
 
     //pOglRenderer->RollbackTransform();
     //pOglRenderer->CommitCamera( camera2);
     //pRenderQueue->Render<CGameObjectOGLAdapter>( *pOglRenderer, oglAdapter );
     //DrawFrustum( camera );
-    pBeam->IncreaseTime(0.001f);
+
     
 
     if ( timer.HasPassedMS(5) )
@@ -1057,30 +1196,56 @@ int main()
       pParticleSystem->Update(timer.GetPassedTimeMS());
       //pSovereign->Update(timer.GetPassedTimeMS());
       //pSpatialGraph->Update( pSovereign );
-      shipUpdater.Update( shipAdapter, timer.GetPassedTimeMS());
+      shipUpdater.Update<CSpaceShipUpdaterAdapter>( shipAdapter, timer.GetPassedTimeMS());
       timer.Reset();
+      pBeam->IncreaseTime( timer.GetPassedTimeMS()*0.001f);
+      if ( pBeam->IsEnabled())
+      {
+	pBeam->Initialize( pSovereign->GetTransform().GetTranslation(), 
+			   pOmega->GetTransform().GetTranslation(), 0.95f );
+      }
+
     }
     pParticleSystem->UpdateRenderableData();
-    pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
+    //pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
+    pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE );
     pOglRenderer->CommitShader( pPsShader );    
     pOglRenderer->CommitTexture( 0, pExplosionTexture );
     pOglRenderer->CommitVertexDescriptor(pParticleSystem->GetVertices());
     pOglRenderer->CommitShaderParam( *pPsShader, "stuff", *pParticleSystem->GetShaderData());
     pOglRenderer->CommitUniformShaderParam( *pPsShader, "texture", 0);
     pOglRenderer->CommitPrimitive(pParticleSystem->GetIndices());
-    
+
+    pOglRenderer->CommitVertexDescriptor(pParticleSystem->GetVerticesDebris());
+    pOglRenderer->CommitShaderParam( *pPsShader, "stuff", *pParticleSystem->GetShaderDataDebris());
+    //pOglRenderer->CommitUniformShaderParam( *pPsShader, "texture", 0);
+    pOglRenderer->CommitPrimitive(pParticleSystem->GetIndicesDebris());
+
     pOglRenderer->DisableState( STATE_BLENDING);
     pOglRenderer->CommitState( STATE_DEPTH_WRITE );
+    pOglRenderer->CommitShader( NULL );
+    pOglRenderer->CommitCamera( camera2 );
+
+    pOglRenderer->DisableState( STATE_DEPTH_TEST );
+    
+    pOglRenderer->DisableTexture( 0, pExplosionTexture );
+
+    DrawSurroundingQuad( pOglRenderer, camera, pSovereign);
+    
+    pOglRenderer->CommitState( STATE_DEPTH_TEST );
+    
     pOglRenderer->Finalize();
     pOglRenderer->CommitShader( NULL );    
+    
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter++;
 
     if ( fpsCounter.HasPassedMS(1000) )
     {
       cerr << "FPS: " << fpsCounter << ", with visible objects #"<< nCollected <<endl;
+      //cerr << "Screen coords : " << camera.WorldCoordinatesToScreen(pSovereign->GetTransform().GetTranslation()) << endl;
       fpsCounter.Reset();
-      pParticleSystem->Init( );
+
     }
     
   }
