@@ -9,7 +9,8 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Class for energy beams.
-    class CEnergyBeam : public Phoenix::Graphics::CModel
+    class CEnergyBeam : public Phoenix::Graphics::CModel,
+			public Phoenix::Core::CEnableable
     {
     private:
       static unsigned int m_nNumBeams;
@@ -56,9 +57,9 @@ namespace Phoenix
 	stream.str("");
 	stream << "EnergyBeam_" << nNum << "_params";
 	//std::cerr << "Stream contents is : " << stream.str() << std::endl;
-	m_pTimeParam = new CVertexDescriptor( ELEMENT_TYPE_UNIFORM_1F, 1 );
+	m_pTimeParam = new CVertexDescriptor( ELEMENT_TYPE_UNIFORM_2F, 1 );
 	m_pTimeParam->GetPointer<float>()[0] = 0.0f;
-    
+    	m_pTimeParam->GetPointer<float>()[1] = 1.0f;
 	/// Create shader parameters.
 	CVertexDescriptor *pEndposThickness = new CVertexDescriptor( ELEMENT_TYPE_ATTRIB_4F, 4);
 	SetShaderParameter( "endposThickness", VERTEX_HANDLE());
@@ -173,7 +174,26 @@ namespace Phoenix
       void IncreaseTime( float fValue )
       {
 	m_pTimeParam->GetPointer<float>()[0] += fValue;
+	if ( IsEnabled()) 
+	{
+	  m_pTimeParam->GetPointer<float>()[1] -= fValue;
+	  if ( m_pTimeParam->GetPointer<float>()[1] <= 0.0f )
+	  {
+	    SetEnabled(0);
+	  }
+	}
       }
+      ////////////////////
+      /// Overrides behaviour.
+      void SetEnabled(int bFlag ) 
+      { 
+	CEnableable::SetEnabled( bFlag );
+	if ( bFlag == 1 )
+	{
+	  m_pTimeParam->GetPointer<float>()[1] = 1.0f;
+	}
+      }
+
     };
   } // namespace EnergyBeam
 } // namespace Phoenix
