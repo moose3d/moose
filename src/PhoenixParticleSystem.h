@@ -32,33 +32,7 @@ namespace Phoenix
       float	      m_fSize;
       
     };
-    /////////////////////////////////////////////////////////////////
-    /// Generic interface for all particlesystems.
-    class IParticleSystemBase 
-    {
-    public:
-      /// Destructor.
-      virtual ~IParticleSystemBase(){}
-      /// Returns particle array.
-      virtual const CParticle * GetParticles() const = 0;
-      /// Is any particles alive in the system.
-      virtual const int	IsAlive() const = 0;
-      /// Updates particles.
-      /// \param nPassedTimeInMs passed time in milliseconds.
-      virtual void		Update( unsigned int nPassedTimeInMs ) = 0;
-      /// Returns maximum number of particles in this system.
-      virtual const size_t	GetMaxParticles() const = 0;
-      /// Creates particles into the system.
-      /// \param nNumParticles Number of particles to be created.
-      /// \param vPosition initial position where particles are created.
-      virtual void		Init(const size_t &nNumParticles, const Phoenix::Math::CVector3<float> &vPosition) = 0;
-      /// Returns the number of particles alive.
-      virtual const size_t	GetAliveCount() const = 0;
-      /// Returns bounding sphere for this system.
-      virtual const Phoenix::Volume::CSphere & GetBoundingSphere() const = 0;
-      /// Returns Axis-aligned box for this system.
-      virtual const Phoenix::Volume::CAxisAlignedBox & GetBoundingBox() const = 0;
-    };
+
     /////////////////////////////////////////////////////////////////
     /// Particle System.
     template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
@@ -125,7 +99,8 @@ namespace Phoenix
 
 
     /////////////////////////////////////////////////////////////////
-    // Policies for ParticleSystems.
+    // Policies for ParticleSystems - these babies make the systems
+    // tick.
     /////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////
@@ -167,33 +142,84 @@ namespace Phoenix
       }
     }; // end of CCompletePolicy
     /////////////////////////////////////////////////////////////////
-
+    // Classe for measuring time difference within policies (using milliseconds). 
+    class CMillisecondPolicyBase 
+    {
+    protected:
+      /// Passed time in milliseconds
+      unsigned int m_nPassedTimeInMS;
+    public:
+      ////////////////////
+      /// Constructor.
+      CMillisecondPolicyBase() : m_nPassedTimeInMS(0) {}
+      ////////////////////
+      /// Prepares this policy according to given time parameter.
+      /// \param nPassedTimeInMS Passed milliseconds are stored as milliseconds.
+      inline void Prepare( unsigned int nPassedTimeInMS )
+      {
+	m_nPassedTimeInMS = nPassedTimeInMS;
+      }
+      ////////////////////
+      /// Returns passed time.
+      /// \returns Passed time in milliseconds.
+      inline unsigned int GetPassedTimeMS() const
+      {
+	return m_nPassedTimeInMS;
+      }
+      
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Class for measuring time difference within policies (using seconds).
+    class CSecondPolicyBase
+    {
+    protected:
+      /// Passed time in seconds
+      float m_fPassedTimeInSec;
+    public:
+      ////////////////////
+      /// Constructor.
+      CSecondPolicyBase() : m_fPassedTimeInSec(0.0f) {}      
+      ////////////////////
+      /// Prepares this policy according to given time parameter.
+      /// \param nPassedTimeInMS Passed milliseconds are stored as seconds.
+      inline void Prepare( unsigned int nPassedTimeInMS )
+      {
+	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f;
+      }
+      ////////////////////
+      /// Returns passed time.
+      /// \returns Passed time in milliseconds.
+      inline float GetPassedTime() const
+      {
+	return m_fPassedTimeInSec;
+      }
+    };
+    /////////////////////////////////////////////////////////////////
     // Individual policies:
-
     /////////////////////////////////////////////////////////////////
     /// Template for GravityAction.
     template <class PARTICLE_TYPE>
-    class CGravityAction
+    class CGravityAction : public CSecondPolicyBase
     {
     private:
       /// Gravity values.
       Phoenix::Math::CVector3<float> m_vGravity;
       /// Passed time in seconds.
-      float m_fPassedTimeInSec;
+      ///float m_fPassedTimeInSec;
     public:
       /// Default constructor.
-      CGravityAction() : m_vGravity(0,-9.81f,0),m_fPassedTimeInSec(0.0f) {};
+      CGravityAction() : m_vGravity(0,-9.81f,0) {};
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeInMS Passed time in milliseconds.
-      inline void Prepare( unsigned int nPassedTimeInMS )
-      {
-	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f;
-      }
+      /* inline void Prepare( unsigned int nPassedTimeInMS ) */
+/*       { */
+/* 	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f; */
+/*       } */
       /// Modifies given particle.
       /// \param particle a particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &particle ) 
       {
-	particle.m_vVelocity += m_vGravity * m_fPassedTimeInSec;
+	particle.m_vVelocity += m_vGravity * GetPassedTime();
       }
       /// Sets gravity vector.
       /// \param vDir a gravity vector.
@@ -206,26 +232,26 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     // Template for MoveAction.
     template <class PARTICLE_TYPE>
-    class CMoveAction
+    class CMoveAction : public CSecondPolicyBase
     {
     private:
       /// Passed time in milliseconds.
-      float m_fPassedTimeInSec;
+      //float m_fPassedTimeInSec;
     public:
       /// Default constructor.
-      CMoveAction() : m_fPassedTimeInSec(0.0f){}
+      CMoveAction() {}
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeInMS Passed time in milliseconds.
-      inline void Prepare( unsigned int nPassedTimeInMS )
-      {
-	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f;
-      }
+      /* inline void Prepare( unsigned int nPassedTimeInMS ) */
+/*       { */
+/* 	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f; */
+/*       } */
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &p) const
       {
 	//cerr << p.m_vPosition << "|" << p.m_vVelocity << "|" << m_fPassedTimeInSec <<endl;
-	p.m_vPosition += p.m_vVelocity * m_fPassedTimeInSec;
+	p.m_vPosition += p.m_vVelocity * GetPassedTime();
 	//cerr <<  "+=" << p.m_vVelocity * m_fPassedTimeInSec <<endl;
       } 
     }; // end of CMoveAction
@@ -485,4 +511,32 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
   return ( GetAliveCount() > 0 );
 }
 /////////////////////////////////////////////////////////////////
+
+/*     ///////////////////////////////////////////////////////////////// */
+/*     /// Generic interface for all particlesystems. */
+/*     class IParticleSystemBase  */
+/*     { */
+/*     public: */
+/*       /// Destructor. */
+/*       virtual ~IParticleSystemBase(){} */
+/*       /// Returns particle array. */
+/*       virtual const CParticle * GetParticles() const = 0; */
+/*       /// Is any particles alive in the system. */
+/*       virtual const int	IsAlive() const = 0; */
+/*       /// Updates particles. */
+/*       /// \param nPassedTimeInMs passed time in milliseconds. */
+/*       virtual void		Update( unsigned int nPassedTimeInMs ) = 0; */
+/*       /// Returns maximum number of particles in this system. */
+/*       virtual const size_t	GetMaxParticles() const = 0; */
+/*       /// Creates particles into the system. */
+/*       /// \param nNumParticles Number of particles to be created. */
+/*       /// \param vPosition initial position where particles are created. */
+/*       virtual void		Init(const size_t &nNumParticles, const Phoenix::Math::CVector3<float> &vPosition) = 0; */
+/*       /// Returns the number of particles alive. */
+/*       virtual const size_t	GetAliveCount() const = 0; */
+/*       /// Returns bounding sphere for this system. */
+/*       virtual const Phoenix::Volume::CSphere & GetBoundingSphere() const = 0; */
+/*       /// Returns Axis-aligned box for this system. */
+/*       virtual const Phoenix::Volume::CAxisAlignedBox & GetBoundingBox() const = 0; */
+/*     }; */
 #endif
