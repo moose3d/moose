@@ -25,7 +25,7 @@ namespace Phoenix
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
       /// Model bounding box.
-      //Phoenix::Volume::COrientedBox	m_BoundingBox;
+      Phoenix::Volume::COrientedBox	m_BoundingBox;
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
     public:
@@ -59,6 +59,14 @@ namespace Phoenix
       /// Returns bounding sphere.
       /// \returns Reference to bounding sphere.
       const Phoenix::Volume::CSphere & GetBoundingSphere() const;
+      ////////////////////
+      /// Returns bounding sphere.
+      /// \returns Reference to bounding sphere. 
+      Phoenix::Volume::COrientedBox & GetBoundingBox();
+      ////////////////////
+      /// Returns bounding sphere.
+      /// \returns Reference to bounding sphere.
+      const Phoenix::Volume::COrientedBox & GetBoundingBox() const;
       ////////////////////
       /// Returns spatial index of this node.
       /// \param index into 1-dimensional array.
@@ -131,6 +139,20 @@ inline const Phoenix::Volume::CSphere &
 Phoenix::Scene::CGameObject<TYPE>::GetBoundingSphere() const
 {
   return m_BoundingSphere;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline Phoenix::Volume::COrientedBox & 
+Phoenix::Scene::CGameObject<TYPE>::GetBoundingBox()
+{
+  return m_BoundingBox;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline const Phoenix::Volume::COrientedBox & 
+Phoenix::Scene::CGameObject<TYPE>::GetBoundingBox() const
+{
+  return m_BoundingBox;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
