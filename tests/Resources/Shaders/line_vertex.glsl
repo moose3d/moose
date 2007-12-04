@@ -1,6 +1,6 @@
 attribute vec4 endposThickness;
-varying vec4 color;
-uniform float time;
+varying float alpha;
+uniform vec2 time;
 void main()
 {
 	/* into EYE coordinates */	
@@ -12,10 +12,10 @@ void main()
 
 
 	/*float texcoef = abs( dot( normalize(linedir), normalize(eyeToStart) ));*/
-
+	alpha = time.y;
 	startPos = vec4(startPos.xyz + (offsetVec * endposThickness.w),startPos.w);
 	/* into window coordinates */
 	gl_Position = gl_ProjectionMatrix * startPos;
-	gl_TexCoord[0].x = (gl_MultiTexCoord0.x * length(endPos - startPos))+ time;
+	gl_TexCoord[0].x = (gl_MultiTexCoord0.x * length(endPos - startPos))+ time.x;
 	gl_TexCoord[0].y = gl_MultiTexCoord0.y;
 }
