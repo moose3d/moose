@@ -1,4 +1,4 @@
 proc playComputer { } {
-    MoveForward 0.01
-    Rotate -0.01 0.02 0.04
+    MoveForward 0.05
+    Rotate 0.0 0.05 0.0
 }
