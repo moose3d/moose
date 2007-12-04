@@ -440,7 +440,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor)
 }
 /////////////////////////////////////////////////////////////////
 CMatrix3x3<float>
-CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray &indices )
+Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray &indices )
 {
   
   CMatrix3x3<float> mCovariance;
