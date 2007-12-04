@@ -2,6 +2,8 @@
 #include "PhoenixGlobals.h"
 #include "PhoenixMatrix3x3.h"
 #include "PhoenixMath.h"
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Volume;
 using namespace Phoenix::Graphics;
@@ -264,3 +266,326 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   return sphere;
 }
 /////////////////////////////////////////////////////////////////
+#define APPLY_CORRECT_VALUES(R,S,T,rmax,rmin,smax, smin,tmax, tmin) {			\
+  obOrientedBox[Phoenix::Volume::FRONT].SetNormal(-R);   				\
+  obOrientedBox[Phoenix::Volume::FRONT][3]  = rmax;					\
+  obOrientedBox[Phoenix::Volume::BACK].SetNormal(R);       				\
+  obOrientedBox[Phoenix::Volume::BACK][3] = -rmin;				\
+  obOrientedBox[Phoenix::Volume::RIGHT].SetNormal(-S);  				\
+  obOrientedBox[Phoenix::Volume::RIGHT][3] = smax;					\
+  obOrientedBox[Phoenix::Volume::LEFT].SetNormal(S);    				\
+  obOrientedBox[Phoenix::Volume::LEFT][3] = -smin;					\
+  obOrientedBox[Phoenix::Volume::TOP].SetNormal(-T);    				\
+  obOrientedBox[Phoenix::Volume::TOP][3] = tmax;					\
+  obOrientedBox[Phoenix::Volume::BOTTOM].SetNormal(T);					\
+  obOrientedBox[Phoenix::Volume::BOTTOM][3] = -tmin;    				\
+  /* The orientation will be formed so, that the forward vector will point along*/ 	\
+  /* principal axis (largest eigenvalue ), right vector along vector with*/        	\
+  /* second largest and up points to vector with lowest eigenvalue*/               	\
+  obOrientedBox.SetOrientation(  T, R, S );                                  		\
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Volume::COrientedBox 
+Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &rVertices )
+{
+  /////////////////////////////////////////////////////////////////  
+  float fMaxR = 0.0f;
+  float fMinR = 0.0f;
+  float fMaxS = 0.0f;
+  float fMinS = 0.0f;
+  float fMaxT = 0.0f;
+  float fMinT = 0.0f;
+  float fLambda1,fLambda2,fLambda3;  
+  float fVertDotR = 0.0f;
+  float fVertDotS = 0.0f;
+  float fVertDotT = 0.0f;
+  CVector3<float>	 vTemp;
+  /////////////////////////////////////////////////////////////////
+  CMatrix3x3<float> mCovar = Math::CovarianceMatrix( rVertices );
+  CMatrix3x3<float> mEigenVectorMatrix;
+  mEigenVectorMatrix.IdentityMatrix();
+  Math::CalculateEigensystem( mCovar, fLambda1, fLambda2,fLambda3,
+			      mEigenVectorMatrix);
+  /////////////////////////////////////////////////////////////////
+  CVector3<float> vR = Math::GetColumnVector(mEigenVectorMatrix, 0);
+  CVector3<float> vS = Math::GetColumnVector(mEigenVectorMatrix, 1);
+  CVector3<float> vT = Math::GetColumnVector(mEigenVectorMatrix, 2);
+  /////////////////////////////////////////////////////////////////
+  vR.Normalize();
+  vS.Normalize();
+  vT.Normalize();
+  /////////////////////////////////////////////////////////////////
+  for ( unsigned int v = 0;v<rVertices.GetSize();v++)
+  {
+
+    vTemp.UseExternalData(&(rVertices.GetPointer<float>()[v*3]));
+    
+    fVertDotR = vTemp.Dot(vR);
+    fVertDotS = vTemp.Dot(vS);
+    fVertDotT = vTemp.Dot(vT);
+    
+    if ( v==0 )
+    {
+      
+      fMaxR = fMinR = fVertDotR;
+      fMaxS = fMinS = fVertDotS;
+      fMaxT = fMinT = fVertDotT;
+      
+    } else {
+      
+      if ( fVertDotR < fMinR )		fMinR = fVertDotR;
+      else if ( fVertDotR > fMaxR )	fMaxR = fVertDotR;
+      
+      if ( fVertDotS < fMinS )		fMinS = fVertDotS;
+      else if ( fVertDotS > fMaxS )	fMaxS = fVertDotS;
+      
+      if ( fVertDotT < fMinT )		fMinT = fVertDotT;
+      else if ( fVertDotT > fMaxT )	fMaxT = fVertDotT;
+      
+    }
+  }
+  
+  COrientedBox obOrientedBox;
+  
+
+  float fRlen = fMaxR - fMinR;
+  float fSlen = fMaxS - fMinS;
+  float fTlen = fMaxT - fMinT;
+  
+  float fA = (fMaxR + fMinR) * 0.5f;
+  float fB = (fMaxS + fMinS) * 0.5f;
+  float fC = (fMaxT + fMinT) * 0.5f;
+
+  /// assign largest eigenvector to vR, second largest to vS and smallest to vT.
+  if ( fRlen > fSlen ) 
+  {
+    /// fLambda1 > fLambda2 !!! 
+    if ( fSlen > fTlen  )
+    {
+      APPLY_CORRECT_VALUES( vR, vS, vT, fMaxR, fMinR, fMaxS, fMinS, fMaxT, fMinT );
+      obOrientedBox.SetLength( fRlen );
+      obOrientedBox.SetWidth(  fSlen );
+      obOrientedBox.SetHeight( fTlen );
+    } 
+    else
+    {
+      if ( fRlen > fTlen )
+      {
+	APPLY_CORRECT_VALUES( vR, vT, vS, fMaxR, fMinR, fMaxT, fMinT,fMaxS, fMinS );
+	obOrientedBox.SetLength( fRlen );
+	obOrientedBox.SetWidth(  fTlen );
+	obOrientedBox.SetHeight( fSlen );
+      }
+      else
+      {
+	APPLY_CORRECT_VALUES( vT, vR, vS, fMaxT, fMinT, fMaxR, fMinR, fMaxS, fMinS );
+	obOrientedBox.SetLength( fTlen );
+	obOrientedBox.SetWidth(  fRlen );
+	obOrientedBox.SetHeight( fSlen );
+      }
+    }
+  }
+  else 
+  {
+    /// fLambda1 < fLambda2 !!! 
+    
+    if ( fSlen < fTlen )
+    {
+      APPLY_CORRECT_VALUES( vT, vS, vR, fMaxT, fMinT, fMaxS, fMinS, fMaxR, fMinR  );
+      obOrientedBox.SetLength( fTlen );
+      obOrientedBox.SetWidth(  fSlen );
+      obOrientedBox.SetHeight( fRlen );
+    }
+    else
+    {
+      /// fLambda3 < fLambda2
+
+      if ( fRlen < fTlen )
+      {
+	APPLY_CORRECT_VALUES( vS, vT, vR, fMaxS, fMinS, fMaxT, fMinT, fMaxR, fMinR  );
+	obOrientedBox.SetLength( fSlen );
+	obOrientedBox.SetWidth(  fTlen );
+	obOrientedBox.SetHeight( fRlen );
+      }
+      else 
+      {
+	APPLY_CORRECT_VALUES( vS, vR, vT, fMaxS, fMinS, fMaxR, fMinR, fMaxT, fMinT  );
+	obOrientedBox.SetLength( fSlen );
+	obOrientedBox.SetWidth(  fRlen );
+	obOrientedBox.SetHeight( fTlen );
+
+      }
+    }
+  }
+  
+  CVector3<float> vPos = (fA*vR) + (fB*vS) + (fC*vT);
+  obOrientedBox.SetPosition( vPos );
+  //obOrientedBox.CalculatePlanes();  
+  obOrientedBox.CalculateCorners();
+
+  return obOrientedBox;
+  
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Volume::COrientedBox 
+Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &rVertices, 
+					       const Phoenix::Graphics::CIndexArray &indexBuffer )
+{
+  /////////////////////////////////////////////////////////////////
+  // Variables used
+  float fMaxR = 0.0f;
+  float fMinR = 0.0f;
+  float fMaxS = 0.0f;
+  float fMinS = 0.0f;
+  float fMaxT = 0.0f;
+  float fMinT = 0.0f;
+  float fLambda1,fLambda2,fLambda3;  
+  float fVertDotR = 0.0f;
+  float fVertDotS = 0.0f;
+  float fVertDotT = 0.0f;
+  CVector3<float>	 vTemp;
+  /////////////////////////////////////////////////////////////////
+  CMatrix3x3<float> mCovar = Math::CovarianceMatrix( rVertices, indexBuffer );
+  CMatrix3x3<float> mEigenVectorMatrix;
+  mEigenVectorMatrix.IdentityMatrix();
+  /////////////////////////////////////////////////////////////////
+  Math::CalculateEigensystem( mCovar, fLambda1, fLambda2,fLambda3,
+			      mEigenVectorMatrix);
+  /////////////////////////////////////////////////////////////////  
+  CVector3<float> vR = GetColumnVector(mEigenVectorMatrix, 0);
+  CVector3<float> vS = GetColumnVector(mEigenVectorMatrix, 1);
+  CVector3<float> vT = GetColumnVector(mEigenVectorMatrix, 2);
+  /////////////////////////////////////////////////////////////////
+  vR.Normalize();
+  vS.Normalize();
+  vT.Normalize();
+  /////////////////////////////////////////////////////////////////
+  for ( unsigned int i = 0;i<indexBuffer.GetNumIndices();i++)
+  {
+    if ( indexBuffer.IsShortIndices())
+      vTemp.UseExternalData(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned short int>()[i]*3]));
+    else
+      vTemp.UseExternalData(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned int>()[i]*3]));
+    fVertDotR = vTemp.Dot(vR);
+    fVertDotS = vTemp.Dot(vS);
+    fVertDotT = vTemp.Dot(vT);
+    
+    if ( i==0){
+      
+      fMaxR = fMinR = fVertDotR;
+      fMaxS = fMinS = fVertDotS;
+      fMaxT = fMinT = fVertDotT;
+      
+    } 
+    else 
+    {
+      
+      if ( fVertDotR < fMinR )		fMinR = fVertDotR;
+      else if ( fVertDotR > fMaxR )	fMaxR = fVertDotR;
+      
+      if ( fVertDotS < fMinS )		fMinS = fVertDotS;
+      else if ( fVertDotS > fMaxS )	fMaxS = fVertDotS;
+      
+      if ( fVertDotT < fMinT )		fMinT = fVertDotT;
+      else if ( fVertDotT > fMaxT )	fMaxT = fVertDotT;
+      
+    }
+  }
+  /////////////////////////////////////////////////////////////////
+  COrientedBox obOrientedBox;
+#ifdef DEBUG
+  CLogger::Error() << DEBUG_HEADER << "minR " << fMinR << endl;
+  CLogger::Error() << DEBUG_HEADER << "maxR " << fMaxR << endl;
+  CLogger::Error() << DEBUG_HEADER << "minS " << fMinS << endl;
+  CLogger::Error() << DEBUG_HEADER << "maxS " << fMaxS << endl;
+  CLogger::Error() << DEBUG_HEADER << "minT " << fMinT << endl;
+  CLogger::Error() << DEBUG_HEADER << "maxT " << fMaxT << endl;
+#endif
+
+  float fRlen = fMaxR - fMinR;
+  float fSlen = fMaxS - fMinS;
+  float fTlen = fMaxT - fMinT;
+  
+  float fA = (fMaxR + fMinR) * 0.5f;
+  float fB = (fMaxS + fMinS) * 0.5f;
+  float fC = (fMaxT + fMinT) * 0.5f;
+
+
+  /// assign largest eigenvector to vR, second largest to vS and smallest to vT.
+  if ( fRlen > fSlen ) 
+  {
+    /// fLambda1 > fLambda2 !!! 
+    if ( fSlen > fTlen  )
+    {
+      APPLY_CORRECT_VALUES( vR, vS, vT, fMaxR, fMinR, fMaxS, fMinS, fMaxT, fMinT );
+      obOrientedBox.SetLength( fRlen );
+      obOrientedBox.SetWidth(  fSlen );
+      obOrientedBox.SetHeight( fTlen );
+    } 
+    else
+    {
+      if ( fRlen > fTlen )
+      {
+	APPLY_CORRECT_VALUES( vR, vT, vS, fMaxR, fMinR, fMaxT, fMinT,fMaxS, fMinS );
+	obOrientedBox.SetLength( fRlen );
+	obOrientedBox.SetWidth(  fTlen );
+	obOrientedBox.SetHeight( fSlen );
+      }
+      else
+      {
+	APPLY_CORRECT_VALUES( vT, vR, vS, fMaxT, fMinT, fMaxR, fMinR, fMaxS, fMinS );
+	obOrientedBox.SetLength( fTlen );
+	obOrientedBox.SetWidth(  fRlen );
+	obOrientedBox.SetHeight( fSlen );
+      }
+    }
+  }
+  else 
+  {
+    /// fLambda1 < fLambda2 !!! 
+    
+    if ( fSlen < fTlen )
+    {
+      APPLY_CORRECT_VALUES( vT, vS, vR, fMaxT, fMinT, fMaxS, fMinS, fMaxR, fMinR  );
+      obOrientedBox.SetLength( fTlen );
+      obOrientedBox.SetWidth(  fSlen );
+      obOrientedBox.SetHeight( fRlen );
+    }
+    else
+    {
+      /// fLambda3 < fLambda2
+
+      if ( fRlen < fTlen )
+      {
+	APPLY_CORRECT_VALUES( vS, vT, vR, fMaxS, fMinS, fMaxT, fMinT, fMaxR, fMinR  );
+	obOrientedBox.SetLength( fSlen );
+	obOrientedBox.SetWidth(  fTlen );
+	obOrientedBox.SetHeight( fRlen );
+      }
+      else 
+      {
+	APPLY_CORRECT_VALUES( vS, vR, vT, fMaxS, fMinS, fMaxR, fMinR, fMaxT, fMinT  );
+	obOrientedBox.SetLength( fSlen );
+	obOrientedBox.SetWidth(  fRlen );
+	obOrientedBox.SetHeight( fTlen );
+
+      }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // The position
+  CVector3<float> vPos = (fA*vR) + (fB*vS) + (fC*vT);
+  obOrientedBox.SetPosition( vPos );
+  /////////////////////////////////////////////////////////////////
+  // The orientation will be formed so, that the forward vector will point along
+  // principal axis (largest eigenvalue ), right vector along vector with 
+  // second largest and up points to vector with lowest eigenvalue
+  ///obOrientedBox.SetOrientation(  vT, vR, vS );
+  //obOrientedBox.CalculatePlanes();
+  obOrientedBox.CalculateCorners();
+  
+  /////////////////////////////////////////////////////////////////
+  return obOrientedBox;
+  
+}
