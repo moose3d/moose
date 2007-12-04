@@ -109,7 +109,9 @@ namespace Phoenix
     /// The class for Oriented Box. Forward vector will be the principal axis,
     /// right vector the second and up the third. Dimensions: length = forward,
     /// width = right, height = up.
-    class COrientedBox : public CAxisAlignedBox, 
+    class COrientedBox : public Phoenix::Spatial::CPositional, 
+                         public Phoenix::Spatial::CDimensional3D, 
+                         public Phoenix::Volume::CPolytope,
 			 public Phoenix::Spatial::COrientable
     {
     protected:
@@ -120,7 +122,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      COrientedBox() : CAxisAlignedBox()
+      COrientedBox() 
       {
 	memset(m_aCorners,0,sizeof(float)*24);
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
