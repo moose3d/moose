@@ -18,6 +18,7 @@ namespace Phoenix
     {
     public:
       CPlane();
+      CPlane( float fX, float fY, float fZ, float fD );
       ~CPlane();
       void SetNormal( Phoenix::Math::CVector3<float> vNormal);
       void SetDistance( float fDistance );    

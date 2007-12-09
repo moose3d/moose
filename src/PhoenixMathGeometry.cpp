@@ -11,6 +11,10 @@ Phoenix::Math::CPlane::CPlane()
 {
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Math::CPlane::CPlane( float fX, float fY, float fZ, float fD ) : CVector4<float>(fX,fY,fZ,fD)
+{
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Math::CPlane::~CPlane()
 {
 }
