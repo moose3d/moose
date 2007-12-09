@@ -1086,9 +1086,9 @@ int main()
   timer.Reset();
   int bChanged = 0;
 
+  CPlane xzPlane(0,1,0,0);
   
-  
-
+  int bMousePressed = 0;
   while( g_bLoop )
   {
     fpsCounter.Update();
@@ -1137,12 +1137,16 @@ int main()
 	{
 	  CVector2<int> vMousePosCurrent(event.motion.x, event.motion.y);
 	  CVector2<int> vMouseDiff = vMousePos - vMousePosCurrent;
+	  
+	  
+	  //camera.RotateAroundUp(vMouseDiff[0]);
+	  //camera.RotateAroundRight(vMouseDiff[1]);	
+	  camera.VirtualTrackball( CVector3<float>(0,0,0),
+				   vMousePos,
+				   vMousePosCurrent );
+
 	  vMousePos = vMousePosCurrent;
-
-	  camera.RotateAroundUp(vMouseDiff[0]);
-	  camera.RotateAroundRight(vMouseDiff[1]);	
-
-	}
+	  }
 	break;
       default:
 	break;
