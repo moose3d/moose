@@ -133,3 +133,39 @@ Phoenix::Math::CTransform::GetTranslation() const
   return m_vTranslation;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Math::CTransform & 
+Phoenix::Math::CTransformable::GetLocalTransform()
+{
+  return m_LocalTransform;
+}
+/////////////////////////////////////////////////////////////////
+const Phoenix::Math::CTransform & 
+Phoenix::Math::CTransformable::GetLocalTransform() const
+{
+  return m_LocalTransform;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Math::CTransform & 
+Phoenix::Math::CTransformable::GetWorldTransform()
+{
+  return m_WorldTransform;
+}
+/////////////////////////////////////////////////////////////////
+const Phoenix::Math::CTransform & 
+Phoenix::Math::CTransformable::GetWorldTransform() const
+{
+  return m_WorldTransform;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Math::CTransformable::SetLocalTransform( const Phoenix::Math::CTransform & rTransform )
+{
+  m_LocalTransform = rTransform;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Math::CTransformable::SetWorldTransform( const Phoenix::Math::CTransform & rTransform )
+{
+  m_WorldTransform = rTransform;
+}
+/////////////////////////////////////////////////////////////////

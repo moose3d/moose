@@ -426,7 +426,7 @@ public:
     assert(pGameObject!=NULL);
     unsigned int nSpatialIndex = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::InsertObject( 
 				  pGameObject, 
-				  pGameObject->GetBoundingSphere().GetPosition() + pGameObject->GetTransform().GetTranslation(),
+				  pGameObject->GetBoundingSphere().GetPosition() + pGameObject->GetWorldTransform().GetTranslation(),
 				  pGameObject->GetBoundingSphere().GetRadius());
     cerr << "object  " << pGameObject << endl;
     pGameObject->SetSpatialIndex( nSpatialIndex );
@@ -447,7 +447,7 @@ public:
   /// 
   void Update( Phoenix::Scene::CGameObject<OBJECT_TYPE> *pGameObject )
   {
-    CVector3<float> vTmp = pGameObject->GetTransform().GetTranslation();
+    CVector3<float> vTmp = pGameObject->GetWorldTransform().GetTranslation();
     vTmp += pGameObject->GetBoundingSphere().GetPosition();
 
     unsigned int nLevel = COctree<Phoenix::Scene::CGameObject<OBJECT_TYPE> *>::GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
@@ -488,10 +488,10 @@ public:
     CVector3<float> vDiff;
     if ( GetCamera() != NULL ) 
     {
-      vDiff = pObject->GetTransform().GetTranslation() - GetCamera()->GetPosition();
+      vDiff = pObject->GetWorldTransform().GetTranslation() - GetCamera()->GetPosition();
     } 
     unsigned int nLength = (unsigned int)vDiff.Length();
-    renderer.CommitTransform( pObject->GetTransform() );
+    renderer.CommitTransform( pObject->GetWorldTransform() );
     if ( nLength < 140 || pObject->GetType() == O_TYPE_ORDINARY)
       renderer.CommitModel( *g_PhoenixModelManager->GetResource(pObject->GetModelHandle()));
     else
@@ -799,7 +799,7 @@ public:
       
       Tcl_GetDoubleFromObj( pInterp, objv[1], &dSpeed );
       
-      m_pCurrentObject->GetTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed);
+      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed);
       
     }
     Tcl_ResetResult( pInterp );
@@ -821,8 +821,9 @@ public:
       qRot[1].CreateFromAxisAngle( m_pCurrentObject->GetUpVector(), dY );
       qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ );
       qRot[3] = qRot[2] * qRot[1] * qRot[0];
+
       // Append rotation to direction vectors and transform
-      m_pCurrentObject->GetTransform().Rotate( qRot[3] );
+      m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
       m_pCurrentObject->AppendToRotation( qRot[3] );
       
     }
@@ -952,8 +953,8 @@ void
 DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<OBJECT_TYPE> *pObject )
 {
   COrientedBox box = pObject->GetBoundingBox();
-  box.AppendToRotation( pObject->GetTransform().GetRotation());
-  box.SetPosition( box.GetPosition() + pObject->GetTransform().GetTranslation());
+  box.AppendToRotation( pObject->GetWorldTransform().GetRotation());
+  box.SetPosition( box.GetPosition() + pObject->GetWorldTransform().GetTranslation());
   box.CalculatePlanes();
   box.CalculateCorners();
   CVector3<float> vMin, vMax;
@@ -993,6 +994,38 @@ DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<O
 
 }
 /////////////////////////////////////////////////////////////////
+class CTransformUpdater 
+{
+public:
+
+  int Enter( CTransformNode<CSpaceShip> *pNode )
+  {
+    CSpaceShip *pShip = pNode->GetResource();
+    assert( pShip != NULL );
+    
+    CSpaceShip *pParent = NULL;
+    if ( !pNode->GetArrivingEdges().empty())
+    {
+      pParent = static_cast<CTransformNode<CSpaceShip> *>(pNode->GetArrivingEdges().front()->GetToNode())->GetResource();
+    }
+    if ( pParent != NULL )
+    {
+      
+
+    } 
+    else 
+    {
+      
+    }
+    return 0;
+  }
+  
+  void Leave( CTransformNode<CSpaceShip> *pNode )
+  {
+    
+  }
+};
+/////////////////////////////////////////////////////////////////
 int main()
 {
   
@@ -1002,8 +1035,17 @@ int main()
     return 1;
   }
   
+  CTransformGraph *pTG = new CTransformGraph();
+  CTransformRoot *pTGR = pTG->CreateNode< CTransformRoot>();
+  CTransformNode<CSpaceShip> *pTSovereign = pTG->CreateNode< CTransformNode<CSpaceShip> >();
+  CTransformNode<CSpaceShip> *pTOmega     = pTG->CreateNode< CTransformNode<CSpaceShip> >();
+
+  pTGR->AddEdge( pTSovereign );
+  pTSovereign->AddEdge( pTOmega );
+  
+  
   CCamera camera;
-  camera.SetPosition( 75, 75.0f,75.0f);
+  camera.SetPosition( 0, 0.0f,75.0f);
   //camera.SetViewport( 480,340, 160, 120 );
   camera.SetViewport( 0,0, 640, 480 );
   camera.SetNearClipping( 0.1f);
@@ -1037,11 +1079,11 @@ int main()
   /////////////////////////////////////////////////////////////////
   /// Create ships 
   COmegaClass *pOmega = new COmegaClass();
-  pOmega->GetTransform().SetTranslation(0, -10 ,0);
+  pOmega->GetWorldTransform().SetTranslation(0, -10 ,0);
   pSpatialGraph->InsertObject( pOmega );
   
   CSovereignClass *pSovereign = new CSovereignClass();
-  pSovereign->GetTransform().SetTranslation( 10, 0,0);
+  pSovereign->GetWorldTransform().SetTranslation( 10, 0,0);
   pSpatialGraph->InsertObject( pSovereign );
   cerr << "we're ok" << endl;
   //pSovereign->GetTransform().SetTranslation( 40, 0,0);
@@ -1063,7 +1105,7 @@ int main()
   CLaserBeam::CreateResources( *pOglRenderer );
   CLaserBeam *pBeam = new CLaserBeam();
   
-  pBeam->Initialize( pSovereign->GetTransform().GetTranslation(), pOmega->GetTransform().GetTranslation(), 0.95f );
+  pBeam->Initialize( pSovereign->GetWorldTransform().GetTranslation(), pOmega->GetWorldTransform().GetTranslation(), 0.95f );
 
 
   SHIP_HANDLE hEnterprise, hBackgammon;
@@ -1119,7 +1161,7 @@ int main()
 	} 
 	else if ( event.key.keysym.sym == SDLK_RETURN )
 	{
-	  pParticleSystem->Init( pSovereign->GetTransform().GetTranslation() + pSovereign->GetForwardVector());
+	  pParticleSystem->Init( pSovereign->GetWorldTransform().GetTranslation() + pSovereign->GetForwardVector());
 	  pBeam->SetEnabled(1);
 	}
 	// else if ( event.key.keysym.sym == SDLK_RIGHT )
@@ -1205,8 +1247,8 @@ int main()
       pBeam->IncreaseTime( timer.GetPassedTimeMS()*0.001f);
       if ( pBeam->IsEnabled())
       {
-	pBeam->Initialize( pSovereign->GetTransform().GetTranslation(), 
-			   pOmega->GetTransform().GetTranslation(), 0.95f );
+	pBeam->Initialize( pSovereign->GetWorldTransform().GetTranslation(), 
+			   pOmega->GetWorldTransform().GetTranslation(), 0.95f );
       }
 
     }

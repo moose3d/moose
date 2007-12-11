@@ -109,6 +109,39 @@ namespace Phoenix
       /// \param q Rotation quaternion.
       void Rotate( const CQuaternion & q);
     };
+    /////////////////////////////////////////////////////////////////
+    /// Transformable base class
+    class CTransformable 
+    {
+    protected:
+      Phoenix::Math::CTransform m_LocalTransform;
+      Phoenix::Math::CTransform m_WorldTransform;
+    public:
+      ////////////////////
+      /// Returns reference to local transform.
+      /// \returns Local transform
+      Phoenix::Math::CTransform & GetLocalTransform();
+      ////////////////////
+      /// Returns reference to local transform.
+      /// \returns Local transform
+      const Phoenix::Math::CTransform & GetLocalTransform() const;
+      ////////////////////
+      /// Returns reference to world transform.
+      /// \returns World transform
+      Phoenix::Math::CTransform & GetWorldTransform();
+      ////////////////////
+      /// Returns reference to world transform.
+      /// \returns World transform
+      const Phoenix::Math::CTransform & GetWorldTransform() const;
+      ////////////////////
+      /// Assigns world transform.
+      /// \param rTransform transform to be set as world
+      void SetWorldTransform( const Phoenix::Math::CTransform & rTransform );
+      ////////////////////
+      /// Assigns local transform.
+      /// \param rTransform transform to be set as local
+      void SetLocalTransform( const Phoenix::Math::CTransform & rTransform );
+    };
   }; // namespace Math
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////

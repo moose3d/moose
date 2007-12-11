@@ -13,15 +13,17 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
     template <typename TYPE>
-    class CGameObject
+    class CGameObject : public Phoenix::Math::CTransformable
     {
     private:
       /// Model object
       Phoenix::Core::CHandle<Phoenix::Graphics::CModel>    m_hModel;
       /// Object type
       TYPE				m_Type;
+
       /// World tranform 
-      Phoenix::Math::CTransform		m_Transform;
+      //Phoenix::Math::CTransform		m_Transform;
+
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
       /// Model bounding box.
@@ -43,14 +45,17 @@ namespace Phoenix
       /// Returns model handle.
       /// \returns Model handle reference.
       const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle() const;
+
       ////////////////////
       /// Returns world transform for this object.
       /// \returns Transform reference.
-      Phoenix::Math::CTransform & GetTransform();
+      //Phoenix::Math::CTransform & GetTransform();
       ////////////////////
       /// Returns world transform for this object.
       /// \returns Transform reference.
-      const Phoenix::Math::CTransform & GetTransform() const;      
+      //const Phoenix::Math::CTransform & GetTransform() const;      
+
+
       ////////////////////
       /// Returns bounding sphere.
       /// \returns Reference to bounding sphere. 
@@ -113,19 +118,19 @@ Phoenix::Scene::CGameObject<TYPE>::GetModelHandle() const
   return m_hModel;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-inline Phoenix::Math::CTransform & 
-Phoenix::Scene::CGameObject<TYPE>::GetTransform()
-{
-  return m_Transform;
-}
-/////////////////////////////////////////////////////////////////
-template<typename TYPE>
-inline const Phoenix::Math::CTransform & 
-Phoenix::Scene::CGameObject<TYPE>::GetTransform() const
-{
-  return m_Transform;
-}
+/* template<typename TYPE> */
+/* inline Phoenix::Math::CTransform &  */
+/* Phoenix::Scene::CGameObject<TYPE>::GetTransform() */
+/* { */
+/*   return m_Transform; */
+/* } */
+/* ///////////////////////////////////////////////////////////////// */
+/* template<typename TYPE> */
+/* inline const Phoenix::Math::CTransform &  */
+/* Phoenix::Scene::CGameObject<TYPE>::GetTransform() const */
+/* { */
+/*   return m_Transform; */
+/* } */
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 inline Phoenix::Volume::CSphere & 

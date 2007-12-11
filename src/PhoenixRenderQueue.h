@@ -87,7 +87,7 @@ Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::
       for( ; it!=pNode->GetObjects().end();it++)
       {
 	sphere = (*it)->GetBoundingSphere();
-	sphere.Move( (*it)->GetTransform().GetTranslation() );
+	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
 
 	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
 	     camera.Frustum().IntersectsSphere( sphere))

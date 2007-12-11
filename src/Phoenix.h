@@ -29,3 +29,4 @@
 #include "PhoenixTransform.h"
 #include "PhoenixParticleSystem.h"
 #include "PhoenixObjectUpdater.h"
+#include "PhoenixTransformGraph.h"
