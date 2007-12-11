@@ -188,7 +188,7 @@ namespace Phoenix
       // A reference to the graph object which contains this baby.
       CGraph<RTTI> *      m_pGraph;  
       ////////////////////
-      /// The default constructor.
+      /// Default constructor.
       CGraphNode() 
       {
 
