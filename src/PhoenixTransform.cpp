@@ -17,12 +17,13 @@ Phoenix::Math::CTransform::GetMatrix()
   // if ( m_pTransformHook != NULL ) return *m_pTransformHook;
   if ( m_bChanged )
   {
+    // Constructs STR-transform.
     // First, convert quaterion into matrix (use m_mTransform).
     QuaternionToMatrix(m_qRotation, m_mTransform);
     // Concatenate transforms 
-    m_mTransform =  UniformScaleMatrix(m_fScaling) * 
-                    TranslationMatrix( m_vTranslation )  * 
-                     m_mTransform;
+    m_mTransform =  UniformScaleMatrix(m_fScaling)*
+                    TranslationMatrix( m_vTranslation ) * 
+                    m_mTransform;
     m_bChanged = 0;
   }
   return  m_mTransform;
@@ -167,5 +168,28 @@ void
 Phoenix::Math::CTransformable::SetWorldTransform( const Phoenix::Math::CTransform & rTransform )
 {
   m_WorldTransform = rTransform;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTransformRight, 
+			 const Phoenix::Math::CTransform & rTransformLeft, 
+			 Phoenix::Math::CTransform & rTransformResult )
+{
+  CMatrix4x4<float> mResult;
+  CVector3<float> vRightTransl = rTransformRight.GetTranslation();
+  CVector3<float> vRightTransl2 = rTransformRight.GetTranslation();
+  // Set combined scaling and rotation
+  rTransformResult.SetScaling( rTransformRight.GetScaling()*rTransformLeft.GetScaling());
+  rTransformResult.SetRotation( rTransformRight.GetRotation()*rTransformLeft.GetRotation());
+  
+  // Set translation
+  RotateVector( rTransformLeft.GetRotation(), vRightTransl );
+  cerr << "Rotated with q: " << vRightTransl << endl; 
+  
+  QuaternionToMatrix(rTransformLeft.GetRotation(), mResult);
+  cerr << "Rotated with matrix: " << Rotate( vRightTransl2, mResult ) << endl; 
+  
+  rTransformResult.SetTranslation( (rTransformLeft.GetScaling()*vRightTransl) + rTransformLeft.GetTranslation());
+  
 }
 /////////////////////////////////////////////////////////////////

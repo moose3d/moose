@@ -97,18 +97,31 @@ namespace Phoenix
       /// Returns uniform scaling factor.
       /// \returns Scaling factor.
       float GetScaling() const;
+      ////////////////////
       /// Appends given vector to current transform.
       /// \param vVector Vector to be applied.
       void Move( const CVector3<float> &vVector );
+      ////////////////////
       /// Appends given values to current transform.
       /// \param fX X-axis translation value.
       /// \param fY Y-axis translation value.
       /// \param fZ Z-axis translation value.
       void Move( float fX, float fY, float fZ);
+      ////////////////////
       /// Appends rotation to current transform.
       /// \param q Rotation quaternion.
       void Rotate( const CQuaternion & q);
+      
     };
+    ////////////////////
+    /// Multiplies two CTransforms as matrices and stores result.
+    /// \param rTransformRight Right-side transform.
+    /// \param rTransformLeft  Left-side transform.
+    /// \param rTransformResult Resulting transform.
+    void Multiply( const CTransform & rTransformRight, 
+		   const CTransform & rTransformLeft, 
+		   CTransform & rTransformResult);
+
     /////////////////////////////////////////////////////////////////
     /// Transformable base class
     class CTransformable 

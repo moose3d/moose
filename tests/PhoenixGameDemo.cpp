@@ -630,7 +630,8 @@ public:
 enum SPACESHIP_CLASS
 {
   SHIP_CLASS_SOVEREIGN = 0,
-  SHIP_CLASS_OMEGA = 1
+  SHIP_CLASS_OMEGA = 1,
+  SHIP_CLASS_ROOT
 };
 /////////////////////////////////////////////////////////////////
 /// Baseclass for every spaceship in the system.
@@ -994,25 +995,50 @@ DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<O
 
 }
 /////////////////////////////////////////////////////////////////
+class CSovereignTransform : public CTransformNode<SPACESHIP_CLASS>
+{
+  friend class CGraph<SPACESHIP_CLASS>;
+public:
+  CSovereignTransform()
+  {
+    SetType( SHIP_CLASS_SOVEREIGN );
+  }
+};
+/////////////////////////////////////////////////////////////////
+class COmegaTransform : public CTransformNode<SPACESHIP_CLASS>
+{
+  friend class CGraph<SPACESHIP_CLASS>;
+public:
+  COmegaTransform()
+  {
+    SetType( SHIP_CLASS_OMEGA );
+  }
+};
+/////////////////////////////////////////////////////////////////
+class CRootTransform : public CTransformNode<SPACESHIP_CLASS>
+{
+  friend class CGraph<SPACESHIP_CLASS>;
+public:
+  COmegaTransform()
+  {
+    SetType( SHIP_CLASS_ROOT );
+  }
+};
+/////////////////////////////////////////////////////////////////
 class CTransformUpdater 
 {
 public:
 
-  int Enter( CTransformNode<CSpaceShip> *pNode )
+  int Enter( CTransformNode<SPACESHIP_CLASS> *pNode )
   {
+
     CSpaceShip *pShip = pNode->GetResource();
     assert( pShip != NULL );
-    
     CSpaceShip *pParent = NULL;
     if ( !pNode->GetArrivingEdges().empty())
     {
       pParent = static_cast<CTransformNode<CSpaceShip> *>(pNode->GetArrivingEdges().front()->GetToNode())->GetResource();
     }
-    if ( pParent != NULL )
-    {
-      
-
-    } 
     else 
     {
       

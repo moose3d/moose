@@ -252,3 +252,37 @@ TEST( CTransform_Rotate )
   CHECK_ARRAY_CLOSE( qFinal.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
 /////////////////////////////////////////////////////////////////
+TEST( CTransform_Multiply )
+{
+  CTransform transform1;
+  CTransform transform2;
+  CTransform transformResult;
+  
+  CVector3<float> vTransl1(0,2,0);
+  CVector3<float> vTransl2(0,0,3);
+
+  CVector3<float> vRot1(0,45,0);
+  CVector3<float> vRot2(33,0,0);
+  
+  float fScale1 = 3.0f;
+  float fScale2 = 2.0f;
+  
+  transform1.SetScaling(fScale1);
+  transform1.SetRotation(vRot1);
+  transform1.SetTranslation(vTransl1);
+
+  transform2.SetScaling(fScale2);
+  transform2.SetRotation(vRot2);
+  transform2.SetTranslation(vTransl2);
+
+  Phoenix::Math::Multiply( transform1, transform2, transformResult );
+  
+  cerr << "tr matrix:" << endl 
+       << transform1.GetMatrix()*transform2.GetMatrix() << endl;
+  cerr << "tr result:" << endl 
+       << transformResult.GetMatrix() << endl;
+
+  
+  CHECK_ARRAY_CLOSE( (transform1.GetMatrix()*transform2.GetMatrix()).GetArray(), transformResult.GetMatrix().GetArray(), 16, 0.001f);
+} 
+/////////////////////////////////////////////////////////////////
