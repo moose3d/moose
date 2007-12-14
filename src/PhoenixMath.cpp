@@ -792,6 +792,7 @@ Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix )
       qRetval[1] = (m.At(1,0) + m.At(0,1) ) * f1DivS;
       qRetval[2] = (m.At(0,2) + m.At(2,0) ) * f1DivS;
       qRetval[3] = (m.At(2,1) - m.At(1,2) ) * f1DivS;
+      break;
     case 1:
       fS  = sqrtf( 1.0f + m.At(1,1) - m.At(0,0) - m.At(2,2) ) * 2.0f;
       qRetval[0] = (m.At(1,0) + m.At(0,1) ) * f1DivS;
@@ -805,6 +806,7 @@ Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix )
       qRetval[1] = (m.At(2,1) + m.At(1,2) ) * f1DivS;
       qRetval[2] = 0.25f * fS;
       qRetval[3] = (m.At(1,0) + m.At(0,1) ) * f1DivS;
+      break;
     default:
       break;
     }
