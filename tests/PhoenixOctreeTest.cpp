@@ -15,8 +15,8 @@ TEST( COctree )
   CSphere sphere2( CVector3<float>(-30,-30,-30), 10.0f);
   COctree<float> *pOctree = new COctree<float>( 3, 100.0f);
 
-  cerr << "edge length at 0 : " << pOctree->GetEdgeLength( 0 ) << endl;
-  cerr << "edge length at 1 : " << pOctree->GetEdgeLength( 1 ) << endl;
+  //cerr << "edge length at 0 : " << pOctree->GetEdgeLength( 0 ) << endl;
+  //cerr << "edge length at 1 : " << pOctree->GetEdgeLength( 1 ) << endl;
 
   pOctree->InsertObject( fTmp, sphere );
   pOctree->InsertObject( fTmp2, sphere2);
