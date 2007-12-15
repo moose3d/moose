@@ -252,37 +252,90 @@ TEST( CTransform_Rotate )
   CHECK_ARRAY_CLOSE( qFinal.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
 /////////////////////////////////////////////////////////////////
+#define V(X,Y,Z) CVector3<float>(X,Y,Z)
 TEST( CTransform_Multiply )
 {
+
+
   CTransform transform1;
   CTransform transform2;
   CTransform transformResult;
   
-  CVector3<float> vTransl1(0,2,0);
-  CVector3<float> vTransl2(0,0,3);
-
-  CVector3<float> vRot1(0,45,0);
-  CVector3<float> vRot2(33,0,0);
+  CVector3<float> vTransl[] = { V(0,2,0),  V(0,0,3),
+				V(0,0,0),  V(0,0,0),
+				};
+  CVector3<float> vRot[]    = { V(0,45,0), V(33,0,0),
+				V(0,0,0),  V(0,0,0), };
+  float fScale[]            = { 3.0f,      2.0f,
+				1.0f,	   1.0f,
+                                5.0f,      6.0f,
+			      };
   
-  float fScale1 = 3.0f;
-  float fScale2 = 2.0f;
+  CMatrix4x4<float> mReal;
+  /////////////////////////////////////////////////////////////////
+  // Full swing
+  transform1.SetScaling(fScale[0]);
+  transform1.SetRotation(vRot[0]);
+  transform1.SetTranslation(vTransl[0]);
+
+  transform2.SetScaling(fScale[1]);
+  transform2.SetRotation(vRot[1]);
+  transform2.SetTranslation(vTransl[1]);
   
-  transform1.SetScaling(fScale1);
-  transform1.SetRotation(vRot1);
-  transform1.SetTranslation(vTransl1);
-
-  transform2.SetScaling(fScale2);
-  transform2.SetRotation(vRot2);
-  transform2.SetTranslation(vTransl2);
-
   Phoenix::Math::Multiply( transform1, transform2, transformResult );
-  
-  cerr << "tr matrix:" << endl 
-       << transform1.GetMatrix()*transform2.GetMatrix() << endl;
-  cerr << "tr result:" << endl 
-       << transformResult.GetMatrix() << endl;
+  mReal = transform1.GetMatrix()*transform2.GetMatrix();
+  CHECK_ARRAY_CLOSE( mReal.GetArray(), transformResult.GetMatrix().GetArray(), 16, 0.001f);
 
+  transform1.SetScaling(fScale[1]);
+  transform1.SetRotation(vRot[1]);
+  transform1.SetTranslation(vTransl[1]);
+
+  transform2.SetScaling(fScale[0]);
+  transform2.SetRotation(vRot[0]);
+  transform2.SetTranslation(vTransl[0]);
   
-  CHECK_ARRAY_CLOSE( (transform1.GetMatrix()*transform2.GetMatrix()).GetArray(), transformResult.GetMatrix().GetArray(), 16, 0.001f);
+  Phoenix::Math::Multiply( transform1, transform2, transformResult );
+  mReal = transform1.GetMatrix()*transform2.GetMatrix();
+  CHECK_ARRAY_CLOSE( mReal.GetArray(), transformResult.GetMatrix().GetArray(), 16, 0.001f);
+
+  /////////////////////////////////////////////////////////////////
+  // simple scaling  test
+  const float SCALE = fScale[4]*fScale[5];
+
+  float fResult[16] = { SCALE, 0,0,0,
+			0, SCALE, 0,0,
+			0,0,SCALE, 0,
+			0,0,0,1 };
+  transform1.SetScaling(fScale[4]);
+  transform1.SetRotation(vRot[2]);
+  transform1.SetTranslation(vTransl[2]);
+
+  transform2.SetScaling(fScale[5]);
+  transform2.SetRotation(vRot[3]);
+  transform2.SetTranslation(vTransl[3]);
+  
+  Phoenix::Math::Multiply( transform1, transform2, transformResult );
+  mReal = transform1.GetMatrix()*transform2.GetMatrix();
+  CHECK_ARRAY_CLOSE( fResult, transformResult.GetMatrix().GetArray(), 16, 0.001f);
+
+  /////////////////////////////////////////////////////////////////
+  // No transl, rot, and scale 1 should yield Identity matrix.
+  float fIdentity[] = { 1,0,0,0,
+			0,1,0,0,
+			0,0,1,0,
+			0,0,0,1 };
+			
+  transform1.SetScaling(fScale[2]);
+  transform1.SetRotation(vRot[2]);
+  transform1.SetTranslation(vTransl[2]);
+
+  transform2.SetScaling(fScale[3]);
+  transform2.SetRotation(vRot[3]);
+  transform2.SetTranslation(vTransl[3]);
+  
+  Phoenix::Math::Multiply( transform1, transform2, transformResult );
+  mReal = transform1.GetMatrix()*transform2.GetMatrix();
+  CHECK_ARRAY_CLOSE( fIdentity, transformResult.GetMatrix().GetArray(), 16, 0.001f);
+  
 } 
 /////////////////////////////////////////////////////////////////
