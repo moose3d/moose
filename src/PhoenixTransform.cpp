@@ -21,9 +21,9 @@ Phoenix::Math::CTransform::GetMatrix()
     // First, convert quaterion into matrix (use m_mTransform).
     QuaternionToMatrix(m_qRotation, m_mTransform);
     // Concatenate transforms 
-    m_mTransform =  UniformScaleMatrix(m_fScaling)*
-                    TranslationMatrix( m_vTranslation ) * 
-                    m_mTransform;
+    m_mTransform =  TranslationMatrix( m_vTranslation ) * 
+                    m_mTransform * 
+                    UniformScaleMatrix(m_fScaling);
     m_bChanged = 0;
   }
   return  m_mTransform;
@@ -171,25 +171,20 @@ Phoenix::Math::CTransformable::SetWorldTransform( const Phoenix::Math::CTransfor
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTransformRight, 
-			 const Phoenix::Math::CTransform & rTransformLeft, 
+Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft, 
+			 const Phoenix::Math::CTransform & rTRight, 
 			 Phoenix::Math::CTransform & rTransformResult )
 {
   CMatrix4x4<float> mResult;
-  CVector3<float> vRightTransl = rTransformRight.GetTranslation();
-  CVector3<float> vRightTransl2 = rTransformRight.GetTranslation();
+  CVector3<float> vRightTransl  = rTRight.GetTranslation();
+
   // Set combined scaling and rotation
-  rTransformResult.SetScaling( rTransformRight.GetScaling()*rTransformLeft.GetScaling());
-  rTransformResult.SetRotation( rTransformRight.GetRotation()*rTransformLeft.GetRotation());
-  
+  rTransformResult.SetScaling( rTRight.GetScaling()*rTLeft.GetScaling());
+  rTransformResult.SetRotation( rTLeft.GetRotation()*rTRight.GetRotation());
+  vRightTransl *= rTLeft.GetScaling();
   // Set translation
-  RotateVector( rTransformLeft.GetRotation(), vRightTransl );
-  cerr << "Rotated with q: " << vRightTransl << endl; 
-  
-  QuaternionToMatrix(rTransformLeft.GetRotation(), mResult);
-  cerr << "Rotated with matrix: " << Rotate( vRightTransl2, mResult ) << endl; 
-  
-  rTransformResult.SetTranslation( (rTransformLeft.GetScaling()*vRightTransl) + rTransformLeft.GetTranslation());
+  RotateVector( rTLeft.GetRotation(), vRightTransl );
+  rTransformResult.SetTranslation( vRightTransl + rTLeft.GetTranslation());
   
 }
 /////////////////////////////////////////////////////////////////
