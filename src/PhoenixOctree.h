@@ -681,9 +681,7 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
 				     vPosition[1], 
 				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
-  std::cerr << "pushing object into " << pNode  << " at index:" << nIndex << std::endl;
-  
-
+  //std::cerr << "pushing object into " << pNode  << " at index:" << nIndex << std::endl;
   if ( pNode->GetObjects().size() == 0)
   {
     pNode->GetObjects().push_back( object );
@@ -691,8 +689,7 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
   }
   else
   {
-    std::cerr << "already objects"  << std::endl;
-
+    //std::cerr << "already objects"  << std::endl;
     pNode->GetObjects().push_back( object );
     
   }
