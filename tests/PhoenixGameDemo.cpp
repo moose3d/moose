@@ -6,7 +6,7 @@
 #include <GL/glu.h>
 #include <tcl.h>
 #include "PhoenixEnergyBeam.h"
-
+#include "TransformGraph.h"
 using std::string;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
@@ -945,6 +945,8 @@ public:
     case SHIP_CLASS_OMEGA:
       //static_cast<COmegaClass *>(pShip)->Update( nTimeMS );
       break;
+    case SHIP_CLASS_ROOT:
+      break;
     }
     m_pGraph->Update( pShip );
   }
@@ -995,7 +997,7 @@ DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<O
 
 }
 /////////////////////////////////////////////////////////////////
-class CSovereignTransform : public CTransformNode<SPACESHIP_CLASS>
+class CSovereignTransform : public CTransformNode<SPACESHIP_CLASS, CHandle<CSpaceShip> >
 {
   friend class CGraph<SPACESHIP_CLASS>;
 public:
@@ -1005,9 +1007,9 @@ public:
   }
 };
 /////////////////////////////////////////////////////////////////
-class COmegaTransform : public CTransformNode<SPACESHIP_CLASS>
+class COmegaTransform : public CTransformNode<SPACESHIP_CLASS, CHandle<CSpaceShip> >
 {
-  friend class CGraph<SPACESHIP_CLASS>;
+  friend class CGraph<CSpaceShip>;
 public:
   COmegaTransform()
   {
@@ -1015,11 +1017,11 @@ public:
   }
 };
 /////////////////////////////////////////////////////////////////
-class CRootTransform : public CTransformNode<SPACESHIP_CLASS>
+class CRootTransform : public CTransformNode<SPACESHIP_CLASS, CHandle<CSpaceShip> >
 {
-  friend class CGraph<SPACESHIP_CLASS>;
+  friend class CGraph<CSpaceShip>;
 public:
-  COmegaTransform()
+  CRootTransform()
   {
     SetType( SHIP_CLASS_ROOT );
   }
@@ -1028,25 +1030,33 @@ public:
 class CTransformUpdater 
 {
 public:
-
-  int Enter( CTransformNode<SPACESHIP_CLASS> *pNode )
+  
+  int Enter( CGraphNode<SPACESHIP_CLASS> *pNode2 )
   {
+    
+    CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *pNode = static_cast<CTransformNode<SPACESHIP_CLASS, CHandle< CSpaceShip > > * >(pNode2);
+    
+    if (pNode->GetShipClass() == SHIP_CLASS_ROOT ) return 0;
 
-    CSpaceShip *pShip = pNode->GetResource();
+    CSpaceShip *pShip = g_ShipManager->GetResource(pNode->GetHandle());
     assert( pShip != NULL );
-    CSpaceShip *pParent = NULL;
+     CSpaceShip *pParent = NULL;
     if ( !pNode->GetArrivingEdges().empty())
     {
-      pParent = static_cast<CTransformNode<CSpaceShip> *>(pNode->GetArrivingEdges().front()->GetToNode())->GetResource();
+
+      pParent = g_ShipManager->GetResource( 
+				  
+					   static_cast<CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *>(pNode->GetArrivingEdges().front()->GetToNode())->GetHandle() );
+      Multiply( pParent->GetWorldTransform(), pShip->GetLocalTransform(), pShip->GetWorldTransform());
     }
     else 
     {
-      
+      pShip->SetWorldTransform( pShip->GetLocalTransform());
     }
     return 0;
   }
   
-  void Leave( CTransformNode<CSpaceShip> *pNode )
+    void Leave( CGraphNode<SPACESHIP_CLASS> *pNode )
   {
     
   }
@@ -1061,10 +1071,11 @@ int main()
     return 1;
   }
   
-  CTransformGraph *pTG = new CTransformGraph();
-  CTransformRoot *pTGR = pTG->CreateNode< CTransformRoot>();
-  CTransformNode<CSpaceShip> *pTSovereign = pTG->CreateNode< CTransformNode<CSpaceShip> >();
-  CTransformNode<CSpaceShip> *pTOmega     = pTG->CreateNode< CTransformNode<CSpaceShip> >();
+  CGraph<SPACESHIP_CLASS> *pTG = new CGraph<SPACESHIP_CLASS>();
+  CRootTransform *pTGR              = pTG->CreateNode< CRootTransform >();
+  CSovereignTransform *pTSovereign  = pTG->CreateNode< CSovereignTransform>();
+  COmegaTransform *pTOmega          = pTG->CreateNode< COmegaTransform >();
+  CTransformUpdater trUpdater;
 
   pTGR->AddEdge( pTSovereign );
   pTSovereign->AddEdge( pTOmega );
@@ -1112,9 +1123,10 @@ int main()
   pSovereign->GetWorldTransform().SetTranslation( 10, 0,0);
   pSpatialGraph->InsertObject( pSovereign );
   cerr << "we're ok" << endl;
-  //pSovereign->GetTransform().SetTranslation( 40, 0,0);
-  //pSpatialGraph->Update( pSovereign );
-  //cerr << "here too. we're ok" << endl;
+
+  
+
+
   /////////////////////////////////////////////////////////////////
   COglTexture *pExplosionTexture = pOglRenderer->CreateTexture("Resources/Textures/explosion.tga");
   CShader *pPsShader = pOglRenderer->CreateShader( "Resources/Shaders/ps_vertex.glsl", "Resources/Shaders/ps_frag.glsl");  
@@ -1143,6 +1155,12 @@ int main()
   CObjectUpdater<CSpaceShip> shipUpdater;
   shipUpdater.Manage( hEnterprise );
   shipUpdater.Manage( hBackgammon );
+
+  g_ShipManager->AttachHandle( "Enterprise", pTSovereign->GetHandle());
+  g_ShipManager->AttachHandle( "Backgammon", pTOmega->GetHandle());
+  
+  assert( g_ShipManager->GetResource( pTSovereign->GetHandle()) != NULL );
+  assert( g_ShipManager->GetResource( pTOmega->GetHandle()) != NULL );
 
   // Clear event queue
   while ( SDL_PollEvent(&event ));
@@ -1233,7 +1251,9 @@ int main()
       camera.CalculateBoundingCone();
       bChanged = 0;
     }
-
+    
+    TravelDF<SPACESHIP_CLASS, CTransformUpdater>( static_cast<CGraphNode<SPACESHIP_CLASS> *>(pTGR), &trUpdater );
+    //TravelDF<SPACESHIP_CLASS, CTransformUpdater>( pTGR, &trUpdater );
 
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
