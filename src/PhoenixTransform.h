@@ -118,8 +118,8 @@ namespace Phoenix
     /// \param rTransformRight Right-side transform.
     /// \param rTransformLeft  Left-side transform.
     /// \param rTransformResult Resulting transform.
-    void Multiply( const CTransform & rTransformRight, 
-		   const CTransform & rTransformLeft, 
+    void Multiply( const CTransform & rTransformLeft, 
+		   const CTransform & rTransformRight, 
 		   CTransform & rTransformResult);
 
     /////////////////////////////////////////////////////////////////
