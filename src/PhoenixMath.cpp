@@ -959,7 +959,7 @@ Phoenix::Math::InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInver
     /// If current value is zero, matrix cannot be inverted.
     if ( TOO_CLOSE_TO_ZERO(mOrig(iPivot, iCol)))
     {
-      std::cerr << "Matrix is not invertible!" << std::endl;
+      //std::cerr << "Matrix is not invertible!" << std::endl;
       return MATRIX_NOT_INVERTIBLE;
     }
     ////////////////////
@@ -1022,7 +1022,7 @@ Phoenix::Math::InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInver
     /// If current value is zero, matrix cannot be inverted.
     if ( TOO_CLOSE_TO_ZERO(mOrig(iPivot, iCol)))
     {
-      std::cerr << "Matrix is not invertible!" << std::endl;
+      //std::cerr << "Matrix is not invertible!" << std::endl;
       return MATRIX_NOT_INVERTIBLE;
     }
     ////////////////////
@@ -1087,7 +1087,7 @@ Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInver
     /// If current value is zero, matrix cannot be inverted.
     if ( TOO_CLOSE_TO_ZERO(mOrig(iPivot, iCol)))
     {
-      std::cerr << "Matrix is not invertible!" << std::endl;
+      //std::cerr << "Matrix is not invertible!" << std::endl;
       return MATRIX_NOT_INVERTIBLE;
     }
     
