@@ -691,8 +691,8 @@ class CSovereignClass : public CSpaceShip
 protected:
   static Tcl_Interp *pInterp;
   static CSovereignClass *m_pCurrentObject;
+  static float m_fPassedTime;
 public:
-
   ////////////////////
   /// Constructor.
   CSovereignClass()
@@ -710,10 +710,12 @@ public:
   ////////////////////
   void Update( unsigned int nTimeMS )
   {
+    m_fPassedTime = ((float)nTimeMS * 0.001f);
     if ( pInterp )
     {
       m_pCurrentObject = this;
       assert(Tcl_Eval(pInterp, "playComputer") == TCL_OK );
+      
     }
     
   }
@@ -800,7 +802,7 @@ public:
       
       Tcl_GetDoubleFromObj( pInterp, objv[1], &dSpeed );
       
-      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed);
+      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed * m_fPassedTime);
       
     }
     Tcl_ResetResult( pInterp );
@@ -818,21 +820,23 @@ public:
       Tcl_GetDoubleFromObj( pInterp, objv[3], &dZ );
       CQuaternion qRot[4];
 
-      qRot[0].CreateFromAxisAngle( m_pCurrentObject->GetRightVector(), dX );
-      qRot[1].CreateFromAxisAngle( m_pCurrentObject->GetUpVector(), dY );
-      qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ );
+      qRot[0].CreateFromAxisAngle( m_pCurrentObject->GetRightVector(), dX * m_fPassedTime);
+      qRot[1].CreateFromAxisAngle( m_pCurrentObject->GetUpVector(), dY * m_fPassedTime);
+      qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ * m_fPassedTime);
       qRot[3] = qRot[2] * qRot[1] * qRot[0];
 
       // Append rotation to direction vectors and transform
       m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
+      //m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
       m_pCurrentObject->AppendToRotation( qRot[3] );
-      
+      //m_pCurrentObject->SetRotation( qRot[3] );
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
   }
 };
 CSovereignClass *CSovereignClass::m_pCurrentObject = NULL;
+float CSovereignClass::m_fPassedTime = 0.0f;
 Tcl_Interp * CSovereignClass::pInterp = NULL;
 /////////////////////////////////////////////////////////////////
 #define OMEGA_MODEL "Resources/Models/omega.ms3d"
@@ -1035,19 +1039,28 @@ public:
   {
     
     CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *pNode = static_cast<CTransformNode<SPACESHIP_CLASS, CHandle< CSpaceShip > > * >(pNode2);
-    
-    if (pNode->GetShipClass() == SHIP_CLASS_ROOT ) return 0;
 
     CSpaceShip *pShip = g_ShipManager->GetResource(pNode->GetHandle());
-    assert( pShip != NULL );
-     CSpaceShip *pParent = NULL;
+    if ( pShip == NULL || pShip->GetShipClass() == SHIP_CLASS_ROOT) 
+    {
+      //cerr << "ship is null" << endl;
+      return 0;
+    }
+
+    CSpaceShip *pParent = NULL;
     if ( !pNode->GetArrivingEdges().empty())
     {
 
       pParent = g_ShipManager->GetResource( 
-				  
-					   static_cast<CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *>(pNode->GetArrivingEdges().front()->GetToNode())->GetHandle() );
+			 static_cast<CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetHandle() );
+      if ( pParent == NULL ) 
+      {
+	pShip->SetWorldTransform( pShip->GetLocalTransform());
+	return 0;
+      }
       Multiply( pParent->GetWorldTransform(), pShip->GetLocalTransform(), pShip->GetWorldTransform());
+      //if ( pShip->GetShipClass() == SHIP_CLASS_OMEGA ) 
+	//cerr << "processing omega: " << pParent->GetWorldTransform().GetMatrix() << "*" << pShip->GetLocalTransform().GetMatrix() << "=" << pShip->GetWorldTransform().GetMatrix() << endl;
     }
     else 
     {
@@ -1056,7 +1069,7 @@ public:
     return 0;
   }
   
-    void Leave( CGraphNode<SPACESHIP_CLASS> *pNode )
+  void Leave( CGraphNode<SPACESHIP_CLASS> *pNode )
   {
     
   }
@@ -1077,9 +1090,10 @@ int main()
   COmegaTransform *pTOmega          = pTG->CreateNode< COmegaTransform >();
   CTransformUpdater trUpdater;
 
-  pTGR->AddEdge( pTSovereign );
-  pTSovereign->AddEdge( pTOmega );
-  
+  //pTGR->AddEdge( pTSovereign );
+  //pTSovereign->AddEdge( pTOmega );
+  pTGR->AddEdge( pTOmega );
+  pTOmega->AddEdge(pTSovereign  );
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,75.0f);
@@ -1159,9 +1173,6 @@ int main()
   g_ShipManager->AttachHandle( "Enterprise", pTSovereign->GetHandle());
   g_ShipManager->AttachHandle( "Backgammon", pTOmega->GetHandle());
   
-  assert( g_ShipManager->GetResource( pTSovereign->GetHandle()) != NULL );
-  assert( g_ShipManager->GetResource( pTOmega->GetHandle()) != NULL );
-
   // Clear event queue
   while ( SDL_PollEvent(&event ));
   
@@ -1252,7 +1263,7 @@ int main()
       bChanged = 0;
     }
     
-    TravelDF<SPACESHIP_CLASS, CTransformUpdater>( static_cast<CGraphNode<SPACESHIP_CLASS> *>(pTGR), &trUpdater );
+
     //TravelDF<SPACESHIP_CLASS, CTransformUpdater>( pTGR, &trUpdater );
 
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
@@ -1289,6 +1300,7 @@ int main()
       //pSovereign->Update(timer.GetPassedTimeMS());
       //pSpatialGraph->Update( pSovereign );
       shipUpdater.Update<CSpaceShipUpdaterAdapter>( shipAdapter, timer.GetPassedTimeMS());
+      TravelDF<SPACESHIP_CLASS, CTransformUpdater>( static_cast<CGraphNode<SPACESHIP_CLASS> *>(pTGR), &trUpdater );
       timer.Reset();
       pBeam->IncreaseTime( timer.GetPassedTimeMS()*0.001f);
       if ( pBeam->IsEnabled())
