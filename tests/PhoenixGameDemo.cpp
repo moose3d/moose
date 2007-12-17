@@ -1084,16 +1084,16 @@ int main()
     return 1;
   }
   
-  CGraph<SPACESHIP_CLASS> *pTG = new CGraph<SPACESHIP_CLASS>();
+  CGraph<SPACESHIP_CLASS> *pTG	    = new CGraph<SPACESHIP_CLASS>();
   CRootTransform *pTGR              = pTG->CreateNode< CRootTransform >();
   CSovereignTransform *pTSovereign  = pTG->CreateNode< CSovereignTransform>();
   COmegaTransform *pTOmega          = pTG->CreateNode< COmegaTransform >();
   CTransformUpdater trUpdater;
 
-  //pTGR->AddEdge( pTSovereign );
-  //pTSovereign->AddEdge( pTOmega );
-  pTGR->AddEdge( pTOmega );
-  pTOmega->AddEdge(pTSovereign  );
+  pTGR->AddEdge( pTSovereign );
+  pTSovereign->AddEdge( pTOmega );
+  //pTGR->AddEdge( pTOmega );
+  //pTOmega->AddEdge(pTSovereign  );
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,75.0f);
@@ -1130,11 +1130,13 @@ int main()
   /////////////////////////////////////////////////////////////////
   /// Create ships 
   COmegaClass *pOmega = new COmegaClass();
-  pOmega->GetWorldTransform().SetTranslation(0, -10 ,0);
+  pOmega->GetLocalTransform().SetTranslation(0, -10 ,0);
+  pOmega->GetLocalTransform().SetScaling(1.0f);
   pSpatialGraph->InsertObject( pOmega );
   
   CSovereignClass *pSovereign = new CSovereignClass();
-  pSovereign->GetWorldTransform().SetTranslation( 10, 0,0);
+  pSovereign->GetLocalTransform().SetTranslation( 10, 0,0);
+  pSovereign->GetLocalTransform().SetScaling(3.0f);
   pSpatialGraph->InsertObject( pSovereign );
   cerr << "we're ok" << endl;
 
@@ -1160,18 +1162,21 @@ int main()
   pBeam->Initialize( pSovereign->GetWorldTransform().GetTranslation(), pOmega->GetWorldTransform().GetTranslation(), 0.95f );
 
 
-  SHIP_HANDLE hEnterprise, hBackgammon;
-  g_ShipManager->Create( pSovereign, "Enterprise", hEnterprise);
-  g_ShipManager->Create( pOmega,     "Backgammon", hBackgammon );
+  //SHIP_HANDLE hEnterprise, hBackgammon;
 
-  CSpaceShipUpdaterAdapter shipAdapter( pSpatialGraph );
-  
-  CObjectUpdater<CSpaceShip> shipUpdater;
-  shipUpdater.Manage( hEnterprise );
-  shipUpdater.Manage( hBackgammon );
+  g_ShipManager->Create( pSovereign, "Enterprise");
+  g_ShipManager->Create( pOmega,     "Backgammon");
 
   g_ShipManager->AttachHandle( "Enterprise", pTSovereign->GetHandle());
   g_ShipManager->AttachHandle( "Backgammon", pTOmega->GetHandle());
+  
+  CSpaceShipUpdaterAdapter shipAdapter( pSpatialGraph );
+  
+  CObjectUpdater<CSpaceShip> shipUpdater;
+  shipUpdater.Manage( pTSovereign->GetHandle() );
+  shipUpdater.Manage( pTOmega->GetHandle() );
+
+
   
   // Clear event queue
   while ( SDL_PollEvent(&event ));
@@ -1219,16 +1224,14 @@ int main()
 	  pParticleSystem->Init( pSovereign->GetWorldTransform().GetTranslation() + pSovereign->GetForwardVector());
 	  pBeam->SetEnabled(1);
 	}
-	// else if ( event.key.keysym.sym == SDLK_RIGHT )
-// 	{
-// 	  pSovereign->GetTransform().Move(0,0,1);
-// 	  pSpatialGraph->Update( pSovereign );
-// 	} 
-// 	else if ( event.key.keysym.sym == SDLK_LEFT )
-// 	{
-// 	  pSovereign->GetTransform().Move(0,0,-1);
-// 	  pSpatialGraph->Update( pSovereign );
-// 	}
+	 else if ( event.key.keysym.sym == SDLK_RIGHT )
+	{
+	  pSovereign->GetLocalTransform().SetScaling(pSovereign->GetLocalTransform().GetScaling()-0.1f);
+	} 
+	else if ( event.key.keysym.sym == SDLK_LEFT )
+	{
+	  pSovereign->GetLocalTransform().SetScaling(pSovereign->GetLocalTransform().GetScaling()+0.1f);
+	}
 	break;
       case SDL_MOUSEMOTION:
 	{
