@@ -630,8 +630,7 @@ public:
 enum SPACESHIP_CLASS
 {
   SHIP_CLASS_SOVEREIGN = 0,
-  SHIP_CLASS_OMEGA = 1,
-  SHIP_CLASS_ROOT
+  SHIP_CLASS_OMEGA = 1
 };
 /////////////////////////////////////////////////////////////////
 /// Baseclass for every spaceship in the system.
@@ -949,8 +948,6 @@ public:
     case SHIP_CLASS_OMEGA:
       //static_cast<COmegaClass *>(pShip)->Update( nTimeMS );
       break;
-    case SHIP_CLASS_ROOT:
-      break;
     }
     m_pGraph->Update( pShip );
   }
@@ -1000,78 +997,145 @@ DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<O
   pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
 
 }
-/////////////////////////////////////////////////////////////////
-class CSovereignTransform : public CTransformNode<SPACESHIP_CLASS, CHandle<CSpaceShip> >
+enum TRANSFORM_TYPE 
 {
-  friend class CGraph<SPACESHIP_CLASS>;
+  TRANSFORM_SHIP = 0,
+  TRANSFORM_EXT = 1
+};
+/////////////////////////////////////////////////////////////////
+class CShipTransform : public CTransformNode<TRANSFORM_TYPE, CHandle<CSpaceShip> >
+{
+  friend class CGraph<TRANSFORM_TYPE>;
 public:
-  CSovereignTransform()
+  CShipTransform()
   {
-    SetType( SHIP_CLASS_SOVEREIGN );
+    SetType( TRANSFORM_SHIP );
   }
 };
 /////////////////////////////////////////////////////////////////
-class COmegaTransform : public CTransformNode<SPACESHIP_CLASS, CHandle<CSpaceShip> >
+class CExtTransform : public CTransformNode<TRANSFORM_TYPE, CHandle<void> >,
+		      public CTransformable
+		
 {
   friend class CGraph<CSpaceShip>;
 public:
-  COmegaTransform()
+  CExtTransform()
   {
-    SetType( SHIP_CLASS_OMEGA );
-  }
-};
-/////////////////////////////////////////////////////////////////
-class CRootTransform : public CTransformNode<SPACESHIP_CLASS, CHandle<CSpaceShip> >
-{
-  friend class CGraph<CSpaceShip>;
-public:
-  CRootTransform()
-  {
-    SetType( SHIP_CLASS_ROOT );
+    SetType( TRANSFORM_EXT );
   }
 };
 /////////////////////////////////////////////////////////////////
 class CTransformUpdater 
 {
 public:
-  
-  int Enter( CGraphNode<SPACESHIP_CLASS> *pNode2 )
+  ////////////////////
+  /// Handles entering to node while traversing
+  int Enter( CGraphNode<TRANSFORM_TYPE> *pNode )
+  {
+    int bRetval;
+    switch ( pNode->GetType() )
+    {
+    case TRANSFORM_EXT:
+      bRetval = HandleExtTransform( static_cast<CExtTransform *>(pNode));
+      break;
+    case TRANSFORM_SHIP:
+      bRetval = HandleShipTransform( static_cast<CShipTransform *>(pNode));
+      break;
+    }
+    return bRetval;
+    
+  }
+  ////////////////////  
+  /// Handles exiting  node while traversing
+  void Leave( CGraphNode<TRANSFORM_TYPE> *pNode )
+  {
+    //NOP
+  }
+protected:
+  ////////////////////
+  int HandleExtTransform( CExtTransform * pNode )
   {
     
-    CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *pNode = static_cast<CTransformNode<SPACESHIP_CLASS, CHandle< CSpaceShip > > * >(pNode2);
-
+    CTransform *pParentWorldTransform = NULL;
+    CSpaceShip *pParentShip = NULL;
+    if ( !pNode->GetArrivingEdges().empty())
+    {
+      
+      switch ( pNode->GetArrivingEdges().front()->GetFromNode()->GetType() )
+      {
+      case TRANSFORM_EXT:
+	pParentWorldTransform = 
+	             &static_cast<CExtTransform *>( pNode->GetArrivingEdges().front()->GetFromNode())->GetWorldTransform();
+	break;
+      case TRANSFORM_SHIP:
+	pParentShip = g_ShipManager->GetResource( 
+		     static_cast<CShipTransform *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetHandle() );
+	// If there is no ship, skip handling and use local transform.
+	if ( pParentShip == NULL ) 
+	{
+	  pNode->SetWorldTransform( pNode->GetLocalTransform());
+	  return 0;
+	}
+	pParentWorldTransform = &pParentShip->GetWorldTransform();
+	break;
+      }
+      
+      Multiply( *pParentWorldTransform, 
+		pNode->GetLocalTransform(), 
+		pNode->GetWorldTransform());
+      
+    }
+    else 
+    {
+      pNode->SetWorldTransform( pNode->GetLocalTransform());
+    }
+    return 0;
+  }
+  ////////////////////
+  int HandleShipTransform( CShipTransform *pNode )
+  {
+    
     CSpaceShip *pShip = g_ShipManager->GetResource(pNode->GetHandle());
-    if ( pShip == NULL || pShip->GetShipClass() == SHIP_CLASS_ROOT) 
+    if ( pShip == NULL) 
     {
       //cerr << "ship is null" << endl;
       return 0;
     }
-
-    CSpaceShip *pParent = NULL;
+    
+    CTransform *pParentWorldTransform = NULL;
+    CSpaceShip *pParentShip = NULL;
     if ( !pNode->GetArrivingEdges().empty())
     {
-
-      pParent = g_ShipManager->GetResource( 
-			 static_cast<CTransformNode< SPACESHIP_CLASS, CHandle<CSpaceShip> > *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetHandle() );
-      if ( pParent == NULL ) 
+      
+      switch ( pNode->GetArrivingEdges().front()->GetFromNode()->GetType() )
       {
-	pShip->SetWorldTransform( pShip->GetLocalTransform());
-	return 0;
+      case TRANSFORM_EXT:
+	pParentWorldTransform = 
+	      &static_cast<CExtTransform *>( pNode->GetArrivingEdges().front()->GetFromNode())->GetWorldTransform();
+	break;
+      case TRANSFORM_SHIP:
+	pParentShip = g_ShipManager->GetResource( 
+		     static_cast<CShipTransform *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetHandle() );
+	// If there is no ship, skip handling and use local transform.
+	if ( pParentShip == NULL ) 
+	{
+	  pShip->SetWorldTransform( pShip->GetLocalTransform());
+	  return 0;
+	}
+	pParentWorldTransform = &pParentShip->GetWorldTransform();
+	break;
       }
-      Multiply( pParent->GetWorldTransform(), pShip->GetLocalTransform(), pShip->GetWorldTransform());
-      //if ( pShip->GetShipClass() == SHIP_CLASS_OMEGA ) 
-	//cerr << "processing omega: " << pParent->GetWorldTransform().GetMatrix() << "*" << pShip->GetLocalTransform().GetMatrix() << "=" << pShip->GetWorldTransform().GetMatrix() << endl;
+      
+      Multiply( *pParentWorldTransform, 
+		pShip->GetLocalTransform(), 
+		pShip->GetWorldTransform());
+      
     }
     else 
     {
       pShip->SetWorldTransform( pShip->GetLocalTransform());
     }
     return 0;
-  }
-  
-  void Leave( CGraphNode<SPACESHIP_CLASS> *pNode )
-  {
-    
   }
 };
 /////////////////////////////////////////////////////////////////
@@ -1084,16 +1148,16 @@ int main()
     return 1;
   }
   
-  CGraph<SPACESHIP_CLASS> *pTG	    = new CGraph<SPACESHIP_CLASS>();
-  CRootTransform *pTGR              = pTG->CreateNode< CRootTransform >();
-  CSovereignTransform *pTSovereign  = pTG->CreateNode< CSovereignTransform>();
-  COmegaTransform *pTOmega          = pTG->CreateNode< COmegaTransform >();
+  CGraph<TRANSFORM_TYPE> *pTG	   = new CGraph<TRANSFORM_TYPE>();
+  CExtTransform *pTGR              = pTG->CreateNode< CExtTransform >();
+  CExtTransform *pScale		   = pTG->CreateNode< CExtTransform >();
+  CShipTransform *pTSovereign      = pTG->CreateNode< CShipTransform >();
+  CShipTransform *pTOmega          = pTG->CreateNode< CShipTransform >();
   CTransformUpdater trUpdater;
 
   pTGR->AddEdge( pTSovereign );
-  pTSovereign->AddEdge( pTOmega );
-  //pTGR->AddEdge( pTOmega );
-  //pTOmega->AddEdge(pTSovereign  );
+  pTSovereign->AddEdge( pScale );
+  pScale->AddEdge(pTOmega );
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,75.0f);
@@ -1140,8 +1204,8 @@ int main()
   pSpatialGraph->InsertObject( pSovereign );
   cerr << "we're ok" << endl;
 
+  pScale->GetLocalTransform().SetScaling( 0.333f);
   
-
 
   /////////////////////////////////////////////////////////////////
   COglTexture *pExplosionTexture = pOglRenderer->CreateTexture("Resources/Textures/explosion.tga");
@@ -1303,7 +1367,7 @@ int main()
       //pSovereign->Update(timer.GetPassedTimeMS());
       //pSpatialGraph->Update( pSovereign );
       shipUpdater.Update<CSpaceShipUpdaterAdapter>( shipAdapter, timer.GetPassedTimeMS());
-      TravelDF<SPACESHIP_CLASS, CTransformUpdater>( static_cast<CGraphNode<SPACESHIP_CLASS> *>(pTGR), &trUpdater );
+      TravelDF<TRANSFORM_TYPE, CTransformUpdater>( static_cast<CGraphNode<TRANSFORM_TYPE> *>(pTGR), &trUpdater );
       timer.Reset();
       pBeam->IncreaseTime( timer.GetPassedTimeMS()*0.001f);
       if ( pBeam->IsEnabled())
