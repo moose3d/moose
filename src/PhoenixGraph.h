@@ -14,24 +14,26 @@ namespace Phoenix
 
     /////////////////////////////////////////////////////////////////
     // Declaration so we can use graphnode in GraphEdge
-    template <typename RTTI> class CGraphNode;
-    template <typename RTTI> class CGraph;
+    template <typename RTTI, typename NODE_NAME, typename EDGE_NAME> class CGraphNode;
+    template <typename RTTI, typename NODE_NAME, typename EDGE_NAME> class CGraph;
     /////////////////////////////////////////////////////////////////
     /// \brief A class for an directed edge between two nodes in a graph.
-    template <typename RTTI>
+    template <typename RTTI, typename NODE_NAME, typename EDGE_NAME>
     class CGraphEdge
     {
-      friend class CGraphNode<RTTI>;
-      friend class CGraph<RTTI>;
+      friend class CGraphNode<RTTI, NODE_NAME, EDGE_NAME>;
+      friend class CGraph<RTTI, NODE_NAME, EDGE_NAME>;
     protected:
       /// \brief A pointer to the node where this edge is leaving from.
-      CGraphNode<RTTI> *m_pFrom;
+      CGraphNode<RTTI, NODE_NAME, EDGE_NAME> *m_pFrom;
       /// \brief A pointer to the node where this edge is arriving.
-      CGraphNode<RTTI> *m_pTo;
-      /// \brief is this edge traversed
+      CGraphNode<RTTI, NODE_NAME, EDGE_NAME> *m_pTo;
+      /// is this edge traversed
       char		       m_bTraversed;
-      /// \brief The cost/weight of this edge
+      /// cost/weight of this edge
       int		       m_iCost;
+      /// name of edge
+      EDGE_NAME		       m_Name;
       ////////////////////
       /// The default constructor.
       CGraphEdge( )
@@ -44,8 +46,8 @@ namespace Phoenix
       /// The parametrized constructor.
       /// \param pFrom CGraphNode where edge starts
       /// \param pTo CGraphNode where edge leads to.
-      CGraphEdge( CGraphNode<RTTI> *pFrom,
-		  CGraphNode<RTTI> *pTo )
+      CGraphEdge( CGraphNode<RTTI, NODE_NAME, EDGE_NAME> *pFrom,
+		  CGraphNode<RTTI, NODE_NAME, EDGE_NAME> *pTo )
       {
 	m_pFrom = pFrom;
 	m_pTo   = pTo;
@@ -73,15 +75,15 @@ namespace Phoenix
     public:
       ////////////////////
       /// \brief Returns the from node.
-      /// \return A pointer to CGraphNode<RTTI>.
-      CGraphNode<RTTI> * GetFromNode()
+      /// \return A pointer to CGraphNode<RTTI, NODE_NAME, EDGE_NAME>.
+      CGraphNode<RTTI, NODE_NAME, EDGE_NAME> * GetFromNode()
       {
 	return m_pFrom;
       }
       ////////////////////
       /// \brief Returns the to node.
-      /// \return A pointer to CGraphNode<RTTI>
-      CGraphNode<RTTI> * GetToNode()
+      /// \return A pointer to CGraphNode<RTTI, NODE_NAME, EDGE_NAME>
+      CGraphNode<RTTI, NODE_NAME, EDGE_NAME> * GetToNode()
       {
 	return m_pTo;
       }
@@ -112,6 +114,20 @@ namespace Phoenix
       void SetCost( int iCost )
       {
 	m_iCost = iCost;
+      }
+      ////////////////////
+      /// Returns edge name.
+      /// \returns Reference to edge name.
+      const EDGE_NAME & GetName() const
+      {
+	return m_Name;
+      }
+      ////////////////////
+      /// Assigns edge name.
+      /// \param rName A name.
+      void SetName(const EDGE_NAME &rName)
+      {
+	m_Name = rName;
       }
     };
 
@@ -161,32 +177,32 @@ namespace Phoenix
     ///  \enddot
     /// Where Cameras 1 and 2 have can have the same objects (Obj1 & Obj2) drawn, 
     /// whereas Objects Obj3 and Obj4 are visible only using Camera 3.
-    template <typename RTTI>
+    template <typename RTTI, typename NODE_NAME = std::string, typename EDGE_NAME = int>
     class CGraphNode 
     {
-      friend class CGraph<RTTI>;
-      friend class CGraphEdge<RTTI>;
+      friend class CGraph<RTTI, NODE_NAME, EDGE_NAME>;
+      friend class CGraphEdge<RTTI, NODE_NAME, EDGE_NAME>;
     protected:
       /// A list of pointers to CGraphEdge objects leaving from this node.
-      std::list<CGraphEdge<RTTI> *> m_lstLeaving;
+      std::list<CGraphEdge<RTTI, NODE_NAME, EDGE_NAME> *> m_lstLeaving;
       /// A list of pointers to CGraphEdge objects arriving to this node.
-      std::list<CGraphEdge<RTTI> *> m_lstArriving;
+      std::list<CGraphEdge<RTTI, NODE_NAME, EDGE_NAME> *> m_lstArriving;
       /// A pointer to Cgraph where this node belongs to.
 
-      /// The symbolic color value. 
+      /// Symbolic color value. 
       int			      m_iColor;
-      /// The name for this Scene node 
-      char m_sName[Phoenix::Globals::NODE_NAME_MAX_SIZE];
-      /// The boolean flag indicating has this node been visited.
+      /// Name for this Scene node 
+      NODE_NAME m_Name;
+      /// Boolean flag indicating has this node been visited.
       int m_bVisited;
-      /// The boolean flag indicating has this node been culled.
+      /// Boolean flag indicating has this node been culled.
       int m_bCulled;
-      /// The boolean flag indicating has this node been changed.
+      /// Boolean flag indicating has this node been changed.
       int m_bChanged;
-      /// The enumeration indicating the type of this node.
+      /// Enumeration indicating the type of this node.
       RTTI m_iType;
       // A reference to the graph object which contains this baby.
-      CGraph<RTTI> *      m_pGraph;  
+      CGraph<RTTI, NODE_NAME, EDGE_NAME> *      m_pGraph;  
       ////////////////////
       /// Default constructor.
       CGraphNode() 
@@ -196,7 +212,6 @@ namespace Phoenix
 	m_bCulled = 0;
 	m_bChanged = 0;
 	m_iType = (RTTI)0; 
-	m_sName[0] = '\0';
 	m_pGraph = NULL;
 	m_iColor = 0;
     
@@ -211,21 +226,21 @@ namespace Phoenix
       CGraphNode( const CGraphNode &Node);
       ////////////////////
       /// Returns the graph where node is in.
-      inline CGraph<RTTI> * GetGraph();
+      inline CGraph<RTTI, NODE_NAME, EDGE_NAME> * GetGraph();
       ////////////////////
-      /// \brief Sets the status of visited flag.
+      /// Sets the status of visited flag.
       /// \param bFlag boolean value for visited (1 = visited, 0 = unvisited )
       void SetVisited(int bFlag );
       ////////////////////
-      /// \brief Returns boolean value indicating has this node been visited.
+      /// Returns boolean value indicating has this node been visited.
       /// \return boolean 1 if this node has been visited, 0 if not.
       int IsVisited();
       ////////////////////
-      /// \brief Sets this node culling status.
+      /// Sets this node culling status.
       /// \param bState boolean value 1 if culled, 0 if not culled.
       void SetCulled( int bState );
       ////////////////////
-      /// \brief Returns boolean value indicated is this node culled.
+      /// Returns boolean value indicated is this node culled.
       /// \return boolean 1 if culled, 0 otherwise
       int IsCulled();
       ////////////////////
@@ -246,10 +261,10 @@ namespace Phoenix
       RTTI GetType();
       ////////////////////
       /// Returns the list of edges leaving from this node
-      std::list< CGraphEdge<RTTI> * > &GetLeavingEdges();
+      std::list< CGraphEdge<RTTI, NODE_NAME, EDGE_NAME> * > &GetLeavingEdges();
       ////////////////////
       /// Returns the list of edges arriving to this node.
-      std::list< CGraphEdge<RTTI> * > &GetArrivingEdges();
+      std::list< CGraphEdge<RTTI, NODE_NAME, EDGE_NAME> * > &GetArrivingEdges();
       ////////////////////
       /// Returns true if this node has leaving edges
       int HasLeavingEdges();
@@ -258,46 +273,46 @@ namespace Phoenix
       int HasArrivingEdges();
       ////////////////////
       /// Assigns the name of the node
-      void SetName( const char *szName );
+      void SetName( const NODE_NAME &rName );
       ////////////////////
       /// returns the name of the joint
-      const char * GetName();
+      const NODE_NAME & GetName() const;
       ////////////////////
-      /// \brief Removes leaving edges from this node.
+      ///  Removes leaving edges from this node.
       /// Edges are removed alse from nodes where they arrive.
       void RemoveLeavingEdges();
       ////////////////////
-      /// \brief Removes arriving edges from this node.
+      ///  Removes arriving edges from this node.
       /// Edges are removed alse from nodes where they lead to.
       void RemoveArrivingEdges();
       ////////////////////
-      /// \brief Adds an edge from this to given node
+      ///  Adds an edge from this to given node
       /// \param pTo A pointer to CGraphNode.
       int AddEdge( CGraphNode *pTo );
       ////////////////////
-      /// \brief Removes and edge leading from this node to giben node.
+      ///  Removes and edge leading from this node to giben node.
       /// \param pTo A pointer to CGraphNode.
       int DeleteEdgeTo( CGraphNode *pTo );
       ////////////////////
-      /// \brief Sets the color of this edge.
+      ///  Sets the color of this edge.
       /// \param iColor integer color
       void SetColor( int iColor );
       ////////////////////
-      /// \brief Returns the color of this edge.
+      ///  Returns the color of this edge.
       /// \returns int the color.
       int  GetColor();
       ////////////////////
-      /// \brief Returns the In-degree of this node
+      ///  Returns the In-degree of this node
       /// \returns unsigned int the number of arriving edges.
       unsigned int GetInDegree();
       ////////////////////
-      /// \brief Returns the Out-degree of this node
+      ///  Returns the Out-degree of this node
       /// \returns unsigned int the number of leaving edges.
       unsigned int GetOutDegree();
     };
 
     /////////////////////////////////////////////////////////////////
-    template <typename R>
+    template <typename R, typename NODE_NAME = std::string, typename EDGE_NAME = int>
     class CGraph
     {
     public:  
@@ -312,9 +327,9 @@ namespace Phoenix
 
     protected:
       /// List of nodes.
-      std::list< CGraphNode< R > *> m_lstNodes;
+    std::list< CGraphNode< R, NODE_NAME, EDGE_NAME > *> m_lstNodes;
       /// List of edges
-      std::list< CGraphEdge< R > *> m_lstEdges;
+      std::list< CGraphEdge< R, NODE_NAME, EDGE_NAME > *> m_lstEdges;
       /// Graph name.
       std::string m_sName;
 
@@ -335,20 +350,20 @@ namespace Phoenix
       ////////////////////
       /// Deletes a node.
       /// \param pNode Node to be deleted.
-      void DeleteNode( CGraphNode< R > *pNode );
+      void DeleteNode( CGraphNode< R, NODE_NAME, EDGE_NAME > *pNode );
       ////////////////////
       /// Adds an edge between pNodeFrom and pNodeTo.
       /// Returns zero if ok, non-zero on error
-      int AddEdge( CGraphNode< R > *pNodeFrom, CGraphNode< R > *pNodeTo);
+      int AddEdge( CGraphNode< R, NODE_NAME, EDGE_NAME > *pNodeFrom, CGraphNode< R, NODE_NAME, EDGE_NAME > *pNodeTo);
       ////////////////////
       /// Removes an edge,
-      void DeleteEdge( CGraphEdge<R> *pEdge );
+      void DeleteEdge( CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge );
       ////////////////////
-      void RemoveLeavingEdgesFrom( CGraphNode<R> *pNode );
+      void RemoveLeavingEdgesFrom( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode );
       ////////////////////
-      void RemoveArrivingEdgesFrom( CGraphNode<R> *pNode );
+      void RemoveArrivingEdgesFrom( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode );
       ////////////////////
-      CGraphNode<R> * SeekNodeByNameAndType( const char *szName, 
+      CGraphNode<R, NODE_NAME, EDGE_NAME> * SeekNodeByNameAndType( const char *szName, 
 					     const R iType );
       ////////////////////
       /// Sets each node as unvisited
@@ -387,16 +402,17 @@ namespace Phoenix
 
     };
     
-    template <typename R, class TravellerType> void TravelDF( CGraphNode<R> *pStartNode, TravellerType * pTraveller );
+    template <class TRAVELLER_TYPE, typename R, typename NODE_NAME, typename EDGE_NAME> 
+    void TravelDF( CGraphNode<R, NODE_NAME, EDGE_NAME> *pStartNode, TRAVELLER_TYPE * pTraveller );
     
   } // namespace Core
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraph<R>::DeleteNode( CGraphNode< R> *pNode )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::DeleteNode( CGraphNode< R, NODE_NAME, EDGE_NAME> *pNode )
 {
-  typename std::list<CGraphNode<R> *>::iterator it;
+  typename std::list<CGraphNode<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   it = find(m_lstNodes.begin(), m_lstNodes.end(), pNode );
 
   if ( it != m_lstNodes.end())
@@ -413,10 +429,10 @@ Phoenix::Core::CGraph<R>::DeleteNode( CGraphNode< R> *pNode )
   }
   
 }
-// -----------------------------------------------------------------
-template<typename R>
+/////////////////////////////////////////////////////////////////
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int 
-Phoenix::Core::CGraph<R>::AddEdge( CGraphNode<R> *pNodeFrom, CGraphNode<R> *pNodeTo )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::AddEdge( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNodeFrom, CGraphNode<R, NODE_NAME, EDGE_NAME> *pNodeTo )
 {
   if ( pNodeFrom == NULL )
   {
@@ -436,18 +452,18 @@ Phoenix::Core::CGraph<R>::AddEdge( CGraphNode<R> *pNodeFrom, CGraphNode<R> *pNod
     return 1;
   }
   
-  CGraphEdge<R> *pEdge = new CGraphEdge<R>( pNodeFrom, pNodeTo);
+  CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge = new CGraphEdge<R, NODE_NAME, EDGE_NAME>( pNodeFrom, pNodeTo);
   pNodeFrom->GetLeavingEdges().push_back( pEdge );
   pNodeTo->GetArrivingEdges().push_back( pEdge );
   m_lstEdges.push_back(pEdge);
   return 0;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraph<R>::DeleteEdge( Phoenix::Core::CGraphEdge<R> *pEdge)
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::DeleteEdge( Phoenix::Core::CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge)
 {
-  typename std::list< CGraphEdge<R> *>::iterator it;
+  typename std::list< CGraphEdge<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   it = find(m_lstEdges.begin(), m_lstEdges.end(), pEdge );
 
   if ( it != m_lstEdges.end())
@@ -455,9 +471,9 @@ Phoenix::Core::CGraph<R>::DeleteEdge( Phoenix::Core::CGraphEdge<R> *pEdge)
     // Delete edge from Graph edge list 
     m_lstEdges.erase(it);
     
-    std::list< CGraphEdge<R> *> &lstFromEdges = 
+    std::list< CGraphEdge<R, NODE_NAME, EDGE_NAME> *> &lstFromEdges = 
      pEdge->GetFromNode()->GetLeavingEdges();
-    std::list< CGraphEdge<R> *> &lstToEdges = 
+    std::list< CGraphEdge<R, NODE_NAME, EDGE_NAME> *> &lstToEdges = 
       pEdge->GetToNode()->GetArrivingEdges();
 
     // delete edge from the edge list of node where it is leaving
@@ -472,35 +488,35 @@ Phoenix::Core::CGraph<R>::DeleteEdge( Phoenix::Core::CGraphEdge<R> *pEdge)
   delete pEdge;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraph<R>::RemoveNodes()
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::RemoveNodes()
 {
   while( !m_lstNodes.empty())
   {
-    CGraphNode<R> *pTmpNode = m_lstNodes.front();
+    CGraphNode<R, NODE_NAME, EDGE_NAME> *pTmpNode = m_lstNodes.front();
     m_lstNodes.pop_front();
     delete pTmpNode;
   }
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraph<R>::RemoveEdges()
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::RemoveEdges()
 {
   while( !m_lstEdges.empty() )
   {
-    CGraphEdge<R> *pTmpEdge = m_lstEdges.front();
+    CGraphEdge<R, NODE_NAME, EDGE_NAME> *pTmpEdge = m_lstEdges.front();
     m_lstEdges.pop_front();
     delete pTmpEdge;
   }
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraph<R>::RemoveLeavingEdgesFrom( CGraphNode<R> *pNode )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::RemoveLeavingEdgesFrom( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode )
 {
-  typename std::list<CGraphEdge<R> *>::iterator it;
+  typename std::list<CGraphEdge<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   while( !pNode->GetLeavingEdges().empty())
   {
     it = pNode->GetLeavingEdges().begin();
@@ -508,11 +524,11 @@ Phoenix::Core::CGraph<R>::RemoveLeavingEdgesFrom( CGraphNode<R> *pNode )
   }
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraph<R>::RemoveArrivingEdgesFrom( CGraphNode<R> *pNode )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::RemoveArrivingEdgesFrom( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode )
 {
-  typename std::list<CGraphEdge<R> *>::iterator it;
+  typename std::list<CGraphEdge<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   while( !pNode->GetArrivingEdges().empty())
   {
     it = pNode->GetArrivingEdges().begin();
@@ -522,17 +538,17 @@ Phoenix::Core::CGraph<R>::RemoveArrivingEdgesFrom( CGraphNode<R> *pNode )
 /////////////////////////////////////////////////////////////////
 #define STR_EQUALS( STR1, STR2 ) ( strncmp(STR1, STR2, Phoenix::Globals::NODE_NAME_MAX_SIZE) == 0 )
 /////////////////////////////////////////////////////////////////
-template<typename R>
-Phoenix::Core::CGraphNode<R> * 
-Phoenix::Core::CGraph<R>::SeekNodeByNameAndType( const char *szName, 
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME> * 
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::SeekNodeByNameAndType( const char *szName, 
 				     const R iType )
 {
-  typename std::list< CGraphNode<R> *>::iterator it;
+  typename std::list< CGraphNode<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   it = m_lstNodes.begin();
 
   for( ; it != m_lstNodes.end(); it++)
   {
-    CGraphNode<R> *pNode = *it;
+    CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode = *it;
     if ( pNode->GetType() == iType && STR_EQUALS( pNode->GetName(), szName )) 
     {
       return pNode;
@@ -544,12 +560,12 @@ Phoenix::Core::CGraph<R>::SeekNodeByNameAndType( const char *szName,
 
 #undef STR_EQUALS
 /////////////////////////////////////////////////////////////////
-template <typename R>
+template <typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraph<R>::SetNodesUnvisited( )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::SetNodesUnvisited( )
 {
   
-  typename std::list<CGraphNode<R> *>::iterator it = m_lstNodes.begin();
+  typename std::list<CGraphNode<R, NODE_NAME, EDGE_NAME> *>::iterator it = m_lstNodes.begin();
 
   for( ; it != m_lstNodes.end(); it++)
   {
@@ -557,12 +573,12 @@ Phoenix::Core::CGraph<R>::SetNodesUnvisited( )
   }
 }
 /////////////////////////////////////////////////////////////////
-template <typename R>
+template <typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraph<R>::SetEdgesUntraversed( )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::SetEdgesUntraversed( )
 {
 
-  typename std::list<CGraphEdge<R> *>::iterator it = m_lstEdges.begin();
+  typename std::list<CGraphEdge<R, NODE_NAME, EDGE_NAME> *>::iterator it = m_lstEdges.begin();
 
   for( ; it != m_lstEdges.end(); it++)
   {
@@ -570,11 +586,11 @@ Phoenix::Core::CGraph<R>::SetEdgesUntraversed( )
   }
 }
 /////////////////////////////////////////////////////////////////
-template <typename R>
+template <typename R, typename NODE_NAME, typename EDGE_NAME>
 void  
-Phoenix::Core::CGraph<R>::SetColor( unsigned int nColor )
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::SetColor( unsigned int nColor )
 {
-  typename std::list<CGraphNode<R> *>::iterator it = m_lstNodes.begin();
+  typename std::list<CGraphNode<R, NODE_NAME, EDGE_NAME> *>::iterator it = m_lstNodes.begin();
 
   for( ; it != m_lstNodes.end(); it++) 
   {
@@ -585,13 +601,13 @@ Phoenix::Core::CGraph<R>::SetColor( unsigned int nColor )
 #define HAS_UNTRAVERSED_EDGES( N ) ( (unsigned int)(N->GetColor()) < N->GetOutDegree())
 #define IS_VISITED( N ) ( N->GetColor() > 0 )
 /////////////////////////////////////////////////////////////////
-template <typename R>
-Phoenix::Core::CGraphNode<R> * SeekNextWithType( CGraphNode<R> *pStartNode, R type )
+template <typename R, typename NODE_NAME, typename EDGE_NAME>
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME> * SeekNextWithType( CGraphNode<R, NODE_NAME, EDGE_NAME> *pStartNode, R type )
 {
-  CGraphNode<R> *pCandidate = NULL;
-  std::queue< CGraphNode<R> *>  queueNodes;
-  std::list< CGraphEdge<R> *> listEdges;
-  typename std::list< CGraphEdge<R> *>::iterator it;
+  CGraphNode<R, NODE_NAME, EDGE_NAME> *pCandidate = NULL;
+  std::queue< CGraphNode<R, NODE_NAME, EDGE_NAME> *>  queueNodes;
+  std::list< CGraphEdge<R, NODE_NAME, EDGE_NAME> *> listEdges;
+  typename std::list< CGraphEdge<R, NODE_NAME, EDGE_NAME> *>::iterator it;
 
   // Sanity check
   if ( pStartNode == NULL ) return NULL;
@@ -617,13 +633,13 @@ Phoenix::Core::CGraphNode<R> * SeekNextWithType( CGraphNode<R> *pStartNode, R ty
   return NULL;
 };
 ////////////////////////////////////////////////////////////////////////////
-template <typename R, class TravellerType>
+template <class TRAVELLER_TYPE, typename R, typename NODE_NAME, typename EDGE_NAME>
 void  
-Phoenix::Core::TravelDF( CGraphNode<R> *pStartNode, TravellerType * pTraveller )
+Phoenix::Core::TravelDF( CGraphNode<R, NODE_NAME, EDGE_NAME> *pStartNode, TRAVELLER_TYPE * pTraveller )
 {
-  std::stack< CGraphNode<R> *> stckNodes;
-  std::list< CGraphEdge<R> *>  lstEdges;
-  CGraphEdge<R> *pEdge = NULL;
+  std::stack< CGraphNode<R, NODE_NAME, EDGE_NAME> *> stckNodes;
+  std::list< CGraphEdge<R, NODE_NAME, EDGE_NAME> *>  lstEdges;
+  CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge = NULL;
   if ( pStartNode ==NULL ) 
   {
     std::cerr << "pStartNode is NULL" << std::endl;
@@ -635,7 +651,7 @@ Phoenix::Core::TravelDF( CGraphNode<R> *pStartNode, TravellerType * pTraveller )
 
   while ( !stckNodes.empty())
   {
-    CGraphNode<R> *pNode = stckNodes.top();
+    CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode = stckNodes.top();
     if ( IS_VISITED(pNode) )
     {
       if ( HAS_UNTRAVERSED_EDGES(pNode))
@@ -680,155 +696,155 @@ Phoenix::Core::TravelDF( CGraphNode<R> *pStartNode, TravellerType * pTraveller )
 }
 
 /////////////////////////////////////////////////////////////////
-template<typename R>
-Phoenix::Core::CGraphNode<R>::CGraphNode( const CGraphNode &Node) 
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::CGraphNode( const CGraphNode &Node) 
 {
   m_bVisited = Node.m_bVisited;
   m_bCulled = Node.m_bCulled;
   m_bChanged = Node.m_bChanged;
   m_iType = Node.m_iType; 
   m_pGraph = m_pGraph;
-  strncpy(m_sName, Node.m_sName, Phoenix::Globals::NODE_NAME_MAX_SIZE);
+  m_Name = Node.m_Name;
   
   m_lstLeaving = Node.m_lstLeaving;
   m_lstArriving = Node.m_lstArriving;
 
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
-inline Phoenix::Core::CGraph<R> *
-Phoenix::Core::CGraphNode<R>::GetGraph()
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+inline Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME> *
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetGraph()
 {
   return m_pGraph;
 }
 /////////////////////////////////////////////////////////////////
 /// The destructor, should be invoked with extreme care since it only removes this node
 /// not the children nor does it fix the parent pointers of the children.
-template<typename R>
-Phoenix::Core::CGraphNode<R>::~CGraphNode()
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::~CGraphNode()
 {
 
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraphNode<R>::SetVisited(int bFlag )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::SetVisited(int bFlag )
 {
   m_bVisited = bFlag;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int
-Phoenix::Core::CGraphNode<R>::IsVisited()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::IsVisited()
 {
   return m_bVisited;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraphNode<R>::SetCulled( int bState )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::SetCulled( int bState )
 {
   m_bCulled = bState;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int
-Phoenix::Core::CGraphNode<R>::IsCulled()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::IsCulled()
 {
   return m_bCulled;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraphNode<R>::SetType( R iType )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::SetType( R iType )
 {
   m_iType = iType;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 R
-Phoenix::Core::CGraphNode<R>::GetType()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetType()
 {
   return m_iType;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
-std::list<Phoenix::Core::CGraphEdge<R> *> &
-Phoenix::Core::CGraphNode<R>::GetLeavingEdges()
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+std::list<Phoenix::Core::CGraphEdge<R, NODE_NAME, EDGE_NAME> *> &
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetLeavingEdges()
 {
   return m_lstLeaving;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
-std::list<Phoenix::Core::CGraphEdge< R > * > &
-Phoenix::Core::CGraphNode<R>::GetArrivingEdges()
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+std::list<Phoenix::Core::CGraphEdge< R, NODE_NAME, EDGE_NAME > * > &
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetArrivingEdges()
 {
   return m_lstArriving;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int
-Phoenix::Core::CGraphNode<R>::HasLeavingEdges()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::HasLeavingEdges()
 {
   return (m_lstLeaving.size() > 0 );
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int
-Phoenix::Core::CGraphNode<R>::HasArrivingEdges()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::HasArrivingEdges()
 {
   return (m_lstArriving.size() > 0 );
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraphNode<R>::SetName( const char *szName )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::SetName( const NODE_NAME & rName )
 {
-  strncpy(m_sName,szName,Phoenix::Globals::NODE_NAME_MAX_SIZE);
+  m_Name = rName;
 }
 
 /////////////////////////////////////////////////////////////////
-template<typename R>
-const char * 
-Phoenix::Core::CGraphNode<R>::GetName()
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+const NODE_NAME &
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetName() const
 {
-  return m_sName;
+  return m_Name;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraphNode<R>::SetChanged( int bFlag )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::SetChanged( int bFlag )
 {
   m_bChanged = bFlag;
 }
 /////////////////////////////////////////////////////////////////
 // Returns value of the m_bChanged flag
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int
-Phoenix::Core::CGraphNode<R>::IsChanged()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::IsChanged()
 {
   return m_bChanged;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int 
-Phoenix::Core::CGraphNode<R>::AddEdge( CGraphNode<R> *pTo )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::AddEdge( CGraphNode<R, NODE_NAME, EDGE_NAME> *pTo )
 {
   return m_pGraph->AddEdge( this, pTo );
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int 
-Phoenix::Core::CGraphNode<R>::DeleteEdgeTo( CGraphNode<R> *pTo )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::DeleteEdgeTo( CGraphNode<R, NODE_NAME, EDGE_NAME> *pTo )
 {
-  typename std::list<CGraphEdge<R> *>::iterator it = this->GetLeavingEdges().begin();
+  typename std::list<CGraphEdge<R, NODE_NAME, EDGE_NAME> *>::iterator it = this->GetLeavingEdges().begin();
   // For each leaving edge in this 
   for(;it!=this->GetLeavingEdges().end();it++)
   {
     // if edge points to pTo, we delete it.
     if ( (*it)->GetToNode() == pTo )
     {
-      CGraphEdge<R> *pEdge = *it;
+      CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge = *it;
       m_pGraph->DeleteEdge( pEdge );
       break;
     }
@@ -836,44 +852,44 @@ Phoenix::Core::CGraphNode<R>::DeleteEdgeTo( CGraphNode<R> *pTo )
   return 0;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraphNode<R>::RemoveLeavingEdges()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::RemoveLeavingEdges()
 {
   m_pGraph->RemoveLeavingEdgesFrom( this );
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void 
-Phoenix::Core::CGraphNode<R>::RemoveArrivingEdges()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::RemoveArrivingEdges()
 {
   m_pGraph->RemoveArrivingEdgesFrom( this );
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 void
-Phoenix::Core::CGraphNode<R>::SetColor( int iColor )
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::SetColor( int iColor )
 {
   m_iColor = iColor;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 int 
-Phoenix::Core::CGraphNode<R>::GetColor()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetColor()
 {
   return m_iColor;
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 unsigned int
-Phoenix::Core::CGraphNode<R>::GetInDegree()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetInDegree()
 {
   return m_lstArriving.size();
 }
 /////////////////////////////////////////////////////////////////
-template<typename R>
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
 unsigned int
-Phoenix::Core::CGraphNode<R>::GetOutDegree()
+Phoenix::Core::CGraphNode<R, NODE_NAME, EDGE_NAME>::GetOutDegree()
 {
   return m_lstLeaving.size();
 }

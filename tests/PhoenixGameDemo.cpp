@@ -1366,7 +1366,7 @@ int main()
       //pSovereign->Update(timer.GetPassedTimeMS());
       //pSpatialGraph->Update( pSovereign );
       shipUpdater.Update<CSpaceShipUpdaterAdapter>( shipAdapter, timer.GetPassedTimeMS());
-      TravelDF<TRANSFORM_TYPE, CTransformUpdater>( static_cast<CGraphNode<TRANSFORM_TYPE> *>(pTGR), &trUpdater );
+      TravelDF<CTransformUpdater, TRANSFORM_TYPE, std::string, int>( static_cast<CGraphNode<TRANSFORM_TYPE> *>(pTGR), &trUpdater );
       timer.Reset();
       pBeam->IncreaseTime( timer.GetPassedTimeMS()*0.001f);
       if ( pBeam->IsEnabled())
