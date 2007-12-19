@@ -27,6 +27,6 @@
 #include "PhoenixRenderQueue.h"
 #include "PhoenixGameObject.h"
 #include "PhoenixTransform.h"
+#include "PhoenixTransformGraph.h"
 #include "PhoenixParticleSystem.h"
 #include "PhoenixObjectUpdater.h"
-

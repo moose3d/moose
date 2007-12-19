@@ -6,7 +6,6 @@
 #include <GL/glu.h>
 #include <tcl.h>
 #include "PhoenixEnergyBeam.h"
-#include "TransformGraph.h"
 using std::string;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
@@ -1003,7 +1002,7 @@ enum TRANSFORM_TYPE
   TRANSFORM_EXT = 1
 };
 /////////////////////////////////////////////////////////////////
-class CShipTransform : public CTransformNode<TRANSFORM_TYPE, CHandle<CSpaceShip> >
+class CShipTransform : public CTransformNode<TRANSFORM_TYPE, CSpaceShip, CHandle<CSpaceShip> >
 {
   friend class CGraph<TRANSFORM_TYPE>;
 public:
@@ -1013,11 +1012,11 @@ public:
   }
 };
 /////////////////////////////////////////////////////////////////
-class CExtTransform : public CTransformNode<TRANSFORM_TYPE, CHandle<void> >,
+class CExtTransform : public CTransformNode<TRANSFORM_TYPE, CSpaceShip, CHandle<void> >,
 		      public CTransformable
 		
 {
-  friend class CGraph<CSpaceShip>;
+  friend class CGraph<TRANSFORM_TYPE>;
 public:
   CExtTransform()
   {

@@ -12,7 +12,7 @@ namespace Phoenix
     /// Transform node template, allows several different objects to be 
     /// attached to each other via typing mechanism.
     /// \warning Objects MUST BE managed by respective ResourceManager!
-    template <class TYPE, class HANDLE>
+    template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
     class CTransformNode : public Phoenix::Core::CGraphNode<TYPE>
     {
       friend class Phoenix::Core::CGraph<TYPE>;
@@ -42,37 +42,37 @@ namespace Phoenix
   } // namespace Scene
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-template <class TYPE, class HANDLE>
-Phoenix::Scene::CTransformNode<TYPE,HANDLE>::CTransformNode()
+template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
+Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::CTransformNode()
 {
   
 }
 /////////////////////////////////////////////////////////////////
-template <class TYPE, class HANDLE>
-Phoenix::Scene::CTransformNode<TYPE,HANDLE>::~CTransformNode()
+template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
+Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::~CTransformNode()
 {
   ReleaseHandle();
 }
 /////////////////////////////////////////////////////////////////
-template <class TYPE, class HANDLE>
+template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
 HANDLE &
-Phoenix::Scene::CTransformNode<TYPE,HANDLE>::GetHandle()
+Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::GetHandle()
 {
   return m_hTransformableObject;
 }
 /////////////////////////////////////////////////////////////////
-template <class TYPE, class HANDLE>
+template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
 const HANDLE &
-Phoenix::Scene::CTransformNode<TYPE,HANDLE>::GetHandle() const
+Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::GetHandle() const
 {
   return m_hTransformableObject;
 }
 /////////////////////////////////////////////////////////////////
-template <class TYPE, class HANDLE>
+template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
 void
-Phoenix::Scene::CTransformNode<TYPE,HANDLE>::ReleaseHandle()
+Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::ReleaseHandle()
 {
-  Phoenix::Core::CResourceManager<TYPE, HANDLE >::GetInstance()->Release( m_hTransformableObject );
+  Phoenix::Core::CResourceManager<RESOURCE_TYPE, HANDLE >::GetInstance()->Release( m_hTransformableObject );
 }
 /////////////////////////////////////////////////////////////////
 #endif
