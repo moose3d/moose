@@ -603,3 +603,55 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
   return (vSepAxis.LengthSqr() < fSumOfRadii);
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Collision::S2S_COLLISION_TYPE
+Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne,
+					    const Phoenix::Math::CVector3<float> &vVelocityOne,
+					    const Phoenix::Volume::CSphere &sphereTwo,
+					    const Phoenix::Math::CVector3<float> &vVelocityTwo,
+					    Phoenix::Math::CVector3<float> & vIntersectionPoint,
+					    float &fRelativeTime )
+{
+  CVector3<float> vA = sphereOne.GetPosition() - sphereTwo.GetPosition();
+  CVector3<float> vB = vVelocityOne - vVelocityTwo;
+  
+  float fASqr = vA.Dot(vA);
+  float fBSqr = vB.Dot(vB);
+
+  float fRadiusSumSqr = sphereOne.GetRadius() + sphereTwo.GetRadius(); 
+  fRadiusSumSqr *= fRadiusSumSqr;
+
+  // Check are sphers colliding already
+  if ( fASqr < fRadiusSumSqr )
+  {
+    return S2S_ALREADY;
+  }
+  // Check are velocities equal ( moving into same direction )
+  if ( TOO_CLOSE_TO_ZERO(fBSqr ))
+  {
+    return S2S_NEVER;
+  }
+
+  float fAdotB = vA.Dot(vB);
+  float fAdotBSqr = fAdotB * fAdotB;
+  
+  float fDSqr = fASqr - fAdotBSqr / fBSqr;
+  // Check will they ever intersect?
+  if ( fDSqr > fRadiusSumSqr ) 
+  {
+    return S2S_NEVER;
+  }
+  
+  // Calculate intersection point and relative time.
+  fRelativeTime = (-fAdotB - sqrtf(fAdotBSqr - fBSqr *(fASqr - fRadiusSumSqr))) / fBSqr;
+
+  CVector3<float> vPosOne, vPosTwo, vNormal;
+
+  vPosOne = sphereOne.GetPosition() + (fRelativeTime * vVelocityOne);
+  vPosTwo = sphereTwo.GetPosition() + (fRelativeTime * vVelocityTwo);
+  vNormal = vPosTwo - vPosOne;
+  vNormal.Normalize();
+  vIntersectionPoint = vPosOne + sphereOne.GetRadius() * vNormal;
+
+  return S2S_SOON;
+}
+/////////////////////////////////////////////////////////////////

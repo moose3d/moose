@@ -18,6 +18,14 @@ namespace Phoenix
     };
     
     ////////////////////
+    /// Returns values for SphereIntersectsSphere( ... ) with velocities.
+    enum S2S_COLLISION_TYPE 
+    {
+      S2S_NEVER = 0,
+      S2S_SOON = 1,
+      S2S_ALREADY = 2
+    };
+    ////////////////////
     /// Checks does line intersect a plane.
     /// \param plane Plane operand.
     /// \param line Line operand.
@@ -149,6 +157,26 @@ namespace Phoenix
     /// \returns Non-zero if spheres intersect.
     int SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, 
 				const Phoenix::Volume::CSphere &sphereTwo );
+
+    ////////////////////
+    /// Checks do two moving spheres intersect.
+    /// \param sphereOne First sphere
+    /// \param sphereTwo Second sphere
+    /// \param vVelocityOne Velocity of first sphere
+    /// \param vVelocityTwo Velocity of second sphere
+    /// \param vIntersectionPoint Point of intersection, if spheres will intersect.
+    /// \param fRelativeTime Relative time [0,1[ when spheres intersect (if they will intersect).
+    /// \returns S2S_NEVER   if spheres do not intersect during movement. Values of vIntersectionPoint and fRelativeTime are undefined.
+    /// \returns S2S_ALREADY if spheres intersect before moving. Values of vIntersectionPoint and fRelativeTime are undefined.
+    /// \returns S2S_SOON  if spheres will intersect during movement.Values of vIntersectionPoint and fRelativeTime are set to corresponding values.
+    S2S_COLLISION_TYPE  SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne,
+					      const Phoenix::Math::CVector3<float> &vVelocityOne,
+					      const Phoenix::Volume::CSphere &sphereTwo,
+					      const Phoenix::Math::CVector3<float> &vVelocityTwo,
+					      Phoenix::Math::CVector3<float> & vIntersectionPoint,
+					      float &fRelativeTime );
+    
+
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
