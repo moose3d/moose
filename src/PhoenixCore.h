@@ -62,6 +62,24 @@ namespace Phoenix
       void SetEnabled(int bFlag ) { m_bEnabled = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
+    /// Template base for each typed object.
+    template <typename TYPE>
+    class CTypeBase
+    {
+    protected:
+      /// Stores the type
+      TYPE m_Type;
+    public:
+      ////////////////////
+      /// Assigns type.
+      /// \param rType TYPE to be set.
+      void SetType( const TYPE &rType ) { m_Type = rType;  }
+      ////////////////////
+      /// Return current type.
+      /// \returns Currently set type.
+      const TYPE & GetType() const { return m_Type; }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
     class CTimer 
     {
