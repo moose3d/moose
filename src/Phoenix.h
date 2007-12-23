@@ -30,3 +30,4 @@
 #include "PhoenixTransformGraph.h"
 #include "PhoenixParticleSystem.h"
 #include "PhoenixObjectUpdater.h"
+#include "PhoenixStateMachine.h"
