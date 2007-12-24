@@ -299,6 +299,14 @@ namespace Phoenix
       /// \returns zero on success, non-zero on error.
       int AttachHandle(  const std::string &strName, HANDLE & handle  );
       ////////////////////
+      /// Duplicates handle.
+      /// \warning Remember to use ACTUAL handle that resides in final position in the memory.
+      /// \warning Otherwise, you WILL get nasty segfaults and handles start pointing
+      /// \warning where they wish - when you delete resources, that is.
+      /// \param hSrcHandle Handle that will be duplicated.
+      /// \param handle Handle that will point to resource pointed by hSrcHandle.
+      void DuplicateHandle(  const HANDLE &hSrcHandle, HANDLE & handle );
+      ////////////////////
       /// Releases handle to this object.
       /// \warning Remember to use ACTUAL handle that resides in final position in the memory.
       /// \warning Otherwise, you WILL get nasty segfaults and handles start pointing
@@ -494,6 +502,33 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::AttachHandle(  const std::st
   handle.Initialize(hashItem->GetObject().GetIndex());
   m_vecObjects[hashItem->GetObject().GetIndex()]->ValidateHandle( handle );
   return 0;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DuplicateHandle( const HANDLE &hSrcHandle, HANDLE & handle  )
+{
+  if ( hSrcHandle.IsNull() )
+  {
+    handle.Nullify();
+  }
+  else
+  {
+    // This requires also mutex, NOT thread-safe
+    size_t nIndex = hSrcHandle.GetIndex();
+
+    if ( nIndex >= m_vecObjects.size())
+    {
+      handle.Nullify();
+    }
+    else
+    {
+      handle.Initialize(nIndex);
+      // Add handle to list of handles to be updated. 
+      m_vecObjects[nIndex]->ValidateHandle( handle );  
+    }
+  }
+  
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
