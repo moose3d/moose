@@ -80,6 +80,84 @@ namespace Phoenix
       const TYPE & GetType() const { return m_Type; }
     };
     /////////////////////////////////////////////////////////////////
+    /// Timestamp for various things.
+    class CTimeStamp
+    {
+    protected:
+      /// Passed seconds 
+      int m_iSeconds;
+      /// Passed milliseconds after m_iSeconds.
+      short m_iMilliSeconds;
+    public:
+      ////////////////////
+      /// Constructor.
+      CTimeStamp() : m_iSeconds(0), m_iMilliSeconds(0) 
+      {
+	
+      }
+      ////////////////////
+      /// Parametrized constructor.
+      /// \param iSeconds Passed seconds.
+      /// \param iMS Passed milliseconds.
+      CTimeStamp( int iSeconds, int iMS ): m_iSeconds(iSeconds), m_iMilliSeconds(iMS) 
+      {
+
+      }
+      ////////////////////
+      /// Sets passed seconds.
+      /// \param nSeconds Passed seconds.
+      void SetSeconds( int iSeconds )
+      {
+	m_iSeconds = iSeconds;
+      }
+      ////////////////////
+      /// Sets passed milliseconds.
+      /// \param iMS Passed milliseconds.
+      void SetMilliSeconds( short iMS )
+      {
+	m_iMilliSeconds = iMS;
+      }
+      ////////////////////
+      /// Returns passed milliseconds.
+      /// \returns Passed milliseconds.
+      short GetMilliSeconds() const
+      {
+	return m_iMilliSeconds;
+      }
+      ////////////////////
+      /// Returns passed seconds.
+      /// \returns Passed seconds.
+      int GetSeconds() const
+      {
+	return m_iSeconds;
+      }
+      ////////////////////
+      /// Comparison operator.
+      /// \param rAnother Another timestamp.
+      int operator<( const CTimeStamp & rAnother) const
+      {
+	if      ( GetSeconds() < rAnother.GetSeconds() ) return 1;
+	else if ( GetSeconds() > rAnother.GetSeconds()) return 0;
+	else if ( GetMilliSeconds() < rAnother.GetMilliSeconds()) return 1;
+	return 0;
+      }
+      ////////////////////
+      /// Reduces given timestamp from this.
+      /// \param rAnother Other timestamp.
+      /// \returns Resulting timestamp.
+      CTimeStamp operator-( const CTimeStamp &rAnother ) const 
+      {
+	int iSeconds = GetSeconds() - rAnother.GetSeconds();
+	int iMS = GetMilliSeconds() - rAnother.GetMilliSeconds();
+	if ( iMS < 0 )
+	{
+	  iSeconds--;
+	  iMS += 1000;
+	}
+	return CTimeStamp( iSeconds, iMS);
+      }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
     class CTimer 
     {
@@ -106,6 +184,13 @@ namespace Phoenix
 	m_nStartTimeMS = nTimeMS;
       }
       ////////////////////
+      /// Returns current time.
+      /// \returns Current time.
+      unsigned int GetCurrentTimeMS()
+      {
+	return m_nStartTimeMS + m_nPassedTimeMS;
+      }
+      ////////////////////
       /// Sets the current time in milliseconds. If passed time is less than 
       /// starting time, the passed time will be set as starting time.
       /// \param nTimeMS The current time in milliseconds, 
@@ -114,6 +199,7 @@ namespace Phoenix
       {
 	if ( nTimeMS < m_nStartTimeMS ) {
 	  SetStartTimeMS( nTimeMS );
+	  m_nPassedTimeMS = 0;
 	}
 	else			  m_nPassedTimeMS = nTimeMS - m_nStartTimeMS;
       }
