@@ -22,7 +22,7 @@ namespace Phoenix
       /// Handle to sender.
       CHandle<OBJECT_TYPE> m_hSender;
       /// Timestamp of this message.
-      size_t		   m_nTimeStamp;
+      Phoenix::Core::CTimeStamp	   m_tTimeStamp;
     public:
       ////////////////////
       /// Constructor.
@@ -48,12 +48,12 @@ namespace Phoenix
       const CHandle<OBJECT_TYPE> & GetReceiver() const;
       ////////////////////
       /// Assign timestamp.
-      /// \param nTimeStamp Timestamp to be set in milliseconds.
-      void SetTimeStamp( size_t nTimeStamp );
+      /// \param tTimeStamp Timestamp to be set in milliseconds.
+      void SetTimeStamp( const Phoenix::Core::CTimeStamp & tTimeStamp );
       ////////////////////
       /// Returns timestamp.
       /// \returns Timestamp.
-      size_t GetTimeStamp() const;
+      const Phoenix::Core::CTimeStamp & GetTimeStamp() const;
       ////////////////////
       /// \param rMessage Message to compare this against - latter time becomes first.
       /// \returns is this message before the other.
@@ -131,9 +131,9 @@ namespace Phoenix
       ////////////////////
       /// Enqueues message with timestamp. 
       /// \param pMessage Pointer to message to be sent.
-      /// \param fTimeStamp Timestamp for message delivery. Value indicates time to wait (in milliseconds) 
+      /// \param tTimeStamp Timestamp for message delivery. Value indicates time to wait (in millisecond precision) 
       ///        before sending the message, default value is 0, meaning message will be sent immediately.
-      void EnqueueMessage( CMessage<OBJECT_TYPE, MSG_TYPE> * pMessage, size_t nTimeStamp = 0 ); 
+      void EnqueueMessage( CMessage<OBJECT_TYPE, MSG_TYPE> * pMessage, const Phoenix::Core::CTimeStamp & tTimeStamp = Phoenix::Core::CTimeStamp(0,0) ); 
       ////////////////////
       /// Delivers messages that need it.
       /// \param nMilliSeconds Passed time in milliseconds.
@@ -157,7 +157,7 @@ namespace Phoenix
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::CMessage() : m_nTimeStamp(0) 
+Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::CMessage() 
 {
   
 }
@@ -206,16 +206,16 @@ Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::operator<( const Phoenix::AI::CMess
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 inline void 
-Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::SetTimeStamp( size_t nTimeStamp )
+Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::SetTimeStamp( const Phoenix::Core::CTimeStamp & tTimeStamp )
 {
-  m_nTimeStamp = nTimeStamp;
+  m_tTimeStamp = tTimeStamp;
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline size_t
+inline const Phoenix::Core::CTimeStamp &
 Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetTimeStamp() const
 {
-  return m_nTimeStamp;
+  return m_tTimeStamp;
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
@@ -332,9 +332,9 @@ Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::UnregisterReceiver( const MS
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 inline void 
-Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::EnqueueMessage( Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> *pMessage, size_t nTimeStamp )
+Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::EnqueueMessage( Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> *pMessage, const Phoenix::Core::CTimeStamp & tTimeStamp )
 {
-  pMessage->SetTimeStamp( GetCurrentTimeMS()+nTimeStamp );
+  pMessage->SetTimeStamp( GetCurrentTime()+tTimeStamp );
   m_priqMessages.push( pMessage );
 }
 /////////////////////////////////////////////////////////////////
@@ -342,16 +342,16 @@ template <typename OBJECT_TYPE, typename MSG_TYPE>
 Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> * 
 Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::GetNextMessage()
 {
-  size_t nTime = GetCurrentTimeMS();
+  //size_t nTime = GetCurrentTime();
   // Check are there any messages left
   if ( m_priqMessages.empty()) return NULL;
 
   Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> * pMessage = m_priqMessages.top();
-  //std::cerr << "Current time is : " << nTime << " vs. " << pMessage->GetTimeStamp() << std::endl;
-  if ( pMessage->GetTimeStamp() <= nTime )
+  //std::cerr << "Current time is : " << GetCurrentTime() << " vs. " << pMessage->GetTimeStamp() << std::endl;
+  if ( pMessage->GetTimeStamp() <= GetCurrentTime() )
   {
-    m_priqMessages.pop();    
-    return pMessage;    
+    m_priqMessages.pop();
+    return pMessage;
   }
   return NULL;
 }
