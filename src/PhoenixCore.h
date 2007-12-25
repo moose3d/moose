@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////
-#ifndef __Ccore_h__
-#define __Ccore_h__
+#ifndef __PhoenixCore_h__
+#define __PhoenixCore_h__
 /////////////////////////////////////////////////////////////////
 #include <sstream>
 #include <iostream>
@@ -141,7 +141,25 @@ namespace Phoenix
 	return 0;
       }
       ////////////////////
-      /// More than comparison operator.
+      /// Less than or equal comparison operator.
+      /// \param rAnother Another timestamp.
+      int operator<=( const CTimeStamp & rAnother) const
+      {
+	if ( GetSeconds() > rAnother.GetSeconds()) return 0;
+	else if ( GetMilliSeconds() <= rAnother.GetMilliSeconds()) return 1;
+	return 0;
+      }
+      ////////////////////
+      /// Greater than or equal comparison operator.
+      /// \param rAnother Another timestamp.
+      int operator>=( const CTimeStamp & rAnother) const
+      {
+	if ( GetSeconds() < rAnother.GetSeconds()) return 0;
+	else if ( GetMilliSeconds() >= rAnother.GetMilliSeconds()) return 1;
+	return 0;
+      }
+      ////////////////////
+      /// Greater than comparison operator.
       /// \param rAnother Another timestamp.
       int operator>( const CTimeStamp & rAnother) const
       {
@@ -187,6 +205,17 @@ namespace Phoenix
 	}
 	return CTimeStamp( iSeconds, iMS);
       }
+      ////////////////////
+      /// Prints timestamps to given stream.
+      /// \param stream Stream where data is printed
+      /// \param tTimeStamp Timestamp to be printed.
+      /// \returns Reference to stream.
+      friend std::ostream & operator<< ( std::ostream & stream, const Phoenix::Core::CTimeStamp & tTimeStamp )
+      {
+	stream << tTimeStamp.GetSeconds() << "." << tTimeStamp.GetMilliSeconds();
+	return stream;
+      }
+
     };
     /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
@@ -194,9 +223,11 @@ namespace Phoenix
     {
     protected:
       /// The passed time relative to nStartTimeMS in milliseconds.
-      unsigned int m_nPassedTimeMS;
+      Phoenix::Core::CTimeStamp m_StartTime;
+      //unsigned int m_nPassedTimeMS;
       /// The starting time in milliseconds where passed time is calculated from.
-      unsigned int m_nStartTimeMS;
+      Phoenix::Core::CTimeStamp m_PassedTime;
+      //unsigned int m_nStartTimeMS;
       /// Time value for Update().
       struct timeval m_TimeVal;
     public:
@@ -204,70 +235,88 @@ namespace Phoenix
       /// The constructor.
       CTimer()
       {
-	m_nPassedTimeMS = 0;
-	m_nStartTimeMS = 0;
+	m_StartTime.SetSeconds(0);
+	m_StartTime.SetMilliSeconds(0);
+	m_PassedTime.SetSeconds(0);
+	m_PassedTime.SetMilliSeconds(0);
+	//m_nPassedTimeMS = 0;
+	//m_nStartTimeMS = 0;
       }
       ////////////////////
       /// Sets the starting time for calculations.
-      /// \param nTimeMS the starting time in milliseconds.
-      void SetStartTimeMS( unsigned int nTimeMS )
+      /// \param iSec Seconds
+      /// \param iMS  Milliseconds
+      void SetStartTime( int iSec, short iMS )
       {
-	m_nStartTimeMS = nTimeMS;
+	m_StartTime.SetSeconds(iSec);
+	m_StartTime.SetMilliSeconds( iMS );
+      }
+      ////////////////////
+      /// Sets the starting time for calculations.
+      /// \param tTimeStamp Timestamp to be set.
+      void SetStartTime( const Phoenix::Core::CTimeStamp & tTimeStamp )
+      {
+	m_StartTime = tTimeStamp;
       }
       ////////////////////
       /// Returns current time.
       /// \returns Current time.
-      unsigned int GetCurrentTimeMS()
+      CTimeStamp GetCurrentTime() const
       {
-	return m_nStartTimeMS + m_nPassedTimeMS;
+	return m_StartTime + m_PassedTime;
       }
       ////////////////////
       /// Sets the current time in milliseconds. If passed time is less than 
       /// starting time, the passed time will be set as starting time.
-      /// \param nTimeMS The current time in milliseconds, 
-      /// preferably after the starting time.
-      void SetCurrentTimeMS( unsigned int nTimeMS )
+      /// \param iSec Time in seconds
+      /// \param iMS Time in milliseconds.
+      void SetCurrentTime( int iSec, short iMS )
       {
-	if ( nTimeMS < m_nStartTimeMS ) {
-	  SetStartTimeMS( nTimeMS );
-	  m_nPassedTimeMS = 0;
+	CTimeStamp tTime(iSec, iMS );
+	if ( tTime < m_StartTime ) 
+	{
+	  SetStartTime( tTime );
+	  m_PassedTime.SetSeconds(0);
+	  m_PassedTime.SetMilliSeconds(0);
 	}
-	else			  m_nPassedTimeMS = nTimeMS - m_nStartTimeMS;
+	else 
+	{
+	  m_PassedTime = tTime - m_StartTime;
+	}
       }
       ////////////////////
       /// Updates current time.
       void Update()
       {
 	gettimeofday(&m_TimeVal, NULL);
-	unsigned int nTime = (m_TimeVal.tv_sec * 1000) + (m_TimeVal.tv_usec / 1000);
-	SetCurrentTimeMS( nTime );
+	SetCurrentTime( m_TimeVal.tv_sec, (short)(m_TimeVal.tv_usec * 0.001f) );
       }
       ////////////////////
       /// Updates start time.
       void Reset()
       {
 	gettimeofday(&m_TimeVal, NULL);
-	unsigned int nTime = (m_TimeVal.tv_sec * 1000) + (m_TimeVal.tv_usec / 1000);
-	SetStartTimeMS( nTime );
+	gettimeofday(&m_TimeVal, NULL);
+	SetStartTime( m_TimeVal.tv_sec, (short)(m_TimeVal.tv_usec * 0.001f) );
       }
       ////////////////////
       /// Returns the passed time in milliseconds.
       /// \returns unsigned int the passed time relative to starting time.
-      inline unsigned int GetPassedTimeMS()
+      inline const CTimeStamp & GetPassedTime()
       {
-	return m_nPassedTimeMS;
+	return m_PassedTime;
       }
       ////////////////////
       /// Checks whether given time has passed since the last call to 
       /// SetStartTime().
       /// \param nTimeMS time in milliseconds which is desired to be passed.
       /// \returns true, if nTimeMS milliseconds have passed, false if not.
-      inline int HasPassedMS( unsigned int nTimeMS )
+      inline int HasPassedMS( int iSec, short iMS )
       {
 	Update();
-	return ( m_nPassedTimeMS >= nTimeMS );
+	return (m_PassedTime >= CTimeStamp(iSec, iMS));
       }
-    
+      
     };
     /////////////////////////////////////////////////////////////////
     /// A FPS Counter class for reporting framerate.
@@ -335,9 +384,9 @@ namespace Phoenix
       /// \returns Frames per second using float value.
       float GetFPS() 
       {
-	if ( m_nPassedTimeMS > 0 )  
+	if ( m_PassedTime.GetSeconds() > 0 || m_PassedTime.GetMilliSeconds() > 0 )  
 	{
-	  return (float)(m_nFrameCount) / (m_nPassedTimeMS *0.001f);
+	  return (float)(m_nFrameCount) / (m_PassedTime.GetSeconds() + m_PassedTime.GetMilliSeconds()*0.001f);
 	} 
 	return 0.0f;
       }
