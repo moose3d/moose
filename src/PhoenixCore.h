@@ -91,9 +91,8 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      CTimeStamp() : m_iSeconds(0), m_iMilliSeconds(0) 
+      CTimeStamp()
       {
-	
       }
       ////////////////////
       /// Parametrized constructor.
@@ -132,7 +131,7 @@ namespace Phoenix
 	return m_iSeconds;
       }
       ////////////////////
-      /// Comparison operator.
+      /// Less than comparison operator.
       /// \param rAnother Another timestamp.
       int operator<( const CTimeStamp & rAnother) const
       {
@@ -140,6 +139,23 @@ namespace Phoenix
 	else if ( GetSeconds() > rAnother.GetSeconds()) return 0;
 	else if ( GetMilliSeconds() < rAnother.GetMilliSeconds()) return 1;
 	return 0;
+      }
+      ////////////////////
+      /// More than comparison operator.
+      /// \param rAnother Another timestamp.
+      int operator>( const CTimeStamp & rAnother) const
+      {
+	if      ( GetSeconds() > rAnother.GetSeconds() ) return 1;
+	else if ( GetSeconds() < rAnother.GetSeconds()) return 0;
+	else if ( GetMilliSeconds() > rAnother.GetMilliSeconds()) return 1;
+	return 0;
+      }
+      ////////////////////
+      /// Equality comparison operator.
+      /// \param rAnother Another timestamp.
+      int operator==( const CTimeStamp & rAnother) const
+      {
+	return ( GetSeconds() == rAnother.GetSeconds() && GetMilliSeconds() == rAnother.GetMilliSeconds() );
       }
       ////////////////////
       /// Reduces given timestamp from this.
@@ -153,6 +169,21 @@ namespace Phoenix
 	{
 	  iSeconds--;
 	  iMS += 1000;
+	}
+	return CTimeStamp( iSeconds, iMS);
+      }
+      ////////////////////
+      /// Adds given timestamp to this.
+      /// \param rAnother Other timestamp.
+      /// \returns Resulting timestamp.
+      CTimeStamp operator+( const CTimeStamp &rAnother ) const 
+      {
+	int iSeconds = GetSeconds() + rAnother.GetSeconds();
+	int iMS = GetMilliSeconds() + rAnother.GetMilliSeconds();
+	if ( iMS > 1000 )
+	{
+	  iSeconds++;
+	  iMS -= 1000;
 	}
 	return CTimeStamp( iSeconds, iMS);
       }
