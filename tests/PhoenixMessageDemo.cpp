@@ -19,6 +19,49 @@ enum MESSAGE_TYPE
 /////////////////////////////////////////////////////////////////
 #define g_IntManager ( CResourceManager<int, CHandle<int> >::GetInstance())
 /////////////////////////////////////////////////////////////////
+class CFirstMessage : public CMessage<int, MESSAGE_TYPE>
+{
+protected:
+  std::string m_strData;
+public:
+  CFirstMessage() 
+  {
+    SetType( MSG_FIRST );
+    m_strData = "first message";
+  }
+  friend std::ostream & operator<<( std::ostream & stream, const CFirstMessage & msg )
+  {
+    stream << msg.GetTimeStamp() << ": FIRST, from " 
+	   << g_IntManager->GetResourceName(msg.GetSender())
+	   << " to " 
+	   << g_IntManager->GetResourceName(msg.GetReceiver())
+	   << " saying " << msg.m_strData;
+    return stream;
+  }
+};
+/////////////////////////////////////////////////////////////////
+class CSecondMessage : public CMessage<int, MESSAGE_TYPE>
+{
+protected:
+  float  m_fData;
+public:
+  CSecondMessage() 
+  {
+    SetType( MSG_SECOND );
+    m_fData =  3.5f;
+  }
+  friend std::ostream & operator<<( std::ostream & stream, const CSecondMessage & msg )
+  {
+    stream << msg.GetTimeStamp() << ": FIRST, from " 
+	   << g_IntManager->GetResourceName(msg.GetSender())
+	   << " to " 
+	   << g_IntManager->GetResourceName(msg.GetReceiver())
+	   << " saying " << msg.m_fData;
+    return stream;
+  }
+
+};
+/////////////////////////////////////////////////////////////////
 class CMessageAdapter
 {
 
@@ -40,11 +83,21 @@ public:
   }
   void Process( const CMessage<int, MESSAGE_TYPE> &rMessage, int &rInt )
   {
-    cout << rMessage.GetTimeStamp() << "|" 
-	 << ConvertToString(rMessage.GetType()) << ":"  
-	 << g_IntManager->GetResourceName(rMessage.GetReceiver())
-	 << " is processing message received from  "  
-	 << g_IntManager->GetResourceName(rMessage.GetSender()) << endl;
+    
+    switch( rMessage.GetType() )
+    {
+    case MSG_FIRST:
+      cout << static_cast<const CFirstMessage & >(rMessage) << endl;
+      break;
+    case MSG_SECOND:
+      cout << static_cast<const CSecondMessage & >(rMessage) << endl;
+      break;
+    default:
+      cout << "UNKNOWN MESSAGE" << endl;
+      break;
+    }
+
+
   }
   
 
@@ -67,15 +120,15 @@ int main()
   messageRouter.RegisterReceiver( MSG_FIRST, hFirst );
   messageRouter.RegisterReceiver( MSG_SECOND, hSecond );
   
-  CMessage<int, MESSAGE_TYPE> *pMsg = new CMessage<int, MESSAGE_TYPE>();
+  CFirstMessage *pMsg = new CFirstMessage();
   g_IntManager->DuplicateHandle( hFirst,  pMsg->GetReceiver());
   g_IntManager->DuplicateHandle( hSecond, pMsg->GetSender());
-  pMsg->SetType( MSG_FIRST );
 
-  CMessage<int, MESSAGE_TYPE> *pMsg2 = new CMessage<int, MESSAGE_TYPE>();
+
+  CSecondMessage *pMsg2 = new CSecondMessage();
   g_IntManager->DuplicateHandle( hSecond,  pMsg2->GetReceiver());
   g_IntManager->DuplicateHandle( hSecond,  pMsg2->GetSender());
-  pMsg2->SetType( MSG_SECOND );
+
 
   messageRouter.Prepare();  
   messageRouter.EnqueueMessage( pMsg2, CTimeStamp(2,250));  
