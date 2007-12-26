@@ -361,7 +361,7 @@ template <class MSG_ADAPTER_TYPE>
 void 
 Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::Update( MSG_ADAPTER_TYPE &rMsgAdapter )
 {
-  Phoenix::Core::CTimer::Update();
+  Phoenix::Core::CTimer::Reset();
   Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> * pMessage = NULL;
   while ( (pMessage = GetNextMessage()) != NULL )
   {
