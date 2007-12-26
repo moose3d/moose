@@ -119,20 +119,27 @@ int main()
   CMessageRouter< int, MESSAGE_TYPE > messageRouter(MSG_NUM_MESSAGE_TYPES);
   messageRouter.RegisterReceiver( MSG_FIRST, hFirst );
   messageRouter.RegisterReceiver( MSG_SECOND, hSecond );
+  messageRouter.RegisterReceiver( MSG_SECOND, hFirst );
   
+  // Send message to #2 from #1
   CFirstMessage *pMsg = new CFirstMessage();
   g_IntManager->DuplicateHandle( hFirst,  pMsg->GetReceiver());
   g_IntManager->DuplicateHandle( hSecond, pMsg->GetSender());
 
-
+  // Send message to self from #2
   CSecondMessage *pMsg2 = new CSecondMessage();
   g_IntManager->DuplicateHandle( hSecond,  pMsg2->GetReceiver());
   g_IntManager->DuplicateHandle( hSecond,  pMsg2->GetSender());
 
+  // Send message to all from #1
+  CSecondMessage *pMsg3 = new CSecondMessage();
+  g_IntManager->DuplicateHandle( hFirst,  pMsg3->GetSender());
 
   messageRouter.Prepare();  
   messageRouter.EnqueueMessage( pMsg2, CTimeStamp(2,250));  
   messageRouter.EnqueueMessage( pMsg );  
+  messageRouter.EnqueueMessage( pMsg3, CTimeStamp(3,500) );  
+
   CMessageAdapter msgAdapter;
   cerr << "starting ..." << endl;
   while( 1 ) 
