@@ -19,6 +19,8 @@ galaxydemo:
 	 g++ -Wall -I../src `sdl-config --cflags` PhoenixGalaxyDemo.cpp -lPhoenix `sdl-config --libs`
 messagedemo:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixMessageDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
+statemachinedemo:
+	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixStateMachineDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean

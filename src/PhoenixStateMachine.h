@@ -104,13 +104,15 @@ namespace Phoenix
 	  return (pFirst->GetTimeStamp() > pSecond->GetTimeStamp());
 	}
       };
-      protected:
+    protected:
       /// How many slots there is
       size_t m_nNumSlots;
       /// Receivers for different types of messages.
       std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> > m_vecMsgReceivers;
       /// Queued messages.
-      std::priority_queue< Phoenix::AI::CMessage< OBJECT_TYPE, MSG_TYPE > *, std::vector<Phoenix::AI::CMessage< OBJECT_TYPE, MSG_TYPE > *>, Priority > m_priqMessages;
+      std::priority_queue< Phoenix::AI::CMessage< OBJECT_TYPE, MSG_TYPE > *, 
+      std::vector<Phoenix::AI::CMessage< OBJECT_TYPE, MSG_TYPE > *>, 
+      Priority > m_priqMessages;
       ////////////////////
       /// Returns number of reserverd message slots.
       size_t GetSlotCount() const;
@@ -147,11 +149,82 @@ namespace Phoenix
       /// Starts message routing 
       void Prepare();
     };
-    ////////////////////
-    template<typename STATE_TYPE>
-    class CStateMachine 
+
+
+    template <typename FSM_TYPE, typename STATE_NAME_TYPE, typename INPUT_NAME_TYPE>
+    class CStateMachine;
+    
+    template <typename FSM_TYPE, typename STATE_NAME_TYPE, typename INPUT_NAME_TYPE>
+    class CState : public Phoenix::Core::CGraphNode< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE >
     {
-      
+      friend class CStateMachine< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE >;
+    public:
+      CState()
+      {
+      }
+    };
+    ////////////////////
+    /// Finite State Machine.
+    template <typename FSM_TYPE, typename STATE_NAME_TYPE, typename INPUT_NAME_TYPE>
+    class CStateMachine : public Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE >
+    {
+    protected:
+      size_t m_nNumStates;
+      /// Pointer to all states
+      std::vector< CState<FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE> *>  m_vecStates;
+      ////////////////////
+      /// Returns reference to vector of states.
+      inline std::vector< CState<FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE> *> & GetStates()
+      {
+	return m_vecStates;
+      }
+    public:
+      ////////////////////
+      /// Constructor. Creates given number of states for this FSM.
+      /// All states are order by STATE_NAME_TYPE
+      CStateMachine( size_t nNumStates) 
+      {
+	m_nNumStates = nNumStates;
+	m_vecStates.reserve( nNumStates );
+	for(size_t n=0;n<nNumStates;n++)
+	{
+	  // This does not work for some reason - complex template syntax, perhaps?
+	  //m_vecStates[n] = Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, 
+	  // INPUT_NAME_TYPE>::CreateNode< CState< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE> >();
+	  m_vecStates.push_back( new Phoenix::AI::CState<FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE>());
+	  Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE>::m_lstNodes.push_back( m_vecStates[n] );
+	  m_vecStates[n]->m_pGraph = this;
+	  m_vecStates[n]->SetName( (STATE_NAME_TYPE)n );
+	}
+      }
+      ////////////////////
+      /// Adds transition from one state to another with given input.
+      /// \param nFromState Name of state where transition begins.
+      /// \param nToState Name of state where transition leads to.
+      /// \param nInput Name of input that ignites transition.
+      void AddTransition( const STATE_NAME_TYPE & nFromState, const STATE_NAME_TYPE &nToState, const INPUT_NAME_TYPE &nInput )
+      {
+	Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE >::AddEdge( m_vecStates[nFromState], m_vecStates[nToState], nInput );
+      }
+      ////////////////////
+      /// Returns name of next state on given input.
+      /// \param nState Current state.
+      /// \param nInput Input signal.
+      /// \returns Name of state following the input.
+      const STATE_NAME_TYPE & StateTransition( const STATE_NAME_TYPE & nState, const INPUT_NAME_TYPE &nInput )
+      {
+	typename std::list< Phoenix::Core::CGraphEdge< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE > *>::iterator it;
+	it = GetStates()[nState]->GetLeavingEdges().begin();
+
+	for( ; it != GetStates()[nState]->GetLeavingEdges().end(); it++)
+	{
+	  if ( (*it)->GetName() == nInput )
+	  {
+	    return (*it)->GetToNode()->GetName();
+	  }
+	}
+	return nState;
+      }
     };
   } // namespace AI
 } // namespace Phoenix

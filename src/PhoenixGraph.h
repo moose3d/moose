@@ -356,6 +356,10 @@ namespace Phoenix
       /// Returns zero if ok, non-zero on error
       int AddEdge( CGraphNode< R, NODE_NAME, EDGE_NAME > *pNodeFrom, CGraphNode< R, NODE_NAME, EDGE_NAME > *pNodeTo);
       ////////////////////
+      /// Adds an edge between pNodeFrom and pNodeTo.
+      /// Returns zero if ok, non-zero on error
+      int AddEdge( CGraphNode< R, NODE_NAME, EDGE_NAME > *pNodeFrom, CGraphNode< R, NODE_NAME, EDGE_NAME > *pNodeTo, const EDGE_NAME & edgeName );
+      ////////////////////
       /// Removes an edge,
       void DeleteEdge( CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge );
       ////////////////////
@@ -453,6 +457,36 @@ Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::AddEdge( CGraphNode<R, NODE_NAME
   }
   
   CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge = new CGraphEdge<R, NODE_NAME, EDGE_NAME>( pNodeFrom, pNodeTo);
+  pNodeFrom->GetLeavingEdges().push_back( pEdge );
+  pNodeTo->GetArrivingEdges().push_back( pEdge );
+  m_lstEdges.push_back(pEdge);
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
+template<typename R, typename NODE_NAME, typename EDGE_NAME>
+int 
+Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::AddEdge( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNodeFrom, CGraphNode<R, NODE_NAME, EDGE_NAME> *pNodeTo, const EDGE_NAME & edgeName )
+{
+  if ( pNodeFrom == NULL )
+  {
+    std::cerr << "FromNode is NULL" << std::endl;
+    return 1;
+  }
+  
+  if ( pNodeTo == NULL )
+  {
+    std::cerr << "ToNode is NULL" << std::endl;
+    return 1;
+  }
+  
+  if ( pNodeTo->m_pGraph != pNodeFrom->m_pGraph )
+  {
+    std::cerr << "Nodes belong to different graphs!" << std::endl;
+    return 1;
+  }
+  
+  CGraphEdge<R, NODE_NAME, EDGE_NAME> *pEdge = new CGraphEdge<R, NODE_NAME, EDGE_NAME>( pNodeFrom, pNodeTo);
+  pEdge->SetName( edgeName );
   pNodeFrom->GetLeavingEdges().push_back( pEdge );
   pNodeTo->GetArrivingEdges().push_back( pEdge );
   m_lstEdges.push_back(pEdge);
