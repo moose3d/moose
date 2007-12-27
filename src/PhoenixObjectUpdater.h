@@ -59,10 +59,8 @@ inline void
 Phoenix::Core::CObjectUpdater<TYPE>::Manage( const Phoenix::Core::CHandle<TYPE> &hResource )
 {
   m_vecUpdateables.push_back( Phoenix::Core::CHandle<TYPE>() );
-  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->AttachHandle(
-    Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->GetResourceName( hResource ),
-      m_vecUpdateables.back());
-  
+  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->DuplicateHandle( hResource, m_vecUpdateables.back() );
+  //assert( !m_vecUpdateables.back().IsNull());
 }
 /////////////////////////////////////////////////////////////////
 template<class TYPE>
