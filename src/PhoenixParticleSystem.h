@@ -195,6 +195,32 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
+    /// Class for measuring time difference within policies (using timestamp).
+    class CTimeStampPolicyBase
+    {
+    protected:
+      /// Passed time in seconds
+      Phoenix::Core::CTimeStamp m_PassedTime;
+    public:
+      ////////////////////
+      /// Constructor.
+      CTimeStampPolicyBase()  { m_PassedTime.SetSeconds(0); m_PassedTime.SetMilliSeconds(0);}      
+      ////////////////////
+      /// Prepares this policy according to given time parameter.
+      /// \param nPassedTimeInMS Passed milliseconds are stored as seconds.
+      inline void Prepare( const Phoenix::Core::CTimeStamp & rPassedTime )
+      {
+	m_PassedTime = rPassedTime;
+      }
+      ////////////////////
+      /// Returns passed time.
+      /// \returns Passed time.
+      inline const Phoenix::Core::CTimeStamp & GetPassedTime() const
+      {
+	return m_PassedTime;
+      }
+    };
+    /////////////////////////////////////////////////////////////////
     // Individual policies:
     /////////////////////////////////////////////////////////////////
     /// Template for GravityAction.
