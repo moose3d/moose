@@ -308,9 +308,10 @@ namespace Phoenix
       ////////////////////
       /// Checks whether given time has passed since the last call to 
       /// SetStartTime().
-      /// \param nTimeMS time in milliseconds which is desired to be passed.
-      /// \returns true, if nTimeMS milliseconds have passed, false if not.
-      inline int HasPassedMS( int iSec, short iMS )
+      /// \param iSec Time in seconds desired to be passed.
+      /// \param iMS time in milliseconds which is desired to be passed (in addition to seconds).
+      /// \returns true, if time has passed, false if not.
+      inline int HasPassed( int iSec, short iMS )
       {
 	Update();
 	return (m_PassedTime >= CTimeStamp(iSec, iMS));
