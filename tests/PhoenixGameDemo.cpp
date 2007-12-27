@@ -15,6 +15,7 @@ using namespace Phoenix::Window;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Volume;
+using namespace Phoenix::AI;
 using std::cerr;
 using std::endl; 
 /////////////////////////////////////////////////////////////////
@@ -643,11 +644,13 @@ protected:
   static Phoenix::Volume::COrientedBox  m_Box;
   SPACESHIP_CLASS			m_nShipClass;
   float					m_fSpeed;
+  float					m_fMaxSpeed;
+  float					m_fHealth;
 public:
 
   ////////////////////
   /// Constructor.
-  CSpaceShip() : m_fSpeed(0.0f)
+  CSpaceShip() : m_fSpeed(0.0f), m_fMaxSpeed(10.0f), m_fHealth(1.0f)
   {
     
   }
@@ -669,6 +672,38 @@ public:
   void SetShipClass( SPACESHIP_CLASS shipClass )
   {
     m_nShipClass = shipClass;
+  }
+  ////////////////////
+  /// Returns current speed.
+  float & GetSpeed() 
+  {
+    return m_fSpeed;
+  }
+  ////////////////////
+  /// Returns maximum speed.
+  const float & GetMaxSpeed() const
+  {
+    return m_fMaxSpeed;
+  }
+  ////////////////////
+  /// Returns current health
+  const float & GetHealth() const
+  {
+    return m_fHealth;
+  }
+  ////////////////////
+  /// Decreases health by damage.
+  /// \param fDamage Inflicted damage.
+  void DecreaseHealth( float fDamage )
+  {
+    m_fHealth -= fDamage;
+  }
+  ////////////////////
+  /// Increases ship health by given amount.
+  /// \param fHealing Health increment.
+  void IncreaseHealth( float fHealing )
+  {
+    m_fHealth += fHealing;
   }
 };
 /// Static members must be initialized.
@@ -695,6 +730,7 @@ public:
   /// Constructor.
   CSovereignClass()
   {
+    m_fMaxSpeed = 15.0f;
     g_PhoenixModelManager->AttachHandle( SOVEREIGN_RESOURCE, GetModelHandle() );
     SetType(O_TYPE_ORDINARY);
     GetBoundingSphere() = CSovereignClass::m_Sphere;
@@ -715,6 +751,8 @@ public:
       assert(Tcl_Eval(pInterp, "playComputer") == TCL_OK );
       
     }
+    // Move ship forward
+    m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * GetSpeed() * m_fPassedTime);
     
   }
   ////////////////////
@@ -765,8 +803,8 @@ public:
     assert(Tcl_CreateObjCommand( pInterp, "Rotate",
 				 Rotate, (ClientData)0,
 				 NULL) != NULL );
-    assert(Tcl_CreateObjCommand( pInterp, "MoveForward",
-				 MoveForward, (ClientData)0,
+    assert(Tcl_CreateObjCommand( pInterp, "Accelerate",
+				 Accelerate, (ClientData)0,
 				 NULL) != NULL );
     int status = Tcl_EvalFile(pInterp, "Resources/Scripts/PlayComputer.tcl");
     assert( status == TCL_OK );
@@ -792,15 +830,18 @@ public:
       Tcl_DeleteInterp( pInterp );
   }
   /////////////////////////////////////////////////////////////////
-  static int MoveForward( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
+  static int Accelerate( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
   {
     if ( m_pCurrentObject != NULL )
     {
       double dSpeed;
-      
       Tcl_GetDoubleFromObj( pInterp, objv[1], &dSpeed );
-      
-      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed * m_fPassedTime);
+      m_pCurrentObject->m_fSpeed += dSpeed * m_fPassedTime;
+      if ( m_pCurrentObject->GetSpeed() > m_pCurrentObject->GetMaxSpeed())
+      {
+	m_pCurrentObject->GetSpeed() = m_pCurrentObject->GetMaxSpeed();
+      }
+      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed * m_fPassedTime );
       
     }
     Tcl_ResetResult( pInterp );
@@ -822,12 +863,15 @@ public:
       qRot[1].CreateFromAxisAngle( m_pCurrentObject->GetUpVector(), dY * m_fPassedTime);
       qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ * m_fPassedTime);
       qRot[3] = qRot[2] * qRot[1] * qRot[0];
-
-      // Append rotation to direction vectors and transform
-      m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
-      //m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
-      m_pCurrentObject->AppendToRotation( qRot[3] );
-      //m_pCurrentObject->SetRotation( qRot[3] );
+      
+      if ( m_pCurrentObject->GetHealth() > 0.0f )
+      {
+	// Append rotation to direction vectors and transform
+	m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
+	//m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
+	m_pCurrentObject->AppendToRotation( qRot[3] );
+	//m_pCurrentObject->SetRotation( qRot[3] );
+      }
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
@@ -939,6 +983,7 @@ public:
   }
   inline void Update( CSpaceShip *pShip, unsigned int nTimeMS )
   {
+    if ( pShip == NULL ) return;
     switch( pShip->GetShipClass())
     {
     case SHIP_CLASS_SOVEREIGN:
@@ -953,7 +998,7 @@ public:
 };
 /////////////////////////////////////////////////////////////////
 void 
-DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<OBJECT_TYPE> *pObject )
+DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CSpaceShip *pObject )
 {
   COrientedBox box = pObject->GetBoundingBox();
   box.AppendToRotation( pObject->GetWorldTransform().GetRotation());
@@ -967,7 +1012,7 @@ DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<O
 
   vMax = vMin;
   vMin[2] = vMax[2] = 0.0f;
-
+  // Project coordinates to screen and get min/max.
   for( unsigned int i=1;i<8;i++)
   {
     vTemp = camera.WorldCoordinatesToScreen( box.GetCorner( (BBOX_CORNER_TYPE)i ));
@@ -979,23 +1024,62 @@ DrawSurroundingQuad( COglRenderer * pOglRenderer, CCamera &camera, CGameObject<O
     
   }
   
-
+  // Render quad.
   pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
   glPolygonMode( GL_FRONT, GL_LINE );
   glBegin(GL_QUADS);
-  glVertex3fv(vMin.GetArray());
+    glVertex3fv(vMin.GetArray());
     glVertex3fv(CVector3<float>(vMax[0], vMin[1], 0.0f).GetArray()); 
     glVertex3fv(vMax.GetArray());
     glVertex3fv(CVector3<float>(vMin[0], vMax[1], 0.0f).GetArray());
-    /*glVertex3f(100,100,0);
-    glVertex3f(300,100,0);
-    glVertex3f(300,300,0);
-    glVertex3f(100,300,0);*/
   glEnd();
-  glPolygonMode( GL_FRONT, GL_FILL );
-  pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
 
+  //pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0,255));
+  pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
+  ////////////////////
+  // Draw healthbar
+  glPolygonMode( GL_FRONT, GL_LINE );
+  glLineWidth(1.0f);
+  
+  pOglRenderer->DisableState( STATE_DEPTH_TEST );
+  float fWidth = 23.0f;
+  float fHeight = 4.0f;
+
+  
+  CVector3<float> vPos = camera.WorldCoordinatesToScreen(pObject->GetWorldTransform().GetTranslation());
+  vPos[1] += (vMax[1] - vMin[1]) * 0.75f;
+
+  glBegin(GL_QUADS);
+    glVertex3f(vPos[0] - fWidth, vPos[1], vPos[2]);
+    glVertex3f(vPos[0] + fWidth, vPos[1], vPos[2]);
+    glVertex3f(vPos[0] + fWidth, vPos[1]+fHeight, vPos[2]);
+    glVertex3f(vPos[0] - fWidth, vPos[1]+fHeight, vPos[2]);
+  glEnd();
+  glPolygonMode( GL_FRONT, GL_FILL );  
+  if ( pObject->GetHealth() > 0.80f )
+  {
+    pOglRenderer->CommitColor( CVector4<unsigned char>(0,255,0, 255));
+  }
+  else if ( pObject->GetHealth() > 0.4f )
+  {
+    pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,0,255));
+  }
+  else 
+  {
+    pOglRenderer->CommitColor( CVector4<unsigned char>(255,0,0,255));
+  }
+  glBegin(GL_QUADS);
+    glVertex3f(vPos[0] - fWidth, vPos[1], vPos[2]);
+    glVertex3f(vPos[0] - fWidth + ((fWidth+fWidth)*pObject->GetHealth()), vPos[1], vPos[2]);
+    glVertex3f(vPos[0] - fWidth + ((fWidth+fWidth)*pObject->GetHealth()), vPos[1]+fHeight, vPos[2]);
+    glVertex3f(vPos[0] - fWidth, vPos[1]+fHeight, vPos[2]);
+  glEnd();
+
+  glLineWidth(1.0f);
+  glPolygonMode( GL_FRONT, GL_FILL );  
+  pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
 }
+/////////////////////////////////////////////////////////////////
 enum TRANSFORM_TYPE 
 {
   TRANSFORM_SHIP = 0,
@@ -1138,6 +1222,69 @@ protected:
   }
 };
 /////////////////////////////////////////////////////////////////
+enum SPACESHIP_MESSAGES
+{
+  SHIP_INFLICT_DAMAGE = 0,
+  SHIP_MESSAGE_COUNT
+};
+/////////////////////////////////////////////////////////////////
+class CDamageMessage : public CMessage< CSpaceShip, SPACESHIP_MESSAGES >
+{
+protected:
+  float		m_fDamage;
+public:
+  ////////////////////
+  /// Constructor.
+  CDamageMessage( const CHandle<CSpaceShip> & hSender, const CHandle<CSpaceShip> &hReceiver, float fDamage ) : m_fDamage( fDamage )
+  {
+    SetType( SHIP_INFLICT_DAMAGE );
+    g_ShipManager->DuplicateHandle( hSender, GetSender());
+    g_ShipManager->DuplicateHandle( hReceiver, GetReceiver());
+  }
+  ////////////////////
+  /// Returns damage inflicted.
+  const float & GetDamage() const 
+  { 
+    return m_fDamage; 
+  }
+};
+/////////////////////////////////////////////////////////////////
+class CMessageAdapter
+{
+public:
+  ////////////////////
+  /// Proceses all messages
+  void Process( const CMessage<CSpaceShip, SPACESHIP_MESSAGES> &rMessage, CSpaceShip &rShip )
+  {
+    switch( rMessage.GetType() )
+    {
+      // Handles damage messages 
+    case SHIP_INFLICT_DAMAGE:
+      cerr << "Received damage message" << endl;
+      rShip.DecreaseHealth( static_cast<const CDamageMessage & >(rMessage).GetDamage());
+      break;
+    default:
+      cerr << "UNKNOWN MESSAGE" << endl;
+      break;
+    }
+  }
+};
+/////////////////////////////////////////////////////////////////
+class CSpaceShipMessageRouter : public CMessageRouter< CSpaceShip, SPACESHIP_MESSAGES>,
+				public CSingleton<CSpaceShipMessageRouter>
+{
+  friend class CSingleton<CSpaceShipMessageRouter>;
+  //friend class CMessageRouter< CSpaceShip, SPACESHIP_MESSAGES>;
+private:
+  CSpaceShipMessageRouter() : CMessageRouter<CSpaceShip, SPACESHIP_MESSAGES>( SHIP_MESSAGE_COUNT )
+  {
+  }
+public:
+  
+};
+/////////////////////////////////////////////////////////////////
+#define g_ShipMsgRouter (CSpaceShipMessageRouter::GetInstance())
+/////////////////////////////////////////////////////////////////
 int main()
 {
   
@@ -1146,17 +1293,18 @@ int main()
     std::cerr << "Couldn't open screen" << std::endl;
     return 1;
   }
+
+
   
   CGraph<TRANSFORM_TYPE> *pTG	   = new CGraph<TRANSFORM_TYPE>();
   CExtTransform *pTGR              = pTG->CreateNode< CExtTransform >();
-  CExtTransform *pScale		   = pTG->CreateNode< CExtTransform >();
   CShipTransform *pTSovereign      = pTG->CreateNode< CShipTransform >();
   CShipTransform *pTOmega          = pTG->CreateNode< CShipTransform >();
   CTransformUpdater trUpdater;
 
   pTGR->AddEdge( pTSovereign );
-  pTSovereign->AddEdge( pScale );
-  pScale->AddEdge(pTOmega );
+  pTGR->AddEdge( pTOmega );
+  
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,75.0f);
@@ -1182,8 +1330,7 @@ int main()
   
   CGameObjectOGLAdapter oglAdapter;
   
-  Phoenix::Graphics::CRenderQueue<CGameObject<OBJECT_TYPE> *> *pRenderQueue = 
-      new Phoenix::Graphics::CRenderQueue<CGameObject<OBJECT_TYPE> *>();
+  CRenderQueue<CGameObject<OBJECT_TYPE> *> *pRenderQueue =  new CRenderQueue<CGameObject<OBJECT_TYPE> *>();
 
   CSpatialGraph *pSpatialGraph = new CSpatialGraph();
   /////////////////////////////////////////////////////////////////
@@ -1194,16 +1341,16 @@ int main()
   /// Create ships 
   COmegaClass *pOmega = new COmegaClass();
   pOmega->GetLocalTransform().SetTranslation(0, -10 ,0);
-  pOmega->GetLocalTransform().SetScaling(1.0f);
+  pOmega->GetLocalTransform().SetScaling(0.50f);
   pSpatialGraph->InsertObject( pOmega );
   
   CSovereignClass *pSovereign = new CSovereignClass();
   pSovereign->GetLocalTransform().SetTranslation( 10, 0,0);
-  pSovereign->GetLocalTransform().SetScaling(3.0f);
+  pSovereign->GetLocalTransform().SetScaling(1.0f);
   pSpatialGraph->InsertObject( pSovereign );
   cerr << "we're ok" << endl;
 
-  pScale->GetLocalTransform().SetScaling( 0.333f);
+
   
 
   /////////////////////////////////////////////////////////////////
@@ -1215,21 +1362,16 @@ int main()
 
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
   glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
-  SDL_WM_GrabInput(SDL_GRAB_ON);
+  //SDL_WM_GrabInput(SDL_GRAB_ON);
   SDL_WarpMouse( (int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f) );
   
   CVector2<int> vMousePos((int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f)) ;
   CLaserBeam::CreateResources( *pOglRenderer );
   CLaserBeam *pBeam = new CLaserBeam();
   
-  pBeam->Initialize( pSovereign->GetWorldTransform().GetTranslation(), pOmega->GetWorldTransform().GetTranslation(), 0.95f );
-
-
-  //SHIP_HANDLE hEnterprise, hBackgammon;
-
-  g_ShipManager->Create( pSovereign, "Enterprise");
-  g_ShipManager->Create( pOmega,     "Backgammon");
-
+  g_ShipManager->Create( pSovereign, "Enterprise" );
+  g_ShipManager->Create( pOmega, "Backgammon");
+  
   g_ShipManager->AttachHandle( "Enterprise", pTSovereign->GetHandle());
   g_ShipManager->AttachHandle( "Backgammon", pTOmega->GetHandle());
   
@@ -1238,7 +1380,9 @@ int main()
   CObjectUpdater<CSpaceShip> shipUpdater;
   shipUpdater.Manage( pTSovereign->GetHandle() );
   shipUpdater.Manage( pTOmega->GetHandle() );
-
+  CMessageAdapter msgAdapter;
+  
+  g_ShipMsgRouter->RegisterReceiver( SHIP_INFLICT_DAMAGE, pTSovereign->GetHandle());
 
   
   // Clear event queue
@@ -1254,9 +1398,11 @@ int main()
   CPlane xzPlane(0,1,0,0);
   
   int bMousePressed = 0;
+  g_ShipMsgRouter->Prepare();
   while( g_bLoop )
   {
     fpsCounter.Update();
+    g_ShipMsgRouter->Update( msgAdapter);
     while ( SDL_PollEvent(&event ))
     {
       switch(event.type)
@@ -1286,6 +1432,7 @@ int main()
 	{
 	  pParticleSystem->Init( pSovereign->GetWorldTransform().GetTranslation() + pSovereign->GetForwardVector());
 	  pBeam->SetEnabled(1);
+	  g_ShipMsgRouter->EnqueueMessage( new CDamageMessage( pTOmega->GetHandle(), pTSovereign->GetHandle(), 0.3f ));
 	}
 	 else if ( event.key.keysym.sym == SDLK_RIGHT )
 	{
@@ -1304,9 +1451,9 @@ int main()
 	  
 	  //camera.RotateAroundUp(vMouseDiff[0]);
 	  //camera.RotateAroundRight(vMouseDiff[1]);	
-	  camera.VirtualTrackball( CVector3<float>(0,0,0),
+	  /*camera.VirtualTrackball( CVector3<float>(0,0,0),
 				   vMousePos,
-				   vMousePosCurrent );
+				   vMousePosCurrent );*/
 
 	  vMousePos = vMousePosCurrent;
 	  }
@@ -1360,15 +1507,15 @@ int main()
 
     
 
-    if ( timer.HasPassedMS(5) )
+    if ( timer.HasPassed(0,5) )
     {
-      pParticleSystem->Update(timer.GetPassedTimeMS());
+      pParticleSystem->Update(timer.GetPassedTime().GetMilliSeconds());
       //pSovereign->Update(timer.GetPassedTimeMS());
       //pSpatialGraph->Update( pSovereign );
-      shipUpdater.Update<CSpaceShipUpdaterAdapter>( shipAdapter, timer.GetPassedTimeMS());
+      shipUpdater.Update<CSpaceShipUpdaterAdapter>( shipAdapter, timer.GetPassedTime().GetMilliSeconds());
       TravelDF<CTransformUpdater, TRANSFORM_TYPE, std::string, int>( static_cast<CGraphNode<TRANSFORM_TYPE> *>(pTGR), &trUpdater );
       timer.Reset();
-      pBeam->IncreaseTime( timer.GetPassedTimeMS()*0.001f);
+      pBeam->IncreaseTime( timer.GetPassedTime().GetMilliSeconds()*0.001f);
       if ( pBeam->IsEnabled())
       {
 	pBeam->Initialize( pSovereign->GetWorldTransform().GetTranslation(), 
@@ -1410,7 +1557,7 @@ int main()
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter++;
 
-    if ( fpsCounter.HasPassedMS(1000) )
+    if ( fpsCounter.HasPassed(1,0) )
     {
       cerr << "FPS: " << fpsCounter << ", with visible objects #"<< nCollected <<endl;
       //cerr << "Screen coords : " << camera.WorldCoordinatesToScreen(pSovereign->GetTransform().GetTranslation()) << endl;
