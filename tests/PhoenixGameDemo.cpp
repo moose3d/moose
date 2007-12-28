@@ -1293,7 +1293,7 @@ int main()
     std::cerr << "Couldn't open screen" << std::endl;
     return 1;
   }
-
+  
 
   
   CGraph<TRANSFORM_TYPE> *pTG	   = new CGraph<TRANSFORM_TYPE>();
@@ -1436,11 +1436,13 @@ int main()
 	}
 	 else if ( event.key.keysym.sym == SDLK_RIGHT )
 	{
-	  pSovereign->GetLocalTransform().SetScaling(pSovereign->GetLocalTransform().GetScaling()-0.1f);
+	  camera.RotateAroundUp( 1.6f);
+	  //pSovereign->GetLocalTransform().SetScaling(pSovereign->GetLocalTransform().GetScaling()-0.1f);
 	} 
 	else if ( event.key.keysym.sym == SDLK_LEFT )
 	{
-	  pSovereign->GetLocalTransform().SetScaling(pSovereign->GetLocalTransform().GetScaling()+0.1f);
+	  //pSovereign->GetLocalTransform().SetScaling(pSovereign->GetLocalTransform().GetScaling()+0.1f);
+	  camera.RotateAroundUp( -1.6f);
 	}
 	break;
       case SDL_MOUSEMOTION:
