@@ -121,12 +121,7 @@ int main()
 
 
   INDEX_HANDLE hIndexHandle;
-
-
-  
-
-  
-  
+ 
   
   CCamera camera;
   camera.SetPosition( 0,0,2.0f);
@@ -147,18 +142,14 @@ int main()
   light.SetConstantAttenuation(0.0f);
   light.SetLinearAttenuation(0.01f);
   light.SetQuadraticAttenuation(0.01f);
-  light.SetSpotAngle(1.0f);
+  light.SetSpotAngle(12.0f);
   CVector4<unsigned char> vColor(155,155,155,255);
   light.SetDiffuseColor(vColor);
-  light.SetAmbientColor(vColor = CVector4<unsigned char>(10,10,10,255));
-  light.SetSpecularColor(vColor = CVector4<unsigned char>(255,255,255,255));
+  light.SetAmbientColor(CVector4<unsigned char>(10,10,10,255));
+  light.SetSpecularColor(CVector4<unsigned char>(255,255,255,255));
   
-
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-
-
-
-  
+ 
   
   CMaterial material;
   material.SetDiffuse( CVector4<float>(0.86,0.86,0.86,1.0f));
@@ -171,8 +162,6 @@ int main()
   materialShip.SetAmbient( CVector4<float>(0.26,0.26,0.26,1.0f));
   materialShip.SetSpecular( CVector4<float>(0.15f,0.15f,0.15f,1.0f));
   materialShip.SetShininess( 0.138f);
-
-
   
 
   float fAngle = 0.0f;
@@ -229,7 +218,9 @@ int main()
     
     ////////////////////
     // Rotate light using  angle.
-    light.SetPosition( fMagnitude * sinf(fAngle), fMagnitude * cosf(fAngle), light.GetPosition()[2]);
+    //light.SetPosition( fMagnitude * sinf(fAngle), fMagnitude * cosf(fAngle), light.GetPosition()[2]);
+    light.SetPosition( camera.GetPosition());
+    light.SetDirection( camera.GetForwardVector());
     fAngle += 0.004f;
     if ( fAngle > 360.0f ) fAngle -= 360.0f;
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
@@ -255,10 +246,11 @@ int main()
     pOglRenderer->CommitTexture( 0, pTextureRock );
     pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
     pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
-    pOglRenderer->CommitTexture( 1, pTextureBump );
-    pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
-    pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
-
+    pOglRenderer->DisableTexture( 1, pTextureBump );
+    //pOglRenderer->CommitTexture( 1, pTextureBump );
+    //pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
+    //pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
+    
 
     //glRotatef( 40.0f, 0,1,0);
     //glTranslatef( 2,0,0);
@@ -272,7 +264,7 @@ int main()
       pOglRenderer->CommitTexture( 1, pTextureShipBump );
       pOglRenderer->CommitFilter( MIN_MIP_LINEAR, TEXTURE_2D);
       pOglRenderer->CommitFilter( MAG_LINEAR, TEXTURE_2D);
-      pOglRenderer->CommitMaterial( materialShip );
+      //pOglRenderer->CommitMaterial( materialShip );
       pOglRenderer->CommitPrimitive( pIndices );
     glPopMatrix();
 
@@ -317,11 +309,12 @@ int main()
     //g_bLoop = 0;
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter.AddFrame();
-    if ( fpsCounter.HasPassedMS(1000) )
+    if ( fpsCounter.HasPassed(1,0) )
     {
       std::cerr << "FPS: " << fpsCounter.GetFPS() << std::endl;
       fpsCounter.Reset();
     }
+
   }
   CSDLScreen::DestroyInstance();
   return 0;
