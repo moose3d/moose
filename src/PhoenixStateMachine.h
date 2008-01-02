@@ -164,7 +164,7 @@ namespace Phoenix
       }
     };
     ////////////////////
-    /// Finite State Machine.
+    /// Finite State Machine. Better implementation would probably be balanced bintree.
     template <typename FSM_TYPE, typename STATE_NAME_TYPE, typename INPUT_NAME_TYPE>
     class CStateMachine : public Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE >
     {
