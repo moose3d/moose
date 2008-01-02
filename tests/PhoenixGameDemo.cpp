@@ -1384,7 +1384,16 @@ int main()
   
   g_ShipMsgRouter->RegisterReceiver( SHIP_INFLICT_DAMAGE, pTSovereign->GetHandle());
 
-  
+
+  CSkybox skybox;
+  COglTexture *pSkyboxTexture = pOglRenderer->CreateTexture("Resources/Textures/hyperspace.tga");
+  g_DefaultTextureManager->Create( pSkyboxTexture, "SKYBOX_TEXTURE", skybox.GetTextureHandle(0) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(1) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(2) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(3) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(4) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(5) );
+
   // Clear event queue
   while ( SDL_PollEvent(&event ));
   
@@ -1481,14 +1490,16 @@ int main()
 
     //TravelDF<SPACESHIP_CLASS, CTransformUpdater>( pTGR, &trUpdater );
 
-    pOglRenderer->ClearBuffer( COLOR_BUFFER );
-    pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+    //pOglRenderer->ClearBuffer( COLOR_BUFFER );
+
     pOglRenderer->CommitState( STATE_DEPTH_TEST );
 
     nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
     pOglRenderer->CommitCamera( camera );
     pOglRenderer->DisableState( STATE_LIGHTING );
     
+    pOglRenderer->CommitSkybox( skybox, camera );
+    pOglRenderer->ClearBuffer( DEPTH_BUFFER );    
     //pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
     //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
     //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));
