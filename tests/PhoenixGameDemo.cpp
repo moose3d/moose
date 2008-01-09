@@ -774,7 +774,7 @@ public:
       Tcl_SetVar2Ex( pInterp, "g_fPassedTime",	NULL,	Tcl_NewDoubleObj(m_fPassedTime),			0);
       Tcl_SetVar2Ex( pInterp, "g_fSpeed",	NULL,	Tcl_NewDoubleObj(m_pCurrentObject->GetSpeed()),		0);
       Tcl_SetVar2Ex( pInterp, "g_fMaxSpeed",	NULL,	Tcl_NewDoubleObj(m_pCurrentObject->GetMaxSpeed()),	0);
-
+      
       if ( Tcl_Eval(pInterp, "playComputer") != TCL_OK )
       {
 	cerr << "Error in script: " << Tcl_GetStringResult(pInterp) << endl;
@@ -879,8 +879,9 @@ public:
       // Handle acceleration
       m_pCurrentObject->GetSpeed() =  m_pCurrentObject->GetAcceleration()* m_fPassedTime;
       // Move ship forward
-      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * m_pCurrentObject->GetSpeed() * m_fPassedTime);
-      
+      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * 
+						  m_pCurrentObject->GetSpeed() * 
+						  m_fPassedTime);
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
@@ -902,14 +903,13 @@ public:
       qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ * m_fPassedTime);
       qRot[3] = qRot[2] * qRot[1] * qRot[0];
       
-      if ( m_pCurrentObject->GetHealth() > 0.0f )
-      {
-	// Append rotation to direction vectors and transform
-	m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
-	//m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
-	m_pCurrentObject->AppendToRotation( qRot[3] );
-	//m_pCurrentObject->SetRotation( qRot[3] );
-      }
+
+      // Append rotation to direction vectors and transform
+      m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
+      //m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
+      m_pCurrentObject->AppendToRotation( qRot[3] );
+      //m_pCurrentObject->SetRotation( qRot[3] );
+
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
