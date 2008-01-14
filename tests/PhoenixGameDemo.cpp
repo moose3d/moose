@@ -21,7 +21,7 @@ using std::endl;
 /////////////////////////////////////////////////////////////////
 #define g_PhoenixModelManager (CResourceManager<CModel, CHandle<CModel> >::GetInstance())
 typedef CHandle<CModel> MODEL_HANDLE;
-/////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 enum OBJECT_TYPE 
 {
   O_TYPE_ORDINARY = 0,
@@ -77,7 +77,7 @@ public:
   inline void operator()(PARTICLE_TYPE &p) const
   {
     p.m_fSize = Phoenix::Math::GetRandom<float>(2.0f, 4.05f);
-    //p.m_fSize = 1.5f;
+    //p.m_fSize = 10.5f;
   } 
 };
 /////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ typedef CParticleSystem<50,
 					CNullPolicy<CRotatingParticle>,
 					CEnergyPolicy<CRotatingParticle>,
 					CPositionPolicy<CRotatingParticle> >,
-			CRotatingParticle> CExplosion;
+			CRotatingParticle> CExplosionFire;
 typedef CParticleSystem<150,
 			CCompletePolicy<CRotatingParticle, 
 					CNullPolicy<CRotatingParticle>,
@@ -189,7 +189,7 @@ private:
   CIndexArray *m_pIndices;
   CIndexArray *m_pIndicesDebris;
 
-  CExplosion         m_Explosion;
+  CExplosionFire     m_ExplosionFire;
   CExplosionDebris   m_ExplosionDebris;
   unsigned int	     m_nPassedTimeMS;
   unsigned int	     m_bSecondDone;
@@ -200,7 +200,7 @@ public:
   CGamePSObject()  
   {
     SetType(O_TYPE_PS);
-    unsigned int nNumIndices = m_Explosion.GetMaxParticles()*4;
+    unsigned int nNumIndices = m_ExplosionFire.GetMaxParticles()*4;
 
     m_pVertexDescriptor = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, nNumIndices);
     m_pShaderData = new CVertexDescriptor(ELEMENT_TYPE_ATTRIB_4F, nNumIndices);
@@ -212,10 +212,10 @@ public:
     m_pIndicesDebris = new CIndexArray( PRIMITIVE_QUAD_LIST, nNumIndicesDebris);    
 
     // Set initial size 
-    m_Explosion.m_InitializePolicy.m_SizePolicy.m_fSize = 1.0f;
-    m_Explosion.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.35f;
-    m_Explosion.m_InitializePolicy.m_VelocityPolicy.m_fMinSpeed = 0.5f;
-    m_Explosion.m_InitializePolicy.m_VelocityPolicy.m_fMaxSpeed = 1.75f;
+    m_ExplosionFire.m_InitializePolicy.m_SizePolicy.m_fSize = 1.0f;
+    m_ExplosionFire.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.15f;
+    m_ExplosionFire.m_InitializePolicy.m_VelocityPolicy.m_fMinSpeed = 0.5f;
+    m_ExplosionFire.m_InitializePolicy.m_VelocityPolicy.m_fMaxSpeed = 1.75f;
     
     m_ExplosionDebris.m_InitializePolicy.m_SizePolicy.m_fSize = 0.50f;
     m_ExplosionDebris.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.52f;
@@ -271,47 +271,47 @@ public:
   {
     size_t nIndex = 0;
     size_t nShaderDataIndex = 0;
-    for(size_t i=0;i<m_Explosion.GetAliveCount();i++)
+    for(size_t i=0;i<m_ExplosionFire.GetAliveCount();i++)
     {
       // number of coords for one quad 4*3
       nIndex = i*12;
       // number of data slots for four quads 4*4
       nShaderDataIndex = i*16;
       
-      m_pVertexDescriptor->GetPointer<float>()[nIndex]   = m_Explosion.GetParticles()[i].m_vPosition[0];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+1] = m_Explosion.GetParticles()[i].m_vPosition[1];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+2] = m_Explosion.GetParticles()[i].m_vPosition[2];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex]   = m_ExplosionFire.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+1] = m_ExplosionFire.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+2] = m_ExplosionFire.GetParticles()[i].m_vPosition[2];
       m_pShaderData->GetPointer<float>()[nShaderDataIndex]    = -1;
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+1]  = 1;
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+2]  = m_Explosion.GetParticles()[i].m_fEnergy; 
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+3]  = m_Explosion.GetParticles()[i].m_fSize;
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+2]  = m_ExplosionFire.GetParticles()[i].m_fEnergy; 
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+3]  = m_ExplosionFire.GetParticles()[i].m_fSize;
 
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+3] = m_Explosion.GetParticles()[i].m_vPosition[0];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+4] = m_Explosion.GetParticles()[i].m_vPosition[1];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+5] = m_Explosion.GetParticles()[i].m_vPosition[2];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+3] = m_ExplosionFire.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+4] = m_ExplosionFire.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+5] = m_ExplosionFire.GetParticles()[i].m_vPosition[2];
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+4]  = -1;
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+5]  = -1;
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+6]  = m_Explosion.GetParticles()[i].m_fEnergy; 
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+7]  = m_Explosion.GetParticles()[i].m_fSize;;
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+6]  = m_ExplosionFire.GetParticles()[i].m_fEnergy; 
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+7]  = m_ExplosionFire.GetParticles()[i].m_fSize;;
 
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+6] = m_Explosion.GetParticles()[i].m_vPosition[0];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+7] = m_Explosion.GetParticles()[i].m_vPosition[1];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+8] = m_Explosion.GetParticles()[i].m_vPosition[2];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+6] = m_ExplosionFire.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+7] = m_ExplosionFire.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+8] = m_ExplosionFire.GetParticles()[i].m_vPosition[2];
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+8]   =  1;
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+9]   = -1;
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+10]  = m_Explosion.GetParticles()[i].m_fEnergy; 
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+11]  = m_Explosion.GetParticles()[i].m_fSize;;
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+10]  = m_ExplosionFire.GetParticles()[i].m_fEnergy; 
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+11]  = m_ExplosionFire.GetParticles()[i].m_fSize;;
 
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+9]  = m_Explosion.GetParticles()[i].m_vPosition[0];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+10] = m_Explosion.GetParticles()[i].m_vPosition[1];
-      m_pVertexDescriptor->GetPointer<float>()[nIndex+11] = m_Explosion.GetParticles()[i].m_vPosition[2];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+9]  = m_ExplosionFire.GetParticles()[i].m_vPosition[0];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+10] = m_ExplosionFire.GetParticles()[i].m_vPosition[1];
+      m_pVertexDescriptor->GetPointer<float>()[nIndex+11] = m_ExplosionFire.GetParticles()[i].m_vPosition[2];
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+12]  = 1;
       m_pShaderData->GetPointer<float>()[nShaderDataIndex+13]  = 1;
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+14]  = m_Explosion.GetParticles()[i].m_fEnergy; 
-      m_pShaderData->GetPointer<float>()[nShaderDataIndex+15]  = m_Explosion.GetParticles()[i].m_fSize;
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+14]  = m_ExplosionFire.GetParticles()[i].m_fEnergy; 
+      m_pShaderData->GetPointer<float>()[nShaderDataIndex+15]  = m_ExplosionFire.GetParticles()[i].m_fSize;
 
     }
-    m_pIndices->SetDrawableCount( m_Explosion.GetAliveCount()*4 );
+    m_pIndices->SetDrawableCount( m_ExplosionFire.GetAliveCount()*4 );
     /////////////////////////////////////////////////////////////////
     // debris
     /////////////////////////////////////////////////////////////////
@@ -362,10 +362,10 @@ public:
   }
   void Update( unsigned int nMS )
   {
-    m_Explosion.Update(nMS);
+    m_ExplosionFire.Update(nMS);
     m_ExplosionDebris.Update(nMS);
     m_nPassedTimeMS+=nMS;
-    if ( m_Explosion.IsAlive() && !m_bSecondDone && m_nPassedTimeMS > 750 )
+    if ( m_ExplosionFire.IsAlive() && !m_bSecondDone && m_nPassedTimeMS > 750 )
     {
       m_ExplosionDebris.Init(25, m_vOrigPosition);
       m_bSecondDone = 1;
@@ -383,7 +383,7 @@ public:
   void Init( const CVector3<float> &vPosition )
   {
     m_nPassedTimeMS = 0;
-    m_Explosion.Init(5, vPosition );
+    m_ExplosionFire.Init(5, vPosition );
     m_ExplosionDebris.Init(65, vPosition );
     m_bSecondDone = 0;
     m_vOrigPosition = vPosition;
@@ -646,11 +646,12 @@ protected:
   float					m_fSpeed;
   float					m_fMaxSpeed;
   float					m_fHealth;
+  float					m_fAcceleration;
 public:
 
   ////////////////////
   /// Constructor.
-  CSpaceShip() : m_fSpeed(0.0f), m_fMaxSpeed(10.0f), m_fHealth(1.0f)
+  CSpaceShip() : m_fSpeed(0.0f), m_fMaxSpeed(10.0f), m_fHealth(1.0f), m_fAcceleration(0.0f)
   {
     
   }
@@ -705,6 +706,26 @@ public:
   {
     m_fHealth += fHealing;
   }
+  ////////////////////
+  /// Returns acceleration 
+  /// \returns Acceleration factor.
+  const float & GetAcceleration() const
+  {
+    return m_fAcceleration;
+  }
+  ////////////////////
+  /// Assigns acceleration factor.
+  /// \param fValue New acceleration factor.
+  void SetAcceleration( const float & fValue ) 
+  {
+    m_fAcceleration = fValue;
+  }
+  ////////////////////
+  /// Checks is this ship alive
+  int IsAlive() const
+  {
+    return (GetHealth() > 0.0f);
+  }
 };
 /// Static members must be initialized.
 CSphere CSpaceShip::m_Sphere = CSphere();
@@ -734,12 +755,11 @@ public:
     g_PhoenixModelManager->AttachHandle( SOVEREIGN_RESOURCE, GetModelHandle() );
     SetType(O_TYPE_ORDINARY);
     GetBoundingSphere() = CSovereignClass::m_Sphere;
-    GetBoundingBox() = CSovereignClass::m_Box;
-    CModel *pModel = g_PhoenixModelManager->GetResource( SOVEREIGN_RESOURCE );
+    GetBoundingBox()	= CSovereignClass::m_Box;
+    CModel *pModel	= g_PhoenixModelManager->GetResource( SOVEREIGN_RESOURCE );
     pModel->AddTextureFilter(MIN_MIP_LINEAR);
     pModel->AddTextureFilter(MAG_LINEAR);
     SetShipClass( SHIP_CLASS_SOVEREIGN );
-
   }
   ////////////////////
   void Update( unsigned int nTimeMS )
@@ -748,12 +768,18 @@ public:
     if ( pInterp )
     {
       m_pCurrentObject = this;
-      assert(Tcl_Eval(pInterp, "playComputer") == TCL_OK );
+
+      Tcl_SetVar2Ex( pInterp, "g_fHealth",	NULL,	Tcl_NewDoubleObj(m_pCurrentObject->GetHealth()),	0);
+      Tcl_SetVar2Ex( pInterp, "g_fAccel",	NULL,	Tcl_NewDoubleObj(m_pCurrentObject->GetAcceleration()),	0);
+      Tcl_SetVar2Ex( pInterp, "g_fPassedTime",	NULL,	Tcl_NewDoubleObj(m_fPassedTime),			0);
+      Tcl_SetVar2Ex( pInterp, "g_fSpeed",	NULL,	Tcl_NewDoubleObj(m_pCurrentObject->GetSpeed()),		0);
+      Tcl_SetVar2Ex( pInterp, "g_fMaxSpeed",	NULL,	Tcl_NewDoubleObj(m_pCurrentObject->GetMaxSpeed()),	0);
       
+      if ( Tcl_Eval(pInterp, "playComputer") != TCL_OK )
+      {
+	cerr << "Error in script: " << Tcl_GetStringResult(pInterp) << endl;
+      }
     }
-    // Move ship forward
-    m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * GetSpeed() * m_fPassedTime);
-    
   }
   ////////////////////
   /// Allocates proper resources for sovereign class ships.
@@ -799,13 +825,16 @@ public:
     pInterp = Tcl_CreateInterp();
     assert( pInterp != NULL );
 
-
     assert(Tcl_CreateObjCommand( pInterp, "Rotate",
 				 Rotate, (ClientData)0,
 				 NULL) != NULL );
     assert(Tcl_CreateObjCommand( pInterp, "Accelerate",
 				 Accelerate, (ClientData)0,
 				 NULL) != NULL );
+    assert(Tcl_CreateObjCommand( pInterp, "Move",
+				 Move, (ClientData)0,
+				 NULL) != NULL );
+    
     int status = Tcl_EvalFile(pInterp, "Resources/Scripts/PlayComputer.tcl");
     assert( status == TCL_OK );
   }  
@@ -815,8 +844,8 @@ public:
   static void ReleaseResources( COglRenderer & rOglRenderer )
   {
     // Release cache
-    CVertexDescriptor *pTemp = g_DefaultVertexManager->GetResource( SOVEREIGN_VERTICES );
-    CIndexArray *pIndices = g_DefaultIndexManager->GetResource( SOVEREIGN_INDICES );
+    CVertexDescriptor *pTemp	= g_DefaultVertexManager->GetResource( SOVEREIGN_VERTICES );
+    CIndexArray *pIndices	= g_DefaultIndexManager->GetResource( SOVEREIGN_INDICES );
     if ( pTemp )
       rOglRenderer.RollbackCache( *pTemp );    
 
@@ -834,15 +863,25 @@ public:
   {
     if ( m_pCurrentObject != NULL )
     {
-      double dSpeed;
-      Tcl_GetDoubleFromObj( pInterp, objv[1], &dSpeed );
-      m_pCurrentObject->m_fSpeed += dSpeed * m_fPassedTime;
-      if ( m_pCurrentObject->GetSpeed() > m_pCurrentObject->GetMaxSpeed())
-      {
-	m_pCurrentObject->GetSpeed() = m_pCurrentObject->GetMaxSpeed();
-      }
-      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * dSpeed * m_fPassedTime );
-      
+      double dAccel;
+      Tcl_GetDoubleFromObj( pInterp, objv[1], &dAccel );
+
+      m_pCurrentObject->SetAcceleration( dAccel );
+    }
+    Tcl_ResetResult( pInterp );
+    return TCL_OK;
+  }
+  /////////////////////////////////////////////////////////////////
+  static int Move( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[] )
+  {
+    if ( m_pCurrentObject != NULL )
+    {
+      // Handle acceleration
+      m_pCurrentObject->GetSpeed() =  m_pCurrentObject->GetAcceleration()* m_fPassedTime;
+      // Move ship forward
+      m_pCurrentObject->GetLocalTransform().Move( m_pCurrentObject->GetForwardVector() * 
+						  m_pCurrentObject->GetSpeed() * 
+						  m_fPassedTime);
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
@@ -864,14 +903,13 @@ public:
       qRot[2].CreateFromAxisAngle( m_pCurrentObject->GetForwardVector(), dZ * m_fPassedTime);
       qRot[3] = qRot[2] * qRot[1] * qRot[0];
       
-      if ( m_pCurrentObject->GetHealth() > 0.0f )
-      {
-	// Append rotation to direction vectors and transform
-	m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
-	//m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
-	m_pCurrentObject->AppendToRotation( qRot[3] );
-	//m_pCurrentObject->SetRotation( qRot[3] );
-      }
+
+      // Append rotation to direction vectors and transform
+      m_pCurrentObject->GetLocalTransform().Rotate( qRot[3] );
+      //m_pCurrentObject->GetLocalTransform().SetRotation( qRot[3] );
+      m_pCurrentObject->AppendToRotation( qRot[3] );
+      //m_pCurrentObject->SetRotation( qRot[3] );
+
     }
     Tcl_ResetResult( pInterp );
     return TCL_OK;
@@ -984,6 +1022,7 @@ public:
   inline void Update( CSpaceShip *pShip, unsigned int nTimeMS )
   {
     if ( pShip == NULL ) return;
+
     switch( pShip->GetShipClass())
     {
     case SHIP_CLASS_SOVEREIGN:
@@ -1384,7 +1423,16 @@ int main()
   
   g_ShipMsgRouter->RegisterReceiver( SHIP_INFLICT_DAMAGE, pTSovereign->GetHandle());
 
-  
+
+  CSkybox skybox;
+  COglTexture *pSkyboxTexture = pOglRenderer->CreateTexture("Resources/Textures/hyperspace.tga");
+  g_DefaultTextureManager->Create( pSkyboxTexture, "SKYBOX_TEXTURE", skybox.GetTextureHandle(0) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(1) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(2) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(3) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(4) );
+  g_DefaultTextureManager->DuplicateHandle( skybox.GetTextureHandle(0), skybox.GetTextureHandle(5) );
+
   // Clear event queue
   while ( SDL_PollEvent(&event ));
   
@@ -1481,14 +1529,16 @@ int main()
 
     //TravelDF<SPACESHIP_CLASS, CTransformUpdater>( pTGR, &trUpdater );
 
-    pOglRenderer->ClearBuffer( COLOR_BUFFER );
-    pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+    //pOglRenderer->ClearBuffer( COLOR_BUFFER );
+
     pOglRenderer->CommitState( STATE_DEPTH_TEST );
 
     nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
     pOglRenderer->CommitCamera( camera );
     pOglRenderer->DisableState( STATE_LIGHTING );
     
+    pOglRenderer->CommitSkybox( skybox, camera );
+    pOglRenderer->ClearBuffer( DEPTH_BUFFER );    
     //pOglRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
     //pOglRenderer->CommitTransform( pGameobject->GetTransform() );
     //pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(gameobject.GetModelHandle()));

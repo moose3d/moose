@@ -792,10 +792,38 @@ Phoenix::Graphics::CShader *
 Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, const char * szFragmentShader )
 {
 
-  int bHasShader = 0;
+ 
   string strVSSource, strFSSource;
+  ////////////////////
+  // Vertex shader loading
+  if ( szVertexShader != NULL && strlen(szVertexShader) > 0 )
+  {
+    if ( LoadFile( szVertexShader, strVSSource ))
+    {
+      std::cerr << "Failed to load vertex shader '" << szVertexShader << "'" << std::endl;
+    }
+    
+  }
+  ////////////////////
+  // Fragment shader loading 
+  if ( szFragmentShader != NULL && strlen(szFragmentShader) > 0 )
+  {
+    if ( LoadFile( szFragmentShader, strFSSource ))
+    {
+      std::cerr << "Failed to load fragment shader '" << szFragmentShader << "'" << std::endl;
+    }
+  }
+  
+  return CreateShaderFromSource( strVSSource.size() > 0 ? strVSSource.c_str() : NULL,
+				 strFSSource.size() > 0 ? strFSSource.c_str() : NULL );
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShader * 
+Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode)
+{
+  int bHasShader = 0;
   int iState = 0; // compile and link status
-
+  
   unsigned int nProgram = glCreateProgram();
   CShader *pShader = new CShader( nProgram );
 
@@ -807,70 +835,60 @@ Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, cons
 
   ////////////////////
   // Vertex shader loading
-  if ( szVertexShader != NULL && strlen(szVertexShader) > 0 )
+  if ( szVertexShaderCode != NULL && strlen(szVertexShaderCode) > 0 )
   {
-    if ( LoadFile( szVertexShader, strVSSource ))
+
+    unsigned int nVertexShader = glCreateShader( GL_VERTEX_SHADER );
+    int nLength = strlen(szVertexShaderCode); // source code length
+    const char *pStrCode = szVertexShaderCode;
+    
+    // compile source
+    glShaderSource(nVertexShader,1, &pStrCode, &nLength );
+    glCompileShader( nVertexShader );
+    // get compile status
+    glGetShaderiv( nVertexShader, GL_COMPILE_STATUS, &iState);
+    if ( iState == GL_TRUE )
     {
-      std::cerr << "Failed to load vertex shader '" << szVertexShader << "'" << std::endl;
+      // compiling went ok
+      pShader->SetVertexShader( nVertexShader );
+      bHasShader = 1;	
     }
     else
     {
-      unsigned int nVertexShader = glCreateShader( GL_VERTEX_SHADER );
-      int nLength = strVSSource.size(); // source code length
-      const char *pStrCode = strVSSource.c_str();
-
-      // compile source
-      glShaderSource(nVertexShader,1, &pStrCode, &nLength );
-      glCompileShader( nVertexShader );
-      // get compile status
-      glGetShaderiv( nVertexShader, GL_COMPILE_STATUS, &iState);
-      if ( iState == GL_TRUE )
-      {
-	// compiling went ok
-	pShader->SetVertexShader( nVertexShader );
-	bHasShader = 1;	
-      }
-      else
-      {
-	string strLog;
-	GetShaderInfoLog( nVertexShader, strLog );
-	std::cerr << strLog << std::endl;
-      }
+      string strLog;
+      GetShaderInfoLog( nVertexShader, strLog );
+      std::cerr << strLog << std::endl;
     }
+
   }
   ////////////////////
   // Fragment shader loading 
-  if ( szFragmentShader != NULL && strlen(szFragmentShader) > 0 )
+  if ( szFragmentShaderCode != NULL && strlen(szFragmentShaderCode) > 0 )
   {
-    if ( LoadFile( szFragmentShader, strFSSource ))
+    
+    unsigned int nFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
+    int nLength = strlen(szFragmentShaderCode); // source code length
+    const char *pStrCode = szFragmentShaderCode;
+      
+    glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
+    glCompileShader( nFragmentShader );
+
+    // get compile status
+    glGetShaderiv( nFragmentShader, GL_COMPILE_STATUS, &iState);
+    if ( iState == GL_TRUE )
     {
-      std::cerr << "Failed to load fragment shader '" << szFragmentShader << "'" << std::endl;
+      // compiling went ok
+      pShader->SetFragmentShader( nFragmentShader );
+      bHasShader = 1;
     }
     else
     {
-      unsigned int nFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-      int nLength = strFSSource.size(); // source code length
-      const char *pStrCode = strFSSource.c_str();
-      
-      glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
-      glCompileShader( nFragmentShader );
-
-      // get compile status
-      glGetShaderiv( nFragmentShader, GL_COMPILE_STATUS, &iState);
-      if ( iState == GL_TRUE )
-      {
-	// compiling went ok
-	pShader->SetFragmentShader( nFragmentShader );
-	bHasShader = 1;
-      }
-      else
-      {
-	string strLog;
-	GetShaderInfoLog( nFragmentShader, strLog );
-	std::cerr << strLog << std::endl;
-      }
-      
+      string strLog;
+      GetShaderInfoLog( nFragmentShader, strLog );
+      std::cerr << strLog << std::endl;
     }
+      
+
   }
   // check that shader code exists
   if ( !bHasShader )

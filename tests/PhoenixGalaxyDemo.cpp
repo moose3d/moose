@@ -271,7 +271,7 @@ int main()
     pShaderAttrib->GetPointer<float>()[1] = camera.GetPosition()[1];
     pShaderAttrib->GetPointer<float>()[2] = camera.GetPosition()[2];
 
-    q.CreateFromAxisAngle( 0,1,0, g_fRotationSpeedPerSec * ((float)timer.GetPassedTimeMS())/1000.0f);
+    q.CreateFromAxisAngle( 0,1,0, g_fRotationSpeedPerSec * (timer.GetPassedTime().GetSeconds()+(float)timer.GetPassedTime().GetMilliSeconds()*0.001f));
     timer.Reset();
     transform.Rotate( q );
     //cerr << "Collected: " << nCollected << endl;

@@ -1,0 +1,6 @@
+glowing performed by separate glow texture with alpha channel
+detemining is something glowing. 
+
+if GameObject->hasGlowTexture() then
+   render();      
+fi
