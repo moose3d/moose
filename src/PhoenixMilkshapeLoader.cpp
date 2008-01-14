@@ -661,8 +661,7 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
 		    m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex[1],  \
 		    m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].vertex[2]); \
  VERTEX.m_vNormal.Set(TRIANGLE.vertexNormals[T_VERTEXINDEX]);				   \
- VERTEX.m_vTexCoord[0]=TRIANGLE.s[T_VERTEXINDEX];					   \
- VERTEX.m_vTexCoord[1]=TRIANGLE.t[T_VERTEXINDEX];					   \
+ VERTEX.SetTextureCoordinates( TRIANGLE.s[T_VERTEXINDEX], TRIANGLE.t[T_VERTEXINDEX], 0)  ; \
  /*VERTEX.m_iBoneId = m_pVertices[TRIANGLE.vertexIndices[T_VERTEXINDEX]].boneId;*/	   \
  											   \
 }

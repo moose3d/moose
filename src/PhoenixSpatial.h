@@ -8,6 +8,7 @@
 #include "PhoenixQuaternion.h"
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixMatrix3x3.h"
+#include "PhoenixDefaultEntities.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -151,18 +152,41 @@ namespace Phoenix
       /// Vertex normal.
       Phoenix::Math::CVector3<float> m_vNormal;
       /// Vertex texture coordinates.
-      Phoenix::Math::CVector2<float> m_vTexCoord;
+      Phoenix::Math::CVector2<float> m_vTexCoord[TEXTURE_HANDLE_COUNT];
       /// Vertex color.
       Phoenix::Math::CVector4<unsigned char> m_vColor;
+      ////////////////////
+      /// Constructor.
+      CVertex()
+      {
+	// init normal to neg z-axis
+	m_vNormal[0] =  0.0f;
+	m_vNormal[1] =  0.0f;
+	m_vNormal[2] = -1.0f;
+	// init texture coordiantes to zero
+	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
+	{
+	  m_vTexCoord[iT][0] = 0.0f;
+	  m_vTexCoord[iT][1] = 0.0f;
+	}
+	// Reset color to grayish
+	m_vColor[0] = m_vColor[1] = m_vColor[2] = 200;
+	m_vColor[3] = 255;
+      }
       ////////////////////
       /// The equality comparison operator.
       /// \param vert CVertex object which this is compared against.
       bool operator==( CVertex vert)
       {
-	return (GetPosition() == vert.GetPosition() &&
-		m_vNormal   == vert.m_vNormal   &&
-		m_vTexCoord == vert.m_vTexCoord && 
-		m_vColor    == vert.m_vColor );
+	int bSame = 1;
+	// compare texcoords; this might require also EPSILON
+	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
+	  bSame = bSame && ( m_vTexCoord[iT] == vert.m_vTexCoord[iT] );
+
+	return bSame &&
+	(GetPosition() == vert.GetPosition()) &&
+	(m_vNormal     == vert.m_vNormal)   &&
+	(m_vColor      == vert.m_vColor );
       }
       ////////////////////
       /// The less than comparison operator.
@@ -188,17 +212,27 @@ namespace Phoenix
       /// Sets texture coordinate.
       /// \param fS S-coordinate.
       /// \param fT T-coordinate.
-      void SetTextureCoordinates( float fS, float fT )
+      /// \param nTexUnit To which texunit coordinates apply. By default, it is zero.
+      void SetTextureCoordinates( float fS, float fT, unsigned int nTexUnit = 0 )
       {
-	m_vTexCoord[0] = fS;
-	m_vTexCoord[1] = fT;
+	m_vTexCoord[nTexUnit][0] = fS;
+	m_vTexCoord[nTexUnit][1] = fT;
+      }
+      ////////////////////
+      /// Sets texture coordinate.
+      /// \param vCoords Coordinates.
+      /// \param nTexUnit To which texunit coordinates apply. By default, it is zero.
+      void SetTextureCoordinates( Phoenix::Math::CVector2<float> vCoords, unsigned int nTexUnit = 0 )
+      {
+	m_vTexCoord[nTexUnit] = vCoords;
       }
       ////////////////////
       /// Returns texture coordinates.
+      /// \param nTexUnit To which texunit coordinates apply. By default, it is zero.
       /// \returns Texture coordinate vector.
-      const Phoenix::Math::CVector2<float> & GetTextureCoordinates() const
+      const Phoenix::Math::CVector2<float> & GetTextureCoordinates( unsigned int nTexUnit = 0 ) const
       {
-	return m_vTexCoord;
+	return m_vTexCoord[nTexUnit];
       }
       ////////////////////
       /// Returns color vector.
@@ -213,6 +247,53 @@ namespace Phoenix
       void SetColor( const Phoenix::Math::CVector4<unsigned char> & vColor )
       {
 	m_vColor = vColor;
+      }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Triangle class for editors.
+    class CTriangle 
+    {
+    protected:
+      /// Vertices in a triangle
+      CVertex			m_vVertices[3];
+      /// Is this triangle selected.
+      int			m_bSelected;
+    public:
+      ////////////////////
+      /// Constructor.
+      CTriangle() : m_bSelected(0)
+      {
+	
+      }
+      ////////////////////
+      /// Is this triangle selected.
+      /// \returns Selection status.
+      int IsSelected() const
+      {
+	return m_bSelected;
+      }
+      ////////////////////
+      /// Sets selection status.
+      /// \param bFlag Boolean selection status, true for selection, false for unselection.
+      void SetSelected( int bFlag )
+      {
+	m_bSelected = bFlag;
+      }
+      ////////////////////
+      /// Returns vertex.
+      /// \param nCorner Which corner vertex of triangle (0,1 or 2)
+      /// \returns Reference to vertex.
+      CVertex & GetVertex( unsigned int nCorner )
+      {
+	return m_vVertices[ nCorner % 3];
+      }
+      ////////////////////
+      /// Returns vertex.
+      /// \param nCorner Which corner vertex of triangle (0,1 or 2)
+      /// \returns Reference to vertex.
+      const CVertex & GetVertex( unsigned int nCorner ) const
+      {
+	return m_vVertices[ nCorner % 3];
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -389,8 +470,8 @@ namespace Phoenix
       ////////////////////
       /// Constructor. Initializes paramaters.
       CDimensional1D() : 
-      m_fWidth(0.0f), 
-      m_fHalfWidth(0.0f)
+	m_fWidth(0.0f), 
+	m_fHalfWidth(0.0f)
       {
     
       }
@@ -438,9 +519,9 @@ namespace Phoenix
       ////////////////////
       /// The constructor. Initializes paramaters.
       CDimensional2D() : 
-      CDimensional1D(),
-      m_fHeight(0.0f), 
-      m_fHalfHeight(0.0f)
+	CDimensional1D(),
+	m_fHeight(0.0f), 
+	m_fHalfHeight(0.0f)
       {
 	
       }
@@ -489,9 +570,9 @@ namespace Phoenix
       ////////////////////
       /// The constructor. Initializes paramaters.
       CDimensional3D() : 
-      CDimensional2D(),
-      m_fLength(0.0f),
-      m_fHalfLength(0.0f)
+	CDimensional2D(),
+	m_fLength(0.0f),
+	m_fHalfLength(0.0f)
       {
     
       }
