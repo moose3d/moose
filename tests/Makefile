@@ -7,6 +7,8 @@ omegademo:
 	g++ -Wall -DOMEGA -I../src `sdl-config --cflags` PhoenixDemo.cpp -lPhoenix `sdl-config --libs`
 demo:
 	g++ -Wall -I../src `sdl-config --cflags` PhoenixDemo.cpp -lPhoenix `sdl-config --libs`
+simpledemo:
+	g++ -Wall -I../src `sdl-config --cflags` PhoenixDemoSimple.cpp -lPhoenix `sdl-config --libs`
 volumeline:
 	g++ -Wall -I../src `sdl-config --cflags` PhoenixVolumeLineDemo.cpp -lPhoenix `sdl-config --libs`
 octreedemo:
