@@ -269,6 +269,10 @@ namespace Phoenix
       /// \param vColor RGBA Color vector.
       void CommitColor( const Phoenix::Math::CVector4<unsigned char> &vColor );
       ////////////////////
+      /// Commits vertex with position, texcoords, normal.
+      /// \param rVertex Vertex to be committed.
+      void CommitVertex ( const Phoenix::Spatial::CVertex & rVertex );
+      ////////////////////
       /// Disable client states, such as vertex array.
       /// \param tType CLIENT_STATE_TYPE to be disabled.
       void DisableClientState( CLIENT_STATE_TYPE tType );

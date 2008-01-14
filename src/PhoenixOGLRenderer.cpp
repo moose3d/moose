@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -330,6 +330,22 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 		      pIndexBuffer->GetPointer<unsigned int>());
     }
   }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertex ( const Phoenix::Spatial::CVertex & rVertex )
+{
+  // Set multitexture coordinates
+  for(int i=0;i<TEXTURE_HANDLE_COUNT;i++)
+  {
+    glMultiTexCoord2fARB( GL_TEXTURE0_ARB+i, 
+			  rVertex.GetTextureCoordinates( i )[0],
+			  rVertex.GetTextureCoordinates( i )[1] );
+  }
+  /// Normal, color and position data
+  glNormal3fv( rVertex.GetNormal().GetArray()) ;
+  //glColor4ubv( rVertex.GetColor().GetArray() );
+  glVertex3fv( rVertex.GetPosition().GetArray()) ;
 }
 /////////////////////////////////////////////////////////////////
 void 
