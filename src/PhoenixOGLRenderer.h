@@ -324,6 +324,12 @@ namespace Phoenix
       /// \returns Pointer to shader object. NULL if shader could not be created.
       Phoenix::Graphics::CShader * CreateShader( const char * szVertexShader, const char * szFragmentShader );
       ////////////////////
+      /// Creates a shader from source codes.
+      /// \param szVertexShaderCode Vertex shader source.
+      /// \param szFragmentShaderCode Fragment shader source.
+      /// \returns Pointer to shader object. NULL if shader could not be created.
+      Phoenix::Graphics::CShader * CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode);
+      ////////////////////
       /// Commits shader.
       /// \param pShader Shader object. If NULL, default rendering pipeline is activated.
       void CommitShader( Phoenix::Graphics::CShader *pShader );
