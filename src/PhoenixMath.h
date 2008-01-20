@@ -101,7 +101,8 @@ namespace Phoenix
     ////////////////////
     /// Constructs tangent array of 4-vectors for bump mapping. w-coordinate indicates handedness (1.0f or -1.0f).
     /// \param vecTriangles Triangles to which vertices tangents are calculated.
-    void CalculateTangents( std::vector<Phoenix::Spatial::CTriangle> & vecTriangles );
+    template<class TRIANGLE_TYPE>
+    void CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles );
     
     // Returns the determinant of the 4x4 float matrix
     float	Det(const Phoenix::Math::CMatrix4x4<float> &mMatrix);
@@ -251,4 +252,106 @@ namespace Phoenix
     CVector3<float> operator*( const CMatrix3x3<float> &mMatrix, const CVector3<float> &vVector);
   }; // namespace Math
 }; // namespace Phoenix
+/////////////////////////////////////////////////////////////////
+template <class TRIANGLE_TYPE>
+void 
+Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
+{
+
+  // One tangent for each vertex.
+  CVector3<float>  *aTangents = new CVector3<float>[vecTriangles.size()*3];
+  // This array is for calculating handness
+  CVector3<float> *aTangents2 = new CVector3<float>[vecTriangles.size()*3];
+  // initialize tangents to zero
+  for(size_t n=0;n<vecTriangles.size()*3;n++)
+  {
+    aTangents[n][0] = 0.0f;
+    aTangents[n][1] = 0.0f;
+    aTangents[n][2] = 0.0f;
+
+    aTangents2[n][0] = 0.0f;
+    aTangents2[n][1] = 0.0f;
+    aTangents2[n][2] = 0.0f;
+
+  }
+
+  CVector3<float> vTmp2;
+  CVector3<float> v1,v2,v3;
+  CVector2<float> w1,w2,w3;
+  CVector3<float> vSdir,vTdir;
+  CVector3<float> vTmp;
+  CVector4<float> vTangent;
+
+  // for each triangle do
+  for( size_t nTri=0; nTri < vecTriangles.size(); nTri++)
+  {
+    
+    v1 = vecTriangles[nTri].GetVertex(0).GetPosition();
+    v2 = vecTriangles[nTri].GetVertex(1).GetPosition();
+    v3 = vecTriangles[nTri].GetVertex(2).GetPosition();
+    
+    w1 = vecTriangles[nTri].GetVertex(0).GetTextureCoordinates();
+    w2 = vecTriangles[nTri].GetVertex(1).GetTextureCoordinates();
+    w3 = vecTriangles[nTri].GetVertex(2).GetTextureCoordinates();
+
+    float x1 = v2[0] - v1[0];
+    float x2 = v3[0] - v1[0];
+    float y1 = v2[1] - v1[1];
+    float y2 = v3[1] - v1[1];
+    float z1 = v2[2] - v1[2];
+    float z2 = v3[2] - v1[2];
+        
+    float s1 = w2[0] - w1[0];
+    float s2 = w3[0] - w1[0];
+    float t1 = w2[1] - w1[1];
+    float t2 = w3[1] - w1[1];
+        
+    float r = 1.0f / (s1 * t2 - s2 * t1);
+    vSdir[0] = (t2 * x1 - t1 * x2) * r;
+    vSdir[1] = (t2 * y1 - t1 * y2) * r;
+    vSdir[2] = (t2 * z1 - t1 * z2) * r;
+    
+    vTdir[0] = (s1 * x2 - s2 * x1) * r;
+    vTdir[1] = (s1 * y2 - s2 * y1) * r;
+    vTdir[2] = (s1 * z2 - s2 * z1) * r;
+    
+    aTangents[nTri*3]   += vSdir;
+    aTangents[nTri*3+1] += vSdir;
+    aTangents[nTri*3+2] += vSdir;
+
+    aTangents2[nTri*3]   += vTdir;
+    aTangents2[nTri*3+1] += vTdir;
+    aTangents2[nTri*3+2] += vTdir;
+
+  }
+
+  // for each vertex do
+  for (size_t nTri = 0; nTri < vecTriangles.size(); nTri++)
+  {
+    for( size_t nVert = 0; nVert < 3; nVert++ )
+    {
+      
+      v1 = vecTriangles[nTri].GetVertex(nVert).GetNormal();
+      v2 = aTangents[(nTri*3)+nVert];
+      
+      // Gram-Schmidt orthogonalize
+      vTmp2 = v2 - (v1 * (v1.Dot(v2)));
+      vTmp2.Normalize();
+
+      vTangent[0] = vTmp2[0];
+      vTangent[1] = vTmp2[1];
+      vTangent[2] = vTmp2[2];
+      
+      // Calculate handedness
+      vTmp = aTangents2[nTri*3+nVert];
+      vTangent[3] = v1.Cross(v2).Dot(vTmp) < 0.0f ? -1.0f : 1.0f;
+      vecTriangles[nTri].GetVertex(nVert).SetAttrib4( vTangent );
+    }
+  }
+  delete aTangents;
+  delete aTangents2;
+  aTangents = aTangents2 = NULL;
+
+}
+/////////////////////////////////////////////////////////////////
 #endif
