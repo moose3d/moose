@@ -98,7 +98,11 @@ namespace Phoenix
 				const Phoenix::Graphics::CVertexDescriptor &texCoords,
 				const Phoenix::Graphics::CIndexArray &indices,
 				Phoenix::Graphics::CVertexDescriptor &tangents);
-
+    ////////////////////
+    /// Constructs tangent array of 4-vectors for bump mapping. w-coordinate indicates handedness (1.0f or -1.0f).
+    /// \param vecTriangles Triangles to which vertices tangents are calculated.
+    void CalculateTangents( std::vector<Phoenix::Spatial::CTriangle> & vecTriangles );
+    
     // Returns the determinant of the 4x4 float matrix
     float	Det(const Phoenix::Math::CMatrix4x4<float> &mMatrix);
     // Returns the determinant of the 3x3 float matrix
