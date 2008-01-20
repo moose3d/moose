@@ -333,7 +333,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitVertex ( const Phoenix::Spatial::CVertex & rVertex )
+Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex & rVertex )
 {
   // Set multitexture coordinates
   for(int i=0;i<TEXTURE_HANDLE_COUNT;i++)
@@ -1088,6 +1088,42 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
 }
 /////////////////////////////////////////////////////////////////
 void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY, float fZ, float fW )
+{
+  if( iLoc != -1 )
+  {
+    glVertexAttrib4f( iLoc, fX, fY, fZ, fW );
+  }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY, float fZ )
+{
+  if( iLoc != -1 )
+  {
+    glVertexAttrib3f( iLoc, fX, fY, fZ );
+  }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY )
+{
+  if( iLoc != -1 )
+  {
+    glVertexAttrib2f( iLoc, fX, fY );
+  }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX )
+{
+  if( iLoc != -1 )
+  {
+    glVertexAttrib1f( iLoc, fX );
+  }
+}
+/////////////////////////////////////////////////////////////////
+void 
 Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int nLightId)
 {
   GLenum iLightID = GL_LIGHT0+nLightId;
@@ -1454,9 +1490,36 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray &
   }
 }
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::COglRenderer::CommitFramebuffer( Phoenix::Graphics::COglTexture & rTexture, int bDepthBuffer = 0 )
-// {
-  
-// }
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc,
+						     const Phoenix::Math::CVector4<float> &vValues )
+{
+  CommitVertexAttrib( shader, iLoc, vValues[0], vValues[1], vValues[2], vValues[3]);
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc,
+						     const Phoenix::Math::CVector3<float> &vValues )
+{
+  CommitVertexAttrib( shader, iLoc, vValues[0], vValues[1], vValues[2]);
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc,
+						     const Phoenix::Math::CVector2<float> &vValues )
+{
+  CommitVertexAttrib( shader, iLoc, vValues[0], vValues[1] );
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRenderer::LocateAttribShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName )
+{
+  return glGetAttribLocation( shader.GetProgram(), strParamName );  
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Graphics::COglRenderer::LocateUniformShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName )
+{
+  return glGetUniformLocation( shader.GetProgram(), strParamName );  
+}
 /////////////////////////////////////////////////////////////////

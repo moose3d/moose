@@ -231,7 +231,6 @@ namespace Phoenix
       /// Initializes the supported values.
       void Init();
     };
-    
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
     class COglRenderer
@@ -375,6 +374,68 @@ namespace Phoenix
       /// \param vValue VertexDescriptor with uniform or vertex attribute param values.
       void CommitShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName, 
 			      const Phoenix::Graphics::CVertexDescriptor & vParam);
+
+      ////////////////////
+      /// Seeks shader parameter name.
+      /// \param shader Shader object where parameter is passed.
+      /// \param strParamName Variable name in shader.
+      /// \returns -1 if not found, otherwise location.
+      int LocateAttribShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName );
+      ////////////////////
+      /// Seeks shader parameter name. This is rather unnecessary, since CommitShaderParam will do 
+      /// just this - but for completeness, it exists.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \returns -1 if not found, otherwise location.
+      int LocateUniformShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader.
+      /// \param fX First value.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \param fX First value.
+      /// \param fY Second value.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \param fX First value.
+      /// \param fY Second value.
+      /// \param fZ Third value.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY, float fZ );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \param fX First value.
+      /// \param fY Second value.
+      /// \param fZ Third value.
+      /// \param fW Fourth value.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY, float fZ, float fW );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \param vValues Attrib values.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, const Phoenix::Math::CVector4<float> &vValues );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \param vValues Attrib values.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, const Phoenix::Math::CVector3<float> &vValues );
+      ////////////////////
+      /// Commits vertex attribute.
+      /// \param shader Shader object where parameter is passed.
+      /// \param iLoc Parameter location in shader
+      /// \param vValues Attrib values.
+      void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, const Phoenix::Math::CVector2<float> &vValues );
       ////////////////////
       /// Commits light object parameters to given light unit.
       /// \param light Light reference.
