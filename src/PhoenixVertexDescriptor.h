@@ -55,7 +55,8 @@ namespace Phoenix
       ////////////////////
       /// default constructor.
       /// \param nType Element type
-      /// \param nNumElements how many elements this vertexbuffer have.
+      /// \param nNumElements how many elements this vertexbuffer have (ie. number of vertices).
+      /// \par   Not the number of elements in vertex (3 floats), but #vertices.
       CVertexDescriptor( ELEMENT_TYPE nType, unsigned int nNumElements);
       ////////////////////
       /// Frees reserverd memory.

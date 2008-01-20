@@ -155,6 +155,12 @@ namespace Phoenix
       Phoenix::Math::CVector2<float> m_vTexCoord[TEXTURE_HANDLE_COUNT];
       /// Vertex color.
       Phoenix::Math::CVector4<unsigned char> m_vColor;
+
+      Phoenix::Math::CVector4<float> m_vAttrib4;
+      Phoenix::Math::CVector3<float> m_vAttrib3;
+      Phoenix::Math::CVector2<float> m_vAttrib2;
+      float			     m_fAttrib1;
+
       ////////////////////
       /// Constructor.
       CVertex()
@@ -247,6 +253,62 @@ namespace Phoenix
       void SetColor( const Phoenix::Math::CVector4<unsigned char> & vColor )
       {
 	m_vColor = vColor;
+      }
+      ////////////////////
+      /// Assigns vertex attribute values for shader.
+      /// \param vValues Vector containing attrib values.
+      void SetAttrib4( const Phoenix::Math::CVector4<float> & vValues )
+      {
+	m_vAttrib4 = vValues;
+      }
+      ////////////////////
+      /// Assigns vertex attribute values for shader.
+      /// \param vValues Vector containing attrib values.
+      void SetAttrib3( const Phoenix::Math::CVector3<float> & vValues )
+      {
+	m_vAttrib3 = vValues;
+      }
+      ////////////////////
+      /// Assigns vertex attribute values for shader.
+      /// \param vValues Vector containing attrib values.
+      void SetAttrib2( const Phoenix::Math::CVector2<float> & vValues )
+      {
+	m_vAttrib2 = vValues;
+      }
+      ////////////////////
+      /// Assigns vertex attribute value for shader.
+      /// \param fValue Attrib value.
+      void SetAttrib1( const float & fValue )
+      {
+	m_fAttrib1 = fValue;
+      }
+      /////////////////////////////
+      /// Returns vertex attribute.
+      /// \returns vertex attribute
+      const float & GetAttrib1() const
+      {
+	return m_fAttrib1;
+      }
+      /////////////////////////////
+      /// Returns vertex attribute.
+      /// \returns vertex attribute
+      const Phoenix::Math::CVector2<float> & GetAttrib2() const
+      {
+	return m_vAttrib2;
+      }
+      /////////////////////////////
+      /// Returns vertex attribute.
+      /// \returns vertex attribute
+      const Phoenix::Math::CVector3<float> & GetAttrib3() const
+      {
+	return m_vAttrib3;
+      }
+      /////////////////////////////
+      /// Returns vertex attribute.
+      /// \returns vertex attribute
+      const Phoenix::Math::CVector4<float> & GetAttrib4() const
+      {
+	return m_vAttrib4;
       }
     };
     /////////////////////////////////////////////////////////////////
