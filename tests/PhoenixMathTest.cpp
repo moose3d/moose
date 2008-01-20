@@ -1,6 +1,11 @@
 #include <UnitTest++/UnitTest++.h>
 #include "PhoenixMath.h"
 using namespace Phoenix::Math;
+using namespace Phoenix::Graphics;
+using namespace Phoenix::Spatial;
+using std::cerr;
+using std::endl;
+#include <vector>
 /////////////////////////////////////////////////////////////////
 TEST(CMatrix3x3_Inverse)
 {
@@ -118,5 +123,96 @@ TEST(RotationMatrixToQuaternion)
   QuaternionToMatrix( q, mMatrixRes );
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), mMatrixRes.GetArray(), 16, 0.001f);
   
+}
+/////////////////////////////////////////////////////////////////
+TEST(CalculateTangentArray_CalculateTangents)
+{
+  CVertexDescriptor *pVertices  = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, 3);
+  CVertexDescriptor *pNormals   = new CVertexDescriptor(ELEMENT_TYPE_NORMAL_3F, 3);
+  CVertexDescriptor *pTexCoords = new CVertexDescriptor(ELEMENT_TYPE_TEX_2F, 3);
+  CVertexDescriptor *pTangents  = new CVertexDescriptor(ELEMENT_TYPE_ATTRIB_4F, 3);
+
+  CIndexArray  *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, 3);
+  
+
+  CTriangle triangle;
+  triangle.GetVertex(0).SetPosition( CVector3<float>(0,0,0));
+  triangle.GetVertex(1).SetPosition( CVector3<float>(1,0,0));
+  triangle.GetVertex(2).SetPosition( CVector3<float>(1,-4,-1));
+
+  triangle.GetVertex(0).SetNormal( CVector3<float>(1,1,0).GetNormalized());
+  triangle.GetVertex(1).SetNormal( CVector3<float>(0,1,0).GetNormalized());
+  triangle.GetVertex(2).SetNormal( CVector3<float>(0,1,1).GetNormalized());
+
+  triangle.GetVertex(0).SetTextureCoordinates( 0,0 );
+  triangle.GetVertex(1).SetTextureCoordinates( 1,0 );
+  triangle.GetVertex(2).SetTextureCoordinates( 1,1 );
+
+  pVertices->GetPointer<float>()[0] = triangle.GetVertex(0).GetPosition()[0];
+  pVertices->GetPointer<float>()[1] = triangle.GetVertex(0).GetPosition()[1];
+  pVertices->GetPointer<float>()[2] = triangle.GetVertex(0).GetPosition()[2];
+
+  pVertices->GetPointer<float>()[3] = triangle.GetVertex(1).GetPosition()[0];
+  pVertices->GetPointer<float>()[4] = triangle.GetVertex(1).GetPosition()[1];
+  pVertices->GetPointer<float>()[5] = triangle.GetVertex(1).GetPosition()[2];
+  
+  pVertices->GetPointer<float>()[6] = triangle.GetVertex(2).GetPosition()[0];
+  pVertices->GetPointer<float>()[7] = triangle.GetVertex(2).GetPosition()[1];
+  pVertices->GetPointer<float>()[8] = triangle.GetVertex(2).GetPosition()[2];
+
+  pNormals->GetPointer<float>()[0] = triangle.GetVertex(0).GetNormal()[0];
+  pNormals->GetPointer<float>()[1] = triangle.GetVertex(0).GetNormal()[1];
+  pNormals->GetPointer<float>()[2] = triangle.GetVertex(0).GetNormal()[2];
+  
+  pNormals->GetPointer<float>()[3] = triangle.GetVertex(1).GetNormal()[0];
+  pNormals->GetPointer<float>()[4] = triangle.GetVertex(1).GetNormal()[1];
+  pNormals->GetPointer<float>()[5] = triangle.GetVertex(1).GetNormal()[2];
+
+  pNormals->GetPointer<float>()[6] = triangle.GetVertex(2).GetNormal()[0];
+  pNormals->GetPointer<float>()[7] = triangle.GetVertex(2).GetNormal()[1];
+  pNormals->GetPointer<float>()[8] = triangle.GetVertex(2).GetNormal()[2];
+
+  pTexCoords->GetPointer<float>()[0] = triangle.GetVertex(0).GetTextureCoordinates()[0];
+  pTexCoords->GetPointer<float>()[1] = triangle.GetVertex(0).GetTextureCoordinates()[1];
+
+  pTexCoords->GetPointer<float>()[2] = triangle.GetVertex(1).GetTextureCoordinates()[0];
+  pTexCoords->GetPointer<float>()[3] = triangle.GetVertex(1).GetTextureCoordinates()[1];
+
+  pTexCoords->GetPointer<float>()[4] = triangle.GetVertex(2).GetTextureCoordinates()[0];
+  pTexCoords->GetPointer<float>()[5] = triangle.GetVertex(2).GetTextureCoordinates()[1];
+
+  pIndices->GetPointer<unsigned short int>()[0] = 0;
+  pIndices->GetPointer<unsigned short int>()[1] = 1;
+  pIndices->GetPointer<unsigned short int>()[2] = 2;
+
+  CalculateTangentArray( *pVertices, *pNormals,
+			 *pTexCoords, *pIndices,
+			 *pTangents);
+
+ 
+
+  std::vector<CTriangle> vecTriangles;
+  vecTriangles.push_back(triangle);
+  
+  CalculateTangents(  vecTriangles );
+  
+  CVector4<float> vTangent;
+
+  vTangent.UseExternalData( &pTangents->GetPointer<float>()[0]);
+  CHECK_ARRAY_CLOSE( vecTriangles[0].GetVertex(0).GetAttrib4().GetArray(), vTangent.GetArray(), 4, 0.001f);
+  
+  vTangent.UseExternalData( &pTangents->GetPointer<float>()[4]);
+  CHECK_ARRAY_CLOSE( vecTriangles[0].GetVertex(1).GetAttrib4().GetArray(), vTangent.GetArray(), 4, 0.001f);
+
+  vTangent.UseExternalData( &pTangents->GetPointer<float>()[8]);
+  CHECK_ARRAY_CLOSE( vecTriangles[0].GetVertex(2).GetAttrib4().GetArray(), vTangent.GetArray(), 4, 0.001f);
+  
+  
+
+  delete pNormals; pNormals = NULL;
+  delete pVertices; pVertices = NULL;
+  delete pTexCoords; pTexCoords = NULL;
+  delete pTangents; pTangents = NULL;
+  delete pIndices; pIndices = NULL;
 }
 /////////////////////////////////////////////////////////////////
