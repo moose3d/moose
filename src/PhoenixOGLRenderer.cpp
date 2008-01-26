@@ -8,9 +8,11 @@
 #include "PhoenixGlobals.h"
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixTGAImage.h"
+#include "PhoenixDefaultEntities.h"
 #include <fstream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
+using namespace Phoenix::Default; 
 using std::endl;
 using std::cerr;
 using std::ifstream;
@@ -28,9 +30,12 @@ Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
   if ( GLEE_ARB_multitexture	)  m_bARB_multitexture     = 1;
 
   if ( GLEE_ARB_vertex_buffer_object	) m_bARB_vertex_buffer_object = 1;
+  if ( GLEE_EXT_framebuffer_object	)  m_bEXT_framebuffer_object    = 1;
   glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
   glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
   glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);  
+  glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &m_iMaxColorAttachments );
+  glGetIntegerv( GL_MAX_DRAW_BUFFERS,      &m_iMaxDrawBuffers );
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -43,7 +48,13 @@ Phoenix::Graphics::COglRendererFeatures::Init()
   m_bARB_vertex_buffer_object = 0;
   m_bARB_multitexture = 0;
   m_bARB_shader_objects = 0;
+  m_bEXT_framebuffer_object = 0;
+
   m_iMaxLights = 0;
+  m_iMaxElementsVertices = 0;
+  m_iMaxElementsIndices = 0;
+  m_iMaxColorAttachments = 0;
+  m_iMaxDrawBuffers = 0;
 }
 /////////////////////////////////////////////////////////////////
 int 
@@ -89,6 +100,12 @@ Phoenix::Graphics::COglRendererFeatures::HasShaderObjects() const
 }
 /////////////////////////////////////////////////////////////////
 int
+Phoenix::Graphics::COglRendererFeatures::HasFramebufferObjects() const
+{
+  return m_bEXT_framebuffer_object;
+}
+/////////////////////////////////////////////////////////////////
+int
 Phoenix::Graphics::COglRendererFeatures::GetMaxLights() const
 {
   return m_iMaxLights;
@@ -106,6 +123,18 @@ Phoenix::Graphics::COglRendererFeatures::GetMaxElementsIndices() const
   return m_iMaxElementsIndices;
 }
 /////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRendererFeatures::GetMaxColorAttachments() const
+{
+  return m_iMaxColorAttachments;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRendererFeatures::GetMaxDrawBuffers() const
+{
+  return m_iMaxDrawBuffers;
+}
+/////////////////////////////////////////////////////////////////
 std::ostream &
 Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &obj)
 {
@@ -118,12 +147,16 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   stream << "GL_ARB_vertex_buffer_object " << ( obj.HasVertexBufferObject() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_multitexture " << ( obj.HasMultitexture() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_shader_objects " << ( obj.HasShaderObjects() ? "YES" : "NO" ) << endl;
+  stream << "GL_EXT_framebuffer_object " << ( obj.HasFramebufferObjects() ? "YES" : "NO" ) << endl;
+  
   stream << "------------------" << std::endl;
   stream << "OpenGL environment variables:" << std::endl;
   stream << "------------------" << std::endl;
   stream << "GL_MAX_LIGHTS = " << obj.GetMaxLights() << endl;
   stream << "GL_MAX_ELEMENTS_VERTICES = " << obj.GetMaxElementsVertices() << std::endl;
   stream << "GL_MAX_ELEMENTS_INDICES  = " << obj.GetMaxElementsIndices() << std::endl;
+  stream << "GL_MAX_COLOR_ATTACHMENTS = " << obj.GetMaxColorAttachments() << std::endl;
+  stream << "GL_MAX_DRAW_BUFFERS  = " << obj.GetMaxDrawBuffers() << std::endl;
   return stream;
 }
 /////////////////////////////////////////////////////////////////
@@ -1521,5 +1554,91 @@ int
 Phoenix::Graphics::COglRenderer::LocateUniformShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName )
 {
   return glGetUniformLocation( shader.GetProgram(), strParamName );  
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CFrameBufferObject * 
+Phoenix::Graphics::COglRenderer::CreateFramebuffer( const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
+						    unsigned int nWidth, unsigned int nHeight, 
+						    int iBufferFlags )
+{
+  GLuint iFBO;
+  CFrameBufferObject *pFBO = NULL;
+
+  ////////////////////
+  // Create and bind framebuffer
+  glGenFramebuffersEXT(1, &iFBO);
+  pFBO = new CFrameBufferObject( iFBO, nWidth, nHeight );
+
+  // Duplicate handle to texture
+  g_DefaultTextureManager->DuplicateHandle( hTexture, pFBO->GetTextureHandle() );
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, pFBO->GetID());
+  
+  if ( iBufferFlags && FBO_DEPTH_BUFFER )
+  {
+    ////////////////////
+    // Create depth buffer
+    glGenRenderbuffersEXT(1, &pFBO->GetDepthBufferId());
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
+    
+    ////////////////////
+    // Attach depth buffer to frame buffer.
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, 
+			     (unsigned int)pFBO->GetWidth(), (unsigned int)pFBO->GetHeight() );
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
+				 GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
+  }
+  
+  if ( !hTexture.IsNull())
+  {
+    ////////////////////
+    // Attach texture to framebuffer
+    COglTexture *pTexture = g_DefaultTextureManager->GetResource( pFBO->GetTextureHandle() );
+
+    // Determine texture type
+    GLenum iTexType = GL_TEXTURE_2D;
+    switch ( pTexture->GetType())
+    {
+    case TEXTURE_2D:
+      iTexType = GL_TEXTURE_2D;
+      break;
+    }
+    /////////////////////////////////////////////////////////////////
+    glBindTexture(iTexType, pTexture->GetID());
+    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, 
+			       iTexType, pTexture->GetID(), 0);
+    glGenerateMipmapEXT( iTexType );
+  }
+
+  GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  /// If there were any errors, clean up and return NULL.
+  if ( status !=  GL_FRAMEBUFFER_COMPLETE_EXT )
+  {
+    delete pFBO;
+    pFBO = NULL;
+  }
+  // Return object pointer.
+  return pFBO;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO )
+{
+  // Bind frame buffer.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
+
+  // Define viewport to texture size and store current settings so they can be retrieved.
+  // (This might not be necessary, but sounds resonably now)
+  glPushAttrib(GL_VIEWPORT_BIT);
+  glViewport(0,0, (unsigned int)rFBO.GetWidth(), (unsigned int)rFBO.GetHeight());
+  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO )
+{
+  // Reset viewport settings
+  glPopAttrib();
+  // Put render commands back to ordinary buffer
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 /////////////////////////////////////////////////////////////////

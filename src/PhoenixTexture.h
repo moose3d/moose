@@ -46,36 +46,19 @@ namespace Phoenix
       ////////////////////
       /// Returns OpenGL texture id.
       /// \returns Texture id.
-      inline unsigned int GetID() 
+      inline unsigned int & GetID() 
+      {
+	return m_nOglId;
+      }
+      ////////////////////
+      /// Returns OpenGL texture id.
+      /// \returns Texture id.
+      inline const unsigned int & GetID() const
       {
 	return m_nOglId;
       }
     };
-    ////////////////////
-    /// 
-//     class CRenderBufferObject : public COglBase
-//     {
-//     public:
-//       CRenderBufferObject( unsigned int nRenderBufferId );
-//     };
-//     /////////////////////////////////////////////////////////////////
-//     /// Class for framebuffer objects.
-//     class CFrameBufferObject : public COglBase
-//     {
-//     protected:
-//       std::vector<CRenderBufferObject *> m_vecRenderBuffers;
-//     public:
-//       ////////////////////
-//       /// Constructor.
-//       CFrameBufferObject( unsigned int nFrameBufferId );
-//       ////////////////////
-//       /// Destructor.
-//       ~CFrameBufferObject();
-//       ////////////////////
-//       /// Attaches renderbuffers to this framebuffer.
-//       //void AttachRenderBuffer( COglBase *pObject );
-      
-//     };
+
     /////////////////////////////////////////////////////////////////
     /// Class for textures.
     class COglTexture : public COglBase
@@ -95,14 +78,6 @@ namespace Phoenix
       /// Returns OpenGL texture type.
       /// \returns Texture type.
       TEXTURE_TYPE GetType() const;
-      ////////////////////
-      /// Returns framebuffer.
-      /// \returns Reference to framebuffer.
-      //Phoenix::Graphics::CFrameBufferObject & GetFrameBuffer();
-      ////////////////////
-      /// Returns depthbuffer.
-      /// \returns Reference to depthbuffer.
-      //Phoenix::Graphics::CRenderBufferObject & GetDepthBuffer();
     };
   }; // namespace Graphics
 }; // namespace Phoenix

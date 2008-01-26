@@ -14,6 +14,7 @@
 #include "PhoenixSkybox.h"
 #include "PhoenixTransform.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixFrameBuffer.h"
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -84,6 +85,13 @@ namespace Phoenix
     { 
       COLOR_BUFFER = 0,
       DEPTH_BUFFER = 1
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Frame buffer flags
+    enum FBO_BUFFER_FLAG
+    {
+      FBO_COLOR_BUFFER = 1 << 0,
+      FBO_DEPTH_BUFFER = 1 << 1
     };
     /////////////////////////////////////////////////////////////////
     /// Class for grouping blending operations. 
@@ -180,37 +188,54 @@ namespace Phoenix
       int m_bARB_multitexture;
       /// shader_objects support flag.
       int m_bARB_shader_objects;
+      /// framebuffer object support flag.
+      int m_bEXT_framebuffer_object;
       /// Max number of supported lights.
       int m_iMaxLights;
       /// GL_MAX_ELEMENTS_VERTICES, used to create optimal render batches.
       int m_iMaxElementsVertices; 
       /// GL_MAX_ELEMENTS_INDICES, used to create optimal render batches.
       int m_iMaxElementsIndices;  
-
+      /// GL_MAX_COLOR_ATTACHMENTS, used in frame buffers.
+      int m_iMaxColorAttachments;
+      /// GL_MAX_DRAW_BUFFERS, used in frame buffers.
+      int m_iMaxDrawBuffers;
     public:
+      ////////////////////
       /// Default constructor.
       COglRendererFeatures();
+      ////////////////////
       /// Is vertex_program extension supported.
       /// \return 1 if supported, 0 otherwise.
       int HasVertexProgram() const;
+      ////////////////////
       /// Is vertex_shader extension supported.
       /// \return 1 if supported, 0 otherwise.
       int HasVertexShader() const;
+      ////////////////////
       /// Is fragment_shader extension supported.
       /// \return 1 if supported, 0 otherwise.
       int HasFragmentShader() const;
+      ////////////////////
       /// Is vertex_array supported.
       /// \return 1 if supported, 0 otherwise.
       int HasVertexArray() const;
+      ////////////////////
       /// Is vertex_buffer_object supported.
       /// \return 1 if supported, 0 otherwise.
       int HasVertexBufferObject() const;
+      ////////////////////
       /// Is multitexture supported.
       /// \return 1 if supported, 0 otherwise.
       int HasMultitexture() const;
+      ////////////////////
       /// Is shader_objects supported.
       /// \return 1 if supported, 0 otherwise.
       int HasShaderObjects() const;
+      ////////////////////
+      /// Is EXT_framebuffer_object supported.
+      /// \return 1 if supported, 0 otherwise.
+      int HasFramebufferObjects() const;
       ////////////////////
       /// Get maximum number of lights.
       /// \return maximum number of lights.
@@ -223,6 +248,14 @@ namespace Phoenix
       /// Get max elements in index arrays.
       /// \return maximum number of elements in index arrays.
       int  GetMaxElementsIndices() const;
+      ////////////////////
+      /// Get max color attachments for frame buffers.
+      /// \returns Maximum number of color attachments for current hardware.
+      int  GetMaxColorAttachments() const;
+      ////////////////////
+      /// Get max draw buffers.
+      /// \returns Maximum number of draw buffers for current hardware.
+      int  GetMaxDrawBuffers() const;
       ////////////////////
       /// for printing out supported features.
       friend std::ostream &operator<<(std::ostream &stream, 
@@ -517,9 +550,24 @@ namespace Phoenix
       void RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray );
       ////////////////////
       /// Creates a framebuffer for given texture.
-      /// \param rTexture Reference to texture 
-      /// \param bDepthBuffer Should depthbuffer be created for this framebuffer.
-      //void CommitFramebuffer( Phoenix::Graphics::COglTexture & rTexture, int bDepthBuffer = 0 )
+      /// \param hTexture Reference to texture 
+      /// \param nWidth Texture width.
+      /// \param nHeight Texture height.
+      /// \param iBufferFlags Which buffers should be included in the framebuffer, use binary OR with FBO_BUFFER_FLAG values.
+      /// \returns Pointer to new Frame Buffer Object.
+      Phoenix::Graphics::CFrameBufferObject * CreateFramebuffer( const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
+								 unsigned int nWidth, unsigned int nHeight, 
+								 int iBufferFlags = 0 );
+      ////////////////////
+      /// Attaches framebuffer for rendering to it.
+      /// \warn Framebuffers cannot be used consequently, only one can be commited/rolled back at a time.
+      /// \param rFBO Framebuffer to render to.
+      void CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO );
+      ////////////////////
+      /// Detaches (any) framebuffer from rendering.
+      /// \param rFBO Framebuffer to detach.
+      /// \warn Given FBO must be previously attached.
+      void RollbackFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO);
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
