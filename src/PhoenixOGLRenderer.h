@@ -549,20 +549,29 @@ namespace Phoenix
       /// \param rIndexArray Reference to IndexArray.
       void RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray );
       ////////////////////
-      /// Creates a framebuffer for given texture.
-      /// \param hTexture Reference to texture 
-      /// \param nWidth Texture width.
-      /// \param nHeight Texture height.
+      /// Creates a framebuffer.
+      /// \param nWidth Framebuffer width.
+      /// \param nHeight Framebuffer height.
       /// \param iBufferFlags Which buffers should be included in the framebuffer, use binary OR with FBO_BUFFER_FLAG values.
       /// \returns Pointer to new Frame Buffer Object.
-      Phoenix::Graphics::CFrameBufferObject * CreateFramebuffer( const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
-								 unsigned int nWidth, unsigned int nHeight, 
+      Phoenix::Graphics::CFrameBufferObject * CreateFramebuffer( unsigned int nWidth, unsigned int nHeight, 
 								 int iBufferFlags = 0 );
+      ////////////////////
+      /// Attaches texture to a framebuffer.
+      /// \param rFBO Framebuffer where texture is attached to.
+      /// \param hTexture Reference to texture which is attached.
+      /// \param nColorBuffer To which colorbuffer this texture will be attahed. Default is first, 0.
+      /// \returns Zero on success, non-zero on error.
+      int AttachTextureToFramebuffer( Phoenix::Graphics::CFrameBufferObject & rFBO, 
+				      const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
+				      unsigned int nColorBuffer = 0 );
       ////////////////////
       /// Attaches framebuffer for rendering to it.
       /// \warn Framebuffers cannot be used consequently, only one can be commited/rolled back at a time.
       /// \param rFBO Framebuffer to render to.
-      void CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO );
+      /// \param nColorBufferCount Number of color buffers that will be rendered.  By default, only first one is rendered.
+      /// \warn Each of the first #nColorBufferCount buffers must have a texture assigned!
+      void CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBufferCount = 1);
       ////////////////////
       /// Detaches (any) framebuffer from rendering.
       /// \param rFBO Framebuffer to detach.

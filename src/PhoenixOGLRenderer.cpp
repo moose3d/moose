@@ -18,6 +18,16 @@ using std::cerr;
 using std::ifstream;
 using std::ios;
 /////////////////////////////////////////////////////////////////
+/// Famous last words: Eight color buffers is enough for anyone :)
+const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT, 
+				  GL_COLOR_ATTACHMENT1_EXT,
+				  GL_COLOR_ATTACHMENT2_EXT,
+				  GL_COLOR_ATTACHMENT3_EXT,
+				  GL_COLOR_ATTACHMENT4_EXT,
+				  GL_COLOR_ATTACHMENT5_EXT,
+				  GL_COLOR_ATTACHMENT6_EXT,
+				  GL_COLOR_ATTACHMENT7_EXT };
+/////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
   Init();
@@ -189,6 +199,12 @@ void
 Phoenix::Graphics::COglRenderer::Finalize()
 {
   glFinish();
+  // disable textures, these tend to make nasty problems.
+  for( int i=0;i<TEXTURE_HANDLE_COUNT;i++)
+  {
+    glActiveTextureARB( GL_TEXTURE0_ARB+i);
+    glDisable( GL_TEXTURE_2D);
+  }
   // Remember call buffer swapping from another source.
 }
 /////////////////////////////////////////////////////////////////
@@ -1557,8 +1573,7 @@ Phoenix::Graphics::COglRenderer::LocateUniformShaderParam( Phoenix::Graphics::CS
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFrameBufferObject * 
-Phoenix::Graphics::COglRenderer::CreateFramebuffer( const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
-						    unsigned int nWidth, unsigned int nHeight, 
+Phoenix::Graphics::COglRenderer::CreateFramebuffer( unsigned int nWidth, unsigned int nHeight, 
 						    int iBufferFlags )
 {
   GLuint iFBO;
@@ -1569,11 +1584,10 @@ Phoenix::Graphics::COglRenderer::CreateFramebuffer( const Phoenix::Default::TEXT
   glGenFramebuffersEXT(1, &iFBO);
   pFBO = new CFrameBufferObject( iFBO, nWidth, nHeight );
 
-  // Duplicate handle to texture
-  g_DefaultTextureManager->DuplicateHandle( hTexture, pFBO->GetTextureHandle() );
+  
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, pFBO->GetID());
   
-  if ( iBufferFlags && FBO_DEPTH_BUFFER )
+  if ( iBufferFlags & FBO_DEPTH_BUFFER )
   {
     ////////////////////
     // Create depth buffer
@@ -1588,11 +1602,29 @@ Phoenix::Graphics::COglRenderer::CreateFramebuffer( const Phoenix::Default::TEXT
 				 GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
   }
   
-  if ( !hTexture.IsNull())
+  
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  // Return object pointer.
+  return pFBO;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::CFrameBufferObject & rFBO, 
+							     const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
+							     unsigned int nColorBuffer )
+{
+  int iRetval = 1;
+  if ( !hTexture.IsNull() )
   {
+
+    // bind frame buffer.
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
+
+    // Duplicate handle to texture
+    g_DefaultTextureManager->DuplicateHandle( hTexture, rFBO.GetTextureHandle( nColorBuffer ) );  
     ////////////////////
     // Attach texture to framebuffer
-    COglTexture *pTexture = g_DefaultTextureManager->GetResource( pFBO->GetTextureHandle() );
+    COglTexture *pTexture = g_DefaultTextureManager->GetResource( rFBO.GetTextureHandle(nColorBuffer) );
 
     // Determine texture type
     GLenum iTexType = GL_TEXTURE_2D;
@@ -1602,26 +1634,41 @@ Phoenix::Graphics::COglRenderer::CreateFramebuffer( const Phoenix::Default::TEXT
       iTexType = GL_TEXTURE_2D;
       break;
     }
+    unsigned int nBufferNumber = nColorBuffer % TEXTURE_HANDLE_COUNT;
     /////////////////////////////////////////////////////////////////
     glBindTexture(iTexType, pTexture->GetID());
-    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, 
-			       iTexType, pTexture->GetID(), 0);
-    glGenerateMipmapEXT( iTexType );
-  }
 
-  GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-  /// If there were any errors, clean up and return NULL.
-  if ( status !=  GL_FRAMEBUFFER_COMPLETE_EXT )
-  {
-    delete pFBO;
-    pFBO = NULL;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, 
+			       GL_COLOR_ATTACHMENT0_EXT+nBufferNumber, 
+			       iTexType, pTexture->GetID(), 0);
+    
+    /////////////////////////////////////////////////////////////////
+    /// THIS MIGHT REQUIRE TINKERING. I don't know should filters be set
+    /// before actually using the texture or not... if there are problems, 
+    /// this might be the culprit.
+    glGenerateMipmapEXT( iTexType );
+    /////////////////////////////////////////////////////////////////
+    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+    /// If there were any errors, clean up and return NULL.
+    if ( status !=  GL_FRAMEBUFFER_COMPLETE_EXT )
+    {
+      iRetval = 1;      
+    }
+    // disable frame buffer
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    iRetval = 0;
   }
-  // Return object pointer.
-  return pFBO;
+  
+  return iRetval;
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO )
+Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBufferCount )
 {
   // Bind frame buffer.
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
@@ -1630,6 +1677,12 @@ Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFr
   // (This might not be necessary, but sounds resonably now)
   glPushAttrib(GL_VIEWPORT_BIT);
   glViewport(0,0, (unsigned int)rFBO.GetWidth(), (unsigned int)rFBO.GetHeight());
+
+  // select render targets.
+  // glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT) or glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT) or etc.
+  // but this is better; it allows multiple buffers to be rendered via parameter.
+  // Output to buffers must be controlled via GLSL fragment shaders.
+  glDrawBuffers( nColorBufferCount % TEXTURE_HANDLE_COUNT, g_ColorBufferNames );
   
 }
 /////////////////////////////////////////////////////////////////
