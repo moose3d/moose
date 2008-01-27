@@ -17,6 +17,7 @@ Phoenix::Graphics::CCamera::CCamera() : COrientable()
 {
   SetFieldOfView(45.0);
   SetProjectionChanged(1);
+  m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::~CCamera()
