@@ -14,8 +14,8 @@ namespace Phoenix
 			       public Phoenix::Spatial::CDimensional2D
     {
     protected:
-      /// Handle to a texture.
-      Phoenix::Default::TEXTURE_HANDLE m_hTexture;
+      /// Handles to a textures.
+      Phoenix::Default::TEXTURE_HANDLE m_hTextures[TEXTURE_HANDLE_COUNT];
       /// Renderbuffer for depth buffer.
       unsigned int m_nDepthBufferId;
     public:
@@ -36,13 +36,15 @@ namespace Phoenix
       /// Destructor.
       ~CFrameBufferObject();
       ////////////////////
-      /// Returns texture handle of this framebuffer.
+      /// Returns texture handle of selected colorbuffer.
+      /// \param nColorBuffer Which color buffer.
       /// \returns TEXTURE_HANDLE
-      Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle();
+      Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle( unsigned int nColorBuffer = 0);
       ////////////////////
-      /// Returns texture handle of this framebuffer.
+      /// Returns texture handle of selected colorbuffer.
+      /// \param nColorBuffer Which color buffer.
       /// \returns TEXTURE_HANDLE
-      const Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle() const;
+      const Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle( unsigned int nColorBuffer = 0) const;
       ////////////////////
       /// Returns reference to depth buffer id.
       /// \returns Depth Buffer id.
@@ -84,15 +86,15 @@ Phoenix::Graphics::CFrameBufferObject::GetDepthBufferId() const
 }
 /////////////////////////////////////////////////////////////////
 inline const Phoenix::Default::TEXTURE_HANDLE & 
-Phoenix::Graphics::CFrameBufferObject::GetTextureHandle() const
+Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( unsigned int nUnit ) const
 {
-  return m_hTexture;
+  return m_hTextures[nUnit % TEXTURE_HANDLE_COUNT];
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Default::TEXTURE_HANDLE & 
-Phoenix::Graphics::CFrameBufferObject::GetTextureHandle()
+Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( unsigned int nUnit )
 {
-  return m_hTexture;
+  return m_hTextures[nUnit % TEXTURE_HANDLE_COUNT];
 }
 /////////////////////////////////////////////////////////////////
 #endif
