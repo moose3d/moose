@@ -20,13 +20,13 @@ using std::ios;
 /////////////////////////////////////////////////////////////////
 /// Famous last words: Eight color buffers is enough for anyone :)
 const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT, 
-				  GL_COLOR_ATTACHMENT1_EXT,
-				  GL_COLOR_ATTACHMENT2_EXT,
-				  GL_COLOR_ATTACHMENT3_EXT,
-				  GL_COLOR_ATTACHMENT4_EXT,
-				  GL_COLOR_ATTACHMENT5_EXT,
-				  GL_COLOR_ATTACHMENT6_EXT,
-				  GL_COLOR_ATTACHMENT7_EXT };
+				      GL_COLOR_ATTACHMENT1_EXT,
+				      GL_COLOR_ATTACHMENT2_EXT,
+				      GL_COLOR_ATTACHMENT3_EXT,
+				      GL_COLOR_ATTACHMENT4_EXT,
+				      GL_COLOR_ATTACHMENT5_EXT,
+				      GL_COLOR_ATTACHMENT6_EXT,
+				      GL_COLOR_ATTACHMENT7_EXT };
 /////////////////////////////////////////////////////////////////
 #define DISABLE_ALL_TEXTURES(){			\
     glDisable(GL_TEXTURE_2D);			\
@@ -957,10 +957,11 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nVertexShader, strLog );
-      std::cerr << strLog << std::endl;
+      std::cerr << strLog << std::endl;      
     }
 
   }
+
   ////////////////////
   // Fragment shader loading 
   if ( szFragmentShaderCode != NULL && strlen(szFragmentShaderCode) > 0 )
@@ -985,9 +986,9 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nFragmentShader, strLog );
-      std::cerr << strLog << std::endl;
+      std::cerr << strLog << std::endl;      
     }
-      
+
 
   }
   // check that shader code exists
