@@ -17,6 +17,7 @@ using std::cerr;
 using std::endl; 
 /////////////////////////////////////////////////////////////////
 int g_bLoop = 1;
+int g_bGlow = 0;
 const float g_fRotationSpeedPerSec = 56.15f;
 /////////////////////////////////////////////////////////////////
 int main()
@@ -30,25 +31,25 @@ int main()
   
   CCamera camera;
   camera.SetPosition( 0, 0.0f,43.0f);
-  camera.SetViewport( 0,0, 256, 512 );
+  camera.SetViewport( 0,0, 640, 480 );
   camera.SetNearClipping( 0.1f);
-  camera.SetFarClipping( 100.0f );
+  camera.SetFarClipping( 500.0f );
   camera.SetFieldOfView( 43.0f);
   camera.RotateAroundRight(0.0f);
   
   CCamera camera2;
   camera2.SetPosition( 0, 0.0f,0.0f);
-  camera2.SetViewport( 0,0, 256,512 );
+  camera2.SetViewport( 0,0, 640,480 );
   camera2.SetNearClipping( -2);
   camera2.SetFarClipping( 20 );
-  camera2.SetViewOrtho( 0, 256, 0, 512);
+  camera2.SetViewOrtho( 0, 640, 0, 480);
   
   CCamera camera3;
   camera3.SetPosition( 0, 0.0f,0.0f);
-  camera3.SetViewport( 256,0, 256, 512 );
+  camera3.SetViewport( 256,0, 256, 256 );
   camera3.SetNearClipping( -2);
   camera3.SetFarClipping( 20.0f );
-  camera3.SetViewOrtho( 0, 256, 0, 512);
+  camera3.SetViewOrtho( 0, 256, 0, 256);
 
 
 
@@ -93,9 +94,9 @@ int main()
   COglTexture *pTextureReal  = pOglRenderer->CreateTexture("./Resources/Textures/sovereign.tga");
   COglTexture *pTextureReal2 = pOglRenderer->CreateTexture("./Resources/Textures/sovereign_glow.tga");
 
-  COglTexture *pFBOTexture     = pOglRenderer->CreateTexture( 256, 512, TEXTURE_RECT);
-  COglTexture *pFBOTexture2    = pOglRenderer->CreateTexture( 256, 512, TEXTURE_RECT);
-  COglTexture *pFBOTexture3    = pOglRenderer->CreateTexture( 256, 512, TEXTURE_RECT);
+  COglTexture *pFBOTexture     = pOglRenderer->CreateTexture( 640, 480, TEXTURE_RECT);
+  COglTexture *pFBOTexture2    = pOglRenderer->CreateTexture( 640, 480, TEXTURE_RECT);
+  COglTexture *pFBOTexture3    = pOglRenderer->CreateTexture( 640, 480, TEXTURE_RECT);
   
   TEXTURE_HANDLE hFramebuffer;
   TEXTURE_HANDLE hFramebuffer2;
@@ -121,7 +122,7 @@ int main()
   CTimer timer;
   timer.Reset();
   
-  CFrameBufferObject *pFrameBuffer = pOglRenderer->CreateFramebuffer( 256, 512, FBO_DEPTH_BUFFER );
+  CFrameBufferObject *pFrameBuffer = pOglRenderer->CreateFramebuffer( 640, 480, FBO_DEPTH_BUFFER );
   assert( pFrameBuffer != NULL );
   assert( pOglRenderer->AttachTextureToFramebuffer( *pFrameBuffer, hFramebuffer,  0 ) == 0);
   assert( pOglRenderer->AttachTextureToFramebuffer( *pFrameBuffer, hFramebuffer2, 1 ) == 0);
@@ -132,6 +133,7 @@ int main()
   
   CShader *pBlurShader = pOglRenderer->CreateShader( "./Resources/Shaders/blur.vertex.glsl",
 						     "./Resources/Shaders/blur.frag.glsl");
+
   int bMousePressed = 0;
   CVector2<int> vMouseStart, vMouseEnd;
   camera.UpdateProjection();
@@ -147,22 +149,25 @@ int main()
   aQuads[0].SetTextureCoordinates( 0.0f,0.0f );
   aQuads[0].SetTextureCoordinates( 0.0f,0.0f, 1 );
   aQuads[0].SetTextureCoordinates( 0.0f,0.0f, 2 );
-  aQuads[1].SetPosition( 256,0,0);
-  aQuads[1].SetTextureCoordinates( 255.0f,0.0f );
-  aQuads[1].SetTextureCoordinates( 255.0f,0.0f,   1 );
-  aQuads[1].SetTextureCoordinates( 255.0f,0.0f, 2 );
-  aQuads[2].SetPosition( 256,512,0);
-  aQuads[2].SetTextureCoordinates( 255.0f,255.0f );
-  aQuads[2].SetTextureCoordinates( 255.0f,255.0f,     1 );
-  aQuads[2].SetTextureCoordinates( 255.0f,255.0f, 2 );
-  aQuads[3].SetPosition( 0,512,0);
-  aQuads[3].SetTextureCoordinates( 0.0f,255.0f );
-  aQuads[3].SetTextureCoordinates( 0.0f,255.0f,   1 );
-  aQuads[3].SetTextureCoordinates( 0.0f,255.0f, 2 );
+  aQuads[1].SetPosition( pFrameBuffer->GetWidth()-1.0f,0,0);
+  aQuads[1].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,0.0f );
+  aQuads[1].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,0.0f,   1 );
+  aQuads[1].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,0.0f, 2 );
+  aQuads[2].SetPosition( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f,0);
+  aQuads[2].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f );
+  aQuads[2].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f,     1 );
+  aQuads[2].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f, 2 );
+  aQuads[3].SetPosition( 0,pFrameBuffer->GetWidth()-1.0f,0);
+  aQuads[3].SetTextureCoordinates( 0.0f,pFrameBuffer->GetWidth()-1.0f );
+  aQuads[3].SetTextureCoordinates( 0.0f,pFrameBuffer->GetWidth()-1.0f,   1 );
+  aQuads[3].SetTextureCoordinates( 0.0f,pFrameBuffer->GetWidth()-1.0f, 2 );
   CVector4<unsigned char> vWhite(255,255,255,255);
+  CFpsCounter fps;
+  fps.Reset();
+
   while( g_bLoop )
   {
-    
+    fps.Update();
     while ( SDL_PollEvent(&event ))
     {
       switch(event.type)
@@ -188,7 +193,14 @@ int main()
 	{
 	  camera.RotateAroundUp( -1.1f );
 	} 
-
+	else if ( event.key.keysym.sym == SDLK_SPACE )
+	{
+	  g_bGlow = !g_bGlow;
+	  if ( g_bGlow )
+	  {
+	    g_DefaultTextureManager->AttachHandle( "ship_texture_glow",  shipModel.GetTextureHandle(1));
+	  }
+	} 
 	break;
       case SDL_MOUSEBUTTONDOWN:
 	bMousePressed = 1;
@@ -226,10 +238,11 @@ int main()
    
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
 
-
+    if ( g_bGlow )
+    {
     /////////////////////////////////////////////////////////////////
     // Render all into framebuffer texture
-    glClearColor( 0,1,0,1);
+    glClearColor( 0,0,0,1);
     pOglRenderer->CommitFrameBuffer( *pFrameBuffer, 2 );
        pOglRenderer->CommitCamera( camera );
        pOglRenderer->ClearBuffer( COLOR_BUFFER );
@@ -237,34 +250,65 @@ int main()
        pOglRenderer->CommitState( STATE_DEPTH_TEST);
        pOglRenderer->DisableState( STATE_LIGHTING );
        pOglRenderer->DisableState( STATE_FACECULLING );
+
        // Rotate 
-       pOglRenderer->CommitTransform( transform);
+       //pOglRenderer->CommitTransform( transform);
          pOglRenderer->CommitShader( pShader );
 	 pOglRenderer->CommitUniformShaderParam( *pShader, "tex0", 0);
 	 pOglRenderer->CommitUniformShaderParam( *pShader, "tex1", 1);
          pOglRenderer->CommitModel( shipModel );
  	pOglRenderer->CommitShader( NULL );
-       pOglRenderer->RollbackTransform();
+	//pOglRenderer->RollbackTransform();
     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
     pOglRenderer->DisableTexture(1);
     pOglRenderer->DisableTexture(2);
+    pOglRenderer->CommitShader( pBlurShader );
     /////////////////////////////////////////////////////////////////
     pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 2 );
+       //pOglRenderer->CommitCamera( camera );
+       pOglRenderer->CommitCamera( camera2 );
+       pOglRenderer->ClearBuffer( COLOR_BUFFER );
+       pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+       pOglRenderer->CommitState( STATE_DEPTH_TEST);
+       pOglRenderer->DisableState( STATE_LIGHTING );
+       pOglRenderer->DisableState( STATE_FACECULLING );
 
        pOglRenderer->CommitTexture( 0, pFBOTexture2);
-
-       pOglRenderer->CommitShader( pBlurShader );
-       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "tex0", 0);
+       //pOglRenderer->CommitShader( pBlurShader );
+       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "tex0",      0);
+       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "bVertical", 1);
        glBegin( GL_QUADS );
          pOglRenderer->CommitVertex(aQuads[0]);
          pOglRenderer->CommitVertex(aQuads[1]);
          pOglRenderer->CommitVertex(aQuads[2]);
          pOglRenderer->CommitVertex(aQuads[3]);
        glEnd();
-       pOglRenderer->CommitShader( NULL );
+       //pOglRenderer->CommitShader( NULL );
        pOglRenderer->DisableTexture( 0, pFBOTexture2);
     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
 
+    pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 1 );
+       pOglRenderer->CommitCamera( camera2 );
+       pOglRenderer->ClearBuffer( COLOR_BUFFER );
+       pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+       pOglRenderer->CommitState( STATE_DEPTH_TEST);
+       pOglRenderer->DisableState( STATE_LIGHTING );
+       pOglRenderer->DisableState( STATE_FACECULLING );
+
+       pOglRenderer->CommitTexture( 0, pFBOTexture3);
+       //pOglRenderer->CommitShader( pBlurShader );
+       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "tex0",      0);
+       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "bVertical", 0);
+       glBegin( GL_QUADS );
+         pOglRenderer->CommitVertex(aQuads[0]);
+         pOglRenderer->CommitVertex(aQuads[1]);
+         pOglRenderer->CommitVertex(aQuads[2]);
+         pOglRenderer->CommitVertex(aQuads[3]);
+       glEnd();
+       //pOglRenderer->CommitShader( NULL );
+       pOglRenderer->DisableTexture( 0, pFBOTexture2);
+    pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
+    pOglRenderer->CommitShader( NULL );
 
     glClearColor( 0,0,0,1 );
     pOglRenderer->CommitColor( vWhite );
@@ -275,29 +319,57 @@ int main()
     pOglRenderer->DisableState( STATE_FACECULLING );
 
     /////////////////////////////////////////////////////////////////
-   
+    
 
+    
     pOglRenderer->CommitCamera( camera2 );
     pOglRenderer->CommitTexture( 0, pFBOTexture);
-    
     glBegin( GL_QUADS );
       pOglRenderer->CommitVertex(aQuads[0]);
       pOglRenderer->CommitVertex(aQuads[1]);
       pOglRenderer->CommitVertex(aQuads[2]);
       pOglRenderer->CommitVertex(aQuads[3]);
     glEnd();
-
+    pOglRenderer->DisableState( STATE_DEPTH_TEST );
+    pOglRenderer->CommitState( STATE_BLENDING );
+    pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE );
+    pOglRenderer->CommitTexture( 0, pFBOTexture2);
+    glBegin( GL_QUADS );
+      pOglRenderer->CommitVertex(aQuads[0]);
+      pOglRenderer->CommitVertex(aQuads[1]);
+      pOglRenderer->CommitVertex(aQuads[2]);
+      pOglRenderer->CommitVertex(aQuads[3]);
+    glEnd();
+    pOglRenderer->DisableState( STATE_BLENDING );
     /////////////////////////////////////////////////////////////////
+//     pOglRenderer->CommitCamera( camera3 );
+//     pOglRenderer->CommitTexture( 0, pFBOTexture2);
+//     glBegin( GL_QUADS );
+//       pOglRenderer->CommitVertex(aQuads[0]);
+//       pOglRenderer->CommitVertex(aQuads[1]);
+//       pOglRenderer->CommitVertex(aQuads[2]);
+//       pOglRenderer->CommitVertex(aQuads[3]);
+//     glEnd();    
 
-    pOglRenderer->CommitCamera( camera3 );
-    pOglRenderer->CommitTexture( 0, pFBOTexture3);
-    glBegin( GL_QUADS );
-      pOglRenderer->CommitVertex(aQuads[0]);
-      pOglRenderer->CommitVertex(aQuads[1]);
-      pOglRenderer->CommitVertex(aQuads[2]);
-      pOglRenderer->CommitVertex(aQuads[3]);
-    glEnd();
 
+    }
+    else 
+    {
+      g_DefaultTextureManager->Release( shipModel.GetTextureHandle(1) );
+       pOglRenderer->CommitCamera( camera );
+       pOglRenderer->ClearBuffer( COLOR_BUFFER );
+       pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+       pOglRenderer->CommitState( STATE_DEPTH_TEST);
+       pOglRenderer->DisableState( STATE_LIGHTING );
+       pOglRenderer->DisableState( STATE_FACECULLING );
+       // Rotate 
+       //pOglRenderer->CommitTransform( transform);
+       //pOglRenderer->CommitShader( pShader );
+       //pOglRenderer->CommitUniformShaderParam( *pShader, "tex0", 0);
+       //pOglRenderer->CommitUniformShaderParam( *pShader, "tex1", 1);
+         pOglRenderer->CommitModel( shipModel );
+       //pOglRenderer->CommitShader( NULL );
+    }
 
 
 
@@ -309,6 +381,12 @@ int main()
     camera3.UpdateProjection();
     camera3.UpdateView();
     pOglRenderer->Finalize();
+    fps++;
+    if ( fps.HasPassed(1,0))
+    {
+      cerr << "FPS: " << fps << endl;
+      fps.Reset();
+    }
     CSDLScreen::GetInstance()->SwapBuffers();
     timer.Update();
   }
