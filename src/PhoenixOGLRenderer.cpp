@@ -811,6 +811,7 @@ LoadFile( const char * szFilename, std::string &sContents )
     {
       getline( fsFile, sLine );
       sContents.append( sLine );
+      sContents.append( "\n" );
     }
     // close the file 
     fsFile.close();
