@@ -29,29 +29,34 @@ int main()
     return 1;
   }
   
+  const unsigned int FRAMEBUFFER_WIDTH = 170;
+  const unsigned int FRAMEBUFFER_HEIGHT = 128;
+
   CCamera camera;
   camera.SetPosition( 0, 0.0f,43.0f);
   camera.SetViewport( 0,0, 640, 480 );
   camera.SetNearClipping( 0.1f);
   camera.SetFarClipping( 500.0f );
   camera.SetFieldOfView( 43.0f);
-  camera.RotateAroundRight(0.0f);
+
   
-  CCamera camera2;
-  camera2.SetPosition( 0, 0.0f,0.0f);
-  camera2.SetViewport( 0,0, 640,480 );
-  camera2.SetNearClipping( -2);
-  camera2.SetFarClipping( 20 );
-  camera2.SetViewOrtho( 0, 640, 0, 480);
+  CCamera cameraScreenQuad;
+  cameraScreenQuad.SetPosition( 0, 0.0f,0.0f);
+  cameraScreenQuad.SetViewport( 0,0, 640,480 );
+  cameraScreenQuad.SetNearClipping( -2);
+  cameraScreenQuad.SetFarClipping( 20 );
+  cameraScreenQuad.SetViewOrtho( 0, 640, 0, 480);
   
-  CCamera camera3;
-  camera3.SetPosition( 0, 0.0f,0.0f);
-  camera3.SetViewport( 256,0, 256, 256 );
-  camera3.SetNearClipping( -2);
-  camera3.SetFarClipping( 20.0f );
-  camera3.SetViewOrtho( 0, 256, 0, 256);
+
+  //cameraFBO.SetViewport( 0,0, FRAMEBUFFER_HEIGHT, FRAMEBUFFER_HEIGHT );
 
 
+  CCamera cameraFBOQuad;
+  cameraFBOQuad.SetPosition( 0, 0.0f,0.0f);
+  cameraFBOQuad.SetViewport( 0,0, FRAMEBUFFER_WIDTH,FRAMEBUFFER_HEIGHT );
+  cameraFBOQuad.SetNearClipping( -2);
+  cameraFBOQuad.SetFarClipping( 20 );
+  cameraFBOQuad.SetViewOrtho( 0, FRAMEBUFFER_WIDTH, 0, FRAMEBUFFER_HEIGHT);
 
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -94,17 +99,17 @@ int main()
   COglTexture *pTextureReal  = pOglRenderer->CreateTexture("./Resources/Textures/sovereign.tga");
   COglTexture *pTextureReal2 = pOglRenderer->CreateTexture("./Resources/Textures/sovereign_glow.tga");
 
-  COglTexture *pFBOTexture     = pOglRenderer->CreateTexture( 640, 480, TEXTURE_RECT);
-  COglTexture *pFBOTexture2    = pOglRenderer->CreateTexture( 640, 480, TEXTURE_RECT);
-  COglTexture *pFBOTexture3    = pOglRenderer->CreateTexture( 640, 480, TEXTURE_RECT);
+  COglTexture *pFBOTexture     = pOglRenderer->CreateTexture( FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, TEXTURE_RECT);
+  COglTexture *pFBOTexture2    = pOglRenderer->CreateTexture( FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, TEXTURE_RECT);
+
   
   TEXTURE_HANDLE hFramebuffer;
   TEXTURE_HANDLE hFramebuffer2;
-  TEXTURE_HANDLE hFramebuffer3;
+
 
   g_DefaultTextureManager->Create( pFBOTexture,     "framebuffer_texture",   hFramebuffer );
   g_DefaultTextureManager->Create( pFBOTexture2,    "framebuffer_texture2",  hFramebuffer2 );
-  g_DefaultTextureManager->Create( pFBOTexture3,    "framebuffer_texture3",  hFramebuffer3 );
+
   g_DefaultTextureManager->Create( pTextureReal,    "ship_texture_real",      shipModel.GetTextureHandle(0));
   g_DefaultTextureManager->Create( pTextureReal2,   "ship_texture_glow",      shipModel.GetTextureHandle(1));
   
@@ -122,11 +127,11 @@ int main()
   CTimer timer;
   timer.Reset();
   
-  CFrameBufferObject *pFrameBuffer = pOglRenderer->CreateFramebuffer( 640, 480, FBO_DEPTH_BUFFER );
+  CFrameBufferObject *pFrameBuffer = pOglRenderer->CreateFramebuffer( FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, FBO_DEPTH_BUFFER );
   assert( pFrameBuffer != NULL );
   assert( pOglRenderer->AttachTextureToFramebuffer( *pFrameBuffer, hFramebuffer,  0 ) == 0);
   assert( pOglRenderer->AttachTextureToFramebuffer( *pFrameBuffer, hFramebuffer2, 1 ) == 0);
-  assert( pOglRenderer->AttachTextureToFramebuffer( *pFrameBuffer, hFramebuffer3, 2 ) == 0);
+
   
   CShader *pShader = pOglRenderer->CreateShader( "./Resources/Shaders/fbotest.vertex.glsl",
 						 "./Resources/Shaders/fbotest.frag.glsl");
@@ -136,31 +141,51 @@ int main()
 
   int bMousePressed = 0;
   CVector2<int> vMouseStart, vMouseEnd;
-  camera.UpdateProjection();
-  camera.UpdateView();
-  camera2.UpdateProjection();
-  camera2.UpdateView();
-  camera3.UpdateProjection();
-  camera3.UpdateView();
+
+  float fFramebufWidth = pFrameBuffer->GetWidth();
+  float fFramebufHeight = pFrameBuffer->GetHeight();
 
   CVertex aQuads[4];
-
+  CVertex aQuadsScreen[4];
   aQuads[0].SetPosition( 0,0,0);
   aQuads[0].SetTextureCoordinates( 0.0f,0.0f );
   aQuads[0].SetTextureCoordinates( 0.0f,0.0f, 1 );
   aQuads[0].SetTextureCoordinates( 0.0f,0.0f, 2 );
-  aQuads[1].SetPosition( pFrameBuffer->GetWidth()-1.0f,0,0);
-  aQuads[1].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,0.0f );
-  aQuads[1].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,0.0f,   1 );
-  aQuads[1].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,0.0f, 2 );
-  aQuads[2].SetPosition( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f,0);
-  aQuads[2].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f );
-  aQuads[2].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f,     1 );
-  aQuads[2].SetTextureCoordinates( pFrameBuffer->GetWidth()-1.0f,pFrameBuffer->GetWidth()-1.0f, 2 );
-  aQuads[3].SetPosition( 0,pFrameBuffer->GetWidth()-1.0f,0);
-  aQuads[3].SetTextureCoordinates( 0.0f,pFrameBuffer->GetWidth()-1.0f );
-  aQuads[3].SetTextureCoordinates( 0.0f,pFrameBuffer->GetWidth()-1.0f,   1 );
-  aQuads[3].SetTextureCoordinates( 0.0f,pFrameBuffer->GetWidth()-1.0f, 2 );
+  aQuads[1].SetPosition( fFramebufWidth,0,0);
+  aQuads[1].SetTextureCoordinates( fFramebufWidth,0.0f );
+  aQuads[1].SetTextureCoordinates( fFramebufWidth,0.0f,   1 );
+  aQuads[1].SetTextureCoordinates( fFramebufWidth,0.0f, 2 );
+  aQuads[2].SetPosition( fFramebufWidth,fFramebufHeight,0);
+  aQuads[2].SetTextureCoordinates( fFramebufWidth, fFramebufHeight );
+  aQuads[2].SetTextureCoordinates( fFramebufWidth, fFramebufHeight, 1 );
+  aQuads[2].SetTextureCoordinates( fFramebufWidth, fFramebufHeight,  2 );
+  aQuads[3].SetPosition( 0,fFramebufHeight,0);
+  aQuads[3].SetTextureCoordinates( 0.0f,fFramebufHeight );
+  aQuads[3].SetTextureCoordinates( 0.0f,fFramebufHeight,   1 );
+  aQuads[3].SetTextureCoordinates( 0.0f,fFramebufHeight, 2 );
+
+  float fRealScreenWidth =  pFrameBuffer->GetWidth();
+  float fRealScreenHeight = pFrameBuffer->GetHeight();
+  float fPosX = cameraScreenQuad.GetViewport()[2];
+  float fPosY = cameraScreenQuad.GetViewport()[3];
+
+  aQuadsScreen[0].SetPosition( 0,0,0);
+  aQuadsScreen[0].SetTextureCoordinates( 0.0f,0.0f );
+  aQuadsScreen[0].SetTextureCoordinates( 0.0f,0.0f, 1 );
+  aQuadsScreen[0].SetTextureCoordinates( 0.0f,0.0f, 2 );
+  aQuadsScreen[1].SetPosition( fPosX,0,0);
+  aQuadsScreen[1].SetTextureCoordinates( fRealScreenWidth,0.0f );
+  aQuadsScreen[1].SetTextureCoordinates( fRealScreenWidth,0.0f,   1 );
+  aQuadsScreen[1].SetTextureCoordinates( fRealScreenWidth,0.0f, 2 );
+  aQuadsScreen[2].SetPosition( fPosX,fPosY,0);
+  aQuadsScreen[2].SetTextureCoordinates( fRealScreenWidth,fRealScreenHeight );
+  aQuadsScreen[2].SetTextureCoordinates( fRealScreenWidth,fRealScreenHeight, 1 );
+  aQuadsScreen[2].SetTextureCoordinates( fRealScreenWidth,fRealScreenHeight, 2 );
+  aQuadsScreen[3].SetPosition( 0,fPosY,0);
+  aQuadsScreen[3].SetTextureCoordinates( 0.0f,fRealScreenHeight );
+  aQuadsScreen[3].SetTextureCoordinates( 0.0f,fRealScreenHeight,   1 );
+  aQuadsScreen[3].SetTextureCoordinates( 0.0f,fRealScreenHeight, 2 );
+  
   CVector4<unsigned char> vWhite(255,255,255,255);
   CFpsCounter fps;
   fps.Reset();
@@ -198,7 +223,7 @@ int main()
 	  g_bGlow = !g_bGlow;
 	  if ( g_bGlow )
 	  {
-	    g_DefaultTextureManager->AttachHandle( "ship_texture_glow",  shipModel.GetTextureHandle(1));
+
 	  }
 	} 
 	break;
@@ -221,6 +246,7 @@ int main()
 	  camera.VirtualTrackball( CVector3<float>(0,0,0),
 				   vMouseStart,
 				   vMouseEnd);
+
 	  vMouseStart = vMouseEnd;
 
 	} 
@@ -237,20 +263,54 @@ int main()
  
    
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
+    glClearColor(0,0,0,0);
+    g_DefaultTextureManager->Release( shipModel.GetTextureHandle(1) );
+
+    pOglRenderer->CommitCamera( camera );
+    pOglRenderer->ClearBuffer( COLOR_BUFFER );
+    pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+    pOglRenderer->CommitState( STATE_DEPTH_TEST);
+    pOglRenderer->DisableState( STATE_LIGHTING );
+    pOglRenderer->DisableState( STATE_FACECULLING );
+    pOglRenderer->CommitColor( vWhite );
+//     glBegin( GL_QUADS );
+//       glVertex2f(0,0);
+//       glVertex2f(253,0);
+//       glVertex2f(253,253);
+//       glVertex2f(0,253);
+//     glEnd();
+//     pOglRenderer->DisableTexture(0);
+//     pOglRenderer->DisableTexture(1);
+//      glBegin( GL_QUADS );
+//          pOglRenderer->CommitVertex(aQuadsScreen[0]);
+//          pOglRenderer->CommitVertex(aQuadsScreen[1]);
+//          pOglRenderer->CommitVertex(aQuadsScreen[2]);
+//          pOglRenderer->CommitVertex(aQuadsScreen[3]);
+//      glEnd();
+    // Rotate 
+    //pOglRenderer->CommitTransform( transform);
+    //pOglRenderer->CommitShader( pShader );
+    //pOglRenderer->CommitUniformShaderParam( *pShader, "tex0", 0);
+    //pOglRenderer->CommitUniformShaderParam( *pShader, "tex1", 1);
+    pOglRenderer->CommitModel( shipModel );
+    //pOglRenderer->CommitShader( NULL );
+
+
 
     if ( g_bGlow )
     {
+      g_DefaultTextureManager->AttachHandle( "ship_texture_glow",  shipModel.GetTextureHandle(1));
     /////////////////////////////////////////////////////////////////
     // Render all into framebuffer texture
-    glClearColor( 0,0,0,1);
-    pOglRenderer->CommitFrameBuffer( *pFrameBuffer, 2 );
+    glClearColor( 0,0,0,0);
+    pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 0 );
+       camera.SetViewport(0,0, FRAMEBUFFER_WIDTH,FRAMEBUFFER_HEIGHT);
        pOglRenderer->CommitCamera( camera );
        pOglRenderer->ClearBuffer( COLOR_BUFFER );
        pOglRenderer->ClearBuffer( DEPTH_BUFFER );
        pOglRenderer->CommitState( STATE_DEPTH_TEST);
        pOglRenderer->DisableState( STATE_LIGHTING );
        pOglRenderer->DisableState( STATE_FACECULLING );
-
        // Rotate 
        //pOglRenderer->CommitTransform( transform);
          pOglRenderer->CommitShader( pShader );
@@ -260,43 +320,50 @@ int main()
  	pOglRenderer->CommitShader( NULL );
 	//pOglRenderer->RollbackTransform();
     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
+
+    camera.SetViewport(0,0, 640,480);
+    
+
     pOglRenderer->DisableTexture(1);
-    pOglRenderer->DisableTexture(2);
-    pOglRenderer->CommitShader( pBlurShader );
-    /////////////////////////////////////////////////////////////////
-    pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 2 );
-       //pOglRenderer->CommitCamera( camera );
-       pOglRenderer->CommitCamera( camera2 );
+    pOglRenderer->DisableTexture(0);
+
+
+     /////////////////////////////////////////////////////////////////
+     pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 1 );
+
+        pOglRenderer->CommitCamera( cameraFBOQuad );
+        pOglRenderer->ClearBuffer( COLOR_BUFFER );
+        pOglRenderer->ClearBuffer( DEPTH_BUFFER );
+        pOglRenderer->DisableState( STATE_DEPTH_TEST);
+        pOglRenderer->DisableState( STATE_LIGHTING );
+        pOglRenderer->DisableState( STATE_FACECULLING );
+
+        pOglRenderer->CommitTexture( 0, pFBOTexture);
+	pOglRenderer->CommitShader( pBlurShader );
+	pOglRenderer->CommitUniformShaderParam( *pBlurShader, "tex0",      0);
+        pOglRenderer->CommitUniformShaderParam( *pBlurShader, "bVertical", 1);
+
+	glBegin( GL_QUADS );
+
+	  pOglRenderer->CommitVertex(aQuads[0]);
+	  pOglRenderer->CommitVertex(aQuads[1]);
+	  pOglRenderer->CommitVertex(aQuads[2]);
+	  pOglRenderer->CommitVertex(aQuads[3]);
+        glEnd();
+        pOglRenderer->CommitShader( NULL );
+        pOglRenderer->DisableTexture( 0, pFBOTexture);
+     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
+
+    pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 0 );
+       pOglRenderer->CommitCamera( cameraFBOQuad );
        pOglRenderer->ClearBuffer( COLOR_BUFFER );
        pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-       pOglRenderer->CommitState( STATE_DEPTH_TEST);
+       pOglRenderer->DisableState( STATE_DEPTH_TEST);
        pOglRenderer->DisableState( STATE_LIGHTING );
        pOglRenderer->DisableState( STATE_FACECULLING );
 
        pOglRenderer->CommitTexture( 0, pFBOTexture2);
-       //pOglRenderer->CommitShader( pBlurShader );
-       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "tex0",      0);
-       pOglRenderer->CommitUniformShaderParam( *pBlurShader, "bVertical", 1);
-       glBegin( GL_QUADS );
-         pOglRenderer->CommitVertex(aQuads[0]);
-         pOglRenderer->CommitVertex(aQuads[1]);
-         pOglRenderer->CommitVertex(aQuads[2]);
-         pOglRenderer->CommitVertex(aQuads[3]);
-       glEnd();
-       //pOglRenderer->CommitShader( NULL );
-       pOglRenderer->DisableTexture( 0, pFBOTexture2);
-    pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
-
-    pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 1 );
-       pOglRenderer->CommitCamera( camera2 );
-       pOglRenderer->ClearBuffer( COLOR_BUFFER );
-       pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-       pOglRenderer->CommitState( STATE_DEPTH_TEST);
-       pOglRenderer->DisableState( STATE_LIGHTING );
-       pOglRenderer->DisableState( STATE_FACECULLING );
-
-       pOglRenderer->CommitTexture( 0, pFBOTexture3);
-       //pOglRenderer->CommitShader( pBlurShader );
+       pOglRenderer->CommitShader( pBlurShader );
        pOglRenderer->CommitUniformShaderParam( *pBlurShader, "tex0",      0);
        pOglRenderer->CommitUniformShaderParam( *pBlurShader, "bVertical", 0);
        glBegin( GL_QUADS );
@@ -305,40 +372,31 @@ int main()
          pOglRenderer->CommitVertex(aQuads[2]);
          pOglRenderer->CommitVertex(aQuads[3]);
        glEnd();
-       //pOglRenderer->CommitShader( NULL );
+       pOglRenderer->CommitShader( NULL );
        pOglRenderer->DisableTexture( 0, pFBOTexture2);
     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
-    pOglRenderer->CommitShader( NULL );
+
+
 
     glClearColor( 0,0,0,1 );
+    pOglRenderer->CommitCamera( cameraScreenQuad );
     pOglRenderer->CommitColor( vWhite );
-    pOglRenderer->ClearBuffer( COLOR_BUFFER );
-    pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-    pOglRenderer->CommitState( STATE_DEPTH_TEST );
+    //pOglRenderer->ClearBuffer( COLOR_BUFFER );
+    //pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->DisableState( STATE_LIGHTING );
-    pOglRenderer->DisableState( STATE_FACECULLING );
-
-    /////////////////////////////////////////////////////////////////
-    
-
-    
-    pOglRenderer->CommitCamera( camera2 );
-    pOglRenderer->CommitTexture( 0, pFBOTexture);
-    glBegin( GL_QUADS );
-      pOglRenderer->CommitVertex(aQuads[0]);
-      pOglRenderer->CommitVertex(aQuads[1]);
-      pOglRenderer->CommitVertex(aQuads[2]);
-      pOglRenderer->CommitVertex(aQuads[3]);
-    glEnd();
+    pOglRenderer->DisableState( STATE_FACECULLING );    
     pOglRenderer->DisableState( STATE_DEPTH_TEST );
     pOglRenderer->CommitState( STATE_BLENDING );
     pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE );
-    pOglRenderer->CommitTexture( 0, pFBOTexture2);
+    pOglRenderer->CommitTexture( 0, pFBOTexture);
+    pOglRenderer->DisableTexture(1);
+    //pOglRenderer->DisableTexture(0);
+    glColor3f( 0, 1,0);
     glBegin( GL_QUADS );
-      pOglRenderer->CommitVertex(aQuads[0]);
-      pOglRenderer->CommitVertex(aQuads[1]);
-      pOglRenderer->CommitVertex(aQuads[2]);
-      pOglRenderer->CommitVertex(aQuads[3]);
+      pOglRenderer->CommitVertex(aQuadsScreen[0]);
+      pOglRenderer->CommitVertex(aQuadsScreen[1]);
+      pOglRenderer->CommitVertex(aQuadsScreen[2]);
+      pOglRenderer->CommitVertex(aQuadsScreen[3]);
     glEnd();
     pOglRenderer->DisableState( STATE_BLENDING );
     /////////////////////////////////////////////////////////////////
@@ -353,33 +411,12 @@ int main()
 
 
     }
-    else 
-    {
-      g_DefaultTextureManager->Release( shipModel.GetTextureHandle(1) );
-       pOglRenderer->CommitCamera( camera );
-       pOglRenderer->ClearBuffer( COLOR_BUFFER );
-       pOglRenderer->ClearBuffer( DEPTH_BUFFER );
-       pOglRenderer->CommitState( STATE_DEPTH_TEST);
-       pOglRenderer->DisableState( STATE_LIGHTING );
-       pOglRenderer->DisableState( STATE_FACECULLING );
-       // Rotate 
-       //pOglRenderer->CommitTransform( transform);
-       //pOglRenderer->CommitShader( pShader );
-       //pOglRenderer->CommitUniformShaderParam( *pShader, "tex0", 0);
-       //pOglRenderer->CommitUniformShaderParam( *pShader, "tex1", 1);
-         pOglRenderer->CommitModel( shipModel );
-       //pOglRenderer->CommitShader( NULL );
-    }
-
-
-
     
+    cameraScreenQuad.UpdateProjection();
+    cameraScreenQuad.UpdateView();
+
     camera.UpdateProjection();
     camera.UpdateView();
-    camera2.UpdateProjection();
-    camera2.UpdateView();
-    camera3.UpdateProjection();
-    camera3.UpdateView();
     pOglRenderer->Finalize();
     fps++;
     if ( fps.HasPassed(1,0))
