@@ -321,12 +321,13 @@ namespace Phoenix
       /// Disables texture.
       /// \param nTexUnit which texture unit does this texture belong to ( 0 - 7)
       /// \param pTexture Texture object.
-      void DisableTexture( unsigned int nTexUnit, Phoenix::Graphics::COglTexture *pTexture );
+      void DisableTexture( unsigned int nTexUnit, Phoenix::Graphics::COglTexture *pTexture = NULL);
       ////////////////////
       /// Creates new 2D texture from TGA image.
       /// \param strFilename filename for tga image.
+      /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
       /// \returns Pointer to COglTexture.
-      Phoenix::Graphics::COglTexture * CreateTexture( const std::string &strFilename );
+      Phoenix::Graphics::COglTexture * CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
       ////////////////////
       /// Creates new empty 2D texture.
       /// \param nWidth width of texture.
@@ -572,6 +573,12 @@ namespace Phoenix
       /// \param nColorBufferCount Number of color buffers that will be rendered.  By default, only first one is rendered.
       /// \warn Each of the first #nColorBufferCount buffers must have a texture assigned!
       void CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBufferCount = 1);
+      ////////////////////
+      /// Attaches framebuffer for rendering to it.
+      /// \warn Framebuffers cannot be used consequently, only one can be commited/rolled back at a time.
+      /// \param rFBO Framebuffer to render to.
+      /// \param nColorBuffer Which of the color buffers is used.
+      void CommitFrameBufferSingle( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBuffer );
       ////////////////////
       /// Detaches (any) framebuffer from rendering.
       /// \param rFBO Framebuffer to detach.

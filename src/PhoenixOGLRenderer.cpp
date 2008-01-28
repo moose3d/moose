@@ -28,6 +28,28 @@ const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT,
 				  GL_COLOR_ATTACHMENT6_EXT,
 				  GL_COLOR_ATTACHMENT7_EXT };
 /////////////////////////////////////////////////////////////////
+#define DISABLE_ALL_TEXTURES(){			\
+    glDisable(GL_TEXTURE_2D);			\
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);	\
+}
+/////////////////////////////////////////////////////////////////
+/// Returns corresponding opengl texture type.
+inline GLenum 
+GetGLTextureType( const TEXTURE_TYPE &tType )
+{
+  GLenum iRetval = GL_TEXTURE_2D;
+  switch ( tType )
+  {
+  case TEXTURE_2D:
+    iRetval = GL_TEXTURE_2D;
+    break;
+  case TEXTURE_RECT:
+    iRetval = GL_TEXTURE_RECTANGLE_ARB;
+    break;
+  }
+  return iRetval;
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
   Init();
@@ -203,7 +225,8 @@ Phoenix::Graphics::COglRenderer::Finalize()
   for( int i=0;i<TEXTURE_HANDLE_COUNT;i++)
   {
     glActiveTextureARB( GL_TEXTURE0_ARB+i);
-    glDisable( GL_TEXTURE_2D);
+    DISABLE_ALL_TEXTURES();
+
   }
   // Remember call buffer swapping from another source.
 }
@@ -450,7 +473,7 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 
 
 Phoenix::Graphics::COglTexture * 
-Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename )
+Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
 {
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
@@ -501,27 +524,31 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename )
   // create texture
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
-  pTexture = new COglTexture( iTexId, TEXTURE_2D );
+  pTexture = new COglTexture( iTexId, tType );
 
   // check memory allocation
   if ( !pTexture ) 
   {
-    std::cerr << "Failed to allocate memory while loading file '" << strFilename << "'" << std::endl;
+    std::cerr << "Failed to allocate memory while loading file '" 
+	      << strFilename << "'" << std::endl;
     return NULL;
   }
   
+  GLenum iGLType = GetGLTextureType( tType );
+  
   // create actual gl texture 
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, pTexture->GetID());  
-  glTexImage2D( GL_TEXTURE_2D, 0, iGLInternalFormat, 
+  glEnable( iGLType );
+  glBindTexture(iGLType, pTexture->GetID());  
+  glTexImage2D( iGLType, 0, iGLInternalFormat, 
 		pImage->GetWidth(), pImage->GetHeight(), 0, 
 		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
   // build mipmaps 
-  gluBuild2DMipmaps(GL_TEXTURE_2D, iGLInternalFormat, 
+  gluBuild2DMipmaps(iGLType, iGLInternalFormat, 
 		    pImage->GetWidth(), pImage->GetHeight(),
 		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
   
-  glDisable(GL_TEXTURE_2D);
+  
+  glDisable( iGLType );
 
   // ReleaseMemory
   CLEANUP();
@@ -545,16 +572,15 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
     std::cerr << "Failed to allocate memory while creating Empty Texture." << std::endl;
     return NULL;
   }
+
+  GLenum iGLType = GetGLTextureType(tType);
   // create texture dimensions
-  switch ( tType )
-  {
-  case TEXTURE_2D:
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture( GL_TEXTURE_2D, pTexture->GetID());
-    glTexImage2D( GL_TEXTURE_2D, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-    glDisable(GL_TEXTURE_2D);
-    break;
-  }
+
+  glEnable( iGLType );
+  glBindTexture( iGLType, pTexture->GetID());
+  glTexImage2D( iGLType, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+  glDisable( iGLType);
+
   return pTexture;
 }
 /////////////////////////////////////////////////////////////////
@@ -569,6 +595,9 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
   case TEXTURE_2D:
     GL_ENABLE_TEXTURE( GL_TEXTURE_2D, pTexture->GetID());
     break;
+  case TEXTURE_RECT:
+    GL_ENABLE_TEXTURE( GL_TEXTURE_RECTANGLE_ARB, pTexture->GetID());
+    break;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -576,11 +605,13 @@ void
 Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
-  switch ( pTexture->GetType())
+  if ( pTexture != NULL )
   {
-  case TEXTURE_2D:
-    glDisable( GL_TEXTURE_2D);
-    break;
+    glDisable( GetGLTextureType( pTexture->GetType()));
+  } 
+  else 
+  {
+    DISABLE_ALL_TEXTURES();
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -686,13 +717,16 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
 void 
 Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType )
 {
-  GLenum glTarget;
+  GLenum glTarget = GL_TEXTURE_2D;
   ////////////////////
   switch( tType )
   {
   case TEXTURE_2D:
-  default:
     glTarget = GL_TEXTURE_2D;
+    break;
+  case TEXTURE_RECT:
+    glTarget = GL_TEXTURE_RECTANGLE_ARB;
+    break;
   }
   ////////////////////
   switch( tFilter )
@@ -1627,21 +1661,16 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
     COglTexture *pTexture = g_DefaultTextureManager->GetResource( rFBO.GetTextureHandle(nColorBuffer) );
 
     // Determine texture type
-    GLenum iTexType = GL_TEXTURE_2D;
-    switch ( pTexture->GetType())
-    {
-    case TEXTURE_2D:
-      iTexType = GL_TEXTURE_2D;
-      break;
-    }
+    GLenum iTexType = GetGLTextureType(pTexture->GetType());
+
     unsigned int nBufferNumber = nColorBuffer % TEXTURE_HANDLE_COUNT;
     /////////////////////////////////////////////////////////////////
     glBindTexture(iTexType, pTexture->GetID());
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf( iTexType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf( iTexType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameterf( iTexType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf( iTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, 
 			       GL_COLOR_ATTACHMENT0_EXT+nBufferNumber, 
@@ -1683,6 +1712,22 @@ Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFr
   // but this is better; it allows multiple buffers to be rendered via parameter.
   // Output to buffers must be controlled via GLSL fragment shaders.
   glDrawBuffers( nColorBufferCount % TEXTURE_HANDLE_COUNT, g_ColorBufferNames );
+  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitFrameBufferSingle( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBuffer )
+{
+  // Bind frame buffer.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
+
+  // Define viewport to texture size and store current settings so they can be retrieved.
+  // (This might not be necessary, but sounds resonably now)
+  glPushAttrib(GL_VIEWPORT_BIT);
+  glViewport(0,0, (unsigned int)rFBO.GetWidth(), (unsigned int)rFBO.GetHeight());
+
+  // select render target
+  glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT+nColorBuffer);
   
 }
 /////////////////////////////////////////////////////////////////

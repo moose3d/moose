@@ -7,7 +7,8 @@ namespace Phoenix
   {
     enum TEXTURE_TYPE 
     {
-      TEXTURE_2D = 0
+      TEXTURE_2D = 0,
+      TEXTURE_RECT = 1
     };
     /// Texture filter modes.
     enum TEXTURE_FILTER
