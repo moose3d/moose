@@ -32,6 +32,7 @@ int main()
   const unsigned int FRAMEBUFFER_WIDTH = 170;
   const unsigned int FRAMEBUFFER_HEIGHT = 128;
 
+
   CCamera camera;
   camera.SetPosition( 0, 0.0f,43.0f);
   camera.SetViewport( 0,0, 640, 480 );
@@ -271,7 +272,7 @@ int main()
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->CommitState( STATE_DEPTH_TEST);
     pOglRenderer->DisableState( STATE_LIGHTING );
-    pOglRenderer->DisableState( STATE_FACECULLING );
+    pOglRenderer->CommitState( STATE_FACECULLING );
     pOglRenderer->CommitColor( vWhite );
 //     glBegin( GL_QUADS );
 //       glVertex2f(0,0);
@@ -305,12 +306,14 @@ int main()
     glClearColor( 0,0,0,0);
     pOglRenderer->CommitFrameBufferSingle( *pFrameBuffer, 0 );
        camera.SetViewport(0,0, FRAMEBUFFER_WIDTH,FRAMEBUFFER_HEIGHT);
+       camera.UpdateProjection();
+       camera.UpdateView();
        pOglRenderer->CommitCamera( camera );
        pOglRenderer->ClearBuffer( COLOR_BUFFER );
        pOglRenderer->ClearBuffer( DEPTH_BUFFER );
        pOglRenderer->CommitState( STATE_DEPTH_TEST);
        pOglRenderer->DisableState( STATE_LIGHTING );
-       pOglRenderer->DisableState( STATE_FACECULLING );
+       pOglRenderer->CommitState( STATE_FACECULLING );
        // Rotate 
        //pOglRenderer->CommitTransform( transform);
          pOglRenderer->CommitShader( pShader );
@@ -322,7 +325,8 @@ int main()
     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
 
     camera.SetViewport(0,0, 640,480);
-    
+    camera.UpdateProjection();
+    camera.UpdateView();
 
     pOglRenderer->DisableTexture(1);
     pOglRenderer->DisableTexture(0);
@@ -336,7 +340,7 @@ int main()
         pOglRenderer->ClearBuffer( DEPTH_BUFFER );
         pOglRenderer->DisableState( STATE_DEPTH_TEST);
         pOglRenderer->DisableState( STATE_LIGHTING );
-        pOglRenderer->DisableState( STATE_FACECULLING );
+        pOglRenderer->CommitState( STATE_FACECULLING );
 
         pOglRenderer->CommitTexture( 0, pFBOTexture);
 	pOglRenderer->CommitShader( pBlurShader );
@@ -360,7 +364,7 @@ int main()
        pOglRenderer->ClearBuffer( DEPTH_BUFFER );
        pOglRenderer->DisableState( STATE_DEPTH_TEST);
        pOglRenderer->DisableState( STATE_LIGHTING );
-       pOglRenderer->DisableState( STATE_FACECULLING );
+       pOglRenderer->CommitState( STATE_FACECULLING );
 
        pOglRenderer->CommitTexture( 0, pFBOTexture2);
        pOglRenderer->CommitShader( pBlurShader );
@@ -392,11 +396,14 @@ int main()
     pOglRenderer->DisableTexture(1);
     //pOglRenderer->DisableTexture(0);
     glColor3f( 0, 1,0);
+
     glBegin( GL_QUADS );
+
       pOglRenderer->CommitVertex(aQuadsScreen[0]);
       pOglRenderer->CommitVertex(aQuadsScreen[1]);
       pOglRenderer->CommitVertex(aQuadsScreen[2]);
       pOglRenderer->CommitVertex(aQuadsScreen[3]);
+
     glEnd();
     pOglRenderer->DisableState( STATE_BLENDING );
     /////////////////////////////////////////////////////////////////
@@ -414,7 +421,8 @@ int main()
     
     cameraScreenQuad.UpdateProjection();
     cameraScreenQuad.UpdateView();
-
+    cameraFBOQuad.UpdateProjection();
+    cameraFBOQuad.UpdateView();
     camera.UpdateProjection();
     camera.UpdateView();
     pOglRenderer->Finalize();
