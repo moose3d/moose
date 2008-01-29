@@ -497,7 +497,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
     CLEANUP();
     break;
   case IMG_ERR_BAD_FORMAT:
-    std::cerr << "Out of memory while loading file '" << strFilename << "'" << std::endl;
+    std::cerr << "Bad format while loading file '" << strFilename << "'" << std::endl;
     CLEANUP();
     break;
   }
@@ -508,7 +508,17 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
   // Check correct depth
   switch (pImage->GetBPP())
   {
+  case 8:
+    iGLInternalFormat = 1;
+    iGLformat = GL_LUMINANCE;
+    break;
+  case 16:
+    iGLInternalFormat = 2;
+    iGLformat = GL_LUMINANCE_ALPHA;
+    break;
   case 24:
+    iGLInternalFormat = 3;
+    iGLformat = GL_RGB;
     break;
   case 32:
     iGLInternalFormat = 4;
@@ -517,7 +527,8 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
     break;
   default:
     delete pImage;
-    std::cerr << "Not 24 or 32 BBP image :  '" << strFilename << "'" << std::endl;
+    std::cerr << "Not 8, 16, 24 or 32 BBP image (was " << pImage->GetBPP() 
+	      << "):  '" << strFilename << "'" << std::endl;
     return NULL;
   }
 

@@ -130,7 +130,23 @@ Phoenix::Graphics::CTGAImage::Load(const string & szFilename)
       BGRtoRGB(); // Convert to RGB
       break;
     }
- 
+  case 3: // Raw grayscale
+    {
+      // Check filesize against header values
+      if((lImageSize+18+pData[0])>ulSize)
+	return IMG_ERR_BAD_FORMAT;
+
+      // Double check image type field
+      if(pData[1]!=0)
+	return IMG_ERR_BAD_FORMAT;      
+
+      // Load image data
+      iRet = LoadRawData();
+      if ( iRet!= IMG_OK )
+	return iRet;
+      
+      break;
+    }
   case 9: // RLE Indexed
     {
       // Double check image type field
@@ -164,8 +180,20 @@ Phoenix::Graphics::CTGAImage::Load(const string & szFilename)
       BGRtoRGB(); // Convert to RGB
       break;
     }
- 
+  case 11: // RLE grayscale
+    {
+      // Double check image type field
+      if(pData[1]!=0)
+	return IMG_ERR_BAD_FORMAT;
+
+      // Load image data
+      iRet = LoadTgaRLEData();
+      if(iRet!=IMG_OK)
+	return iRet;
+      break;      
+    }
   default:
+    std::cerr << "UNSUPPORTED FORMAT " << (int)bEnc << std::endl;
     return IMG_ERR_UNSUPPORTED;
   }
  
@@ -229,7 +257,7 @@ Phoenix::Graphics::CTGAImage::ReadHeader() // Examine the header and populate ou
  
   // Bits per Pixel
   iBPP=pData[16];
- 
+  std::cerr << "received " << iBPP << " bit image" << std::endl;
   // Check flip / interleave byte
    if(pData[17]>32) // Interleaved data
     return IMG_ERR_UNSUPPORTED;
