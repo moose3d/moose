@@ -280,7 +280,7 @@ Phoenix::Graphics::CTGAImage::LoadRawData() // Load uncompressed image data
  
   if(pImage==NULL)
     return IMG_ERR_MEM_FAIL;
- 
+  
   iOffset=pData[0]+18; // Add header to ident field size
  
   if(pData[1]==1) // Indexed images
