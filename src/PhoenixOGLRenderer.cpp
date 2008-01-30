@@ -1753,3 +1753,45 @@ Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::C
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 /////////////////////////////////////////////////////////////////
+/// A handle macro for commiting vertices with N 
+#define COMMIT_COORDINATES( POSX, POSY, TEXX, TEXY ){	\
+   glMultiTexCoord2fARB( GL_TEXTURE0_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE1_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE2_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE3_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE4_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE5_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE6_ARB, TEXX, TEXY);	\
+   glMultiTexCoord2fARB( GL_TEXTURE7_ARB, TEXX, TEXY);	\
+   glVertex2f( POSX, POSY );				\
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CFrameBufferObject & rFBO )
+{
+  
+  glBegin(GL_QUADS);
+
+    COMMIT_COORDINATES( 0.0f,            0.0f,		0.0f,            0.0f);
+    COMMIT_COORDINATES( rFBO.GetWidth(), 0.0f,		rFBO.GetWidth(), 0.0f);
+    COMMIT_COORDINATES( rFBO.GetWidth(), rFBO.GetHeight(),rFBO.GetWidth(), rFBO.GetHeight() );
+    COMMIT_COORDINATES( 0.0f,            rFBO.GetHeight(),0.0f,            rFBO.GetHeight());
+
+  glEnd();
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CCamera & rCamera, const Phoenix::Graphics::CFrameBufferObject & rFBO)
+{
+  glBegin(GL_QUADS);
+
+    COMMIT_COORDINATES( 0.0f,				 0.0f,				0.0f,            0.0f);
+    COMMIT_COORDINATES( rCamera.GetViewport()[2],	 0.0f,				rFBO.GetWidth(), 0.0f);
+    COMMIT_COORDINATES( rCamera.GetViewport()[2],	 rCamera.GetViewport()[3],	rFBO.GetWidth(), rFBO.GetHeight() );
+    COMMIT_COORDINATES( 0.0f,				 rCamera.GetViewport()[3],	0.0f,            rFBO.GetHeight());
+
+  glEnd();
+}
+/////////////////////////////////////////////////////////////////
+#undef COMMIT_COORDINATES
+/////////////////////////////////////////////////////////////////

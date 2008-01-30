@@ -584,6 +584,16 @@ namespace Phoenix
       /// \param rFBO Framebuffer to detach.
       /// \warn Given FBO must be previously attached.
       void RollbackFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO);
+      ////////////////////
+      /// Draws framebuffer-sized quad, assuming that view is orthogonally
+      /// set from 0,0 to width, height.
+      /// \param rFBO Framebuffer object where quad coordinates are retrieved.
+      void CommitQuad( const Phoenix::Graphics::CFrameBufferObject & rFBO );
+      ////////////////////
+      /// Draws screen-sized quad, with texture coordinates from FBO dimensions.
+      /// \param rCamera Camera used for current screen.
+      /// \param rFBO Framebuffer, of which texture is used.
+      void CommitQuad( const Phoenix::Graphics::CCamera & rCamera, const Phoenix::Graphics::CFrameBufferObject & rFBO );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
