@@ -92,6 +92,10 @@ namespace Phoenix
       /// \returns Pointer to int array
       int * GetViewport();
       ////////////////////
+      /// Returns the array of viewport settings.
+      /// \returns Pointer to int array
+      const int * GetViewport() const;
+      ////////////////////
       /// Returns field of view angle.
       /// \returns field of view in degrees.
       float GetFieldOfView() const;

@@ -108,6 +108,12 @@ Phoenix::Graphics::CCamera::GetViewport()
   return m_aViewport;
 }
 /////////////////////////////////////////////////////////////////
+const int *
+Phoenix::Graphics::CCamera::GetViewport() const
+{
+  return m_aViewport;
+}
+/////////////////////////////////////////////////////////////////
 int
 Phoenix::Graphics::CCamera::IsLensFlaresEnabled()
 {
