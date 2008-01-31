@@ -322,6 +322,10 @@ namespace Phoenix
       /// \param szStrName Resource name.
       void Destroy( const char *szStrName ); 
       ////////////////////
+      /// Removes a resource from manager.
+      /// \param handle Handle pointing to resource to be destroyed.
+      void Destroy( HANDLE &handle ); 
+      ////////////////////
       /// Returns pointer to resource.
       /// \param handle Handle to resource.
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
@@ -349,6 +353,10 @@ namespace Phoenix
       
     private:
       void DeleteMemory();
+      ////////////////////
+      /// Removes a resource from manager.
+      /// \param nIndex Index of resource array.
+      void Destroy( unsigned int nIndex ); 
     };
   };
 };
@@ -613,9 +621,39 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
   
   if ( pHashItem == NULL ) return;
   unsigned int nIndex = pHashItem->GetObject().GetIndex();
+  // Destroy by index.
+  Destroy( nIndex );
+
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const char * szStrName )
+{
+  if ( m_pResourceHash == NULL ) return;
+  std::string strName(szStrName);
+  Destroy( strName );
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( HANDLE & handle )
+{
+  // Null handles won't point to anything. 
+  if ( handle.IsNull() ) return;
+  // Destroy by index.
+  Destroy( handle.GetIndex() );
+
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( unsigned int nIndex )
+{
   
   if ( nIndex < m_vecObjects.size() - 1 )
   {
+    std::string strName = m_vecObjects[nIndex]->GetName();
     // Remove resource (invalidates also handles)
     delete m_vecObjects[nIndex];
     // Assign last resource into place of deleted resource.
@@ -631,27 +669,19 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
     m_pResourceHash->Delete( strName );
     
     // Update hashtable's resourcename.index for moved resource
-    pHashItem = m_pResourceHash->Find(m_vecObjects[nIndex]->GetName());
+    CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(m_vecObjects[nIndex]->GetName());
     pHashItem->GetObject().SetIndex( nIndex );
 
   }
-  else
+  else if ( nIndex == m_vecObjects.size() - 1 )
   {
+    std::string strName = m_vecObjects[nIndex]->GetName();
     delete m_vecObjects[nIndex];
     m_vecObjects.pop_back();    
     // Remove key from hash table.
     m_pResourceHash->Delete( strName );
   }
 
-}
-/////////////////////////////////////////////////////////////////
-template<typename OBJECTTYPE, typename HANDLE>
-void
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const char * szStrName )
-{
-  if ( m_pResourceHash == NULL ) return;
-  std::string strName(szStrName);
-  Destroy( strName );
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE,typename HANDLE>
