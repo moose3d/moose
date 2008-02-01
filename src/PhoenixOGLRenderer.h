@@ -103,7 +103,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor. 
-      CBlendingOperation() : Phoenix::Core::CEnableable(), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
+    CBlendingOperation() : Phoenix::Core::CEnableable(), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
       ////////////////////
       /// Assigns src operation for blending.
       /// \param tType Blending source operation;
@@ -138,7 +138,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      CAlphaTestOperation() : m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
+    CAlphaTestOperation() : m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
       ////////////////////
       /// Assigns test type.
       /// \param tType ALPHA_TEST_TYPE.
@@ -265,6 +265,36 @@ namespace Phoenix
       void Init();
     };
     /////////////////////////////////////////////////////////////////
+    /// Fontset for rendering arbitrary text on screen.
+    /// \warn Not tested properly!!!
+    class CFontset
+    {
+    protected:
+      /// Pointers to font textures.
+      Phoenix::Graphics::COglTexture * m_ppTextures[Phoenix::Globals::MAX_FONT_CHARACTERS];   
+      /// Display lists for font letters.
+      GLuint	 m_nDisplayLists; 
+      ////////////////////
+      /// This will not be passed as a copy.
+      CFontset( const CFontset &fs ) {}
+    public:
+      ////////////////////
+      /// Default constructor.
+      CFontset();
+      ////////////////////
+      /// Destructor.
+      ~CFontset();
+      ////////////////////
+      /// Returns reference to display list.
+      /// \returns Reference to display list id.
+      GLuint & GetDisplayList();
+      ////////////////////
+      /// Returns the pointer to array of texture pointers.
+      /// \retursn Pointer to array of pointers to textures.
+      Phoenix::Graphics::COglTexture * *GetTextures();  
+    };
+
+    /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
     class COglRenderer
     {
@@ -323,18 +353,26 @@ namespace Phoenix
       /// \param pTexture Texture object.
       void DisableTexture( unsigned int nTexUnit, Phoenix::Graphics::COglTexture *pTexture = NULL);
       ////////////////////
-      /// Creates new 2D texture from TGA image.
+      /// Creates new texture from TGA image.
       /// \param strFilename filename for tga image.
       /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
       /// \returns Pointer to COglTexture.
       Phoenix::Graphics::COglTexture * CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
       ////////////////////
-      /// Creates new empty 2D texture.
+      /// Creates new empty texture.
       /// \param nWidth width of texture.
       /// \param nHeight height of texture.
       /// \param tType TEXTURE_TYPE 
       /// \returns Pointer to COglTexture.
       Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType );
+      ////////////////////
+      /// Creates new texture from existing data.
+      /// \param nWidth width of texture.
+      /// \param nHeight height of texture.
+      /// \param tType TEXTURE_TYPE 
+      /// \param pData Pointer to data.
+      /// \returns Pointer to COglTexture.
+      Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData);
       ////////////////////
       /// Sets view using camera.
       /// \param camera Camera.
@@ -594,6 +632,12 @@ namespace Phoenix
       /// \param rCamera Camera used for current screen.
       /// \param rFBO Framebuffer, of which texture is used.
       void CommitQuad( const Phoenix::Graphics::CCamera & rCamera, const Phoenix::Graphics::CFrameBufferObject & rFBO );
+      ////////////////////
+      /// Creates new fontset from given TTF file.
+      /// \param sPathToFontFile Path to TTF file.
+      /// \param nFontSize Desired font size.
+      /// \returns Pointer to CFontset or NULL on failure.
+      CFontset * CreateFontset( const char *sPathToFontFile, unsigned int nFontSize);
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
