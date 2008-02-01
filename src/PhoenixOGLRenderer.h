@@ -273,7 +273,9 @@ namespace Phoenix
       /// Pointers to font textures.
       Phoenix::Graphics::COglTexture * m_ppTextures[Phoenix::Globals::MAX_FONT_CHARACTERS];   
       /// Display lists for font letters.
-      GLuint	 m_nDisplayLists; 
+      GLuint		m_nDisplayLists; 
+      /// Height of line
+      float		m_fLineHeight;
       ////////////////////
       /// This will not be passed as a copy.
       CFontset( const CFontset &fs ) {}
@@ -289,9 +291,25 @@ namespace Phoenix
       /// \returns Reference to display list id.
       GLuint & GetDisplayList();
       ////////////////////
+      /// Returns reference to display list.
+      /// \returns Reference to display list id.
+      const GLuint & GetDisplayList() const;
+      ////////////////////
       /// Returns the pointer to array of texture pointers.
-      /// \retursn Pointer to array of pointers to textures.
+      /// \returns Pointer to array of pointers to textures.
       Phoenix::Graphics::COglTexture * *GetTextures();  
+      ////////////////////
+      /// Returns line height with this font.
+      inline float GetLineHeight() const
+      {
+	return m_fLineHeight;
+      }
+      ////////////////////
+      /// Returns line height with this font.
+      inline void SetLineHeight(float fHeight)
+      {
+	m_fLineHeight = fHeight;
+      }
     };
 
     /////////////////////////////////////////////////////////////////
@@ -638,6 +656,13 @@ namespace Phoenix
       /// \param nFontSize Desired font size.
       /// \returns Pointer to CFontset or NULL on failure.
       CFontset * CreateFontset( const char *sPathToFontFile, unsigned int nFontSize);
+      ////////////////////
+      /// Renders given string into passed coordinates.
+      /// \param fFontset Fontset to be used.
+      /// \param fX Text lower left corner x coordinate.
+      /// \param fY Text lower left corner y coordinate.
+      /// \param szText Text itself.
+      void CommitString( CFontset & rFontSet, float fX, float fY, const char *szText );
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics

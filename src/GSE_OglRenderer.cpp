@@ -2530,6 +2530,7 @@ GSE_OglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontS
     // Compile new display list
     glNewList(pFontset->DisplayList()+n,GL_COMPILE);
     // Bind texture
+    glEnable( GL_TEXTURE_2D);
     glBindTexture( GL_TEXTURE_2D, pTexture->GetId());
     
     glPushMatrix();

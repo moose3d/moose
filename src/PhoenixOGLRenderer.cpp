@@ -60,14 +60,21 @@ Phoenix::Graphics::CFontset::CFontset() : m_nDisplayLists(0)
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFontset::~CFontset()
 {
-  // Release lists
-  glDeleteLists( GetDisplayList(), Phoenix::Globals::MAX_FONT_CHARACTERS );
+  
   // delete textures
   delete [] m_ppTextures;
+// Release lists
+  glDeleteLists( GetDisplayList(), Phoenix::Globals::MAX_FONT_CHARACTERS );
 }
 /////////////////////////////////////////////////////////////////
 GLuint &
 Phoenix::Graphics::CFontset::GetDisplayList()
+{
+  return m_nDisplayLists;
+}
+/////////////////////////////////////////////////////////////////
+const GLuint &
+Phoenix::Graphics::CFontset::GetDisplayList() const
 {
   return m_nDisplayLists;
 }
@@ -645,7 +652,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   glBindTexture( iGLType, pTexture->GetID());
   glTexImage2D( iGLType, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
   glDisable( iGLType);
-
+  
   return pTexture;
 }
 /////////////////////////////////////////////////////////////////
@@ -1862,7 +1869,6 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   FT_Library	ftLibrary;
   FT_Error	ftError;
   FT_Face	ftFace;  
-  
 
   ////////////////////
   // Initialize the font library
@@ -1882,7 +1888,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   }
   ////////////////////
   // Set the character size
-  ftError = FT_Set_Char_Size( ftFace, nFontSize * 64, 0, 0, 0 );        
+  ftError = FT_Set_Char_Size( ftFace, nFontSize << 6, 0, 0, 0 );        
 
   if ( ftError )
   {
@@ -1892,13 +1898,14 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   ////////////////////
   // Create fontset.
   pFontset = new CFontset();
+  
   ////////////////////
   // Create display lists.
   pFontset->GetDisplayList() = glGenLists(Phoenix::Globals::MAX_FONT_CHARACTERS);
   
   for(unsigned int n=0;n<Phoenix::Globals::MAX_FONT_CHARACTERS;n++)
   {
-
+    // Whitespace has no dimension, it needs special treatment.
     if ( n == WHITESPACE )
     {
       glNewList(pFontset->GetDisplayList()+n,GL_COMPILE);
@@ -1914,11 +1921,17 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     ftGlyphIndex = FT_Get_Char_Index( ftFace, n );
     ////////////////////
     ftError = FT_Load_Glyph( ftFace, ftGlyphIndex, FT_LOAD_DEFAULT ); 
-    if ( ftError ) continue; /* ignore errors */
+    if ( ftError ) 
+    { 
+      continue; /* ignore errors */
+    }
     ////////////////////
     // convert to an anti-aliased bitmap.
     ftError = FT_Render_Glyph( ftFace->glyph, FT_RENDER_MODE_NORMAL ); 
-    if ( ftError ) continue;
+    if ( ftError ) 
+    { 
+      continue;
+    }
     
     if ( ftFace->glyph->bitmap.width == 0 ) continue;
     ////////////////////
@@ -1931,6 +1944,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     if ( (fLog2Width  - (int)fLog2Width)  < EPSILON ) fLog2Width  = (int)fLog2Width;
     int iWidth  = (int)pow( 2, ceil(fLog2Width));
     int iHeight = (int)pow( 2, ceil(fLog2Height));
+
     ////////////////////
     // A fix for really narrow characters.
     if ( iWidth == 1 ) 
@@ -1952,7 +1966,20 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     }
     ////////////////////
     // Create texture.
-    COglTexture *pTexture = CreateTexture( iWidth, iHeight, TEXTURE_2D, expanded_data );
+    /*CreateTexture( iWidth, iHeight, TEXTURE_2D, expanded_data );*/
+    
+    unsigned int iTexId;
+    glGenTextures( 1, &iTexId);
+    COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_2D );
+
+    glActiveTextureARB( GL_TEXTURE0_ARB );
+    glEnable( GL_TEXTURE_2D);
+    glBindTexture  ( GL_TEXTURE_2D, pTexture->GetID());
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, iWidth, iHeight, 0,
+		  GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
+    
     delete [] expanded_data;
     ////////////////////
     // Add pointer to fontset's array as well.
@@ -1964,15 +1991,14 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     // face->glyph->bitmap->rows;   // #lines
     // face->glyph->bitmap->pitch; // #|bytes| in line
     // --------------------------------------------------
-    glEnable(GL_TEXTURE_2D);
+
     ////////////////////
     // Compile new display list.
     glNewList(pFontset->GetDisplayList()+n,GL_COMPILE);
     ////////////////////
     // Bind texture
     glBindTexture( GL_TEXTURE_2D, pTexture->GetID());
-    
-    glPushMatrix();
+    glPushMatrix();    
     ////////////////////
     // move new char left so we have correct spacing.
     glTranslatef( ftFace->glyph->bitmap_left, 0,0 );
@@ -1982,33 +2008,67 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
 
     float   fX = (float)ftFace->glyph->bitmap.width / (float)iWidth;
     float   fY = (float)ftFace->glyph->bitmap.rows / (float)iHeight;
+
     ////////////////////
     // Render actual character.
     glBegin(GL_QUADS);
-      glTexCoord2d(0,  0  ); glVertex2f( 0,ftFace->glyph->bitmap.rows );
-      glTexCoord2d(0,  fY ); glVertex2f( 0,0 );
-      glTexCoord2d(fX, fY ); glVertex2f( ftFace->glyph->bitmap.width, 0);
-      glTexCoord2d(fX, 0  ); glVertex2f( ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows );
+      glTexCoord2f(0,  0  ); glVertex2f( 0,ftFace->glyph->bitmap.rows );
+      glTexCoord2f(0,  fY ); glVertex2f( 0,0 );
+      glTexCoord2f(fX, fY ); glVertex2f( ftFace->glyph->bitmap.width, 0);
+      glTexCoord2f(fX, 0  ); glVertex2f( ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows );
     glEnd();
-    
     glPopMatrix();
     ////////////////////
     // Advance along x-axis so next letter will be 
     // in correct place.
     if ( bWidthFixApplied )   glTranslatef(ftFace->glyph->advance.x >> 7, 0, 0);
     else		      glTranslatef(ftFace->glyph->advance.x >> 6, 0, 0);
-    
+
     ////////////////////
     // End list
     glEndList();
-    glEnable(GL_TEXTURE_2D);
+
   }
   ////////////////////
   // Cleanup freetype stuff.
   FT_Done_Face    ( ftFace );
   FT_Done_FreeType( ftLibrary );
-    
-  return 0;
+  ////////////////////
+  // return new fontset.
+  return pFontset;
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, float fY, const char *szText )
+{
+  
+  ////////////////////
+  /// Sanity check.
+  if ( szText == NULL )
+  {
+    cerr << "I shall not render a NULL string!" << endl;
+    return;
+  }
 
+  glActiveTextureARB( GL_TEXTURE0_ARB );
+  glEnable( GL_TEXTURE_2D );
+  ////////////////////
+  /// Store display list settings
+  glPushAttrib( GL_LIST_BIT );
+
+    // Activate preferred fontset
+    glListBase( rFontSet.GetDisplayList() );      
+    // Store current position
+    glPushMatrix();
+      glTranslatef( fX, fY, 0.0f);
+
+      // render test
+      glCallLists( strlen(szText), GL_UNSIGNED_BYTE, szText );
+
+
+    glPopMatrix();
+  
+  glPopAttrib();
+  glDisable( GL_TEXTURE_2D );
+}
+/////////////////////////////////////////////////////////////////
