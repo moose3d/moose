@@ -10,6 +10,9 @@
 #include "PhoenixTGAImage.h"
 #include "PhoenixDefaultEntities.h"
 #include <fstream>
+#include <ft2build.h>
+// include freetype stuff
+#include FT_FREETYPE_H
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics; 
 using namespace Phoenix::Default; 
@@ -48,6 +51,31 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
     break;
   }
   return iRetval;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CFontset::CFontset() : m_nDisplayLists(0)
+{
+  
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CFontset::~CFontset()
+{
+  // Release lists
+  glDeleteLists( GetDisplayList(), Phoenix::Globals::MAX_FONT_CHARACTERS );
+  // delete textures
+  delete [] m_ppTextures;
+}
+/////////////////////////////////////////////////////////////////
+GLuint &
+Phoenix::Graphics::CFontset::GetDisplayList()
+{
+  return m_nDisplayLists;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture **
+Phoenix::Graphics::CFontset::GetTextures()
+{
+  return m_ppTextures;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
@@ -590,6 +618,32 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   glEnable( iGLType );
   glBindTexture( iGLType, pTexture->GetID());
   glTexImage2D( iGLType, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+  glDisable( iGLType);
+
+  return pTexture;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData)
+{
+   // create texture
+  unsigned int iTexId;
+  glGenTextures( 1, &iTexId);
+  COglTexture *pTexture = new COglTexture( iTexId, tType );
+  
+  // check memory allocation
+  if ( !pTexture ) 
+  {
+    std::cerr << "Failed to allocate memory while creating Empty Texture." << std::endl;
+    return NULL;
+  }
+
+  GLenum iGLType = GetGLTextureType(tType);
+  // create texture dimensions
+
+  glEnable( iGLType );
+  glBindTexture( iGLType, pTexture->GetID());
+  glTexImage2D( iGLType, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
   glDisable( iGLType);
 
   return pTexture;
@@ -1795,3 +1849,166 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CCamera & 
 /////////////////////////////////////////////////////////////////
 #undef COMMIT_COORDINATES
 /////////////////////////////////////////////////////////////////
+
+Phoenix::Graphics::CFontset *
+Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontSize)
+{
+
+#define WHITESPACE 32
+  // Fontset to be created.
+  CFontset *	pFontset = NULL;
+  /////////////////////////////////////////////////////////////////
+  // Freetype stuff
+  FT_Library	ftLibrary;
+  FT_Error	ftError;
+  FT_Face	ftFace;  
+  
+
+  ////////////////////
+  // Initialize the font library
+  ftError = FT_Init_FreeType( &ftLibrary ); 
+  if ( ftError ) 
+  { 
+    cerr << "Error initializing FT" << endl;
+    return NULL;
+  }
+  ////////////////////
+  // Create new face
+  ftError = FT_New_Face( ftLibrary,sPathToFontFile, 0, &ftFace);
+  if ( ftError )
+  {
+    cerr << "Error loading face" << endl;
+    return NULL;
+  }
+  ////////////////////
+  // Set the character size
+  ftError = FT_Set_Char_Size( ftFace, nFontSize * 64, 0, 0, 0 );        
+
+  if ( ftError )
+  {
+    cerr << "Error setting font size" << endl;
+    return NULL;
+  }
+  ////////////////////
+  // Create fontset.
+  pFontset = new CFontset();
+  ////////////////////
+  // Create display lists.
+  pFontset->GetDisplayList() = glGenLists(Phoenix::Globals::MAX_FONT_CHARACTERS);
+  
+  for(unsigned int n=0;n<Phoenix::Globals::MAX_FONT_CHARACTERS;n++)
+  {
+
+    if ( n == WHITESPACE )
+    {
+      glNewList(pFontset->GetDisplayList()+n,GL_COMPILE);
+      glTranslatef(nFontSize*0.2, 0, 0);
+      glEndList();
+      continue;
+    } 
+    ////////////////////
+    // For some characters, such as i, a width fixing is 
+    // necessary to make it visible.
+    int		bWidthFixApplied = 0;
+    FT_UInt	ftGlyphIndex;    
+    ftGlyphIndex = FT_Get_Char_Index( ftFace, n );
+    ////////////////////
+    ftError = FT_Load_Glyph( ftFace, ftGlyphIndex, FT_LOAD_DEFAULT ); 
+    if ( ftError ) continue; /* ignore errors */
+    ////////////////////
+    // convert to an anti-aliased bitmap.
+    ftError = FT_Render_Glyph( ftFace->glyph, FT_RENDER_MODE_NORMAL ); 
+    if ( ftError ) continue;
+    
+    if ( ftFace->glyph->bitmap.width == 0 ) continue;
+    ////////////////////
+    // Round dimensions up to closes power of two.
+    float fLog2Height = log(ftFace->glyph->bitmap.rows)/log(2);
+    float fLog2Width  = log(ftFace->glyph->bitmap.width)/log(2);
+    ////////////////////
+    // Rounding error check.
+    if ( (fLog2Height - (int)fLog2Height) < EPSILON ) fLog2Height = (int)fLog2Height;
+    if ( (fLog2Width  - (int)fLog2Width)  < EPSILON ) fLog2Width  = (int)fLog2Width;
+    int iWidth  = (int)pow( 2, ceil(fLog2Width));
+    int iHeight = (int)pow( 2, ceil(fLog2Height));
+    ////////////////////
+    // A fix for really narrow characters.
+    if ( iWidth == 1 ) 
+    {
+      bWidthFixApplied = 1;
+      iWidth = 2;
+    }
+    ////////////////////
+    // Create two-channel data.
+    GLubyte* expanded_data = new GLubyte[ 2 * iWidth * iHeight];
+    for(int j=0; j <iHeight;j++) 
+    {
+      for(int i=0; i < iWidth; i++)
+      {
+	expanded_data[2*(i+j*iWidth)]= expanded_data[2*(i+j*iWidth)+1] = 
+	(i>=ftFace->glyph->bitmap.width || j>=ftFace->glyph->bitmap.rows) ?
+	0 : ftFace->glyph->bitmap.buffer[i + ftFace->glyph->bitmap.width*j];
+      }
+    }
+    ////////////////////
+    // Create texture.
+    COglTexture *pTexture = CreateTexture( iWidth, iHeight, TEXTURE_2D, expanded_data );
+    delete [] expanded_data;
+    ////////////////////
+    // Add pointer to fontset's array as well.
+    pFontset->GetTextures()[n] = pTexture;
+
+    // --------------------------------------------------
+    // face->glyph->bitmap->buffer;  // pointer to data
+    // face->glyph->bitmap->width;   // pixels on a line
+    // face->glyph->bitmap->rows;   // #lines
+    // face->glyph->bitmap->pitch; // #|bytes| in line
+    // --------------------------------------------------
+    glEnable(GL_TEXTURE_2D);
+    ////////////////////
+    // Compile new display list.
+    glNewList(pFontset->GetDisplayList()+n,GL_COMPILE);
+    ////////////////////
+    // Bind texture
+    glBindTexture( GL_TEXTURE_2D, pTexture->GetID());
+    
+    glPushMatrix();
+    ////////////////////
+    // move new char left so we have correct spacing.
+    glTranslatef( ftFace->glyph->bitmap_left, 0,0 );
+    ////////////////////
+    // fix g and y chars
+    glTranslatef(0,ftFace->glyph->bitmap_top-ftFace->glyph->bitmap.rows,0);
+
+    float   fX = (float)ftFace->glyph->bitmap.width / (float)iWidth;
+    float   fY = (float)ftFace->glyph->bitmap.rows / (float)iHeight;
+    ////////////////////
+    // Render actual character.
+    glBegin(GL_QUADS);
+      glTexCoord2d(0,  0  ); glVertex2f( 0,ftFace->glyph->bitmap.rows );
+      glTexCoord2d(0,  fY ); glVertex2f( 0,0 );
+      glTexCoord2d(fX, fY ); glVertex2f( ftFace->glyph->bitmap.width, 0);
+      glTexCoord2d(fX, 0  ); glVertex2f( ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows );
+    glEnd();
+    
+    glPopMatrix();
+    ////////////////////
+    // Advance along x-axis so next letter will be 
+    // in correct place.
+    if ( bWidthFixApplied )   glTranslatef(ftFace->glyph->advance.x >> 7, 0, 0);
+    else		      glTranslatef(ftFace->glyph->advance.x >> 6, 0, 0);
+    
+    ////////////////////
+    // End list
+    glEndList();
+    glEnable(GL_TEXTURE_2D);
+  }
+  ////////////////////
+  // Cleanup freetype stuff.
+  FT_Done_Face    ( ftFace );
+  FT_Done_FreeType( ftLibrary );
+    
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
+
