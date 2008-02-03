@@ -1570,6 +1570,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
     if ( glGetError() == GL_OUT_OF_MEMORY )
     {
       glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
+      return 2;
     }
     else
     {
@@ -1610,6 +1611,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & r
     if ( glGetError() == GL_OUT_OF_MEMORY )
     {
       glDeleteBuffersARB( 1, &(rIndexArray.GetCache()));
+      return 2;
     }
     else
     {
