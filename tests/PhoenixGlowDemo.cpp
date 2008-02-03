@@ -22,7 +22,7 @@ const float g_fRotationSpeedPerSec = 56.15f;
 const unsigned int SCREEN_WIDTH = 1280;
 const unsigned int SCREEN_HEIGHT = 800;
 
-const unsigned int FRAMEBUFFER_WIDTH =256;
+const unsigned int FRAMEBUFFER_WIDTH =556;
 const unsigned int FRAMEBUFFER_HEIGHT = (unsigned int)(FRAMEBUFFER_WIDTH*((float)SCREEN_HEIGHT/(float)SCREEN_WIDTH));
 
 
@@ -42,10 +42,10 @@ int main()
   
   
   CCamera camera;
-  camera.SetPosition( 0, 0.0f,43.0f);
+  camera.SetPosition( 0, 0.0f,143.0f);
   camera.SetViewport( 0,0, SCREEN_WIDTH, SCREEN_HEIGHT );
   camera.SetNearClipping( 0.1f);
-  camera.SetFarClipping( 500.0f );
+  camera.SetFarClipping( 1500.0f );
   camera.SetFieldOfView( 43.0f);
 
   
@@ -99,7 +99,17 @@ int main()
   loader.ResetVertices();
   loader.ResetTexCoords();
   loader.ResetIndices();
-
+  
+  assert( pOglRenderer->CommitCache( *g_DefaultVertexManager->GetResource(shipModel.GetVertexHandle())) == 0 );
+  assert( pOglRenderer->CommitCache( *g_DefaultVertexManager->GetResource(shipModel.GetTextureCoordinateHandle(0))) == 0);
+  assert( pOglRenderer->CommitCache( *g_DefaultVertexManager->GetResource(shipModel.GetTextureCoordinateHandle(1))) == 0);
+  assert ( pOglRenderer->CommitCache( *g_DefaultVertexManager->GetResource(shipModel.GetNormalHandle())) == 0);
+  // create resources for indices.
+  for(unsigned int i=0;i<shipModel.GetIndexHandles().size();i++)
+  {
+    assert ( pOglRenderer->CommitCache(*g_DefaultIndexManager->GetResource( shipModel.GetIndexHandles()[i])) == 0);
+  }
+  
 
   COglTexture *pTextureReal  = pOglRenderer->CreateTexture("./Resources/Textures/sovereign.tga");
   COglTexture *pTextureReal2 = pOglRenderer->CreateTexture("./Resources/Textures/sovereign_glow.tga");
@@ -236,7 +246,26 @@ int main()
 
     // Rotate 
     pOglRenderer->CommitTransform( transform);
-      pOglRenderer->CommitModel( shipModel );
+    CIndexArray *pIndexArray = NULL;
+    for( int k=0;k<4;k++)
+    {
+      for( int i=0;i<10;i++)
+      {
+	glPushMatrix();
+	glTranslatef( -100.0f+i*20.0f, -40+40*k, 0 );
+	if ( k==0 && i== 0)
+	{
+	  pOglRenderer->CommitModel( shipModel );
+	  pIndexArray = g_DefaultIndexManager->GetResource( shipModel.GetIndexHandles()[0]);
+	}
+	else 
+	{
+	  pOglRenderer->CommitPrimitive( pIndexArray );
+	}
+	glPopMatrix();
+      }
+    }
+    pOglRenderer->RollbackTransform( );
     pOglRenderer->CommitShader( NULL );
 
 
@@ -259,10 +288,32 @@ int main()
        pOglRenderer->CommitState( STATE_FACECULLING );
        // Rotate 
        pOglRenderer->CommitTransform( transform);
+
+
          pOglRenderer->CommitShader( pShader );
 	 pOglRenderer->CommitUniformShaderParam( *pShader, "tex0", 0);
 	 pOglRenderer->CommitUniformShaderParam( *pShader, "tex1", 1);
-         pOglRenderer->CommitModel( shipModel );
+     
+    for( int k=0;k<4;k++)
+    {
+      for( int i=0;i<10;i++)
+      {
+	glPushMatrix();
+	glTranslatef( -100.0f+i*20.0f, -40+40*k, 0 );
+	if ( k==0 && i== 0)
+	{
+	  pOglRenderer->CommitModel( shipModel );
+	  pIndexArray = g_DefaultIndexManager->GetResource( shipModel.GetIndexHandles()[0]);
+	}
+	else 
+	{
+	  pOglRenderer->CommitPrimitive( pIndexArray );
+	}
+
+	glPopMatrix();
+      }
+    }
+
  	pOglRenderer->CommitShader( NULL );
 	pOglRenderer->RollbackTransform();
     pOglRenderer->RollbackFrameBuffer( *pFrameBuffer );
@@ -347,6 +398,17 @@ int main()
     CSDLScreen::GetInstance()->SwapBuffers();
     timer.Update();
   }
+
+ //  pOglRenderer->RollbackCache( *g_DefaultVertexManager->GetResource(shipModel.GetVertexHandle()));
+//   pOglRenderer->RollbackCache( *g_DefaultVertexManager->GetResource(shipModel.GetTextureCoordinateHandle(0)));
+//   pOglRenderer->RollbackCache( *g_DefaultVertexManager->GetResource(shipModel.GetTextureCoordinateHandle(1)));
+//   pOglRenderer->RollbackCache( *g_DefaultVertexManager->GetResource(shipModel.GetNormalHandle()));
+//   // create resources for indices.
+//   for(unsigned int i=0;i<shipModel.GetIndexHandles().size();i++)
+//   {
+//     pOglRenderer->RollbackCache( *g_DefaultIndexManager->GetResource( shipModel.GetIndexHandles()[i]));
+//   }
+
   delete pFrameBuffer;
   pFrameBuffer = NULL;
   CSDLScreen::DestroyInstance();
