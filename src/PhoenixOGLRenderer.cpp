@@ -291,7 +291,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     if ( pBuffer->IsCached()) 
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
-      glColorPointer(4, GL_UNSIGNED_BYTE, 0, pBuffer->GetPointer<unsigned char>());
+      glColorPointer(4, GL_UNSIGNED_BYTE, 0, 0);
     } 
     else
     {
@@ -304,7 +304,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     if ( pBuffer->IsCached()) 
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
-      glColorPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+      glColorPointer(3, GL_FLOAT, 0, 0);
     } 
     else
     {
@@ -320,7 +320,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     if ( pBuffer->IsCached()) 
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
-      glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+      glTexCoordPointer(2, GL_FLOAT, 0, 0);
     } 
     else
     {
