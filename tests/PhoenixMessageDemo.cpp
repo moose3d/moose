@@ -52,7 +52,7 @@ public:
   }
   friend std::ostream & operator<<( std::ostream & stream, const CSecondMessage & msg )
   {
-    stream << msg.GetTimeStamp() << ": FIRST, from " 
+    stream << msg.GetTimeStamp() << ": SECOND, from " 
 	   << g_IntManager->GetResourceName(msg.GetSender())
 	   << " to " 
 	   << g_IntManager->GetResourceName(msg.GetReceiver())
@@ -106,6 +106,7 @@ public:
 /////////////////////////////////////////////////////////////////
 int main()
 {
+  // Handles to receivers.
   CHandle<int> hFirst, hSecond;
   int *pFirst, *pSecond;
   pFirst = new int();
