@@ -19,8 +19,8 @@ using std::endl;
 int g_bLoop = 1;
 int g_bGlow = 0;
 const float g_fRotationSpeedPerSec = 56.15f;
-const unsigned int SCREEN_WIDTH = 1680;
-const unsigned int SCREEN_HEIGHT = 1050;
+const unsigned int SCREEN_WIDTH = 1280;
+const unsigned int SCREEN_HEIGHT = 800;
 
 const unsigned int FRAMEBUFFER_WIDTH =256;
 const unsigned int FRAMEBUFFER_HEIGHT = (unsigned int)(FRAMEBUFFER_WIDTH*((float)SCREEN_HEIGHT/(float)SCREEN_WIDTH));
