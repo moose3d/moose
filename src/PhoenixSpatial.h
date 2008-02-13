@@ -128,7 +128,7 @@ namespace Phoenix
 
 
 
-#ifndef _WIN32EXPORT 
+
     // WHOA!! This was probably the most mind-boggling thing to fix. This is 
     // related to the differences between UNIX shared object files (.so) and 
     // Windows's Dynamically Linked Libraries (.DLL) 
@@ -139,11 +139,11 @@ namespace Phoenix
     // this nasty feature wreaks havoc on implementation. Following statements 
     // say that the CSingleton<CMaterialMgr> template has already been 
     // created in DLL and should not be created again.
-#ifdef WIN32
-    class CMaterialMgr;
-    extern template class __declspec(dllimport) CSingleton<CMaterialMgr>;
-#endif
-#endif
+
+    //    class CMaterialMgr;
+    //extern template class __declspec(dllimport) CSingleton<CMaterialMgr>;
+
+
     ////////////////////
     /// Vertex class for some cases where it is easier to handle things as a blob.
     class CVertex : public Phoenix::Spatial::CPositional

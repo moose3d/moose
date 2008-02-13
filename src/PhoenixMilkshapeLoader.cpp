@@ -2,7 +2,11 @@
 #include "PhoenixMilkshapeLoader.h"
 #include <fstream>
 #include <vector>
+#ifndef WIN32
+// Win32 support for tri_stripper needs some tweaking.
+// it is not too crucial to be left out.
 #include <tri_stripper.h>
+#endif
 /////////////////////////////////////////////////////////////////
 #define DELETE(OBJ) if(OBJ != NULL ) delete OBJ; OBJ=NULL;
 /////////////////////////////////////////////////////////////////
@@ -711,6 +715,7 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
 void
 Phoenix::Data::CMilkshapeLoader::Stripify()
 {
+#ifndef WIN32
   triangle_stripper::indices triangleIndices;
   CIndexArray *pIndices = NULL;
   
@@ -802,5 +807,6 @@ Phoenix::Data::CMilkshapeLoader::Stripify()
     // Put index array into vector
     GetIndices().push_back( pIndices );
   }
+  #endif
 }
 /////////////////////////////////////////////////////////////////
