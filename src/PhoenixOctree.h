@@ -251,7 +251,7 @@ namespace Phoenix
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 /// Macro for easier deletion
-#define DELETE(A) \
+#define PHOENIX_DELETE(A) \
  {\
   if ( A != NULL ){\
     delete A;\
@@ -286,14 +286,14 @@ Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode() : CAxisAlignedCube()
 template<typename TYPE>
 Phoenix::Spatial::COctreeNode<TYPE>::~COctreeNode()
 {
-  DELETE(m_pChildren[TOP_LEFT_FRONT]);
-  DELETE(m_pChildren[TOP_LEFT_BACK]);
-  DELETE(m_pChildren[TOP_RIGHT_FRONT]);
-  DELETE(m_pChildren[TOP_RIGHT_BACK]);
-  DELETE(m_pChildren[BOTTOM_LEFT_FRONT]);
-  DELETE(m_pChildren[BOTTOM_LEFT_BACK]);
-  DELETE(m_pChildren[BOTTOM_RIGHT_FRONT]);
-  DELETE(m_pChildren[BOTTOM_RIGHT_BACK]);
+  PHOENIX_DELETE(m_pChildren[TOP_LEFT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[TOP_LEFT_BACK]);
+  PHOENIX_DELETE(m_pChildren[TOP_RIGHT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[TOP_RIGHT_BACK]);
+  PHOENIX_DELETE(m_pChildren[BOTTOM_LEFT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[BOTTOM_LEFT_BACK]);
+  PHOENIX_DELETE(m_pChildren[BOTTOM_RIGHT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[BOTTOM_RIGHT_BACK]);
 
   m_pNeighbors[TOP] = NULL;
   m_pNeighbors[BOTTOM] = NULL;
@@ -353,7 +353,7 @@ template<typename TYPE>
 void
 inline Phoenix::Spatial::COctreeNode<TYPE>::DeleteNode( Phoenix::Spatial::OCTREE_SECTION iSection )
 {
-  DELETE(m_pChildren[iSection]);
+  PHOENIX_DELETE(m_pChildren[iSection]);
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
