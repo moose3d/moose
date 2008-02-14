@@ -106,6 +106,75 @@ TEST(CVector4_OperatorEqualityComparison)
   vectorInit2.Set(g_aResultOne);
   
   CHECK( vectorInit2 == vectorInit1 );
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  CHECK( vectorInit2 == vectorInit1 );
+  
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  -1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+  // negative test
+  CHECK( !(vectorInit2 == vectorInit1) );
+  CHECK( !(vectorInit1 == vectorInit2) );
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  -2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  // negative test
+  CHECK( !(vectorInit2 == vectorInit1) );
+  CHECK( !(vectorInit1 == vectorInit2) );
+
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  -3.0f;
+  vectorInit2[3] =  4.0f;
+
+  // negative test
+  CHECK( !(vectorInit2 == vectorInit1) );
+  CHECK( !(vectorInit1 == vectorInit2) );
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  -4.0f;
+
+  // negative test
+  CHECK( !(vectorInit2 == vectorInit1) );
+  CHECK( !(vectorInit1 == vectorInit2) );
+
+
 }
 /////////////////////////////////////////////////////////////////
 TEST(CVector4_OperatorInequalityComparison)
@@ -117,6 +186,73 @@ TEST(CVector4_OperatorInequalityComparison)
   vectorInit2.Set(g_aResultTwo);
   
   CHECK( vectorInit2 != vectorInit1 );
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  // negative test
+  CHECK( ! (vectorInit2 != vectorInit1) );
+  CHECK( ! (vectorInit1 != vectorInit2) );
+
+  vectorInit1[0] =  -1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  CHECK( vectorInit2 != vectorInit1 );
+  CHECK( vectorInit1 != vectorInit2 );
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  -2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  CHECK( vectorInit2 != vectorInit1 );
+  CHECK( vectorInit1 != vectorInit2 );
+
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  -3.0f;
+  vectorInit1[3] =  4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  CHECK( vectorInit2 != vectorInit1 );
+  CHECK( vectorInit1 != vectorInit2 );
+
+  vectorInit1[0] =  1.0f;
+  vectorInit1[1] =  2.0f;
+  vectorInit1[2] =  3.0f;
+  vectorInit1[3] =  -4.0f;
+
+  vectorInit2[0] =  1.0f;
+  vectorInit2[1] =  2.0f;
+  vectorInit2[2] =  3.0f;
+  vectorInit2[3] =  4.0f;
+
+  CHECK( vectorInit2 != vectorInit1 );
+  CHECK( vectorInit1 != vectorInit2 );
 }
 /////////////////////////////////////////////////////////////////
 TEST(CVector4_Dot)
