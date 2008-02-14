@@ -184,8 +184,8 @@ Phoenix::Spatial::COrientable::SetDirectionForwardUp( CVector3<float> f, CVector
   m_vRight.Normalize();
   // To ensure numerical stability
   CVector3<float> vDiff = f - u;
-  if ( vDiff[0] < 0.0001f &&
-       vDiff[1] < 0.0001f &&
+  if ( vDiff[0] < 0.0001f ||
+       vDiff[1] < 0.0001f ||
        vDiff[2] < 0.0001f )
   {
     m_qRotation.CreateFromAxisAngle( m_vRight, 180.0f);
