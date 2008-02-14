@@ -182,21 +182,21 @@ namespace Phoenix
       ////////////////////
       /// The equality comparison operator.
       /// \param vert CVertex object which this is compared against.
-      bool operator==( CVertex vert)
+      bool operator==( const CVertex & vert)
       {
-	int bSame = 1;
 	// compare texcoords; this might require also EPSILON
 	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
-	  bSame = bSame && ( m_vTexCoord[iT] == vert.m_vTexCoord[iT] );
-
-	return bSame &&
-	(GetPosition() == vert.GetPosition()) &&
-	(m_vNormal     == vert.m_vNormal)   &&
-	(m_vColor      == vert.m_vColor );
+	{
+	  if ( (m_vTexCoord[iT] != vert.m_vTexCoord[iT]) )  {  return 0;  }
+	}
+	if ( GetPosition() != vert.GetPosition()) { return 0; }
+	if ( m_vNormal     != vert.m_vNormal)     { return 0; }
+	if ( m_vColor      != vert.m_vColor )     { return 0; }
+	return 1;
       }
       ////////////////////
       /// The less than comparison operator.
-      bool operator< (CVertex vert)
+      bool operator< (const CVertex & vert)
       {
 	return m_vPosition[1] < vert.m_vPosition[1];
       }
