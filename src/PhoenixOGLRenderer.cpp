@@ -604,7 +604,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture * 
-Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType )
+Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, TEXTURE_FORMAT tFormat )
 {
   
   // create texture
@@ -624,14 +624,14 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
 
   glEnable( iGLType );
   glBindTexture( iGLType, pTexture->GetID());
-  glTexImage2D( iGLType, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+  glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0, static_cast<GLenum>(tFormat), GL_UNSIGNED_BYTE, NULL );
   glDisable( iGLType);
 
   return pTexture;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture * 
-Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData)
+Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData, TEXTURE_FORMAT tFormat)
 {
    // create texture
   unsigned int iTexId;
@@ -650,7 +650,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
 
   glEnable( iGLType );
   glBindTexture( iGLType, pTexture->GetID());
-  glTexImage2D( iGLType, 0, 4, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
+  glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
   glDisable( iGLType);
   
   return pTexture;

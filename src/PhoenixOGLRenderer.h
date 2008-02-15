@@ -93,6 +93,15 @@ namespace Phoenix
       FBO_COLOR_BUFFER = 1 << 0,
       FBO_DEPTH_BUFFER = 1 << 1
     };
+    ////////////////////
+    /// Texture formats
+    enum TEXTURE_FORMAT
+    {
+      TEX_FORMAT_RGBA = GL_RGBA,
+      TEX_FORMAT_RGB  = GL_RGB,
+      TEX_FORMAT_DEPTH_COMPONENT = GL_DEPTH_COMPONENT
+    };
+    
     /////////////////////////////////////////////////////////////////
     /// Class for grouping blending operations. 
     class CBlendingOperation : public Phoenix::Core::CEnableable
@@ -381,16 +390,18 @@ namespace Phoenix
       /// \param nWidth width of texture.
       /// \param nHeight height of texture.
       /// \param tType TEXTURE_TYPE 
+      /// \param tFormat TEXTURE FORMAT, by default RGB with alpha channel.
       /// \returns Pointer to COglTexture.
-      Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType );
+      Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, TEXTURE_FORMAT tFormat = TEX_FORMAT_RGBA );
       ////////////////////
       /// Creates new texture from existing data.
       /// \param nWidth width of texture.
       /// \param nHeight height of texture.
       /// \param tType TEXTURE_TYPE 
       /// \param pData Pointer to data.
+      /// \param tFormat TEXTURE FORMAT, by default RGB with alpha channel.
       /// \returns Pointer to COglTexture.
-      Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData);
+      Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData, TEXTURE_FORMAT tFormat = TEX_FORMAT_RGBA );
       ////////////////////
       /// Sets view using camera.
       /// \param camera Camera.

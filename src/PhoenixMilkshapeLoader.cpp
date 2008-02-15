@@ -218,15 +218,21 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
 int
 Phoenix::Data::CMilkshapeLoader::Load(const std::string &sFilename)
 {
+  return Load( sFilename.c_str());
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Data::CMilkshapeLoader::Load(const char *szFilename)
+{
 
   fstream	fFile;
   int iRetval = 0;
   unsigned int iFilesize = 0;
-  fFile.open( sFilename.c_str(), ios::binary | ios::in );
+  fFile.open( szFilename, ios::binary | ios::in );
   
   if ( !fFile )
   {
-    cerr << "Couldn't open " << sFilename << std::endl;
+    cerr << "Couldn't open " << szFilename << std::endl;
     return 1;
   }
   
@@ -243,7 +249,7 @@ Phoenix::Data::CMilkshapeLoader::Load(const std::string &sFilename)
 
   if ( pBuffer == NULL )
   {
-    cerr << "Error while reading " << sFilename << std::endl;
+    cerr << "Error while reading " << szFilename << std::endl;
     return 1;
   }
 

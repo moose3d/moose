@@ -311,6 +311,11 @@ namespace Phoenix
       /// \returns Non-zero on error, zero otherwise.
       int Load(const std::string &sFilename);
       ////////////////////
+      /// Loads the model data from file.
+      /// \param szFilename Path to file as zero-terminated char array.
+      /// \returns Non-zero on error, zero otherwise.
+      int Load(const char * szFilename);
+      ////////////////////
       /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
       /// Remember to call ResetVertices(), ResetNormals(), etc. if you have created a resource
       /// from those pointers. Remember to use ALL or NONE indices, otherwise memory leak will occur.

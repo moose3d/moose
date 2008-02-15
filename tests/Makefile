@@ -29,6 +29,8 @@ glowdemo:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixGlowDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 fontdemo:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixFontDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
+shadowdemo:
+	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixShadowDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean
