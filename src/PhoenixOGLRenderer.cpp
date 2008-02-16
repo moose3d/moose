@@ -44,6 +44,7 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
   switch ( tType )
   {
   case TEXTURE_2D:
+  case TEXTURE_DEPTH2D:
     iRetval = GL_TEXTURE_2D;
     break;
   case TEXTURE_RECT:
@@ -624,7 +625,23 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
 
   glEnable( iGLType );
   glBindTexture( iGLType, pTexture->GetID());
-  glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0, static_cast<GLenum>(tFormat), GL_UNSIGNED_BYTE, NULL );
+
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // depth texture requires special settings
+  if ( tType == TEXTURE_DEPTH2D )
+  {
+    glTexParameteri( iGLType, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+    glTexImage2D( iGLType, 0, GL_DEPTH_COMPONENT, nWidth, nHeight, 0, 
+		  GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
+  }
+  else
+  {
+    glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0, 
+		  static_cast<GLenum>(tFormat), GL_UNSIGNED_BYTE, NULL );
+  }
+
   glDisable( iGLType);
 
   return pTexture;
@@ -662,15 +679,7 @@ void
 Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
-  switch ( pTexture->GetType())
-  {
-  case TEXTURE_2D:
-    GL_ENABLE_TEXTURE( GL_TEXTURE_2D, pTexture->GetID());
-    break;
-  case TEXTURE_RECT:
-    GL_ENABLE_TEXTURE( GL_TEXTURE_RECTANGLE_ARB, pTexture->GetID());
-    break;
-  }
+  GL_ENABLE_TEXTURE(   GetGLTextureType( pTexture->GetType() ), pTexture->GetID());
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -789,17 +798,7 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
 void 
 Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType )
 {
-  GLenum glTarget = GL_TEXTURE_2D;
-  ////////////////////
-  switch( tType )
-  {
-  case TEXTURE_2D:
-    glTarget = GL_TEXTURE_2D;
-    break;
-  case TEXTURE_RECT:
-    glTarget = GL_TEXTURE_RECTANGLE_ARB;
-    break;
-  }
+  GLenum glTarget = GetGLTextureType( tType );
   ////////////////////
   switch( tFilter )
   {
@@ -1746,7 +1745,7 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
     glTexParameterf( iTexType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf( iTexType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameterf( iTexType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf( iTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf( iTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, 
 			       GL_COLOR_ATTACHMENT0_EXT+nBufferNumber, 
