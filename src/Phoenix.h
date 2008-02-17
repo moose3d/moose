@@ -37,3 +37,4 @@
 #include "PhoenixParticleSystem.h"
 #include "PhoenixObjectUpdater.h"
 #include "PhoenixStateMachine.h"
+#include "PhoenixModelHelper.h"
