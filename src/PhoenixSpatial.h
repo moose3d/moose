@@ -117,7 +117,14 @@ namespace Phoenix
 	m_vDirection[2] = fZ;
       }
       ////////////////////
-      /// Returns the direction.
+      /// Returns direction.
+      /// \returns Vector with current direction.
+      inline Phoenix::Math::CVector3<float> & GetDirection() 
+      {
+	return m_vDirection;
+      }
+      ////////////////////
+      /// Returns direction.
       /// \returns Vector with current direction.
       inline const Phoenix::Math::CVector3<float> & GetDirection() const
       {
