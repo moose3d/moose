@@ -17,7 +17,7 @@ Phoenix::Graphics::CSkybox::CSkybox() : CModel()
     cerr << "no previous texcoords!" << endl;
     pTexCoords = new Phoenix::Graphics::CVertexDescriptor( Phoenix::Graphics::ELEMENT_TYPE_TEX_2F, 24);
     ////////////////////
-    // floor
+    // ceiling
     pTexCoords->GetPointer<float>()[0] = 0.0f;
     pTexCoords->GetPointer<float>()[1] = 0.0f;
 
@@ -26,20 +26,20 @@ Phoenix::Graphics::CSkybox::CSkybox() : CModel()
 
     pTexCoords->GetPointer<float>()[4] = 1.0f;
     pTexCoords->GetPointer<float>()[5] = 1.0f;
-    
+
     pTexCoords->GetPointer<float>()[6] = 0.0f;
     pTexCoords->GetPointer<float>()[7] = 1.0f;
     ////////////////////
-    // ceiling
+    // floor
     pTexCoords->GetPointer<float>()[8] = 0.0f;
     pTexCoords->GetPointer<float>()[9] = 0.0f;
-
+    
     pTexCoords->GetPointer<float>()[10] = 1.0f;
     pTexCoords->GetPointer<float>()[11] = 0.0f;
 
     pTexCoords->GetPointer<float>()[12] = 1.0f;
     pTexCoords->GetPointer<float>()[13] = 1.0f;
-
+    
     pTexCoords->GetPointer<float>()[14] = 0.0f;
     pTexCoords->GetPointer<float>()[15] = 1.0f;
     ////////////////////

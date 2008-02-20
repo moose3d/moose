@@ -14,8 +14,9 @@ namespace Phoenix
   {
     enum SKYBOX_WALL_TYPE
     {
-      SKYBOX_CEILING = 0,
-      SKYBOX_FLOOR = 1,
+
+      SKYBOX_FLOOR = 0,
+      SKYBOX_CEILING = 1,
       SKYBOX_FRONT = 2,
       SKYBOX_REAR = 3,
       SKYBOX_LEFT = 4,
