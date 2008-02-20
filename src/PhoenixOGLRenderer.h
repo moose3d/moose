@@ -575,11 +575,11 @@ namespace Phoenix
       /// \param camera Current camera where skybox will be applied.
       void CommitSkybox( Phoenix::Graphics::CSkybox & skybox, Phoenix::Graphics::CCamera &camera );
       ////////////////////
-      /// Commits transform.
+      /// Commits transform. Applies stack push of current modelview matrix.
       /// \param transform Transform to be applied.
       void CommitTransform( const Phoenix::Math::CTransform &transform );
       ////////////////////
-      /// Rolls back transform.
+      /// Rolls back transform. Pops modelview stack.
       void RollbackTransform();
       ////////////////////
       /// Renders a sphere.
