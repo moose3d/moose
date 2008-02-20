@@ -16,7 +16,8 @@ using namespace Phoenix::Data;
 int g_bLoop = 1;
 #define TEXWIDTH  512
 #define TEXHEIGHT 512
-
+#define SPOT_CUTOFF 45.0f
+float g_fSpotAngleFactor = 1.0f;
 /////////////////////////////////////////////////////////////////
 int main()
 {
@@ -31,19 +32,23 @@ int main()
 
   CCamera lightCamera;  
   lightCamera.SetViewport(0,0,TEXWIDTH,TEXHEIGHT);
-  lightCamera.SetNearClipping( -51 );
-  lightCamera.SetFarClipping( 51 );
-  lightCamera.SetViewOrtho(-50, 50, -50,50);
-  lightCamera.SetPosition(0,0,0);
+  lightCamera.SetNearClipping( 1 );
+  lightCamera.SetFarClipping( 351 );
+  //lightCamera.SetViewOrtho(-50, 150, -50,150);
+  lightCamera.SetFieldOfView(SPOT_CUTOFF*2.0f);
+  lightCamera.SetPosition(0,15,0);
   lightCamera.RotateAroundX( -90 );
   
   CLight directionalLight;
-  directionalLight.SetPosition(0, 0, 0);
-  directionalLight.SetType( DIRECTIONAL );
+  directionalLight.SetPosition(0, 15, 0);
+  //directionalLight.SetType( DIRECTIONAL );
+  directionalLight.SetType( SPOTLIGHT );
+  directionalLight.SetSpotAngle(SPOT_CUTOFF);
   directionalLight.SetDirection( CVector3<float>( 0,-1,0).GetNormalized());
   directionalLight.SetDiffuseColor( CVector4<unsigned char>(225,225,225,255));
   directionalLight.SetAmbientColor( CVector4<unsigned char>(225,225,225,255));
   directionalLight.SetSpecularColor( CVector4<unsigned char>(255,255,255,255));
+  directionalLight.SetQuadraticAttenuation(0.001f);
   //lightCamera.SetRotation( RotationArc( directionalLight.GetDirection(), lightCamera.GetForwardVector() ));
 
   CCamera camera;  
@@ -59,7 +64,7 @@ int main()
 
   CModel *pModel    = new CModel();
   Phoenix::Data::LoadMilkshapeModel( "Resources/Models/shadowscene.ms3d",    "shadowmodel", *pModel, OPT_VERTEX_NORMALS | OPT_VERTEX_INDICES );
-  
+
   COglTexture *pTextureWall = pRenderer->CreateTexture( "./Resources/Textures/wall.tga");
   assert( pTextureWall  != NULL );
 
@@ -93,8 +98,8 @@ int main()
   
   CMatrix4x4<float> mResult;
 
-  CShader *pShadowShader  = pRenderer->CreateShader("Resources/Shaders/shadow.vert.glsl",
-						    "Resources/Shaders/shadow.frag.glsl");
+  CShader *pShadowShader  = pRenderer->CreateShader("Resources/Shaders/shadow.point.vertex.glsl",
+						    "Resources/Shaders/shadow.spot.frag.glsl");
   
 
   
@@ -161,7 +166,18 @@ int main()
 	  lightCamera.Move( CVector3<float>(0,-2.0f,0));
 	  directionalLight.Move( CVector3<float>(0,-2.0f,0) );
 	}
-
+	else if ( event.key.keysym.sym == SDLK_g )
+	{
+	  g_fSpotAngleFactor += 0.2f;
+	  lightCamera.SetFieldOfView(SPOT_CUTOFF*g_fSpotAngleFactor);
+	  cerr << "factor now: " << g_fSpotAngleFactor << endl;
+	}
+	else if ( event.key.keysym.sym == SDLK_t )
+	{
+	  g_fSpotAngleFactor -= 0.2f;
+	  lightCamera.SetFieldOfView(SPOT_CUTOFF*g_fSpotAngleFactor);
+	  cerr << "factor now: " << g_fSpotAngleFactor << endl;
+	}
 	break;
       }
     }
@@ -225,6 +241,7 @@ int main()
        pRenderer->CommitModel( *pModel );
        pRenderer->CommitModel( *pBackdrop );
        pRenderer->DisableTexture(0, pTextureWall );
+
     pRenderer->DisableTexture( 7, pTexture );
     pRenderer->CommitShader( NULL );
 
