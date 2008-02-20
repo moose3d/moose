@@ -674,6 +674,10 @@ namespace Phoenix
       /// \param fY Text lower left corner y coordinate.
       /// \param szText Text itself.
       void CommitString( CFontset & rFontSet, float fX, float fY, const char *szText );
+      ////////////////////
+      /// Returns information about current rendering hardware and opengl.
+      /// \returns Reference to features object.
+      const COglRendererFeatures & GetFeatures();
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics

@@ -230,8 +230,10 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::COglRenderer()
 {
+  // This must be assert()'ed!! GetFeatures will bork otherwise.
   m_pFeatures = new COglRendererFeatures();
-  std::cerr << "OpenGL information:" << std::endl << *m_pFeatures << std::endl;
+  assert( m_pFeatures != NULL && "Cannot create renderer features object!" );
+  //std::cerr << "OpenGL information:" << std::endl << *m_pFeatures << std::endl;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::~COglRenderer()
@@ -2071,5 +2073,12 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
   
   glPopAttrib();
   glDisable( GL_TEXTURE_2D );
+}
+/////////////////////////////////////////////////////////////////
+const COglRendererFeatures & 
+Phoenix::Graphics::COglRenderer::GetFeatures()
+{
+  // There should not be danger, since Renderer has assert in constrctor for this.
+  return *m_pFeatures;
 }
 /////////////////////////////////////////////////////////////////
