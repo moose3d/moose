@@ -13,8 +13,8 @@ int
 Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, CModel & rModel, int iFlags  )
 {
 
-  if ( szFilename == NULL )	return NULL;
-  if ( szName == NULL )		return NULL;
+  if ( szFilename == NULL )	return 1;
+  if ( szName == NULL )		return 1;
 
   // Create milkshape loader
   CMilkshapeLoader *pLoader = new CMilkshapeLoader() ;
@@ -25,7 +25,7 @@ Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, C
   if ( pLoader->Load( szFilename ) ) 
   {
     delete pLoader;
-    return NULL;
+    return 1;
   }
 
   pLoader->GenerateModelData();
@@ -75,7 +75,7 @@ Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, C
     {
       ostringstream stream;  
       stream << name << "_indices" << i;
-      pModel->AddIndexHandle(INDEX_HANDLE());
+      rModel.AddIndexHandle(INDEX_HANDLE());
       assert( g_DefaultIndexManager->Create( pLoader->GetIndices()[i], 
 					     stream.str().c_str(), 
 					     rModel.GetIndexHandles().back()) == 0 );
