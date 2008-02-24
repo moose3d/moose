@@ -18,17 +18,18 @@ namespace Phoenix
     class CParticle 
     {
     public:
-      ///  previous position in the world.
-      Phoenix::Math::CVector3<float> m_vOldPosition;
-      ///  current position in the world.
+      ///  Current position in the world. 
+      ///  \par previous position in the world is a special case, 
+      ///  \par must be implemented in inherited class.
       Phoenix::Math::CVector3<float> m_vPosition;
-      ///  direction and speed.
+      ///  Direction and speed.
       Phoenix::Math::CVector3<float> m_vVelocity;
-      ///  vertex colors.
+      ///  Vertex colors.
       Phoenix::Math::CVector4<unsigned char>  m_vColor;
-      /// The energy of this particle.
+      ///  The energy of this particle.
       float	      m_fEnergy;
-      /// The scaling factor for the particle shape defined in the ParticleSystem.
+      ///  The scaling factor for the particle shape defined in the 
+      ///  \par ParticleSystem.
       float	      m_fSize;
       
     };
@@ -49,6 +50,10 @@ namespace Phoenix
       Phoenix::Volume::CAxisAlignedBox m_BBox;
       /// Bounding sphere.
       Phoenix::Volume::CSphere	     m_BSphere;
+    private:
+      ////////////////////
+      /// Determines bounding volume for this system.
+      void DetermineBoundingVolume();
     public:
       /// Initialization policy.
       InitializePolicy m_InitializePolicy;
@@ -120,6 +125,7 @@ namespace Phoenix
       PositionPolicy m_PositionPolicy;
       /// Color policy.
       ColorPolicy    m_ColorPolicy;
+      ////////////////////
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeMS Passed time in milliseconds.
       inline void Prepare( unsigned int nPassedTimeMS )
@@ -130,6 +136,7 @@ namespace Phoenix
 	m_PositionPolicy.Prepare(nPassedTimeMS);
 	m_ColorPolicy.Prepare(nPassedTimeMS);
       }
+      ////////////////////
       /// Modifies given particle.
       /// \param particle a particle which values are to be modified.
       inline void operator()( PARTICLE_TYPE & particle ) 
@@ -230,17 +237,11 @@ namespace Phoenix
     private:
       /// Gravity values.
       Phoenix::Math::CVector3<float> m_vGravity;
-      /// Passed time in seconds.
-      ///float m_fPassedTimeInSec;
     public:
+      ////////////////////
       /// Default constructor.
       CGravityAction() : m_vGravity(0,-9.81f,0) {};
-      /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeInMS Passed time in milliseconds.
-      /* inline void Prepare( unsigned int nPassedTimeInMS ) */
-/*       { */
-/* 	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f; */
-/*       } */
+      ////////////////////
       /// Modifies given particle.
       /// \param particle a particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &particle ) 
@@ -260,25 +261,13 @@ namespace Phoenix
     template <class PARTICLE_TYPE>
     class CMoveAction : public CSecondPolicyBase
     {
-    private:
-      /// Passed time in milliseconds.
-      //float m_fPassedTimeInSec;
     public:
-      /// Default constructor.
-      CMoveAction() {}
-      /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeInMS Passed time in milliseconds.
-      /* inline void Prepare( unsigned int nPassedTimeInMS ) */
-/*       { */
-/* 	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f; */
-/*       } */
+      ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &p) const
       {
-	//cerr << p.m_vPosition << "|" << p.m_vVelocity << "|" << m_fPassedTimeInSec <<endl;
 	p.m_vPosition += p.m_vVelocity * GetPassedTime();
-	//cerr <<  "+=" << p.m_vVelocity * m_fPassedTimeInSec <<endl;
       } 
     }; // end of CMoveAction
     /////////////////////////////////////////////////////////////////
@@ -289,8 +278,10 @@ namespace Phoenix
     public:
       /// Size value.
       float m_fSize;
+      ////////////////////
       /// Default constructor.
       CSizeInitializer() : m_fSize(1.0f){}
+      ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline const void operator()(PARTICLE_TYPE &p) const
@@ -305,9 +296,11 @@ namespace Phoenix
     class CNullPolicy
     {
     public:
+      ////////////////////
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeInMS Passed time in milliseconds.
       inline void Prepare( unsigned int nPassedTimeInMS ){}
+      ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &p) const {}
@@ -317,16 +310,21 @@ namespace Phoenix
     class CEnergyInitializer
     {
     public:
+      /// Initial energy.
+      float m_fEnergy;
+      ////////////////////
       /// Default constructor.
-      CEnergyInitializer(){}
+      CEnergyInitializer() : m_fEnergy(1.0f){}
+      ////////////////////
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeInMS Passed time in milliseconds.
       inline void Prepare( unsigned int nPassedTimeInMS ){}
+      ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &p) const
       {
-	p.m_fEnergy = 1.0f;
+	p.m_fEnergy = m_fEnergy;
       } 
     };
     /////////////////////////////////////////////////////////////////
@@ -334,15 +332,17 @@ namespace Phoenix
     template <class PARTICLE_TYPE>
     class CVelocityInitializer
     {
-
     public:
       /// Velocity vector.
       Phoenix::Math::CVector3<float> m_vVelocity ;
+      ////////////////////
       /// Default constructor.
       CVelocityInitializer() :m_vVelocity(0,0,0) {}
+      ////////////////////
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeInMS Passed time in milliseconds.
       inline void Prepare( unsigned int nPassedTimeInMS ){}
+      ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &p) const
@@ -358,8 +358,7 @@ namespace Phoenix
     public:
       /// Color value.
       Phoenix::Math::CVector4<unsigned char> m_vColor;
-      /// Default constructor.
-      CColorInitializer() {}
+      ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
       inline void operator()(PARTICLE_TYPE &p) const
@@ -418,25 +417,8 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 /////////////////////////////////////////////////////////////////
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
 void
-Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Update( unsigned int nPassedTimeInMs )
+Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::DetermineBoundingVolume()
 {
-  m_ActionPolicy.Prepare( nPassedTimeInMs );
-  for(unsigned int i = 0;i<GetAliveCount();)
-  {
-    PARTICLE_TYPE &p = m_aParticles[i];
-    m_ActionPolicy(p);
-    // Is particle is dead
-    if ( p.m_fEnergy <= 0.0f && m_nNumParticlesAlive > 0)
-    {
-      // Replace dead particle with last known live one
-      m_aParticles[i] = m_aParticles[m_nNumParticlesAlive - 1];
-      m_nNumParticlesAlive--;
-    } 
-    else 
-    {
-      i++;
-    }
-  }
   if ( GetAliveCount() > 0 )
   {
     Phoenix::Math::CVector3<float> vMaxValues( m_aParticles[0].m_vPosition );
@@ -486,6 +468,31 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 }
 /////////////////////////////////////////////////////////////////
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
+void
+Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Update( unsigned int nPassedTimeInMs )
+{
+  m_ActionPolicy.Prepare( nPassedTimeInMs );
+  for(unsigned int i = 0;i<GetAliveCount();)
+  {
+    PARTICLE_TYPE &p = m_aParticles[i];
+    m_ActionPolicy(p);
+    // Is particle is dead
+    if ( p.m_fEnergy <= 0.0f && m_nNumParticlesAlive > 0)
+    {
+      // Replace dead particle with last known live one
+      m_aParticles[i] = m_aParticles[m_nNumParticlesAlive - 1];
+      m_nNumParticlesAlive--;
+    } 
+    else 
+    {
+      i++;
+    }
+  }
+  // update bounds
+  DetermineBoundingVolume();
+}
+/////////////////////////////////////////////////////////////////
+template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
 inline const PARTICLE_TYPE *	
 Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::GetParticles() const
 {
@@ -497,7 +504,7 @@ void
 Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Init(const size_t &nNumParticles, const Phoenix::Math::CVector3<float> &vPosition )
 {
   size_t nAmount = nNumParticles;
-    
+  float  fParticleMaxSize = 0.0f;
   if ( GetAliveCount() + nAmount > GetMaxParticles() )
   {
     nAmount = GetMaxParticles() - GetAliveCount();
@@ -511,23 +518,21 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 
     for(; nCount < GetAliveCount(); nCount++) 
     {
-      m_aParticles[nCount].m_vPosition = vPosition;
-      // Init policy takes care of additional positioning, if necessary.
+      // init policy must take care of all positioning, we might have different types of 
+      // particles that require additional structures to be set (Such as tails of energy weapons)
+      // m_aParticles[nCount].m_vPosition = vPosition;
+      // Init policy takes care of positioning, if necessary.
       m_InitializePolicy(m_aParticles[nCount]);
+      
+      if ( m_aParticles[nCount].m_fSize > fParticleMaxSize)
+      {
+	fParticleMaxSize = m_aParticles[nCount].m_fSize; 
+      }
     }
   }
-  ////////////////////
-  // This is a bit bad way to do this, but hopefully it will 
-  // work. If done properly, we would need the size of the largest 
-  // particle and use that.
-  m_BSphere.SetRadius( 1.0f );
-  m_BSphere.SetPosition( vPosition );
-  m_BBox.SetPosition( vPosition );
-    
-  m_BBox.SetWidth(  5.0f );
-  m_BBox.SetHeight( 5.0f );
-  m_BBox.SetLength( 5.0f );
-    
+  // update bounds
+  DetermineBoundingVolume();
+  
 }
 /////////////////////////////////////////////////////////////////
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
