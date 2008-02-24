@@ -57,7 +57,7 @@ namespace Phoenix
     ///          2 if the ray and sphere intersect on two points.
     int LineIntersectsSphere( const Phoenix::Math::CLine &line,
 			      Phoenix::Math::CVector3<float> *pvIntersection0,
-			      CVector3<float> *pvIntersection1,
+			      Phoenix::Math::CVector3<float> *pvIntersection1,
 			      const Phoenix::Volume::CSphere &Sphere);
     
     ////////////////////
@@ -66,6 +66,7 @@ namespace Phoenix
     /// \param aVertices Corner vertices of triangle.
     int PointInsideTriangle( const Phoenix::Math::CVector3<float> &vPoint, 
 			     const Phoenix::Math::CVector3<float> aVertices[3] );
+
 
     ////////////////////
     /// Returns the floating-point distance from point to a plane.
@@ -176,6 +177,15 @@ namespace Phoenix
 					      Phoenix::Math::CVector3<float> & vIntersectionPoint,
 					      float &fRelativeTime );
     
+    ////////////////////
+    /// Checks is point within sphere.
+    /// \param sphere sphere to be checked.
+    /// \param vPoint 3-Vector representing position in space.
+    /// \returns non-zero on intersectsion.
+    /// \returns zero on non-intersection.
+    int PointInsideSphere( const Phoenix::Volume::CSphere & sphere,  
+			   const CVector3<float> & vPoint );
+
 
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
@@ -291,7 +301,13 @@ namespace Phoenix
 
   } // namespace Collision
 } // namespace Phoenix
-
+/////////////////////////////////////////////////////////////////
+inline int 
+Phoenix::Collision::PointInsideSphere( const Phoenix::Volume::CSphere & sphere, 
+				       const Phoenix::Math::CVector3<float> & vPoint )
+{
+  return ( (sphere.GetPosition() - vPoint).Length() < sphere.GetRadius());
+}
 /////////////////////////////////////////////////////////////////
 #endif
 /////////////////////////////////////////////////////////////////
