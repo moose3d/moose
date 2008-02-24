@@ -6,24 +6,30 @@
 #include "PhoenixTransform.h"
 #include "PhoenixVolume.h"
 /////////////////////////////////////////////////////////////////
+#include <vector>
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Scene
   {
     /////////////////////////////////////////////////////////////////
-    /// GameObject class; base for every object in a game.
+    /// GameObject class; base for every object in a game. One object 
+    /// can consist of several models. 
+    /// ************************************************************
+    /// \warn THIS NEEDS RETHINKING. 
+    /// \warn Should a gameobject consist of several models,
+    /// \warn or just one model with different indices for different LODs and 
+    /// \warn animated sections?
+    ///
+    /// ************************************************************
     template <typename TYPE>
     class CGameObject : public Phoenix::Math::CTransformable
     {
     private:
-      /// Model object
-      Phoenix::Core::CHandle<Phoenix::Graphics::CModel>    m_hModel;
+      /// Model objects
+      std::vector< Phoenix::Core::CHandle<Phoenix::Graphics::CModel> > m_vecModelHandles;
       /// Object type
       TYPE				m_Type;
-
-      /// World tranform 
-      //Phoenix::Math::CTransform		m_Transform;
-
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
       /// Model bounding box.
@@ -32,30 +38,22 @@ namespace Phoenix
       unsigned int			m_nSpatialIndex;
     public:
       ////////////////////
-      /// Constructor.
-      CGameObject();
+      /// Constructor. 
+      /// \param nNumModels Number models in this gameobject.
+      CGameObject( size_t nNumModels = 1);
       ////////////////////
       /// Destructor.
       ~CGameObject();
       ////////////////////
       /// Returns model handle.
+      /// \param nIndex Which model handle is returned.
       /// \returns Model handle reference.
-      Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle();
+      Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle( size_t nIndex = 0);
       ////////////////////
       /// Returns model handle.
+      /// \param nIndex Which model handle is returned.
       /// \returns Model handle reference.
-      const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle() const;
-
-      ////////////////////
-      /// Returns world transform for this object.
-      /// \returns Transform reference.
-      //Phoenix::Math::CTransform & GetTransform();
-      ////////////////////
-      /// Returns world transform for this object.
-      /// \returns Transform reference.
-      //const Phoenix::Math::CTransform & GetTransform() const;      
-
-
+      const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle( size_t nIndex = 0) const;
       ////////////////////
       /// Returns bounding sphere.
       /// \returns Reference to bounding sphere. 
@@ -88,14 +86,20 @@ namespace Phoenix
       /// Sets object type.
       /// \param type Object type.
       void SetType(TYPE type);
+      ////////////////////
+      /// Returns number of model handles in this object.
+      /// \returns Number of allocated model handles.
+      size_t GetNumModels() const;
     };
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Scene::CGameObject<TYPE>::CGameObject() : m_Type((TYPE)0)
+Phoenix::Scene::CGameObject<TYPE>::CGameObject( size_t nNumModels ) : m_Type((TYPE)0)
 {
-  
+  if ( nNumModels == 0 ) nNumModels = 1;
+  for ( size_t i=0;i<nNumModels;i++)
+    m_vecModelHandles.push_back(Phoenix::Core::CHandle<Phoenix::Graphics::CModel>());
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -106,31 +110,19 @@ Phoenix::Scene::CGameObject<TYPE>::~CGameObject()
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 inline Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject<TYPE>::GetModelHandle()
+Phoenix::Scene::CGameObject<TYPE>::GetModelHandle( size_t nIndex )
 {
-  return m_hModel;
+  assert( nIndex < m_vecModelHandles.size());
+  return m_vecModelHandles[nIndex];
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 inline const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject<TYPE>::GetModelHandle() const
+Phoenix::Scene::CGameObject<TYPE>::GetModelHandle( size_t nIndex) const
 {
-  return m_hModel;
+  assert( nIndex < m_vecModelHandles.size());
+  return m_vecModelHandles[nIndex];
 }
-/////////////////////////////////////////////////////////////////
-/* template<typename TYPE> */
-/* inline Phoenix::Math::CTransform &  */
-/* Phoenix::Scene::CGameObject<TYPE>::GetTransform() */
-/* { */
-/*   return m_Transform; */
-/* } */
-/* ///////////////////////////////////////////////////////////////// */
-/* template<typename TYPE> */
-/* inline const Phoenix::Math::CTransform &  */
-/* Phoenix::Scene::CGameObject<TYPE>::GetTransform() const */
-/* { */
-/*   return m_Transform; */
-/* } */
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 inline Phoenix::Volume::CSphere & 
@@ -186,6 +178,13 @@ inline void
 Phoenix::Scene::CGameObject<TYPE>::SetType(TYPE type) 
 {
   m_Type = type;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline size_t 
+Phoenix::Scene::CGameObject<TYPE>::GetNumModels() const
+{
+  return m_vecModelHandles.size();
 }
 /////////////////////////////////////////////////////////////////
 #endif
