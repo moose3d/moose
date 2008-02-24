@@ -315,6 +315,19 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glColorPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
     break;
+  case ELEMENT_TYPE_COLOR_4F:
+    glEnableClientState( GL_COLOR_ARRAY );
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glColorPointer(4, GL_FLOAT, 0, 0);
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glColorPointer(4, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
+    break;
   case ELEMENT_TYPE_TEX_2F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
     else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
@@ -343,6 +356,57 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
       glNormalPointer( GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
+    break;
+  case ELEMENT_TYPE_UNIFORM_1F:
+  case ELEMENT_TYPE_UNIFORM_2F:
+  case ELEMENT_TYPE_UNIFORM_3F:
+  case ELEMENT_TYPE_UNIFORM_4F:
+  case ELEMENT_TYPE_UNIFORM_1I:
+  case ELEMENT_TYPE_UNIFORM_2I:
+  case ELEMENT_TYPE_UNIFORM_3I:
+  case ELEMENT_TYPE_UNIFORM_4I:
+  case ELEMENT_TYPE_UNIFORM_2X2F:
+  case ELEMENT_TYPE_UNIFORM_3X3F:
+  case ELEMENT_TYPE_UNIFORM_4X4F:
+  case ELEMENT_TYPE_ATTRIB_1F:
+  case ELEMENT_TYPE_ATTRIB_2F:
+  case ELEMENT_TYPE_ATTRIB_3F:
+  case ELEMENT_TYPE_ATTRIB_4F:
+  case ELEMENT_TYPE_ATTRIB_1I:
+  case ELEMENT_TYPE_ATTRIB_2I:
+  case ELEMENT_TYPE_ATTRIB_3I:
+  case ELEMENT_TYPE_ATTRIB_4I:
+  case ELEMENT_TYPE_ATTRIB_1UB:
+  case ELEMENT_TYPE_ATTRIB_2UB:
+  case ELEMENT_TYPE_ATTRIB_3UB:
+  case ELEMENT_TYPE_ATTRIB_4UB:
+  case ELEMENT_TYPE_NULL:
+    break;
+  }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
+{
+  // implemantation does not take into account if VBO is not supported.
+
+  switch( pBuffer->GetType() )
+  {
+  case ELEMENT_TYPE_VERTEX_3F:
+    glDisableClientState( GL_VERTEX_ARRAY );
+    break;
+  case ELEMENT_TYPE_COLOR_4UB:
+  case ELEMENT_TYPE_COLOR_3F:
+  case ELEMENT_TYPE_COLOR_4F:
+    glDisableClientState( GL_COLOR_ARRAY );
+    break;
+  case ELEMENT_TYPE_TEX_2F:
+    if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
+    else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+    break;
+  case ELEMENT_TYPE_NORMAL_3F:
+    glDisableClientState( GL_NORMAL_ARRAY );
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_UNIFORM_2F:

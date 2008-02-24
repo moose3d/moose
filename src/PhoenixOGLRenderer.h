@@ -350,6 +350,11 @@ namespace Phoenix
       /// \param nId Number for active texture unit. Used only in conjunction of ELEMENT_TYPE_TEX_*. If value is omitted, it defaults to zero.
       void CommitVertexDescriptor( Phoenix::Graphics::CVertexDescriptor *pBuffer, unsigned int nId = 0);
       ////////////////////
+      /// Disables vertex descriptor.
+      /// \param pBuffer Buffer to be applied.
+      /// \param nId Number for active texture unit. Used only in conjunction of ELEMENT_TYPE_TEX_*. If value is omitted, it defaults to zero.
+      void RollbackVertexDescriptor( Phoenix::Graphics::CVertexDescriptor *pBuffer, unsigned int nId = 0);
+      ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
       void CommitPrimitive( Phoenix::Graphics::CIndexArray *pIndexBuffer );
