@@ -1859,7 +1859,7 @@ int CheckForLineHits( CSovereignClass *pSovereign, CLine &line )
       if ( LineIntersectsTriangle( tmpLine, vVertices[0], vVertices[1], vVertices[2], intersectPoint))
       {
 	
-	cerr << "Collides: " << tmpLine.GetStart() << " and " << tmpLine.GetEnd() << endl;
+	//cerr << "Collides: " << tmpLine.GetStart() << " and " << tmpLine.GetEnd() << endl;
 	return 1;
       }
      
@@ -1901,7 +1901,7 @@ int main()
   CCamera camera;
   camera.SetPosition( 0, 0.0f,75.0f);
   //camera.SetViewport( 480,340, 160, 120 );
-  camera.SetViewport( 0,0, CSDLScreen::m_SDLScreenParams.m_iWidth/2, CSDLScreen::m_SDLScreenParams.m_iHeight );
+  camera.SetViewport( 0,0, CSDLScreen::m_SDLScreenParams.m_iWidth, CSDLScreen::m_SDLScreenParams.m_iHeight );
   camera.SetNearClipping( 0.1f);
   camera.SetFarClipping( 1500.0f );
   camera.SetFieldOfView( 43.0f);
