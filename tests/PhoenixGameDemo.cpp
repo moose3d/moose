@@ -528,7 +528,7 @@ public:
 /////////////////////////////////////////////////////////////////
 #define RESOURCE_ENERGYBOLT "__phoenix_energybolt"
 #define RESOURCE_ENERGYBOLT_TEXTURE "__phoenix_energybolt_texture"
-#define ENERGYBOLT_TEXTURE "/home/entity/workdir/textures/energybolt.tga"
+#define ENERGYBOLT_TEXTURE "Resources/Textures/energybolt.tga"
 class CEnergyBolt 
 {
 private:
@@ -1897,22 +1897,22 @@ int main()
   CSkybox skybox;
 
 
-  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("/home/entity/workdir/textures/sb_nebula_top.tga"), 
+  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("Resources/Textures/sb_nebula_top.tga"), 
 				   "SKYBOX_TEXTURE0", 
 				   skybox.GetTextureHandle(SKYBOX_CEILING) );
-  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("/home/entity/workdir/textures/sb_nebula_bottom.tga"), 
+  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("Resources/Textures/sb_nebula_bottom.tga"), 
 				   "SKYBOX_TEXTURE1", 
 				   skybox.GetTextureHandle(SKYBOX_FLOOR) );
-  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("/home/entity/workdir/textures/sb_nebula_left.tga"), 
+  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("Resources/Textures/sb_nebula_left.tga"), 
 				   "SKYBOX_TEXTURE2", 
 				   skybox.GetTextureHandle(SKYBOX_LEFT) );
-  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("/home/entity/workdir/textures/sb_nebula_right.tga"), 
+  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("Resources/Textures/sb_nebula_right.tga"), 
 				   "SKYBOX_TEXTURE3", 
 				   skybox.GetTextureHandle(SKYBOX_RIGHT) );
-  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("/home/entity/workdir/textures/sb_nebula_front.tga"), 
+  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("Resources/Textures/sb_nebula_front.tga"), 
 				   "SKYBOX_TEXTURE4", 
 				   skybox.GetTextureHandle(SKYBOX_FRONT) );
-  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("/home/entity/workdir/textures/sb_nebula_back.tga"), 
+  g_DefaultTextureManager->Create( pOglRenderer->CreateTexture("Resources/Textures/sb_nebula_back.tga"), 
 				   "SKYBOX_TEXTURE5", 
 				   skybox.GetTextureHandle(SKYBOX_REAR) );
   // Clear event queue
@@ -1948,7 +1948,7 @@ int main()
 
   
   CPulseWeapon *pPulseWeapon = new CPulseWeapon();
-  COglTexture *pPulse = pOglRenderer->CreateTexture( "/home/entity/workdir/textures/pulseweapon.tga" );
+  COglTexture *pPulse = pOglRenderer->CreateTexture( "Resources/Textures/pulseweapon.tga" );
   assert( pPulse != 0);
   CVector3<float> m_vFireDirection(0,0,1);
   CQuaternion qUp, qDown;
