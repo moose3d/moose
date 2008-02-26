@@ -144,35 +144,48 @@ Phoenix::Collision::LineIntersectsSphere( const CLine &line,
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Collision::PointInsideTriangle( const CVector3<float> &vPoint, 
-					 const CVector3<float> aVertices[3])
+Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint, 
+					 const CVector3<float> & vVertex0,
+					 const CVector3<float> & vVertex1,
+					 const CVector3<float> & vVertex2 )
 {
   CVector3<float> vVect1, vVect2;
   float fAngle = 0.0f;
   
-  vVect1 = aVertices[0] - vPoint;
-  vVect2 = aVertices[1] - vPoint;
+  vVect1 = vVertex0 - vPoint;
+  vVect2 = vVertex1 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
 
-  vVect1 = aVertices[1] - vPoint;
-  vVect2 = aVertices[2] - vPoint;
+  vVect1 = vVertex1 - vPoint;
+  vVect2 = vVertex2 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
   
-  vVect1 = aVertices[2] - vPoint;
-  vVect2 = aVertices[0] - vPoint;
+  vVect1 = vVertex2 - vPoint;
+  vVect2 = vVertex0 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
-  
-  // for( unsigned int v=0;v<nNumVertices;v++)
-//   {
-//     vS.UseExternalData( &(pVertices[(v*3)]));
-//     vT.UseExternalData( &(pVertices[((v+1)%nNumVertices)*3]));
-//     vVect1 = vS - vPoint;
-//     vVect2 = vT - vPoint;
-//     fAngle += AngleBetweenVectors( vVect1, vVect2);
-//   }
   
   return (fabs(fAngle) >= (0.99f * Math::PI * 2.0f));
+}
+/////////////////////////////////////////////////////////////////
+int 
+Phoenix::Collision::LineIntersectsTriangle( const Phoenix::Math::CLine & line,
+					    const Phoenix::Math::CVector3<float> & vVertex0,
+					    const Phoenix::Math::CVector3<float> & vVertex1,
+					    const Phoenix::Math::CVector3<float> & vVertex2,
+					    Phoenix::Math::CVector3<float> &vPointOfIntersection )
+{
   
+  CPlane triPlane;
+  CVector3<float> vPoint;
+  // Calculate triangle plane and check does it intersect the plane.
+  triPlane.Calculate( (vVertex1-vVertex0).Cross( vVertex2-vVertex0), vVertex0);
+  LINE_PLANE_INTERSECTION tType = LineIntersectsPlane( triPlane, line, vPoint );
+  if ( tType == POINT_IN_PLANE)
+  {
+    // if line intersects plane, then proceed to test triangle with interesection point.
+    return PointInsideTriangle( vPoint, vVertex0, vVertex1, vVertex2 );
+  }
+  return 0;
 }
 /////////////////////////////////////////////////////////////////
 float 

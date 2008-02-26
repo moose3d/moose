@@ -65,9 +65,23 @@ namespace Phoenix
     /// \param vPoint Point to be checked.
     /// \param aVertices Corner vertices of triangle.
     int PointInsideTriangle( const Phoenix::Math::CVector3<float> &vPoint, 
-			     const Phoenix::Math::CVector3<float> aVertices[3] );
+			     const Phoenix::Math::CVector3<float> & vVertex0,
+			     const Phoenix::Math::CVector3<float> & vVertex1,
+			     const Phoenix::Math::CVector3<float> & vVertex2 );
 
-
+    ////////////////////
+    /// Does given line intersect static triangle.
+    /// \param line			Line to be checked.
+    /// \param vVertex0			First vertex of triangle.
+    /// \param vVertex1			Second vertex of triangle.
+    /// \param vVertex2			Third vertex of triangle.
+    /// \param vPointOfIntersection     If line intersects, the point of intersection inside triangle. Otherwise undefined.
+    /// \returns non-zero on intersection, zero otherwise.
+    int LineIntersectsTriangle( const Phoenix::Math::CLine & line,
+				const Phoenix::Math::CVector3<float> & vVertex0,
+				const Phoenix::Math::CVector3<float> & vVertex1,
+				const Phoenix::Math::CVector3<float> & vVertex2,
+				Phoenix::Math::CVector3<float> &vPointOfIntersection );
     ////////////////////
     /// Returns the floating-point distance from point to a plane.
     /// \param vPoint Point of origin.
