@@ -35,6 +35,8 @@ spotshadowdemo:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixSpotShadowDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 simplifier:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixMeshSimplifier.cpp -lPhoenix `sdl-config --libs` -ltcl
+linecollision:
+	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixLineCollisionDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean

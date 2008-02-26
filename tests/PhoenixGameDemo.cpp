@@ -722,6 +722,7 @@ public:
   {
     Phoenix::Data::CMilkshapeLoader loader;
     std::string name("Resources/Models/1701-e.ms3d");
+    //std::string name("Resources/Models/triangle.ms3d");
     assert ( loader.Load( name ) == 0 && "Could not open model file!");
     loader.GenerateModelData();
     //loader.Stripify();
@@ -1539,7 +1540,7 @@ public:
     ////////////////////
     // Set initial size.
     m_PulseWeaponPS.m_InitializePolicy.m_SizePolicy.m_fSize = 0.4780f;
-    m_PulseWeaponPS.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.10f;
+    m_PulseWeaponPS.m_ActionPolicy.m_EnergyPolicy.m_fEnergyDecrease = 0.50f;
 
     // create indices for drawing the quads
     if ( m_pIndicesHead->IsShortIndices())
@@ -1734,59 +1735,140 @@ int CheckForHits( CSovereignClass *pSovereign, CPulseWeaponParticleSystem *pPuls
   CVector3<float> vVertices[3];
   CLine line;
   CVector3<float> intersectPoint;
+  CMatrix4x4<float> mInverse;
+
+  if ( InverseMatrix( pSovereign->GetWorldTransform().GetMatrix(), mInverse))
+  {
+    cerr << "not inverible" << endl;
+    return 0;
+  }
+
   if ( pIndices->IsShortIndices())
   {
-    for( size_t i=0;i<pIndices->GetNumIndices();i+=9)
+    for( size_t i=0;i<pIndices->GetNumIndices();i+=3)
     {
       unsigned short int *pTmp = pIndices->GetPointer<unsigned short int>();
 
-      vVertices[0][0] = pVertices->GetPointer<float>()[pTmp[i*9]];
-      vVertices[0][1] = pVertices->GetPointer<float>()[pTmp[i*9+1]];
-      vVertices[0][2] = pVertices->GetPointer<float>()[pTmp[i*9+2]];
+
+      vVertices[0][0] = pVertices->GetPointer<float>()[pTmp[i]*3];
+      vVertices[0][1] = pVertices->GetPointer<float>()[pTmp[i]*3+1];
+      vVertices[0][2] = pVertices->GetPointer<float>()[pTmp[i]*3+2];
       
-      vVertices[1][0] = pVertices->GetPointer<float>()[pTmp[i*9+3]];
-      vVertices[1][1] = pVertices->GetPointer<float>()[pTmp[i*9+4]];
-      vVertices[1][2] = pVertices->GetPointer<float>()[pTmp[i*9+5]];
+      vVertices[1][0] = pVertices->GetPointer<float>()[pTmp[i+1]*3];
+      vVertices[1][1] = pVertices->GetPointer<float>()[pTmp[i+1]*3+1];
+      vVertices[1][2] = pVertices->GetPointer<float>()[pTmp[i+1]*3+2];
       
-      vVertices[2][0] = pVertices->GetPointer<float>()[pTmp[i*9+6]];
-      vVertices[2][1] = pVertices->GetPointer<float>()[pTmp[i*9+7]];
-      vVertices[2][2] = pVertices->GetPointer<float>()[pTmp[i*9+8]];
+      vVertices[2][0] = pVertices->GetPointer<float>()[pTmp[i+2]*3];
+      vVertices[2][1] = pVertices->GetPointer<float>()[pTmp[i+2]*3+1];
+      vVertices[2][2] = pVertices->GetPointer<float>()[pTmp[i+2]*3+2];
       
       // check does triangle intersect
       for( size_t p=0;p<pPulseWeapon->GetAliveCount();p++)
       {
-	line.SetStart( pPulseWeapon->GetParticles()[p].m_vOldPositions[0]);
-	line.SetEnd(  pPulseWeapon->GetParticles()[p].m_vPosition );
-	
+	 CVector3<float> vStart = Transform( pPulseWeapon->GetParticles()[p].m_vOldPositions[0], mInverse);
+	 CVector3<float> vEnd   = Transform( pPulseWeapon->GetParticles()[p].m_vPosition, mInverse);
+	 //CVector3<float> vStart = Transform( line.GetStart(), mInverse);
+	 //CVector3<float> vEnd   = Transform( line.GetEnd(), mInverse);
+	line.SetStart(vStart );
+	line.SetEnd( vEnd );
+	//cerr << "Checking: " << line.GetStart() << " and " << line.GetEnd() << endl;
 	if ( LineIntersectsTriangle( line, vVertices[0], vVertices[1], vVertices[2], intersectPoint))
 	{
-	  //const_cast<CTailParticle *>(pPulseWeapon->GetParticles())[p].m_fEnergy = 0.0f;
+	  const_cast<CTailParticle *>(pPulseWeapon->GetParticles())[p].m_fEnergy = 0.0f;
 	  cerr << "Collides: " << line.GetStart() << " and " << line.GetEnd() << endl;
 	}
-      }
+       }
+    }
+  }
+  else
+  {
+    assert( 0 );
+  }
+  return 0;
+}
+/////////////////////////////////////////////////////////////////
+int CheckForLineHits( CSovereignClass *pSovereign, CLine &line )
+{
+  CModel *pModel = g_PhoenixModelManager->GetResource(pSovereign->GetModelHandle());
+  assert( pModel != NULL );
+  CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(pModel->GetVertexHandle());
+  assert( pVertices );
+  assert( pModel->GetIndexHandles().size() == 1);
+  CIndexArray *pIndices = g_DefaultIndexManager->GetResource(pModel->GetIndexHandles().front());
+  assert( pIndices );
 
+
+  CVector3<float> vVertices[3];
+  CVector3<float> intersectPoint;
+  CMatrix4x4<float> mInverse;
+
+  if ( InverseMatrix( pSovereign->GetWorldTransform().GetMatrix(), mInverse))
+  {
+    cerr << "not inverible" << endl;
+    return 0;
+  }
+
+  CVector3<float> vStart = Transform( line.GetStart(), mInverse);
+  CVector3<float> vEnd   = Transform( line.GetEnd(), mInverse);
+
+  //assert(pVertices->GetSize()==3);
+
+  CLine tmpLine;
+  tmpLine.SetStart(vStart );
+  tmpLine.SetEnd( vEnd );
+  // cerr << "line start = " << tmpLine.GetStart() << endl;
+//   cerr << "line end = "   << tmpLine.GetEnd() << endl;
+
+//   cerr << "vertex0 actual: " 
+//        << pVertices->GetPointer<float>()[0] << "," 
+//        << pVertices->GetPointer<float>()[1] << ","
+//        << pVertices->GetPointer<float>()[2] << endl;
+
+//   cerr << "vertex1 actual: " 
+//        << pVertices->GetPointer<float>()[3] << "," 
+//        << pVertices->GetPointer<float>()[4] << ","
+//        << pVertices->GetPointer<float>()[5] << endl;
+
+//   cerr << "vertex2 actual: " 
+//        << pVertices->GetPointer<float>()[6] << "," 
+//        << pVertices->GetPointer<float>()[7] << ","
+//        << pVertices->GetPointer<float>()[8] << endl;
+
+  if ( pIndices->IsShortIndices())
+  {
+    for( size_t i=0;i<pIndices->GetNumIndices();i+=3)
+    {
+      unsigned short int *pTmp = pIndices->GetPointer<unsigned short int>();
+
+      vVertices[0][0] = pVertices->GetPointer<float>()[pTmp[i]*3];
+      vVertices[0][1] = pVertices->GetPointer<float>()[pTmp[i]*3+1];
+      vVertices[0][2] = pVertices->GetPointer<float>()[pTmp[i]*3+2];
       
+      vVertices[1][0] = pVertices->GetPointer<float>()[pTmp[i+1]*3];
+      vVertices[1][1] = pVertices->GetPointer<float>()[pTmp[i+1]*3+1];
+      vVertices[1][2] = pVertices->GetPointer<float>()[pTmp[i+1]*3+2];
+      
+      vVertices[2][0] = pVertices->GetPointer<float>()[pTmp[i+2]*3];
+      vVertices[2][1] = pVertices->GetPointer<float>()[pTmp[i+2]*3+1];
+      vVertices[2][2] = pVertices->GetPointer<float>()[pTmp[i+2]*3+2];
+      
+      
+      // cerr << "vertex 0 : " << vVertices[0] << endl;
+      // cerr << "vertex 1 : " << vVertices[1] << endl;
+      // cerr << "vertex 2 : " << vVertices[2] << endl;
+      if ( LineIntersectsTriangle( tmpLine, vVertices[0], vVertices[1], vVertices[2], intersectPoint))
+      {
+	
+	cerr << "Collides: " << tmpLine.GetStart() << " and " << tmpLine.GetEnd() << endl;
+	return 1;
+      }
+     
       
     }
   }
   else
   {
-    for( size_t i=0;i<pIndices->GetNumIndices();i+=9)
-    {
-      unsigned int *pTmp = pIndices->GetPointer<unsigned int>();
-
-      vVertices[0][0] = pVertices->GetPointer<float>()[pTmp[i*9]];
-      vVertices[0][1] = pVertices->GetPointer<float>()[pTmp[i*9+1]];
-      vVertices[0][2] = pVertices->GetPointer<float>()[pTmp[i*9+2]];
-      
-      vVertices[1][0] = pVertices->GetPointer<float>()[pTmp[i*9+3]];
-      vVertices[1][1] = pVertices->GetPointer<float>()[pTmp[i*9+4]];
-      vVertices[1][2] = pVertices->GetPointer<float>()[pTmp[i*9+5]];
-      
-      vVertices[2][0] = pVertices->GetPointer<float>()[pTmp[i*9+6]];
-      vVertices[2][1] = pVertices->GetPointer<float>()[pTmp[i*9+7]];
-      vVertices[2][2] = pVertices->GetPointer<float>()[pTmp[i*9+8]];
-    }
+    assert( 0 );
   }
   return 0;
 }
@@ -1794,8 +1876,8 @@ int CheckForHits( CSovereignClass *pSovereign, CPulseWeaponParticleSystem *pPuls
 int main()
 {
 
-  CSDLScreen::m_SDLScreenParams.m_iWidth  = 1280;
-  CSDLScreen::m_SDLScreenParams.m_iHeight = 1024;
+  CSDLScreen::m_SDLScreenParams.m_iWidth  = 800;
+  CSDLScreen::m_SDLScreenParams.m_iHeight = 600;
 
 
   if ( !CSDLScreen::GetInstance() )
@@ -1819,18 +1901,19 @@ int main()
   CCamera camera;
   camera.SetPosition( 0, 0.0f,75.0f);
   //camera.SetViewport( 480,340, 160, 120 );
-  camera.SetViewport( 0,0, 1280, 1024 );
+  camera.SetViewport( 0,0, CSDLScreen::m_SDLScreenParams.m_iWidth/2, CSDLScreen::m_SDLScreenParams.m_iHeight );
   camera.SetNearClipping( 0.1f);
   camera.SetFarClipping( 1500.0f );
   camera.SetFieldOfView( 43.0f);
 
   CCamera camera2;
-  camera2.SetPosition( 0, 0.0f, 0.0f);
-  camera2.SetViewport( 0,0, 1280, 1024 );
-  camera2.SetNearClipping( -1.0f);
-  camera2.SetFarClipping( 10.0f );
-  camera2.SetViewOrtho( 0,1280, 0, 1024);
-  //camera2.RotateAroundRight( -90.0 );
+  camera2.SetPosition( 0, 0.0f, 75.0f);
+  camera2.SetViewport( CSDLScreen::m_SDLScreenParams.m_iWidth/2, 0,
+		       CSDLScreen::m_SDLScreenParams.m_iWidth/2, CSDLScreen::m_SDLScreenParams.m_iHeight );
+  camera2.SetNearClipping( 0.1f);
+  camera2.SetFarClipping( 1500.0f );
+  camera2.SetFieldOfView( 43.0f);
+
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   
@@ -1850,12 +1933,12 @@ int main()
   /////////////////////////////////////////////////////////////////
   /// Create ships 
   COmegaClass *pOmega = new COmegaClass();
-  pOmega->GetLocalTransform().SetTranslation(0, -10 ,0);
+  pOmega->GetLocalTransform().SetTranslation(0, -50 ,0);
   pOmega->GetLocalTransform().SetScaling(1.0f);
   pSpatialGraph->InsertObject( pOmega );
   
   CSovereignClass *pSovereign = new CSovereignClass();
-  pSovereign->GetLocalTransform().SetTranslation( 10, 0,0);
+  pSovereign->GetLocalTransform().SetTranslation( 0, 10,0);
   pSovereign->GetLocalTransform().SetScaling(1.0f);
   pSpatialGraph->InsertObject( pSovereign );
   cerr << "we're ok" << endl;
@@ -1933,6 +2016,7 @@ int main()
 
   string strFPS;
   CVector4<unsigned char> vWhite(255,255,255,255);
+  CVector4<unsigned char> vEnergyRayColor(0,255,0,255);
   CFontset *pFontset = pOglRenderer->CreateFontset( "Resources/Fonts/trebuc.ttf", 15);
 
   ostringstream *pStream = new ostringstream();
@@ -1954,6 +2038,9 @@ int main()
   CQuaternion qUp, qDown;
   qUp.CreateFromAxisAngle( 1,0,0, 2.0f);
   qDown.CreateFromAxisAngle( 1,0,0, -2.0f);
+
+  CLine energyRay;
+
   while( g_bLoop )
   {
     fpsCounter.Update();
@@ -1983,6 +2070,15 @@ int main()
 	{
 	  camera.Strafe( 1.1f );
 	} 
+	else if ( event.key.keysym.sym == SDLK_r )
+	{
+	  camera.RotateAroundRight( -1.1f );
+	}      
+	else if ( event.key.keysym.sym == SDLK_f )
+	{
+	  camera.RotateAroundRight( 1.1f );
+
+	} 
 	else if ( event.key.keysym.sym == SDLK_PAGEUP )
 	{
 	  RotateVector( qUp, m_vFireDirection);
@@ -1996,9 +2092,8 @@ int main()
 	  //pParticleSystem->Init( pSovereign->GetWorldTransform().GetTranslation() + pSovereign->GetForwardVector());
 	  //pBeam->SetEnabled(1);
 	  g_ShipMsgRouter->EnqueueMessage( new CDamageMessage( pTOmega->GetHandle(), pTSovereign->GetHandle(), 0.3f ));
-
 	  pPulseWeapon->Init( CVector3<float>(0,0,0), m_vFireDirection*45.0f );
-	  
+	  //pPulseWeapon->Init( CVector3<float>(0,0,0), pSovereign->GetWorldTransform().GetTranslation().GetNormalized()*45.0f );
 	}
 	 else if ( event.key.keysym.sym == SDLK_LEFT )
 	{
@@ -2060,7 +2155,7 @@ int main()
     //TravelDF<SPACESHIP_CLASS, CTransformUpdater>( pTGR, &trUpdater );
 
     //pOglRenderer->ClearBuffer( COLOR_BUFFER );
-
+    pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->CommitState( STATE_DEPTH_TEST );
 
     nCollected = pRenderQueue->CollectObjects( camera, *pSpatialGraph ) ;
@@ -2096,11 +2191,23 @@ int main()
 			   pOmega->GetWorldTransform().GetTranslation(), 0.95f );
       }
       
-      CheckForHits( pSovereign, pPulseWeapon->GetPS());
-      
     }
+    CheckForHits( pSovereign, pPulseWeapon->GetPS());      
+    
+    energyRay.SetStart( CVector3<float>(0,0,0));
+    energyRay.SetEnd( m_vFireDirection*pSovereign->GetWorldTransform().GetTranslation().Length()*1.5f);
 
-
+    if ( CheckForLineHits( pSovereign, energyRay ))
+    {
+      vEnergyRayColor = CVector4<unsigned char>(255,0,0,255);
+    } 
+    else 
+    {
+      
+      //cerr << "does not hit" << endl;
+      vEnergyRayColor = CVector4<unsigned char>(0,255,0,255);
+    }
+    
 
     pParticleSystem->UpdateRenderableData();
     //pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
@@ -2141,6 +2248,13 @@ int main()
     pOglRenderer->RollbackVertexDescriptor( pPulseWeapon->m_pTailColor );
     glLineWidth(1.0f);
     glDisable(GL_LINE_SMOOTH );
+
+    pOglRenderer->CommitColor(vEnergyRayColor);
+    glBegin(GL_LINES);
+      glVertex3fv( energyRay.GetStart().GetArray());
+      glVertex3fv( energyRay.GetEnd().GetArray());
+    glEnd();
+    pOglRenderer->CommitColor( vWhite );
     /////////////////////////////////////////////////////////////////
     /// Draw energybolt
     pOglRenderer->DisableState( STATE_BLENDING);
@@ -2200,9 +2314,34 @@ int main()
     pOglRenderer->CommitState( STATE_DEPTH_TEST );
     glDisable(GL_ALPHA_TEST);
     pOglRenderer->DisableState( STATE_BLENDING );
-    pOglRenderer->Finalize();
+
     pOglRenderer->CommitShader( NULL );    
     
+//     pOglRenderer->CommitCamera( camera2 );
+
+
+//     pOglRenderer->CommitColor( vWhite );
+//     pOglRenderer->CommitModel( *g_PhoenixModelManager->GetResource(pSovereign->GetModelHandle()) );
+
+//     CMatrix4x4<float> inv;
+//     if ( InverseMatrix( pSovereign->GetWorldTransform().GetMatrix(), inv))
+//     {
+//       cerr << "not inverible" << endl;
+//       return 0;
+//     }
+    
+//     CVector3<float> vStart = Transform( energyRay.GetStart(), inv);
+//     CVector3<float> vEnd   = Transform( energyRay.GetEnd(), inv);
+//     pOglRenderer->CommitShader( NULL );    
+//     pOglRenderer->CommitColor(CVector4<unsigned char>(255,0,0,255));
+//     pOglRenderer->DisableTexture(0);
+//     glBegin(GL_LINES);
+//       glVertex3fv( vStart.GetArray());
+//       glVertex3fv( vEnd.GetArray());
+//     glEnd();
+//     pOglRenderer->CommitColor( vWhite );
+//     pOglRenderer->CommitShader( NULL );    
+    pOglRenderer->Finalize();    
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter++;
 
