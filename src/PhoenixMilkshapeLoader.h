@@ -319,13 +319,18 @@ namespace Phoenix
       /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
       /// Remember to call ResetVertices(), ResetNormals(), etc. if you have created a resource
       /// from those pointers. Remember to use ALL or NONE indices, otherwise memory leak will occur.
-      void GenerateModelData();
+      /// \param iVertexCompareFlags Which components of vertices are used in comparision when creating lists. By default, all.
+      void GenerateModelData( int iVertexCompareFlags = 
+			      Phoenix::Spatial::VERTEX_COMP_TEXCOORD | 
+			      Phoenix::Spatial::VERTEX_COMP_POSITION | 
+			      Phoenix::Spatial::VERTEX_COMP_NORMAL | 
+			      Phoenix::Spatial::VERTEX_COMP_COLOR);
       /////////////////////////////////////////////////////////////////
       /// Creates new vertex for every occasion where position is same
       /// but normal and/or texture coordinate is different.
       /// \param vecVertices Vector of new vertices.
       /// \param vecIndices Vector of new indices representing triangle list.
-      void CreateTriangleList( std::vector<Phoenix::Spatial::CVertex> &vecVertices, std::vector<unsigned int> &vecIndices);
+      void CreateTriangleList( std::vector<Phoenix::Spatial::CVertex> &vecVertices, std::vector<unsigned int> &vecIndices, int iVertexCompareFlags );
       
       inline Phoenix::Graphics::CVertexDescriptor * GetVertices() const 
       {

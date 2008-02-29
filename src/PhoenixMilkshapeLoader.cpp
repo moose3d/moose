@@ -14,7 +14,7 @@ using std::fstream;
 using std::ios;
 using namespace Phoenix::Data;
 using namespace Phoenix::Graphics;
-using Phoenix::Spatial::CVertex;
+using namespace Phoenix::Spatial;
 using std::cerr;
 using std::endl;
 using std::vector;
@@ -611,11 +611,11 @@ Phoenix::Data::CMilkshapeLoader::Handle_Joints( unsigned char *pWorkBuffer)
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Data::CMilkshapeLoader::GenerateModelData()
+Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
 {
   vector<CVertex> vecVertices;
   vector<unsigned int> vecIndices;
-  CreateTriangleList( vecVertices, vecIndices);
+  CreateTriangleList( vecVertices, vecIndices, iVertexCompareFlags );
   
   DELETE(m_pPositions);
   DELETE(m_pNormals);
@@ -626,6 +626,8 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
     delete GetIndices()[GetIndices().size()-1];
     GetIndices().pop_back();
   }
+  cerr << "generating model data" << vecVertices.size() << endl;
+  
   // Create new descriptors / array
   m_pPositions = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, vecVertices.size());
   m_pNormals = new CVertexDescriptor(ELEMENT_TYPE_NORMAL_3F, vecVertices.size());
@@ -649,9 +651,11 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
     m_pTexCoords->GetPointer<float>()[nIndex+1] = vecVertices[i].GetTextureCoordinates()[1];
 
   }
-  
+  unsigned int nMaxIndex = 0;
   for(unsigned int i=0;i<vecIndices.size();i++)
   {
+    if ( vecIndices[i] > nMaxIndex ) nMaxIndex = vecIndices[i];
+
     if ( pIndices->IsShortIndices() )
     {
       pIndices->GetPointer<unsigned short int>()[i] = vecIndices[i];
@@ -661,7 +665,7 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
       pIndices->GetPointer<unsigned int>()[i] = vecIndices[i];
     }
   }
- 
+  cerr << " max index : " << nMaxIndex << endl;
   GetIndices().push_back( pIndices );
 }
 /////////////////////////////////////////////////////////////////
@@ -678,7 +682,8 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
-						     vector<unsigned int> &vecIndices)
+						     vector<unsigned int> &vecIndices,
+						     int iVertexCompareFlags )
 {
   vecVertices.clear();
   vecIndices.clear();
@@ -695,10 +700,11 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
 
       // Check does the vertex exist in the list already
       bool bFoundVertex = false;
-      unsigned int nIndex = 0;
+      size_t nIndex = 0;
       for( ; nIndex < vecVertices.size(); nIndex++ )
       {
-	if ( vecVertices[nIndex] == vertex ) 
+
+	if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
 	{
 	  bFoundVertex = true;
 	  break;

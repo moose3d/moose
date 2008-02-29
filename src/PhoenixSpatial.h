@@ -149,8 +149,14 @@ namespace Phoenix
 
     //    class CMaterialMgr;
     //extern template class __declspec(dllimport) CSingleton<CMaterialMgr>;
-
-
+    /// Vertex comparison flags
+    enum VERTEX_COMP_FLAGS 
+    {
+      VERTEX_COMP_POSITION  = 1 << 0,
+      VERTEX_COMP_TEXCOORD  = 1 << 1,
+      VERTEX_COMP_COLOR     = 1 << 2,
+      VERTEX_COMP_NORMAL    = 1 << 3
+    };
     ////////////////////
     /// Vertex class for some cases where it is easier to handle things as a blob.
     class CVertex : public Phoenix::Spatial::CPositional
@@ -186,19 +192,63 @@ namespace Phoenix
 	m_vColor[0] = m_vColor[1] = m_vColor[2] = 200;
 	m_vColor[3] = 255;
       }
+
+      //       bool operator==( const CVertex & vert)
+//       {
+// 	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
+// 	{
+// 	  if ( !(m_vTexCoord[iT] == vert.m_vTexCoord[iT]) )  
+// 	  {
+// 	    return 0;  
+// 	  }
+// 	}
+// 	if ( !(GetPosition() == vert.GetPosition())) 
+// 	{
+// 	  return 0;
+// 	}
+// 	if ( !(m_vNormal     == vert.m_vNormal))     { return 0; }
+// 	if ( !(m_vColor      == vert.m_vColor ))     { return 0; }
+// 	return 1;
+//       }
       ////////////////////
       /// The equality comparison operator.
       /// \param vert CVertex object which this is compared against.
-      bool operator==( const CVertex & vert)
+      /// \param iCompFlags Which parts of vertex data is compared. By default, all of them.
+      bool Compare( const CVertex & vert, int iCompFlags = VERTEX_COMP_TEXCOORD | VERTEX_COMP_POSITION | VERTEX_COMP_NORMAL | VERTEX_COMP_COLOR )
       {
-	// compare texcoords; this might require also EPSILON
-	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
+	// texture coordinate comparsion
+	if ( iCompFlags & VERTEX_COMP_TEXCOORD )
 	{
-	  if ( (m_vTexCoord[iT] != vert.m_vTexCoord[iT]) )  {  return 0;  }
+	  for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
+	  {
+	    if ( !(m_vTexCoord[iT] == vert.m_vTexCoord[iT]) )  
+	    {
+	      return 0;  
+	    }
+	  }
 	}
-	if ( GetPosition() != vert.GetPosition()) { return 0; }
-	if ( m_vNormal     != vert.m_vNormal)     { return 0; }
-	if ( m_vColor      != vert.m_vColor )     { return 0; }
+
+	// position comparision
+	if ( iCompFlags & VERTEX_COMP_POSITION )
+	{
+	  if ( !(GetPosition() == vert.GetPosition())) 
+	  {
+	    return 0;
+	  } 
+	}
+
+	// normal comparison
+	if ( iCompFlags & VERTEX_COMP_NORMAL )
+	{
+	  if ( !(m_vNormal     == vert.m_vNormal))     { return 0; }
+	}
+
+	// color comparison
+	if ( iCompFlags & VERTEX_COMP_COLOR )
+	{
+	  if ( !(m_vColor      == vert.m_vColor ))     { return 0; }
+	}
+	
 	return 1;
       }
       ////////////////////
@@ -316,6 +366,19 @@ namespace Phoenix
       const Phoenix::Math::CVector4<float> & GetAttrib4() const
       {
 	return m_vAttrib4;
+      }
+      ////////////////////
+      /// For debugging.
+      friend std::ostream & operator<<( std::ostream & stream, const CVertex & vertex)
+      {
+	stream << vertex.GetPosition() << ",";
+	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
+	{
+	  stream << vertex.m_vTexCoord[iT] << ",";
+	}
+	stream << vertex.m_vNormal << ",";
+	stream << vertex.m_vColor;
+	return stream;
       }
     };
     /////////////////////////////////////////////////////////////////
