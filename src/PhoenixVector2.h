@@ -395,8 +395,8 @@ namespace Phoenix
       /// both vectors does not have same value, zero otherwise.
       inline int operator!=(const CVector2 & vVector) const
       {
-	return ( m_pValues[0] != vVector.m_pValues[0] ||
-		 m_pValues[1] != vVector.m_pValues[1] );
+	return ( !QUITE_CLOSE_TO(m_pValues[0], vVector.m_pValues[0]) ||
+		 !QUITE_CLOSE_TO(m_pValues[1], vVector.m_pValues[1]) );
       }
       ////////////////////
       /// Calculates the dot product.
