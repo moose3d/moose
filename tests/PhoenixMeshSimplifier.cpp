@@ -361,10 +361,6 @@ int ReduceVertex( vector<Vertex> &vertices, vector<Triangle> & triangles, vector
 	    d = newD < d ? newD : d;
 	  }
 	} 
-	else 
-	{
-	  d = 1.0f;
-	}
       }
       float cost = (1.0f - d)*vE.Length();
       // compare cost to previous 
@@ -390,9 +386,9 @@ int ReduceVertex( vector<Vertex> &vertices, vector<Triangle> & triangles, vector
     
   if(  vertices[lowest].cost < QUITE_HUGE )
   {
-    /*cerr << "lowest cost was in vertex " << lowest 
+    cerr << "lowest cost was in vertex " << lowest 
       << " with cost value : " << vertices[lowest].cost 
-      << " merged to vertex " << vertices[lowest].mergeVertex << endl;*/
+	 << " merged to vertex " << vertices[lowest].mergeVertex << endl;
       
     // determine which triangles must be removed.
     vector<size_t> remove;
@@ -446,7 +442,7 @@ int main( int argc, char **argv )
   CVertexDescriptor *pVertexDescriptor = NULL; 
   CVertexDescriptor *pTexCoords = NULL; 
   assert(pLoader->Load("Resources/Models/1701-e.ms3d") == 0);
-  pLoader->GenerateModelData( VERTEX_COMP_POSITION | VERTEX_COMP_TEXCOORD );
+  pLoader->GenerateModelData( VERTEX_COMP_POSITION  );
   
   pVertexDescriptor = pLoader->GetVertices();
   pLoader->ResetVertices();
@@ -495,7 +491,7 @@ int main( int argc, char **argv )
   COglRenderer *pRenderer = new COglRenderer();
   CVector2<int> vMousePos((int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f)) ;
   int bMousePressed = 0;
-  COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/sovereign.tga");
+  //COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/sovereign.tga");
   size_t nDesiredFaces = pIndices->GetNumIndices()/3;
   while (  bLoop  )
   {
@@ -510,7 +506,7 @@ int main( int argc, char **argv )
 	} 
 	else if ( event.key.keysym.sym == SDLK_PLUS)
 	{
-	  if ( nDesiredFaces < (pIndices->GetNumIndices()/3)-2 )
+	  if ( nDesiredFaces <= (pIndices->GetNumIndices()/3)-2 )
 	    nDesiredFaces+=2;
 	  indices.clear();
 	  ConstructVertices( pVertexDescriptor, vertices );
@@ -592,17 +588,26 @@ int main( int argc, char **argv )
     pRenderer->ClearBuffer( DEPTH_BUFFER );
     pRenderer->CommitState( STATE_DEPTH_TEST );
     pRenderer->DisableState( STATE_FACECULLING );
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
     pRenderer->CommitCamera( camera );
     pRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
-    pRenderer->CommitTexture( 0, pTexture );
+    //pRenderer->CommitTexture( 0, pTexture );
     pRenderer->CommitVertexDescriptor( pVertexDescriptor );
     pRenderer->CommitVertexDescriptor( pTexCoords );
+    glDepthRange (0.01, 1.0); 
     if ( pIndices2 != NULL )
       pRenderer->CommitPrimitive( pIndices2 );
     else 
       pRenderer->CommitPrimitive( pIndices );
-    pRenderer->DisableTexture( 0, pTexture );
+    pRenderer->CommitColor( CVector4<unsigned char>(0,0,0,255));
+    glDepthRange (0.0, 1.0); 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
+    if ( pIndices2 != NULL )
+      pRenderer->CommitPrimitive( pIndices2 );
+    else 
+      pRenderer->CommitPrimitive( pIndices );
+    glPolygonOffset( 0.0, 0.0f);
+    //pRenderer->DisableTexture( 0, pTexture );
     pRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
 
