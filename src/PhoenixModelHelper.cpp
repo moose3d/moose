@@ -1,11 +1,13 @@
 #include <PhoenixModelHelper.h>
 #include <PhoenixMilkshapeLoader.h>
 #include <PhoenixDefaultEntities.h>
+#include <PhoenixSpatial.h>
 #include <sstream>
 #include <string>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Data;
+using namespace Phoenix::Spatial;
 using std::ostringstream;
 using std::string;
 /////////////////////////////////////////////////////////////////
@@ -27,8 +29,13 @@ Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, C
     delete pLoader;
     return 1;
   }
+  // determine which data is used in comparison
+  int iCompFlags = VERTEX_COMP_POSITION;
+  if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL;
+  if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;
+  if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD;
 
-  pLoader->GenerateModelData();
+  pLoader->GenerateModelData( iCompFlags );
 
   ////////////////////
   /// Resource allocation is one-way, either everything succeeds or nothing goes.
