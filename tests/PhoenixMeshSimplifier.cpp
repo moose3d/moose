@@ -285,18 +285,19 @@ void CreateIndexVector( vector<Face *> & triangles, vector<size_t> & indices )
   }
 }
 
-int ReduceVertex( vector<Vertex *> &vertices, vector<Face *> & triangles  )
+int ReduceVertex( vector<Vertex *> &vertices, vector<Face *> & triangles, int bProcessAll = 0  )
 {
   
   int bWasAbleToRemove = 0;
-  
   for( size_t i=0;i<vertices.size();i++)
   {
+
     Vertex *v = vertices[i];
+    
     int bVertexCanBeRemoved = 1;
-    
+    if ( v->dirty == 0 && !bProcessAll ) continue;      
     if ( v->neighbors.size() == 0 ) continue;
-    
+
     vector<Vertex *>::iterator it = v->neighbors.begin();
     for( ; it != v->neighbors.end();it++)
     {
@@ -415,10 +416,8 @@ int ReduceVertex( vector<Vertex *> &vertices, vector<Face *> & triangles  )
 	v->mergeVertex = n;
       }
     }
-   
-  }  
-
-
+  }
+  
   // determine vertex with lowest merge cost
   size_t lowest = 0;
   for( size_t v=0;v<vertices.size();v++)
@@ -433,7 +432,7 @@ int ReduceVertex( vector<Vertex *> &vertices, vector<Face *> & triangles  )
   if(  vertices[lowest]->cost < QUITE_HUGE )
   {
     /*cerr << "lowest cost was in " << vertices[lowest] << " -> " 
-	 << vertices[lowest]->mergeVertex << ", with cost value : " << vertices[lowest]->cost << endl;
+      << vertices[lowest]->mergeVertex << ", with cost value : " << vertices[lowest]->cost << endl;
     */
     // determine which triangles must be removed.
     vector<size_t> remove;
@@ -508,11 +507,12 @@ int ReduceVertex( vector<Vertex *> &vertices, vector<Face *> & triangles  )
 int main( int argc, char **argv )
 {
   
+  size_t nDesiredFaces = 0;  
   CMilkshapeLoader *pLoader = new CMilkshapeLoader();
   CVertexDescriptor *pVertexDescriptor = NULL; 
   CVertexDescriptor *pTexCoords = NULL; 
   assert(pLoader->Load("Resources/Models/1701-e-high.ms3d") == 0);
-  pLoader->GenerateModelData( VERTEX_COMP_POSITION  );
+  pLoader->GenerateModelData( VERTEX_COMP_POSITION   );
   
   pVertexDescriptor = pLoader->GetVertices();
   pLoader->ResetVertices();
@@ -527,7 +527,11 @@ int main( int argc, char **argv )
   
   cerr << "vertices actually: " << pVertexDescriptor->GetSize() << endl;
   cerr << "indices actually: "  << pIndices->GetNumIndices()    << endl;
-
+  
+  if ( argc > 1 )
+  {
+    nDesiredFaces = atoi( argv[1]);
+  }
   
   
   
@@ -546,13 +550,19 @@ int main( int argc, char **argv )
   ResetVertexFacesAndNeighbors( vertices );
   ConstructVertexFacesAndNeighbors( triangles );
   
-  size_t nDesiredFaces = 4;  
+
   
   CTimer timer;
   timer.Reset();
   while (  triangles.size() > nDesiredFaces ){
     if ( !ReduceVertex( vertices, triangles ) )
+    {
+      ResetVertexFacesAndNeighbors( vertices );
+      ConstructVertexFacesAndNeighbors( triangles );
+      if ( !ReduceVertex( vertices, triangles, 1 ) )
       break;
+    }
+    
     if (triangles.size() % 100 == 0) cerr << "processing : " << triangles.size() << endl;
   }
   CreateIndexVector( triangles, indices );
@@ -588,10 +598,19 @@ int main( int argc, char **argv )
   COglRenderer *pRenderer = new COglRenderer();
   CVector2<int> vMousePos((int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f)) ;
   int bMousePressed = 0;
-  //COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/sovereign.tga");
+  COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/sovereign.tga");
+  SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+  int bSimplified = 0;
+  CFpsCounter fpsCounter;
+  fpsCounter.Reset();
 
+  pRenderer->CommitCache( *pVertexDescriptor );
+  pRenderer->CommitCache( *pTexCoords );
+  pRenderer->CommitCache( *pIndices );
+  pRenderer->CommitCache( *pIndices2 );
   while (  bLoop  )
   {
+    fpsCounter.Update();
     while ( SDL_PollEvent(&event))
     {
       switch(event.type)
@@ -601,57 +620,17 @@ int main( int argc, char **argv )
 	{
 	  bLoop = 0;
 	} 
-	else if ( event.key.keysym.sym == SDLK_PLUS)
+	else if ( event.key.keysym.sym == SDLK_DOWN)
 	{
-	  if ( nDesiredFaces <= (pIndices->GetNumIndices()/3)-2 )
-	    nDesiredFaces+=2;
-	  indices.clear();
-	  ConstructVertices( pVertexDescriptor, vertices );
-	  CreateIndexVector( pIndices, indices );
-	  CTimer timer;
-	  timer.Reset();
-	  while (   indices.size()/3 > nDesiredFaces ){
-	    if ( !ReduceVertex( vertices, triangles ) )
-	      break;
-	  }
-	  timer.Update();
-	  cerr << timer.GetPassedTime() << endl;
-	  cerr << "triangles remaining : " << indices.size()/3 << endl;
-	  cerr << "triangles reduced : " << (pIndices->GetNumIndices() - indices.size())/3 << endl;
-
-	  if ( pIndices2 != NULL ) delete pIndices2;
-	  pIndices2 = new CIndexArray( PRIMITIVE_TRI_LIST, indices.size());
-	  
-	  for( size_t idx =0 ; idx < indices.size(); idx++)
-	  {
-	    pIndices2->GetPointer<unsigned short int>()[idx] = indices[idx];
-	  }
+	  camera.Move(camera.GetForwardVector()*-5.0f);
 	}
-	else if ( event.key.keysym.sym == SDLK_MINUS)
+	else if ( event.key.keysym.sym == SDLK_UP)
 	{
-	  if ( nDesiredFaces > 2 )
-	    nDesiredFaces-=2;
-	  indices.clear();
-	  ConstructVertices( pVertexDescriptor, vertices );
-	  CreateIndexVector( pIndices, indices );
-	  CTimer timer;
-	  timer.Reset();
-	  while (   indices.size()/3 > nDesiredFaces ){
-	    if ( !ReduceVertex( vertices, triangles ) )
-	      break;
-	  }
-	  timer.Update();
-	  cerr << timer.GetPassedTime() << endl;
-	  cerr << "triangles remaining : " << indices.size()/3 << endl;
-	  cerr << "triangles reduced : " << (pIndices->GetNumIndices() - indices.size())/3 << endl;
-
-	  if ( pIndices2 != NULL ) delete pIndices2;
-	  pIndices2 = new CIndexArray( PRIMITIVE_TRI_LIST, indices.size());
-
-	  for( size_t idx =0 ; idx < indices.size(); idx++)
-	  {
-	    pIndices2->GetPointer<unsigned short int>()[idx] = indices[idx];
-	  }
+	  camera.Move(camera.GetForwardVector()*5.0f);
+	}
+	else if ( event.key.keysym.sym == SDLK_RETURN)
+	{
+	  bSimplified = !bSimplified;
 	}
 	break;
       case SDL_MOUSEBUTTONDOWN:
@@ -688,26 +667,32 @@ int main( int argc, char **argv )
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
     pRenderer->CommitCamera( camera );
     pRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
-    //pRenderer->CommitTexture( 0, pTexture );
+    pRenderer->CommitTexture( 0, pTexture );
     pRenderer->CommitVertexDescriptor( pVertexDescriptor );
     pRenderer->CommitVertexDescriptor( pTexCoords );
-    glDepthRange (0.01, 1.0); 
-    if ( pIndices2 != NULL )
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
+    //glDepthRange (0.01, 1.0); 
+    if ( bSimplified )
       pRenderer->CommitPrimitive( pIndices2 );
     else 
       pRenderer->CommitPrimitive( pIndices );
-    pRenderer->CommitColor( CVector4<unsigned char>(0,0,0,255));
-    glDepthRange (0.0, 1.0); 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
-    if ( pIndices2 != NULL )
-      pRenderer->CommitPrimitive( pIndices2 );
-    else 
-      pRenderer->CommitPrimitive( pIndices );
-    glPolygonOffset( 0.0, 0.0f);
+    //pRenderer->CommitColor( CVector4<unsigned char>(0,0,0,255));
+    // glDepthRange (0.0, 1.0); 
+//     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
+//     if ( pIndices2 != NULL )
+//       pRenderer->CommitPrimitive( pIndices2 );
+//     else 
+//       pRenderer->CommitPrimitive( pIndices );
+//     glPolygonOffset( 0.0, 0.0f);
     //pRenderer->DisableTexture( 0, pTexture );
     pRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
-
+    fpsCounter++;
+    if ( fpsCounter.HasPassed(1,0) )
+    {
+      cerr << "FPS: " << fpsCounter << endl;
+      fpsCounter.Reset();
+    }    
   }
   return 0;
 }
