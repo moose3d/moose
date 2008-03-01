@@ -14,66 +14,118 @@ using namespace Phoenix::Scene;
 using namespace Phoenix::Volume;
 using namespace Phoenix::AI;
 using namespace Phoenix::Data;
+/////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl; 
 using std::list;
 using std::vector;
-
-#define ENORMOUS_COST -500.0f
+/////////////////////////////////////////////////////////////////
 #define QUITE_HUGE     200.0f
-class Triangle;
+class Face;
 /////////////////////////////////////////////////////////////////
 class Vertex 
 {
 public:
+  size_t		index;
   CVector3<float>	normal;
   CVector3<float>	position;  
-  vector<size_t>        neighbors; // indices of vertices
-  vector<size_t>	faces;     // indices of triangles that this belongs
+  vector<Vertex *>      neighbors; // indices of vertices
+  vector<Face *>	faces;     // indices of triangles that this belongs
+  Vertex *		mergeVertex;
   float			cost;
-  size_t		mergeVertex;
+  int			dirty;
   /////////////////////////////////////////////////////////////////
   Vertex()
   {
+    dirty = 1;
     cost = 0.0f;
+    mergeVertex = NULL;
   }
   /////////////////////////////////////////////////////////////////
-  void AddNeighbor( size_t ind )
+  void AddNeighbor( Vertex *vertex )
   {
-    vector<size_t>::iterator it = neighbors.begin();
+    // we won't add ourselves as neighbor.
+    if ( vertex == this ) return;
+    if ( vertex == NULL ) return;
+    vector<Vertex *>::iterator it = neighbors.begin();
     for( ; it != neighbors.end(); it++)
     {
       // ok, vertex is already there 
-      if ( (*it) == ind ) return;
+      if ( (*it) == vertex ) return;
     }
     // adds vertex as neighbor
-    neighbors.push_back( ind );
+    neighbors.push_back( vertex );
   }
-  /////////////////////////////////////////////////////////////////
-  void AddFaceIndex( size_t ind )
+  void DeleteNeighbor( Vertex *vertex )
   {
-    faces.push_back(ind);
+    if ( vertex == NULL ) return;
+    vector<Vertex *>::iterator it = neighbors.begin();
+    for( ; it != neighbors.end(); it++)
+    {
+      // ok, vertex is already there 
+      if ( (*it) == vertex ) {
+	neighbors.erase( it );
+	return;
+      }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////
+  void AddFace( Face *face )
+  {
+    if ( face == NULL ) return;
+    for( size_t t=0;t<faces.size();t++ )
+    {
+      if( faces[t] == face ) return;
+    }
+    faces.push_back(face);
+  }
+  void DeleteFace( Face *face )
+  {
+    if ( face == NULL ) return;
+    for( size_t t=0;t<faces.size();t++ )
+    {
+      if( faces[t] == face )
+      {
+	faces.erase(faces.begin()+t);
+	return ;
+      }
+    }
   }
   /////////////////////////////////////////////////////////////////  
-  void CalculateNormal( vector<Triangle> & triangles, vector<Vertex> & vertices );
-  
+  void CalculateNormal();
+  void SetNeighborsDirty()
+  {
+    for( size_t i=0;i<neighbors.size();i++)
+    {
+      neighbors[i]->dirty = 1;
+      //neighbors[i]->mergeVertex = NULL;
+      neighbors[i]->cost = QUITE_HUGE;
+    }    
+  }
 };
 
-class Triangle
+class Face
 {
 public:
-  size_t v0, v1, v2;
-  /////////////////////////////////////////////////////////////////
-  CVector3<float>	GetNormal( vector<Vertex> & vertices ) 
+  Vertex * v0, *v1, *v2;
+  Face()
   {
-    CVector3<float> tmp1 = vertices[v1].position - vertices[v0].position;
-    CVector3<float> tmp2 = vertices[v2].position - vertices[v0].position;
+    v0 = NULL;
+    v1 = NULL;
+    v2 = NULL;
+  }
+  /////////////////////////////////////////////////////////////////
+  CVector3<float>	GetNormal() 
+  {
+    CVector3<float> tmp1 = v1->position - v0->position;
+    CVector3<float> tmp2 = v2->position - v0->position;
     return tmp1.Cross(tmp2).GetNormalized();
   }
   /////////////////////////////////////////////////////////////////  
-  int HasEdge( size_t start, size_t end )
+  int HasEdge( Vertex * start, Vertex * end )
   {
-
+    
     //cerr << "HasEdge: " << start << " vs. " << end << endl;
     return 
     ( v0 == start && v1 == end ) ||
@@ -83,15 +135,19 @@ public:
     ( v1 == end && v2 == start ) ||
     ( v2 == end && v0 == start );
   }
+  
   /////////////////////////////////////////////////////////////////
-  void ReplaceVertex( size_t prev, size_t curr )
+  void ReplaceVertex( Vertex * prev, Vertex * curr )
   {
+    assert( prev != NULL );
+    assert( curr != NULL );
     if      ( v0 == prev ) {     v0 = curr;    } 
     else if ( v1 == prev ) {     v1 = curr;    } 
     else if ( v2 == prev ) {     v2 = curr;    }
+    
   }
   /////////////////////////////////////////////////////////////////
-  size_t GetVertexNotOnEdge( size_t one, size_t two )
+  Vertex * GetVertexNotOnEdge( Vertex * one, Vertex * two )
   {
     if ( one == v0 )
     {
@@ -110,26 +166,26 @@ public:
 };
 /////////////////////////////////////////////////////////////////
 void 
-Vertex::CalculateNormal( vector<Triangle> & triangles, vector<Vertex> & vertices )
+Vertex::CalculateNormal()
 {
   // calculate normal for vertex from surrounding triangle normals.
   normal = CVector3<float>(0,0,0);
-  vector<size_t>::iterator triIt = faces.begin();    
+  vector<Face *>::iterator triIt = faces.begin();    
   for( ; triIt != faces.end(); triIt++)
   {
-    normal += triangles[*triIt].GetNormal(vertices);
+    normal += (*triIt)->GetNormal();
   }
   normal.Normalize();
 }
+
 /////////////////////////////////////////////////////////////////
-int SharedByTwoFaces( vector<Triangle> & triangles, vector<Vertex> &vertices, size_t start, size_t end  )
+int SharedByTwoFaces( vector<Face *> & triangles, Vertex * start, Vertex * end  )
 {
   int count = 0;
-  Vertex & v = vertices[start];
   
-  for( size_t i=0;i < v.faces.size();i++)
+  for( size_t i=0;i < start->faces.size();i++)
   {
-    if ( triangles[v.faces[i]].HasEdge( start, end))
+    if ( start->faces[i]->HasEdge( start, end))
     {
       count++;
     }
@@ -138,37 +194,24 @@ int SharedByTwoFaces( vector<Triangle> & triangles, vector<Vertex> &vertices, si
   return (count == 2);
 }
 
-void ConstructVertices( CVertexDescriptor *pVertexDescriptor, vector<Vertex> & vertices)
+void ConstructVertices( CVertexDescriptor *pVertexDescriptor, vector<Vertex *> & vertices)
 {
   // clear previous vertices.
   vertices.clear();
+
   // generate new set 
   for( size_t i=0;i<pVertexDescriptor->GetSize();i++)
   {
-    Vertex vert;
-    vert.position[0] = pVertexDescriptor->GetPointer<float>()[i*3];
-    vert.position[1] = pVertexDescriptor->GetPointer<float>()[i*3+1];
-    vert.position[2] = pVertexDescriptor->GetPointer<float>()[i*3+2];
-    vert.mergeVertex = i;
-    vert.cost = QUITE_HUGE;
+    Vertex *vert =  new Vertex();    
+    vert->position[0] = pVertexDescriptor->GetPointer<float>()[i*3];
+    vert->position[1] = pVertexDescriptor->GetPointer<float>()[i*3+1];
+    vert->position[2] = pVertexDescriptor->GetPointer<float>()[i*3+2];
+    vert->mergeVertex = NULL;
+    vert->cost = QUITE_HUGE;
+    vert->index = i;
     vertices.push_back(vert);
   }
 }
-
-// void ConstructFaces( CIndexArray * pIndices, vector<Triangle> & triangles )
-// {
-//   // Clears previous faces
-//   triangles.clear();
-  
-//   for( size_t i=0;i<pIndices->GetNumIndices();i+=3)
-//   {
-//     Triangle tri;
-//     tri.v0 = pIndices->GetPointer<unsigned short int>()[i];
-//     tri.v1 = pIndices->GetPointer<unsigned short int>()[i+1];
-//     tri.v2 = pIndices->GetPointer<unsigned short int>()[i+2];
-//     triangles.push_back(tri);
-//   }
-// }
 
 void CreateIndexVector( CIndexArray * pIndices, vector<size_t> & indices)
 {
@@ -180,138 +223,139 @@ void CreateIndexVector( CIndexArray * pIndices, vector<size_t> & indices)
   }
 }
 
-void ConstructFaces( vector<size_t> & indices, vector<Triangle> & triangles )
+void ConstructFaces( vector<size_t> & indices, vector<Vertex *> vertices, vector<Face *> & triangles )
 {
   // Clears previous faces
   triangles.clear();
   
   for( size_t i=0;i<indices.size();i+=3)
   {
-    Triangle tri;
-    tri.v0 = indices[i];
-    tri.v1 = indices[i+1];
-    tri.v2 = indices[i+2];
+    Face *tri = new Face();
+    tri->v0 = vertices[indices[i]];
+    tri->v1 = vertices[indices[i+1]];
+    tri->v2 = vertices[indices[i+2]];
     triangles.push_back(tri);
   }
 }
 
-void ResetVertexFacesAndNeighbors( vector<Vertex> & vertices )
+void ResetVertexFacesAndNeighbors( vector<Vertex *> & vertices )
 {
   for( size_t i=0;i<vertices.size();i++)
   {
-    vertices[i].neighbors.clear();
-    vertices[i].faces.clear();
-    vertices[i].cost = QUITE_HUGE;
+    vertices[i]->neighbors.clear();
+    vertices[i]->faces.clear();
+    vertices[i]->cost = QUITE_HUGE;
   }
 }
 
-void ConstructVertexFacesAndNeighbors( vector<Vertex> & vertices, vector<Triangle> & triangles )
+void ConstructVertexFacesAndNeighbors( vector<Face *> & triangles )
 {
   /// check which vertices belong to which triangle
   for( size_t i=0;i<triangles.size();i++)
   {
-    size_t index0 = triangles[i].v0;
-    size_t index1 = triangles[i].v1;
-    size_t index2 = triangles[i].v2;
-
-    Vertex &vert0 = vertices[index0];
-    Vertex &vert1 = vertices[index1];
-    Vertex &vert2 = vertices[index2];
     
-    vert0.AddFaceIndex(i);
-    vert1.AddFaceIndex(i);
-    vert2.AddFaceIndex(i);
+    Vertex *vert0 = triangles[i]->v0;
+    Vertex *vert1 = triangles[i]->v1;
+    Vertex *vert2 = triangles[i]->v2;
+
+    vert0->AddFace( triangles[i] );
+    vert1->AddFace( triangles[i] );
+    vert2->AddFace( triangles[i] );
     
-    vert0.AddNeighbor( index1 );
-    vert0.AddNeighbor( index2 );
+    vert0->AddNeighbor( triangles[i]->v1 );
+    vert0->AddNeighbor( triangles[i]->v2 );
 
-    vert1.AddNeighbor( index0 );
-    vert1.AddNeighbor( index2 );
+    vert1->AddNeighbor( triangles[i]->v0 );
+    vert1->AddNeighbor( triangles[i]->v2 );
 
-    vert2.AddNeighbor( index1 );
-    vert2.AddNeighbor( index0 );
+    vert2->AddNeighbor( triangles[i]->v1 );
+    vert2->AddNeighbor( triangles[i]->v0 );
   }
 }
 
-int ReduceVertex( vector<Vertex> &vertices, vector<Triangle> & triangles, vector<size_t> & indices  )
+void CreateIndexVector( vector<Face *> & triangles, vector<size_t> & indices )
+{
+  // recreate index vector
+  indices.clear();
+  for( size_t t=0;t<triangles.size();t++)
+  {
+    indices.push_back( triangles[t]->v0->index );
+    indices.push_back( triangles[t]->v1->index );
+    indices.push_back( triangles[t]->v2->index );
+  }
+}
+
+int ReduceVertex( vector<Vertex *> &vertices, vector<Face *> & triangles  )
 {
   
   int bWasAbleToRemove = 0;
-  ConstructFaces( indices, triangles );
-  ResetVertexFacesAndNeighbors( vertices );
-  ConstructVertexFacesAndNeighbors( vertices, triangles );
   
   for( size_t i=0;i<vertices.size();i++)
   {
-    Vertex &v = vertices[i];
+    Vertex *v = vertices[i];
     int bVertexCanBeRemoved = 1;
-    if ( v.neighbors.size() == 0 ) continue;
-      
-    vector<size_t>::iterator it = v.neighbors.begin();
-    for( ; it != v.neighbors.end();it++)
+    
+    if ( v->neighbors.size() == 0 ) continue;
+    
+    vector<Vertex *>::iterator it = v->neighbors.begin();
+    for( ; it != v->neighbors.end();it++)
     {
-      size_t ind = *it; 
-
-      //cerr << "neighbor is : " << ind << endl;
-      if ( ! SharedByTwoFaces( triangles, vertices, i, ind )) 
+      Vertex *neighbor = *it; 
+      if ( ! SharedByTwoFaces( triangles, v, neighbor )) 
       {
 	bVertexCanBeRemoved = 0;
+	break;
       }
     }
     // if vertex can't be removed, try next
-    if ( !bVertexCanBeRemoved ) 
-    { 
-      continue;
-    }
-    v.CalculateNormal( triangles, vertices );
+    if ( !bVertexCanBeRemoved ) { continue;  }
+    
+    v->CalculateNormal();
     //cerr << "vertex has normal " << v.normal  << endl;
     
-    it = v.neighbors.begin();
-    for( ; it != v.neighbors.end();it++)
+    it = v->neighbors.begin();
+    for( ; it != v->neighbors.end();it++)
     {
-      size_t ind = *it; 
-
-      Vertex &n = vertices[ind];
-      CVector3<float> vE = n.position - v.position ;
-      CVector3<float> vD = v.normal.Cross(vE).GetNormalized();
-
-      size_t vert1, vert2;
+      Vertex *n = *it;
+      CVector3<float> vE = n->position - v->position ;
+      CVector3<float> vD = v->normal.Cross(vE).GetNormalized();
       
-      int tri1found = 0;
-      int tri2found = 0;
+      Vertex * vert1 = NULL, *vert2 = NULL;
+      
+      
       float tri1side = 0.0f;
       float tri2side = 0.0f;
-      size_t tri1_index, tri2_index;
-      for( size_t t=0;t<v.faces.size();t++)
+      Face * tri1 = NULL;
+      Face * tri2 = NULL;
+
+      for( size_t t=0;t<v->faces.size();t++)
       {
-	Triangle & tri = triangles[v.faces[t]];
+	Face * tri = v->faces[t];
 	
 	//	cerr << "tri has vertices: " << tri.v0 << "," << tri.v1 << "," << tri.v2 << endl;	  
-	if ( tri.HasEdge( i,ind) )
+	if ( tri->HasEdge( v, n) )
 	{
-
-	  size_t v3 = tri.GetVertexNotOnEdge( i, ind);
-	  if ( tri1found == 0)
+	  
+	  Vertex * v3 = tri->GetVertexNotOnEdge( v, n);
+	  if ( tri1 == NULL)
 	  {
 	    vert1 = v3;
-	    tri1found = 1;
-	    tri1_index = t;
+	    tri1 = tri;
 	  }
 	  else 
 	  {
 	    vert2 = v3;
-	    tri2found = 1;
-	    tri2_index = t;
+	    tri2 = tri;
 	    break;
 	  }
 	  
 	}
       }
       //cerr << "indices were: " << vert1 << " and " << vert2 << endl;
-      assert( tri1found == 1 && tri2found == 1 );
+      assert( tri1 != NULL && tri2 != NULL );
       
-      tri1side = vD.Dot( vertices[vert1].position - v.position );
-      tri2side = vD.Dot( vertices[vert2].position - v.position );
+      tri1side = vD.Dot( vert1->position - v->position );
+      tri2side = vD.Dot( vert2->position - v->position );
       
       
       // both vertices are on same side of edge, cannot remove 
@@ -323,102 +367,128 @@ int ReduceVertex( vector<Vertex> &vertices, vector<Triangle> & triangles, vector
 
       if ( tri1side >= 0.0f ) 
       {
-	posnormal = triangles[tri1_index].GetNormal( vertices );
-	negnormal = triangles[tri2_index].GetNormal( vertices );
+	posnormal = tri1->GetNormal();
+	negnormal = tri2->GetNormal();
       }      
       else 
       {
-	negnormal = triangles[tri1_index].GetNormal( vertices );
-	posnormal = triangles[tri2_index].GetNormal( vertices );
+	negnormal = tri1->GetNormal();
+	posnormal = tri2->GetNormal();
       }      
       float d = QUITE_HUGE;
 
       // compare other faces that are related to this vertex, but
       // do not share the edge that is to be removed.
-      for( size_t t=0;t<v.faces.size();t++)
+      for( size_t t=0;t<v->faces.size();t++)
       {
-	Triangle & tri = triangles[v.faces[t]];
+	Face * tri = v->faces[t];
 	
-	if ( !tri.HasEdge( i, *it) )
+	if ( !tri->HasEdge( v, n) )
 	{
 	  float val = 0.0f;
 	  float newD = 0.0f;
-	  size_t nTmpIndex = 0;
+	  Vertex *tmp = NULL;
 
-	  if ( tri.v0 != i ) { nTmpIndex = tri.v0; }
-	  if ( tri.v1 != i ) { nTmpIndex = tri.v1; }
-	  if ( tri.v2 != i ) { nTmpIndex = tri.v2; }
+	  if ( tri->v0 != v ) { tmp = tri->v0; }
+	  if ( tri->v1 != v ) { tmp = tri->v1; }
+	  if ( tri->v2 != v ) { tmp = tri->v2; }
 	  
-	  val = vD.Dot( vertices[nTmpIndex].position - v.position );
+	  val = vD.Dot( tmp->position - v->position );
 	  if ( val > EPSILON ) 
 	  {
-	    newD = posnormal.Dot(tri.GetNormal(vertices));
+	    newD = posnormal.Dot(tri->GetNormal());
 	    d = newD < d ? newD : d;
 	  } 
 	  else if ( val < -EPSILON )
 	  {
-	    newD = negnormal.Dot(tri.GetNormal(vertices));
+	    newD = negnormal.Dot(tri->GetNormal());
 	    d = newD < d ? newD : d;
 	  }
 	} 
       }
       float cost = (1.0f - d)*vE.Length();
+      v->dirty = 0;
       // compare cost to previous 
-      if ( cost < v.cost )
+      if ( cost < v->cost )
       {
-	v.cost = cost;
-	v.mergeVertex = ind;
+	v->cost = cost;
+	v->mergeVertex = n;
       }
-      
     }
    
   }  
+
+
   // determine vertex with lowest merge cost
   size_t lowest = 0;
   for( size_t v=0;v<vertices.size();v++)
   {
     //cerr << "vertices[" << v << "]=" << vertices[v].cost << "\t" << vertices[v].position << endl;
-    if( vertices[v].cost < vertices[lowest].cost )
+    if( vertices[v]->cost < vertices[lowest]->cost )
     {
       lowest = v;
     }
   }
-    
-  if(  vertices[lowest].cost < QUITE_HUGE )
+  // if there actually is a vertex that can be removed
+  if(  vertices[lowest]->cost < QUITE_HUGE )
   {
-    cerr << "lowest cost was in vertex " << lowest 
-      << " with cost value : " << vertices[lowest].cost 
-	 << " merged to vertex " << vertices[lowest].mergeVertex << endl;
-      
+    /*cerr << "lowest cost was in " << vertices[lowest] << " -> " 
+	 << vertices[lowest]->mergeVertex << ", with cost value : " << vertices[lowest]->cost << endl;
+    */
     // determine which triangles must be removed.
     vector<size_t> remove;
     for( size_t t=0;t<triangles.size();t++)
     {
-      if ( triangles[t].HasEdge( lowest, vertices[lowest].mergeVertex ))
+      if ( triangles[t]->HasEdge( vertices[lowest], vertices[lowest]->mergeVertex ))
       {
 	remove.push_back( t );
       }
     }
     assert( remove.size() == 2 );
-    // "remove" triangles
+
+    Vertex *pDeadVert = vertices[lowest];
+
+    // set vertices dirty that are affected by merge
+    pDeadVert->SetNeighborsDirty();
+    pDeadVert->mergeVertex->SetNeighborsDirty();
+
+    /// remove deleted vertex from neighbors and add mergeVertex as neighbor
+    for( size_t n=0;n<pDeadVert->neighbors.size();n++)
+    {
+      pDeadVert->neighbors[n]->DeleteNeighbor( pDeadVert );
+      pDeadVert->neighbors[n]->AddNeighbor( pDeadVert->mergeVertex );
+    }
+
+    Face *pDead =  *(triangles.begin() + remove[1]);
+    Face *pDead2 = *(triangles.begin() + remove[0]);
+
+    pDead->v0->DeleteFace( pDead );
+    pDead->v1->DeleteFace( pDead );
+    pDead->v2->DeleteFace( pDead );
+
+    pDead2->v0->DeleteFace( pDead2 );
+    pDead2->v1->DeleteFace( pDead2 );
+    pDead2->v2->DeleteFace( pDead2 );
+
+    // remove triangles, order matters
     triangles.erase( triangles.begin() + remove[1] );
     triangles.erase( triangles.begin() + remove[0] );
-      
+
     // replace removed vertices from triangles
     for( size_t t=0;t<triangles.size();t++)
     {
-      triangles[t].ReplaceVertex( lowest, vertices[lowest].mergeVertex );
-    }
 
-    // recreate index vector
-    indices.clear();
-    for( size_t t=0;t<triangles.size();t++)
-    {
-      indices.push_back( triangles[t].v0 );
-      indices.push_back( triangles[t].v1 );
-      indices.push_back( triangles[t].v2 );
+      triangles[t]->ReplaceVertex( pDeadVert, pDeadVert->mergeVertex );
     }
+    
+    pDeadVert->neighbors.clear();
+    pDeadVert->faces.clear();
+    // just to be on safe side
+    delete pDead;     pDead = NULL;
+    delete pDead2;    pDead2 = NULL;
+    delete pDeadVert; pDeadVert = NULL;
 
+    vertices.erase(vertices.begin()+lowest);
     bWasAbleToRemove = 1;
   } 
   else
@@ -441,7 +511,7 @@ int main( int argc, char **argv )
   CMilkshapeLoader *pLoader = new CMilkshapeLoader();
   CVertexDescriptor *pVertexDescriptor = NULL; 
   CVertexDescriptor *pTexCoords = NULL; 
-  assert(pLoader->Load("Resources/Models/1701-e.ms3d") == 0);
+  assert(pLoader->Load("Resources/Models/1701-e-high.ms3d") == 0);
   pLoader->GenerateModelData( VERTEX_COMP_POSITION  );
   
   pVertexDescriptor = pLoader->GetVertices();
@@ -458,17 +528,38 @@ int main( int argc, char **argv )
   cerr << "vertices actually: " << pVertexDescriptor->GetSize() << endl;
   cerr << "indices actually: "  << pIndices->GetNumIndices()    << endl;
 
-
+  
   
   
   /// Assign proper indices to vertices and set position
-  vector<Vertex> vertices;
+  vector<Vertex *> vertices;
   /// Create triangles out from index vector
-  vector<Triangle> triangles;
+  vector<Face *> triangles;
   /// Indices 
   vector<size_t>   indices;
-
   
+  
+  ConstructVertices( pVertexDescriptor, vertices );
+  CreateIndexVector( pIndices, indices );
+  
+  ConstructFaces( indices, vertices, triangles );
+  ResetVertexFacesAndNeighbors( vertices );
+  ConstructVertexFacesAndNeighbors( triangles );
+  
+  size_t nDesiredFaces = 4;  
+  
+  CTimer timer;
+  timer.Reset();
+  while (  triangles.size() > nDesiredFaces ){
+    if ( !ReduceVertex( vertices, triangles ) )
+      break;
+    if (triangles.size() % 100 == 0) cerr << "processing : " << triangles.size() << endl;
+  }
+  CreateIndexVector( triangles, indices );
+  timer.Update();
+  cerr << timer.GetPassedTime() << endl;
+  cerr << "triangles remaining : " << indices.size()/3 << endl;
+  cerr << "triangles reduced : " << (pIndices->GetNumIndices() - indices.size())/3 << endl;
   
   if (  CSDLScreen::GetInstance() == NULL )
   {
@@ -486,13 +577,19 @@ int main( int argc, char **argv )
   int bLoop = 1;
 
   CIndexArray *pIndices2 = NULL;
-
+  if ( pIndices2 != NULL ) delete pIndices2;
+  pIndices2 = new CIndexArray( PRIMITIVE_TRI_LIST, indices.size());
+  
+  for( size_t idx =0 ; idx < indices.size(); idx++)
+  {
+    pIndices2->GetPointer<unsigned short int>()[idx] = indices[idx];
+  }  
   
   COglRenderer *pRenderer = new COglRenderer();
   CVector2<int> vMousePos((int)(camera.GetViewport()[2]*0.5f),  (int)(camera.GetViewport()[3]*0.5f)) ;
   int bMousePressed = 0;
   //COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/sovereign.tga");
-  size_t nDesiredFaces = pIndices->GetNumIndices()/3;
+
   while (  bLoop  )
   {
     while ( SDL_PollEvent(&event))
@@ -514,7 +611,7 @@ int main( int argc, char **argv )
 	  CTimer timer;
 	  timer.Reset();
 	  while (   indices.size()/3 > nDesiredFaces ){
-	    if ( !ReduceVertex( vertices, triangles, indices ) )
+	    if ( !ReduceVertex( vertices, triangles ) )
 	      break;
 	  }
 	  timer.Update();
@@ -524,7 +621,7 @@ int main( int argc, char **argv )
 
 	  if ( pIndices2 != NULL ) delete pIndices2;
 	  pIndices2 = new CIndexArray( PRIMITIVE_TRI_LIST, indices.size());
-
+	  
 	  for( size_t idx =0 ; idx < indices.size(); idx++)
 	  {
 	    pIndices2->GetPointer<unsigned short int>()[idx] = indices[idx];
@@ -540,7 +637,7 @@ int main( int argc, char **argv )
 	  CTimer timer;
 	  timer.Reset();
 	  while (   indices.size()/3 > nDesiredFaces ){
-	    if ( !ReduceVertex( vertices, triangles, indices ) )
+	    if ( !ReduceVertex( vertices, triangles ) )
 	      break;
 	  }
 	  timer.Update();
