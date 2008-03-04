@@ -14,7 +14,7 @@ namespace Phoenix
     {
     protected:
       /// Holds all handles to updateable objects
-      std::vector<CHandle<TYPE> > m_vecUpdateables;
+      std::vector< CHandle<TYPE> * > m_vecUpdateables;
     public:
       ////////////////////
       /// Constructor.
@@ -49,7 +49,8 @@ Phoenix::Core::CObjectUpdater<TYPE>::~CObjectUpdater()
   Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> > *pManager = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance();
   for(size_t n=0;n<m_vecUpdateables.size();n++)
   {
-    pManager->Release(m_vecUpdateables[n]);
+    pManager->Release(*m_vecUpdateables[n]);
+    delete m_vecUpdateables[n];
   }
   m_vecUpdateables.clear();
 }
@@ -58,8 +59,8 @@ template<class TYPE>
 inline void
 Phoenix::Core::CObjectUpdater<TYPE>::Manage( const Phoenix::Core::CHandle<TYPE> &hResource )
 {
-  m_vecUpdateables.push_back( Phoenix::Core::CHandle<TYPE>() );
-  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->DuplicateHandle( hResource, m_vecUpdateables.back() );
+  m_vecUpdateables.push_back( new Phoenix::Core::CHandle<TYPE>() );
+  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->DuplicateHandle( hResource, *m_vecUpdateables.back() );
   //assert( !m_vecUpdateables.back().IsNull());
 }
 /////////////////////////////////////////////////////////////////
@@ -70,7 +71,7 @@ Phoenix::Core::CObjectUpdater<TYPE>::Update( ADAPTER &rAdapter, unsigned int nTi
 {
   for(size_t n=0;n<m_vecUpdateables.size();n++)
   {
-    TYPE *pTemp = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->GetResource(m_vecUpdateables[n]);
+    TYPE *pTemp = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->GetResource(*m_vecUpdateables[n]);
     rAdapter.Update( pTemp, nTimeMS );
   } 
 }
