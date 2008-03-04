@@ -91,12 +91,11 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
 {
 
   CVector3<float> vNormal;
-  CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
   float fEffectiveRadius;
-
-  CVector3<float> vHalfWidthX = aaCube.GetHalfWidth()*vX;
-  CVector3<float> vHalfWidthY = aaCube.GetHalfWidth()*vY;
-  CVector3<float> vHalfWidthZ = aaCube.GetHalfWidth()*vZ;
+  
+  CVector3<float> vHalfWidthX(aaCube.GetHalfWidth(),0.0f,0.0f);
+  CVector3<float> vHalfWidthY(0.0f, aaCube.GetHalfWidth(), 0.0f);
+  CVector3<float> vHalfWidthZ(0.0f, 0.0f, aaCube.GetHalfWidth());
   
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {  
