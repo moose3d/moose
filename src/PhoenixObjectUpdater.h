@@ -23,7 +23,7 @@ namespace Phoenix
       /// Destructor.
       ~CObjectUpdater();
       ////////////////////
-      void Update( unsigned int nTimeMS = 0 );
+      //void Update( unsigned int nTimeMS = 0 );
       ////////////////////
       /// Updates all objects assigned to updater.
       /// \param rAdapter Adapter object which does the actual updating.
