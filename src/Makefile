@@ -7,7 +7,7 @@ LINUX_CC=g++
 WIN_CC=i686-mingw32-g++
 DEBUG_FLAGS=#-DDEBUG #-DDEBUG_PRINT_INSANE 
 INCLUDE_DIR=-I/home/entity/workdir/phoenix/src -I../../tristripper/include/
-LINUX_CFLAGS=-Wall -c `sdl-config --cflags` \
+LINUX_CFLAGS=-Wall -c  `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
 	-mmmx -msse2 -mfpmath=sse
@@ -38,6 +38,8 @@ all:  linux
 
 linux:
 	make libs CC=$(LINUX_CC) CFLAGS="$(LINUX_CFLAGS)" 
+linuxstatic:
+	make libsstatic CC=$(LINUX_CC) CFLAGS="$(LINUX_CFLAGS)" 
 win32:
 	make winlibs CC=$(WIN_CC) CFLAGS="$(WIN_CFLAGS)"
 
@@ -48,6 +50,7 @@ clean:
 	$(CC) $(CFLAGS) $< -o $@
 libs: $(OBJ)
 	$(CC) -shared $(OBJ) -o ../bin/libPhoenix.so $(LDFLAGS_LINUX)
-
+libsstatic: $(OBJ)
+	ar rcs ../bin/libPhoenix.a $(OBJ)  
 winlibs: $(OBJ)
 	$(CC) -shared $(OBJ) -o ../bin/Phoenix.dll $(LDFLAGS_WIN)
