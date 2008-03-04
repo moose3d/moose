@@ -69,7 +69,7 @@ Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::
   unsigned int nObjCount = 0;
   Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
   Phoenix::Volume::CSphere sphere;
-
+  typename std::list<TYPE>::iterator it;
   while(!lstNodePtrs.empty())
   {
     // Pop first node from list
@@ -82,8 +82,7 @@ Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::
       //std::cerr << "Camera intersects!" << std::endl;
       
       // insert objects from this node into list
-
-      typename std::list<TYPE>::iterator it = pNode->GetObjects().begin();
+      it = pNode->GetObjects().begin();
       for( ; it!=pNode->GetObjects().end();it++)
       {
 	sphere = (*it)->GetBoundingSphere();
@@ -133,4 +132,5 @@ Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &
   }      
 }
 /////////////////////////////////////////////////////////////////
+#undef INSERT
 #endif
