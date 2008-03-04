@@ -320,7 +320,7 @@ inline int
 Phoenix::Collision::PointInsideSphere( const Phoenix::Volume::CSphere & sphere, 
 				       const Phoenix::Math::CVector3<float> & vPoint )
 {
-  return ( (sphere.GetPosition() - vPoint).Length() < sphere.GetRadius());
+  return ( (sphere.GetPosition() - vPoint).LengthSqr() < sphere.GetRadiusSqr());
 }
 /////////////////////////////////////////////////////////////////
 #endif
