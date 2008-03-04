@@ -363,6 +363,13 @@ namespace Phoenix
       /// \param vColor RGBA Color vector.
       void CommitColor( const Phoenix::Math::CVector4<unsigned char> &vColor );
       ////////////////////
+      /// Sets color for drawing.
+      /// \param bR Red component.
+      /// \param bG Green component.
+      /// \param bB Blue component.
+      /// \param bA Alpha component.
+      void CommitColor( unsigned char bR, unsigned char bG, unsigned char bB, unsigned char bA);
+      ////////////////////
       /// Commits vertex with position, texcoords, normal.
       /// \param rVertex Vertex to be committed.
       void CommitVertex ( const Phoenix::Spatial::CVertex & rVertex );
@@ -692,6 +699,12 @@ inline void
 Phoenix::Graphics::COglRenderer::CommitColor( const CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Graphics::COglRenderer::CommitColor( unsigned char bR, unsigned char bG, unsigned char bB, unsigned char bA)
+{
+  glColor4ub( bR,bG,bB,bA );
 }
 /////////////////////////////////////////////////////////////////
 #endif
