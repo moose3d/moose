@@ -1745,32 +1745,31 @@ int CheckForHits( CSovereignClass *pSovereign, CPulseWeaponParticleSystem *pPuls
 
   if ( pIndices->IsShortIndices())
   {
-    for( size_t i=0;i<pIndices->GetNumIndices();i+=3)
+    // check does triangle intersect
+    for( size_t p=0;p<pPulseWeapon->GetAliveCount();p++)
     {
-      unsigned short int *pTmp = pIndices->GetPointer<unsigned short int>();
+      CVector3<float> vStart = Transform( pPulseWeapon->GetParticles()[p].m_vOldPositions[0], mInverse);
+      CVector3<float> vEnd   = Transform( pPulseWeapon->GetParticles()[p].m_vPosition, mInverse);
+      line.SetStart(vStart );
+      line.SetEnd( vEnd );
 
-
-      vVertices[0][0] = pVertices->GetPointer<float>()[pTmp[i]*3];
-      vVertices[0][1] = pVertices->GetPointer<float>()[pTmp[i]*3+1];
-      vVertices[0][2] = pVertices->GetPointer<float>()[pTmp[i]*3+2];
-      
-      vVertices[1][0] = pVertices->GetPointer<float>()[pTmp[i+1]*3];
-      vVertices[1][1] = pVertices->GetPointer<float>()[pTmp[i+1]*3+1];
-      vVertices[1][2] = pVertices->GetPointer<float>()[pTmp[i+1]*3+2];
-      
-      vVertices[2][0] = pVertices->GetPointer<float>()[pTmp[i+2]*3];
-      vVertices[2][1] = pVertices->GetPointer<float>()[pTmp[i+2]*3+1];
-      vVertices[2][2] = pVertices->GetPointer<float>()[pTmp[i+2]*3+2];
-      
-      // check does triangle intersect
-      for( size_t p=0;p<pPulseWeapon->GetAliveCount();p++)
+      for( size_t i=0;i<pIndices->GetNumIndices();i+=3)
       {
-	 CVector3<float> vStart = Transform( pPulseWeapon->GetParticles()[p].m_vOldPositions[0], mInverse);
-	 CVector3<float> vEnd   = Transform( pPulseWeapon->GetParticles()[p].m_vPosition, mInverse);
-	 //CVector3<float> vStart = Transform( line.GetStart(), mInverse);
-	 //CVector3<float> vEnd   = Transform( line.GetEnd(), mInverse);
-	line.SetStart(vStart );
-	line.SetEnd( vEnd );
+	
+	unsigned short int *pTmp = pIndices->GetPointer<unsigned short int>();
+	
+	vVertices[0][0] = pVertices->GetPointer<float>()[pTmp[i]*3];
+	vVertices[0][1] = pVertices->GetPointer<float>()[pTmp[i]*3+1];
+	vVertices[0][2] = pVertices->GetPointer<float>()[pTmp[i]*3+2];
+	
+	vVertices[1][0] = pVertices->GetPointer<float>()[pTmp[i+1]*3];
+	vVertices[1][1] = pVertices->GetPointer<float>()[pTmp[i+1]*3+1];
+	vVertices[1][2] = pVertices->GetPointer<float>()[pTmp[i+1]*3+2];
+	
+	vVertices[2][0] = pVertices->GetPointer<float>()[pTmp[i+2]*3];
+	vVertices[2][1] = pVertices->GetPointer<float>()[pTmp[i+2]*3+1];
+	vVertices[2][2] = pVertices->GetPointer<float>()[pTmp[i+2]*3+2];
+      
 	//cerr << "Checking: " << line.GetStart() << " and " << line.GetEnd() << endl;
 	if ( LineIntersectsTriangle( line, vVertices[0], vVertices[1], vVertices[2], intersectPoint))
 	{
@@ -1913,6 +1912,15 @@ int main()
   camera2.SetNearClipping( 0.1f);
   camera2.SetFarClipping( 1500.0f );
   camera2.SetFieldOfView( 43.0f);
+
+  CCamera cameraGUI;
+  cameraGUI.SetPosition( 0, 0.0f, 0.0f);
+  cameraGUI.SetViewport( 0, 0,
+		       CSDLScreen::m_SDLScreenParams.m_iWidth, CSDLScreen::m_SDLScreenParams.m_iHeight );
+  cameraGUI.SetNearClipping( -2.0f);
+  cameraGUI.SetFarClipping( 3.0f );
+  cameraGUI.SetViewOrtho(0,CSDLScreen::m_SDLScreenParams.m_iWidth, 0, CSDLScreen::m_SDLScreenParams.m_iHeight );
+
 
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -2277,12 +2285,9 @@ int main()
     pOglRenderer->CommitColor(vWhite);
     ////////////////////
     // Draw GUI elements 
-    pOglRenderer->CommitCamera( camera2 );
-
+    pOglRenderer->CommitCamera( cameraGUI );
     pOglRenderer->DisableState( STATE_DEPTH_TEST );
-
     pOglRenderer->DisableTexture( 0, pExplosionTexture );
-
     DrawSurroundingQuad( pOglRenderer, camera, pSovereign);
 
     ////////////////////
@@ -2294,7 +2299,7 @@ int main()
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc( GL_GREATER, 0.0f);
     pOglRenderer->CommitColor( vWhite );
-    pOglRenderer->CommitString( *pFontset, 300, 100, strFPS.c_str());
+    pOglRenderer->CommitString( *pFontset, 100, 100, strFPS.c_str());
     size_t prevpos = 0;
     size_t pos     = strFeatures.find("\n");
     if ( pos == string::npos )
@@ -2305,7 +2310,7 @@ int main()
     int offset = 0;
     while ( pos != string::npos )
     {
-      pOglRenderer->CommitString( *pFontset, 100, 1009+offset, strFeatures.substr(prevpos, pos-prevpos).c_str() );
+      pOglRenderer->CommitString( *pFontset, 100, 500+offset, strFeatures.substr(prevpos, pos-prevpos).c_str() );
       prevpos = pos+1;
       pos = strFeatures.find("\n", prevpos+1);
       offset -= 15;
