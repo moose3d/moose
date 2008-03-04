@@ -20,7 +20,7 @@ namespace Phoenix
     /// \warn Should a gameobject consist of several models,
     /// \warn or just one model with different indices for different LODs and 
     /// \warn animated sections?
-    ///
+    /// \warn Or does gameobject rendering have anything to do with this all?
     /// ************************************************************
     template <typename TYPE>
     class CGameObject : public Phoenix::Math::CTransformable
