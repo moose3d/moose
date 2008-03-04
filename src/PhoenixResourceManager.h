@@ -299,6 +299,15 @@ namespace Phoenix
       /// \returns zero on success, non-zero on error.
       int AttachHandle(  const std::string &strName, HANDLE & handle  );
       ////////////////////
+      /// Attaches handle to resource.
+      /// \warning Remember to use ACTUAL handle that resides in final position in the memory.
+      /// \warning Otherwise, you WILL get nasty segfaults and handles start pointing
+      /// \warning where they wish - when you delete resources, that is.
+      /// \param szName Name of resource.
+      /// \param handle Handle which will point to resource.
+      /// \returns zero on success, non-zero on error.
+      int AttachHandle(  const char *szName, HANDLE & handle  );
+      ////////////////////
       /// Duplicates handle.
       /// \warning Remember to use ACTUAL handle that resides in final position in the memory.
       /// \warning Otherwise, you WILL get nasty segfaults and handles start pointing
@@ -486,6 +495,13 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
   } 
   
   return -1;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+int 
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::AttachHandle(  const char *szName, HANDLE & handle  )
+{
+  return AttachHandle( std::string(szName), handle);
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
