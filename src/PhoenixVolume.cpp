@@ -589,3 +589,291 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   return obOrientedBox;
   
 }
+
+// /////////////////////////////////////////////////////////////////
+CSphere
+Phoenix::Volume::MergeSpheres( const Phoenix::Volume::CSphere &sphereOne, const Phoenix::Volume::CSphere &sphereTwo)
+{
+  
+  CVector3<float>  vCenterDiff = sphereTwo.GetPosition() - sphereOne.GetPosition();
+  float		fCenterDiffLen = 0.0f;
+  float		fRadiusDiff    = sphereTwo.GetRadius() - sphereOne.GetRadius();
+  float		fRadiusDiffSqr = fRadiusDiff * fRadiusDiff;
+  float		fLengthSqr     = vCenterDiff.LengthSqr();
+
+//   int bSphereOneValid = sphereOne.GetRadius() > EPSILON;
+//   int bSphereTwoValid = sphereTwo.GetRadius() > EPSILON;
+//   if (  bSphereOneValid && !bSphereTwoValid ) return sphereOne;
+//   if ( !bSphereOneValid &&  bSphereTwoValid ) return sphereTwo;
+
+  if ( fRadiusDiffSqr >= fLengthSqr )
+  {
+    if ( fRadiusDiff >= 0.0f ) // Sphere two contains the sphere one
+    {     
+      return sphereTwo;
+    } 
+    else // Sphere one contains the sphere two
+    {			
+      return sphereOne;
+    }
+
+  } else {
+
+    fCenterDiffLen = sqrt( fLengthSqr );
+    float fT = (fCenterDiffLen + sphereTwo.GetRadius() - 
+		sphereOne.GetRadius()) /(2.0f * fCenterDiffLen);
+    
+    return CSphere( sphereOne.GetPosition() + (fT * vCenterDiff),
+		    (fCenterDiffLen + sphereTwo.GetRadius() + sphereOne.GetRadius())*0.5f);
+  }
+}
+/////////////////////////////////////////////////////////////////
+COrientedBox 
+Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo )
+{
+  unsigned int bObOneValid =  (obOne.GetLength() * obOne.GetWidth() * obOne.GetHeight()) > 0.0001f;
+  unsigned int bObTwoValid =  (obTwo.GetLength() * obTwo.GetWidth() * obTwo.GetHeight()) > 0.0001f;
+
+  if (  bObOneValid && !bObTwoValid ) return obOne;
+  if ( !bObOneValid && bObTwoValid ) return obTwo;
+  if ( !bObOneValid && !bObTwoValid) return COrientedBox();
+
+#define OPTIMAL_BOUNDING_BOX_MERGE
+#ifdef OPTIMAL_BOUNDING_BOX_MERGE
+  
+  COrientedBox obMerge;
+  CVector3<float> vDir = obTwo.GetPosition() - obOne.GetPosition();
+  vDir.Normalize();
+
+  CVector3<float> vCorner;
+  CVector3<float> vCornerOnLine;
+  CVector3<float> vMin(0,0,0);
+  CVector3<float> vMax(0,0,0);
+  CVector3<float> vSecondaryAxis;
+  CVector3<float> vSecAxisCandidate;
+
+  float fDot;
+  float fLength;
+  
+  int i;
+  // For each corner in box one 
+  for (i = 0; i < 8; i++)
+  {
+    // Calculate the length on initial axis
+    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (BBOX_CORNER_TYPE)i) ;
+    fDot = vDir.Dot(vCorner - obOne.GetPosition());
+
+    // calculate possible secondary axis.
+    vCornerOnLine = obOne.GetPosition() + vDir * fDot;
+    vSecAxisCandidate = vCorner - vCornerOnLine;
+    fLength = vSecAxisCandidate.Length();
+    
+    /// 
+    if (fDot > vMax[0])  {     vMax[0] = fDot;  }
+    else if (fDot < vMin[0]){  vMin[0] = fDot;  }
+    
+    // Since this is a symmetric box, we need to check only for 
+    // max, since width becomes 2 * max.
+    if ( fLength > vMax[1] ) 
+    { 
+      vMax[1]  = fLength; 
+      vSecondaryAxis = vSecAxisCandidate;
+    }
+  }
+  
+  // For each corner in box two
+  for (i = 0; i < 8; i++)
+  {
+    // Calculate the length on initial axis
+    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (BBOX_CORNER_TYPE)i);
+    fDot = vDir.Dot(vCorner - obOne.GetPosition());
+
+    // calculate possible secondary axis.
+    vCornerOnLine = obOne.GetPosition() + vDir * fDot;
+    vSecAxisCandidate = vCorner - vCornerOnLine;
+    fLength = vSecAxisCandidate.Length();
+    
+    /// 
+    if (fDot > vMax[0])  {     vMax[0] = fDot;  }
+    else if (fDot < vMin[0]){  vMin[0] = fDot;  }
+    
+    // Since this is a symmetric box, we need to check only for 
+    // max, since width becomes 2 * max.
+    if ( fLength > vMax[1] ) 
+    { 
+      vMax[1]  = fLength; 
+      vSecondaryAxis = vSecAxisCandidate;
+    }
+  }
+  vMin[1] = -vMax[1];
+  /////////////////////////////////////////////////////////////////
+  // At this point, we have initial and secondary axis with extents.
+  CVector3<float> vTertiaryAxis = vSecondaryAxis.Cross(vDir);
+  vTertiaryAxis.Normalize();
+  vSecondaryAxis.Normalize();
+  fDot = 0.0f;
+  /////////////////////////////////////////////////////////////////
+  // For each corner in box one 
+  for (i = 0; i < 8; i++)
+  {
+    // Calculate the length on initial axis
+    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (BBOX_CORNER_TYPE)i );
+    fDot = vTertiaryAxis.Dot(vCorner - obOne.GetPosition());
+    if (fDot > vMax[2])     {  vMax[2] = fDot;  }
+
+  }
+  
+  // For each corner in box two
+  for (i = 0; i < 8; i++)
+  {
+    // Calculate the length on initial axis
+    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (BBOX_CORNER_TYPE)i );
+    fDot = vTertiaryAxis.Dot(vCorner - obOne.GetPosition());
+    if (fDot > vMax[2])     {  vMax[2] = fDot;  }
+    
+  }
+  vMin[2] = -vMax[2];
+  
+  CVector3<float> vExtents(vMax - vMin);
+  
+  obMerge.SetPosition( ((obOne.GetPosition() + vDir * vMax[0]) +  
+			(obOne.GetPosition() + vDir * vMin[0])) *0.5f)  ;
+
+  obMerge.SetOrientation( vTertiaryAxis, vDir,  vSecondaryAxis );
+  obMerge.SetLength( vExtents[0] );
+  obMerge.SetWidth( vExtents[1] );
+  obMerge.SetHeight( vExtents[2] );
+  obMerge.CalculateCorners();
+  obMerge.CalculatePlanes();
+  return obMerge;
+#else
+  // construct a box that contains the input boxes
+  COrientedBox obMerge;
+
+  // The first guess at the box center.  This value will be updated later
+  // after the input box vertices are projected onto axes determined by an
+  // average of box axes.
+  obMerge.SetPosition( 0.5f*(obOne.GetPosition() + obTwo.GetPosition()));
+  
+  // A box's axes, when viewed as the columns of a matrix, form a rotation
+  // matrix.  The input box axes are converted to quaternions.  The average
+  // quaternion is computed, then normalized to unit length.  The result is
+  // the slerp of the two input quaternions with t-value of 1/2.  The result
+  // is converted back to a rotation matrix and its columns are selected as
+  // the merged box axes.
+  CQuaternion qOne, qTwo;
+  
+  CMatrix4x4f mOne = OrientedBoxAxisToRotationMatrix( obOne );
+  CMatrix4x4f mTwo = OrientedBoxAxisToRotationMatrix( obTwo );
+
+  qOne = RotationMatrixToQuaternion( mOne );
+  qTwo = RotationMatrixToQuaternion( mTwo );
+
+  if ( qOne.Dot(qTwo) < 0.0f) 
+  {
+    qTwo = -qTwo;
+  }
+
+  CQuaternion  qQuat = qOne + qTwo;
+  qQuat.Normalize();
+
+  CMatrix4x4f mFinal = qQuat.ToMatrix();
+
+  CVector3<float> vUp(mFinal(0,2), mFinal(1,2), mFinal(2,2) );
+  CVector3<float> vForward(mFinal(0,0), mFinal(1,0), mFinal(2,0) );
+  CVector3<float> vRight(mFinal(0,1), mFinal(1,1), mFinal(2,1) );
+  
+  obMerge.SetOrientation( vUp, vForward, vRight);
+
+  // Project the input box vertices onto the merged-box axes.  Each axis
+  // D[i] containing the current center C has a minimum projected value
+  // pmin[i] and a maximum projected value pmax[i].  The corresponding end
+  // points on the axes are C+pmin[i]*D[i] and C+pmax[i]*D[i].  The point C
+  // is not necessarily the midpoint for any of the intervals.  The actual
+  // box center will be adjusted from C to a point C' that is the midpoint
+  // of each interval,
+  //   C' = C + sum_{i=0}^2 0.5*(pmin[i]+pmax[i])*D[i]
+  // The box extents are
+  //   e[i] = 0.5*(pmax[i]-pmin[i])
+
+  int i = 0;
+  float fDot = 0.0f;
+  
+  CVector3<float> vCorner, vDiff;
+  CVector3<float> vMin(0,0,0);
+  CVector3<float> vMax(0,0,0);
+  
+  // For each corner in box one 
+  for (i = 0; i < 8; i++)
+  {
+    // Forward axis
+    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vDiff = vCorner - obMerge.GetPosition();
+    fDot = vDiff.Dot( obMerge.GetForwardVector() );
+    if (fDot > vMax[0])  {     vMax[0] = fDot;    }
+    else if (fDot < vMin[0]){    vMin[0] = fDot;  }
+
+    // right axis 
+    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vDiff = vCorner - obMerge.GetPosition();
+    fDot = vDiff.Dot( obMerge.GetRightVector() );
+    if (fDot > vMax[1])  {     vMax[1] = fDot;    }
+    else if (fDot < vMin[1]){    vMin[1] = fDot;  }
+
+    // Up axis 
+    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vDiff = vCorner - obMerge.GetPosition();
+    fDot = vDiff.Dot( obMerge.GetUpVector() );
+    if (fDot > vMax[2])  {     vMax[2] = fDot;    }
+    else if (fDot < vMin[2]){    vMin[2] = fDot;  }
+    
+  }
+  
+  // For each corner in box two
+  for (i = 0; i < 8; i++)
+  {
+    // Forward axis
+    vCorner.UseExternalData( const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i));
+    vDiff = vCorner - obMerge.GetPosition();
+    fDot = vDiff.Dot( obMerge.GetForwardVector() );
+    if (fDot > vMax[0])  {     vMax[0] = fDot; }
+    else if (fDot < vMin[0]){  vMin[0] = fDot; }
+
+    // right axis 
+    vCorner.UseExternalData( const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i));
+    vDiff = vCorner - obMerge.GetPosition();
+    fDot = vDiff.Dot( obMerge.GetRightVector() );
+    if (fDot > vMax[1])  {     vMax[1] = fDot; }
+    else if (fDot < vMin[1]){  vMin[1] = fDot; }
+
+    // Up axis 
+    vCorner.UseExternalData( const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i));
+    vDiff = vCorner - obMerge.GetPosition();
+    fDot = vDiff.Dot( obMerge.GetUpVector() );
+    if (fDot > vMax[2])  {     vMax[2] = fDot; }
+    else if (fDot < vMin[2]){  vMin[2] = fDot; }
+    
+  }
+  
+  // [kMin,kMax] is the axis-aligned box in the coordinate system of the
+  // merged box axes.  Update the current box center to be the center of
+  // the new box.  Compute the extent based on the new center.
+  
+  CVector3<float> vMean    = (vMax + vMin) * 0.5f;
+  CVector3<float> vExtents = (vMax - vMin );
+  
+  obMerge.SetPosition( obMerge.GetPosition() + (vMean[0] *obMerge.GetForwardVector()));
+  obMerge.SetLength( vExtents[0] );
+  
+  obMerge.SetPosition( obMerge.GetPosition() + (vMean[1]*obMerge.GetRightVector()));
+  obMerge.SetWidth( vExtents[1] );
+  
+  obMerge.SetPosition( obMerge.GetPosition() + (vMean[2]*obMerge.GetUpVector()));
+  obMerge.SetHeight( vExtents[2] );
+
+  obMerge.CalculatePlanes();
+  obMerge.CalculateCorners();
+  return obMerge;
+#endif
+}
+/////////////////////////////////////////////////////////////////
