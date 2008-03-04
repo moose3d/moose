@@ -38,6 +38,9 @@ namespace Phoenix
       ////////////////////
       /// Clears current queue.
       void Clear();
+      ////////////////////
+      /// Performs sorting using adapter class.
+      template<class ADAPTER_CLASS> void Sort( ADAPTER_CLASS & rAdapter );
     };
   }
 }

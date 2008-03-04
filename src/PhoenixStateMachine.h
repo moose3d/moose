@@ -150,11 +150,29 @@ namespace Phoenix
       /// Starts message routing 
       void Prepare();
     };
-
-
+    /////////////////////////////////////////////////////////////////
+    /// Base class for message receivers and senders.
+    template <typename OBJECT_TYPE, typename MSG_TYPE>
+    class CMessageObject
+    {
+    private:
+      /// Handle to object itself.
+      Phoenix::Core::CHandle<OBJECT_TYPE> m_hThis;
+    protected:
+      ////////////////////
+      /// Constructor.
+      CMessageObject() { } 
+    public:
+      ////////////////////
+      /// Returns handle to object itself - Handle is null handle, unless
+      /// object has been registered into CMessageRouter.
+      /// \returns Handle to object itself. 
+      Phoenix::Core::CHandle<OBJECT_TYPE> & GetObjectHandle() { return m_hThis; }
+    };
+    /////////////////////////////////////////////////////////////////    
     template <typename FSM_TYPE, typename STATE_NAME_TYPE, typename INPUT_NAME_TYPE>
     class CStateMachine;
-    
+    /////////////////////////////////////////////////////////////////    
     template <typename FSM_TYPE, typename STATE_NAME_TYPE, typename INPUT_NAME_TYPE>
     class CState : public Phoenix::Core::CGraphNode< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE >
     {
@@ -391,9 +409,14 @@ template <typename OBJECT_TYPE, typename MSG_TYPE>
 void
 Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::RegisterReceiver( const MSG_TYPE & rType, const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject )
 {
-  assert( (unsigned int)rType < GetSlotCount() && "Message slots exceeded!!!");
+  assert( (unsigned int)rType < GetSlotCount() && "Message slots exceeded - this is not proper type!!!");
   m_vecMsgReceivers[(unsigned int)rType].PushReceiver( hObject );
 
+  // check that object actually exists - it must be derived from type CMessageObject
+  assert( hObject.IsNull() == 0);
+  OBJECT_TYPE *pPtr = NULL;   
+  pPtr = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(hObject);
+  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->DuplicateHandle( hObject, pPtr->GetObjectHandle());
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
@@ -402,6 +425,13 @@ Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::UnregisterReceiver( const MS
 {
   assert( (unsigned int)rType < GetSlotCount() && "Message slots exceeded!!!");
   m_vecMsgReceivers[(unsigned int)rType].RemoveReceiver( hObject );
+  
+  OBJECT_TYPE *pPtr = NULL;   
+  pPtr = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(hObject);
+  if ( pPtr != NULL )
+  {
+    Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( pPtr->GetObjectHandle());
+  }
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
