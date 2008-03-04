@@ -18,6 +18,7 @@ Phoenix::Graphics::CCamera::CCamera() : COrientable()
   SetFieldOfView(45.0);
   SetProjectionChanged(1);
   m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
+  SetTrackballDistance( 3.24f);
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::~CCamera()
@@ -447,9 +448,13 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
 #define TRACKBALL_FUDGE_FACTOR 0.5f
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
-					      const CVector2<int> &vStartPoint,
-					      const CVector2<int> &vEndPoint )
+Phoenix::Graphics::CCamera::VirtualTrackball( const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint  )
+{
+  VirtualTrackball( GetPosition()+GetForwardVector()*GetTrackballDistance(), vStartPoint, vEndPoint);
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint )
 {
   CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint[0], 
 						    vStartPoint[1],

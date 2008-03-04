@@ -46,6 +46,8 @@ namespace Phoenix
       Phoenix::Volume::CSphere m_FrustumSphere;
       /// Bounding sphere for cone.
       Phoenix::Volume::CCone m_FrustumCone;
+      /// Distance to point along forwardvector, which will be used in virtual trackball.
+      float			m_fTrackballCenterDistance;
     public:
       ////////////////////
       /// Default constructor
@@ -290,10 +292,32 @@ namespace Phoenix
 			     const Phoenix::Math::CVector2<int> &vStartPoint,
 			     const Phoenix::Math::CVector2<int> &vEndPoint );
       ////////////////////
+      /// Creates an imaginary trackball and rotates camera using two
+      /// positions on the surface of the sphere. Sphere center is m_fTrackballCenterDistance away along
+      /// forward vector.
+      /// \param vPosition The center of the sphere.
+      /// \param vStartPoint The point where rotation begins.
+      void VirtualTrackball( const Phoenix::Math::CVector2<int> &vStartPoint,
+			     const Phoenix::Math::CVector2<int> &vEndPoint);
+      ////////////////////
       /// Converts world coordinates into screen coordinates.
       /// \param vPosition Position in world coordinates.
       /// \returns CVector3<float> position in window coordinates.
       Phoenix::Math::CVector3<float> WorldCoordinatesToScreen( const Phoenix::Math::CVector3<float> &vPosition);
+      ////////////////////
+      /// Returns trackball center distance.
+      /// \return point distance along forward vector.
+      float GetTrackballDistance() const 
+      {
+	return m_fTrackballCenterDistance;
+      }
+      ////////////////////
+      /// Sets trackball center distance.
+      /// \param fDist  point distance along forward vector.
+      void SetTrackballDistance( float fDist )
+      {
+	m_fTrackballCenterDistance = fDist;
+      }
     };
   }; // namespace Graphics
 }; // Phoenix
