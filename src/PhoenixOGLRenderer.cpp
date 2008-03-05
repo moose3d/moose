@@ -824,7 +824,7 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
     // Go through all parameters and commit them
     for(unsigned int nSP=0; nSP< model.GetShaderParameters().size(); nSP++)
     {
-      pParam = g_DefaultVertexManager->GetResource( model.GetShaderParameters()[nSP].second );
+      pParam = g_DefaultVertexManager->GetResource( *model.GetShaderParameters()[nSP].second );
       if ( pParam != NULL )
       {
 	CommitShaderParam( *pShader, model.GetShaderParameters()[nSP].first, *pParam );
@@ -853,7 +853,7 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   }
   for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
   {
-    pIndices = g_DefaultIndexManager->GetResource( model.GetIndexHandles()[n] );
+    pIndices = g_DefaultIndexManager->GetResource( *model.GetIndexHandles()[n] );
     if ( pIndices  != NULL ) 
     { 
       CommitPrimitive ( pIndices );         
@@ -1491,7 +1491,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   mView(1,3) = 0.0f;
   mView(2,3) = 0.0f;
 
-  std::vector<INDEX_HANDLE>::iterator it = skybox.GetIndexHandles().begin();
+  std::vector<INDEX_HANDLE * >::iterator it = skybox.GetIndexHandles().begin();
   glPushMatrix();
   glLoadMatrixf( mView.GetTransposition().GetArray());
   
@@ -1508,7 +1508,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   if ( pTexCoords != NULL ) CommitVertexDescriptor( pTexCoords );
   /////////////////////////////////////////////////////////////////
   pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(0) );
-  pIndices = g_DefaultIndexManager->GetResource(*it);
+  pIndices = g_DefaultIndexManager->GetResource(*(*it));
   it++;
   if (pTexture) CommitTexture( 0, pTexture ); 
   // // Apply texture filters.
@@ -1523,7 +1523,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   /////////////////////////////////////////////////////////////////
 
   pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(1) );
-  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
   it++;
   if ( pTexture ) CommitTexture( 0, pTexture ); 
   if ( pIndices ) CommitPrimitive( pIndices );
@@ -1531,7 +1531,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   /////////////////////////////////////////////////////////////////
 
   pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(2) );
-  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
   it++;
   if (pTexture) CommitTexture( 0, pTexture ); 
   if ( pIndices )  CommitPrimitive( pIndices );
@@ -1539,7 +1539,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 //   /////////////////////////////////////////////////////////////////
 
   pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(3) );
-  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
   it++;
   if (pTexture) CommitTexture( 0, pTexture );
   if ( pIndices )  CommitPrimitive( pIndices );
@@ -1547,7 +1547,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 //   /////////////////////////////////////////////////////////////////
 
   pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(4) );
-  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
   it++;
   if (pTexture) 
   {
@@ -1559,7 +1559,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 //   /////////////////////////////////////////////////////////////////
 
   pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(5) );
-  pIndices = g_DefaultIndexManager->GetResource( *it);    
+  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
   
   if (pTexture) CommitTexture( 0, pTexture ); 
   if ( pIndices )  CommitPrimitive( pIndices );

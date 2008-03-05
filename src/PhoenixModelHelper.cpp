@@ -82,10 +82,10 @@ Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, C
     {
       ostringstream stream;  
       stream << name << "_indices" << i;
-      rModel.AddIndexHandle(INDEX_HANDLE());
+      rModel.AddIndexHandle(new INDEX_HANDLE());
       assert( g_DefaultIndexManager->Create( pLoader->GetIndices()[i], 
 					     stream.str().c_str(), 
-					     rModel.GetIndexHandles().back()) == 0 );
+					     *rModel.GetIndexHandles().back()) == 0 );
     }
     pLoader->ResetIndices();
   }

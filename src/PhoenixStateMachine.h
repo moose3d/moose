@@ -87,7 +87,7 @@ namespace Phoenix
       /// \param rMessage 
       template <class MSG_ADAPTER_TYPE> 
       void PropagateMessage( const CMessage< OBJECT_TYPE, MSG_TYPE > &rMessage, MSG_ADAPTER_TYPE &rMsgAdapter );
-
+      
     };
     ////////////////////
     /// Message router class.
