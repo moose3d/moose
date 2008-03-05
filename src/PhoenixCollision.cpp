@@ -176,14 +176,14 @@ Phoenix::Collision::LineIntersectsTriangle( const Phoenix::Math::CLine & line,
 {
   
   CPlane triPlane;
-  CVector3<float> vPoint;
+  //CVector3<float> vPoint;
   // Calculate triangle plane and check does it intersect the plane.
   triPlane.Calculate( (vVertex1-vVertex0).Cross( vVertex2-vVertex0), vVertex0);
-  LINE_PLANE_INTERSECTION tType = LineIntersectsPlane( triPlane, line, vPoint );
+  LINE_PLANE_INTERSECTION tType = LineIntersectsPlane( triPlane, line, vPointOfIntersection );
   if ( tType == POINT_IN_PLANE)
   {
     // if line intersects plane, then proceed to test triangle with interesection point.
-    return PointInsideTriangle( vPoint, vVertex0, vVertex1, vVertex2 );
+    return PointInsideTriangle( vPointOfIntersection, vVertex0, vVertex1, vVertex2 );
   }
   return 0;
 }
