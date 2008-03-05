@@ -66,7 +66,7 @@ namespace Phoenix
     class CReceiverQueue 
     {
     protected:
-      std::vector< CHandle<OBJECT_TYPE> > m_vecObjects;
+      std::vector< CHandle<OBJECT_TYPE> * > m_vecObjects;
     public:
       ////////////////////
       /// Constructor.
@@ -319,13 +319,14 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::CReceiverQueue()
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::~CReceiverQueue()
 {
-  typename std::vector<CHandle<OBJECT_TYPE> >::iterator it;
+  typename std::vector< CHandle<OBJECT_TYPE> * >::iterator it;
   it = m_vecObjects.begin();
 
   // Release handles 
   for( ; it != m_vecObjects.end(); it++)
   {
-    CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *it );
+    CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *(*it) );
+    delete *it;
   }
   // cleanup
   m_vecObjects.clear();
@@ -336,9 +337,9 @@ void
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PushReceiver( const CHandle<OBJECT_TYPE> &hObject )
 {
   // Not thread-safe, requires mutex
-  m_vecObjects.push_back(CHandle<OBJECT_TYPE>());
+  m_vecObjects.push_back(new CHandle<OBJECT_TYPE>());
   std::string strName = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResourceName( hObject);
-  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->AttachHandle( strName, m_vecObjects.back());
+  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->AttachHandle( strName, *m_vecObjects.back());
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
@@ -346,16 +347,17 @@ void
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::RemoveReceiver( const CHandle<OBJECT_TYPE> &hObject )
 {
 
-  typename std::vector<CHandle<OBJECT_TYPE> >::iterator it;
+  typename std::vector<CHandle<OBJECT_TYPE> *>::iterator it;
   it = m_vecObjects.begin();
-
+  
   // Release handles 
   for( ; it != m_vecObjects.end(); it++)
   {
     // Release and Erase
-    if ( hObject == *it )
+    if ( hObject == *(*it) )
     {
-      CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *it );      
+      CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *(*it) );      
+      delete *it;
       m_vecObjects.erase( it );
       break;
     }
@@ -367,7 +369,7 @@ template <class MESSAGE_ADAPTER>
 void
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PropagateMessage( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> &rMessage, MESSAGE_ADAPTER &rMsgAdapter )
 {
-  typename std::vector<CHandle<OBJECT_TYPE> >::iterator it;
+  typename std::vector<CHandle<OBJECT_TYPE> * >::iterator it;
   it = m_vecObjects.begin();
   OBJECT_TYPE *pObject = NULL;
   if ( rMessage.GetReceiver().IsNull())
@@ -375,8 +377,8 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PropagateMessage( const Phoen
     // send message to each object listening
     for( ; it != m_vecObjects.end(); it++)
     {
-      if ( (*it).IsNull() ) continue;
-      pObject = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResource(*it);
+      if ( (*it)->IsNull() ) continue;
+      pObject = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResource(*(*it));
       if ( pObject != NULL )
       {
 	rMsgAdapter.Process( rMessage, *pObject );
