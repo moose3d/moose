@@ -1,7 +1,7 @@
 #include "PhoenixVertexDescriptor.h"
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType, 
-							 unsigned int nNumElements)
+							 unsigned int nNumElements) : Phoenix::Graphics::CRenderable(RT_VERTEXDESCRIPTOR)
 {
   m_nType = nType;
   m_nSize = nNumElements;

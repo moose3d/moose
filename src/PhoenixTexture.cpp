@@ -10,6 +10,7 @@ Phoenix::Graphics::COglBase::COglBase( unsigned int nId ) : m_nOglId(nId)
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture::COglTexture( unsigned int nId, TEXTURE_TYPE tType ) : COglBase(nId), 
+										      CRenderable(RT_TEXTURE), 
 										      m_tTextureType(tType)
 {
   
@@ -25,17 +26,4 @@ Phoenix::Graphics::COglTexture::GetType() const
 {
   return m_tTextureType;
 }
-// /////////////////////////////////////////////////////////////////
-// Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBufferId, unsigned int nDepthBufferId )
-// {
-//   m_nFrameBufferId = nFrameBufferId;
-//   m_nDepthBufferId = nDepthBufferId;
-// }
-// /////////////////////////////////////////////////////////////////
-// Phoenix::Graphics::CFrameBufferObject::~CFrameBufferObject()
-// {
-//   glDeleteFrameBuffersEXT( Phoenix::Graphics::CFrameBufferObject::GetID());
-// }
-// /////////////////////////////////////////////////////////////////
-
-      
+/////////////////////////////////////////////////////////////////

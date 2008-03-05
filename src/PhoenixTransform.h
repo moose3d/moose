@@ -1,9 +1,10 @@
 #ifndef __PhoenixTransform_h__
 #define __PhoenixTransform_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixMatrix4x4.h"
-#include "PhoenixQuaternion.h"
-#include "PhoenixVector3.h"
+#include <PhoenixMatrix4x4.h>
+#include <PhoenixQuaternion.h>
+#include <PhoenixVector3.h>
+#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -13,7 +14,7 @@ namespace Phoenix
     /// A class which stores scaling, rotation and translation into
     /// 4x4 matrix and provides methods for easily changing any of 
     /// those components.
-    class CTransform 
+    class CTransform : public Phoenix::Graphics::CRenderable
     {
     protected:
       /// Is this transform changed.
@@ -32,7 +33,8 @@ namespace Phoenix
     public:
       ////////////////////
       /// Default constructor.
-      CTransform() : m_bChanged(0),
+      CTransform() : Phoenix::Graphics::CRenderable(Phoenix::Graphics::RT_TRANSFORM),
+		     m_bChanged(0),
                      m_fScaling(1.0f),
                      m_mTransform(1,0,0,0,
 				  0,1,0,0,

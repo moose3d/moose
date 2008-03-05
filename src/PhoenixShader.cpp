@@ -2,7 +2,14 @@
 #include <GL/GLee.h>
 #include <GL/gl.h>
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader::CShader( unsigned int nProgramId ) : m_nShaderProgram(nProgramId), m_nVertexShader(0), m_nFragmentShader(0), m_bIsFragShader(0),m_bIsVertexShader(0)
+using namespace Phoenix::Graphics;
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShader::CShader( unsigned int nProgramId ) : CRenderable(RT_SHADER),
+								 m_nShaderProgram(nProgramId), 
+								 m_nVertexShader(0), 
+								 m_nFragmentShader(0), 
+								 m_bIsFragShader(0),
+								 m_bIsVertexShader(0)
 {
   
 }

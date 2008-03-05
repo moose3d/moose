@@ -15,6 +15,7 @@
 #include "PhoenixTransform.h"
 #include "PhoenixSpatial.h"
 #include "PhoenixFrameBuffer.h"
+#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
@@ -104,7 +105,8 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////
     /// Class for grouping blending operations. 
-    class CBlendingOperation : public Phoenix::Core::CEnableable
+    class CBlendingOperation : public Phoenix::Core::CEnableable,
+                               public Phoenix::Graphics::CRenderable
     {
     private:
       BLEND_SRC_TYPE m_tBlendSrcType;
@@ -112,7 +114,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor. 
-    CBlendingOperation() : Phoenix::Core::CEnableable(), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
+      CBlendingOperation() : Phoenix::Core::CEnableable(), Phoenix::Graphics::CRenderable(Phoenix::Graphics::RT_BLENDING), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
       ////////////////////
       /// Assigns src operation for blending.
       /// \param tType Blending source operation;
@@ -139,7 +141,8 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Class grouping alpha testing properties.
-    class CAlphaTestOperation : public Phoenix::Core::CEnableable
+    class CAlphaTestOperation : public Phoenix::Core::CEnableable,
+			        public Phoenix::Graphics::CRenderable
     {
     private:
       ALPHA_TEST_TYPE m_tTestType;
@@ -147,7 +150,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-    CAlphaTestOperation() : m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
+      CAlphaTestOperation() : Phoenix::Graphics::CRenderable(Phoenix::Graphics::RT_ALPHA_TEST), m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
       ////////////////////
       /// Assigns test type.
       /// \param tType ALPHA_TEST_TYPE.
