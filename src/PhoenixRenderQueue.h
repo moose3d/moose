@@ -135,5 +135,13 @@ Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &
   }      
 }
 /////////////////////////////////////////////////////////////////
+template<typename TYPE>
+template<class ADAPTER_CLASS> 
+void 
+Phoenix::Graphics::CRenderQueue<TYPE>::Sort( ADAPTER_CLASS &rAdapter )
+{
+  rAdapter.Sort( m_lstObjects );
+}
+/////////////////////////////////////////////////////////////////
 #undef INSERT
 #endif
