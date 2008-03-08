@@ -232,6 +232,14 @@ namespace Phoenix
       /// Updates child statuses from this node towards root.
       /// \param pNode Recently added child node.
       void PropagateChildrenStatus( COctreeNode<TYPE> *pNode );
+      ////////////////////
+      /// Collects objects from octree into list of objects.
+      /// \param camera Camera used in culling.
+      /// \param list List where objects are inserted.
+      /// \returns Number of collected objects.
+      size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, 
+			     std::list<TYPE> & list);
+      
     protected:
       ////////////////////
       /// Sets world size.
@@ -767,5 +775,63 @@ Phoenix::Spatial::COctreeNode<TYPE>::HasObjects() const
 {
   return !GetObjects().empty();
 }
+/////////////////////////////////////////////////////////////////
+#define INSERT( OBJ ) { \
+  if ( pNode->GetChild( OBJ ) != NULL ) \
+    lstNodePtrs.push_back(pNode->GetChild( OBJ ));\
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+size_t
+Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list)
+{
+  std::list< Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
+  lstNodePtrs.push_back(GetRoot());
+  size_t nObjCount = 0;
+  Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
+  Phoenix::Volume::CSphere sphere;
+  typename std::list<TYPE>::iterator it;
+
+  while(!lstNodePtrs.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrs.front();
+    lstNodePtrs.pop_front();
+    
+    // Check does cube intersect frustum
+    if ( camera.Frustum().IntersectsCube(*pNode))
+    {
+      // Check do objects intersect frustum and if so, 
+      // insert them into list
+      it = pNode->GetObjects().begin();
+      for( ; it!=pNode->GetObjects().end();it++)
+      {
+	sphere = (*it)->GetBoundingSphere();
+	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+
+	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
+	     camera.Frustum().IntersectsSphere( sphere))
+	{
+	  list.push_back( *it );
+	  nObjCount++;
+	}
+      }
+      // If there's objects left in children, push them into nodeptr list
+      if ( pNode->ChildrenContainObjects())
+      {
+	INSERT( TOP_LEFT_FRONT );
+	INSERT( TOP_LEFT_BACK );
+	INSERT( TOP_RIGHT_FRONT );
+	INSERT( TOP_RIGHT_BACK );
+	INSERT( BOTTOM_LEFT_FRONT );
+	INSERT( BOTTOM_LEFT_BACK );
+	INSERT( BOTTOM_RIGHT_FRONT );
+	INSERT( BOTTOM_RIGHT_BACK );
+      }
+    }
+  }
+  return nObjCount;  
+}
+#undef INSERT
 /////////////////////////////////////////////////////////////////
 #endif

@@ -24,12 +24,9 @@ namespace Phoenix
       /// Destructor.
       ~CRenderQueue();
       ////////////////////
-      /// Collects objects from octree into internal list of objects.
-      /// \param camera Camera used in culling.
-      /// \param octree Octree that contains objects.
-      /// \returns Number of collected objects.
-      unsigned int CollectObjects( const Phoenix::Graphics::CCamera &camera, 
-				   Phoenix::Spatial::COctree<TYPE> &octree);
+      /// Returns object list.
+      /// \returns Reference to object list.
+      std::list<TYPE> & GetObjectList();
       ////////////////////
       /// Renders current queue using renderer and given adapter.
       /// \param renderer OpenGL renderer.
@@ -45,11 +42,7 @@ namespace Phoenix
   }
 }
 /////////////////////////////////////////////////////////////////
-#define INSERT( OBJ ) { \
-  if ( pNode->GetChild( OBJ ) != NULL ) \
-    lstNodePtrs.push_back(pNode->GetChild( OBJ ));\
-}
-/////////////////////////////////////////////////////////////////
+
 template<typename TYPE>
 Phoenix::Graphics::CRenderQueue<TYPE>::CRenderQueue()
 {
@@ -63,56 +56,10 @@ Phoenix::Graphics::CRenderQueue<TYPE>::~CRenderQueue()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-unsigned int 
-Phoenix::Graphics::CRenderQueue<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, 
-						       Phoenix::Spatial::COctree<TYPE> &octree)
+std::list<TYPE> & 
+Phoenix::Graphics::CRenderQueue<TYPE>::GetObjectList()
 {
-  std::list< Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
-  lstNodePtrs.push_back(octree.GetRoot());
-  unsigned int nObjCount = 0;
-  Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
-  Phoenix::Volume::CSphere sphere;
-  typename std::list<TYPE>::iterator it;
-  while(!lstNodePtrs.empty())
-  {
-    // Pop first node from list
-    pNode = lstNodePtrs.front();
-    lstNodePtrs.pop_front();
-    //std::cerr << "processing node : " << pNode << std::endl;
-    // Check does cube intersect frustum
-    if ( camera.Frustum().IntersectsCube(*pNode))
-    {
-      //std::cerr << "Camera intersects!" << std::endl;
-      
-      // insert objects from this node into list
-      it = pNode->GetObjects().begin();
-      for( ; it!=pNode->GetObjects().end();it++)
-      {
-	sphere = (*it)->GetBoundingSphere();
-	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
-
-	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
-	     camera.Frustum().IntersectsSphere( sphere))
-	{
-	  m_lstObjects.push_back( *it );
-	  nObjCount++;
-	}
-      }
-      // If there's objects left in children, push them into nodeptr list
-      if ( pNode->ChildrenContainObjects())
-      {
-	INSERT( TOP_LEFT_FRONT );
-	INSERT( TOP_LEFT_BACK );
-	INSERT( TOP_RIGHT_FRONT );
-	INSERT( TOP_RIGHT_BACK );
-	INSERT( BOTTOM_LEFT_FRONT );
-	INSERT( BOTTOM_LEFT_BACK );
-	INSERT( BOTTOM_RIGHT_FRONT );
-	INSERT( BOTTOM_RIGHT_BACK );
-      }
-    }
-  }
-  return nObjCount;  
+  return m_lstObjects;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -143,5 +90,5 @@ Phoenix::Graphics::CRenderQueue<TYPE>::Sort( ADAPTER_CLASS &rAdapter )
   rAdapter.Sort( m_lstObjects );
 }
 /////////////////////////////////////////////////////////////////
-#undef INSERT
+
 #endif
