@@ -130,6 +130,8 @@ namespace Phoenix
     class COctree : protected Phoenix::Spatial::CDimensional1D
     {
     protected:
+      /// Number of total nodes in this Octree.
+      size_t		m_nNodeCount;
       unsigned int      m_nDepth;
       float	        m_fOneDivWorldSize;
       COctreeNode<TYPE>      *m_pAllNodes;
@@ -139,6 +141,9 @@ namespace Phoenix
       /// \param nNumLevels Maximum number of levels in this tree.
       /// \param fWorldSize Max world size.
       COctree( unsigned int nNumLevels, float fWorldSize );
+      ////////////////////
+      /// Returns total node count in this octree.
+      size_t GetNodeCount() const;
       ////////////////////
       /// Returns depth of tree.
       /// \param fRadius Bounding sphere radius.
@@ -218,7 +223,9 @@ namespace Phoenix
       int  DeleteObject( const TYPE & object, const Phoenix::Volume::CSphere & boundingSphere);
       ////////////////////
       /// Returns node at index.
-      /// \param nIndex From which index node is returned.
+      /// \param nIndex From which index node is returned. 
+      /// \warn This must be between 0 and size of m_pAllNodes, otherwise 
+      /// \warn segfaults are weird bugs shall cross your path!!
       /// \returns Pointer to OctreeNode.
       COctreeNode<TYPE> * GetNodeAt(unsigned int nIndex);
       ////////////////////
@@ -434,13 +441,20 @@ Phoenix::Spatial::COctreeNode<TYPE>::GetParent()
 template<typename TYPE>
 Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nNumLevels, float fWorldSize )
 {
-  unsigned int nNodeCount = (unsigned int)((1-powf(8,nNumLevels))/-7);
+  m_nNodeCount = (unsigned int)((1-powf(8,nNumLevels))/-7);
   // Maximum depth will be levels-1, ie. 4 = { 0, 1, 2, 3 }
   SetMaxDepth(nNumLevels-1);
   SetWorldSize(fWorldSize);
   // Allocate array for all nodes
-  m_pAllNodes = new COctreeNode<TYPE>[nNodeCount];
+  m_pAllNodes = new COctreeNode<TYPE>[m_nNodeCount];
   Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline size_t 
+Phoenix::Spatial::COctree<TYPE>::GetNodeCount() const
+{
+  return m_nNodeCount;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
