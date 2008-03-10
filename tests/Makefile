@@ -37,6 +37,8 @@ simplifier:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixMeshSimplifier.cpp -lPhoenix `sdl-config --libs` -ltcl
 linecollision:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixLineCollisionDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
+decal:
+	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixDecalDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean
