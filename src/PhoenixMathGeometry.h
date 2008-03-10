@@ -18,6 +18,7 @@ namespace Phoenix
     {
     public:
       CPlane();
+      CPlane( const CVector3<float> &vNormal, float fD );
       CPlane( float fX, float fY, float fZ, float fD );
       ~CPlane();
       void SetNormal( Phoenix::Math::CVector3<float> vNormal);

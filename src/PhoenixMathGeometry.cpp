@@ -11,6 +11,11 @@ Phoenix::Math::CPlane::CPlane()
 {
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Math::CPlane::CPlane( const CVector3<float> &vNormal, float fD ) : CVector4<float>(vNormal[0], vNormal[1], vNormal[2], fD)
+{
+  
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Math::CPlane::CPlane( float fX, float fY, float fZ, float fD ) : CVector4<float>(fX,fY,fZ,fD)
 {
 }
