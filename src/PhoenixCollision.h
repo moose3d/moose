@@ -206,12 +206,17 @@ namespace Phoenix
     /// \param decalVolume Volume used in evaluation
     /// \param vertices VertexDescriptor of vertex data.
     /// \param indices Triangle indices
-    /// \param decalTriangleIndices resulting indices.
-    void CalculateAffectedTriangleIndices( const Phoenix::Volume::CDecalVolume & decalVolume, 
-					   const Phoenix::Graphics::CVertexDescriptor & vertices, 
-					   const Phoenix::Graphics::CIndexArray & indices,
-					   std::vector<size_t > & decalTriangleIndices );
+    /// \param vecTriangleFans Vector, where lists of vertex coordinates are stored for final mesh.
+    void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume, 
+			     const Phoenix::Graphics::CVertexDescriptor & vertices, 
+			     const Phoenix::Graphics::CIndexArray & indices,
+			     std::vector< std::list< Phoenix::Math::CVector3<float> > > & vecTriangleFans );
     
+    ////////////////////
+    /// Clips given polygon with plane. New vertices replace previous ones.
+    /// \param plane Clipping plane.
+    /// \param lstVertices List of vertices (vector3s).
+    void ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Math::CVector3<float> > & lstVertices );
     
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
