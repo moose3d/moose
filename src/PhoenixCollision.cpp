@@ -1,10 +1,13 @@
 #include "PhoenixMath.h"
 #include "PhoenixCollision.h"
+#include "PhoenixIndexArray.h"
+#include "PhoenixVertexDescriptor.h"
 #include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Collision;
+using namespace Phoenix::Graphics;
 using std::cerr;
 using std::endl;
 /////////////////////////////////////////////////////////////////
@@ -666,5 +669,68 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
   vIntersectionPoint = vPosOne + sphereOne.GetRadius() * vNormal;
 
   return S2S_SOON;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Collision::CalculateAffectedTriangleIndices( const CDecalVolume & decalVolume, 
+						      const Phoenix::Graphics::CVertexDescriptor & vertices, 
+						      const Phoenix::Graphics::CIndexArray & indices,
+						      std::vector<size_t > & decalTriangleIndices )
+{
+  assert( indices.GetPrimitiveType() == PRIMITIVE_TRI_LIST );
+  CVector3<float> vPoint0, vPoint1, vPoint2, vTriNormal;
+  decalTriangleIndices.clear();
+  
+  if ( indices.IsShortIndices())
+  {
+    unsigned short int index0,index1,index2;
+    // for each triangle 
+    for( size_t i=0;i<indices.GetNumIndices();i+=3)
+    {
+      // retrieve actual vertex coordinates
+      index0 = indices.GetPointer<unsigned short int>()[i];
+      index1 = indices.GetPointer<unsigned short int>()[i+1];
+      index2 = indices.GetPointer<unsigned short int>()[i+2];
+      
+      vPoint0.Set( &(vertices.GetPointer<float>()[index0*3]) );
+      vPoint1.Set( &(vertices.GetPointer<float>()[index1*3]) );
+      vPoint2.Set( &(vertices.GetPointer<float>()[index2*3]) );
+
+
+      int bOutside = 0;
+      std::list<Phoenix::Math::CPlane>::iterator it;
+      ////////////////////
+      // check against plane, if outside even one - triangle is not contributing to 
+      // decal
+      for( it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
+	   it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
+	   it++)
+      {
+	if ( (PointDistanceFromPlane( vPoint0, *it ) < 0.0) &&
+	     (PointDistanceFromPlane( vPoint1, *it ) < 0.0) &&
+	     (PointDistanceFromPlane( vPoint2, *it ) < 0.0))
+	{
+	  bOutside = 1;
+	  break;
+	}
+      }
+      ////////////////////
+      // if triangle intersects decal volume
+      if ( !bOutside )
+      {
+	// Check that triangle normal points same direction as decal volume's.
+	if ( ((vPoint2-vPoint0).Cross(vPoint1-vPoint0)).Dot(decalVolume.GetNormalVector()) >= EPSILON )
+	{
+	  decalTriangleIndices.push_back( index0 );
+	  decalTriangleIndices.push_back( index1 );
+	  decalTriangleIndices.push_back( index2 );
+	}
+      }
+    } // for( size_t ...
+  }
+  else 
+  {
+    assert( 0 && "NOt short indices." );
+  }
 }
 /////////////////////////////////////////////////////////////////

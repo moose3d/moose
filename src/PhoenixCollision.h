@@ -200,7 +200,19 @@ namespace Phoenix
     int PointInsideSphere( const Phoenix::Volume::CSphere & sphere,  
 			   const CVector3<float> & vPoint );
 
-
+    
+    ////////////////////
+    /// Calculates which triangles are completely or partially inside decal volume.
+    /// \param decalVolume Volume used in evaluation
+    /// \param vertices VertexDescriptor of vertex data.
+    /// \param indices Triangle indices
+    /// \param decalTriangleIndices resulting indices.
+    void CalculateAffectedTriangleIndices( const Phoenix::Volume::CDecalVolume & decalVolume, 
+					   const Phoenix::Graphics::CVertexDescriptor & vertices, 
+					   const Phoenix::Graphics::CIndexArray & indices,
+					   std::vector<size_t > & decalTriangleIndices );
+    
+    
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
