@@ -13,6 +13,7 @@ namespace Phoenix
   {
     /// The handy PI constants
     const float PI     = 3.14159265358979323f;
+    const float PImul2 = 6.28318530717958647f;
     const float PIdiv2 = 1.57079632679489661f;
     /// 1.0 / logf(2)
     const float OneDivLogN2 = 1.44269504088896340737f;

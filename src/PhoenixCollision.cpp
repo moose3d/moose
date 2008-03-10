@@ -154,7 +154,9 @@ Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint,
 {
   CVector3<float> vVect1, vVect2;
   float fAngle = 0.0f;
-  
+  if ( vPoint == vVertex0) return 1;
+  if ( vPoint == vVertex1) return 1;
+  if ( vPoint == vVertex2) return 1;
   vVect1 = vVertex0 - vPoint;
   vVect2 = vVertex1 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
@@ -167,7 +169,7 @@ Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint,
   vVect2 = vVertex0 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
   
-  return (fabs(fAngle) >= (0.99f * Math::PI * 2.0f));
+  return (fabs(fAngle) >= (0.99f * Math::PImul2));
 }
 /////////////////////////////////////////////////////////////////
 int 
