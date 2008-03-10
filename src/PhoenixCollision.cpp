@@ -674,14 +674,14 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Collision::CalculateAffectedTriangleIndices( const CDecalVolume & decalVolume, 
-						      const Phoenix::Graphics::CVertexDescriptor & vertices, 
-						      const Phoenix::Graphics::CIndexArray & indices,
-						      std::vector<size_t > & decalTriangleIndices )
+Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume, 
+					const Phoenix::Graphics::CVertexDescriptor & vertices, 
+					const Phoenix::Graphics::CIndexArray & indices,
+					std::vector< std::list< Phoenix::Math::CVector3<float> > > & vecTriangleFans )
 {
   assert( indices.GetPrimitiveType() == PRIMITIVE_TRI_LIST );
   CVector3<float> vPoint0, vPoint1, vPoint2, vTriNormal;
-  decalTriangleIndices.clear();
+  
   
   if ( indices.IsShortIndices())
   {
@@ -697,7 +697,7 @@ Phoenix::Collision::CalculateAffectedTriangleIndices( const CDecalVolume & decal
       vPoint0.Set( &(vertices.GetPointer<float>()[index0*3]) );
       vPoint1.Set( &(vertices.GetPointer<float>()[index1*3]) );
       vPoint2.Set( &(vertices.GetPointer<float>()[index2*3]) );
-
+      
 
       int bOutside = 0;
       std::list<Phoenix::Math::CPlane>::iterator it;
@@ -723,16 +723,59 @@ Phoenix::Collision::CalculateAffectedTriangleIndices( const CDecalVolume & decal
 	// Check that triangle normal points same direction as decal volume's.
 	if ( ((vPoint2-vPoint0).Cross(vPoint1-vPoint0)).Dot(decalVolume.GetNormalVector()) >= EPSILON )
 	{
-	  decalTriangleIndices.push_back( index0 );
-	  decalTriangleIndices.push_back( index1 );
-	  decalTriangleIndices.push_back( index2 );
+	  std::list< CVector3<float> > lstVertices;
+	  
+	  lstVertices.push_back( vPoint0 );
+	  lstVertices.push_back( vPoint1 );
+	  lstVertices.push_back( vPoint2 );
+	  
+	  vecTriangleFans.push_back( lstVertices );
+	  
 	}
       }
     } // for( size_t ...
+    
+    // Do actual clipping against planes.
+    std::vector< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
+    std::list< Phoenix::Math::CVector3<float> >::iterator point_iterator;
+
+    for( fan_iterator  = vecTriangleFans.begin(); 
+	 fan_iterator != vecTriangleFans.end();
+	 fan_iterator++)
+    {
+      std::list<Phoenix::Math::CPlane>::iterator plane_it;
+      ////////////////////
+      // check against plane, if outside even one - triangle is not contributing to 
+      // decal
+      for( plane_it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
+	   plane_it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
+	   plane_it++)
+      {
+	ClipPolygon( *plane_it, *fan_iterator );
+      }
+    }
   }
   else 
   {
     assert( 0 && "NOt short indices." );
   }
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Math::CVector3<float> > & lstVertices )
+{
+  if ( lstVertices.size() < 3 ) return;
+
+  std::list< Phoenix::Math::CVector3<float> >::iterator it; 
+  float fDot = 0.0f;
+  for( it = lstVertices.begin(); it != lstVertices.end(); it++)
+  {
+    fDot = plane[0] * (*it)[0] + plane[1] * (*it)[1] + plane[2] * (*it)[2] + plane[3];
+    if ( fDot > 0.0f )
+    {
+      // s. 244 Math 4 3d game programmig and computer graphics.
+    }
+  }
+
 }
 /////////////////////////////////////////////////////////////////
