@@ -389,34 +389,28 @@ namespace Phoenix
 
 	// T · P
 	// left
-	float fTmp = GetTangentVector().Dot(GetPosition());
-	Phoenix::Math::CPlane plane( GetTangentVector(), GetHalfWidth() - fTmp);
+
+	Phoenix::Math::CPlane plane;
+	plane.Calculate( -GetTangentVector(), GetPosition() + GetTangentVector()*GetHalfWidth());
 	AddPlane( plane );
 	// right
-	plane.SetNormal( -GetTangentVector() );
-	plane.SetDistance( GetHalfWidth() + fTmp );
+	plane.Calculate( GetTangentVector(), GetPosition() - GetTangentVector()*GetHalfWidth());
 	AddPlane( plane );
 	
 	// B · P
 	// Bottom
-	fTmp = GetBitangentVector().Dot( GetPosition());
-	plane.SetNormal( GetBitangentVector());
-	plane.SetDistance( GetHalfHeight() - fTmp );
+	plane.Calculate( -GetBitangentVector(), GetPosition() + GetBitangentVector()*GetHalfHeight() );
 	AddPlane( plane );
 	// top
-	plane.SetNormal( -GetBitangentVector() );
-	plane.SetDistance( GetHalfHeight() + fTmp );
+	plane.Calculate( GetBitangentVector(), GetPosition() - GetBitangentVector()*GetHalfHeight()  );
 	AddPlane( plane );
 
 	// N · P
 	// front
-	fTmp = GetNormalVector().Dot( GetPosition());
-	plane.SetNormal( -GetNormalVector());
-	plane.SetDistance( GetHalfLength() + fTmp );
+	plane.Calculate( -GetNormalVector(), GetPosition() + GetNormalVector() * GetHalfLength() );
 	AddPlane( plane );
 	// back
-	plane.SetNormal( GetNormalVector());
-	plane.SetDistance( GetHalfLength() - fTmp );
+	plane.Calculate(  GetNormalVector(), GetPosition() - GetNormalVector() * GetHalfLength() );
 	AddPlane( plane );
       }
 
