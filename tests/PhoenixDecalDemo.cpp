@@ -63,17 +63,19 @@ int main( int argc, char **argv )
 
   CMilkshapeLoader *pLoader = new CMilkshapeLoader();
   CVertexDescriptor *pVertexDescriptor = NULL; 
-
+  CVertexDescriptor *pNormals = NULL;
   assert(pLoader->Load("Resources/Models/sphere.ms3d") == 0);
   
-  pLoader->GenerateModelData( VERTEX_COMP_POSITION   );
+  pLoader->GenerateModelData( VERTEX_COMP_POSITION | VERTEX_COMP_NORMAL  );
   pVertexDescriptor = pLoader->GetVertices();
   pLoader->ResetVertices();
 
   assert( pLoader->GetIndices().size() == 1 );
   CIndexArray *pIndices = pLoader->GetIndices()[0];
   pLoader->ResetIndices();
-
+  
+  pNormals = pLoader->GetNormals();
+  pLoader->ResetNormals();
 
   delete pLoader;
       
@@ -107,6 +109,8 @@ int main( int argc, char **argv )
   line.SetStart( CVector3<float>(15,0,0) );
   line.SetEnd( CVector3<float>(3,0,0) );
   
+
+  COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/scorchmark.tga");
   while (  bLoop  )
   {
     fpsCounter.Update();
@@ -212,13 +216,13 @@ int main( int argc, char **argv )
     CVector3<float> vPoint;
     CVector3<float> vTangent;
 
-    std::vector< std::list< CVector3<float> > > vecTriFans;
+    std::vector< std::list< CVertex > > vecTriFans;
     int bHits = 0;
     if ( CalculateHitpoint( line, *pVertexDescriptor, *pIndices, vPoint, vTangent ))
     {
       bHits = 1;
-      CDecalVolume decal( vPoint, -line.GetDirection(), vTangent, 3.0f, 3.0f, 2.0f );
-      CalculateDecalMesh( decal, *pVertexDescriptor, *pIndices, vecTriFans );
+      CDecalVolume decal( vPoint, -line.GetDirection(), vTangent, 3.0f, 3.0f,0.20f );
+      CalculateDecalMesh( decal, *pVertexDescriptor, *pNormals, *pIndices, vecTriFans );
     }
     else 
     {
@@ -236,36 +240,25 @@ int main( int argc, char **argv )
     glColor3f(1,1,1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
     // Draw decal mesh
-    std::vector< std::list< CVector3<float> > >::iterator it;
-    glDepthRange (0.01, 1.0); 
+    std::vector< std::list< CVertex > >::iterator it;
+    pRenderer->CommitTexture( 0, pTexture );
+    pRenderer->CommitState( STATE_BLENDING );
+    pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
     for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
     {
-      std::list< CVector3<float> >::iterator fanIt;
-      glColor3f(1,0,0);
-      pRenderer->DisableState( STATE_DEPTH_TEST );
-
+      std::list< CVertex >::iterator fanIt;
+      glColor3f(1,1,1);
+      pRenderer->CommitState( STATE_DEPTH_TEST );
+      pRenderer->DisableState ( STATE_DEPTH_WRITE );
       glBegin(GL_TRIANGLE_FAN);
       for( fanIt = (*it).begin(); fanIt != (*it).end(); fanIt++)
       {
-	glVertex3fv( (*fanIt).GetArray());
+	pRenderer->CommitVertex( *fanIt , VERTEX_COMP_COLOR );
       }
       glEnd();
     }
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
-    glDepthRange (0.0, 1.0); 
-    for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
-    {
-      std::list< CVector3<float> >::iterator fanIt;
-      glColor3f(0,0,0);
-      pRenderer->DisableState( STATE_DEPTH_TEST );
-      glBegin(GL_TRIANGLE_FAN);
-      for( fanIt = (*it).begin(); fanIt != (*it).end(); fanIt++)
-      {
-	glVertex3fv( (*fanIt).GetArray());
-      }
-      glEnd();
-    }
-
+    pRenderer->DisableTexture( 0, pTexture );
+    pRenderer->CommitState ( STATE_DEPTH_WRITE );
 
     glColor3f(1,1,1);
     pRenderer->Finalize();
