@@ -265,6 +265,15 @@ namespace Phoenix
 	m_vNormal = vNormal;
       }
       ////////////////////
+      /// Assigns normal vector.
+      /// \param vNormal Normal vector.
+      inline void SetNormal( float fX, float fY, float fZ )
+      {
+	m_vNormal[0] = fX;
+	m_vNormal[1] = fY;
+	m_vNormal[2] = fZ;
+      }
+      ////////////////////
       /// Returns normal vector.
       /// \returns Normal vector reference.
       inline const Phoenix::Math::CVector3<float> GetNormal() const
@@ -301,6 +310,13 @@ namespace Phoenix
       /// Returns color vector.
       /// \return Color vector.
       const Phoenix::Math::CVector4<unsigned char> & GetColor() const
+      {
+	return m_vColor;
+      }
+      ////////////////////
+      /// Returns color vector.
+      /// \return Color vector.
+      Phoenix::Math::CVector4<unsigned char> & GetColor() 
       {
 	return m_vColor;
       }

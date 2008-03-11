@@ -507,18 +507,23 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex & rVertex )
+Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex & rVertex, int iIgnoreFlags )
 {
   // Set multitexture coordinates
-  for(int i=0;i<TEXTURE_HANDLE_COUNT;i++)
+
+  if ( !(iIgnoreFlags & VERTEX_COMP_TEXCOORD) )
   {
-    glMultiTexCoord2fARB( GL_TEXTURE0_ARB+i, 
-			  rVertex.GetTextureCoordinates( i )[0],
-			  rVertex.GetTextureCoordinates( i )[1] );
+    for(int i=0;i<TEXTURE_HANDLE_COUNT;i++)
+    {
+      glMultiTexCoord2fARB( GL_TEXTURE0_ARB+i, 
+			    rVertex.GetTextureCoordinates( i )[0],
+			    rVertex.GetTextureCoordinates( i )[1] );
+    }
   }
   /// Normal, color and position data
-  glNormal3fv( rVertex.GetNormal().GetArray()) ;
-  //glColor4ubv( rVertex.GetColor().GetArray() );
+  if ( !(iIgnoreFlags & VERTEX_COMP_NORMAL) ) glNormal3fv( rVertex.GetNormal().GetArray()) ;
+  if ( !(iIgnoreFlags & VERTEX_COMP_COLOR ) ) glColor4ubv( rVertex.GetColor().GetArray() );
+  
   glVertex3fv( rVertex.GetPosition().GetArray()) ;
 }
 /////////////////////////////////////////////////////////////////

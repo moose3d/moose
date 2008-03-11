@@ -375,7 +375,8 @@ namespace Phoenix
       ////////////////////
       /// Commits vertex with position, texcoords, normal.
       /// \param rVertex Vertex to be committed.
-      void CommitVertex ( const Phoenix::Spatial::CVertex & rVertex );
+      /// \param iIgnoreFlags What vertex data is ignored - specified by VERTEX_COMP_FLAGS - by default everything is included.
+      void CommitVertex ( const Phoenix::Spatial::CVertex & rVertex, int iIgnoreFlags = 0);
       ////////////////////
       /// Disable client states, such as vertex array.
       /// \param tType CLIENT_STATE_TYPE to be disabled.

@@ -211,13 +211,31 @@ namespace Phoenix
 			     const Phoenix::Graphics::CVertexDescriptor & vertices, 
 			     const Phoenix::Graphics::CIndexArray & indices,
 			     std::vector< std::list< Phoenix::Math::CVector3<float> > > & vecTriangleFans );
-    
+    ////////////////////
+    /// Calculates which triangles are completely or partially inside decal volume.
+    /// \param decalVolume Volume used in evaluation
+    /// \param vertices VertexDescriptor of vertex coordinate data.
+    /// \param normals VertexDescriptor of vertex normal data.
+    /// \param indices Triangle indices
+    /// \param vecTriangleFans Vector, where lists of vertices are stored for final mesh.
+    void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume, 
+			     const Phoenix::Graphics::CVertexDescriptor & vertices, 
+			     const Phoenix::Graphics::CVertexDescriptor & normals, 
+			     const Phoenix::Graphics::CIndexArray & indices,
+			     std::vector< std::list< Phoenix::Spatial::CVertex > > & vecTriangleFans );
+
     ////////////////////
     /// Clips given polygon with plane. New vertices replace previous ones.
     /// \param plane Clipping plane.
     /// \param lstVertices List of vertices (vector3s).
     void ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Math::CVector3<float> > & lstVertices );
     
+    ////////////////////
+    /// Clips given polygon with plane. New vertices replace previous ones.
+    /// \param plane Clipping plane.
+    /// \param lstVertices List of vertices (CVertex).
+    void ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Spatial::CVertex > & lstVertices );
+
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
 /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */

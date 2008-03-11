@@ -2,12 +2,14 @@
 #include "PhoenixCollision.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixVertexDescriptor.h"
+#include "PhoenixSpatial.h"
 #include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Collision;
 using namespace Phoenix::Graphics;
+using namespace Phoenix::Spatial;
 using std::cerr;
 using std::endl;
 /////////////////////////////////////////////////////////////////
@@ -698,50 +700,25 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       vPoint1.Set( &(vertices.GetPointer<float>()[index1*3]) );
       vPoint2.Set( &(vertices.GetPointer<float>()[index2*3]) );
       
-
-      //int bOutside = 0;
       std::list<Phoenix::Math::CPlane>::iterator it;
-
-      int bOutside = 0;
-      ////////////////////
-      // check against plane, if outside even one - triangle is not contributing to 
-      // decal.
-      // for( it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
-// 	   it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
-// 	   it++)
-//       {
-// 	if ( (PointDistanceFromPlane( vPoint0, *it ) < 0.0) &&
-// 	     (PointDistanceFromPlane( vPoint1, *it ) < 0.0) &&
-// 	     (PointDistanceFromPlane( vPoint2, *it ) < 0.0))
-// 	{
-// 	  bOutside = 1;
-// 	  break;
-// 	}
-//       }
-      ////////////////////
-      // if triangle intersects decal volume
-      if ( !bOutside )
+      // Check that triangle normal points same direction as decal volume's.
+      if ( ((vPoint1-vPoint0).Cross(vPoint2-vPoint0)).Dot(decalVolume.GetNormalVector()) > 0.0f )
       {
+	std::list< CVector3<float> > lstVertices;
 	
-	// Check that triangle normal points same direction as decal volume's.
-	if ( ((vPoint1-vPoint0).Cross(vPoint2-vPoint0)).Dot(decalVolume.GetNormalVector()) > 0.0f )
-	{
-	  std::list< CVector3<float> > lstVertices;
+	lstVertices.push_back( vPoint0 );
+	lstVertices.push_back( vPoint1 );
+	lstVertices.push_back( vPoint2 );
 	
-	  lstVertices.push_back( vPoint0 );
-	  lstVertices.push_back( vPoint1 );
-	  lstVertices.push_back( vPoint2 );
-	
-	  vecTriangleFans.push_back( lstVertices );
-	
-	}
+	vecTriangleFans.push_back( lstVertices );
 	
       }
+
     } // for( size_t ...
     
     // Do actual clipping against planes.
     std::vector< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
-    std::list< Phoenix::Math::CVector3<float> >::iterator point_iterator;
+
 
     for( fan_iterator  = vecTriangleFans.begin(); 
 	 fan_iterator != vecTriangleFans.end();
@@ -753,6 +730,100 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	   plane_it++)
       {
 	ClipPolygon( *plane_it, *fan_iterator );
+      }
+    }
+  }
+  else 
+  {
+    assert( 0 && "NOt short indices." );
+  }
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume, 
+					const Phoenix::Graphics::CVertexDescriptor & vertices, 
+					const Phoenix::Graphics::CVertexDescriptor & normals, 
+					const Phoenix::Graphics::CIndexArray & indices,
+					std::vector< std::list< Phoenix::Spatial::CVertex > > & vecTriangleFans )
+{
+  assert( indices.GetPrimitiveType() == PRIMITIVE_TRI_LIST );
+
+  CVector3<float> vTriNormal;
+  CVertex vPoint0, vPoint1, vPoint2;
+  float *pTmp = NULL;
+  if ( indices.IsShortIndices())
+  {
+    unsigned short int index0,index1,index2;
+    // for each triangle 
+    for( size_t i=0;i<indices.GetNumIndices();i+=3)
+    {
+      // retrieve actual vertex coordinates
+      index0 = indices.GetPointer<unsigned short int>()[i];
+      index1 = indices.GetPointer<unsigned short int>()[i+1];
+      index2 = indices.GetPointer<unsigned short int>()[i+2];
+
+      pTmp = &(vertices.GetPointer<float>()[index0*3]);
+      vPoint0.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(normals.GetPointer<float>()[index0*3]);
+      vPoint0.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+
+      pTmp = &(vertices.GetPointer<float>()[index1*3]);
+      vPoint1.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(normals.GetPointer<float>()[index1*3]);
+      vPoint1.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+      
+      pTmp = &(vertices.GetPointer<float>()[index2*3]);
+      vPoint2.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(normals.GetPointer<float>()[index2*3]);
+      vPoint2.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+
+      std::list<Phoenix::Math::CPlane>::iterator it;
+      // Check that triangle normal points same direction as decal volume's.
+      if ( ((vPoint1.GetPosition()-vPoint0.GetPosition()).
+	    Cross(vPoint2.GetPosition()-vPoint0.GetPosition())).
+	   Dot(decalVolume.GetNormalVector()) > 0.0f )
+      {
+	std::list< CVertex > lstVertices;
+	
+	lstVertices.push_back( vPoint0 );
+	lstVertices.push_back( vPoint1 );
+	lstVertices.push_back( vPoint2 );
+	
+	vecTriangleFans.push_back( lstVertices );
+      }
+
+    } // for( size_t ...
+    
+    // Do actual clipping against planes.
+    std::vector< std::list< Phoenix::Spatial::CVertex > >::iterator fan_iterator;
+    std::list< Phoenix::Spatial::CVertex >::iterator v_iterator;
+
+    for( fan_iterator  = vecTriangleFans.begin(); 
+	 fan_iterator != vecTriangleFans.end();
+	 fan_iterator++)
+    {
+      std::list<Phoenix::Math::CPlane>::iterator plane_it;
+      for( plane_it  = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
+	   plane_it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
+	   plane_it++)
+      {
+	ClipPolygon( *plane_it, *fan_iterator );
+	v_iterator = (*fan_iterator).begin();
+	
+	for( ; v_iterator != (*fan_iterator).end(); v_iterator++ )
+	{
+	  // Alpha value is not working fully yet.
+	  //float fAlpha = ( decalVolume.GetNormalVector().GetNormalized().Dot((*v_iterator).GetNormal().GetNormalized()) - EPSILON) / ( 1.0f - EPSILON );
+	  // 	  if ( fAlpha < 0.0f ) fAlpha = 0.0f;
+	  // 	  if ( fAlpha > 1.0f ) fAlpha = 1.0f;
+	  //cerr << "alpha is : " << fAlpha << endl;
+	  //(*v_iterator).GetColor()[3] = 127+ (unsigned char)(128 * fAlpha);
+	  
+	  float fS = ( decalVolume.GetTangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetWidth() + 0.5f;
+	  float fT = ( decalVolume.GetBitangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetHeight() + 0.5f;
+	  (*v_iterator).SetTextureCoordinates( fS, fT );
+	  
+	}
       }
     }
   }
@@ -845,6 +916,100 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
 
     CVector3<float> vClipPoint = vCurrPoint + fT * (vNextPoint - vCurrPoint);
     lstVerticesNew.push_back(vClipPoint);
+  }
+  // swap vertex lists
+  lstVerticesNew.swap( lstVertices );
+  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Spatial::CVertex > & lstVertices )
+{
+
+  const int POS_SIDE =  1;
+  const int NEG_SIDE =  -1;
+
+  std::list< Phoenix::Spatial::CVertex > lstVerticesNew;
+  
+
+  if ( lstVertices.size() < 3 ) return;
+  
+  // Determine side of first vertex in respect to plane
+  std::list< Phoenix::Spatial::CVertex >::iterator it; 
+  it = lstVertices.begin();
+
+  CVertex vCurrPoint = *it;
+  int iCurrSide = 0;
+  int iNextSide = 0;
+  float fNextDot = 0.0f;
+  float fCurrDot = plane[0] * (*it).GetPosition()[0] + 
+                   plane[1] * (*it).GetPosition()[1] + 
+                   plane[2] * (*it).GetPosition()[2] + plane[3];
+
+  iCurrSide      = fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+  
+  // if first vertex is on positive side, then push it to list
+  if ( iCurrSide == POS_SIDE ) { lstVerticesNew.push_back( *it );  }
+
+
+  // step to next vertex
+  it++;
+
+  for( ; it != lstVertices.end(); it++)
+  {
+    CVertex & vNextPoint = *it;
+    
+    fNextDot = plane[0] * vNextPoint.GetPosition()[0] + 
+               plane[1] * vNextPoint.GetPosition()[1] + 
+	       plane[2] * vNextPoint.GetPosition()[2] + plane[3];
+    
+    iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+
+    // If vertices are on different sides of plane, 
+    if ( iNextSide != iCurrSide )
+    {
+      CVector3<float> vTmp = (vCurrPoint.GetPosition()-vNextPoint.GetPosition());
+      float fT             = fCurrDot / (plane[0] * vTmp[0] + 
+					 plane[1] * vTmp[1] + 
+					 plane[2] * vTmp[2]);
+
+      CVector3<float> vClipPoint = vCurrPoint.GetPosition() + fT * (vNextPoint.GetPosition() - vCurrPoint.GetPosition());
+      CVertex vertex;
+      vertex.SetPosition( vClipPoint );
+      lstVerticesNew.push_back(vertex);
+    }
+    
+    if ( iNextSide == POS_SIDE )
+    {
+      // If vertices are on positive side of plane
+      lstVerticesNew.push_back( (*it) );
+    }
+
+    vCurrPoint = vNextPoint;
+    fCurrDot   = fNextDot;
+    iCurrSide  = iNextSide;
+  }
+  /////////////////////////////////////////////////////////////////
+  // check situation from last vertex to first
+  CVertex & vNextPoint = lstVertices.front();
+  fNextDot = plane[0] * vNextPoint.GetPosition()[0] + 
+             plane[1] * vNextPoint.GetPosition()[1] + 
+             plane[2] * vNextPoint.GetPosition()[2] + plane[3];
+  iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+
+  // If vertices are on different sides of plane, 
+  if ( iNextSide != iCurrSide )
+  {
+    CVector3<float> vTmp = (vCurrPoint.GetPosition()-vNextPoint.GetPosition());
+    float fT             = fCurrDot / ( plane[0] * vTmp[0] + 
+				        plane[1] * vTmp[1] + 
+				        plane[2] * vTmp[2] );
+
+    CVector3<float> vClipPoint = vCurrPoint.GetPosition() + fT * (vNextPoint.GetPosition() - vCurrPoint.GetPosition());
+    CVertex vertex;
+    vertex.SetPosition( vClipPoint );
+    lstVerticesNew.push_back(vertex);
+
   }
   // swap vertex lists
   lstVerticesNew.swap( lstVertices );
