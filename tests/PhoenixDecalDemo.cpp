@@ -104,8 +104,8 @@ int main( int argc, char **argv )
   pRenderer->CommitCache( *pIndices );
 
   CLine line;
-  line.SetStart( CVector3<float>(3,0,0) );
-  line.SetEnd( CVector3<float>(5,0,0) );
+  line.SetStart( CVector3<float>(15,0,0) );
+  line.SetEnd( CVector3<float>(3,0,0) );
   
   while (  bLoop  )
   {
@@ -195,7 +195,7 @@ int main( int argc, char **argv )
     pRenderer->ClearBuffer( COLOR_BUFFER );
     pRenderer->ClearBuffer( DEPTH_BUFFER );
     pRenderer->CommitState( STATE_DEPTH_TEST );
-    pRenderer->DisableState( STATE_FACECULLING );
+    pRenderer->CommitState( STATE_FACECULLING );
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
     pRenderer->CommitCamera( camera );
     pRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
@@ -226,34 +226,47 @@ int main( int argc, char **argv )
     }
 
     glBegin(GL_LINES);
-      if ( bHits )  glColor3f(1,0,0);
-      else          glColor3f(1,1,0);
+
+      glColor3f(1,0,0);
       glVertex3fv( line.GetStart().GetArray() );
-      
-      glColor3f(0,1,0);
+      if ( !bHits )        
+	glColor3f(0,1,0);
       glVertex3fv( line.GetEnd().GetArray() );
     glEnd();
     glColor3f(1,1,1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
     // Draw decal mesh
     std::vector< std::list< CVector3<float> > >::iterator it;
-    if ( vecTriFans.size() > 0 )
-    {
-      cerr << "Drawing fan" << endl;
-    }
+    glDepthRange (0.01, 1.0); 
     for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
     {
       std::list< CVector3<float> >::iterator fanIt;
       glColor3f(1,0,0);
       pRenderer->DisableState( STATE_DEPTH_TEST );
+
       glBegin(GL_TRIANGLE_FAN);
       for( fanIt = (*it).begin(); fanIt != (*it).end(); fanIt++)
       {
-	cerr << "vertex: " << *fanIt << endl;
 	glVertex3fv( (*fanIt).GetArray());
       }
       glEnd();
     }
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
+    glDepthRange (0.0, 1.0); 
+    for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
+    {
+      std::list< CVector3<float> >::iterator fanIt;
+      glColor3f(0,0,0);
+      pRenderer->DisableState( STATE_DEPTH_TEST );
+      glBegin(GL_TRIANGLE_FAN);
+      for( fanIt = (*it).begin(); fanIt != (*it).end(); fanIt++)
+      {
+	glVertex3fv( (*fanIt).GetArray());
+      }
+      glEnd();
+    }
+
+
     glColor3f(1,1,1);
     pRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
