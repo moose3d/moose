@@ -246,6 +246,7 @@ int main( int argc, char **argv )
     pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
     for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
     {
+
       std::list< CVertex >::iterator fanIt;
       glColor3f(1,1,1);
       pRenderer->CommitState( STATE_DEPTH_TEST );
@@ -253,13 +254,13 @@ int main( int argc, char **argv )
       glBegin(GL_TRIANGLE_FAN);
       for( fanIt = (*it).begin(); fanIt != (*it).end(); fanIt++)
       {
-	pRenderer->CommitVertex( *fanIt , VERTEX_COMP_COLOR );
+	pRenderer->CommitVertex( *fanIt );
       }
       glEnd();
     }
     pRenderer->DisableTexture( 0, pTexture );
     pRenderer->CommitState ( STATE_DEPTH_WRITE );
-
+    pRenderer->DisableState( STATE_BLENDING );
     glColor3f(1,1,1);
     pRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
