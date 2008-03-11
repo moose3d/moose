@@ -496,7 +496,7 @@ Phoenix::Data::CMilkshapeLoader::Handle_Materials( unsigned char *pWorkBuffer)
     m_nNumMaterials = *(WORD *)pWorkBuffer;
     pWorkBuffer+=sizeof(WORD);
 
-    if ( m_nNumMaterials > 0 && m_nNumMaterials < MAX_MATERIALS)
+    if ( m_nNumMaterials < MAX_MATERIALS)
     {
       m_pMaterials = new MS3D_Material_t[m_nNumMaterials];
       cerr << m_nNumMaterials << " materials to be read.." << std::endl;
