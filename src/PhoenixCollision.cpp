@@ -744,9 +744,6 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	 fan_iterator++)
     {
       std::list<Phoenix::Math::CPlane>::iterator plane_it;
-      ////////////////////
-      // check against plane, if outside even one - triangle is not contributing to 
-      // decal
       for( plane_it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
 	   plane_it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
 	   plane_it++)
@@ -764,18 +761,71 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 void 
 Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Math::CVector3<float> > & lstVertices )
 {
+
+  const int POS_SIDE =  1;
+  const int NEG_SIDE =  -1;
+
+  std::list< Phoenix::Math::CVector3<float> > lstVerticesNew;
+  
+
   if ( lstVertices.size() < 3 ) return;
-
+  
+  // Determine side of first vertex in respect to plane
   std::list< Phoenix::Math::CVector3<float> >::iterator it; 
-  float fDot = 0.0f;
-  for( it = lstVertices.begin(); it != lstVertices.end(); it++)
-  {
-    fDot = plane[0] * (*it)[0] + plane[1] * (*it)[1] + plane[2] * (*it)[2] + plane[3];
-    if ( fDot > 0.0f )
-    {
-      // s. 244 Math 4 3d game programmig and computer graphics.
-    }
-  }
+  it = lstVertices.begin();
 
+  CVector3<float> vPrevPoint = *it;    
+  int iPrevSide = 0;
+  int iCurrSide = 0;
+  
+  float fCurrDot = plane[0] * (*it)[0] + 
+                   plane[1] * (*it)[1] + 
+                   plane[2] * (*it)[2] + plane[3];
+
+  iCurrSide =  fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+  float fPrevDot = fCurrDot;
+
+  // if first vertex is on positive side, then push it to list
+  if ( iPrevSide == POS_SIDE ) { lstVerticesNew.push_back( *it );  }
+  iPrevSide = iCurrSide;
+
+  // step to next vertex
+  it++;
+
+  for( ; it != lstVertices.end(); it++)
+  {
+    CVector3<float> & vCurrPoint = *it;
+
+    fCurrDot = plane[0] * vCurrPoint[0] + 
+               plane[1] * vCurrPoint[1] + 
+	       plane[2] * vCurrPoint[2] + plane[3];
+
+
+    iCurrSide =  fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+
+    // If vertices are on different sides of plane, 
+    if ( iCurrSide != iPrevSide )
+    {
+      CVector3<float> vTmp = (vPrevPoint-vCurrPoint);
+      float fT             = fPrevDot / (plane[0] * vTmp[0] + 
+					 plane[1] * vTmp[1] + 
+					 plane[2] * vTmp[2]);
+
+      CVector3<float> vClipPoint = vPrevPoint + fT * (vCurrPoint - vPrevPoint);
+      lstVerticesNew.push_back(vClipPoint);
+    }
+    else if ( iCurrSide == POS_SIDE )
+    {
+      // If vertices are on positive side of plane
+      lstVerticesNew.push_back( (*it) );
+    }
+
+    vPrevPoint = vCurrPoint;
+    fPrevDot   = fCurrDot;
+    iPrevSide  = iCurrSide;
+  }
+  // swap vertex lists
+  lstVerticesNew.swap( lstVertices );
+  
 }
 /////////////////////////////////////////////////////////////////
