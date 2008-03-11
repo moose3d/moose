@@ -374,8 +374,8 @@ namespace Phoenix
       ////////////////////
       /// Constructor. Creates a volume with plane normals pointing towards center.
       /// \param vPosition	Decal center.
-      /// \param vNormal	Decal normal vector.
-      /// \param vNormal	Decal tangent vector.
+      /// \param vNormal	Decal unit normal vector. 
+      /// \param vNormal	Decal unit tangent vector.
       /// \param fWidth		Width of decal.
       /// \param fHeight	Height of decal.
       /// \param fLength	Length of decal - used for front and back plane clipping.
@@ -390,33 +390,33 @@ namespace Phoenix
 	// T · P
 	// left
 	float fTmp = GetTangentVector().Dot(GetPosition());
-	Phoenix::Math::CPlane plane( -GetTangentVector(), GetHalfWidth() - fTmp);
+	Phoenix::Math::CPlane plane( GetTangentVector(), GetHalfWidth() - fTmp);
 	AddPlane( plane );
 	// right
-	plane.SetNormal( GetTangentVector() );
+	plane.SetNormal( -GetTangentVector() );
 	plane.SetDistance( GetHalfWidth() + fTmp );
 	AddPlane( plane );
 	
 	// B · P
 	// Bottom
 	fTmp = GetBitangentVector().Dot( GetPosition());
-	plane.SetNormal( -GetBitangentVector());
+	plane.SetNormal( GetBitangentVector());
 	plane.SetDistance( GetHalfHeight() - fTmp );
 	AddPlane( plane );
 	// top
-	plane.SetNormal( GetBitangentVector() );
+	plane.SetNormal( -GetBitangentVector() );
 	plane.SetDistance( GetHalfHeight() + fTmp );
 	AddPlane( plane );
 
 	// N · P
 	// front
 	fTmp = GetNormalVector().Dot( GetPosition());
-	plane.SetNormal( GetNormalVector());
-	plane.SetDistance( GetHalfHeight() + fTmp );
+	plane.SetNormal( -GetNormalVector());
+	plane.SetDistance( GetHalfLength() + fTmp );
 	AddPlane( plane );
 	// back
-	plane.SetNormal( -GetNormalVector());
-	plane.SetDistance( GetHalfHeight() - fTmp );
+	plane.SetNormal( GetNormalVector());
+	plane.SetDistance( GetHalfLength() - fTmp );
 	AddPlane( plane );
       }
 

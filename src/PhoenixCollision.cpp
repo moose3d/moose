@@ -699,42 +699,46 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       vPoint2.Set( &(vertices.GetPointer<float>()[index2*3]) );
       
 
-      int bOutside = 0;
+      //int bOutside = 0;
       std::list<Phoenix::Math::CPlane>::iterator it;
+
+      int bOutside = 0;
       ////////////////////
       // check against plane, if outside even one - triangle is not contributing to 
       // decal
-      for( it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
-	   it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
-	   it++)
-      {
-	if ( (PointDistanceFromPlane( vPoint0, *it ) < 0.0) &&
-	     (PointDistanceFromPlane( vPoint1, *it ) < 0.0) &&
-	     (PointDistanceFromPlane( vPoint2, *it ) < 0.0))
-	{
-	  bOutside = 1;
-	  break;
-	}
-      }
+     //  for( it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
+// 	   it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
+// 	   it++)
+//       {
+// 	if ( (PointDistanceFromPlane( vPoint0, *it ) < 0.0) &&
+// 	     (PointDistanceFromPlane( vPoint1, *it ) < 0.0) &&
+// 	     (PointDistanceFromPlane( vPoint2, *it ) < 0.0))
+// 	{
+// 	  bOutside = 1;
+// 	  break;
+// 	}
+//       }
       ////////////////////
       // if triangle intersects decal volume
       if ( !bOutside )
       {
+	cerr << "not outside" << endl;
 	// Check that triangle normal points same direction as decal volume's.
-	if ( ((vPoint2-vPoint0).Cross(vPoint1-vPoint0)).Dot(decalVolume.GetNormalVector()) >= EPSILON )
+	if ( ((vPoint2-vPoint0).Cross(vPoint1-vPoint0)).GetNormalized().Dot(decalVolume.GetNormalVector()) > 0.0f )
 	{
 	  std::list< CVector3<float> > lstVertices;
-	  
+	
 	  lstVertices.push_back( vPoint0 );
 	  lstVertices.push_back( vPoint1 );
 	  lstVertices.push_back( vPoint2 );
-	  
+	
 	  vecTriangleFans.push_back( lstVertices );
-	  
+	
 	}
+	
       }
     } // for( size_t ...
-    
+    std::cerr << "potential triangles : #" << vecTriangleFans.size() << std::endl;
     // Do actual clipping against planes.
     std::vector< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
     std::list< Phoenix::Math::CVector3<float> >::iterator point_iterator;
@@ -774,55 +778,73 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   std::list< Phoenix::Math::CVector3<float> >::iterator it; 
   it = lstVertices.begin();
 
-  CVector3<float> vPrevPoint = *it;    
-  int iPrevSide = 0;
+  CVector3<float> vCurrPoint = *it;    
   int iCurrSide = 0;
-  
+  int iNextSide = 0;
+  float fNextDot = 0.0f;
   float fCurrDot = plane[0] * (*it)[0] + 
                    plane[1] * (*it)[1] + 
                    plane[2] * (*it)[2] + plane[3];
 
-  iCurrSide =  fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
-  float fPrevDot = fCurrDot;
-
+  iCurrSide      = fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+  
   // if first vertex is on positive side, then push it to list
-  if ( iPrevSide == POS_SIDE ) { lstVerticesNew.push_back( *it );  }
-  iPrevSide = iCurrSide;
+  if ( iCurrSide == POS_SIDE ) { lstVerticesNew.push_back( *it );  }
+
 
   // step to next vertex
   it++;
 
   for( ; it != lstVertices.end(); it++)
   {
-    CVector3<float> & vCurrPoint = *it;
-
-    fCurrDot = plane[0] * vCurrPoint[0] + 
-               plane[1] * vCurrPoint[1] + 
-	       plane[2] * vCurrPoint[2] + plane[3];
-
-
-    iCurrSide =  fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+    CVector3<float> & vNextPoint = *it;
+    
+    fNextDot = plane[0] * vNextPoint[0] + 
+               plane[1] * vNextPoint[1] + 
+	       plane[2] * vNextPoint[2] + plane[3];
+    
+    iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
 
     // If vertices are on different sides of plane, 
-    if ( iCurrSide != iPrevSide )
+    if ( iNextSide != iCurrSide )
     {
-      CVector3<float> vTmp = (vPrevPoint-vCurrPoint);
-      float fT             = fPrevDot / (plane[0] * vTmp[0] + 
+      CVector3<float> vTmp = (vCurrPoint-vNextPoint);
+      float fT             = fCurrDot / (plane[0] * vTmp[0] + 
 					 plane[1] * vTmp[1] + 
 					 plane[2] * vTmp[2]);
 
-      CVector3<float> vClipPoint = vPrevPoint + fT * (vCurrPoint - vPrevPoint);
+      CVector3<float> vClipPoint = vCurrPoint + fT * (vNextPoint - vCurrPoint);
       lstVerticesNew.push_back(vClipPoint);
     }
-    else if ( iCurrSide == POS_SIDE )
+    
+    if ( iNextSide == POS_SIDE )
     {
       // If vertices are on positive side of plane
       lstVerticesNew.push_back( (*it) );
     }
 
-    vPrevPoint = vCurrPoint;
-    fPrevDot   = fCurrDot;
-    iPrevSide  = iCurrSide;
+    vCurrPoint = vNextPoint;
+    fCurrDot   = fNextDot;
+    iCurrSide  = iNextSide;
+  }
+  /////////////////////////////////////////////////////////////////
+  // check situation from last vertex to first
+  CVector3<float> & vNextPoint = lstVertices.front();
+  fNextDot = plane[0] * vNextPoint[0] + 
+             plane[1] * vNextPoint[1] + 
+	     plane[2] * vNextPoint[2] + plane[3];
+  iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
+
+  // If vertices are on different sides of plane, 
+  if ( iNextSide != iCurrSide )
+  {
+    CVector3<float> vTmp = (vCurrPoint-vNextPoint);
+    float fT             = fCurrDot / ( plane[0] * vTmp[0] + 
+				        plane[1] * vTmp[1] + 
+				        plane[2] * vTmp[2] );
+
+    CVector3<float> vClipPoint = vCurrPoint + fT * (vNextPoint - vCurrPoint);
+    lstVerticesNew.push_back(vClipPoint);
   }
   // swap vertex lists
   lstVerticesNew.swap( lstVertices );

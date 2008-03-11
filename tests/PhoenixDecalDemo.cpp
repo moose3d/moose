@@ -22,7 +22,8 @@ using std::list;
 using std::vector;
 /////////////////////////////////////////////////////////////////
 int CalculateHitpoint( CLine &line, CVertexDescriptor & vertices, 
-		       CIndexArray & indices, CVector3<float> & point )
+		       CIndexArray & indices, CVector3<float> & point, 
+		       CVector3<float> & vTangent )
 {
   CVector3<float> vVertices[3];
   
@@ -49,6 +50,7 @@ int CalculateHitpoint( CLine &line, CVertexDescriptor & vertices,
     //cerr << "Checking: " << line.GetStart() << " and " << line.GetEnd() << endl;
     if ( LineIntersectsTriangle( line, vVertices[0], vVertices[1], vVertices[2], point))
     {
+      vTangent = (vVertices[1]-vVertices[0]).GetNormalized();
       return 1;
     }
   }
@@ -102,9 +104,9 @@ int main( int argc, char **argv )
   pRenderer->CommitCache( *pIndices );
 
   CLine line;
-  line.SetStart( CVector3<float>(30,0,0) );
-  line.SetEnd( CVector3<float>(15,0,0) );
-
+  line.SetStart( CVector3<float>(3,0,0) );
+  line.SetEnd( CVector3<float>(5,0,0) );
+  
   while (  bLoop  )
   {
     fpsCounter.Update();
@@ -208,18 +210,50 @@ int main( int argc, char **argv )
     pRenderer->CommitPrimitive( pIndices );
     glPolygonOffset( 0.0, 0.0f);
     CVector3<float> vPoint;
-    if ( CalculateHitpoint( line, *pVertexDescriptor, *pIndices, vPoint ))
+    CVector3<float> vTangent;
+
+    std::vector< std::list< CVector3<float> > > vecTriFans;
+    int bHits = 0;
+    if ( CalculateHitpoint( line, *pVertexDescriptor, *pIndices, vPoint, vTangent ))
     {
-      glColor3f(1,0,0);
+      bHits = 1;
+      CDecalVolume decal( vPoint, -line.GetDirection(), vTangent, 3.0f, 3.0f, 2.0f );
+      CalculateDecalMesh( decal, *pVertexDescriptor, *pIndices, vecTriFans );
     }
     else 
     {
-      glColor3f(0,1,0);
+      bHits = 0;
     }
+
     glBegin(GL_LINES);
+      if ( bHits )  glColor3f(1,0,0);
+      else          glColor3f(1,1,0);
       glVertex3fv( line.GetStart().GetArray() );
+      
+      glColor3f(0,1,0);
       glVertex3fv( line.GetEnd().GetArray() );
     glEnd();
+    glColor3f(1,1,1);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+    // Draw decal mesh
+    std::vector< std::list< CVector3<float> > >::iterator it;
+    if ( vecTriFans.size() > 0 )
+    {
+      cerr << "Drawing fan" << endl;
+    }
+    for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
+    {
+      std::list< CVector3<float> >::iterator fanIt;
+      glColor3f(1,0,0);
+      pRenderer->DisableState( STATE_DEPTH_TEST );
+      glBegin(GL_TRIANGLE_FAN);
+      for( fanIt = (*it).begin(); fanIt != (*it).end(); fanIt++)
+      {
+	cerr << "vertex: " << *fanIt << endl;
+	glVertex3fv( (*fanIt).GetArray());
+      }
+      glEnd();
+    }
     glColor3f(1,1,1);
     pRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
