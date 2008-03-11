@@ -762,20 +762,16 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       index1 = indices.GetPointer<unsigned short int>()[i+1];
       index2 = indices.GetPointer<unsigned short int>()[i+2];
 
-      pTmp = &(vertices.GetPointer<float>()[index0*3]);
-      vPoint0.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
-      pTmp = &(normals.GetPointer<float>()[index0*3]);
-      vPoint0.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(vertices.GetPointer<float>()[index0*3]);     vPoint0.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(normals.GetPointer<float>()[index0*3]);      vPoint0.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
 
-      pTmp = &(vertices.GetPointer<float>()[index1*3]);
-      vPoint1.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
-      pTmp = &(normals.GetPointer<float>()[index1*3]);
-      vPoint1.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
-      
-      pTmp = &(vertices.GetPointer<float>()[index2*3]);
-      vPoint2.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
-      pTmp = &(normals.GetPointer<float>()[index2*3]);
-      vPoint2.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+
+      pTmp = &(vertices.GetPointer<float>()[index1*3]);     vPoint1.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(normals.GetPointer<float>()[index1*3]);      vPoint1.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+
+
+      pTmp = &(vertices.GetPointer<float>()[index2*3]);     vPoint2.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+      pTmp = &(normals.GetPointer<float>()[index2*3]);      vPoint2.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
 
       std::list<Phoenix::Math::CPlane>::iterator it;
       // Check that triangle normal points same direction as decal volume's.
@@ -812,12 +808,13 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	
 	for( ; v_iterator != (*fan_iterator).end(); v_iterator++ )
 	{
+	  
 	  // Alpha value is not working fully yet.
-	  //float fAlpha = ( decalVolume.GetNormalVector().GetNormalized().Dot((*v_iterator).GetNormal().GetNormalized()) - EPSILON) / ( 1.0f - EPSILON );
+	  float fAlpha = ( decalVolume.GetNormalVector().Dot((*v_iterator).GetNormal()));
 	  // 	  if ( fAlpha < 0.0f ) fAlpha = 0.0f;
 	  // 	  if ( fAlpha > 1.0f ) fAlpha = 1.0f;
-	  //cerr << "alpha is : " << fAlpha << endl;
-	  //(*v_iterator).GetColor()[3] = 127+ (unsigned char)(128 * fAlpha);
+	  
+	  (*v_iterator).GetColor()[3] = (unsigned char)(255 * fAlpha);
 	  
 	  float fS = ( decalVolume.GetTangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetWidth() + 0.5f;
 	  float fT = ( decalVolume.GetBitangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetHeight() + 0.5f;
@@ -825,7 +822,9 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	  
 	}
       }
+
     }
+
   }
   else 
   {
@@ -976,6 +975,7 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
       CVector3<float> vClipPoint = vCurrPoint.GetPosition() + fT * (vNextPoint.GetPosition() - vCurrPoint.GetPosition());
       CVertex vertex;
       vertex.SetPosition( vClipPoint );
+      vertex.SetNormal( (vCurrPoint.GetPosition() + fT * ( vNextPoint.GetNormal() - vCurrPoint.GetNormal())).GetNormalized() );
       lstVerticesNew.push_back(vertex);
     }
     
