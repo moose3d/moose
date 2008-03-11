@@ -4,6 +4,8 @@
 #include <list>
 #include "PhoenixSpatial.h"
 #include "PhoenixVolume.h"
+#include "PhoenixCamera.h"
+#include "PhoenixCollision.h"
 #include <iostream>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
