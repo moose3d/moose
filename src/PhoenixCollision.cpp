@@ -705,8 +705,8 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       int bOutside = 0;
       ////////////////////
       // check against plane, if outside even one - triangle is not contributing to 
-      // decal
-     //  for( it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
+      // decal.
+      // for( it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
 // 	   it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
 // 	   it++)
 //       {
@@ -722,9 +722,9 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       // if triangle intersects decal volume
       if ( !bOutside )
       {
-	cerr << "not outside" << endl;
+	
 	// Check that triangle normal points same direction as decal volume's.
-	if ( ((vPoint2-vPoint0).Cross(vPoint1-vPoint0)).GetNormalized().Dot(decalVolume.GetNormalVector()) > 0.0f )
+	if ( ((vPoint1-vPoint0).Cross(vPoint2-vPoint0)).Dot(decalVolume.GetNormalVector()) > 0.0f )
 	{
 	  std::list< CVector3<float> > lstVertices;
 	
@@ -738,7 +738,7 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	
       }
     } // for( size_t ...
-    std::cerr << "potential triangles : #" << vecTriangleFans.size() << std::endl;
+    
     // Do actual clipping against planes.
     std::vector< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
     std::list< Phoenix::Math::CVector3<float> >::iterator point_iterator;
