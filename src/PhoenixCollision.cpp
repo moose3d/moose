@@ -793,11 +793,15 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
     // Do actual clipping against planes.
     std::vector< std::list< Phoenix::Spatial::CVertex > >::iterator fan_iterator;
     std::list< Phoenix::Spatial::CVertex >::iterator v_iterator;
+    // Empty fans will be listed here.
+    std::list< size_t > lstEmptyFans;
+    size_t count = 0;
 
     for( fan_iterator  = vecTriangleFans.begin(); 
 	 fan_iterator != vecTriangleFans.end();
-	 fan_iterator++)
+	 fan_iterator++, count++)
     {
+      
       std::list<Phoenix::Math::CPlane>::iterator plane_it;
       for( plane_it  = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
 	   plane_it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
@@ -805,26 +809,37 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       {
 	ClipPolygon( *plane_it, *fan_iterator );
 	v_iterator = (*fan_iterator).begin();
+
+	/// Mark the empty fans for removal, and exit loop
+	if ( (*fan_iterator).empty()) 
+	{
+	  lstEmptyFans.push_back(count); 
+	  break;
+	}
 	
 	for( ; v_iterator != (*fan_iterator).end(); v_iterator++ )
 	{
-	  
-	  // Alpha value is not working fully yet.
+
 	  float fAlpha = ( decalVolume.GetNormalVector().Dot((*v_iterator).GetNormal()));
-	  // 	  if ( fAlpha < 0.0f ) fAlpha = 0.0f;
-	  // 	  if ( fAlpha > 1.0f ) fAlpha = 1.0f;
-	  
 	  (*v_iterator).GetColor()[3] = (unsigned char)(255 * fAlpha);
 	  
 	  float fS = ( decalVolume.GetTangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetWidth() + 0.5f;
 	  float fT = ( decalVolume.GetBitangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetHeight() + 0.5f;
 	  (*v_iterator).SetTextureCoordinates( fS, fT );
 	  
-	}
-      }
+	} /// ...v_iterator
+      } /// ...plane_iteartor
 
+
+    } /// fan_iterator...
+    
+    /// Remove empty fan lists from vector
+    std::list< size_t >::reverse_iterator it = lstEmptyFans.rbegin();
+    for( ; it != lstEmptyFans.rend(); it++)
+    {
+      fan_iterator = vecTriangleFans.begin()+(*it);
+      vecTriangleFans.erase( fan_iterator);
     }
-
   }
   else 
   {
