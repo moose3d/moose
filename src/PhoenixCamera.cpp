@@ -19,6 +19,7 @@ Phoenix::Graphics::CCamera::CCamera() : COrientable()
   SetProjectionChanged(1);
   m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
   SetTrackballDistance( 3.24f);
+  m_fDecalOffset = 0.0f;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::~CCamera()
@@ -303,6 +304,8 @@ Phoenix::Graphics::CCamera::UpdateProjection()
     m_mProjectionInv(3,2) = (-(fFar - fNear))  / (2.0f * fFar * fNear );
     m_mProjectionInv(3,3) = (fFar + fNear)  / (2.0f * fFar * fNear );
   }
+  /// \warn This is a bit bad - inverse projection matrix won't be affected.
+  m_mProjection(2,2) *= m_fDecalOffset;
   m_bProjectionChanged = 0;
 }
 /////////////////////////////////////////////////////////////////
@@ -496,6 +499,20 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 #undef TRACKBALL_FUDGE_FACTOR
 /////////////////////////////////////////////////////////////////
 CVector3<float>
+Phoenix::Graphics::CCamera::WorldCoordinatesToEye( const CVector3<float> &vPosition)
+{
+  CVector4<float> vTmp;
+
+  vTmp[0] = vPosition[0];
+  vTmp[1] = vPosition[1];
+  vTmp[2] = vPosition[2];
+  vTmp[3] = 1.0f;
+
+  vTmp = GetViewMatrix() * vTmp;
+  return CVector3<float>( vTmp[0], vTmp[1], vTmp[2] );  
+}
+/////////////////////////////////////////////////////////////////
+CVector3<float>
 Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPosition)
 {
 
@@ -662,7 +679,23 @@ Phoenix::Graphics::CCamera::CalculateFrustum()
   
 
 }
-  // Float clip[16];
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CCamera::SetDecalOffset( float fDelta, float fZ )
+{
+  m_fDecalOffset = 1.0f + (-2.0f * GetFarClipping() * GetNearClipping() * fDelta) / 
+                          ((GetFarClipping() + GetNearClipping()) * fZ *( fZ + fDelta ));
+  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CCamera::ResetDecalOffset()
+{
+  m_fDecalOffset = 1.0f;
+}
+/////////////////////////////////////////////////////////////////
+
+// Float clip[16];
 //   float modl[16], proj[16];
 //   glGetFloatv( GL_PROJECTION_MATRIX, proj );
 //   glGetFloatv( GL_MODELVIEW_MATRIX,  modl );

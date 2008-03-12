@@ -48,6 +48,8 @@ namespace Phoenix
       Phoenix::Volume::CCone m_FrustumCone;
       /// Distance to point along forwardvector, which will be used in virtual trackball.
       float			m_fTrackballCenterDistance;
+      /// Offset value for drawing decals.
+      float			m_fDecalOffset;
     public:
       ////////////////////
       /// Default constructor
@@ -305,6 +307,11 @@ namespace Phoenix
       /// \returns CVector3<float> position in window coordinates.
       Phoenix::Math::CVector3<float> WorldCoordinatesToScreen( const Phoenix::Math::CVector3<float> &vPosition);
       ////////////////////
+      /// Converts world coordinates into eye coordinates.
+      /// \param vPosition Position in world coordinates.
+      /// \returns CVector3<float> position in eye coordinates.
+      Phoenix::Math::CVector3<float> WorldCoordinatesToEye( const Phoenix::Math::CVector3<float> &vPosition);
+      ////////////////////
       /// Returns trackball center distance.
       /// \return point distance along forward vector.
       float GetTrackballDistance() const 
@@ -318,6 +325,15 @@ namespace Phoenix
       {
 	m_fTrackballCenterDistance = fDist;
       }
+      ////////////////////
+      /// Sets decal offset value. Helps rendering decals over already drawn surfaces. 
+      /// Remember to call UpdateProjection afterwards.
+      /// \param fDelta Offset value
+      /// \param fZ Projected z-coordinate of the decal that will be rendered.
+      void SetDecalOffset( float fDelta, float fZ );
+      ////////////////////
+      /// Resets decal offset value - practically same as SetDecalOffset( 0.0f, * ), but without calculations.
+      void ResetDecalOffset();
     };
   }; // namespace Graphics
 }; // Phoenix
