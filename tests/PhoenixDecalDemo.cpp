@@ -205,14 +205,17 @@ int main( int argc, char **argv )
     pRenderer->CommitColor( CVector4<unsigned char>(255,255,255,255));
     pRenderer->CommitVertexDescriptor( pVertexDescriptor );
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
-    glDepthRange (0.01, 1.0); 
+
     pRenderer->CommitPrimitive( pIndices );
     
     pRenderer->CommitColor( CVector4<unsigned char>(0,0,0,255));
-    glDepthRange (0.0, 1.0); 
+    CVector3<float> vTmp = camera.WorldCoordinatesToEye( CVector3<float>(0,0,0));
+    camera.SetDecalOffset( 0.1, vTmp[2] );
+    camera.UpdateProjection();
+    pRenderer->CommitCamera( camera );
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
     pRenderer->CommitPrimitive( pIndices );
-    glPolygonOffset( 0.0, 0.0f);
+
     CVector3<float> vPoint;
     CVector3<float> vTangent;
 
@@ -223,6 +226,10 @@ int main( int argc, char **argv )
       bHits = 1;
       CDecalVolume decal( vPoint, -line.GetDirection(), vTangent, 3.0f, 3.0f,0.20f );
       CalculateDecalMesh( decal, *pVertexDescriptor, *pNormals, *pIndices, vecTriFans );
+      CVector3<float> vTmp = camera.WorldCoordinatesToEye( vPoint );
+      camera.SetDecalOffset( 0.1, vTmp[2] );
+      camera.UpdateProjection();
+      pRenderer->CommitCamera( camera );
     }
     else 
     {
@@ -262,6 +269,9 @@ int main( int argc, char **argv )
     pRenderer->CommitState ( STATE_DEPTH_WRITE );
     pRenderer->DisableState( STATE_BLENDING );
     glColor3f(1,1,1);
+    camera.ResetDecalOffset();
+    camera.UpdateProjection();
+    
     pRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
     fpsCounter++;
