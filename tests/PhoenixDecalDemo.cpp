@@ -50,7 +50,23 @@ int CalculateHitpoint( CLine &line, CVertexDescriptor & vertices,
     //cerr << "Checking: " << line.GetStart() << " and " << line.GetEnd() << endl;
     if ( LineIntersectsTriangle( line, vVertices[0], vVertices[1], vVertices[2], point))
     {
-      vTangent = (vVertices[1]-vVertices[0]).GetNormalized();
+      CRay ray;
+      ray.SetPosition( line.GetStart());
+      ray.SetDirection( line.GetDirection().GetNormalized());
+      vTangent = (vVertices[0] - ClosestPointOnRay( vVertices[0], ray ));
+      if ( vTangent.LengthSqr() > EPSILON )
+      {
+	vTangent.Normalize();
+	return 1;
+      }
+      vTangent = (vVertices[1] - ClosestPointOnRay( vVertices[1], ray ));
+      if ( vTangent.LengthSqr() > EPSILON )
+      {
+	vTangent.Normalize();
+	return 1;
+      }
+      vTangent = (vVertices[2] - ClosestPointOnRay( vVertices[2], ray ));
+      vTangent.Normalize();
       return 1;
     }
   }
