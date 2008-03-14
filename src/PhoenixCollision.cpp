@@ -679,7 +679,7 @@ void
 Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume, 
 					const Phoenix::Graphics::CVertexDescriptor & vertices, 
 					const Phoenix::Graphics::CIndexArray & indices,
-					std::vector< std::list< Phoenix::Math::CVector3<float> > > & vecTriangleFans )
+					std::list< std::list< Phoenix::Math::CVector3<float> > > & lstTriangleFans )
 {
   assert( indices.GetPrimitiveType() == PRIMITIVE_TRI_LIST );
   CVector3<float> vPoint0, vPoint1, vPoint2, vTriNormal;
@@ -710,18 +710,18 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	lstVertices.push_back( vPoint1 );
 	lstVertices.push_back( vPoint2 );
 	
-	vecTriangleFans.push_back( lstVertices );
+	lstTriangleFans.push_back( lstVertices );
 	
       }
 
     } // for( size_t ...
     
     // Do actual clipping against planes.
-    std::vector< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
+    std::list< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
 
 
-    for( fan_iterator  = vecTriangleFans.begin(); 
-	 fan_iterator != vecTriangleFans.end();
+    for( fan_iterator  = lstTriangleFans.begin(); 
+	 fan_iterator != lstTriangleFans.end();
 	 fan_iterator++)
     {
       std::list<Phoenix::Math::CPlane>::iterator plane_it;
@@ -732,6 +732,7 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	ClipPolygon( *plane_it, *fan_iterator );
       }
     }
+    
   }
   else 
   {
@@ -744,7 +745,7 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 					const Phoenix::Graphics::CVertexDescriptor & vertices, 
 					const Phoenix::Graphics::CVertexDescriptor & normals, 
 					const Phoenix::Graphics::CIndexArray & indices,
-					std::vector< std::list< Phoenix::Spatial::CVertex > > & vecTriangleFans )
+					std::list< std::list< Phoenix::Spatial::CVertex > > & lstTriangleFans )
 {
   assert( indices.GetPrimitiveType() == PRIMITIVE_TRI_LIST );
 
@@ -785,21 +786,19 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	lstVertices.push_back( vPoint1 );
 	lstVertices.push_back( vPoint2 );
 	
-	vecTriangleFans.push_back( lstVertices );
+	lstTriangleFans.push_back( lstVertices );
       }
 
     } // for( size_t ...
     
     // Do actual clipping against planes.
-    std::vector< std::list< Phoenix::Spatial::CVertex > >::iterator fan_iterator;
+    std::list< std::list< Phoenix::Spatial::CVertex > >::iterator fan_iterator;
     std::list< Phoenix::Spatial::CVertex >::iterator v_iterator;
-    // Empty fans will be listed here.
-    std::list< size_t > lstEmptyFans;
-    size_t count = 0;
+    
 
-    for( fan_iterator  = vecTriangleFans.begin(); 
-	 fan_iterator != vecTriangleFans.end();
-	 fan_iterator++, count++)
+    for( fan_iterator  = lstTriangleFans.begin(); 
+	 fan_iterator != lstTriangleFans.end();
+	 fan_iterator++ )
     {
       
       std::list<Phoenix::Math::CPlane>::iterator plane_it;
@@ -809,22 +808,15 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       {
 	ClipPolygon( *plane_it, *fan_iterator );
 	v_iterator = (*fan_iterator).begin();
-
-	/// Mark the empty fans for removal, and exit loop
-	if ( (*fan_iterator).empty()) 
-	{
-	  lstEmptyFans.push_back(count); 
-	  break;
-	}
 	
 	for( ; v_iterator != (*fan_iterator).end(); v_iterator++ )
 	{
 
 	  float fAlpha = ( decalVolume.GetNormalVector().Dot((*v_iterator).GetNormal()));
 	  (*v_iterator).GetColor()[3] = (unsigned char)(255 * fAlpha);
-	  
-	  float fS = ( decalVolume.GetTangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetWidth() + 0.5f;
-	  float fT = ( decalVolume.GetBitangentVector().Dot( (*v_iterator).GetPosition() - decalVolume.GetPosition()) ) / decalVolume.GetHeight() + 0.5f;
+	  CVector3<float> vDecalToVertex = (*v_iterator).GetPosition() - decalVolume.GetPosition();
+	  float fS = (decalVolume.GetTangentVector().Dot( vDecalToVertex  ) / decalVolume.GetWidth()) + 0.5f;
+	  float fT = (decalVolume.GetBitangentVector().Dot( vDecalToVertex ) / decalVolume.GetHeight()) + 0.5f;
 	  (*v_iterator).SetTextureCoordinates( fS, fT );
 	  
 	} /// ...v_iterator
@@ -834,11 +826,13 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
     } /// fan_iterator...
     
     /// Remove empty fan lists from vector
-    std::list< size_t >::reverse_iterator it = lstEmptyFans.rbegin();
-    for( ; it != lstEmptyFans.rend(); it++)
+    fan_iterator = lstTriangleFans.begin(); 
+    while( fan_iterator != lstTriangleFans.end() )
     {
-      fan_iterator = vecTriangleFans.begin()+(*it);
-      vecTriangleFans.erase( fan_iterator);
+      if ( (*fan_iterator).empty() ) 
+	fan_iterator = lstTriangleFans.erase(fan_iterator);
+      else
+	++fan_iterator;
     }
   }
   else 

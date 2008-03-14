@@ -206,23 +206,23 @@ namespace Phoenix
     /// \param decalVolume Volume used in evaluation
     /// \param vertices VertexDescriptor of vertex data.
     /// \param indices Triangle indices
-    /// \param vecTriangleFans Vector, where lists of vertex coordinates are stored for final mesh.
+    /// \param lstTriangleFans List, where lists of vertex coordinates are stored for final mesh.
     void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume, 
 			     const Phoenix::Graphics::CVertexDescriptor & vertices, 
 			     const Phoenix::Graphics::CIndexArray & indices,
-			     std::vector< std::list< Phoenix::Math::CVector3<float> > > & vecTriangleFans );
+			     std::list< std::list< Phoenix::Math::CVector3<float> > > & lstTriangleFans );
     ////////////////////
     /// Calculates which triangles are completely or partially inside decal volume.
     /// \param decalVolume Volume used in evaluation
     /// \param vertices VertexDescriptor of vertex coordinate data.
     /// \param normals VertexDescriptor of vertex normal data.
     /// \param indices Triangle indices
-    /// \param vecTriangleFans Vector, where lists of vertices are stored for final mesh.
+    /// \param lstTriangleFans List, where lists of vertices are stored for final mesh.
     void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume, 
 			     const Phoenix::Graphics::CVertexDescriptor & vertices, 
 			     const Phoenix::Graphics::CVertexDescriptor & normals, 
 			     const Phoenix::Graphics::CIndexArray & indices,
-			     std::vector< std::list< Phoenix::Spatial::CVertex > > & vecTriangleFans );
+			     std::list< std::list< Phoenix::Spatial::CVertex > > & lstTriangleFans );
 
     ////////////////////
     /// Clips given polygon with plane. New vertices replace previous ones.
