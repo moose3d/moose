@@ -110,7 +110,7 @@ int main( int argc, char **argv )
   line.SetEnd( CVector3<float>(3,0,0) );
   
 
-  COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/scorchmark.tga");
+  COglTexture *pTexture = pRenderer->CreateTexture( "Resources/Textures/crater.tga");
   while (  bLoop  )
   {
     fpsCounter.Update();
@@ -219,13 +219,13 @@ int main( int argc, char **argv )
     CVector3<float> vPoint;
     CVector3<float> vTangent;
 
-    std::vector< std::list< CVertex > > vecTriFans;
+    std::list< std::list< CVertex > > lstTriFans;
     int bHits = 0;
     if ( CalculateHitpoint( line, *pVertexDescriptor, *pIndices, vPoint, vTangent ))
     {
       bHits = 1;
       CDecalVolume decal( vPoint, -line.GetDirection(), vTangent, 3.0f, 3.0f,0.20f );
-      CalculateDecalMesh( decal, *pVertexDescriptor, *pNormals, *pIndices, vecTriFans );
+      CalculateDecalMesh( decal, *pVertexDescriptor, *pNormals, *pIndices, lstTriFans );
       CVector3<float> vTmp = camera.WorldCoordinatesToEye( vPoint );
       camera.SetDecalOffset( 0.1, vTmp[2] );
       camera.UpdateProjection();
@@ -247,11 +247,11 @@ int main( int argc, char **argv )
     glColor3f(1,1,1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
     // Draw decal mesh
-    std::vector< std::list< CVertex > >::iterator it;
+    std::list< std::list< CVertex > >::iterator it;
     pRenderer->CommitTexture( 0, pTexture );
     pRenderer->CommitState( STATE_BLENDING );
     pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
-    for( it = vecTriFans.begin(); it != vecTriFans.end(); it++)
+    for( it = lstTriFans.begin(); it != lstTriFans.end(); it++)
     {
 
       std::list< CVertex >::iterator fanIt;
