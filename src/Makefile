@@ -7,7 +7,7 @@ LINUX_CC=g++
 WIN_CC=i686-mingw32-g++
 DEBUG_FLAGS=#-DDEBUG #-DDEBUG_PRINT_INSANE 
 INCLUDE_DIR=-I/home/entity/workdir/phoenix/src -I../../tristripper/include/
-LINUX_CFLAGS=-Wall -c  `sdl-config --cflags` \
+LINUX_CFLAGS=-Wall -c -g `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
 	-mmmx -msse2 -mfpmath=sse

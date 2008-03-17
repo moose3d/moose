@@ -418,13 +418,20 @@ Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::DeleteNode( CGraphNode< R, NODE_
 {
   typename std::list<CGraphNode<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   it = find(m_lstNodes.begin(), m_lstNodes.end(), pNode );
+  std::cerr << "seeking ptr: " << pNode << std::endl;
+  std::cerr << "foung ptr: " << *it << std::endl;
 
+  
   if ( it != m_lstNodes.end())
   {
+    std::cerr << "beginning RemoveLeavingedgesfrom" << std::endl;
     RemoveLeavingEdgesFrom( pNode );
+    std::cerr << "beginning RemoveArrivingEdgesfrom" << std::endl;
     RemoveArrivingEdgesFrom( pNode );
     m_lstNodes.erase(it);
+    std::cerr << "preparing to delete" << std::endl;
     delete pNode;
+    std::cerr << "done deleting" << std::endl;
   } 
   else 
   {

@@ -38,3 +38,4 @@
 #include "PhoenixObjectUpdater.h"
 #include "PhoenixStateMachine.h"
 #include "PhoenixModelHelper.h"
+#include "PhoenixGuiSystem.h"
