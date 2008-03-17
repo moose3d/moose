@@ -76,16 +76,9 @@ int main()
   
   CGuiSystem *pGuiSystem = new CGuiSystem();
   CButton *pButton = pGuiSystem->CreateNode<CButton>();
-  cerr << "button is : " << pButton << endl;
-  cerr << "Nodes: " << pGuiSystem->GetNodeCount() << endl;
-  cerr << "edges: " << pGuiSystem->GetEdgeCount() << endl;
+  pGuiSystem->DeleteNode( pButton);
+  pButton->GetLocalTransform().SetTranslation( 10,0,0);
   
-  pGuiSystem->DeleteNode( static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(pButton));
-  
-  cerr << "Nodes 2: " << pGuiSystem->GetNodeCount() << endl;
-  cerr << "edges 2: " << pGuiSystem->GetEdgeCount() << endl;
-  //pButton->GetLocalTransform().SetTranslation( 10,0,0);
-  //delete pGuiSystem;
   
   while( g_bLoop )
   {

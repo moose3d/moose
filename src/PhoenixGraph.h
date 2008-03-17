@@ -11,7 +11,7 @@ namespace Phoenix
 {
   namespace Core
   {
-
+    
     /////////////////////////////////////////////////////////////////
     // Declaration so we can use graphnode in GraphEdge
     template <typename RTTI, typename NODE_NAME, typename EDGE_NAME> class CGraphNode;
@@ -65,7 +65,7 @@ namespace Phoenix
       ////////////////////
       /// \brief The destructor. 
       /// It is protected and should only be invoked by CGraph.
-      ~CGraphEdge()
+      virtual ~CGraphEdge()
       {
 	m_pFrom = NULL;
 	m_pTo = NULL;
@@ -218,7 +218,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Destructor
-      ~CGraphNode();
+      virtual ~CGraphNode();
 
     public:
       ////////////////////
@@ -310,7 +310,6 @@ namespace Phoenix
       /// \returns unsigned int the number of leaving edges.
       unsigned int GetOutDegree();
     };
-
     /////////////////////////////////////////////////////////////////
     template <typename R, typename NODE_NAME = std::string, typename EDGE_NAME = int>
     class CGraph
@@ -318,16 +317,16 @@ namespace Phoenix
     public:  
 
       typedef enum 
-      {
-	BREADTH_FIRST      = 0,   // breadth-first traversal 
-	DEPTH_FIRST        = 1,   // depth-first traversal
-	DEPTH_FIRST_BY_EDGES,     // depth-first, but with every 
-	// edge is considered as a new branch of a tree.
-      } GraphTraversalMode;
+	{
+	  BREADTH_FIRST      = 0,   // breadth-first traversal 
+	  DEPTH_FIRST        = 1,   // depth-first traversal
+	  DEPTH_FIRST_BY_EDGES,     // depth-first, but with every 
+	  // edge is considered as a new branch of a tree.
+	} GraphTraversalMode;
 
     protected:
       /// List of nodes.
-    std::list< CGraphNode< R, NODE_NAME, EDGE_NAME > *> m_lstNodes;
+      std::list< CGraphNode< R, NODE_NAME, EDGE_NAME > *> m_lstNodes;
       /// List of edges
       std::list< CGraphEdge< R, NODE_NAME, EDGE_NAME > *> m_lstEdges;
       /// Graph name.
@@ -368,7 +367,7 @@ namespace Phoenix
       void RemoveArrivingEdgesFrom( CGraphNode<R, NODE_NAME, EDGE_NAME> *pNode );
       ////////////////////
       CGraphNode<R, NODE_NAME, EDGE_NAME> * SeekNodeByNameAndType( const char *szName, 
-					     const R iType );
+								   const R iType );
       ////////////////////
       /// Sets each node as unvisited
       void  SetNodesUnvisited();
@@ -418,20 +417,15 @@ Phoenix::Core::CGraph<R, NODE_NAME, EDGE_NAME>::DeleteNode( CGraphNode< R, NODE_
 {
   typename std::list<CGraphNode<R, NODE_NAME, EDGE_NAME> *>::iterator it;
   it = find(m_lstNodes.begin(), m_lstNodes.end(), pNode );
-  std::cerr << "seeking ptr: " << pNode << std::endl;
-  std::cerr << "foung ptr: " << *it << std::endl;
-
   
   if ( it != m_lstNodes.end())
   {
-    std::cerr << "beginning RemoveLeavingedgesfrom" << std::endl;
+
     RemoveLeavingEdgesFrom( pNode );
-    std::cerr << "beginning RemoveArrivingEdgesfrom" << std::endl;
     RemoveArrivingEdgesFrom( pNode );
+   
     m_lstNodes.erase(it);
-    std::cerr << "preparing to delete" << std::endl;
     delete pNode;
-    std::cerr << "done deleting" << std::endl;
   } 
   else 
   {

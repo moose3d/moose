@@ -248,7 +248,7 @@ namespace Phoenix
       CResourceManager();
       ////////////////////
       /// Destructor.
-      ~CResourceManager();
+      virtual ~CResourceManager();
     public:
       ////////////////////
       /// Initializes hash table with given size. If size is not given, it defaults to PHOENIX_MAGIC_NUMBER.
