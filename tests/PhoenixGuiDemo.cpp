@@ -75,10 +75,10 @@ int main()
   fps.Reset();
   
   CGuiSystem *pGuiSystem = new CGuiSystem();
-  CButton *pButton = pGuiSystem->CreateNode<CButton>();
-  pGuiSystem->DeleteNode( pButton);
+  CButton *pButton = pGuiSystem->Create<CButton>( "main.button");
   pButton->GetLocalTransform().SetTranslation( 10,0,0);
   
+  //pGuiSystem->Delete( pButton);  
   
   while( g_bLoop )
   {
@@ -159,7 +159,7 @@ int main()
     if ( fOffset > SCREEN_HEIGHT )
       fOffset = 0.0f;
   }
-
+  delete pGuiSystem;
 
   CSDLScreen::DestroyInstance();
   return 0;
