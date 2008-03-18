@@ -25,6 +25,21 @@ const unsigned int SCREEN_HEIGHT = 480;
 
 float fOffset = 0.0f;
 /////////////////////////////////////////////////////////////////
+class CMessageAdapter 
+{
+public:
+  void Process( const Phoenix::AI::CMessage<CGuiElement, GUI_MESSAGE_TYPES> &rMessage, CGuiElement &rElement )
+  {
+    if ( rMessage.GetType() == GUI_MSG_MOUSE_CLICK )
+    {
+      cerr << "mouse pressed at " << static_cast<const CMouseClickEvent &>(rMessage).GetCoords() << endl;
+      if ( rElement.MouseCoordinatesInside( static_cast<const CMouseClickEvent &>(rMessage).GetCoords()) )
+      {
+	cerr << "CLICK!" << endl;
+      }
+    }
+  }
+};
 int main()
 {
   
@@ -73,11 +88,19 @@ int main()
   CVector4<unsigned char> vYellow(255,255,0,255);
   CFpsCounter fps;
   fps.Reset();
-  
+
   CGuiSystem *pGuiSystem = new CGuiSystem();
   CButton *pButton = pGuiSystem->Create<CButton>( "main.button");
-  pButton->GetLocalTransform().SetTranslation( 10,0,0);
-  
+  pButton->SetWidth( 120);
+  pButton->SetHeight( 25 );
+  pButton->GetLocalTransform().SetTranslation( 10,10,0);
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *static_cast<CGuiElement *>(pButton) );
+  pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+  pGuiSystem->EvaluateLayout();
+  pGuiSystem->Prepare();
+  CMessageAdapter msgAdapter;
+  //pGuiSystem->Update( );
+  //pGuiSystem->
   //pGuiSystem->Delete( pButton);  
   
   while( g_bLoop )
@@ -114,6 +137,7 @@ int main()
 	} 
 	break;
       case SDL_MOUSEBUTTONDOWN:
+	pGuiSystem->EnqueueMouseClick( CVector2<int>(event.button.x,SCREEN_HEIGHT-event.button.y));
 	break;
       case SDL_MOUSEBUTTONUP:
 	break;
@@ -123,7 +147,7 @@ int main()
 	break;
       }
     }
-
+    pGuiSystem->Update(msgAdapter);
 
    
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
