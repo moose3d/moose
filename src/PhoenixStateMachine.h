@@ -147,7 +147,7 @@ namespace Phoenix
       /// \returns Message pointer.
       CMessage<OBJECT_TYPE, MSG_TYPE> * GetNextMessage();
       ////////////////////
-      /// Starts message routing 
+      /// Starts message routing (resets timer).
       void Prepare();
     };
     /////////////////////////////////////////////////////////////////
