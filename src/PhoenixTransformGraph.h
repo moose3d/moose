@@ -38,6 +38,9 @@ namespace Phoenix
       /// Returns handle pointing to transformable object.
       /// \returns Reference to a handle.
       const HANDLE &	GetHandle() const;
+      ////////////////////
+      /// Returns pointer to resource refererred by m_hTransformableObject.
+      RESOURCE_TYPE * GetResource();
     };
   } // namespace Scene
 } // namespace Phoenix
@@ -73,6 +76,13 @@ void
 Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::ReleaseHandle()
 {
   Phoenix::Core::CResourceManager<RESOURCE_TYPE, HANDLE >::GetInstance()->Release( m_hTransformableObject );
+}
+/////////////////////////////////////////////////////////////////
+template <typename TYPE, typename RESOURCE_TYPE, typename HANDLE>
+RESOURCE_TYPE *
+Phoenix::Scene::CTransformNode<TYPE,RESOURCE_TYPE,HANDLE>::GetResource()
+{
+  return Phoenix::Core::CResourceManager<RESOURCE_TYPE, HANDLE >::GetInstance()->GetResource( m_hTransformableObject );
 }
 /////////////////////////////////////////////////////////////////
 #endif

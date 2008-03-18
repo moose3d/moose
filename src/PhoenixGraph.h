@@ -341,7 +341,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Destructor.
-      ~CGraph()
+      virtual ~CGraph()
       {    
 	RemoveEdges();
 	RemoveNodes();
