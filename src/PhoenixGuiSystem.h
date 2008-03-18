@@ -7,6 +7,7 @@
 #include <PhoenixTransform.h>
 #include <PhoenixGraph.h>
 #include <PhoenixTransformGraph.h>
+#include <PhoenixStateMachine.h>
 #include <string>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
@@ -24,8 +25,7 @@ namespace Phoenix
     /// Message types for GUI elements.
     enum GUI_MESSAGE_TYPES 
     {
-      GUI_MSG_MOUSE_ENTER = 0,
-      GUI_MSG_MOUSE_LEAVE,
+      GUI_MSG_MOUSE_MOTION = 0,
       GUI_MSG_MOUSE_CLICK,
       GUI_NUM_OF_MESSAGE_TYPES
     };
@@ -36,7 +36,8 @@ namespace Phoenix
     /// Base class for every GUI object.
     class CGuiElement : public Phoenix::Spatial::CDimensional2D, 
 			public CTypeBase<GUI_ELEMENT_TYPE>,
-			public Phoenix::Math::CTransformable
+			public Phoenix::Math::CTransformable,
+			public Phoenix::AI::CMessageObject< CGuiElement, GUI_MESSAGE_TYPES >
     {
     protected:
       /// Is this element visible.
@@ -74,6 +75,19 @@ namespace Phoenix
       /// Returns transform node.
       /// \returns Pointer to transform node.
       GUI_ELEMENT_TNODE_TYPE *GetTransformNode() { return m_pTransformNode; }
+      ////////////////////
+      /// Checks does mouse click hit this element.
+      /// Mouse clicks must be in OpenGL Window format, (0,0) is in left lower corner.
+      virtual int MouseCoordinatesInside( const Phoenix::Math::CVector2<int> &vCoords ) 
+      {
+	Phoenix::Math::CVector3<float> vTransl = GetWorldTransform().GetTranslation();
+	if ( vCoords[0] >= vTransl[0] && vCoords[0] < (vTransl[0] + GetWidth()) &&
+	     vCoords[1] >= vTransl[1] && vCoords[1] < (vTransl[1] + GetHeight()))
+	{
+	  return 1;
+	}
+	return 0;
+      }
     };
     ////////////////////
     /// Class for window. Window contains other objects.
@@ -173,6 +187,24 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
+    /// Simple mouse motion event.
+    class CMouseMotionEvent : public Phoenix::AI::CMessage<Phoenix::Gui::CGuiElement,GUI_MESSAGE_TYPES>
+    {
+    public:
+      CMouseMotionEvent( ) { SetType( GUI_MSG_MOUSE_MOTION ); }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Simple mouse click event.
+    class CMouseClickEvent : public Phoenix::AI::CMessage<Phoenix::Gui::CGuiElement,GUI_MESSAGE_TYPES>
+    {
+    private:
+      Phoenix::Math::CVector2<int> m_vCoords;
+    public:
+      CMouseClickEvent( const Phoenix::Math::CVector2<int> &vCoords ) { SetType( GUI_MSG_MOUSE_CLICK ); m_vCoords = vCoords; }
+      const Phoenix::Math::CVector2<int> & GetCoords() const { return m_vCoords; }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Class for GUI system.
     class CGuiSystem : private Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>
     {
     protected:
@@ -180,10 +212,12 @@ namespace Phoenix
       Phoenix::Gui::CWindow *m_pBaseWindow;
       /// Updater adapter.
       Phoenix::Gui::CGuiUpdateAdapter      m_updaterAdapter;
+      // Message router 
+      Phoenix::AI::CMessageRouter< Phoenix::Gui::CGuiElement, GUI_MESSAGE_TYPES > m_msgRouter;
     public:
       ////////////////////
       /// Constructor.
-      CGuiSystem()
+      CGuiSystem() : m_msgRouter(GUI_NUM_OF_MESSAGE_TYPES)
       {
 	m_pBaseWindow = Create<Phoenix::Gui::CWindow>("main");
 	assert( m_pBaseWindow != NULL && "GUI: Basewindow creation failed! Out of memory?" );
@@ -195,12 +229,24 @@ namespace Phoenix
 	return *m_pBaseWindow;
       }
       ////////////////////
-      /// Updates gui locations.
-      void Update()
+      /// Prepares GUI for action.
+      void Prepare()
+      {
+	m_msgRouter.Prepare();
+      }
+      ////////////////////
+      /// Updates element positions / scaling.
+      void EvaluateLayout()
       {
 	TravelDF<CGuiUpdateAdapter, GUI_ELEMENT_TYPE, std::string, int>( 
 									static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), 
 									&m_updaterAdapter );
+      }
+      ////////////////////
+      /// Passes events to listeners.
+      template<class MSG_ADAPTER_TYPE> void Update( MSG_ADAPTER_TYPE & rAdapter )
+      {
+	m_msgRouter.Update( rAdapter);
       }
       ////////////////////
       /// Factory method for creating GUI elements.
@@ -237,10 +283,28 @@ namespace Phoenix
 					 Phoenix::Core::CHandle<Phoenix::Gui::CGuiElement> >::GetInstance()->Destroy( hTmp );
 
       }
+      ////////////////////
+      /// Registers a receiver.
+      void RegisterReceiver( const GUI_MESSAGE_TYPES & tType, Phoenix::Gui::CGuiElement & rPtr )
+      {
+	m_msgRouter.RegisterReceiver( tType, rPtr.GetTransformNode()->GetHandle() );
+      }
+      ////////////////////
+      /// Sends mouse click event.
+      void EnqueueMouseClick( const Phoenix::Math::CVector2<int> & vPosition )
+      {
+	m_msgRouter.EnqueueMessage( new CMouseClickEvent( vPosition ) );
+      }
+      ////////////////////
+      /// Sends mouse motion event.
+      void EnqueueMouseMotion( const Phoenix::Math::CVector2<int> &vStart, const Phoenix::Math::CVector2<int> &vEnd  )
+      {
+	m_msgRouter.EnqueueMessage( new CMouseMotionEvent() );
+      }
+
     };
   } // namespace Gui
 } // namespace Phoenix
 #undef GUI_ELEMENT_TNODE_TYPE
 /////////////////////////////////////////////////////////////////
 #endif
-
