@@ -15,12 +15,20 @@ namespace Phoenix
   {
     /// Types of elements that are allowed in GUI.
     enum GUI_ELEMENT_TYPE
-      {
-	GUI_WINDOW = 0,
-	GUI_LABEL,
-	GUI_BUTTON,
-	GUI_MULTILABEL
-      };
+    {
+      GUI_WINDOW = 0,
+      GUI_LABEL,
+      GUI_BUTTON,
+      GUI_MULTILABEL
+    };
+    /// Message types for GUI elements.
+    enum GUI_MESSAGE_TYPES 
+    {
+      GUI_MSG_MOUSE_ENTER = 0,
+      GUI_MSG_MOUSE_LEAVE,
+      GUI_MSG_MOUSE_CLICK,
+      GUI_NUM_OF_MESSAGE_TYPES
+    };
     ////////////////////
     /// Base class for every GUI object.
     class CGuiElement : public Phoenix::Spatial::CDimensional2D,
@@ -30,7 +38,15 @@ namespace Phoenix
     protected:
       /// Is this element visible.
       int	m_bVisible;
+      /// Does this element have current focus.
+      int	m_bHasFocus;
     public:
+      ////////////////////
+      /// Constructor.
+      CGuiElement() : m_bVisible(0), m_bHasFocus(0) { }
+      ////////////////////
+      /// Destructor.
+      virtual ~CGuiElement() {}
       ////////////////////
       /// Checks is element visible.
       /// \returns non-zero if visible, zero otherwise.
@@ -39,6 +55,15 @@ namespace Phoenix
       /// Sets element visibility.
       /// \param bFlag Non-zero if visible, zero otherwise.
       void SetVisible( int bFlag ) {	m_bVisible = bFlag;  }
+      ////////////////////
+      /// Checks is this element focused.
+      /// \returns Non-zero on focus, zero otherwise.
+      int HasFocus() const { return m_bHasFocus;  }
+      ////////////////////
+      /// Sets focus flag.
+      /// \param bFlag Non-zero for focus on, 0 for unfocus.
+      void SetFocus( int bFlag ) { m_bHasFocus = bFlag; }
+      
     };
     ////////////////////
     /// Class for window. Window contains other objects.
@@ -51,6 +76,7 @@ namespace Phoenix
       {
 	SetType( Phoenix::Gui::GUI_WINDOW );
       }
+      
     };
     ////////////////////
     /// Simple one-line label class.
@@ -145,8 +171,8 @@ namespace Phoenix
       /// Constructor.
       CGuiSystem()
       {
-	//m_pBaseWindow = Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>::CreateNode< Phoenix::Gui::CWindow >();
-	//assert( m_pBaseWindow != NULL && "GUI: Basewindow creation failed! Out of memory?" );
+	m_pBaseWindow = Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>::CreateNode< Phoenix::Gui::CWindow >();
+	assert( m_pBaseWindow != NULL && "GUI: Basewindow creation failed! Out of memory?" );
       }
       ////////////////////
       /// Returns reference to root window:

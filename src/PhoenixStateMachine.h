@@ -30,7 +30,7 @@ namespace Phoenix
       CMessage();
       ////////////////////
       /// Destructor.
-      ~CMessage();
+      virtual ~CMessage();
       ////////////////////
       /// Returns reference to handle of sender.
       /// \returns Handle to sender.
