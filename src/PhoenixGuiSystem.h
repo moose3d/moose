@@ -89,68 +89,22 @@ namespace Phoenix
       /// Mouse clicks must be in OpenGL Window format, (0,0) is in left lower corner.
       virtual int MouseCoordinatesInside( const Phoenix::Math::CVector2<int> &vCoords ) 
       {
-	Phoenix::Math::CVector3<float> vTransl = GetWorldTransform().GetTranslation();
-	if ( vCoords[0] >= vTransl[0] && vCoords[0] < (vTransl[0] + GetWidth()) &&
-	     vCoords[1] >= vTransl[1] && vCoords[1] < (vTransl[1] + GetHeight()))
+	const Phoenix::Math::CVector3<float> & vTransl  = GetWorldTransform().GetTranslation();
+	const Phoenix::Math::CMatrix4x4<float> & matrix = GetWorldTransform().GetMatrix();
+	// Convert coords 
+	float fWidth  = matrix(0,0) * GetWidth();
+	float fHeight = matrix(1,1) * GetHeight();
+	float fX = matrix(0,0) * vTransl[0] + matrix(0,3);
+	float fY = matrix(1,1) * vTransl[1] + matrix(1,3);
+	// actual checking
+	if ( vCoords[0] > (int)fX && vCoords[0] < (int)(fX+fWidth) &&
+	     vCoords[1] > (int)fY && vCoords[1] < (int)(fY+fHeight) )
 	{
 	  return 1;
 	}
-	return 0;
+      return 0;
       }
     };
-    /* //////////////////// */
-/*     /// Class for window. Window contains other objects. */
-/*     class CWindow : public Phoenix::Gui::CGuiElement */
-/*     { */
-/*       friend class CGuiSystem; */
-/*     protected: */
-/*       //////////////////// */
-/*       /// Constructor. */
-/*       CWindow( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
-/*       { */
-/* 	SetType( Phoenix::Gui::GUI_WINDOW ); */
-/*       } */
-      
-/*     }; */
-/*     //////////////////// */
-/*     /// Simple one-line label class. */
-/*     class CLabel : public Phoenix::Gui::CGuiElement  */
-/*     { */
-/*       friend class CGuiSystem; */
-/*     protected: */
-/*       //////////////////// */
-/*       /// Constructor. */
-/*       CLabel(  GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
-/*       { */
-/* 	SetType( Phoenix::Gui::GUI_LABEL ); */
-/*       } */
-/*     }; */
-/*     //////////////////// */
-/*     /// Very simple button class. */
-/*     class CButton : public Phoenix::Gui::CGuiElement */
-/*     { */
-/*       friend class CGuiSystem; */
-/*     protected: */
-/*       //////////////////// */
-/*       /// Constructor. */
-/*       CButton( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
-/*       { */
-/* 	SetType( Phoenix::Gui::GUI_BUTTON ); */
-/*       } */
-/*     }; */
-/*     //////////////////// */
-/*     /// Label with multiple lines. Convinient for displaying logs etc. */
-/*     class CMultiLineLabel : public Phoenix::Gui::CGuiElement */
-/*     { */
-/*       friend class CGuiSystem; */
-/*     protected: */
-/*       //////////////////// */
-/*       /// Constructor. */
-/*       CMultiLineLabel( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
-/*       { */
-/* 	SetType( Phoenix::Gui::GUI_MULTILABEL ); */
-/*       } */
-/*     }; */
     /////////////////////////////////////////////////////////////////
     /// Update adapter for GUI element graph.
     template <class BASE_COMPONENT_TYPE>
@@ -197,12 +151,44 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
+    /// Update adapter for GUI element graph.
+    template <class BASE_COMPONENT_TYPE, class EXT_ADAPTER>
+    class CGuiRenderAdapter
+    {
+    private:
+      EXT_ADAPTER adapter;
+    public:
+      ////////////////////
+      CGuiRenderAdapter() {}
+      ////////////////////
+      /// Handles entering to node while traversing
+      int Enter( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
+      {
+	adapter.Process( *static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetResource() );
+	// add visibility checking here.
+	// not culling
+	return 0;
+      }
+      ////////////////////  
+      /// Handles exiting  node while traversing
+      void Leave( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
+      {
+	//NOP
+      }
+      ////////////////////
+      /// Returns reference to adapter.
+      EXT_ADAPTER & GetAdapter() { return adapter; }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Simple mouse motion event.
     template <class BASE_COMPONENT_TYPE>
     class CMouseMotionEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
     {
     public:
-      CMouseMotionEvent( ) { Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); }
+      CMouseMotionEvent( ) 
+      { 
+	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); 
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Simple mouse click event.
@@ -233,7 +219,7 @@ namespace Phoenix
       BASE_COMPONENT_TYPE *m_pBaseWindow;
       /// Updater adapter.
       Phoenix::Gui::CGuiUpdateAdapter<BASE_COMPONENT_TYPE>      m_updaterAdapter;
-      // Message router 
+      /// Message router 
       Phoenix::AI::CMessageRouter< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES > m_msgRouter;
     public:
       ////////////////////
@@ -332,7 +318,13 @@ namespace Phoenix
       {
 	m_msgRouter.EnqueueMessage( new CMouseMotionEvent<BASE_COMPONENT_TYPE>() );
       }
-      
+      ////////////////////
+      /// Sends all visible components into renderer adapter.
+      template <class RENDERER_ADAPTER_TYPE> void Render( CGuiRenderAdapter<BASE_COMPONENT_TYPE, RENDERER_ADAPTER_TYPE> & rAdapter)
+      {
+	TravelDF<CGuiRenderAdapter<BASE_COMPONENT_TYPE, RENDERER_ADAPTER_TYPE>, GUI_ELEMENT_TYPE, 
+	std::string, int>(  static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), &rAdapter );
+      }
     };
   } // namespace Gui
 } // namespace Phoenix
