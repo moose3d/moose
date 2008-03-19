@@ -17,10 +17,11 @@ namespace Phoenix
     /// Types of elements that are allowed in GUI.
     enum GUI_ELEMENT_TYPE
     {
-      GUI_WINDOW = 0,
+      /*      GUI_WINDOW = 0,
       GUI_LABEL,
       GUI_BUTTON,
-      GUI_MULTILABEL
+      GUI_MULTILABEL*/
+      GUI_ELEMENT = 0
     };
     /// Message types for GUI elements.
     enum GUI_MESSAGE_TYPES 
@@ -35,10 +36,10 @@ namespace Phoenix
     ////////////////////
     /// Base class for every GUI object.
     class CGuiElement : public Phoenix::Spatial::CDimensional2D, 
-			public CTypeBase<GUI_ELEMENT_TYPE>,
 			public Phoenix::Math::CTransformable,
 			public Phoenix::AI::CMessageObject< CGuiElement, GUI_MESSAGE_TYPES >
     {
+      friend class Phoenix::Gui::CGuiSystem;
     protected:
       /// Is this element visible.
       int	m_bVisible;
@@ -48,10 +49,17 @@ namespace Phoenix
       GUI_ELEMENT_TNODE_TYPE *m_pTransformNode;
       ////////////////////
       /// Constructor.
-      CGuiElement( GUI_ELEMENT_TNODE_TYPE *pNode ) : m_bVisible(0), 
-						     m_bHasFocus(0), 
-						     m_pTransformNode(pNode) { }
+      CGuiElement( ) : m_bVisible(0), 
+		       m_bHasFocus(0), 
+		       m_pTransformNode(NULL) { }
     public:
+      ////////////////////
+      /// Sets transform node.
+      /// \param pNode transform node to be set.
+      void SetTransformNode( GUI_ELEMENT_TNODE_TYPE *pNode )
+      {
+	m_pTransformNode = pNode;
+      }
       ////////////////////
       /// Destructor.
       virtual ~CGuiElement() {}
@@ -89,59 +97,59 @@ namespace Phoenix
 	return 0;
       }
     };
-    ////////////////////
-    /// Class for window. Window contains other objects.
-    class CWindow : public Phoenix::Gui::CGuiElement
-    {
-      friend class CGuiSystem;
-    protected:
-      ////////////////////
-      /// Constructor.
-      CWindow( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode )
-      {
-	SetType( Phoenix::Gui::GUI_WINDOW );
-      }
+    /* //////////////////// */
+/*     /// Class for window. Window contains other objects. */
+/*     class CWindow : public Phoenix::Gui::CGuiElement */
+/*     { */
+/*       friend class CGuiSystem; */
+/*     protected: */
+/*       //////////////////// */
+/*       /// Constructor. */
+/*       CWindow( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
+/*       { */
+/* 	SetType( Phoenix::Gui::GUI_WINDOW ); */
+/*       } */
       
-    };
-    ////////////////////
-    /// Simple one-line label class.
-    class CLabel : public Phoenix::Gui::CGuiElement 
-    {
-      friend class CGuiSystem;
-    protected:
-      ////////////////////
-      /// Constructor.
-      CLabel(  GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode )
-      {
-	SetType( Phoenix::Gui::GUI_LABEL );
-      }
-    };
-    ////////////////////
-    /// Very simple button class.
-    class CButton : public Phoenix::Gui::CGuiElement
-    {
-      friend class CGuiSystem;
-    protected:
-      ////////////////////
-      /// Constructor.
-      CButton( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode )
-      {
-	SetType( Phoenix::Gui::GUI_BUTTON );
-      }
-    };
-    ////////////////////
-    /// Label with multiple lines. Convinient for displaying logs etc.
-    class CMultiLineLabel : public Phoenix::Gui::CGuiElement
-    {
-      friend class CGuiSystem;
-    protected:
-      ////////////////////
-      /// Constructor.
-      CMultiLineLabel( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode )
-      {
-	SetType( Phoenix::Gui::GUI_MULTILABEL );
-      }
-    };
+/*     }; */
+/*     //////////////////// */
+/*     /// Simple one-line label class. */
+/*     class CLabel : public Phoenix::Gui::CGuiElement  */
+/*     { */
+/*       friend class CGuiSystem; */
+/*     protected: */
+/*       //////////////////// */
+/*       /// Constructor. */
+/*       CLabel(  GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
+/*       { */
+/* 	SetType( Phoenix::Gui::GUI_LABEL ); */
+/*       } */
+/*     }; */
+/*     //////////////////// */
+/*     /// Very simple button class. */
+/*     class CButton : public Phoenix::Gui::CGuiElement */
+/*     { */
+/*       friend class CGuiSystem; */
+/*     protected: */
+/*       //////////////////// */
+/*       /// Constructor. */
+/*       CButton( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
+/*       { */
+/* 	SetType( Phoenix::Gui::GUI_BUTTON ); */
+/*       } */
+/*     }; */
+/*     //////////////////// */
+/*     /// Label with multiple lines. Convinient for displaying logs etc. */
+/*     class CMultiLineLabel : public Phoenix::Gui::CGuiElement */
+/*     { */
+/*       friend class CGuiSystem; */
+/*     protected: */
+/*       //////////////////// */
+/*       /// Constructor. */
+/*       CMultiLineLabel( GUI_ELEMENT_TNODE_TYPE *pNode ) : Phoenix::Gui::CGuiElement( pNode ) */
+/*       { */
+/* 	SetType( Phoenix::Gui::GUI_MULTILABEL ); */
+/*       } */
+/*     }; */
     /////////////////////////////////////////////////////////////////
     /// Update adapter for GUI element graph.
     class CGuiUpdateAdapter
@@ -209,7 +217,8 @@ namespace Phoenix
     {
     protected:
       /// pointer to root window.
-      Phoenix::Gui::CWindow *m_pBaseWindow;
+      //Phoenix::Gui::CWindow *m_pBaseWindow;
+      Phoenix::Gui::CGuiElement *m_pBaseWindow;
       /// Updater adapter.
       Phoenix::Gui::CGuiUpdateAdapter      m_updaterAdapter;
       // Message router 
@@ -219,12 +228,14 @@ namespace Phoenix
       /// Constructor.
       CGuiSystem() : m_msgRouter(GUI_NUM_OF_MESSAGE_TYPES)
       {
-	m_pBaseWindow = Create<Phoenix::Gui::CWindow>("main");
+	//m_pBaseWindow = Create<Phoenix::Gui::CWindow>("main");
+	m_pBaseWindow = Create<Phoenix::Gui::CGuiElement>("main");
 	assert( m_pBaseWindow != NULL && "GUI: Basewindow creation failed! Out of memory?" );
       }
       ////////////////////
       /// Returns reference to root window:
-      Phoenix::Gui::CWindow & GetRoot()
+      //Phoenix::Gui::CWindow & GetRoot()
+      Phoenix::Gui::CGuiElement & GetRoot()
       {
 	return *m_pBaseWindow;
       }
@@ -255,8 +266,8 @@ namespace Phoenix
 	// create node for transformation graph.
 	GUI_ELEMENT_TNODE_TYPE *pNode = Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>::CreateNode<GUI_ELEMENT_TNODE_TYPE>();
 	// Create actual button, and pass proper pointer to transform node
-	ELEMENT_TYPE *pElement = new ELEMENT_TYPE(pNode);
-
+	ELEMENT_TYPE *pElement = new ELEMENT_TYPE();
+	pElement->SetTransformNode(pNode);
 	// Make element managed by gui element resourcemanager
 	assert( (Phoenix::Core::CResourceManager< Phoenix::Gui::CGuiElement, 
 		Phoenix::Core::CHandle<Phoenix::Gui::CGuiElement> >::GetInstance()->
