@@ -24,6 +24,25 @@ const unsigned int SCREEN_WIDTH = 640;
 const unsigned int SCREEN_HEIGHT = 480;
 
 float fOffset = 0.0f;
+
+enum GUI_COMPONENT_TYPE 
+{
+  GUI_COMP_BUTTON = 0
+};
+class CComponentBase : public CGuiElement,
+		       public CTypeBase<GUI_COMPONENT_TYPE>
+{
+  
+};
+
+class CButton : public CComponentBase
+{
+  friend class Phoenix::Gui::CGuiSystem;
+protected:
+  CButton() {
+    SetType(GUI_COMP_BUTTON );
+  }
+};
 /////////////////////////////////////////////////////////////////
 class CMessageAdapter 
 {
@@ -40,6 +59,12 @@ public:
     }
   }
 };
+/////////////////////////////////////////////////////////////////
+class CGuiSystemOGLAdapter
+{
+  
+};
+/////////////////////////////////////////////////////////////////
 int main()
 {
   
