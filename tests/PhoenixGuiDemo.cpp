@@ -29,7 +29,7 @@ enum GUI_COMPONENT_TYPE
 {
   GUI_COMP_BUTTON = 0
 };
-class CComponentBase : public CGuiElement,
+class CComponentBase : public CGuiElement<CComponentBase>,
 		       public CTypeBase<GUI_COMPONENT_TYPE>
 {
   
@@ -37,7 +37,7 @@ class CComponentBase : public CGuiElement,
 
 class CButton : public CComponentBase
 {
-  friend class Phoenix::Gui::CGuiSystem;
+  friend class Phoenix::Gui::CGuiSystem<CComponentBase>;
 protected:
   CButton() {
     SetType(GUI_COMP_BUTTON );
@@ -47,22 +47,33 @@ protected:
 class CMessageAdapter 
 {
 public:
-  void Process( const Phoenix::AI::CMessage<CGuiElement, GUI_MESSAGE_TYPES> &rMessage, CGuiElement &rElement )
+  void Process( const Phoenix::AI::CMessage<CComponentBase, GUI_MESSAGE_TYPES> &rMessage, CComponentBase &rElement )
   {
     if ( rMessage.GetType() == GUI_MSG_MOUSE_CLICK )
     {
-      cerr << "mouse pressed at " << static_cast<const CMouseClickEvent &>(rMessage).GetCoords() << endl;
-      if ( rElement.MouseCoordinatesInside( static_cast<const CMouseClickEvent &>(rMessage).GetCoords()) )
+      const CMouseClickEvent<CComponentBase> & event = static_cast<const CMouseClickEvent<CComponentBase> &>(rMessage);
+      cerr << "mouse pressed at " << event.GetCoords() << endl;
+      
+      if ( rElement.GetType() == GUI_COMP_BUTTON )
       {
-	cerr << "CLICK!" << endl;
+	CButton & btn = static_cast< CButton &>(rElement);
+
+	if ( btn.MouseCoordinatesInside( event.GetCoords()) )
+	{
+	  cerr << "CLICK!" << endl;
+	}
       }
+
     }
   }
 };
 /////////////////////////////////////////////////////////////////
 class CGuiSystemOGLAdapter
 {
-  
+  void Render( CGuiSystem<CComponentBase> & system )
+  {
+    
+  }
 };
 /////////////////////////////////////////////////////////////////
 int main()
@@ -114,13 +125,15 @@ int main()
   CFpsCounter fps;
   fps.Reset();
 
-  CGuiSystem *pGuiSystem = new CGuiSystem();
+  CGuiSystem<CComponentBase> *pGuiSystem = new CGuiSystem<CComponentBase>();
   CButton *pButton = pGuiSystem->Create<CButton>( "main.button");
   pButton->SetWidth( 120);
   pButton->SetHeight( 25 );
   pButton->GetLocalTransform().SetTranslation( 10,10,0);
-  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *static_cast<CGuiElement *>(pButton) );
-  pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *static_cast<CComponentBase *>(pButton) );
+  
+  //pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+  pGuiSystem->SetRoot( pButton );
   pGuiSystem->EvaluateLayout();
   pGuiSystem->Prepare();
   CMessageAdapter msgAdapter;
