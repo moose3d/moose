@@ -31,15 +31,16 @@ namespace Phoenix
       GUI_NUM_OF_MESSAGE_TYPES
     };
 
-#define GUI_ELEMENT_TNODE_TYPE Phoenix::Scene::CTransformNode<GUI_ELEMENT_TYPE, Phoenix::Gui::CGuiElement, Phoenix::Core::CHandle<Phoenix::Gui::CGuiElement> >
-    class CGuiSystem;
+#define GUI_ELEMENT_TNODE_TYPE Phoenix::Scene::CTransformNode<GUI_ELEMENT_TYPE, BASE_COMPONENT_TYPE, Phoenix::Core::CHandle<BASE_COMPONENT_TYPE > >
+     template< class BASE_COMPONENT_TYPE > class CGuiSystem;
     ////////////////////
     /// Base class for every GUI object.
+    template< class BASE_COMPONENT_TYPE >
     class CGuiElement : public Phoenix::Spatial::CDimensional2D, 
 			public Phoenix::Math::CTransformable,
-			public Phoenix::AI::CMessageObject< CGuiElement, GUI_MESSAGE_TYPES >
+			public Phoenix::AI::CMessageObject< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES >
     {
-      friend class Phoenix::Gui::CGuiSystem;
+      friend  class Phoenix::Gui::CGuiSystem<BASE_COMPONENT_TYPE>;
     protected:
       /// Is this element visible.
       int	m_bVisible;
@@ -152,6 +153,7 @@ namespace Phoenix
 /*     }; */
     /////////////////////////////////////////////////////////////////
     /// Update adapter for GUI element graph.
+    template <class BASE_COMPONENT_TYPE>
     class CGuiUpdateAdapter
     {
     public:
@@ -196,48 +198,66 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Simple mouse motion event.
-    class CMouseMotionEvent : public Phoenix::AI::CMessage<Phoenix::Gui::CGuiElement,GUI_MESSAGE_TYPES>
+    template <class BASE_COMPONENT_TYPE>
+    class CMouseMotionEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
     {
     public:
-      CMouseMotionEvent( ) { SetType( GUI_MSG_MOUSE_MOTION ); }
+      CMouseMotionEvent( ) { Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); }
     };
     /////////////////////////////////////////////////////////////////
     /// Simple mouse click event.
-    class CMouseClickEvent : public Phoenix::AI::CMessage<Phoenix::Gui::CGuiElement,GUI_MESSAGE_TYPES>
+    template <class BASE_COMPONENT_TYPE>
+    class CMouseClickEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
     {
     private:
       Phoenix::Math::CVector2<int> m_vCoords;
     public:
-      CMouseClickEvent( const Phoenix::Math::CVector2<int> &vCoords ) { SetType( GUI_MSG_MOUSE_CLICK ); m_vCoords = vCoords; }
-      const Phoenix::Math::CVector2<int> & GetCoords() const { return m_vCoords; }
+      CMouseClickEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
+      { 
+	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_CLICK ); 
+	m_vCoords = vCoords; 
+      }
+      const Phoenix::Math::CVector2<int> & GetCoords() const 
+      { 
+	return m_vCoords; 
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Class for GUI system.
+    template< class BASE_COMPONENT_TYPE >
     class CGuiSystem : private Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>
     {
     protected:
       /// pointer to root window.
       //Phoenix::Gui::CWindow *m_pBaseWindow;
-      Phoenix::Gui::CGuiElement *m_pBaseWindow;
+      BASE_COMPONENT_TYPE *m_pBaseWindow;
       /// Updater adapter.
-      Phoenix::Gui::CGuiUpdateAdapter      m_updaterAdapter;
+      Phoenix::Gui::CGuiUpdateAdapter<BASE_COMPONENT_TYPE>      m_updaterAdapter;
       // Message router 
-      Phoenix::AI::CMessageRouter< Phoenix::Gui::CGuiElement, GUI_MESSAGE_TYPES > m_msgRouter;
+      Phoenix::AI::CMessageRouter< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES > m_msgRouter;
     public:
       ////////////////////
       /// Constructor.
       CGuiSystem() : m_msgRouter(GUI_NUM_OF_MESSAGE_TYPES)
       {
+	m_pBaseWindow = NULL;
 	//m_pBaseWindow = Create<Phoenix::Gui::CWindow>("main");
-	m_pBaseWindow = Create<Phoenix::Gui::CGuiElement>("main");
-	assert( m_pBaseWindow != NULL && "GUI: Basewindow creation failed! Out of memory?" );
+	//m_pBaseWindow = Create<Phoenix::Gui::CGuiElement>("main");
+	//assert( m_pBaseWindow != NULL && "GUI: Basewindow creation failed! Out of memory?" );
       }
       ////////////////////
       /// Returns reference to root window:
       //Phoenix::Gui::CWindow & GetRoot()
-      Phoenix::Gui::CGuiElement & GetRoot()
+      BASE_COMPONENT_TYPE & GetRoot()
       {
 	return *m_pBaseWindow;
+      }
+      ////////////////////
+      /// Returns reference to root window:
+      //Phoenix::Gui::CWindow & GetRoot()
+      void SetRoot( BASE_COMPONENT_TYPE *pRoot )
+      {
+	m_pBaseWindow = pRoot;
       }
       ////////////////////
       /// Prepares GUI for action.
@@ -249,9 +269,9 @@ namespace Phoenix
       /// Updates element positions / scaling.
       void EvaluateLayout()
       {
-	TravelDF<CGuiUpdateAdapter, GUI_ELEMENT_TYPE, std::string, int>( 
-									static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), 
-									&m_updaterAdapter );
+	TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE>, GUI_ELEMENT_TYPE, 
+	std::string, int>(  static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), 
+			    &m_updaterAdapter );
       }
       ////////////////////
       /// Passes events to listeners.
@@ -269,15 +289,15 @@ namespace Phoenix
 	ELEMENT_TYPE *pElement = new ELEMENT_TYPE();
 	pElement->SetTransformNode(pNode);
 	// Make element managed by gui element resourcemanager
-	assert( (Phoenix::Core::CResourceManager< Phoenix::Gui::CGuiElement, 
-		Phoenix::Core::CHandle<Phoenix::Gui::CGuiElement> >::GetInstance()->
-		Create( pElement, szResourceName, pNode->GetHandle() ) == 0) && "GUI System: Conflicting element name or Out Of Memory!");
+	assert( (Phoenix::Core::CResourceManager< BASE_COMPONENT_TYPE, 
+		Phoenix::Core::CHandle<BASE_COMPONENT_TYPE> >::GetInstance()->
+		 Create( pElement, szResourceName, pNode->GetHandle() ) == 0) && "GUI System: Conflicting element name or Out Of Memory!");
 	return pElement;
       }
       ////////////////////
       /// Deletes given element from GUI.
       /// \param pPtr Pointer to an element to be deleted.
-      void Delete( Phoenix::Gui::CGuiElement *pPtr )
+      void Delete( BASE_COMPONENT_TYPE *pPtr )
       {
 	assert( pPtr != NULL && "GuiSystem: delete failed, ptr NULL");
 	
@@ -286,17 +306,17 @@ namespace Phoenix
 	// handle gets destroyed when transform node is destroyed, so we can't really use it directly.
 	// Also the handle is never registered to resource manager and never used outside this scope,
 	// so we're on the safe side.
-	Phoenix::Core::CHandle<Phoenix::Gui::CGuiElement> hTmp = pPtr->GetTransformNode()->GetHandle();
+	Phoenix::Core::CHandle<BASE_COMPONENT_TYPE> hTmp = pPtr->GetTransformNode()->GetHandle();
 	// Delete transform node from graph.
         Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>::DeleteNode( static_cast< CGraphNode<GUI_ELEMENT_TYPE> *>(pPtr->GetTransformNode()));
 	// Delete actual object from manager using temp handle.
-        Phoenix::Core::CResourceManager< Phoenix::Gui::CGuiElement, 
-					 Phoenix::Core::CHandle<Phoenix::Gui::CGuiElement> >::GetInstance()->Destroy( hTmp );
+        Phoenix::Core::CResourceManager< BASE_COMPONENT_TYPE, 
+	                                 Phoenix::Core::CHandle<BASE_COMPONENT_TYPE> >::GetInstance()->Destroy( hTmp );
 
       }
       ////////////////////
       /// Registers a receiver.
-      void RegisterReceiver( const GUI_MESSAGE_TYPES & tType, Phoenix::Gui::CGuiElement & rPtr )
+      void RegisterReceiver( const GUI_MESSAGE_TYPES & tType, BASE_COMPONENT_TYPE & rPtr )
       {
 	m_msgRouter.RegisterReceiver( tType, rPtr.GetTransformNode()->GetHandle() );
       }
@@ -304,15 +324,15 @@ namespace Phoenix
       /// Sends mouse click event.
       void EnqueueMouseClick( const Phoenix::Math::CVector2<int> & vPosition )
       {
-	m_msgRouter.EnqueueMessage( new CMouseClickEvent( vPosition ) );
+ 	m_msgRouter.EnqueueMessage( new CMouseClickEvent<BASE_COMPONENT_TYPE>( vPosition ) );
       }
       ////////////////////
       /// Sends mouse motion event.
       void EnqueueMouseMotion( const Phoenix::Math::CVector2<int> &vStart, const Phoenix::Math::CVector2<int> &vEnd  )
       {
-	m_msgRouter.EnqueueMessage( new CMouseMotionEvent() );
+	m_msgRouter.EnqueueMessage( new CMouseMotionEvent<BASE_COMPONENT_TYPE>() );
       }
-
+      
     };
   } // namespace Gui
 } // namespace Phoenix
