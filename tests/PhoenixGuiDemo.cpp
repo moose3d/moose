@@ -38,10 +38,16 @@ class CComponentBase : public CGuiElement<CComponentBase>,
 class CButton : public CComponentBase
 {
   friend class Phoenix::Gui::CGuiSystem<CComponentBase>;
+
 protected:
+  std::string m_strText;
+
   CButton() {
     SetType(GUI_COMP_BUTTON );
   }
+public:  
+  void SetText( const std::string & text ){ m_strText = text; }
+  const std::string &GetText() const { return m_strText; }
 };
 /////////////////////////////////////////////////////////////////
 class CMessageAdapter 
@@ -57,7 +63,6 @@ public:
       if ( rElement.GetType() == GUI_COMP_BUTTON )
       {
 	CButton & btn = static_cast< CButton &>(rElement);
-
 	if ( btn.MouseCoordinatesInside( event.GetCoords()) )
 	{
 	  cerr << "CLICK!" << endl;
@@ -70,9 +75,39 @@ public:
 /////////////////////////////////////////////////////////////////
 class CGuiSystemOGLAdapter
 {
-  void Render( CGuiSystem<CComponentBase> & system )
+private:
+
+  COglRenderer *m_pRenderer;
+  CFontset *m_pFontset;
+public:
+
+  CGuiSystemOGLAdapter() : m_pRenderer(NULL) {}
+
+  void SetRenderer( COglRenderer *pRenderer )
   {
-    
+    m_pRenderer = pRenderer;
+    m_pFontset = pRenderer->CreateFontset("Resources/Fonts/trebuc.ttf", 12);
+  }
+  
+  void Process( CComponentBase & rObject )
+  {
+    if ( rObject.GetType()  == GUI_COMP_BUTTON )
+    {
+      CButton &btn = static_cast<CButton &>(rObject);
+      const CVector3<float> & vPos = rObject.GetWorldTransform().GetTranslation();
+      m_pRenderer->CommitTransform( btn.GetWorldTransform());
+      glColor3f(1,1,1);
+      glPolygonMode( GL_FRONT, GL_LINE);
+      glBegin( GL_QUADS );
+        glVertex2f(vPos[0], vPos[1]);
+	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]);
+	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]+rObject.GetHeight());
+	glVertex2f(vPos[0], vPos[1]+rObject.GetHeight());
+      glEnd();
+      glPolygonMode( GL_FRONT, GL_FILL);
+      m_pRenderer->CommitString( *m_pFontset, vPos[0], vPos[1], btn.GetText().c_str());
+      m_pRenderer->RollbackTransform();
+    }
   }
 };
 /////////////////////////////////////////////////////////////////
@@ -106,7 +141,7 @@ int main()
   camera2D.SetViewOrtho( 0, SCREEN_WIDTH, 0, SCREEN_HEIGHT);
 
   
-
+  
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   
@@ -127,9 +162,11 @@ int main()
 
   CGuiSystem<CComponentBase> *pGuiSystem = new CGuiSystem<CComponentBase>();
   CButton *pButton = pGuiSystem->Create<CButton>( "main.button");
-  pButton->SetWidth( 120);
+  pButton->SetWidth( 120 );
   pButton->SetHeight( 25 );
+  pButton->SetText( std::string("Hello world!"));
   pButton->GetLocalTransform().SetTranslation( 10,10,0);
+  pButton->GetLocalTransform().SetScaling(4.5f);
   pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *static_cast<CComponentBase *>(pButton) );
   
   //pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
@@ -140,6 +177,8 @@ int main()
   //pGuiSystem->Update( );
   //pGuiSystem->
   //pGuiSystem->Delete( pButton);  
+  CGuiRenderAdapter<CComponentBase, CGuiSystemOGLAdapter> guiOglAdapter;
+  guiOglAdapter.GetAdapter().SetRenderer( pOglRenderer );
   
   while( g_bLoop )
   {
@@ -208,6 +247,9 @@ int main()
     pOglRenderer->CommitString( *pFontset, 300, 50+fOffset, "This is a font demo...");
     pOglRenderer->CommitColor( vYellow );
     pOglRenderer->CommitString( *pFontset, 300, 0+fOffset, "... with Phoenix!!!");
+    
+    
+    pGuiSystem->Render<CGuiSystemOGLAdapter>(guiOglAdapter);
     pOglRenderer->Finalize();
     fps++;
     if ( fps.HasPassed(1,0))
