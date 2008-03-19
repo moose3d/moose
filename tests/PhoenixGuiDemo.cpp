@@ -41,13 +41,13 @@ class CButton : public CComponentBase
 
 protected:
   std::string m_strText;
-
   CButton() {
     SetType(GUI_COMP_BUTTON );
   }
 public:  
   void SetText( const std::string & text ){ m_strText = text; }
   const std::string &GetText() const { return m_strText; }
+
 };
 /////////////////////////////////////////////////////////////////
 class CMessageAdapter 
@@ -58,8 +58,6 @@ public:
     if ( rMessage.GetType() == GUI_MSG_MOUSE_CLICK )
     {
       const CMouseClickEvent<CComponentBase> & event = static_cast<const CMouseClickEvent<CComponentBase> &>(rMessage);
-      cerr << "mouse pressed at " << event.GetCoords() << endl;
-      
       if ( rElement.GetType() == GUI_COMP_BUTTON )
       {
 	CButton & btn = static_cast< CButton &>(rElement);
@@ -69,7 +67,17 @@ public:
 	}
       }
 
+    } 
+    else if ( rMessage.GetType() == GUI_MSG_MOUSE_MOTION )
+    {
+      const CMouseMotionEvent<CComponentBase> & event = static_cast<const CMouseMotionEvent<CComponentBase> &>(rMessage);
+      if ( rElement.GetType() == GUI_COMP_BUTTON )
+      {
+	CButton & btn = static_cast< CButton &>(rElement);
+	btn.SetFocus ( btn.MouseCoordinatesInside( event.GetCoords()));
+      }
     }
+
   }
 };
 /////////////////////////////////////////////////////////////////
@@ -96,7 +104,10 @@ public:
       CButton &btn = static_cast<CButton &>(rObject);
       const CVector3<float> & vPos = rObject.GetWorldTransform().GetTranslation();
       m_pRenderer->CommitTransform( btn.GetWorldTransform());
-      glColor3f(1,1,1);
+      if ( btn.HasFocus())
+	glColor3f(0,1,0);
+      else 
+	glColor3f(1,1,1);	
       glPolygonMode( GL_FRONT, GL_LINE);
       glBegin( GL_QUADS );
         glVertex2f(vPos[0], vPos[1]);
@@ -166,17 +177,16 @@ int main()
   pButton->SetHeight( 25 );
   pButton->SetText( std::string("Hello world!"));
   pButton->GetLocalTransform().SetTranslation( 10,10,0);
-  pButton->GetLocalTransform().SetScaling(4.5f);
-  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *static_cast<CComponentBase *>(pButton) );
-  
+  pButton->GetLocalTransform().SetScaling(1.0f);
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *pButton );
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_MOTION, *pButton );
+
   //pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
   pGuiSystem->SetRoot( pButton );
   pGuiSystem->EvaluateLayout();
   pGuiSystem->Prepare();
   CMessageAdapter msgAdapter;
-  //pGuiSystem->Update( );
-  //pGuiSystem->
-  //pGuiSystem->Delete( pButton);  
+
   CGuiRenderAdapter<CComponentBase, CGuiSystemOGLAdapter> guiOglAdapter;
   guiOglAdapter.GetAdapter().SetRenderer( pOglRenderer );
   
@@ -219,6 +229,7 @@ int main()
       case SDL_MOUSEBUTTONUP:
 	break;
       case SDL_MOUSEMOTION:
+	pGuiSystem->EnqueueMouseMotion( CVector2<int>(event.button.x,SCREEN_HEIGHT-event.button.y));
 	break;
       default:
 	break;
