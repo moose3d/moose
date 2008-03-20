@@ -27,6 +27,8 @@ namespace Phoenix
     enum GUI_MESSAGE_TYPES 
     {
       GUI_MSG_MOUSE_MOTION = 0,
+      GUI_MSG_MOUSE_DOWN,
+      GUI_MSG_MOUSE_UP,
       GUI_MSG_MOUSE_CLICK,
       GUI_NUM_OF_MESSAGE_TYPES
     };
@@ -46,12 +48,15 @@ namespace Phoenix
       int	m_bVisible;
       /// Does this element have current focus.
       int	m_bHasFocus;
+      /// Is element pressed.
+      int	m_bPressed;
       /// Transform node for this element.
       GUI_ELEMENT_TNODE_TYPE *m_pTransformNode;
       ////////////////////
       /// Constructor.
       CGuiElement( ) : m_bVisible(0), 
-		       m_bHasFocus(0), 
+		       m_bHasFocus(0),
+		       m_bPressed(0),
 		       m_pTransformNode(NULL) { }
     public:
       ////////////////////
@@ -72,6 +77,14 @@ namespace Phoenix
       /// Sets element visibility.
       /// \param bFlag Non-zero if visible, zero otherwise.
       void SetVisible( int bFlag ) {	m_bVisible = bFlag;  }
+      ////////////////////
+      /// Checks if element is pressed.
+      /// \returns non-zero if pressed, zero otherwise.
+      int IsPressed() const { return m_bPressed; }
+      ////////////////////
+      /// Sets pressed status.
+      /// \param bFlag non-zero if pressed, zero otherwise.
+      void SetPressed( int bFlag ){ m_bPressed = bFlag; }
       ////////////////////
       /// Checks is this element focused.
       /// \returns Non-zero on focus, zero otherwise.
@@ -102,7 +115,7 @@ namespace Phoenix
 	{
 	  return 1;
 	}
-      return 0;
+	return 0;
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -216,6 +229,42 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
+    /// Simple mouse down event.
+    template <class BASE_COMPONENT_TYPE>
+    class CMouseDownEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
+    {
+    private:
+      Phoenix::Math::CVector2<int> m_vCoords;
+    public:
+      CMouseDownEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
+      { 
+	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_DOWN ); 
+	m_vCoords = vCoords; 
+      }
+      const Phoenix::Math::CVector2<int> & GetCoords() const 
+      { 
+	return m_vCoords; 
+      }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Simple mouse up event.
+    template <class BASE_COMPONENT_TYPE>
+    class CMouseUpEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
+    {
+    private:
+      Phoenix::Math::CVector2<int> m_vCoords;
+    public:
+      CMouseUpEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
+      { 
+	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_UP ); 
+	m_vCoords = vCoords; 
+      }
+      const Phoenix::Math::CVector2<int> & GetCoords() const 
+      { 
+	return m_vCoords; 
+      }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Class for GUI system.
     template< class BASE_COMPONENT_TYPE >
     class CGuiSystem : private Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>
@@ -318,6 +367,18 @@ namespace Phoenix
       void EnqueueMouseClick( const Phoenix::Math::CVector2<int> & vPosition )
       {
  	m_msgRouter.EnqueueMessage( new CMouseClickEvent<BASE_COMPONENT_TYPE>( vPosition ) );
+      }
+      ////////////////////
+      /// Sends mouse down event.
+      void EnqueueMouseDown( const Phoenix::Math::CVector2<int> & vPosition )
+      {
+ 	m_msgRouter.EnqueueMessage( new CMouseDownEvent<BASE_COMPONENT_TYPE>( vPosition ) );
+      }
+      ////////////////////
+      /// Sends mouse up event.
+      void EnqueueMouseUp( const Phoenix::Math::CVector2<int> & vPosition )
+      {
+ 	m_msgRouter.EnqueueMessage( new CMouseUpEvent<BASE_COMPONENT_TYPE>( vPosition ) );
       }
       ////////////////////
       /// Sends mouse motion event.

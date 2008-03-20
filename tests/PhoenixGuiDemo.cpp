@@ -27,7 +27,8 @@ float fOffset = 0.0f;
 
 enum GUI_COMPONENT_TYPE 
 {
-  GUI_COMP_BUTTON = 0
+  GUI_COMP_BUTTON = 0,
+  GUI_COMP_PANEL  = 1
 };
 class CComponentBase : public CGuiElement<CComponentBase>,
 		       public CTypeBase<GUI_COMPONENT_TYPE>
@@ -38,7 +39,7 @@ class CComponentBase : public CGuiElement<CComponentBase>,
 class CButton : public CComponentBase
 {
   friend class Phoenix::Gui::CGuiSystem<CComponentBase>;
-
+  
 protected:
   std::string m_strText;
   CButton() {
@@ -47,7 +48,22 @@ protected:
 public:  
   void SetText( const std::string & text ){ m_strText = text; }
   const std::string &GetText() const { return m_strText; }
-
+  
+  TEXTURE_HANDLE m_hNormal;
+};
+/////////////////////////////////////////////////////////////////
+class CPanel : public CComponentBase
+{
+  friend class Phoenix::Gui::CGuiSystem<CComponentBase>;
+  
+protected:
+  std::string m_strText;
+  CPanel() {
+    SetType(GUI_COMP_PANEL );
+  }
+public:  
+  void SetText( const std::string & text ){ m_strText = text; }
+  const std::string &GetText() const { return m_strText; }
 };
 /////////////////////////////////////////////////////////////////
 class CMessageAdapter 
@@ -55,7 +71,7 @@ class CMessageAdapter
 public:
   void Process( const Phoenix::AI::CMessage<CComponentBase, GUI_MESSAGE_TYPES> &rMessage, CComponentBase &rElement )
   {
-    if ( rMessage.GetType() == GUI_MSG_MOUSE_CLICK )
+    if ( rMessage.GetType() == GUI_MSG_MOUSE_UP )
     {
       const CMouseClickEvent<CComponentBase> & event = static_cast<const CMouseClickEvent<CComponentBase> &>(rMessage);
       if ( rElement.GetType() == GUI_COMP_BUTTON )
@@ -63,10 +79,23 @@ public:
 	CButton & btn = static_cast< CButton &>(rElement);
 	if ( btn.MouseCoordinatesInside( event.GetCoords()) )
 	{
-	  cerr << "CLICK!" << endl;
+	  btn.SetPressed(0);
 	}
       }
-
+      
+    } 
+    else if ( rMessage.GetType() == GUI_MSG_MOUSE_DOWN )
+    {
+      const CMouseClickEvent<CComponentBase> & event = static_cast<const CMouseClickEvent<CComponentBase> &>(rMessage);
+      if ( rElement.GetType() == GUI_COMP_BUTTON )
+      {
+	CButton & btn = static_cast< CButton &>(rElement);
+	if ( btn.MouseCoordinatesInside( event.GetCoords()) )
+	{
+	  btn.SetPressed(1);
+	}
+      }
+      
     } 
     else if ( rMessage.GetType() == GUI_MSG_MOUSE_MOTION )
     {
@@ -75,6 +104,7 @@ public:
       {
 	CButton & btn = static_cast< CButton &>(rElement);
 	btn.SetFocus ( btn.MouseCoordinatesInside( event.GetCoords()));
+	if ( !btn.HasFocus() ) btn.SetPressed(0);
       }
     }
 
@@ -103,20 +133,55 @@ public:
     {
       CButton &btn = static_cast<CButton &>(rObject);
       const CVector3<float> & vPos = rObject.GetWorldTransform().GetTranslation();
+
       m_pRenderer->CommitTransform( btn.GetWorldTransform());
+      m_pRenderer->CommitState( STATE_BLENDING );
+      m_pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
+      
       if ( btn.HasFocus())
-	glColor3f(0,1,0);
+	glColor4f(1,1,1,1.0f);
       else 
-	glColor3f(1,1,1);	
-      glPolygonMode( GL_FRONT, GL_LINE);
+	glColor4f(1,1,1,0.25f);	
+      m_pRenderer->CommitTexture( 0, g_DefaultTextureManager->GetResource( btn.m_hNormal) );
+
+      if ( btn.IsPressed() )  
+	glTranslatef(2.0,-2.0,0.0);       
+
       glBegin( GL_QUADS );
+        glTexCoord2f(0,0);
+        glVertex2f(vPos[0], vPos[1]);
+	glTexCoord2f(1,0);
+	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]);
+	glTexCoord2f(1,1);
+	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]+rObject.GetHeight());
+	glTexCoord2f(0,1);
+	glVertex2f(vPos[0], vPos[1]+rObject.GetHeight());
+      glEnd();
+      glColor4f(1,1,1,1);
+      m_pRenderer->CommitString( *m_pFontset, vPos[0], vPos[1], btn.GetText().c_str());
+      m_pRenderer->RollbackTransform();
+      m_pRenderer->DisableState( STATE_BLENDING );
+      m_pRenderer->DisableTexture( 0, g_DefaultTextureManager->GetResource( btn.m_hNormal) );
+    }
+    else if ( rObject.GetType() == GUI_COMP_PANEL )
+    {
+      CPanel &pnl = static_cast<CPanel &>(rObject);
+      const CVector3<float> & vPos = rObject.GetWorldTransform().GetTranslation();
+
+      m_pRenderer->CommitTransform( pnl.GetWorldTransform());
+      m_pRenderer->CommitState( STATE_BLENDING );
+      m_pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
+      glColor4f(0.625,0.9825f,1,0.25f);	
+      glBegin( GL_QUADS );
+
         glVertex2f(vPos[0], vPos[1]);
 	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]);
 	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]+rObject.GetHeight());
 	glVertex2f(vPos[0], vPos[1]+rObject.GetHeight());
+
       glEnd();
-      glPolygonMode( GL_FRONT, GL_FILL);
-      m_pRenderer->CommitString( *m_pFontset, vPos[0], vPos[1], btn.GetText().c_str());
+      glColor4f(1,1,1,1);
+      m_pRenderer->CommitString( *m_pFontset, vPos[0], vPos[1]+pnl.GetHeight()-12, pnl.GetText().c_str());
       m_pRenderer->RollbackTransform();
     }
   }
@@ -171,22 +236,49 @@ int main()
   CFpsCounter fps;
   fps.Reset();
 
+
+  
   CGuiSystem<CComponentBase> *pGuiSystem = new CGuiSystem<CComponentBase>();
+  CPanel *pPanel = pGuiSystem->Create<CPanel>( "main.panel" );
+  pPanel->SetWidth( 128 );
+  pPanel->SetHeight( 256 );
+  pPanel->SetText(" ======= Ships ======= " );
+  pPanel->GetLocalTransform().SetScaling( 1.00f);
+  pGuiSystem->SetRoot(pPanel);
+  
   CButton *pButton = pGuiSystem->Create<CButton>( "main.button");
-  pButton->SetWidth( 120 );
-  pButton->SetHeight( 25 );
-  pButton->SetText( std::string("Hello world!"));
+  pButton->SetWidth( 128 );
+  pButton->SetHeight( 32 );
+  COglTexture *pTex = pOglRenderer->CreateTexture( "Resources/Textures/omega_icon.tga" );
+  assert( g_DefaultTextureManager->Create( pTex, "omega_icon", pButton->m_hNormal) == 0);
+  
+  pButton->SetText( std::string("Backgammon"));
   pButton->GetLocalTransform().SetTranslation( 10,10,0);
   pButton->GetLocalTransform().SetScaling(1.0f);
-  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_CLICK, *pButton );
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_DOWN, *pButton );
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_UP, *pButton );
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_MOTION, *pButton );
+  pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+
+  pButton = pGuiSystem->Create<CButton>( "main.button2");
+  pButton->SetWidth( 128 );
+  pButton->SetHeight( 32 );
+  pTex = pOglRenderer->CreateTexture( "Resources/Textures/enterprise_icon.tga" );
+  assert( g_DefaultTextureManager->Create( pTex, "enterprise_icon", pButton->m_hNormal) == 0);
+  
+  pButton->SetText( std::string("CPP Potkustart"));
+  pButton->GetLocalTransform().SetTranslation( 10,40,0);
+  pButton->GetLocalTransform().SetScaling(1.0f);
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_DOWN, *pButton );
+  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_UP, *pButton );
   pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_MOTION, *pButton );
 
-  //pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
-  pGuiSystem->SetRoot( pButton );
+  pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+
   pGuiSystem->EvaluateLayout();
   pGuiSystem->Prepare();
   CMessageAdapter msgAdapter;
-
+  
   CGuiRenderAdapter<CComponentBase, CGuiSystemOGLAdapter> guiOglAdapter;
   guiOglAdapter.GetAdapter().SetRenderer( pOglRenderer );
   
@@ -224,9 +316,10 @@ int main()
 	} 
 	break;
       case SDL_MOUSEBUTTONDOWN:
-	pGuiSystem->EnqueueMouseClick( CVector2<int>(event.button.x,SCREEN_HEIGHT-event.button.y));
+	pGuiSystem->EnqueueMouseDown( CVector2<int>(event.button.x,SCREEN_HEIGHT-event.button.y));
 	break;
       case SDL_MOUSEBUTTONUP:
+	pGuiSystem->EnqueueMouseUp( CVector2<int>(event.button.x,SCREEN_HEIGHT-event.button.y));
 	break;
       case SDL_MOUSEMOTION:
 	pGuiSystem->EnqueueMouseMotion( CVector2<int>(event.button.x,SCREEN_HEIGHT-event.button.y));
