@@ -107,8 +107,8 @@ namespace Phoenix
 	// Convert coords 
 	float fWidth  = matrix(0,0) * GetWidth();
 	float fHeight = matrix(1,1) * GetHeight();
-	float fX = matrix(0,0) * vTransl[0] + matrix(0,3);
-	float fY = matrix(1,1) * vTransl[1] + matrix(1,3);
+	float fX = matrix(0,0) * vTransl[0];// + matrix(0,3);
+	float fY = matrix(1,1) * vTransl[1];// + matrix(1,3);
 	// actual checking
 	if ( vCoords[0] > (int)fX && vCoords[0] < (int)(fX+fWidth) &&
 	     vCoords[1] > (int)fY && vCoords[1] < (int)(fY+fHeight) )
@@ -309,11 +309,13 @@ namespace Phoenix
       }
       ////////////////////
       /// Updates element positions / scaling.
-      void EvaluateLayout()
+      void EvaluateLayout( CGraphNode<GUI_ELEMENT_TYPE> * pNode = NULL )
       {
-	TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE>, GUI_ELEMENT_TYPE, 
-	std::string, int>(  static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), 
-			    &m_updaterAdapter );
+	if ( !pNode )
+	{
+	  pNode = static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode());
+	}
+	TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE>, GUI_ELEMENT_TYPE, std::string, int>( pNode, &m_updaterAdapter );
       }
       ////////////////////
       /// Passes events to listeners.
