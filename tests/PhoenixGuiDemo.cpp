@@ -20,8 +20,8 @@ using std::endl;
 int g_bLoop = 1;
 int g_bGlow = 0;
 //const float g_fRotationSpeedPerSec = 56.15f;
-const unsigned int SCREEN_WIDTH = 640;
-const unsigned int SCREEN_HEIGHT = 480;
+const unsigned int SCREEN_WIDTH = 1280;
+const unsigned int SCREEN_HEIGHT = 800;
 
 float fOffset = 0.0f;
 
@@ -42,8 +42,11 @@ class CButton : public CComponentBase
   
 protected:
   std::string m_strText;
-  CButton() {
+  CButton() 
+  {
     SetType(GUI_COMP_BUTTON );
+    SetWidth( 28 );
+    SetHeight( 10 );
   }
 public:  
   void SetText( const std::string & text ){ m_strText = text; }
@@ -124,7 +127,7 @@ public:
   void SetRenderer( COglRenderer *pRenderer )
   {
     m_pRenderer = pRenderer;
-    m_pFontset = pRenderer->CreateFontset("Resources/Fonts/trebuc.ttf", 12);
+    m_pFontset = pRenderer->CreateFontset("Resources/Fonts/verdanab.ttf", 14);
   }
   
   void Process( CComponentBase & rObject )
@@ -132,36 +135,29 @@ public:
     if ( rObject.GetType()  == GUI_COMP_BUTTON )
     {
       CButton &btn = static_cast<CButton &>(rObject);
-      const CVector3<float> & vPos = rObject.GetWorldTransform().GetTranslation();
 
       m_pRenderer->CommitTransform( btn.GetWorldTransform());
-      m_pRenderer->CommitState( STATE_BLENDING );
-      m_pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
       
-      if ( btn.HasFocus())
-	glColor4f(1,1,1,1.0f);
-      else 
-	glColor4f(1,1,1,0.25f);	
+      
+      if ( btn.HasFocus())	glColor4f(1,1,1,1.0f);
+      else			glColor4f(1,1,1,0.725f);	
+
       m_pRenderer->CommitTexture( 0, g_DefaultTextureManager->GetResource( btn.m_hNormal) );
 
       if ( btn.IsPressed() )  
 	glTranslatef(2.0,-2.0,0.0);       
 
       glBegin( GL_QUADS );
-        glTexCoord2f(0,0);
-        glVertex2f(vPos[0], vPos[1]);
-	glTexCoord2f(1,0);
-	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]);
-	glTexCoord2f(1,1);
-	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]+rObject.GetHeight());
-	glTexCoord2f(0,1);
-	glVertex2f(vPos[0], vPos[1]+rObject.GetHeight());
+      glTexCoord2f(0,0);      glVertex2f(0, 0);
+      glTexCoord2f(1,0);      glVertex2f(rObject.GetWidth(), 0);
+      glTexCoord2f(1,1);      glVertex2f(rObject.GetWidth(), rObject.GetHeight());
+      glTexCoord2f(0,1);      glVertex2f(0, rObject.GetHeight());
       glEnd();
-      glColor4f(1,1,1,1);
-      m_pRenderer->CommitString( *m_pFontset, vPos[0], vPos[1], btn.GetText().c_str());
+      
+      // glColor4f(1,1,1,1);
+//       m_pRenderer->CommitString( *m_pFontset, btn.GetWidth(), 5, btn.GetText().c_str());
       m_pRenderer->RollbackTransform();
-      m_pRenderer->DisableState( STATE_BLENDING );
-      m_pRenderer->DisableTexture( 0, g_DefaultTextureManager->GetResource( btn.m_hNormal) );
+      
     }
     else if ( rObject.GetType() == GUI_COMP_PANEL )
     {
@@ -172,18 +168,23 @@ public:
       m_pRenderer->CommitState( STATE_BLENDING );
       m_pRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );
       glColor4f(0.625,0.9825f,1,0.25f);	
+      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
       glBegin( GL_QUADS );
 
-        glVertex2f(vPos[0], vPos[1]);
-	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]);
-	glVertex2f(vPos[0]+rObject.GetWidth(), vPos[1]+rObject.GetHeight());
-	glVertex2f(vPos[0], vPos[1]+rObject.GetHeight());
+        glVertex2f(0,			0);
+	glVertex2f(rObject.GetWidth(),  0);
+	glVertex2f(rObject.GetWidth(),  rObject.GetHeight());
+	glVertex2f(0,			rObject.GetHeight());
 
       glEnd();
+      glPolygonMode( GL_FRONT, GL_FILL );
       glColor4f(1,1,1,1);
-      m_pRenderer->CommitString( *m_pFontset, vPos[0], vPos[1]+pnl.GetHeight()-12, pnl.GetText().c_str());
+      m_pRenderer->CommitString( *m_pFontset, 10, pnl.GetHeight(), pnl.GetText().c_str());
+
+      
       m_pRenderer->RollbackTransform();
     }
+    
   }
 };
 /////////////////////////////////////////////////////////////////
@@ -192,8 +193,8 @@ int main()
   
   CSDLScreen::m_SDLScreenParams.m_iWidth = SCREEN_WIDTH;
   CSDLScreen::m_SDLScreenParams.m_iHeight= SCREEN_HEIGHT;
-  //CSDLScreen::m_SDLScreenParams.m_iVideoModeFlags |= SDL_FULLSCREEN;
-
+  CSDLScreen::m_SDLScreenParams.m_iVideoModeFlags |= SDL_FULLSCREEN;
+  
   if ( !CSDLScreen::GetInstance() )
   {
     std::cerr << "Couldn't open screen" << std::endl;
@@ -235,48 +236,69 @@ int main()
   CVector4<unsigned char> vYellow(255,255,0,255);
   CFpsCounter fps;
   fps.Reset();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-
+  glTranslatef( 0,380,0);
+  glScalef(0.75,0.75,0.75);
+  
+  CMatrix4x4<float> matrix;
+  glGetFloatv( GL_MODELVIEW_MATRIX, matrix.GetArray());
   
   CGuiSystem<CComponentBase> *pGuiSystem = new CGuiSystem<CComponentBase>();
   CPanel *pPanel = pGuiSystem->Create<CPanel>( "main.panel" );
-  pPanel->SetWidth( 128 );
-  pPanel->SetHeight( 256 );
-  pPanel->SetText(" ======= Ships ======= " );
-  pPanel->GetLocalTransform().SetScaling( 1.00f);
+  pPanel->SetText("P-Fleet Ships");
+  pPanel->SetWidth(230);
+  pPanel->SetHeight(200);
+  pPanel->GetLocalTransform().SetScaling(2.5f);
   pGuiSystem->SetRoot(pPanel);
+  pPanel->GetLocalTransform().SetTranslation( 0, 380,0);
+  
+  
+  
+  
   
   CButton *pButton = pGuiSystem->Create<CButton>( "main.button");
-  pButton->SetWidth( 128 );
-  pButton->SetHeight( 32 );
   COglTexture *pTex = pOglRenderer->CreateTexture( "Resources/Textures/omega_icon.tga" );
   assert( g_DefaultTextureManager->Create( pTex, "omega_icon", pButton->m_hNormal) == 0);
   
   pButton->SetText( std::string("Backgammon"));
-  pButton->GetLocalTransform().SetTranslation( 10,10,0);
+  pButton->GetLocalTransform().SetTranslation( 10,0,0);
   pButton->GetLocalTransform().SetScaling(1.0f);
-  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_DOWN, *pButton );
-  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_UP, *pButton );
-  pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_MOTION, *pButton );
-  pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
-
-  pButton = pGuiSystem->Create<CButton>( "main.button2");
-  pButton->SetWidth( 128 );
-  pButton->SetHeight( 32 );
-  pTex = pOglRenderer->CreateTexture( "Resources/Textures/enterprise_icon.tga" );
-  assert( g_DefaultTextureManager->Create( pTex, "enterprise_icon", pButton->m_hNormal) == 0);
   
-  pButton->SetText( std::string("CPP Potkustart"));
-  pButton->GetLocalTransform().SetTranslation( 10,40,0);
-  pButton->GetLocalTransform().SetScaling(1.0f);
   pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_DOWN, *pButton );
   pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_UP, *pButton );
   pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_MOTION, *pButton );
 
   pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+
+
+  pTex = pOglRenderer->CreateTexture( "Resources/Textures/enterprise_icon.tga" );
+  assert( g_DefaultTextureManager->Create( pTex, "enterprise_icon") == 0);
+  size_t i=0;
+
+  while( i<40 )
+  {
+    std::ostringstream name;
+    name << "main.button" << i;
+
+    pButton = pGuiSystem->Create<CButton>( name.str().c_str() );
+    pButton->SetText( std::string("CPP Potkustart"));
+    pButton->GetLocalTransform().SetTranslation( 10+35*(i%6),(int)(i/6)*20,0);
+    
+    assert( g_DefaultTextureManager->AttachHandle( "enterprise_icon", pButton->m_hNormal ) == 0);
+    pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_DOWN, *pButton );
+    pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_UP, *pButton );
+    pGuiSystem->RegisterReceiver( GUI_MSG_MOUSE_MOTION, *pButton );
+    pGuiSystem->GetRoot().GetTransformNode()->AddEdge( pButton->GetTransformNode());
+    
+    ++i;
+  }
+
 
   pGuiSystem->EvaluateLayout();
   pGuiSystem->Prepare();
+  
   CMessageAdapter msgAdapter;
   
   CGuiRenderAdapter<CComponentBase, CGuiSystemOGLAdapter> guiOglAdapter;
@@ -352,8 +374,14 @@ int main()
     pOglRenderer->CommitColor( vYellow );
     pOglRenderer->CommitString( *pFontset, 300, 0+fOffset, "... with Phoenix!!!");
     
-    
+    pOglRenderer->CommitState( STATE_BLENDING );
+    pOglRenderer->CommitBlending( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA );    
+
+    //pOglRenderer->CommitCamera( camera2D );
     pGuiSystem->Render<CGuiSystemOGLAdapter>(guiOglAdapter);
+    pOglRenderer->DisableState( STATE_BLENDING );
+    
+
     pOglRenderer->Finalize();
     fps++;
     if ( fps.HasPassed(1,0))
