@@ -102,20 +102,19 @@ namespace Phoenix
       /// Mouse clicks must be in OpenGL Window format, (0,0) is in left lower corner.
       virtual int MouseCoordinatesInside( const Phoenix::Math::CVector2<int> &vCoords ) 
       {
-	const Phoenix::Math::CVector3<float> & vTransl  = GetWorldTransform().GetTranslation();
 	const Phoenix::Math::CMatrix4x4<float> & matrix = GetWorldTransform().GetMatrix();
-	// Convert coords 
-	float fWidth  = matrix(0,0) * GetWidth();
-	float fHeight = matrix(1,1) * GetHeight();
-	float fX = matrix(0,0) * vTransl[0];// + matrix(0,3);
-	float fY = matrix(1,1) * vTransl[1];// + matrix(1,3);
+	// Convert coords;
+	// first scale, then add translation
+	float fX1  = matrix(0,0) * (GetWidth() ) + matrix(0,3);
+	float fY1 = matrix(1,1) * (GetHeight() ) + matrix(1,3);
+	// Origin is always at (0,0)
+	float fX0 =  matrix(0,3);
+	float fY0 =  matrix(1,3);
 	// actual checking
-	if ( vCoords[0] > (int)fX && vCoords[0] < (int)(fX+fWidth) &&
-	     vCoords[1] > (int)fY && vCoords[1] < (int)(fY+fHeight) )
-	{
-	  return 1;
-	}
-	return 0;
+	return ( (vCoords[0] > (int)fX0)    && 
+		 (vCoords[0] < (int)(fX1)) && 
+		 (vCoords[1] > (int)fY0)    && 
+		 (vCoords[1] < (int)(fY1)) );
       }
     };
     /////////////////////////////////////////////////////////////////
