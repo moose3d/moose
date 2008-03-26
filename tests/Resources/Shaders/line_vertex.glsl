@@ -1,6 +1,7 @@
 attribute vec4 endposThickness;
 varying float alpha;
 uniform vec2 time;
+
 void main()
 {
 	/* into EYE coordinates */	
