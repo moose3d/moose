@@ -62,6 +62,26 @@ namespace Phoenix
       void SetEnabled(int bFlag ) { m_bEnabled = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
+    class CSelectable
+    {
+    private:
+      /// Is object selected.
+      int		m_bSelected;
+    protected:
+      ////////////////////
+      /// Default constructor. Unselects object.
+      CSelectable() : m_bSelected(0){ }
+    public:
+      ////////////////////
+      /// Returns is object selected or unselected.
+      /// \returns true for selected, false for unselected.
+      int IsSelected() const {   return m_bSelected; }
+      ////////////////////
+      /// Sets object selected or unselected.
+      /// \param bFlag Boolean flag - true for selecting, false for unselecting.
+      void SetSelected(int bFlag ) { m_bSelected = bFlag; }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Template base for each typed object.
     template <typename TYPE>
     class CTypeBase
