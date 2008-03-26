@@ -5,14 +5,14 @@
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixSpatial.h"
 #include "PhoenixFrustum.h"
-using namespace Phoenix::Spatial;
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
   {
     /////////////////////////////////////////////////////////////////
     /// Camera class.
-    class CCamera : public CPositional, public COrientable
+    class CCamera : public Phoenix::Spatial::CPositional, public Phoenix::Spatial::COrientable
     {
     protected:
       /// field of view angle in degrees.
