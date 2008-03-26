@@ -43,12 +43,6 @@ TEST(CVector2_Set)
   vectorInit1.Set(g_aResultTwo);
   CHECK_ARRAY_CLOSE( g_aResultTwo,  vectorInit1.GetArray(), 2, 0.001f);
 }
-TEST(CVector2_UseExternalData)
-{
-  CVector2<float> vectorInit1;
-  vectorInit1.UseExternalData(g_aResultTwo);
-  CHECK_ARRAY_CLOSE(  g_aResultTwo,  vectorInit1.GetArray(), 2, 0.001f);
-}
 /////////////////////////////////////////////////////////////////
 TEST(CVector2_OperatorParenthesis)
 {

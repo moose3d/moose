@@ -46,12 +46,6 @@ TEST(CVector3_Set)
   vectorInit1.Set(g_aResultTwo);
   CHECK_ARRAY_CLOSE( g_aResultTwo,  vectorInit1.GetArray(), 3, 0.001f);
 }
-TEST(CVector3_UseExternalData)
-{
-  CVector3<float> vectorInit1;
-  vectorInit1.UseExternalData(g_aResultTwo);
-  CHECK_ARRAY_CLOSE(  g_aResultTwo,  vectorInit1.GetArray(), 3, 0.001f);
-}
 /////////////////////////////////////////////////////////////////
 TEST(CVector3_OperatorParenthesis)
 {

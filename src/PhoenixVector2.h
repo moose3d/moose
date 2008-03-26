@@ -77,13 +77,6 @@ namespace Phoenix
 	m_pValues[1] = pArray[1];
       }
       ////////////////////
-      /// Makes the vector to handle data from pArray, it won't be released if object is deleted.
-      void UseExternalData( TYPE *pArray )
-      {
-	m_pValues = pArray;
-	m_bExternalData = 1;
-      }
-      ////////////////////
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
@@ -335,13 +328,7 @@ namespace Phoenix
 	m_pValues[0] = pArray[0];
 	m_pValues[1] = pArray[1];
       }
-      ////////////////////
-      /// Makes the vector to handle data from pArray, it won't be released if object is deleted.
-      void UseExternalData( float *pArray )
-      {
-	m_pValues = pArray;
-	m_bExternalData = 1;
-      }
+      
       ////////////////////
       /// Returns value of an element.
       /// \param nIndex Element index.

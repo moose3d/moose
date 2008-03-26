@@ -21,7 +21,7 @@ Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
   
   float fDistanceOne = 0.0f, fDistanceTwo = 0.0f;
   CVector3<float> vNormal;
-  vNormal.UseExternalData( const_cast<CPlane &>(plane).GetArray());
+  vNormal.Set( const_cast<CPlane &>(plane).GetArray());
   
   fDistanceOne = vNormal.Dot( line.GetStart() ) + plane[3];
   fDistanceTwo = vNormal.Dot( line.GetEnd() ) + plane[3];
@@ -69,7 +69,7 @@ Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
 					CVector3<float> &vCollisionPoint )
 {
   CVector3<float> vNormal;
-  vNormal.UseExternalData( const_cast<CPlane &>(plane).GetArray() );
+  vNormal.Set( const_cast<CPlane &>(plane).GetArray() );
   // The negated distance of the vPoint1 from the plane 
   float fNumerator = -(vNormal.Dot(ray.GetPosition()) + plane[3]);
   // The vNormal · vDir = cos( angle( vNormal, vDir ))
@@ -199,7 +199,7 @@ float
 Phoenix::Collision::PointDistanceFromPlane( const CVector3<float> &vPoint, const CPlane & plane )
 {
   CVector3<float> vNormal;
-  vNormal.UseExternalData(const_cast<CPlane &>(plane).GetArray());
+  vNormal.Set(const_cast<CPlane &>(plane).GetArray());
   return vNormal.Dot(vPoint) + plane[3];
 }
 /////////////////////////////////////////////////////////////////
@@ -444,7 +444,7 @@ Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
 
   // Using separate axis theorem (SAT), perform checking.
   CVector3<float> vNormal;
-  vNormal.UseExternalData(const_cast<CPlane &>(plane).GetArray());
+  vNormal.Set(const_cast<CPlane &>(plane).GetArray());
 
   float fValue;
   float fTmp = fabsf(box.GetHalfLength()*(vNormal.Dot(box.GetForwardVector())));
@@ -468,7 +468,7 @@ Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
 
   // Using separate axis theorem (SAT), perform checking.
   CVector3<float> vNormal;
-  vNormal.UseExternalData(const_cast<CPlane &>(plane).GetArray());
+  vNormal.Set(const_cast<CPlane &>(plane).GetArray());
 
   float fValue;
   float fTmp = fabsf(box.GetHalfLength()*vNormal[2]);
@@ -527,7 +527,7 @@ Phoenix::Collision::SphereIntersectsPlane( const Phoenix::Math::CPlane &plane,
 {
 
   CVector3<float> vNormal;
-  vNormal.UseExternalData(const_cast<Phoenix::Math::CPlane &>(plane).GetArray());
+  vNormal.Set(const_cast<Phoenix::Math::CPlane &>(plane).GetArray());
   float fDistance = vNormal.Dot(sphere.GetPosition()) + plane[3];
   fCenterDistance = fDistance;
   // Check does sphere intersect

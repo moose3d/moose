@@ -23,30 +23,31 @@ namespace Phoenix
 {
   namespace Math 
   {
+    CMatrix4x4<float> TranslationMatrix(float fX, float fY, float fZ) __attribute__((deprecated));
     ////////////////////
     /// Generates a Rotation matrix which corresponds to rotation of fRadians rad
     /// over axis (fX, fY, fZ)
-    CMatrix4x4<float> RotationMatrix(float fX, float fY, float fZ, float fRadians);
+    CMatrix4x4<float> RotationMatrix(float fX, float fY, float fZ, float fRadians) __attribute__((deprecated));
     ////////////////////
     /// Generates a Rotation matrix which corresponds to rotation of fRadians rad
     /// over axis vAxis
-    CMatrix4x4<float> RotationMatrix(const Phoenix::Math::CVector3<float> &vAxis, float fRadians);
+    CMatrix4x4<float> RotationMatrix(const Phoenix::Math::CVector3<float> &vAxis, float fRadians) __attribute__((deprecated));
     ////////////////////
     /// Generates a rotation matrix from (x,y,z) -axis rotations 
     /// rotation fX radians using X-axis, fY rad over Y-axis and fZ rad over Z-axis.
-    CMatrix4x4<float> RotationMatrix(float fX, float fY, float fZ );
+    CMatrix4x4<float> RotationMatrix(float fX, float fY, float fZ )__attribute__((deprecated));
     ////////////////////
     /// Generates a rotation matrix from (x,y,z) -axis rotations 
     /// rotation vRadians[X] radians using X-axis, 
     /// vRadians[Y] rad over Y-axis and vRadians[Z] rad over Z-axis.
-    CMatrix4x4<float> RotationMatrix(const Phoenix::Math::CVector3<float> & vRadians );
+    CMatrix4x4<float> RotationMatrix(const Phoenix::Math::CVector3<float> & vRadians )__attribute__((deprecated));
     ////////////////////
     /// Generates a translation matrix .
     /// \param fX X-axis translation.
     /// \param fY Y-axis translation.
     /// \param fZ Z-axis translation.
     /// \returns Translation Matrix.
-    inline CMatrix4x4<float> TranslationMatrix(float fX, float fY, float fZ)
+    inline CMatrix4x4<float> TranslationMatrix(float fX, float fY, float fZ) 
     {
       return CMatrix4x4<float>( 1,0,0,fX,
 				0,1,0,fY,
@@ -121,15 +122,15 @@ namespace Phoenix
     // Copies values from the vVector to iColth column of the matrix mMatrix
     void SetColumnVector(Phoenix::Math::CMatrix3x3<float> &mMatrix, unsigned int iCol, CVector3<float> vVector);
     // Translates the vector v by matrix m ( doesn't use scaling or rotation )
-    CVector3<float> Translate(CVector3<float> v, Phoenix::Math::CMatrix4x4<float> m);
+    CVector3<float> Translate(CVector3<float> v, Phoenix::Math::CMatrix4x4<float> m) __attribute__((deprecated));
     // Translates the vector v by the inverse of translation matrix m ( doesn't use scaling or rotation )
-    CVector3<float> TranslateInverse(Phoenix::Math::CVector3<float> v, Phoenix::Math::CMatrix4x4<float> m);
+    CVector3<float> TranslateInverse(Phoenix::Math::CVector3<float> v, Phoenix::Math::CMatrix4x4<float> m) __attribute__((deprecated));
     // Rotates vector v by matrix m ( doesn't use scaling or translation )
-    CVector3<float> Rotate( const Phoenix::Math::CVector3<float> & v, const Phoenix::Math::CMatrix4x4<float> &m);
+    CVector3<float> Rotate( const Phoenix::Math::CVector3<float> & v, const Phoenix::Math::CMatrix4x4<float> &m) __attribute__((deprecated));
     // Transforms vector v by matrix (scaling, rotation and translation is applied)
-    CVector3<float> Transform( const Phoenix::Math::CVector3<float> &v, const Phoenix::Math::CMatrix4x4<float> &m);
+    CVector3<float> Transform( const Phoenix::Math::CVector3<float> &v, const Phoenix::Math::CMatrix4x4<float> &m) __attribute__((deprecated));
     // Multiplies vector vVector from right by matrix mMatrix  ( mMatrix * vVector );
-    CVector3<float> MultiplyFromRight( Phoenix::Math::CMatrix3x3<float> mMatrix, Phoenix::Math::CVector3<float> &vVector);
+    CVector3<float> MultiplyFromRight( Phoenix::Math::CMatrix3x3<float> mMatrix, Phoenix::Math::CVector3<float> &vVector) __attribute__((deprecated));
     ////////////////////
     /// Removes row and column from matrix, creating new submatrix.
     /// \param mMatrix orignal matrix.
@@ -165,10 +166,10 @@ namespace Phoenix
   
     ////////////////////
     /// Converts a rotation matrix into a quaternion.
-    CQuaternion RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix );
+    CQuaternion RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix ) __attribute__((deprecated));
     CVector3<float> RotateAroundPoint( const CVector3<float> & vVector, 
 				       const CVector3<float> & vPoint, 
-				       const CQuaternion & ref );
+				       const CQuaternion & ref ) __attribute__((deprecated));
     ////////////////////
     /// Rotates vector using quaternion.
     /// \param qRotation CQuaternion expressing rotation.
@@ -206,13 +207,13 @@ namespace Phoenix
     /// \param v0 some vector.
     /// \param v1 another vector.
     /// \returns Quaternion expressing rotation from v0 to v1. If (v0 == -v1), result is undefined.
-    CQuaternion RotationArc( CVector3<float> v0, CVector3<float> v1);
+    CQuaternion RotationArc( CVector3<float> v0, CVector3<float> v1 ) __attribute__((deprecated));
     ////////////////////
     /// Performs a spherical linear interpolation between quaternions qFrom and qTo.
     /// \param qFrom Rotation which is the beginning.
     /// \param qTo Rotation which is the end.
     /// \float fInterpolation between 0.0f (qFrom) and 1.0f (qTo).
-    CQuaternion Slerp(CQuaternion qFrom, CQuaternion qTo, float fInterpolation);
+    CQuaternion Slerp(CQuaternion qFrom, CQuaternion qTo, float fInterpolation) __attribute__((deprecated));;
 
     ////////////////////
     /// Inverses matrix.

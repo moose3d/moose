@@ -14,8 +14,8 @@ CQuaternion::operator * ( const CQuaternion & qQuat ) const
   Phoenix::Math::CVector3<float>		vTmp2;
   Phoenix::Math::CVector3<float>		vResult;
   
-  vTmp1.UseExternalData( m_pValues );
-  vTmp2.UseExternalData( qQuat.m_pValues );
+  vTmp1.Set( m_pValues );
+  vTmp2.Set( qQuat.m_pValues );
   
   vResult =  vTmp1 * qQuat[3];
   vResult += vTmp2 * At(3);

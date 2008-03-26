@@ -198,13 +198,13 @@ TEST(CalculateTangentArray_CalculateTangents)
   
   CVector4<float> vTangent;
 
-  vTangent.UseExternalData( &pTangents->GetPointer<float>()[0]);
+  vTangent.Set( &pTangents->GetPointer<float>()[0]);
   CHECK_ARRAY_CLOSE( vecTriangles[0].GetVertex(0).GetAttrib4().GetArray(), vTangent.GetArray(), 4, 0.001f);
   
-  vTangent.UseExternalData( &pTangents->GetPointer<float>()[4]);
+  vTangent.Set( &pTangents->GetPointer<float>()[4]);
   CHECK_ARRAY_CLOSE( vecTriangles[0].GetVertex(1).GetAttrib4().GetArray(), vTangent.GetArray(), 4, 0.001f);
 
-  vTangent.UseExternalData( &pTangents->GetPointer<float>()[8]);
+  vTangent.Set( &pTangents->GetPointer<float>()[8]);
   CHECK_ARRAY_CLOSE( vecTriangles[0].GetVertex(2).GetAttrib4().GetArray(), vTangent.GetArray(), 4, 0.001f);
   
   

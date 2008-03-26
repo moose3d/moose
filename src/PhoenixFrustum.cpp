@@ -74,7 +74,7 @@ Phoenix::Graphics::CFrustum::IntersectsAABB( const Phoenix::Volume::CAxisAligned
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {  
     const CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
-    vNormal.UseExternalData( const_cast<float *>(plane.GetArray()));
+    vNormal.Set( const_cast<float *>(plane.GetArray()));
     fEffectiveRadius = fabsf((aaBox.GetHalfWidth() *vX).Dot(vNormal)) + 
                        fabsf((aaBox.GetHalfHeight()*vY).Dot(vNormal)) + 
                        fabsf((aaBox.GetHalfLength()*vZ).Dot(vNormal));
@@ -100,7 +100,7 @@ Phoenix::Graphics::CFrustum::IntersectsCube( const Phoenix::Volume::CAxisAligned
   for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++)
   {  
     const CPlane &plane = GetPlane( (FRUSTUM_PLANE)iPlane );
-    vNormal.UseExternalData( const_cast<float *>(plane.GetArray()));
+    vNormal.Set( const_cast<float *>(plane.GetArray()));
     fEffectiveRadius = fabsf(vHalfWidthX.Dot(vNormal)) + 
                        fabsf(vHalfWidthY.Dot(vNormal)) + 
                        fabsf(vHalfWidthZ.Dot(vNormal));
@@ -204,7 +204,7 @@ Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere ) const
     
 //     for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++){
       
-//       vNormal.UseExternalData( m_aPlanes[iPlane]->m_pValues);
+//       vNormal.Set( m_aPlanes[iPlane]->m_pValues);
 //       // Since axes from COrientable are always Unit length,
 //       // we include proper dimensions in the equation.
 //       fEffRadius = 0.5f * ( fabsf( (obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal) ) +
@@ -238,7 +238,7 @@ Phoenix::Graphics::CFrustum::IntersectsSphere( const CSphere &sphere ) const
 
 //     for(int iPlane=0;iPlane<NUM_FRUSTUM_PLANES;iPlane++){
       
-//       vNormal.UseExternalData( m_aPlanes[iPlane]->m_pValues);
+//       vNormal.Set( m_aPlanes[iPlane]->m_pValues);
 
 //       // Since axes from COrientable are always Unit length,
 //       // we include proper dimensions in the equation.

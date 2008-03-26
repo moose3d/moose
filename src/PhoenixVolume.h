@@ -116,13 +116,22 @@ namespace Phoenix
       /// Planes oriented along the box walls.
       Phoenix::Math::CPlane    m_Planes[6];    
       /// Corners of box, 3 floats, 8 corners
-      float     m_aCorners[24]; 
+      Phoenix::Math::CVector3<float>     m_vecCorners[8]; 
     public:
       ////////////////////
       /// Constructor.
       COrientedBox() 
       {
-	memset(m_aCorners,0,sizeof(float)*24);
+	//memset(m_aCorners,0,sizeof(float)*24);
+	// reset coords. (Is it really necessary?)
+	// m_vecCorners[0][0] = m_vecCorners[0][1] =  m_vecCorners[0][2] = 0.0f;
+// 	m_vecCorners[1][0] = m_vecCorners[1][1] =  m_vecCorners[1][2] = 0.0f;
+// 	m_vecCorners[2][0] = m_vecCorners[2][1] =  m_vecCorners[2][2] = 0.0f;
+// 	m_vecCorners[3][0] = m_vecCorners[3][1] =  m_vecCorners[3][2] = 0.0f;
+// 	m_vecCorners[4][0] = m_vecCorners[4][1] =  m_vecCorners[4][2] = 0.0f;
+// 	m_vecCorners[5][0] = m_vecCorners[5][1] =  m_vecCorners[5][2] = 0.0f;
+// 	m_vecCorners[6][0] = m_vecCorners[6][1] =  m_vecCorners[6][2] = 0.0f;
+// 	m_vecCorners[7][0] = m_vecCorners[7][1] =  m_vecCorners[7][2] = 0.0f;
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
 			Phoenix::Math::CVector3<float>(0,0,-1),
 			Phoenix::Math::CVector3<float>(1,0,0));
@@ -176,10 +185,6 @@ namespace Phoenix
 			  const Phoenix::Math::CVector3<float> &vForward,
 			  const Phoenix::Math::CVector3<float> &vRight);
       ////////////////////
-      /// Returns corners of this box as float array.
-      /// \returns Pointer to beginning of array.
-      const float * GetCorners() const;
-      ////////////////////
       /// Calculates corners of this box.
       void CalculateCorners();
       /// Calculates planes of this box.
@@ -188,7 +193,12 @@ namespace Phoenix
       /// Returns specific corner as vector.
       /// \param tCorner Corner index.
       /// \returns CVector3<float>.
-      CVector3<float> GetCorner( BBOX_CORNER_TYPE tCorner );
+      CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner );
+      ////////////////////
+      /// Returns specific corner as vector.
+      /// \param tCorner Corner index.
+      /// \returns CVector3<float>.
+      const CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner ) const;
       ////////////////////
       /// Stream output.
       /// \param stream Output stream.

@@ -46,7 +46,7 @@ Phoenix::Volume::COrientedBox::CalculateCorners()
 
   vTmp += -GetForwardVector()*GetLength();
   GetCorner( TOP_RIGHT_BACK ) = vTmp;
-
+  
   vTmp += -GetRightVector()*GetWidth();
   GetCorner( TOP_LEFT_BACK ) = vTmp;
 
@@ -63,18 +63,16 @@ Phoenix::Volume::COrientedBox::CalculateCorners()
   GetCorner( BOTTOM_LEFT_FRONT ) = vTmp;
 }
 /////////////////////////////////////////////////////////////////
-const float *
-Phoenix::Volume::COrientedBox::GetCorners() const
-{
-  return m_aCorners;
-}
-/////////////////////////////////////////////////////////////////
-CVector3<float> 
+CVector3<float> &
 Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner )
 {
-  CVector3<float> m_vVector;
-  m_vVector.UseExternalData( &m_aCorners[tCorner*3] );
-  return m_vVector;
+  return m_vecCorners[tCorner];
+}
+/////////////////////////////////////////////////////////////////
+const CVector3<float> &
+Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner ) const
+{
+  return m_vecCorners[tCorner];
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -193,7 +191,8 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   unsigned int nMaxIndex = 0, nMinIndex = 0;
 
   // Initialize the first values
-  vTemp.UseExternalData( &(vd.GetPointer<float>()[0]));
+  vTemp.Set( &(vd.GetPointer<float>()[0]));
+  
   fMinExtent = fMaxExtent = vTemp.Dot(vR);
   CVector3<float> vMin = vTemp;
   CVector3<float> vMax = vTemp;
@@ -202,7 +201,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   for ( unsigned int v = 1;v<nNumVertices; v++)
   {
     
-    vTemp.UseExternalData( &(vd.GetPointer<float>()[v*3]));
+    vTemp.Set( &(vd.GetPointer<float>()[v*3]));
     fTempDotR = vTemp.Dot( vR );
 
     if ( fTempDotR > fMaxExtent ){
@@ -218,8 +217,8 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
 
   }
   // Assign initial center and radius
-  vMin.UseExternalData(&vd.GetPointer<float>()[nMinIndex*3]);
-  vMax.UseExternalData(&vd.GetPointer<float>()[nMaxIndex*3]);
+  vMin.Set(&vd.GetPointer<float>()[nMinIndex*3]);
+  vMax.Set(&vd.GetPointer<float>()[nMaxIndex*3]);
   
   //sphere.SetPosition( (vMin + vMax ) * 0.5f );
   
@@ -239,7 +238,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   // For each vertex
   for ( unsigned int v = 0;v<nNumVertices; v++)
   {
-    vTemp.UseExternalData( &(vd.GetPointer<float>()[v*3]));
+    vTemp.Set( &(vd.GetPointer<float>()[v*3]));
 
     float fDist = ((vTemp - sphere.GetPosition()).Length());
     float fDistSquared = fDist * fDist;
@@ -271,7 +270,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   obOrientedBox[Phoenix::Volume::FRONT][3]  = rmax;					\
   obOrientedBox[Phoenix::Volume::BACK].SetNormal(R);       				\
   obOrientedBox[Phoenix::Volume::BACK][3] = -rmin;				\
-  obOrientedBox[Phoenix::Volume::RIGHT].SetNormal(-S);  				\
+  obOrientedBox[Phoenix::Volume::RIGHT].SetNormal(-S);			\
   obOrientedBox[Phoenix::Volume::RIGHT][3] = smax;					\
   obOrientedBox[Phoenix::Volume::LEFT].SetNormal(S);    				\
   obOrientedBox[Phoenix::Volume::LEFT][3] = -smin;					\
@@ -318,7 +317,7 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   for ( unsigned int v = 0;v<rVertices.GetSize();v++)
   {
 
-    vTemp.UseExternalData(&(rVertices.GetPointer<float>()[v*3]));
+    vTemp.Set(&(rVertices.GetPointer<float>()[v*3]));
     
     fVertDotR = vTemp.Dot(vR);
     fVertDotS = vTemp.Dot(vS);
@@ -463,9 +462,10 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   for ( unsigned int i = 0;i<indexBuffer.GetNumIndices();i++)
   {
     if ( indexBuffer.IsShortIndices())
-      vTemp.UseExternalData(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned short int>()[i]*3]));
+      vTemp.Set(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned short int>()[i]*3]));
     else
-      vTemp.UseExternalData(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned int>()[i]*3]));
+      vTemp.Set(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned int>()[i]*3]));
+
     fVertDotR = vTemp.Dot(vR);
     fVertDotS = vTemp.Dot(vS);
     fVertDotT = vTemp.Dot(vT);
@@ -833,21 +833,21 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Forward axis
-    vCorner.UseExternalData( const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i));
+    vCorner =  const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetForwardVector() );
     if (fDot > vMax[0])  {     vMax[0] = fDot; }
     else if (fDot < vMin[0]){  vMin[0] = fDot; }
 
     // right axis 
-    vCorner.UseExternalData( const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i));
+    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetRightVector() );
     if (fDot > vMax[1])  {     vMax[1] = fDot; }
     else if (fDot < vMin[1]){  vMin[1] = fDot; }
 
     // Up axis 
-    vCorner.UseExternalData( const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i));
+    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetUpVector() );
     if (fDot > vMax[2])  {     vMax[2] = fDot; }

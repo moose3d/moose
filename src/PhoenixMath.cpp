@@ -304,13 +304,13 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
       i2 = indices.GetPointer<unsigned int>()[idx+1];
       i3 = indices.GetPointer<unsigned int>()[idx+2];
     }
-    v1.UseExternalData(&vertices.GetPointer<float>()[i1*3]);
-    v2.UseExternalData(&vertices.GetPointer<float>()[i2*3]);
-    v3.UseExternalData(&vertices.GetPointer<float>()[i3*3]);
+    v1.Set(&vertices.GetPointer<float>()[i1*3]);
+    v2.Set(&vertices.GetPointer<float>()[i2*3]);
+    v3.Set(&vertices.GetPointer<float>()[i3*3]);
     
-    w1.UseExternalData(&texCoords.GetPointer<float>()[i1*2]);
-    w2.UseExternalData(&texCoords.GetPointer<float>()[i2*2]);
-    w3.UseExternalData(&texCoords.GetPointer<float>()[i3*2]);
+    w1.Set(&texCoords.GetPointer<float>()[i1*2]);
+    w2.Set(&texCoords.GetPointer<float>()[i2*2]);
+    w3.Set(&texCoords.GetPointer<float>()[i3*2]);
     
     float x1 = v2[0] - v1[0];
     float x2 = v3[0] - v1[0];
@@ -333,34 +333,65 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
     vTdir[1] = (s1 * y2 - s2 * y1) * r;
     vTdir[2] = (s1 * z2 - s2 * z1) * r;
     
-    vTmp.UseExternalData( &pTangents[i1*3] );    vTmp += vSdir;
-    vTmp.UseExternalData( &pTangents[i2*3] );    vTmp += vSdir;
-    vTmp.UseExternalData( &pTangents[i3*3] );    vTmp += vSdir;
+    //vTmp.UseExternalData( &pTangents[i1*3] );    vTmp += vSdir;
+    //vTmp.UseExternalData( &pTangents[i2*3] );    vTmp += vSdir;
+    //vTmp.UseExternalData( &pTangents[i3*3] );    vTmp += vSdir;
+    pTangents[i1*3]   += vSdir[0];
+    pTangents[i1*3+1] += vSdir[1];
+    pTangents[i1*3+2] += vSdir[2];
 
-    vTmp.UseExternalData( &pTangents2[i1*3] );    vTmp += vTdir;
-    vTmp.UseExternalData( &pTangents2[i2*3] );    vTmp += vTdir;
-    vTmp.UseExternalData( &pTangents2[i3*3] );    vTmp += vTdir;
+
+    pTangents[i2*3]   += vSdir[0];
+    pTangents[i2*3+1] += vSdir[1];
+    pTangents[i2*3+2] += vSdir[2];
+
+
+    pTangents[i3*3]   += vSdir[0];
+    pTangents[i3*3+1] += vSdir[1];
+    pTangents[i3*3+2] += vSdir[2];
+    
+    //vTmp.UseExternalData( &pTangents2[i1*3] );    vTmp += vTdir;
+    //vTmp.UseExternalData( &pTangents2[i2*3] );    vTmp += vTdir;
+    //vTmp.UseExternalData( &pTangents2[i3*3] );    vTmp += vTdir;
+
+    pTangents2[i1*3]   += vTdir[0];
+    pTangents2[i1*3+1] += vTdir[1];
+    pTangents2[i1*3+2] += vTdir[2];
+
+    pTangents2[i2*3]   += vTdir[0];
+    pTangents2[i2*3+1] += vTdir[1];
+    pTangents2[i2*3+2] += vTdir[2];
+
+    pTangents2[i3*3]   += vTdir[0];
+    pTangents2[i3*3+1] += vTdir[1];
+    pTangents2[i3*3+2] += vTdir[2];
 
   }
 
   for (unsigned int a = 0; a < vertices.GetSize(); a++)
   {
 
-    v1.UseExternalData( &normals.GetPointer<float>()[a*3]);
-    v2.UseExternalData( &pTangents[a*3] );
-    vTangent.UseExternalData( &tangents.GetPointer<float>()[a*4]); 
-
+    v1.Set( &normals.GetPointer<float>()[a*3]);
+    v2.Set( &pTangents[a*3] );
+    
+    //vTangent.UseExternalData( &tangents.GetPointer<float>()[a*4]); 
+    
     // Gram-Schmidt orthogonalize
     vTmp2 = v2 - (v1 * (v1.Dot(v2)));
     vTmp2.Normalize();
 
-    vTangent[0] = vTmp2[0];
-    vTangent[1] = vTmp2[1];
-    vTangent[2] = vTmp2[2];
-    
+    //vTangent[0] = vTmp2[0];
+    //vTangent[1] = vTmp2[1];
+    //vTangent[2] = vTmp2[2];
+
+    tangents.GetPointer<float>()[a*4]   = vTmp2[0];
+    tangents.GetPointer<float>()[a*4+1] = vTmp2[1];
+    tangents.GetPointer<float>()[a*4+2] = vTmp2[2];
+
     // Calculate handedness
-    vTmp.UseExternalData( &pTangents2[a*3] );
-    vTangent[3] = v1.Cross(v2).Dot( vTmp) < 0.0f ? -1.0f : 1.0f;
+    vTmp.Set( &pTangents2[a*3] );
+    //vTangent[3] = v1.Cross(v2).Dot( vTmp) < 0.0f ? -1.0f : 1.0f;
+    tangents.GetPointer<float>()[a*4+3] = v1.Cross(v2).Dot( vTmp) < 0.0f ? -1.0f : 1.0f;
   }
   delete pTangents;
   pTangents = pTangents2 = NULL;
