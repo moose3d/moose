@@ -3,9 +3,11 @@
 #include "PhoenixMath.h"
 #include <math.h>
 #include <algorithm>
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Volume;
 using namespace Phoenix::Math;
+using namespace std;
 /////////////////////////////////////////////////////////////////
 Phoenix::Math::CPlane::CPlane()
 {
@@ -73,6 +75,13 @@ std::ostream&
 Phoenix::Math::operator<<( std::ostream &stream, const CPlane &plane )
 {
   stream << "(" << plane[0] << "," << plane[1] << "," << plane[2] << "," << plane[3] ;
+  return stream;
+}
+/////////////////////////////////////////////////////////////////
+std::ostream& 
+Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
+{
+  stream << quad.GetPosition() << "," << quad.GetWidth() << "x" << quad.GetHeight() << endl;
   return stream;
 }
 /////////////////////////////////////////////////////////////////

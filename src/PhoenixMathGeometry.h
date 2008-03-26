@@ -42,40 +42,42 @@ namespace Phoenix
       float m_fHalfHeight;
     
     public:
-      // The constructor
-
-      CQuad() : CPositional()
-      {
-	m_fWidth = 0.0f;
-	m_fHeight = 0.0f;
-      }
-
+      ////////////////////
+      /// The constructor
+      CQuad() : CPositional(), m_fWidth(0.0f), m_fHeight(0.0f) {}
+      ////////////////////
+      /// Sets width
+      /// \param fWidth Width to be assigned.
       void SetWidth( float fWidth )
       {
 	m_fWidth = fWidth;
 	m_fHalfWidth = m_fWidth * 0.5;
       }
+      ////////////////////
+      /// Sets height
+      /// \param fHeight Height to be assigned.
       void SetHeight( float fHeight )
       {
 	m_fHeight = fHeight;
 	m_fHalfHeight = m_fHeight * 0.5;
       }
-      float GetWidth()
+      float GetWidth() const
       {
 	return m_fWidth;
       }
-      float GetHeight()
+      float GetHeight() const
       {
 	return m_fHeight;
       }
-      float GetHalfWidth()
+      float GetHalfWidth() const
       {
 	return m_fHalfWidth;
       }
-      float GetHalfHeight()
+      float GetHalfHeight() const
       {
 	return m_fHalfHeight;
       }
+      friend std::ostream& operator<<( std::ostream &stream, const CQuad & quad );
     }; // class CQuad
     /////////////////////////////////////////////////////////////////
     /// Abstraction for rays. 
