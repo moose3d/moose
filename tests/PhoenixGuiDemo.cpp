@@ -61,7 +61,8 @@ class CPanel : public CComponentBase
   
 protected:
   std::string m_strText;
-  CPanel() {
+  CPanel() 
+  {
     SetType(GUI_COMP_PANEL );
   }
 public:  
@@ -276,7 +277,7 @@ int main()
   pTex = pOglRenderer->CreateTexture( "Resources/Textures/enterprise_icon.tga" );
   assert( g_DefaultTextureManager->Create( pTex, "enterprise_icon") == 0);
   size_t i=0;
-
+  
   while( i<40 )
   {
     std::ostringstream name;
