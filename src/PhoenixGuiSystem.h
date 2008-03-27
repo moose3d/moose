@@ -116,6 +116,14 @@ namespace Phoenix
 		 (vCoords[1] > (int)fY0)    && 
 		 (vCoords[1] < (int)(fY1)) );
       }
+      ////////////////////
+      /// Adds given elemtn as child of this element.
+      /// \param pElement Element to be assigned as child.
+      void AddChild( CGuiElement *pElement )
+      {
+	assert( pElement != NULL && "pElement IS NULL!!!" );
+	GetTransformNode()->AddEdge( pElement->GetTransformNode());
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Update adapter for GUI element graph.
@@ -192,75 +200,81 @@ namespace Phoenix
       EXT_ADAPTER & GetAdapter() { return adapter; }
     };
     /////////////////////////////////////////////////////////////////
-    /// Simple mouse motion event.
-    template <class BASE_COMPONENT_TYPE>
-    class CMouseMotionEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
+    /// Base class for mouse events.
+    class CMouseEventBase
     {
     private:
       Phoenix::Math::CVector2<int> m_vCoords;
+      int			   m_iButton;
+    protected:
+      CMouseEventBase( const Phoenix::Math::CVector2<int> &vCoords) : m_vCoords(vCoords), m_iButton(0) {}
+      CMouseEventBase( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : m_vCoords(vCoords), m_iButton(iButton) {}
     public:
-      CMouseMotionEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
-      { 
-	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); 
-	m_vCoords = vCoords; 
-      }
+      ////////////////////
+      /// Returns mouse coordinates.
+      /// \returns Mouse coordinates as int 2-vector
       const Phoenix::Math::CVector2<int> & GetCoords() const 
       { 
 	return m_vCoords; 
+      }
+      ////////////////////
+      /// Returns button identifier.
+      /// \returns Button id.
+      int GetButton() const
+      {
+	return m_iButton;
+      }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Simple mouse motion event.
+    template <class BASE_COMPONENT_TYPE>
+    class CMouseMotionEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>,
+			      public CMouseEventBase
+    
+    {
+    public:
+      CMouseMotionEvent( const Phoenix::Math::CVector2<int> &vCoords ) : CMouseEventBase( vCoords)
+      { 
+	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); 
       }
     };
     /////////////////////////////////////////////////////////////////
     /// Simple mouse click event.
     template <class BASE_COMPONENT_TYPE>
-    class CMouseClickEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
+    class CMouseClickEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>,
+			     public CMouseEventBase
     {
-    private:
-      Phoenix::Math::CVector2<int> m_vCoords;
+
     public:
-      CMouseClickEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
+      CMouseClickEvent( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : CMouseEventBase( vCoords, iButton)
       { 
 	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_CLICK ); 
-	m_vCoords = vCoords; 
       }
-      const Phoenix::Math::CVector2<int> & GetCoords() const 
-      { 
-	return m_vCoords; 
-      }
+     
     };
     /////////////////////////////////////////////////////////////////
     /// Simple mouse down event.
     template <class BASE_COMPONENT_TYPE>
-    class CMouseDownEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
+    class CMouseDownEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>,
+			    public CMouseEventBase
     {
-    private:
-      Phoenix::Math::CVector2<int> m_vCoords;
     public:
-      CMouseDownEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
+      CMouseDownEvent( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : CMouseEventBase( vCoords, iButton)
       { 
 	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_DOWN ); 
-	m_vCoords = vCoords; 
-      }
-      const Phoenix::Math::CVector2<int> & GetCoords() const 
-      { 
-	return m_vCoords; 
       }
     };
     /////////////////////////////////////////////////////////////////
     /// Simple mouse up event.
     template <class BASE_COMPONENT_TYPE>
-    class CMouseUpEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>
+    class CMouseUpEvent : public Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>,
+			  public CMouseEventBase
     {
-    private:
-      Phoenix::Math::CVector2<int> m_vCoords;
     public:
-      CMouseUpEvent( const Phoenix::Math::CVector2<int> &vCoords ) 
+      CMouseUpEvent( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : CMouseEventBase( vCoords, iButton)
       { 
 	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_UP ); 
-	m_vCoords = vCoords; 
-      }
-      const Phoenix::Math::CVector2<int> & GetCoords() const 
-      { 
-	return m_vCoords; 
+
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -323,6 +337,14 @@ namespace Phoenix
 	m_msgRouter.Update( rAdapter);
       }
       ////////////////////
+      /// Returns component by its name.
+      /// \param szResourceName Resource name.
+      /// \returns Component pointer, or NULL if not found.
+      BASE_COMPONENT_TYPE * GetComponent( const char *szResourceName) 
+      {
+	return Phoenix::Core::CResourceManager< BASE_COMPONENT_TYPE, Phoenix::Core::CHandle<BASE_COMPONENT_TYPE> >::GetInstance()->GetResource( szResourceName );
+      }
+      ////////////////////
       /// Factory method for creating GUI elements.
       template< typename ELEMENT_TYPE > ELEMENT_TYPE * Create( const char *szResourceName)
       {
@@ -354,8 +376,8 @@ namespace Phoenix
         Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>::DeleteNode( static_cast< CGraphNode<GUI_ELEMENT_TYPE> *>(pPtr->GetTransformNode()));
 	// Delete actual object from manager using temp handle.
         Phoenix::Core::CResourceManager< BASE_COMPONENT_TYPE, 
-	                                 Phoenix::Core::CHandle<BASE_COMPONENT_TYPE> >::GetInstance()->Destroy( hTmp );
-
+   	         Phoenix::Core::CHandle<BASE_COMPONENT_TYPE> >::GetInstance()->Destroy( hTmp );
+	
       }
       ////////////////////
       /// Registers a receiver.
@@ -365,21 +387,21 @@ namespace Phoenix
       }
       ////////////////////
       /// Sends mouse click event.
-      void EnqueueMouseClick( const Phoenix::Math::CVector2<int> & vPosition )
+      void EnqueueMouseClick( const Phoenix::Math::CVector2<int> & vPosition, int iButton )
       {
- 	m_msgRouter.EnqueueMessage( new CMouseClickEvent<BASE_COMPONENT_TYPE>( vPosition ) );
+ 	m_msgRouter.EnqueueMessage( new CMouseClickEvent<BASE_COMPONENT_TYPE>( vPosition, iButton ) );
       }
       ////////////////////
       /// Sends mouse down event.
-      void EnqueueMouseDown( const Phoenix::Math::CVector2<int> & vPosition )
+      void EnqueueMouseDown( const Phoenix::Math::CVector2<int> & vPosition, int iButton )
       {
- 	m_msgRouter.EnqueueMessage( new CMouseDownEvent<BASE_COMPONENT_TYPE>( vPosition ) );
+ 	m_msgRouter.EnqueueMessage( new CMouseDownEvent<BASE_COMPONENT_TYPE>( vPosition, iButton ) );
       }
       ////////////////////
       /// Sends mouse up event.
-      void EnqueueMouseUp( const Phoenix::Math::CVector2<int> & vPosition )
+      void EnqueueMouseUp( const Phoenix::Math::CVector2<int> & vPosition, int iButton )
       {
- 	m_msgRouter.EnqueueMessage( new CMouseUpEvent<BASE_COMPONENT_TYPE>( vPosition ) );
+ 	m_msgRouter.EnqueueMessage( new CMouseUpEvent<BASE_COMPONENT_TYPE>( vPosition, iButton ) );
       }
       ////////////////////
       /// Sends mouse motion event.
