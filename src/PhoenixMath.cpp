@@ -2,6 +2,8 @@
 #include <iostream>
 #include "PhoenixMath.h"
 #include <assert.h>
+#include <iostream>
+using namespace std;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Graphics;
@@ -107,9 +109,14 @@ Phoenix::Math::RotationMatrix(const CVector3<float> & vAxis, float fRadians)
 CMatrix4x4<float> 
 Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians)
 {
+  // does not need to be initialized, values will be set later.
   CMatrix4x4<float> mS;
-  CMatrix4x4<float> uuT;
-  uuT.ZeroMatrix();
+  
+  CMatrix4x4<float> uuT(0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f);
+
   CMatrix4x4<float> mResult;
   // An unit vector is required
   CVector3<float> vAxisUnit(fX,fY,fZ);
@@ -429,7 +436,9 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 CMatrix3x3<float>
 Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor)
 {
-  CMatrix3x3<float> mCovariance;
+  CMatrix3x3<float> mCovariance(0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f );
   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
 
   /// Covariance matrix is valid only for 3d coordinates
@@ -449,7 +458,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor)
   }
   
   vAveragePos /= vertexDescriptor.GetSize();
-  
+
   // Calculate Covariance matrix
   for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize()*3; iVertComponent+=3)
   {
@@ -474,7 +483,9 @@ CMatrix3x3<float>
 Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, const CIndexArray &indices )
 {
   
-  CMatrix3x3<float> mCovariance;
+  CMatrix3x3<float> mCovariance(0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f );
   CVector3<float> vAveragePos(0.0f,0.0f,0.0f);
   unsigned int nVertexIndex;
   unsigned short int *m_pIndexShortArray = NULL;
