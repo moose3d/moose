@@ -197,6 +197,9 @@ namespace Phoenix
       {
 	return m_vecStates;
       }
+      ////////////////////
+      /// 
+      STATE_NAME_TYPE m_CurrentState;
     public:
       ////////////////////
       /// Constructor. Creates given number of states for this FSM.
@@ -205,6 +208,8 @@ namespace Phoenix
       {
 	m_nNumStates = nNumStates;
 	m_vecStates.reserve( nNumStates );
+	SetCurrentState( (STATE_NAME_TYPE)0);
+
 	for(size_t n=0;n<nNumStates;n++)
 	{
 	  // This does not work for some reason - complex template syntax, perhaps?
@@ -243,6 +248,27 @@ namespace Phoenix
 	  }
 	}
 	return nState;
+      }
+      ///////////////////
+      /// Processes given input and sets state accordingly.
+      /// \param nInput Input where state machine reacts.
+      void Process( const INPUT_NAME_TYPE & nInput )
+      {
+	SetCurrentState( StateTransition( GetCurrentState(), nInput));
+      }
+      ////////////////////
+      /// Sets current state.
+      /// \param state Next state.
+      void SetCurrentState( const STATE_NAME_TYPE & state )
+      {
+	m_CurrentState = state;
+      }
+      ////////////////////
+      /// Returns current state.
+      /// \returns Current state.
+      const STATE_NAME_TYPE & GetCurrentState()
+      {
+	return m_CurrentState;
       }
     };
   } // namespace AI
