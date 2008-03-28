@@ -41,6 +41,8 @@ decal:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixDecalDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 gui:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixGuiDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
+volumecalc:
+	g++ -Wall -I../src `sdl-config --cflags` PhoenixVolumeDemo.cpp -lPhoenix `sdl-config --libs`
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean
