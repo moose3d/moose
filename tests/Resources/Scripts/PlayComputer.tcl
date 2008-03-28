@@ -6,14 +6,14 @@ proc playComputer { } {
 
 	#Accelerate -5
 	#Move
-	#Rotate 0.0 25 10.0
+	Rotate 0.0 25 10.0
 
     } else {
 	if { $g_fSpeed < 1.0 } {
 	    Accelerate 5
 	}
 	Move
-	#Rotate 0.0 25 10.0
+	Rotate 0.0 150 0.0
     }
 
 }
