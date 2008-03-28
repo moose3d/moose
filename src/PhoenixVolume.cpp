@@ -305,6 +305,8 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   mEigenVectorMatrix.IdentityMatrix();
   Math::CalculateEigensystem( mCovar, fLambda1, fLambda2,fLambda3,
 			      mEigenVectorMatrix);
+
+
   /////////////////////////////////////////////////////////////////
   CVector3<float> vR = Math::GetColumnVector(mEigenVectorMatrix, 0);
   CVector3<float> vS = Math::GetColumnVector(mEigenVectorMatrix, 1);
@@ -316,7 +318,7 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   /////////////////////////////////////////////////////////////////
   for ( unsigned int v = 0;v<rVertices.GetSize();v++)
   {
-
+    
     vTemp.Set(&(rVertices.GetPointer<float>()[v*3]));
     
     fVertDotR = vTemp.Dot(vR);
@@ -419,7 +421,7 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   
   CVector3<float> vPos = (fA*vR) + (fB*vS) + (fC*vT);
   obOrientedBox.SetPosition( vPos );
-  //obOrientedBox.CalculatePlanes();  
+  obOrientedBox.CalculatePlanes();  
   obOrientedBox.CalculateCorners();
 
   return obOrientedBox;
