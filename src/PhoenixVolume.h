@@ -126,12 +126,12 @@ namespace Phoenix
 	// reset coords. (Is it really necessary?)
 	// m_vecCorners[0][0] = m_vecCorners[0][1] =  m_vecCorners[0][2] = 0.0f;
 // 	m_vecCorners[1][0] = m_vecCorners[1][1] =  m_vecCorners[1][2] = 0.0f;
-// 	m_vecCorners[2][0] = m_vecCorners[2][1] =  m_vecCorners[2][2] = 0.0f;
-// 	m_vecCorners[3][0] = m_vecCorners[3][1] =  m_vecCorners[3][2] = 0.0f;
-// 	m_vecCorners[4][0] = m_vecCorners[4][1] =  m_vecCorners[4][2] = 0.0f;
-// 	m_vecCorners[5][0] = m_vecCorners[5][1] =  m_vecCorners[5][2] = 0.0f;
-// 	m_vecCorners[6][0] = m_vecCorners[6][1] =  m_vecCorners[6][2] = 0.0f;
-// 	m_vecCorners[7][0] = m_vecCorners[7][1] =  m_vecCorners[7][2] = 0.0f;
+//  	m_vecCorners[2][0] = m_vecCorners[2][1] =  m_vecCorners[2][2] = 0.0f;
+//  	m_vecCorners[3][0] = m_vecCorners[3][1] =  m_vecCorners[3][2] = 0.0f;
+//  	m_vecCorners[4][0] = m_vecCorners[4][1] =  m_vecCorners[4][2] = 0.0f;
+//  	m_vecCorners[5][0] = m_vecCorners[5][1] =  m_vecCorners[5][2] = 0.0f;
+//  	m_vecCorners[6][0] = m_vecCorners[6][1] =  m_vecCorners[6][2] = 0.0f;
+//  	m_vecCorners[7][0] = m_vecCorners[7][1] =  m_vecCorners[7][2] = 0.0f;
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
 			Phoenix::Math::CVector3<float>(0,0,-1),
 			Phoenix::Math::CVector3<float>(1,0,0));
