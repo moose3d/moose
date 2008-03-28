@@ -17,10 +17,6 @@ namespace Phoenix
     /// Types of elements that are allowed in GUI.
     enum GUI_ELEMENT_TYPE
     {
-      /*      GUI_WINDOW = 0,
-      GUI_LABEL,
-      GUI_BUTTON,
-      GUI_MULTILABEL*/
       GUI_ELEMENT = 0
     };
     /// Message types for GUI elements.
@@ -32,9 +28,49 @@ namespace Phoenix
       GUI_MSG_MOUSE_CLICK,
       GUI_NUM_OF_MESSAGE_TYPES
     };
-
+    
+    /////////////////////////////////////////////////////////////////
+    /// Base class for mouse events.
+    class CMouseEventBase
+    {
+    private:
+      Phoenix::Math::CVector2<int> m_vCoords;
+      int			   m_iButton;
+    protected:
+      CMouseEventBase( const Phoenix::Math::CVector2<int> &vCoords) : m_vCoords(vCoords), m_iButton(0) {}
+      CMouseEventBase( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : m_vCoords(vCoords), m_iButton(iButton) {}
+    public:
+      ////////////////////
+      /// Returns mouse coordinates.
+      /// \returns Mouse coordinates as int 2-vector
+      const Phoenix::Math::CVector2<int> & GetCoords() const 
+      { 
+	return m_vCoords; 
+      }
+      ////////////////////
+      /// Returns button identifier.
+      /// \returns Button id.
+      int GetButton() const
+      {
+	return m_iButton;
+      }
+    };
+    template< class BASE_COMPONENT_TYPE > class CGuiElement;
+    /////////////////////////////////////////////////////////////////
+    /// Mouse event handler class. 
+    template <class BASE_COMPONENT_TYPE>
+    class CMouseEventHandler 
+    {
+    public:
+      virtual ~CMouseEventHandler(){}
+      virtual void HandleMouseDown( const CMouseEventBase & me,   CGuiElement<BASE_COMPONENT_TYPE> & element ) {}
+      virtual void HandleMouseUp( const CMouseEventBase & me,     CGuiElement<BASE_COMPONENT_TYPE> & element ) {}
+      virtual void HandleMouseClick( const CMouseEventBase & me,  CGuiElement<BASE_COMPONENT_TYPE> & element ) {}
+      virtual void HandleMouseMotion( const CMouseEventBase & me, CGuiElement<BASE_COMPONENT_TYPE> & element ) {}
+    };
+    /////////////////////////////////////////////////////////////////
 #define GUI_ELEMENT_TNODE_TYPE Phoenix::Scene::CTransformNode<GUI_ELEMENT_TYPE, BASE_COMPONENT_TYPE, Phoenix::Core::CHandle<BASE_COMPONENT_TYPE > >
-     template< class BASE_COMPONENT_TYPE > class CGuiSystem;
+    template< class BASE_COMPONENT_TYPE > class CGuiSystem;
     ////////////////////
     /// Base class for every GUI object.
     template< class BASE_COMPONENT_TYPE >
@@ -52,13 +88,29 @@ namespace Phoenix
       int	m_bPressed;
       /// Transform node for this element.
       GUI_ELEMENT_TNODE_TYPE *m_pTransformNode;
+      CMouseEventHandler<BASE_COMPONENT_TYPE> *m_pMouseHandler;
       ////////////////////
       /// Constructor.
       CGuiElement( ) : m_bVisible(0), 
 		       m_bHasFocus(0),
 		       m_bPressed(0),
-		       m_pTransformNode(NULL) { }
+		       m_pTransformNode(NULL),
+		       m_pMouseHandler(NULL) { }
     public:
+      ////////////////////
+      /// Sets current mouse handler.
+      /// \param pMouseHandler Pointer to mousehandler.
+      void SetMouseHandler( CMouseEventHandler<BASE_COMPONENT_TYPE> *pMouseHandler )
+      {
+	m_pMouseHandler = pMouseHandler;
+      }
+      ////////////////////
+      /// Returns mouse handler.
+      /// \returns Pointer to current mouse handler.
+      CMouseEventHandler<BASE_COMPONENT_TYPE> * GetMouseHandler()
+      {
+	return m_pMouseHandler;
+      }
       ////////////////////
       /// Sets transform node.
       /// \param pNode transform node to be set.
@@ -199,32 +251,7 @@ namespace Phoenix
       /// Returns reference to adapter.
       EXT_ADAPTER & GetAdapter() { return adapter; }
     };
-    /////////////////////////////////////////////////////////////////
-    /// Base class for mouse events.
-    class CMouseEventBase
-    {
-    private:
-      Phoenix::Math::CVector2<int> m_vCoords;
-      int			   m_iButton;
-    protected:
-      CMouseEventBase( const Phoenix::Math::CVector2<int> &vCoords) : m_vCoords(vCoords), m_iButton(0) {}
-      CMouseEventBase( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : m_vCoords(vCoords), m_iButton(iButton) {}
-    public:
-      ////////////////////
-      /// Returns mouse coordinates.
-      /// \returns Mouse coordinates as int 2-vector
-      const Phoenix::Math::CVector2<int> & GetCoords() const 
-      { 
-	return m_vCoords; 
-      }
-      ////////////////////
-      /// Returns button identifier.
-      /// \returns Button id.
-      int GetButton() const
-      {
-	return m_iButton;
-      }
-    };
+    
     /////////////////////////////////////////////////////////////////
     /// Simple mouse motion event.
     template <class BASE_COMPONENT_TYPE>
