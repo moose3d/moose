@@ -31,7 +31,18 @@ namespace Phoenix
 	m_aValues[0]  = m00; m_aValues[1]  = m01; 
 	m_aValues[2]  = m10; m_aValues[3]  = m11; 
       }
-
+      ////////////////////
+      /// Assigns matrix values.
+      /// \param m00 index value at row 0, column 0
+      /// \param m01 index value at row 0, column 1
+      /// \param m10 index value at row 1, column 0
+      /// \param m11 index value at row 1, column 1
+      void Set( TYPE m00, TYPE m01,  
+		TYPE m10, TYPE m11 )  
+      {
+	m_aValues[0]  = m00; m_aValues[1]  = m01; 
+	m_aValues[2]  = m10; m_aValues[3]  = m11; 
+      }
       ////////////////////
       // Returns a singledimensional array of floats in Row-Major mode.
       // The values of the first row are listed first,
@@ -68,6 +79,7 @@ namespace Phoenix
 			   m_aValues[2] * mMatrix.m_aValues[1] +
 			   m_aValues[3] * mMatrix.m_aValues[3] );
       }
+      
       ////////////////////
       /// The assignment operator.
       /// \param m Matrix where values are copied to this.

@@ -30,7 +30,7 @@ TEST( CTransform_SetTranslation_Matrix )
   CQuaternion q;
   q.Identity();  
   // Translate by matrix.
-  mMatrix = Phoenix::Math::TranslationMatrix( vTransl );
+  Phoenix::Math::TranslationMatrix( vTransl, mMatrix );
 
 
   transform.SetTranslation( mMatrix );
@@ -49,7 +49,7 @@ TEST( CTransform_SetTranslation_Vector3 )
   CQuaternion q;
   q.Identity();  
   // Translate by vector
-  mMatrix = Phoenix::Math::TranslationMatrix( vTransl );
+  Phoenix::Math::TranslationMatrix( vTransl, mMatrix );
 
 
   transform.SetTranslation( vTransl );
@@ -68,9 +68,9 @@ TEST( CTransform_SetTranslation_3_Floats )
   CQuaternion q;
   q.Identity();  
   // Translate by values
-  mMatrix = Phoenix::Math::TranslationMatrix( vTransl );
+  Phoenix::Math::TranslationMatrix( vTransl, mMatrix );
 
-
+  
   transform.SetTranslation( vTransl[0], vTransl[1], vTransl[2] );
 
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
@@ -87,8 +87,8 @@ TEST( CTransform_SetRotation_Matrix )
   CVector3<float> vTransl(0,0,0);
   CQuaternion q;
   // Rotate by 3 rotations 
-  mMatrix = Phoenix::Math::RotationMatrix( vRot );
-  q = RotationMatrixToQuaternion( mMatrix );
+  Phoenix::Math::RotationMatrix( vRot, mMatrix );
+  RotationMatrixToQuaternion( mMatrix, q );
 
   transform.SetTranslation(vTransl);
   transform.SetScaling(1.0f);
@@ -108,8 +108,8 @@ TEST( CTransform_SetRotation_Quaternion )
   CVector3<float> vTransl(0,0,0);
   CQuaternion q;
   // Rotate by 3 rotations 
-  mMatrix = Phoenix::Math::RotationMatrix( vRot );
-  q = RotationMatrixToQuaternion( mMatrix );
+  Phoenix::Math::RotationMatrix( vRot, mMatrix );
+  RotationMatrixToQuaternion( mMatrix, q );
 
   transform.SetTranslation(vTransl);
   transform.SetScaling(1.0f);
@@ -129,8 +129,8 @@ TEST( CTransform_SetRotation_3_Floats )
   CVector3<float> vTransl(0,0,0);
   CQuaternion q;
   // Rotate by 3 rotations 
-  mMatrix = Phoenix::Math::RotationMatrix( vRot );
-  q = RotationMatrixToQuaternion( mMatrix );
+  Phoenix::Math::RotationMatrix( vRot, mMatrix );
+  RotationMatrixToQuaternion( mMatrix, q );
   
   transform.SetTranslation(vTransl);
   transform.SetScaling(1.0f);
@@ -150,8 +150,8 @@ TEST( CTransform_SetRotation_Vector3 )
   CVector3<float> vTransl(0,0,0);
   CQuaternion q;
   // Rotate by 3 rotations 
-  mMatrix = Phoenix::Math::RotationMatrix( vRot );
-  q = RotationMatrixToQuaternion( mMatrix );
+  Phoenix::Math::RotationMatrix( vRot, mMatrix );
+  RotationMatrixToQuaternion( mMatrix, q );
   
   transform.SetTranslation(vTransl);
   transform.SetScaling(1.0f);
@@ -191,7 +191,7 @@ TEST( CTransform_Move_Vector )
   CQuaternion q;
   q.Identity();
 
-  mMatrix = TranslationMatrix( vTranslReal );
+  TranslationMatrix( vTranslReal, mMatrix );
   transform.Move( CVector3<float>(1,0,0) );
   transform.Move( CVector3<float>(0,2,0) );
   transform.Move( CVector3<float>(0,0,3) );
@@ -212,7 +212,7 @@ TEST( CTransform_Move_3_Floats )
   CQuaternion q;
   q.Identity();
 
-  mMatrix = TranslationMatrix( vTranslReal );
+  TranslationMatrix( vTranslReal, mMatrix );
   transform.Move( 1,0,0 );
   transform.Move( 0,2,0 );
   transform.Move( 0,0,3 );
@@ -241,7 +241,7 @@ TEST( CTransform_Rotate )
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 
-  mMatrix = RotationMatrix( 4,0,0 );
+  RotationMatrix( 4,0,0, mMatrix );
   q.CreateFromAxisAngleRad( 1,0,0, 2 );
   qFinal.CreateFromAxisAngleRad( 1,0,0, 4 );
   transform.Rotate( q );

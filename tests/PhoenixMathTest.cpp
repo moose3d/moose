@@ -107,7 +107,8 @@ TEST(RotationArc)
 {
   CVector3<float> vec1(1,0,0);
   CVector3<float> vec2(0,1,0);
-  CQuaternion q = RotationArc( vec1, vec2);  
+  CQuaternion q;
+  RotationArc( vec1, vec2, q);  
   CVector3<float> vRes = vec1;
 
   RotateVector( q, vRes );
@@ -118,8 +119,8 @@ TEST(RotationMatrixToQuaternion)
 {
   CMatrix4x4<float> mMatrix, mMatrixRes;
   CQuaternion q;
-  mMatrix = RotationMatrix( 1, 4, -5);
-  q = RotationMatrixToQuaternion( mMatrix );
+  RotationMatrix( 1, 4, -5, mMatrix);
+  RotationMatrixToQuaternion( mMatrix,q );
   QuaternionToMatrix( q, mMatrixRes );
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), mMatrixRes.GetArray(), 16, 0.001f);
   

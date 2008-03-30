@@ -67,6 +67,7 @@ namespace Phoenix
       {
 	return m_vPosition;
       }
+      
       ////////////////////
       /// Adds vector to current position.
       /// \param vPosition the movement applied to current position.

@@ -791,11 +791,11 @@ TEST(TriangleIntersectsOBB_BoxRotated)
   CVector3<float> v2; v2[0] = vVertex2[0]; v2[1] = vVertex2[1]; v2[2] = vVertex2[2];
   CVector3<float> vRes;
 
-  vRes = Rotate( v0, mRotation);
+  Rotate( v0, mRotation, vRes );
   //cerr << "v0 rotated: " << vRes << endl;
-  vRes = Rotate( v1, mRotation);
+  Rotate( v1, mRotation, vRes );
   //cerr << "v1 rotated: " << vRes << endl;
-  vRes = Rotate( v2, mRotation);
+  Rotate( v2, mRotation, vRes );
   //cerr << "v2 rotated: " << vRes << endl;
   
   vTriangle[0] = v0;
@@ -941,11 +941,11 @@ TEST(TriangleIntersectsOBB_RealWorldExample )
   vTriangle[1] = CVector3<float>(1,1,0);
   vTriangle[2] = CVector3<float>(-1,1,0);
 
-  vRes = Rotate( vTriangle[0], mRotation );
+  Rotate( vTriangle[0], mRotation, vRes );
   //cerr << "Rotated v0 :" << vRes << endl;
-  vRes = Rotate( vTriangle[1], mRotation );
+  Rotate( vTriangle[1], mRotation, vRes );
   //cerr << "Rotated v1 :" << vRes << endl;
-  vRes = Rotate( vTriangle[2], mRotation );
+  Rotate( vTriangle[2], mRotation, vRes  );
   //cerr << "Rotated v2 :" << vRes << endl;
   CHECK( TriangleIntersectsOBB( vTriangle[0], vTriangle[1], vTriangle[2], box ) == 1 );
 }

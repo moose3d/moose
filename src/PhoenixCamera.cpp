@@ -229,7 +229,8 @@ Phoenix::Graphics::CCamera::RotateAroundPoint( const CVector3<float> & vPoint, c
 {
 
   AppendToRotation(q);
-  SetPosition( Phoenix::Math::RotateAroundPoint(GetPosition(), vPoint, q ));
+  Phoenix::Math::RotateAroundPoint(GetPosition(), vPoint, q, const_cast<CVector3<float> & >(GetPosition()) );
+  //SetPosition(  );
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -313,7 +314,8 @@ void
 Phoenix::Graphics::CCamera::UpdateView()
 {
   // Transform camera reversely so we get proper effect.
-  CMatrix4x4<float> mT = TranslationMatrix( GetPosition());
+  CMatrix4x4<float> mT;
+  TranslationMatrix( GetPosition(), mT);
   CMatrix4x4<float> mR;
   QuaternionToMatrix( GetRotationQuaternion(), mR );
   m_mViewInv = mT * mR;
@@ -488,7 +490,8 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
       vOrig.Normalize();
       vEnd.Normalize();
 
-      CQuaternion qRotation = Phoenix::Math::RotationArc(vOrig,vEnd);
+      CQuaternion qRotation;
+      Phoenix::Math::RotationArc(vOrig,vEnd, qRotation);
       qRotation.Reverse();
       
       RotateAroundPoint( sphere.GetPosition(), qRotation  );

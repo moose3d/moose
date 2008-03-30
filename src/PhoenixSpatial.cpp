@@ -192,7 +192,7 @@ Phoenix::Spatial::COrientable::SetDirectionForwardUp( CVector3<float> f, CVector
   }
   else 
   {
-    m_qRotation = Phoenix::Math::RotationArc( m_vForward, f);
+    Phoenix::Math::RotationArc( m_vForward, f, m_qRotation );
   }
   SetRotationChanged(1);
 }
@@ -234,7 +234,7 @@ Phoenix::Spatial::COrientable::SetRotation( const CMatrix4x4<float> &mMatrix )
   // Restore initial state
   Reset();
   // Get quaternion and rotate vectors
-  m_qRotation = RotationMatrixToQuaternion(mMatrix);
+  RotationMatrixToQuaternion(mMatrix, m_qRotation);
   RotateAllDirections(m_qRotation);
   SetRotationChanged(1);
 }
