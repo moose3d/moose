@@ -115,17 +115,18 @@ Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char * szName, 
     for( ; it != lstGroupNames.end(); it++)
     {
       CIndexArray *pIndices = pLoader->GetGroupIndices( (*it).c_str() );
-      if ( pIndices != NULL )
-      {
-	ostringstream stream;  
-	stream << name << "_" << *it << "_indices";
-	rModel.AddIndexHandle(new INDEX_HANDLE());
-	assert( g_DefaultIndexManager->Create( pIndices, 
-					       stream.str().c_str(), 
-					       *rModel.GetIndexHandles().back()) == 0 );
-      }
+      assert ( pIndices != NULL && "Group is NULL");
+
+      ostringstream stream;  
+      stream << name << "_" << *it << "_indices";
+      rModel.AddIndexHandle(new INDEX_HANDLE());
+      assert( g_DefaultIndexManager->Create( pIndices, 
+					     stream.str().c_str(), 
+					     *rModel.GetIndexHandles().back()) == 0 );
+      pLoader->ResetGroup( (*it).c_str() );
+
     }
-    pLoader->ResetIndices();
+    
   }
 
   // Release loader memory
