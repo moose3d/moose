@@ -789,7 +789,7 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
+Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
 {
   // Retrieve resources
   COglTexture *pTexture = NULL;
@@ -797,32 +797,35 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
   CIndexArray *pIndices = NULL;
   
-  // Commit textures
-  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  if ( !(iExcludeOpts & M_TEXTURE_DATA) )
   {
-    pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
-    pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
+    // Commit textures
+    for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+    {
+      pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
+      pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
     
-    // check that texcoord resources actually exist
-    if ( pTemp     != NULL ) 
-    { 
-      CommitVertexDescriptor( pTemp, i ); 
-    } 
-    // check that texture resource exists
-    if ( pTexture  != NULL ) 
-    { 
-      CommitTexture( i, pTexture ); 
-      // Apply texture filters.
-      std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
+      // check that texcoord resources actually exist
+      if ( pTemp     != NULL ) 
+      { 
+	CommitVertexDescriptor( pTemp, i ); 
+      } 
+      // check that texture resource exists
+      if ( pTexture  != NULL ) 
+      { 
+	CommitTexture( i, pTexture ); 
+	// Apply texture filters.
+	std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
       
-      for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
-      {
-	CommitFilter( vecFilters[nFilter], pTexture->GetType() );
+	for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
+	{
+	  CommitFilter( vecFilters[nFilter], pTexture->GetType() );
+	}
       }
     }
   }
   // if shader exists
-  if ( model.GetShaderHandle().IsNull() == 0 )
+  if ( !( iExcludeOpts & M_SHADER_DATA ) && model.GetShaderHandle().IsNull() == 0 )
   {
     CShader *pShader = g_DefaultShaderManager->GetResource(model.GetShaderHandle());
     CommitShader( pShader );
@@ -852,17 +855,21 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   { 
     CommitVertexDescriptor ( pVertices ); 
   }
-  CVertexDescriptor *pNormals = g_DefaultVertexManager->GetResource(model.GetNormalHandle());
-  if ( pNormals != NULL ) 
+  // commit normals
+  if ( !( iExcludeOpts & M_NORMAL_DATA ) && model.GetNormalHandle().IsNull() == 0 ) 
   { 
-    CommitVertexDescriptor( pNormals ); 
+    CommitVertexDescriptor( g_DefaultVertexManager->GetResource(model.GetNormalHandle()) ); 
   }
-  for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
+  // commit indices
+  if ( !( iExcludeOpts & M_INDEX_DATA ))
   {
-    pIndices = g_DefaultIndexManager->GetResource( *model.GetIndexHandles()[n] );
-    if ( pIndices  != NULL ) 
-    { 
-      CommitPrimitive ( pIndices );         
+    for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
+    {
+      pIndices = g_DefaultIndexManager->GetResource( *model.GetIndexHandles()[n] );
+      if ( pIndices  != NULL ) 
+      { 
+	CommitPrimitive ( pIndices );         
+      }
     }
   }
 }
