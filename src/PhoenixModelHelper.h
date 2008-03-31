@@ -22,6 +22,16 @@ namespace Phoenix
     /// \returns On success, zero.
     /// \returns On failure, non-zero.
     int LoadMilkshapeModel( const char *szFilename, const char * szName, Phoenix::Graphics::CModel & rModel, int iFlags = 0);
+    ////////////////////
+    /// Loads milkshape file and creates new CModel object out of it.
+    /// \param szFilename Path to milkshape model file.
+    /// \param szName Model name prefix for storing data in resourcemanagers.
+    /// \param rModel CModel where data handles are attached to.
+    /// \param lstGroupNames List of group names that are attached to model index handles in that order.
+    /// \param iFlags Flags that indicate what data should be loaded from model - use MS3DDATA_OPTIONS values.
+    /// \returns On success, zero.
+    /// \returns On failure, non-zero.
+    int LoadMilkshapeModel( const char *szFilename, const char * szName, Phoenix::Graphics::CModel & rModel, std::list<std::string> & lstGroupNames, int iFlags = 0);
   } // namespace Graphics 
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
