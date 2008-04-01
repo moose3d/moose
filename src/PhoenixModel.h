@@ -52,7 +52,7 @@ namespace Phoenix
       CModel();
       ////////////////////
       /// Destructor.
-      ~CModel();
+      virtual ~CModel();
       ////////////////////
       /// Returns handle to Texture.
       /// \param nId Which texture unit is handled. By default it is zero, the first.
