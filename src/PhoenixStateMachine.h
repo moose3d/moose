@@ -362,10 +362,12 @@ template <typename OBJECT_TYPE, typename MSG_TYPE>
 void
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PushReceiver( const CHandle<OBJECT_TYPE> &hObject )
 {
+
+  CHandle<OBJECT_TYPE> *pHandle = new CHandle<OBJECT_TYPE>();
+  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->DuplicateHandle( hObject, *pHandle);
   // Not thread-safe, requires mutex
-  m_vecObjects.push_back(new CHandle<OBJECT_TYPE>());
-  std::string strName = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResourceName( hObject);
-  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->AttachHandle( strName, *m_vecObjects.back());
+  m_vecObjects.push_back( pHandle );
+
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
