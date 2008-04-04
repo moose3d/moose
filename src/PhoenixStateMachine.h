@@ -58,7 +58,7 @@ namespace Phoenix
       ////////////////////
       /// \param rMessage Message to compare this against - latter time becomes first.
       /// \returns is this message before the other.
-      bool operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage );
+      //bool operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage );
     };
     ////////////////////
     /// ReceiverQueue
@@ -102,7 +102,7 @@ namespace Phoenix
 	bool operator()( const CMessage<OBJECT_TYPE, MSG_TYPE> *pFirst,
 			 const CMessage<OBJECT_TYPE, MSG_TYPE> *pSecond) 
 	{
-	  return (pFirst->GetTimeStamp() > pSecond->GetTimeStamp());
+	  return (pFirst->GetTimeStamp() < pSecond->GetTimeStamp());
 	}
       };
     protected:
@@ -315,12 +315,12 @@ Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetReceiver() const
   return m_hReceiver;
 }
 /////////////////////////////////////////////////////////////////
-template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline bool 
-Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage )
-{
-  return (GetTimeStamp() < rMessage.GetTimeStamp());
-}
+/* template <typename OBJECT_TYPE, typename MSG_TYPE> */
+/* inline bool  */
+/* Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage ) */
+/* { */
+/*   return (GetTimeStamp() < rMessage.GetTimeStamp()); */
+/* } */
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 inline void 
