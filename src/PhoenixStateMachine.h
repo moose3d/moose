@@ -6,6 +6,7 @@
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>
 #include <iomanip>
+#include <algorithm>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -60,14 +61,21 @@ namespace Phoenix
       /// \returns is this message before the other.
       //bool operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage );
     };
+    template <typename OBJECT_TYPE, typename MSG_TYPE> class CMessageRouter;
     ////////////////////
     /// ReceiverQueue
     template <typename OBJECT_TYPE, typename MSG_TYPE>
     class CReceiverQueue 
     {
+      friend class CMessageRouter<OBJECT_TYPE,MSG_TYPE>;
     protected:
       std::vector< CHandle<OBJECT_TYPE> * > m_vecObjects;
+      ////////////////////
+      /// Returns reference to object handle vector.
+      /// \returns vector with pointers to handles.
+
     public:
+      std::vector< CHandle<OBJECT_TYPE> * > & GetObjectHandles() { return m_vecObjects; }
       ////////////////////
       /// Constructor.
       CReceiverQueue();
@@ -87,6 +95,7 @@ namespace Phoenix
       /// \param rMessage 
       template <class MSG_ADAPTER_TYPE> 
       void PropagateMessage( const CMessage< OBJECT_TYPE, MSG_TYPE > &rMessage, MSG_ADAPTER_TYPE &rMsgAdapter );
+      
       
     };
     ////////////////////
@@ -149,6 +158,10 @@ namespace Phoenix
       ////////////////////
       /// Starts message routing (resets timer).
       void Prepare();
+      ////////////////////
+      /// Sorts receiver queues using SORT_FUNC.
+      template<typename SORT_FUNC> void SortReceivers();
+      std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> > & GetReceivers() { return m_vecMsgReceivers; }
     };
     /////////////////////////////////////////////////////////////////
     /// Base class for message receivers and senders.
@@ -409,7 +422,8 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PropagateMessage( const Phoen
       pObject = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResource(*(*it));
       if ( pObject != NULL )
       {
-	rMsgAdapter.Process( rMessage, *pObject );
+	// if adapter explicitly tells to stop passing message any further
+	if ( rMsgAdapter.Process( rMessage, *pObject ) ) break;
       }
     }
   }
@@ -517,6 +531,22 @@ Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::Prepare()
 {
   Phoenix::Core::CTimer::Reset();
   
+}
+/////////////////////////////////////////////////////////////////
+template <typename OBJECT_TYPE, typename MSG_TYPE>
+template<typename SORT_FUNC> 
+void 
+Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::SortReceivers()
+{
+  SORT_FUNC sort_func;
+  typename std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> >::iterator recv_it;
+  recv_it = m_vecMsgReceivers.begin();
+  ////////////////////
+  // sort all receiver vectors using sort_func:
+  for( ; recv_it != m_vecMsgReceivers.end(); recv_it++)
+  {
+    std::sort( (*recv_it).GetObjectHandles().begin(), (*recv_it).GetObjectHandles().end(), sort_func );
+  }
 }
 /////////////////////////////////////////////////////////////////
 #endif

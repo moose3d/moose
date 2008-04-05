@@ -86,6 +86,8 @@ namespace Phoenix
       int	m_bHasFocus;
       /// Is element pressed.
       int	m_bPressed;
+      /// Element id
+      int	m_iActionId;
       /// Transform node for this element.
       GUI_ELEMENT_TNODE_TYPE *m_pTransformNode;
       CMouseEventHandler<BASE_COMPONENT_TYPE> *m_pMouseHandler;
@@ -94,6 +96,7 @@ namespace Phoenix
       CGuiElement( ) : m_bVisible(0), 
 		       m_bHasFocus(0),
 		       m_bPressed(0),
+		       m_iActionId(0),
 		       m_pTransformNode(NULL),
 		       m_pMouseHandler(NULL) { }
     public:
@@ -175,6 +178,20 @@ namespace Phoenix
       {
 	assert( pElement != NULL && "pElement IS NULL!!!" );
 	GetTransformNode()->AddEdge( pElement->GetTransformNode());
+      }
+      ////////////////////
+      /// Returns id.
+      /// \returns Id number.
+      int GetActionId() const
+      {
+	return m_iActionId;
+      }
+      ////////////////////
+      /// Sets id.
+      /// \param id New id.
+      void SetActionId( int id )
+      {
+	m_iActionId = id;
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -442,6 +459,13 @@ namespace Phoenix
       {
 	TravelDF<CGuiRenderAdapter<BASE_COMPONENT_TYPE, RENDERER_ADAPTER_TYPE>, GUI_ELEMENT_TYPE, 
 	std::string, int>(  static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), &rAdapter );
+      }
+      ////////////////////
+      /// Returns reference to message router.
+      /// \returns Message router.
+      Phoenix::AI::CMessageRouter< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES > & GetMessageRouter()
+      {
+	return m_msgRouter;
       }
     };
   } // namespace Gui
