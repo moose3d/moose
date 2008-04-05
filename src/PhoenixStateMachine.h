@@ -160,7 +160,7 @@ namespace Phoenix
       void Prepare();
       ////////////////////
       /// Sorts receiver queues using SORT_FUNC.
-      template<typename SORT_FUNC> void SortReceivers();
+      template<typename SORT_FUNC> void SortReceivers( SORT_FUNC & sort_func );
       std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> > & GetReceivers() { return m_vecMsgReceivers; }
     };
     /////////////////////////////////////////////////////////////////
@@ -231,6 +231,7 @@ namespace Phoenix
 	  m_vecStates.push_back( new Phoenix::AI::CState<FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE>());
 	  Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE>::m_lstNodes.push_back( m_vecStates[n] );
 	  m_vecStates[n]->m_pGraph = this;
+
 	  m_vecStates[n]->SetName( (STATE_NAME_TYPE)n );
 	}
       }
@@ -534,11 +535,11 @@ Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::Prepare()
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-template<typename SORT_FUNC> 
+template< typename SORT_FUNC > 
 void 
-Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::SortReceivers()
+Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::SortReceivers( SORT_FUNC & sort_func)
 {
-  SORT_FUNC sort_func;
+  //SORT_FUNC sort_func;
   typename std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> >::iterator recv_it;
   recv_it = m_vecMsgReceivers.begin();
   ////////////////////
