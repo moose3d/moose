@@ -322,6 +322,23 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
+    /// Sorter function for receivers. By using this,
+    /// the EvaluateLayout method orders elements from top to bottom, making
+    /// "top" elements hide those "under" them when clicking.
+
+    template <class OBJECT_TYPE> 
+    struct SorterZ
+    {
+      inline bool operator()( CHandle<OBJECT_TYPE> * hFirst, CHandle<OBJECT_TYPE> * hSecond )
+      {
+	if ( hFirst->IsNull() )  return false;
+	if ( hSecond->IsNull() ) return true;
+	return ( CResourceManager<OBJECT_TYPE, CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hFirst)->GetWorldTransform().GetMatrix()(2,3) >
+		 CResourceManager<OBJECT_TYPE, CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hSecond)->GetWorldTransform().GetMatrix()(2,3) );
+	
+      }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Class for GUI system.
     template< class BASE_COMPONENT_TYPE >
     class CGuiSystem : private Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>
@@ -373,6 +390,8 @@ namespace Phoenix
 	  pNode = static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode());
 	}
 	TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE>, GUI_ELEMENT_TYPE, std::string, int>( pNode, &m_updaterAdapter );
+        SorterZ< BASE_COMPONENT_TYPE > sort_func;
+	m_msgRouter.SortReceivers( sort_func );
       }
       ////////////////////
       /// Passes events to listeners.
