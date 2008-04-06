@@ -284,6 +284,14 @@ namespace Phoenix
       {
 	return m_CurrentState;
       }
+      ////////////////////
+      /// Comparison operator for states directly.
+      /// \param state State which current state is compared against.
+      /// \returns Non-zero, if states are equal - zero otherwise.
+      int operator==( const STATE_NAME_TYPE & state )
+      {
+	return ( GetCurrentState() == state );
+      }
     };
   } // namespace AI
 } // namespace Phoenix
