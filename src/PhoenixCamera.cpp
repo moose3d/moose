@@ -19,7 +19,7 @@ Phoenix::Graphics::CCamera::CCamera() : COrientable()
   SetProjectionChanged(1);
   m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
   SetTrackballDistance( 3.24f);
-  m_fDecalOffset = 0.0f;
+  m_fDecalOffset = 1.0f;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::~CCamera()
