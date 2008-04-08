@@ -63,6 +63,11 @@ namespace Phoenix
       /// \returns Pointer to child node.
       COctreeNode * GetChild( OCTREE_SECTION iSection );
       ////////////////////
+      /// Index accessor method.
+      /// \param iSection which node will be returned.
+      /// \returns Pointer to child node.
+      const COctreeNode * GetChild( OCTREE_SECTION iSection ) const;
+      ////////////////////
       /// Removes node from section iSection.
       /// \param iSection Section to be deleted.
       void DeleteNode( OCTREE_SECTION iSection);
@@ -239,9 +244,15 @@ namespace Phoenix
       /// \param camera Camera used in culling.
       /// \param list List where objects are inserted.
       /// \returns Number of collected objects.
-      size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, 
-			     std::list<TYPE> & list);
-      
+      size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list) const;
+      ////////////////////
+      /// Collects objects from octree into list of objects.
+      /// All objects must should be inheritced from CGameObject or provide similar interface
+      /// ( GetBoundingSphere, GetWorldTransform() ).
+      /// \param sphere Objects must intersect this in order to be included.
+      /// \param list List where objects are inserted.
+      /// \returns Number of collected objects.
+      size_t CollectObjects( const Phoenix::Volume::CSphere &sphere, std::list<TYPE> & list) const;
     protected:
       ////////////////////
       /// Sets world size.
@@ -325,6 +336,13 @@ Phoenix::Spatial::COctreeNode<TYPE>::~COctreeNode()
 template<typename TYPE>
 inline Phoenix::Spatial::COctreeNode<TYPE> *
 Phoenix::Spatial::COctreeNode<TYPE>::GetChild( Phoenix::Spatial::OCTREE_SECTION iSection )
+{
+  return m_pChildren[iSection];
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+inline const Phoenix::Spatial::COctreeNode<TYPE> *
+Phoenix::Spatial::COctreeNode<TYPE>::GetChild( Phoenix::Spatial::OCTREE_SECTION iSection ) const
 {
   return m_pChildren[iSection];
 }
@@ -785,14 +803,14 @@ Phoenix::Spatial::COctreeNode<TYPE>::HasObjects() const
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 size_t
-Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list)
+Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list) const
 {
-  std::list< Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
+  std::list< const Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
   lstNodePtrs.push_back(GetRoot());
-  size_t nObjCount = 0;
-  Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
+
+  const Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
   Phoenix::Volume::CSphere sphere;
-  typename std::list<TYPE>::iterator it;
+  typename std::list<TYPE>::const_iterator it;
 
   while(!lstNodePtrs.empty())
   {
@@ -815,7 +833,6 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamer
 	     camera.Frustum().IntersectsSphere( sphere))
 	{
 	  list.push_back( *it );
-	  nObjCount++;
 	}
       }
       // If there's objects left in children, push them into nodeptr list
@@ -832,7 +849,59 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamer
       }
     }
   }
-  return nObjCount;  
+  // return number of currently visible objects.
+  return list.size();  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+size_t
+Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Volume::CSphere &cullSphere, std::list<TYPE> & list) const
+{
+  std::list< const Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
+  lstNodePtrs.push_back(GetRoot());
+
+  const Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
+  Phoenix::Volume::CSphere sphere;
+  typename std::list<TYPE>::const_iterator it;
+
+  while(!lstNodePtrs.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrs.front();
+    lstNodePtrs.pop_front();
+    
+    // Check does cube intersect sphere
+    if ( SphereIntersectsAACube(cullSphere, *pNode))
+    {
+      // Check do objects intersect sphere and if so, 
+      // insert them into list
+      it = pNode->GetObjects().begin();
+      for( ; it!=pNode->GetObjects().end();it++)
+      {
+	sphere = (*it)->GetBoundingSphere();
+	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+
+	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, cullSphere) )
+	{
+	  list.push_back( *it );
+	}
+      }
+      // If there's objects left in children, push them into nodeptr list
+      if ( pNode->ChildrenContainObjects())
+      {
+	INSERT( TOP_LEFT_FRONT );
+	INSERT( TOP_LEFT_BACK );
+	INSERT( TOP_RIGHT_FRONT );
+	INSERT( TOP_RIGHT_BACK );
+	INSERT( BOTTOM_LEFT_FRONT );
+	INSERT( BOTTOM_LEFT_BACK );
+	INSERT( BOTTOM_RIGHT_FRONT );
+	INSERT( BOTTOM_RIGHT_BACK );
+      }
+    }
+  }
+  // return number of currently visible objects.
+  return list.size();  
 }
 #undef INSERT
 /////////////////////////////////////////////////////////////////
