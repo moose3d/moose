@@ -277,7 +277,7 @@ namespace Phoenix
     
     {
     public:
-      CMouseMotionEvent( const Phoenix::Math::CVector2<int> &vCoords ) : CMouseEventBase( vCoords)
+      CMouseMotionEvent( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : CMouseEventBase( vCoords, iButton)
       { 
 	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); 
       }
@@ -468,9 +468,9 @@ namespace Phoenix
       }
       ////////////////////
       /// Sends mouse motion event.
-      void EnqueueMouseMotion( const Phoenix::Math::CVector2<int> & vPosition  )
+      void EnqueueMouseMotion( const Phoenix::Math::CVector2<int> & vPosition, int iButton  )
       {
-	m_msgRouter.EnqueueMessage( new CMouseMotionEvent<BASE_COMPONENT_TYPE>( vPosition) );
+	m_msgRouter.EnqueueMessage( new CMouseMotionEvent<BASE_COMPONENT_TYPE>( vPosition, iButton ) );
       }
       ////////////////////
       /// Sends all visible components into renderer adapter.
