@@ -359,7 +359,10 @@ namespace Phoenix
       /// \returns String containing resource name. 
       /// \returns Empty string is returned if resource is not found.
       std::string GetResourceName( const HANDLE &handle ) const;
-      
+      ////////////////////
+      /// Returns reference to Object vector.
+      /// \returns Vector of managed objects.
+      std::vector<CResource<OBJECTTYPE,HANDLE> *> & GetResources();
     private:
       void DeleteMemory();
       ////////////////////
@@ -709,6 +712,13 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResourceName( const HANDL
     return string();
   }
   return m_vecObjects[handle.GetIndex()]->GetName();
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE,typename HANDLE>
+std::vector<Phoenix::Core::CResource<OBJECTTYPE,HANDLE> *> & 
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResources() 
+{
+  return m_vecObjects;
 }
 /////////////////////////////////////////////////////////////////
 #endif
