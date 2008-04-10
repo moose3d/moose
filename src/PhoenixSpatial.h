@@ -100,6 +100,12 @@ namespace Phoenix
       Phoenix::Math::CVector3<float> m_vDirection;
     public:
       ////////////////////
+      /// Constructor.
+      COneDirectional() {}
+      ////////////////////
+      /// Constructor.
+      COneDirectional( const Phoenix::Math::CVector3<float> & vDir ) : m_vDirection(vDir) { }
+      ////////////////////
       /// Assigns direction.
       /// \param vDirection direction vector to be assigned.
       inline void SetDirection( const Phoenix::Math::CVector3<float> & vDirection )
