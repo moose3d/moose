@@ -1,3 +1,19 @@
+proc FullThrust {} {
+    global g_fSpeed g_fMaxSpeed
+
+    if { $g_fSpeed < $g_fMaxSpeed } {
+	Accelerate 0.25
+    }
+}
+
+proc StopShip {} {
+   global g_fSpeed
+    if { $g_fSpeed > 0.0 } {
+	Accelerate -0.5
+    } else {
+	Stop
+    }
+}
 proc playComputer { } {
 
     global g_fHealth g_fSpeed g_fMaxSpeed g_fAccel g_bHasTarget \
@@ -17,15 +33,11 @@ proc playComputer { } {
 
 	switch -- $shipActionState  \
 	$SHIP_ACTION_PASSIVE {
-	    if { $g_fSpeed > 0.0 } {
-		Accelerate -1.5
-		Move
-	    }
+	    StopShip
 	} \
 	$SHIP_ACTION_MOVING {
-	    if { $g_fSpeed < $g_fMaxSpeed } {
-		Accelerate 0.25
-	    }
+
+	    FullThrust
 	
 	    if { $g_bHasTarget  } {
 		TurnTowardsTarget
@@ -33,13 +45,27 @@ proc playComputer { } {
 	    # if target is OutOfRange  
 	    # move towards target.
 	    Move
-	    
+	    puts "moving"
 	} \
 	$SHIP_ACTION_ATTACKING {
 
-	} \
-	$SHIP_ACTION_GUARDING {
+	    if { [ TargetInWeaponsRange ] == "1" } {
 
+		StopShip
+		Move
+		FirePhasers
+
+	    } else {
+
+		if { $g_bHasTarget  } {
+		    TurnTowardsTarget
+		}
+		FullThrust
+		Move
+	    }
+ 	} \
+	$SHIP_ACTION_GUARDING {
+	    
 	} \
 	default {
 
