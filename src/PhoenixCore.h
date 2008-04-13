@@ -82,6 +82,26 @@ namespace Phoenix
       void SetSelected(int bFlag ) { m_bSelected = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
+    class CFocusable
+    {
+    private:
+      /// Does this element have current focus.
+      int	m_bHasFocus;
+    protected:
+      ////////////////////
+      /// Constructor. Unfocuses object.
+      CFocusable() : m_bHasFocus(0) {}
+    public:
+      ////////////////////
+      /// Checks is this element focused.
+      /// \returns Non-zero on focus, zero otherwise.
+      int HasFocus() const { return m_bHasFocus;  }
+      ////////////////////
+      /// Sets focus flag.
+      /// \param bFlag Non-zero for focus on, 0 for unfocus.
+      void SetFocus( int bFlag ) { m_bHasFocus = bFlag; }
+    };
+    /////////////////////////////////////////////////////////////////
     /// Template base for each typed object.
     template <typename TYPE>
     class CTypeBase

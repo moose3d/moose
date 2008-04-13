@@ -76,14 +76,13 @@ namespace Phoenix
     template< class BASE_COMPONENT_TYPE >
     class CGuiElement : public Phoenix::Spatial::CDimensional2D, 
 			public Phoenix::Math::CTransformable,
-			public Phoenix::AI::CMessageObject< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES >
+			public Phoenix::AI::CMessageObject< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES >,
+			public Phoenix::Core::CFocusable
     {
       friend  class Phoenix::Gui::CGuiSystem<BASE_COMPONENT_TYPE>;
     protected:
       /// Is this element visible.
       int	m_bVisible;
-      /// Does this element have current focus.
-      int	m_bHasFocus;
       /// Is element pressed.
       int	m_bPressed;
       /// Element id
@@ -94,7 +93,6 @@ namespace Phoenix
       ////////////////////
       /// Constructor.
       CGuiElement( ) : m_bVisible(0), 
-		       m_bHasFocus(0),
 		       m_bPressed(0),
 		       m_iActionId(0),
 		       m_pTransformNode(NULL),
@@ -140,14 +138,6 @@ namespace Phoenix
       /// Sets pressed status.
       /// \param bFlag non-zero if pressed, zero otherwise.
       void SetPressed( int bFlag ){ m_bPressed = bFlag; }
-      ////////////////////
-      /// Checks is this element focused.
-      /// \returns Non-zero on focus, zero otherwise.
-      int HasFocus() const { return m_bHasFocus;  }
-      ////////////////////
-      /// Sets focus flag.
-      /// \param bFlag Non-zero for focus on, 0 for unfocus.
-      void SetFocus( int bFlag ) { m_bHasFocus = bFlag; }
       ////////////////////
       /// Returns transform node.
       /// \returns Pointer to transform node.
