@@ -17,6 +17,6 @@ void main()
 	startPos = vec4(startPos.xyz + (offsetVec * endposThickness.w),startPos.w);
 	/* into window coordinates */
 	gl_Position = gl_ProjectionMatrix * startPos;
-	gl_TexCoord[0].x = (gl_MultiTexCoord0.x * length(endPos - startPos))+ time.x;
+	gl_TexCoord[0].x = (gl_MultiTexCoord0.x * length(endPos - startPos)) - time.x;
 	gl_TexCoord[0].y = gl_MultiTexCoord0.y;
 }
