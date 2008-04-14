@@ -95,7 +95,7 @@ namespace Phoenix
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-Phoenix::Scene::CGameObject<TYPE>::CGameObject( size_t nNumModels ) : m_Type((TYPE)0)
+Phoenix::Scene::CGameObject<TYPE>::CGameObject( size_t nNumModels ) : m_Type((TYPE)0), m_nSpatialIndex(0)
 {
   if ( nNumModels == 0 ) nNumModels = 1;
   for ( size_t i=0;i<nNumModels;i++)
