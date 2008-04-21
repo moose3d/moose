@@ -461,6 +461,19 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector2<int> &vStartPoint, 
 void 
 Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint )
 {
+
+  CQuaternion qRotation;
+  CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
+  if ( VirtualTrackball( vPosition, vStartPoint, vEndPoint, qRotation ) )
+  {
+    qRotation.Reverse();
+    RotateAroundPoint( sphere.GetPosition(), qRotation  );
+  }
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint, CQuaternion & qResult )
+{
   CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint[0], 
 						    vStartPoint[1],
 						    0.0f);
@@ -489,14 +502,12 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 
       vOrig.Normalize();
       vEnd.Normalize();
-
-      CQuaternion qRotation;
-      Phoenix::Math::RotationArc(vOrig,vEnd, qRotation);
-      qRotation.Reverse();
       
-      RotateAroundPoint( sphere.GetPosition(), qRotation  );
+      Phoenix::Math::RotationArc(vOrig,vEnd, qResult);
+      return 1;
     }
   }
+  return 0;
 }
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR
