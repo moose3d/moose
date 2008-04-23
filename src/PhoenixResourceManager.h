@@ -8,7 +8,8 @@ namespace Phoenix
 {
   namespace Core
   {
-    using namespace Phoenix::Core;
+    
+    template<typename OBJECTTYPE, typename HANDLE> class CResourceManager;
     ////////////////////
     /// Handle class. Handle is always null handle before it is Initialize()'d.
     /// \note 
@@ -66,6 +67,9 @@ namespace Phoenix
       {
 	return ( GetIndex() < handle.GetIndex() );
       }
+      
+      TAG * operator*() const;
+      TAG * operator->() const;
     };
     ////////////////////
     /// Resource Name class. This is used in Hash table.
@@ -719,6 +723,21 @@ std::vector<Phoenix::Core::CResource<OBJECTTYPE,HANDLE> *> &
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResources() 
 {
   return m_vecObjects;
+}
+/////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline TAG *
+Phoenix::Core::CHandle<TAG>::operator*() const
+{
+  return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetResource(*this);
+}
+/////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline TAG *
+Phoenix::Core::CHandle<TAG>::operator->() const
+{
+  assert ( !IsNull() && "Dereferencing NULL Handle!" );
+  return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetResource(*this);
 }
 /////////////////////////////////////////////////////////////////
 #endif
