@@ -450,6 +450,14 @@ namespace Phoenix
       {
 	return m_vVertices[ nCorner % 3];
       }
+      ////////////////////
+      /// Calculates triangle face normal.
+      void CalculateFaceNormal( CVector3<float> & vResult )
+      {
+	vResult = (m_vVertices[2].GetPosition() - m_vVertices[0].GetPosition()).Cross(m_vVertices[1].GetPosition() - m_vVertices[0].GetPosition());
+	vResult.Normalize();
+      }
+      
     };
     /////////////////////////////////////////////////////////////////
     /// Generic orientable object. Contains base vectors
