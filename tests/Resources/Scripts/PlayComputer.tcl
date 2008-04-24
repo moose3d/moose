@@ -50,11 +50,13 @@ proc playComputer { } {
 	$SHIP_ACTION_ATTACKING {
 
 	    if { [ TargetInWeaponsRange ] == "1" } {
-
-		StopShip
-		Move
-		FirePhasers
-
+		if {  [ IsTargetAlive ] } {
+		    StopShip
+		    Move
+		    FirePhasers
+		} else {
+		    NextCommand
+		}
 	    } else {
 
 		if { $g_bHasTarget  } {
