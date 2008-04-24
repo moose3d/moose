@@ -45,7 +45,6 @@ proc playComputer { } {
 	    # if target is OutOfRange  
 	    # move towards target.
 	    Move
-	    puts "moving"
 	} \
 	$SHIP_ACTION_ATTACKING {
 
