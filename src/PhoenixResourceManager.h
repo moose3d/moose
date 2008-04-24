@@ -17,6 +17,8 @@ namespace Phoenix
     /// Nullifying them is not enough - Otherwise BAD things are about to happen. 
     /// This is because CResourceManager keeps track of references (Handles) to resources 
     /// and does not know that handle does not exist anymore without Releasing.
+    /// \note
+    /// Handles can release themselves now during delete.
     template<typename TAG>
     class CHandle : public CNullable
     {
@@ -28,7 +30,7 @@ namespace Phoenix
       CHandle() : CNullable(), m_nIndex(0) {  }
       ////////////////////
       /// Destructor.
-      ~CHandle() {}
+      ~CHandle();
       //////////////////// 
       /// Returns index.
       /// \returns current index pointed by handle.
@@ -584,7 +586,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DeleteMemory()
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
-OBJECTTYPE *
+inline OBJECTTYPE *
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const HANDLE &handle) const
 {
   if ( handle.GetIndex() >= GetSize() || handle.IsNull() )
@@ -595,7 +597,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const HANDLE &h
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
-OBJECTTYPE *
+inline OBJECTTYPE *
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const std::string &strName ) const
 {
   if ( m_pResourceHash == NULL ) return NULL;
@@ -607,7 +609,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const std::stri
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
-OBJECTTYPE *
+inline OBJECTTYPE *
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const char *szResName ) const
 {
   std::string strName(szResName);
@@ -738,6 +740,14 @@ Phoenix::Core::CHandle<TAG>::operator->() const
 {
   assert ( !IsNull() && "Dereferencing NULL Handle!" );
   return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->GetResource(*this);
+}
+/////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline
+Phoenix::Core::CHandle<TAG>::~CHandle()
+{
+  // this has to be released, otherwise we'll go see the boogie man. :)
+  Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->Release(*this);
 }
 /////////////////////////////////////////////////////////////////
 #endif
