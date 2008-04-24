@@ -729,7 +729,7 @@ template<typename TAG>
 inline TAG *
 Phoenix::Core::CHandle<TAG>::operator*() const
 {
-  return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetResource(*this);
+  return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->GetResource(*this);
 }
 /////////////////////////////////////////////////////////////////
 template<typename TAG>
@@ -737,7 +737,7 @@ inline TAG *
 Phoenix::Core::CHandle<TAG>::operator->() const
 {
   assert ( !IsNull() && "Dereferencing NULL Handle!" );
-  return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetResource(*this);
+  return Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->GetResource(*this);
 }
 /////////////////////////////////////////////////////////////////
 #endif
