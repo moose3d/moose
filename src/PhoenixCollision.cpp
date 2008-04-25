@@ -364,9 +364,9 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   // Inverse rotation; transpose is sufficient for rotation matrices.
   mRotation.Transpose();
   
-  vVertex0 = Rotate( vVertex0, mRotation );
-  vVertex1 = Rotate( vVertex1, mRotation );
-  vVertex2 = Rotate( vVertex2, mRotation );
+  Rotate( CVector3<float>(vVertex0), mRotation, vVertex0 );
+  Rotate( CVector3<float>(vVertex1), mRotation, vVertex1 );
+  Rotate( CVector3<float>(vVertex2), mRotation, vVertex2 );
   
   // Calculate triangle edges.
   CVector3<float> vEdge0 = vVertex1 - vVertex0;

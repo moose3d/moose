@@ -6,6 +6,7 @@
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>
 #include <iomanip>
+#include <algorithm>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -58,16 +59,23 @@ namespace Phoenix
       ////////////////////
       /// \param rMessage Message to compare this against - latter time becomes first.
       /// \returns is this message before the other.
-      bool operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage );
+      //bool operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage );
     };
+    template <typename OBJECT_TYPE, typename MSG_TYPE> class CMessageRouter;
     ////////////////////
     /// ReceiverQueue
     template <typename OBJECT_TYPE, typename MSG_TYPE>
     class CReceiverQueue 
     {
+      friend class CMessageRouter<OBJECT_TYPE,MSG_TYPE>;
     protected:
       std::vector< CHandle<OBJECT_TYPE> * > m_vecObjects;
+      ////////////////////
+      /// Returns reference to object handle vector.
+      /// \returns vector with pointers to handles.
+
     public:
+      std::vector< CHandle<OBJECT_TYPE> * > & GetObjectHandles() { return m_vecObjects; }
       ////////////////////
       /// Constructor.
       CReceiverQueue();
@@ -88,6 +96,7 @@ namespace Phoenix
       template <class MSG_ADAPTER_TYPE> 
       void PropagateMessage( const CMessage< OBJECT_TYPE, MSG_TYPE > &rMessage, MSG_ADAPTER_TYPE &rMsgAdapter );
       
+      
     };
     ////////////////////
     /// Message router class.
@@ -102,7 +111,7 @@ namespace Phoenix
 	bool operator()( const CMessage<OBJECT_TYPE, MSG_TYPE> *pFirst,
 			 const CMessage<OBJECT_TYPE, MSG_TYPE> *pSecond) 
 	{
-	  return (pFirst->GetTimeStamp() > pSecond->GetTimeStamp());
+	  return (pFirst->GetTimeStamp() < pSecond->GetTimeStamp());
 	}
       };
     protected:
@@ -149,6 +158,10 @@ namespace Phoenix
       ////////////////////
       /// Starts message routing (resets timer).
       void Prepare();
+      ////////////////////
+      /// Sorts receiver queues using SORT_FUNC.
+      template<typename SORT_FUNC> void SortReceivers( SORT_FUNC & sort_func );
+      std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> > & GetReceivers() { return m_vecMsgReceivers; }
     };
     /////////////////////////////////////////////////////////////////
     /// Base class for message receivers and senders.
@@ -218,6 +231,7 @@ namespace Phoenix
 	  m_vecStates.push_back( new Phoenix::AI::CState<FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE>());
 	  Phoenix::Core::CGraph< FSM_TYPE, STATE_NAME_TYPE, INPUT_NAME_TYPE>::m_lstNodes.push_back( m_vecStates[n] );
 	  m_vecStates[n]->m_pGraph = this;
+
 	  m_vecStates[n]->SetName( (STATE_NAME_TYPE)n );
 	}
       }
@@ -270,6 +284,14 @@ namespace Phoenix
       {
 	return m_CurrentState;
       }
+      ////////////////////
+      /// Comparison operator for states directly.
+      /// \param state State which current state is compared against.
+      /// \returns Non-zero, if states are equal - zero otherwise.
+      int operator==( const STATE_NAME_TYPE & state )
+      {
+	return ( GetCurrentState() == state );
+      }
     };
   } // namespace AI
 } // namespace Phoenix
@@ -315,12 +337,12 @@ Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetReceiver() const
   return m_hReceiver;
 }
 /////////////////////////////////////////////////////////////////
-template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline bool 
-Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage )
-{
-  return (GetTimeStamp() < rMessage.GetTimeStamp());
-}
+/* template <typename OBJECT_TYPE, typename MSG_TYPE> */
+/* inline bool  */
+/* Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::operator<( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> & rMessage ) */
+/* { */
+/*   return (GetTimeStamp() < rMessage.GetTimeStamp()); */
+/* } */
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 inline void 
@@ -362,10 +384,12 @@ template <typename OBJECT_TYPE, typename MSG_TYPE>
 void
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PushReceiver( const CHandle<OBJECT_TYPE> &hObject )
 {
+
+  CHandle<OBJECT_TYPE> *pHandle = new CHandle<OBJECT_TYPE>();
+  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->DuplicateHandle( hObject, *pHandle);
   // Not thread-safe, requires mutex
-  m_vecObjects.push_back(new CHandle<OBJECT_TYPE>());
-  std::string strName = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResourceName( hObject);
-  Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->AttachHandle( strName, *m_vecObjects.back());
+  m_vecObjects.push_back( pHandle );
+
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
@@ -407,7 +431,8 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PropagateMessage( const Phoen
       pObject = Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->GetResource(*(*it));
       if ( pObject != NULL )
       {
-	rMsgAdapter.Process( rMessage, *pObject );
+	// if adapter explicitly tells to stop passing message any further
+	if ( rMsgAdapter.Process( rMessage, *pObject ) ) break;
       }
     }
   }
@@ -515,6 +540,22 @@ Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::Prepare()
 {
   Phoenix::Core::CTimer::Reset();
   
+}
+/////////////////////////////////////////////////////////////////
+template <typename OBJECT_TYPE, typename MSG_TYPE>
+template< typename SORT_FUNC > 
+void 
+Phoenix::AI::CMessageRouter<OBJECT_TYPE, MSG_TYPE>::SortReceivers( SORT_FUNC & sort_func)
+{
+  //SORT_FUNC sort_func;
+  typename std::vector<Phoenix::AI::CReceiverQueue<OBJECT_TYPE, MSG_TYPE> >::iterator recv_it;
+  recv_it = m_vecMsgReceivers.begin();
+  ////////////////////
+  // sort all receiver vectors using sort_func:
+  for( ; recv_it != m_vecMsgReceivers.end(); recv_it++)
+  {
+    std::sort( (*recv_it).GetObjectHandles().begin(), (*recv_it).GetObjectHandles().end(), sort_func );
+  }
 }
 /////////////////////////////////////////////////////////////////
 #endif

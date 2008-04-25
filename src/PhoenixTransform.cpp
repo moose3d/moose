@@ -17,16 +17,18 @@ Phoenix::Math::CTransform::GetMatrix()
   // if ( m_pTransformHook != NULL ) return *m_pTransformHook;
   if ( m_bChanged )
   {
+    CMatrix4x4<float> mTmp;
     // Constructs STR-transform.
     // First, convert quaterion into matrix (use m_mTransform).
     QuaternionToMatrix(m_qRotation, m_mTransform);
+    TranslationMatrix( m_vTranslation, mTmp );
     // Concatenate transforms 
-    m_mTransform =  TranslationMatrix( m_vTranslation ) * 
-                    m_mTransform * 
-                    UniformScaleMatrix(m_fScaling);
+    m_mTransform =  mTmp * m_mTransform; 
+    UniformScaleMatrix(m_fScaling, mTmp);
+    m_mTransform = m_mTransform * mTmp;
     m_bChanged = 0;
   }
-  return  m_mTransform;
+  return m_mTransform;
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -57,7 +59,7 @@ Phoenix::Math::CTransform::SetTranslation( float fX, float fY, float fZ )
 void 
 Phoenix::Math::CTransform::SetRotation( const CMatrix4x4<float> &mMatrix )
 {
-  m_qRotation = RotationMatrixToQuaternion( mMatrix );
+  RotationMatrixToQuaternion( mMatrix, m_qRotation );
   m_bChanged = 1;  
 }
 /////////////////////////////////////////////////////////////////

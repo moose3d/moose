@@ -199,12 +199,16 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
     DELETE(GetIndices()[GetIndices().size()-1]);
     GetIndices().pop_back();
   }
-
-  
+  // Release group names
+  while( !m_mapGroups.empty() )
+  {
+    DELETE ((*m_mapGroups.begin()).second);
+    m_mapGroups.erase( m_mapGroups.begin());
+  }
   m_Animationdata.fAnimationFPS = 0.0;
   m_Animationdata.fCurrentTime = 0.0;
   m_Animationdata.iTotalFrames = 0;
-
+  
   m_nNumVertices = 0;
   m_nNumTriangles = 0;
   m_nNumGroups = 0;
@@ -616,7 +620,8 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
   vector<CVertex> vecVertices;
   vector<unsigned int> vecIndices;
   CreateTriangleList( vecVertices, vecIndices, iVertexCompareFlags );
-  
+  CreateGroupIndexMap( vecVertices, iVertexCompareFlags );
+
   DELETE(m_pPositions);
   DELETE(m_pNormals);
   DELETE(m_pTexCoords);
@@ -680,6 +685,7 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
  											   \
 }
 /////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
 						     vector<unsigned int> &vecIndices,
@@ -723,6 +729,67 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
     } // for each vertex in triangle
   } // for each triangle
 }  // separatevertices
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices, int iVertexCompareFlags )
+{
+  m_mapGroups.clear();
+  std::list<size_t> lstIndices;
+  // for each group
+  for( size_t g=0;g<m_nNumGroups;g++)
+  {
+    struct MS3D_Group_t group = m_pGroups[g];
+    struct MS3D_Triangle_t triangle;
+    lstIndices.clear();
+
+    // for each triangle in Group
+    for( size_t t=0; t<group.nNumTriangles; t++)
+    {
+      triangle = m_pTriangles[group.pTriangleIndices[t]];
+      for( unsigned int nV=0;nV<3;nV++)
+      {
+	CVertex vertex;    
+	CREATE_VERTEX( vertex, triangle, nV );
+	// Check does the vertex exist in the list already
+	bool bFoundVertex = false;
+	size_t nIndex = 0;
+	
+	for( ; nIndex < vecVertices.size(); nIndex++ )
+	{
+	  
+	  if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
+	  {
+	    bFoundVertex = true;
+	    break;
+	  } 
+	}
+	assert ( bFoundVertex );
+	lstIndices.push_back( nIndex );
+      } // for each vert
+    } // for each tri
+
+    // Create index array from indices
+    CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, lstIndices.size());
+    if ( pIndices->IsShortIndices())
+    {
+      std::list<size_t>::iterator it = lstIndices.begin();
+      for( size_t i=0;i<lstIndices.size();i++, it++)
+      {
+	pIndices->GetPointer<unsigned short int>()[i] = *it;
+      }
+    } 
+    else
+    {
+      std::list<size_t>::iterator it = lstIndices.begin();
+      for( size_t i=0;i<lstIndices.size();i++, it++)
+      {
+	pIndices->GetPointer<unsigned int>()[i] = *it;
+      }
+    }
+    // Insert indexarray under group name 
+    m_mapGroups.insert( make_pair( std::string(group.name), pIndices ) );
+  }
+}
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Data::CMilkshapeLoader::Stripify()

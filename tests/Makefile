@@ -39,6 +39,8 @@ linecollision:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixLineCollisionDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 decal:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixDecalDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
+skybox:
+	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixSkyboxDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 gui:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixGuiDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 volumecalc:

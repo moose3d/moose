@@ -235,16 +235,16 @@ int main()
   CCamera camera;
   camera.SetPosition( 0, 10.0f,0.0f);
   camera.SetViewport( 0,0, 640, 480 );
-  camera.SetNearClipping( 0.1f);
-  camera.SetFarClipping( 800.0f );
+  camera.SetNearClipping( 0.10f);
+  camera.SetFarClipping( 500.0f );
   camera.SetViewOrtho( -200,200, -150, 150);
-
   camera.RotateAroundRight( -90.0f);
+  
   SDL_Event event;
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   
   COglRenderer *pOglRenderer = new COglRenderer();
-  
+   
 
   COctree<float> *pOctree = new COctree<float>(4,100.0f);
   
@@ -260,7 +260,7 @@ int main()
 
 	listOfSpheres.push_back( Phoenix::Volume::CSphere(CVector3<float>(i*25-100,0,j*25-100),20));
       }
-	
+ 
   while( g_bLoop )
   {
     while ( SDL_PollEvent(&event ))
@@ -302,18 +302,22 @@ int main()
 
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, 0 );    
     glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
+
     pOglRenderer->ClearBuffer( COLOR_BUFFER );
     pOglRenderer->ClearBuffer( DEPTH_BUFFER );
     pOglRenderer->DisableState( STATE_LIGHTING );
-    pOglRenderer->CommitCamera( camera );
-    
-    
-    
+
     test.UpdateProjection();
     test.UpdateView();
     test.CalculateFrustum();    
     test.CalculateBoundingSphere();
     test.CalculateBoundingCone();
+
+    
+    pOglRenderer->CommitCamera( camera );
+    
+    
+    
     CVector4<unsigned char> color(255,255,255,255);
     pOglRenderer->CommitColor(color );
     DrawFrustum( test);
@@ -321,7 +325,10 @@ int main()
     g_nDrawnNodes = 0;
     DrawOctree( pOctree->GetRoot(), test );
     
-    //DrawSpheres( test, listOfSpheres);
+    DrawSpheres( test, listOfSpheres);
+    
+    
+
     pOglRenderer->Finalize();
     CSDLScreen::GetInstance()->SwapBuffers();
   }

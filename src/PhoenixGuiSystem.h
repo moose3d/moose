@@ -76,24 +76,25 @@ namespace Phoenix
     template< class BASE_COMPONENT_TYPE >
     class CGuiElement : public Phoenix::Spatial::CDimensional2D, 
 			public Phoenix::Math::CTransformable,
-			public Phoenix::AI::CMessageObject< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES >
+			public Phoenix::AI::CMessageObject< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES >,
+			public Phoenix::Core::CFocusable
     {
       friend  class Phoenix::Gui::CGuiSystem<BASE_COMPONENT_TYPE>;
     protected:
       /// Is this element visible.
       int	m_bVisible;
-      /// Does this element have current focus.
-      int	m_bHasFocus;
       /// Is element pressed.
       int	m_bPressed;
+      /// Element id
+      int	m_iActionId;
       /// Transform node for this element.
       GUI_ELEMENT_TNODE_TYPE *m_pTransformNode;
       CMouseEventHandler<BASE_COMPONENT_TYPE> *m_pMouseHandler;
       ////////////////////
       /// Constructor.
       CGuiElement( ) : m_bVisible(0), 
-		       m_bHasFocus(0),
 		       m_bPressed(0),
+		       m_iActionId(0),
 		       m_pTransformNode(NULL),
 		       m_pMouseHandler(NULL) { }
     public:
@@ -138,14 +139,6 @@ namespace Phoenix
       /// \param bFlag non-zero if pressed, zero otherwise.
       void SetPressed( int bFlag ){ m_bPressed = bFlag; }
       ////////////////////
-      /// Checks is this element focused.
-      /// \returns Non-zero on focus, zero otherwise.
-      int HasFocus() const { return m_bHasFocus;  }
-      ////////////////////
-      /// Sets focus flag.
-      /// \param bFlag Non-zero for focus on, 0 for unfocus.
-      void SetFocus( int bFlag ) { m_bHasFocus = bFlag; }
-      ////////////////////
       /// Returns transform node.
       /// \returns Pointer to transform node.
       GUI_ELEMENT_TNODE_TYPE *GetTransformNode() { return m_pTransformNode; }
@@ -175,6 +168,20 @@ namespace Phoenix
       {
 	assert( pElement != NULL && "pElement IS NULL!!!" );
 	GetTransformNode()->AddEdge( pElement->GetTransformNode());
+      }
+      ////////////////////
+      /// Returns id.
+      /// \returns Id number.
+      int GetActionId() const
+      {
+	return m_iActionId;
+      }
+      ////////////////////
+      /// Sets id.
+      /// \param id New id.
+      void SetActionId( int id )
+      {
+	m_iActionId = id;
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -260,7 +267,7 @@ namespace Phoenix
     
     {
     public:
-      CMouseMotionEvent( const Phoenix::Math::CVector2<int> &vCoords ) : CMouseEventBase( vCoords)
+      CMouseMotionEvent( const Phoenix::Math::CVector2<int> &vCoords, int iButton ) : CMouseEventBase( vCoords, iButton)
       { 
 	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_MOTION ); 
       }
@@ -302,6 +309,23 @@ namespace Phoenix
       { 
 	Phoenix::AI::CMessage<BASE_COMPONENT_TYPE,GUI_MESSAGE_TYPES>::SetType( GUI_MSG_MOUSE_UP ); 
 
+      }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Sorter function for receivers. By using this,
+    /// the EvaluateLayout method orders elements from top to bottom, making
+    /// "top" elements hide those "under" them when clicking.
+
+    template <class OBJECT_TYPE> 
+    struct SorterZ
+    {
+      inline bool operator()( CHandle<OBJECT_TYPE> * hFirst, CHandle<OBJECT_TYPE> * hSecond )
+      {
+	if ( hFirst->IsNull() )  return false;
+	if ( hSecond->IsNull() ) return true;
+	return ( CResourceManager<OBJECT_TYPE, CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hFirst)->GetWorldTransform().GetMatrix()(2,3) >
+		 CResourceManager<OBJECT_TYPE, CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hSecond)->GetWorldTransform().GetMatrix()(2,3) );
+	
       }
     };
     /////////////////////////////////////////////////////////////////
@@ -356,6 +380,8 @@ namespace Phoenix
 	  pNode = static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode());
 	}
 	TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE>, GUI_ELEMENT_TYPE, std::string, int>( pNode, &m_updaterAdapter );
+        SorterZ< BASE_COMPONENT_TYPE > sort_func;
+	m_msgRouter.SortReceivers( sort_func );
       }
       ////////////////////
       /// Passes events to listeners.
@@ -432,9 +458,9 @@ namespace Phoenix
       }
       ////////////////////
       /// Sends mouse motion event.
-      void EnqueueMouseMotion( const Phoenix::Math::CVector2<int> & vPosition  )
+      void EnqueueMouseMotion( const Phoenix::Math::CVector2<int> & vPosition, int iButton  )
       {
-	m_msgRouter.EnqueueMessage( new CMouseMotionEvent<BASE_COMPONENT_TYPE>( vPosition) );
+	m_msgRouter.EnqueueMessage( new CMouseMotionEvent<BASE_COMPONENT_TYPE>( vPosition, iButton ) );
       }
       ////////////////////
       /// Sends all visible components into renderer adapter.
@@ -442,6 +468,13 @@ namespace Phoenix
       {
 	TravelDF<CGuiRenderAdapter<BASE_COMPONENT_TYPE, RENDERER_ADAPTER_TYPE>, GUI_ELEMENT_TYPE, 
 	std::string, int>(  static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), &rAdapter );
+      }
+      ////////////////////
+      /// Returns reference to message router.
+      /// \returns Message router.
+      Phoenix::AI::CMessageRouter< BASE_COMPONENT_TYPE, GUI_MESSAGE_TYPES > & GetMessageRouter()
+      {
+	return m_msgRouter;
       }
     };
   } // namespace Gui

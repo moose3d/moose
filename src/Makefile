@@ -11,7 +11,7 @@ LINUX_CFLAGS=-Wall -c -g `sdl-config --cflags` \
 	`freetype-config --cflags` -O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) -fPIC $(DEBUG_FLAGS) \
 	-mmmx -msse2 -mfpmath=sse
-WIN_CFLAGS=-Wall -c `/usr/i686-mingw32/usr/bin/sdl-config --cflags` \
+WIN_CFLAGS=-Wall -c -DPHOENIX_DLL_EXPORT `/usr/i686-mingw32/usr/bin/sdl-config --cflags` \
 	-I/usr/i686-mingw32/usr/include/freetype2 \
 	-O3 -finline-functions -funroll-loops \
 	$(INCLUDE_DIR) $(DEBUG_FLAGS) \
@@ -45,7 +45,7 @@ win32:
 
 .PHONY: clean 
 clean:
-	rm -f *.o *.so a.out *.exe ../bin/Phoenix.dll ../bin/libPhoenix.so ../bin/libPhoenix.a *~
+	rm -f *.o *.so a.out *.exe 
 .cpp.o: $@.cpp $@.h
 	$(CC) $(CFLAGS) $< -o $@
 libs: $(OBJ)
@@ -53,4 +53,5 @@ libs: $(OBJ)
 libsstatic: $(OBJ)
 	ar rcs ../bin/libPhoenix.a $(OBJ)  
 winlibs: $(OBJ)
-	$(CC) -shared $(OBJ) -o ../bin/Phoenix.dll $(LDFLAGS_WIN)
+	#$(CC) -shared $(OBJ) -o ../bin/Phoenix.dll $(LDFLAGS_WIN)
+	i686-mingw32-ar rcs ../bin/libPhoenix.a $(OBJ)  

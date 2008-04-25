@@ -19,7 +19,7 @@ Phoenix::Graphics::CCamera::CCamera() : COrientable()
   SetProjectionChanged(1);
   m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
   SetTrackballDistance( 3.24f);
-  m_fDecalOffset = 0.0f;
+  m_fDecalOffset = 1.0f;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::~CCamera()
@@ -229,7 +229,8 @@ Phoenix::Graphics::CCamera::RotateAroundPoint( const CVector3<float> & vPoint, c
 {
 
   AppendToRotation(q);
-  SetPosition( Phoenix::Math::RotateAroundPoint(GetPosition(), vPoint, q ));
+  Phoenix::Math::RotateAroundPoint(GetPosition(), vPoint, q, const_cast<CVector3<float> & >(GetPosition()) );
+  //SetPosition(  );
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -313,7 +314,8 @@ void
 Phoenix::Graphics::CCamera::UpdateView()
 {
   // Transform camera reversely so we get proper effect.
-  CMatrix4x4<float> mT = TranslationMatrix( GetPosition());
+  CMatrix4x4<float> mT;
+  TranslationMatrix( GetPosition(), mT);
   CMatrix4x4<float> mR;
   QuaternionToMatrix( GetRotationQuaternion(), mR );
   m_mViewInv = mT * mR;
@@ -459,6 +461,19 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector2<int> &vStartPoint, 
 void 
 Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint )
 {
+
+  CQuaternion qRotation;
+  CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
+  if ( VirtualTrackball( vPosition, vStartPoint, vEndPoint, qRotation ) )
+  {
+    qRotation.Reverse();
+    RotateAroundPoint( sphere.GetPosition(), qRotation  );
+  }
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint, CQuaternion & qResult )
+{
   CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint[0], 
 						    vStartPoint[1],
 						    0.0f);
@@ -487,13 +502,12 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 
       vOrig.Normalize();
       vEnd.Normalize();
-
-      CQuaternion qRotation = Phoenix::Math::RotationArc(vOrig,vEnd);
-      qRotation.Reverse();
       
-      RotateAroundPoint( sphere.GetPosition(), qRotation  );
+      Phoenix::Math::RotationArc(vOrig,vEnd, qResult);
+      return 1;
     }
   }
+  return 0;
 }
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR

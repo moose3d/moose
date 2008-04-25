@@ -67,6 +67,7 @@ namespace Phoenix
       {
 	return m_vPosition;
       }
+      
       ////////////////////
       /// Adds vector to current position.
       /// \param vPosition the movement applied to current position.
@@ -98,6 +99,12 @@ namespace Phoenix
       /// Direction vector.
       Phoenix::Math::CVector3<float> m_vDirection;
     public:
+      ////////////////////
+      /// Constructor.
+      COneDirectional() {}
+      ////////////////////
+      /// Constructor.
+      COneDirectional( const Phoenix::Math::CVector3<float> & vDir ) : m_vDirection(vDir) { }
       ////////////////////
       /// Assigns direction.
       /// \param vDirection direction vector to be assigned.
@@ -443,6 +450,14 @@ namespace Phoenix
       {
 	return m_vVertices[ nCorner % 3];
       }
+      ////////////////////
+      /// Calculates triangle face normal.
+      void CalculateFaceNormal( CVector3<float> & vResult )
+      {
+	vResult = (m_vVertices[2].GetPosition() - m_vVertices[0].GetPosition()).Cross(m_vVertices[1].GetPosition() - m_vVertices[0].GetPosition());
+	vResult.Normalize();
+      }
+      
     };
     /////////////////////////////////////////////////////////////////
     /// Generic orientable object. Contains base vectors

@@ -294,6 +294,18 @@ namespace Phoenix
 			     const Phoenix::Math::CVector2<int> &vStartPoint,
 			     const Phoenix::Math::CVector2<int> &vEndPoint );
       ////////////////////
+      /// Creates an imaginary trackball and calculates rotation quaterion using two
+      /// positions on the surface of the sphere.
+      /// \param vPosition The center of the sphere.
+      /// \param vStartPoint The point where rotation begins.
+      /// \param vEndPoint The point where rotation ends.
+      /// \param qResult Rotation quaternion is stored here.
+      /// \returns Non-zero on success, zero otherwise.
+      int VirtualTrackball( const Phoenix::Math::CVector3<float> & vPosition,
+			    const Phoenix::Math::CVector2<int> & vStartPoint,
+			    const Phoenix::Math::CVector2<int> & vEndPoint,
+			    Phoenix::Math::CQuaternion & qResult );
+      ////////////////////
       /// Creates an imaginary trackball and rotates camera using two
       /// positions on the surface of the sphere. Sphere center is m_fTrackballCenterDistance away along
       /// forward vector.

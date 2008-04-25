@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -259,6 +260,8 @@ namespace Phoenix
       Phoenix::Graphics::CVertexDescriptor *m_pTexCoords;
       /// Vector of triangle indices (either a strip with one list or just a list).
       std::vector<Phoenix::Graphics::CIndexArray *> m_vecIndices;
+      /// Map of group names to index arrays.
+      std::map<std::string, Phoenix::Graphics::CIndexArray *> m_mapGroups;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
@@ -325,7 +328,7 @@ namespace Phoenix
 			      Phoenix::Spatial::VERTEX_COMP_POSITION | 
 			      Phoenix::Spatial::VERTEX_COMP_NORMAL | 
 			      Phoenix::Spatial::VERTEX_COMP_COLOR);
-      /////////////////////////////////////////////////////////////////
+      ////////////////////
       /// Creates new vertex for every occasion where position is same
       /// but normal and/or texture coordinate is different.
       /// \param vecVertices Vector of new vertices.
@@ -363,6 +366,24 @@ namespace Phoenix
       inline void ResetIndices()
       {
 	GetIndices().clear();
+      }
+      inline void ResetGroup( const char *szName )
+      {
+	assert( m_mapGroups.find(std::string(szName)) != m_mapGroups.end() && "Group does not exist!");
+	m_mapGroups.erase(std::string(szName));
+      }
+      inline Phoenix::Graphics::CIndexArray * GetGroupIndices( const char *szName )
+      {
+	std::map<std::string, Phoenix::Graphics::CIndexArray *>::iterator it;
+	it = m_mapGroups.find(std::string(szName));
+
+	// Check that we found it...
+	if ( it != m_mapGroups.end())
+	{
+	  return (*it).second;
+	}
+	// ... otherwise return NULL
+	return NULL;
       }
       ////////////////////
       /// Creates triangle strips from triangle list.
@@ -413,6 +434,10 @@ namespace Phoenix
       /// Processes Joints.
       /// \param pWorkBuffer Byte buffer where data is read from.
       unsigned char *Handle_Joints( unsigned char *pWorkBuffer);
+      ////////////////////
+      /// Creates IndexArrays for each group, stores them into a map.
+      /// Should be called after CreateTriangleList( ... ).
+      void CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices, int iVertexCompareFlags );
     };
     //////////////////////////////////////////////////////////////// 
   }; // namespace Data

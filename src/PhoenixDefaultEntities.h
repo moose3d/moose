@@ -23,7 +23,15 @@ namespace Phoenix
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CIndexArray,		INDEX_HANDLE>    IndexManager;
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CShader,		SHADER_HANDLE>   ShaderManager;
     ////////////////////
-
+#ifdef WIN32
+#ifndef PHOENIX_DLL_EXPORT
+    //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::COglTexture,        Phoenix::Default::TEXTURE_HANDLE>;
+    //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::CVertexDescriptor,  Phoenix::Default::TEXTURE_HANDLE>;
+    //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::CIndexArray,	    Phoenix::Default::INDEX_HANDLE>;
+    //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::CShader,	    Phoenix::Default::SHADER_HANDLE>;
+    
+#endif
+#endif
   }; // namespace Default
 }; // namespace Phoenix
 ////////////////////

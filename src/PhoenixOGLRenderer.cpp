@@ -229,17 +229,14 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   return stream;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglRenderer::COglRenderer()
+Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL)
 {
-  // This must be assert()'ed!! GetFeatures will bork otherwise.
-  m_pFeatures = new COglRendererFeatures();
-  assert( m_pFeatures != NULL && "Cannot create renderer features object!" );
-  //std::cerr << "OpenGL information:" << std::endl << *m_pFeatures << std::endl;
+  
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::~COglRenderer()
 {
-  delete m_pFeatures;
+  if ( m_pFeatures )  delete m_pFeatures;
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -789,7 +786,7 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
+Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
 {
   // Retrieve resources
   COglTexture *pTexture = NULL;
@@ -797,32 +794,35 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
   CIndexArray *pIndices = NULL;
   
-  // Commit textures
-  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  if ( !(iExcludeOpts & M_TEXTURE_DATA) )
   {
-    pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
-    pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
+    // Commit textures
+    for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+    {
+      pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
+      pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
     
-    // check that texcoord resources actually exist
-    if ( pTemp     != NULL ) 
-    { 
-      CommitVertexDescriptor( pTemp, i ); 
-    } 
-    // check that texture resource exists
-    if ( pTexture  != NULL ) 
-    { 
-      CommitTexture( i, pTexture ); 
-      // Apply texture filters.
-      std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
+      // check that texcoord resources actually exist
+      if ( pTemp     != NULL ) 
+      { 
+	CommitVertexDescriptor( pTemp, i ); 
+      } 
+      // check that texture resource exists
+      if ( pTexture  != NULL ) 
+      { 
+	CommitTexture( i, pTexture ); 
+	// Apply texture filters.
+	std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
       
-      for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
-      {
-	CommitFilter( vecFilters[nFilter], pTexture->GetType() );
+	for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
+	{
+	  CommitFilter( vecFilters[nFilter], pTexture->GetType() );
+	}
       }
     }
   }
   // if shader exists
-  if ( model.GetShaderHandle().IsNull() == 0 )
+  if ( !( iExcludeOpts & M_SHADER_DATA ) && model.GetShaderHandle().IsNull() == 0 )
   {
     CShader *pShader = g_DefaultShaderManager->GetResource(model.GetShaderHandle());
     CommitShader( pShader );
@@ -852,17 +852,21 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model )
   { 
     CommitVertexDescriptor ( pVertices ); 
   }
-  CVertexDescriptor *pNormals = g_DefaultVertexManager->GetResource(model.GetNormalHandle());
-  if ( pNormals != NULL ) 
+  // commit normals
+  if ( !( iExcludeOpts & M_NORMAL_DATA ) && model.GetNormalHandle().IsNull() == 0 ) 
   { 
-    CommitVertexDescriptor( pNormals ); 
+    CommitVertexDescriptor( g_DefaultVertexManager->GetResource(model.GetNormalHandle()) ); 
   }
-  for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
+  // commit indices
+  if ( !( iExcludeOpts & M_INDEX_DATA ))
   {
-    pIndices = g_DefaultIndexManager->GetResource( *model.GetIndexHandles()[n] );
-    if ( pIndices  != NULL ) 
-    { 
-      CommitPrimitive ( pIndices );         
+    for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
+    {
+      pIndices = g_DefaultIndexManager->GetResource( *model.GetIndexHandles()[n] );
+      if ( pIndices  != NULL ) 
+      { 
+	CommitPrimitive ( pIndices );         
+      }
     }
   }
 }
@@ -1626,7 +1630,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
 int 
 Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return 1;
+  if ( !GetFeatures().HasVertexBufferObject() ) return 1;
   
   if(  !rVertexDescriptor.IsCached() )
   {
@@ -1656,7 +1660,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
 int 
 Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return 1;
+  if ( !GetFeatures().HasVertexBufferObject() ) return 1;
   
   if(  !rIndexArray.IsCached() )
   {
@@ -1697,7 +1701,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & r
 void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return;
+  if ( !GetFeatures().HasVertexBufferObject() ) return;
   
   if(  !rVertexDescriptor.IsCached() )
   {
@@ -1710,7 +1714,7 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescri
 void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return;
+  if ( !GetFeatures().HasVertexBufferObject() ) return;
   
   if(  !rIndexArray.IsCached() )
   {
@@ -2148,7 +2152,11 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
 const COglRendererFeatures & 
 Phoenix::Graphics::COglRenderer::GetFeatures()
 {
-  // There should not be danger, since Renderer has assert in constrctor for this.
+  if ( m_pFeatures == NULL )
+  {
+    m_pFeatures = new COglRendererFeatures();
+    assert( m_pFeatures != NULL && "Cannot create renderer features object!" );
+  }
   return *m_pFeatures;
 }
 /////////////////////////////////////////////////////////////////

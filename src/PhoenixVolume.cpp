@@ -175,14 +175,16 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   float fLambda1,fLambda2,fLambda3;  
   
   // Calculate the principal axis R by component analysis
-  CMatrix3x3<float> mCovar = CovarianceMatrix( vd  );
+  CMatrix3x3<float> mCovar;
+  CovarianceMatrix( vd, mCovar );
   CMatrix3x3<float> mEigenVectorMatrix;
   mEigenVectorMatrix.IdentityMatrix();
   CalculateEigensystem( mCovar, 
 			fLambda1, fLambda2,fLambda3,
 			mEigenVectorMatrix);
   
-  CVector3<float> vR = GetColumnVector(mEigenVectorMatrix, 0);
+  CVector3<float> vR;
+  GetColumnVector(mEigenVectorMatrix, 0, vR);
   vR.Normalize();
   // Get min and max values of each point in direction R
   CVector3<float> vTemp;
@@ -300,7 +302,8 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   float fVertDotT = 0.0f;
   CVector3<float>	 vTemp;
   /////////////////////////////////////////////////////////////////
-  CMatrix3x3<float> mCovar = Math::CovarianceMatrix( rVertices );
+  CMatrix3x3<float> mCovar;
+  Math::CovarianceMatrix( rVertices, mCovar );
   CMatrix3x3<float> mEigenVectorMatrix;
   mEigenVectorMatrix.IdentityMatrix();
   Math::CalculateEigensystem( mCovar, fLambda1, fLambda2,fLambda3,
@@ -308,9 +311,9 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
 
 
   /////////////////////////////////////////////////////////////////
-  CVector3<float> vR = Math::GetColumnVector(mEigenVectorMatrix, 0);
-  CVector3<float> vS = Math::GetColumnVector(mEigenVectorMatrix, 1);
-  CVector3<float> vT = Math::GetColumnVector(mEigenVectorMatrix, 2);
+  CVector3<float> vR; Math::GetColumnVector(mEigenVectorMatrix, 0, vR);
+  CVector3<float> vS; Math::GetColumnVector(mEigenVectorMatrix, 1, vS);
+  CVector3<float> vT; Math::GetColumnVector(mEigenVectorMatrix, 2, vT);
   /////////////////////////////////////////////////////////////////
   vR.Normalize();
   vS.Normalize();
@@ -446,16 +449,17 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   float fVertDotT = 0.0f;
   CVector3<float>	 vTemp;
   /////////////////////////////////////////////////////////////////
-  CMatrix3x3<float> mCovar = Math::CovarianceMatrix( rVertices, indexBuffer );
+  CMatrix3x3<float> mCovar;
+  Math::CovarianceMatrix( rVertices, indexBuffer, mCovar );
   CMatrix3x3<float> mEigenVectorMatrix;
   mEigenVectorMatrix.IdentityMatrix();
   /////////////////////////////////////////////////////////////////
   Math::CalculateEigensystem( mCovar, fLambda1, fLambda2,fLambda3,
 			      mEigenVectorMatrix);
   /////////////////////////////////////////////////////////////////  
-  CVector3<float> vR = GetColumnVector(mEigenVectorMatrix, 0);
-  CVector3<float> vS = GetColumnVector(mEigenVectorMatrix, 1);
-  CVector3<float> vT = GetColumnVector(mEigenVectorMatrix, 2);
+  CVector3<float> vR; GetColumnVector(mEigenVectorMatrix, 0, vR);
+  CVector3<float> vS; GetColumnVector(mEigenVectorMatrix, 1, vS);
+  CVector3<float> vT; GetColumnVector(mEigenVectorMatrix, 2, vT);
   /////////////////////////////////////////////////////////////////
   vR.Normalize();
   vS.Normalize();

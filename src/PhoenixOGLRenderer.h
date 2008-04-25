@@ -24,6 +24,14 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    /// Which model data is left unrendered.
+    enum MODEL_EXCLUDE_DATA 
+    {
+      M_TEXTURE_DATA = 1,
+      M_SHADER_DATA = 1 << 1,
+      M_NORMAL_DATA = 1 << 2,
+      M_INDEX_DATA = 1 << 3
+    };
     enum CLIENT_STATE_TYPE 
     {
       CLIENT_STATE_VERTEX_ARRAY = 0,
@@ -425,7 +433,8 @@ namespace Phoenix
       ////////////////////
       /// Renders a complete model.
       /// \param model Model object. 
-      void CommitModel( Phoenix::Graphics::CModel &model );
+      /// \param iExcludeOpt Which model data should not be renderered.
+      void CommitModel( Phoenix::Graphics::CModel &model, int iExcludeOpt = 0 );
       ////////////////////
       /// Commits a texture filter.
       /// \param tFilter Which filter will be applied.
