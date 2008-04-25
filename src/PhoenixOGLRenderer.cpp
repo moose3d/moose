@@ -229,17 +229,14 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   return stream;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglRenderer::COglRenderer()
+Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL)
 {
-  // This must be assert()'ed!! GetFeatures will bork otherwise.
-  m_pFeatures = new COglRendererFeatures();
-  assert( m_pFeatures != NULL && "Cannot create renderer features object!" );
-  //std::cerr << "OpenGL information:" << std::endl << *m_pFeatures << std::endl;
+  
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::~COglRenderer()
 {
-  delete m_pFeatures;
+  if ( m_pFeatures )  delete m_pFeatures;
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -1633,7 +1630,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
 int 
 Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return 1;
+  if ( !GetFeatures().HasVertexBufferObject() ) return 1;
   
   if(  !rVertexDescriptor.IsCached() )
   {
@@ -1663,7 +1660,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
 int 
 Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return 1;
+  if ( !GetFeatures().HasVertexBufferObject() ) return 1;
   
   if(  !rIndexArray.IsCached() )
   {
@@ -1704,7 +1701,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & r
 void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return;
+  if ( !GetFeatures().HasVertexBufferObject() ) return;
   
   if(  !rVertexDescriptor.IsCached() )
   {
@@ -1717,7 +1714,7 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescri
 void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray )
 {
-  if ( !m_pFeatures->HasVertexBufferObject() ) return;
+  if ( !GetFeatures().HasVertexBufferObject() ) return;
   
   if(  !rIndexArray.IsCached() )
   {
@@ -2155,7 +2152,11 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
 const COglRendererFeatures & 
 Phoenix::Graphics::COglRenderer::GetFeatures()
 {
-  // There should not be danger, since Renderer has assert in constrctor for this.
+  if ( m_pFeatures == NULL )
+  {
+    m_pFeatures = new COglRendererFeatures();
+    assert( m_pFeatures != NULL && "Cannot create renderer features object!" );
+  }
   return *m_pFeatures;
 }
 /////////////////////////////////////////////////////////////////

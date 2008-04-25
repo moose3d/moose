@@ -71,8 +71,8 @@ Phoenix::Core::CObjectUpdater<TYPE>::Update( ADAPTER &rAdapter, unsigned int nTi
 {
   for(size_t n=0;n<m_vecUpdateables.size();n++)
   {
-    TYPE *pTemp = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->GetResource(*m_vecUpdateables[n]);
-    rAdapter.Update( pTemp, nTimeMS );
+    //rAdapter.Update( pTemp, nTimeMS );
+    rAdapter.Update( *(*m_vecUpdateables[n]), nTimeMS);
   } 
 }
 /////////////////////////////////////////////////////////////////
