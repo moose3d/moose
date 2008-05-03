@@ -467,6 +467,9 @@ namespace Phoenix
       /// Sends all visible components into renderer adapter.
       template <class RENDERER_ADAPTER_TYPE> void Render( CGuiRenderAdapter<BASE_COMPONENT_TYPE, RENDERER_ADAPTER_TYPE> & rAdapter)
       {
+	// sanity check for root window
+	if ( m_pBaseWindow == NULL ) return;
+	
 	TravelDF<CGuiRenderAdapter<BASE_COMPONENT_TYPE, RENDERER_ADAPTER_TYPE>, GUI_ELEMENT_TYPE, 
 	std::string, int>(  static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode()), &rAdapter );
       }
