@@ -244,9 +244,10 @@ namespace Phoenix
       int Enter( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
       {
 	adapter.Process( *static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetResource() );
-	// add visibility checking here.
-	// not culling
-	return 0;
+	// visibility check, if is not visible, children shall be culled.
+	return ! static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetResource()->IsVisible();
+
+	//return 0;
       }
       ////////////////////  
       /// Handles exiting  node while traversing
