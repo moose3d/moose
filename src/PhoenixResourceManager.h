@@ -351,6 +351,11 @@ namespace Phoenix
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
       OBJECTTYPE *GetResource( const std::string &resName ) const;
       ////////////////////
+      /// Checks, if resource name is taken.
+      /// \param resName Resource name. 
+      /// \returns non-zero, if name is taken, zero otherwise.
+      int HasResource( const std::string &resName ) const;
+      ////////////////////
       /// Returns pointer to resource.
       /// \param szResName Registered resource name. 
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
@@ -606,6 +611,14 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const std::stri
   if ( pHashItem == NULL ) return NULL;
 
   return m_vecObjects[pHashItem->GetObject().GetIndex()]->GetObject();
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline int
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::HasResource( const std::string &strName ) const
+{
+  if ( m_pResourceHash == NULL ) return 0;
+  return (m_pResourceHash->Find(strName) != 0);
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
