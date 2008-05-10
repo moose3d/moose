@@ -292,6 +292,8 @@ namespace Phoenix
     protected:
       /// Pointers to font textures.
       Phoenix::Graphics::COglTexture * m_ppTextures[Phoenix::Globals::MAX_FONT_CHARACTERS];   
+      /// Width of each character
+      unsigned char	m_aCharWidths[Phoenix::Globals::MAX_FONT_CHARACTERS];
       /// Display lists for font letters.
       GLuint		m_nDisplayLists; 
       /// Height of line
