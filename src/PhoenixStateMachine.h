@@ -211,7 +211,7 @@ namespace Phoenix
 	return m_vecStates;
       }
       ////////////////////
-      /// 
+      /// Current machine state .
       STATE_NAME_TYPE m_CurrentState;
     public:
       ////////////////////
