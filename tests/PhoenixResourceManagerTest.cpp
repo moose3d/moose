@@ -49,9 +49,9 @@ TEST( PhoenixResourceManager_Create )
   CHECK( pMgr->GetResource( strSearchNotFound) ==  NULL );
   CHECK( pMgr->GetResource( handleNotFound ) == NULL );
   CHECK( pMgr->GetResource( handleNotFound2 ) == NULL );
-  
+   
   CIntResourceMgr::DestroyInstance();
-  
+  handleNotFound2.Nullify();
 }
 /////////////////////////////////////////////////////////////////
 TEST( PhoenixResourceManager_Create_NoHandle )
@@ -79,7 +79,7 @@ TEST( PhoenixResourceManager_Create_NoHandle )
   CHECK( pMgr->GetResource( handleNotFound2 ) == NULL );
   
   CIntResourceMgr::DestroyInstance();
-  
+  handleNotFound2.Nullify();
 }
 /////////////////////////////////////////////////////////////////
 TEST( PhoenixResourceManager_Delete )
@@ -149,5 +149,6 @@ TEST( PhoenixResourceManager_Delete )
   CHECK_EQUAL( (UINT)0, handle4.GetIndex());
   
   CIntResourceMgr::DestroyInstance();
+  handle5.Nullify();
 }
 /////////////////////////////////////////////////////////////////
