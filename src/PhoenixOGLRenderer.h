@@ -412,6 +412,12 @@ namespace Phoenix
       /// \returns Pointer to COglTexture.
       Phoenix::Graphics::COglTexture * CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
       ////////////////////
+      /// Creates new texture from DDS image.
+      /// \param strFilename filename for DDS image.
+      /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
+      /// \returns Pointer to COglTexture.
+      Phoenix::Graphics::COglTexture * CreateCompressedTexture( const char * strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
+      ////////////////////
       /// Creates new empty texture.
       /// \param nWidth width of texture.
       /// \param nHeight height of texture.
