@@ -44,7 +44,9 @@ skybox:
 gui:
 	 g++ -Wall -g -I../src `sdl-config --cflags` PhoenixGuiDemo.cpp -lPhoenix `sdl-config --libs` -ltcl
 volumecalc:
-	g++ -Wall -I../src `sdl-config --cflags` PhoenixVolumeDemo.cpp -lPhoenix `sdl-config --libs`
+	g++ -Wall -g -I../src `sdl-config --cflags` PhoenixVolumeDemo.cpp -lPhoenix `sdl-config --libs`
+texturedemo:
+	g++ -Wall -g -I../src `sdl-config --cflags` PhoenixTextureDemo.cpp -lPhoenix `sdl-config --libs`
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
 .PHONY: clean
