@@ -704,6 +704,7 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
     CLEANUP();
     break;
   }
+
   ////////////////////
   size_t nBlockSize = 16;
   GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
@@ -754,8 +755,8 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
 
   int nSize;
   int nOffset = 0;
-  size_t nWidth = pImage->GetWidth();
-  size_t nHeight = pImage->GetHeight();
+  int nWidth = pImage->GetWidth();
+  int nHeight = pImage->GetHeight();
 
   for( int i = 0; i < pImage->GetNumMipMaps(); i++ )
   {
@@ -763,13 +764,12 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
     if ( nHeight == 0 ) nHeight = 1;
 		       
     nSize = ((nWidth+3)/4) * ((nHeight+3)/4) * nBlockSize;
-     
+
     glCompressedTexImage2D( GL_TEXTURE_2D,  i,  glFormat,  nWidth,  nHeight,
-			   0, nSize, pImage->GetPixelData() + nOffset );
-    
+			       0, nSize, pImage->GetPixelData() + nOffset );
     nOffset += nSize;
 
-    // Half the image size for the next mip-map level...
+    // Half the image size for next mipmap
     nWidth  = (nWidth  / 2);
     nHeight = (nHeight / 2);
   }
