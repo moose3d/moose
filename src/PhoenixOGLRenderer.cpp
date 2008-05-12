@@ -777,12 +777,12 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glViewport(pViewport[0], pViewport[1], pViewport[2], pViewport[3]);
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity();
-  glMultMatrixf( camera.GetProjectionMatrix().GetTransposition().GetArray());
+  glMultTransposeMatrixf( camera.GetProjectionMatrix().GetArray());
   ////////////////////
   /// Set up proper position.
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glMultMatrixf( camera.GetViewMatrix().GetTransposition().GetArray());
+  glMultTransposeMatrixf( camera.GetViewMatrix().GetArray());
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -1503,7 +1503,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 
   std::vector<INDEX_HANDLE * >::iterator it = skybox.GetIndexHandles().begin();
   glPushMatrix();
-  glLoadMatrixf( mView.GetTransposition().GetArray());
+  glLoadTransposeMatrixf( mView.GetArray());
   
   COglTexture *pTexture = NULL;
   CIndexArray *pIndices = NULL;
@@ -1581,7 +1581,7 @@ void
 Phoenix::Graphics::COglRenderer::CommitTransform( const Phoenix::Math::CTransform &transform )
 {
   glPushMatrix();
-  glMultMatrixf( const_cast<Phoenix::Math::CTransform &>(transform).GetMatrix().GetTransposition().GetArray());
+  glMultTransposeMatrixf( const_cast<Phoenix::Math::CTransform &>(transform).GetMatrix().GetArray());
 }
 /////////////////////////////////////////////////////////////////
 void
