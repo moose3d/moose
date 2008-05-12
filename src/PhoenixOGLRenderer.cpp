@@ -8,6 +8,7 @@
 #include "PhoenixGlobals.h"
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixTGAImage.h"
+#include "PhoenixDDSImage.h"
 #include "PhoenixDefaultEntities.h"
 #include <fstream>
 #include <ft2build.h>
@@ -663,6 +664,115 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
 		    pImage->GetWidth(), pImage->GetHeight(),
 		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
   
+  
+  glDisable( iGLType );
+
+  // ReleaseMemory
+  CLEANUP();
+
+#undef CLEANUP  	   
+
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename, TEXTURE_TYPE tType  )
+{
+  ////////////////////
+#define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
+  ////////////////////
+  CDDSImage *pImage = new CDDSImage();
+  COglTexture *pTexture = NULL;
+  assert( strFilename != NULL && "Texture filename is NULL");
+  switch ( pImage->Load( strFilename ) )
+  {
+  case IMG_OK:
+    break;
+  case IMG_ERR_NO_FILE:
+    std::cerr << "No such file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  case IMG_ERR_UNSUPPORTED:
+    std::cerr << "Unsupported format in file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  case IMG_ERR_MEM_FAIL:
+    std::cerr << "Out of memory while loading file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  case IMG_ERR_BAD_FORMAT:
+    std::cerr << "Bad format while loading file '" << strFilename << "'" << std::endl;
+    CLEANUP();
+    break;
+  }
+  ////////////////////
+  size_t nBlockSize = 16;
+  GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+  ////////////////////
+  // Check correct format:
+  switch (pImage->GetFormat())
+  {
+  case DDS_FORMAT_DXT1:
+    nBlockSize = 8;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+    break;
+  case DDS_FORMAT_DXT3:
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+    nBlockSize = 16;
+    break;
+  case DDS_FORMAT_DXT5:
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+    nBlockSize = 16;
+    break;
+  default:
+    delete pImage;
+    std::cerr << "Not in DXT1, DXT3, DXT5 format (was " 
+	      << (pImage->GetFormat() == DDS_FORMAT_DXT2  ? "DXT2" : "DXT4")
+	      << "):  '" << strFilename << "'" << std::endl;
+    return NULL;
+  }
+
+  // create texture
+  unsigned int iTexId;
+  glGenTextures( 1, &iTexId);
+  pTexture = new COglTexture( iTexId, tType );
+
+  // check memory allocation
+  if ( !pTexture ) 
+  {
+    std::cerr << "Failed to allocate memory while loading file '" 
+	      << strFilename << "'" << std::endl;
+    return NULL;
+  }
+  
+
+  
+  GLenum iGLType = GetGLTextureType( tType );
+
+  // create actual gl texture 
+  glEnable( iGLType );
+  glBindTexture(iGLType, pTexture->GetID());  
+
+  int nSize;
+  int nOffset = 0;
+  size_t nWidth = pImage->GetWidth();
+  size_t nHeight = pImage->GetHeight();
+
+  for( int i = 0; i < pImage->GetNumMipMaps(); i++ )
+  {
+    if ( nWidth == 0 ) nWidth = 1;
+    if ( nHeight == 0 ) nHeight = 1;
+		       
+    nSize = ((nWidth+3)/4) * ((nHeight+3)/4) * nBlockSize;
+     
+    glCompressedTexImage2D( GL_TEXTURE_2D,  i,  glFormat,  nWidth,  nHeight,
+			   0, nSize, pImage->GetPixelData() + nOffset );
+    
+    nOffset += nSize;
+
+    // Half the image size for the next mip-map level...
+    nWidth  = (nWidth  / 2);
+    nHeight = (nHeight / 2);
+  }
   
   glDisable( iGLType );
 
