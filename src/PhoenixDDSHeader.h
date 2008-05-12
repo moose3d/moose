@@ -24,7 +24,7 @@ namespace Phoenix
     typedef struct _DDCOLORKEY{ 
       DWORD dwColorSpaceLowValue; 
       DWORD dwColorSpaceHighValue; 
-    } DDCOLORKEY,FAR *LPDDCOLORKEY;  
+    } DDCOLORKEY;//,FAR *LPDDCOLORKEY;  
 
     typedef struct _DDPIXELFORMAT {
       DWORD  dwSize;
@@ -70,18 +70,18 @@ namespace Phoenix
 	DWORD  dwRGBZBitMask;
 	DWORD  dwYUVZBitMask;
       } ;
-    } DDPIXELFORMAT, FAR* LPDDPIXELFORMAT;
+    } DDPIXELFORMAT;//, FAR* LPDDPIXELFORMAT;
 
     typedef struct _DDSCAPS {
       DWORD  dwCaps;
-    } DDSCAPS, FAR* LPDDSCAPS;
+    } DDSCAPS;//, FAR* LPDDSCAPS;
 
     typedef struct _DDSCAPS2 {
       DWORD  dwCaps;
       DWORD  dwCaps2;
       DWORD  dwCaps3;
       DWORD  dwCaps4;
-    } DDSCAPS2, FAR* LPDDSCAPS2;
+    } DDSCAPS2;//, FAR* LPDDSCAPS2;
 
     typedef struct _DDSURFACEDESC2 {
       DWORD  dwSize;
