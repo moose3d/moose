@@ -1,16 +1,11 @@
 #ifndef __PhoenixTGAImage_h__
 #define __PhoenixTGAImage_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixGlobals.h"
 #include <iostream>
 #include <fstream>
 #include <memory.h>
 #include <string>
-///////////////////////////////////////////////////////////////// 
-#define IMG_OK              0x1
-#define IMG_ERR_NO_FILE     0x2
-#define IMG_ERR_MEM_FAIL    0x4
-#define IMG_ERR_BAD_FORMAT  0x8
-#define IMG_ERR_UNSUPPORTED 0x40
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
 {
