@@ -20,12 +20,13 @@ typedef long LONG;
 ///  http://en.wikipedia.org/wiki/FOURCC
 ///  http://www.fourcc.org/indexcod.htm
 /////////////////////////////////////////////////////////////////
-#define MAKE_FOURCC(A,B,C,D) ((A<<24) | (B<<16) | (C<<8)| D)
+#define MAKE_FOURCC(A,B,C,D) ((A) | (B<<8) | (C<<16)| (D<<24))
 #define FOURCC_DXT1 MAKE_FOURCC('D','X','T','1')
 #define FOURCC_DXT2 MAKE_FOURCC('D','X','T','2')
 #define FOURCC_DXT3 MAKE_FOURCC('D','X','T','3')
 #define FOURCC_DXT4 MAKE_FOURCC('D','X','T','4')
 #define FOURCC_DXT5 MAKE_FOURCC('D','X','T','5')
+#define FOURCC(i) (((i & 0xff000000) >> 24) | ((i & 0x00ff0000) >> 8) | ((i & 0x0000ff00) << 8) | ((i & 0x000000ff) << 24))
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {

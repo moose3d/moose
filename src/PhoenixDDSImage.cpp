@@ -1,5 +1,6 @@
 #include "PhoenixGlobals.h"
-#include "PhoenixDDSHeader.h"
+#include "PhoenixDDSImage.h"
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CDDSImage::CDDSImage() : 
   m_nWidth(0), m_nHeight(0), m_iComponents(0), m_Format(DDS_FORMAT_DXT1), 
@@ -26,7 +27,7 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
 
   ifstream file;
   file.open(szFilename,ios::binary);
-  
+
   if ( file == NULL )
   {
     iRetval = IMG_ERR_NO_FILE;
@@ -38,9 +39,11 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
     iRetval = IMG_ERR_BAD_FORMAT;
     goto cleanup;
   }
+
   // create and read surface desciptor
   DDSURFACEDESC2 ddsd;
   file.read( (char *)&ddsd, sizeof(ddsd));
+
   ////////////////////
   // Determine file type.
   // compression ratios are 8:1 for DXT1, 4:1 for the rest.
@@ -49,22 +52,32 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
   case FOURCC_DXT1:
     m_Format = DDS_FORMAT_DXT1;
     iMipmapFactor = 2;
+    cerr << "we got DXT1" << endl;
     break;
   case FOURCC_DXT3:
     m_Format = DDS_FORMAT_DXT3;
     iMipmapFactor = 4;
+    cerr << "we got DXT3" << endl;
     break;
   case FOURCC_DXT5:
     m_Format = DDS_FORMAT_DXT5;
     iMipmapFactor = 4;
+    cerr << "we got DXT5" << endl;
     break;
   case FOURCC_DXT4:
     m_Format = DDS_FORMAT_DXT4;
     iMipmapFactor = 4;
+    cerr << "we got DXT4" << endl;
     break;
   case FOURCC_DXT2:
     m_Format = DDS_FORMAT_DXT2;
     iMipmapFactor = 4;
+    cerr << "we got DXT2" << endl;
+    break;
+  default:
+    cerr << "Uh-oh, we got " << FOURCC(ddsd.ddpfPixelFormat.dwFourCC) << endl;
+    iRetval = IMG_ERR_BAD_FORMAT;
+    goto cleanup;
     break;
   }
 
@@ -82,6 +95,7 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
     iBufferSize = ddsd.dwLinearSize * iMipmapFactor;
   else
     iBufferSize = ddsd.dwLinearSize;
+
   ////////////////////
   /// allocate memory
   m_pPixels = new unsigned char[iBufferSize];
@@ -90,9 +104,15 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
     iRetval = IMG_ERR_MEM_FAIL;
     goto cleanup;
   }
+
   // read actual image data
   file.read( (char *)m_pPixels, iBufferSize);
+  if ( !file.eof())
+  {
+    cerr << "somethign weird is going on..." << endl;
+  }
   file.close();
+  
   // set attributes 
   m_nWidth	= ddsd.dwWidth;
   m_nHeight	= ddsd.dwHeight;
@@ -103,7 +123,6 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
   ////////////////////
   // we're good to go!
   goto exit;
-
   // release handles & stuff
  cleanup:
   file.close();
@@ -113,6 +132,7 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
     m_pPixels = NULL;
   }
  exit:
+
   return iRetval;
 }
 /////////////////////////////////////////////////////////////////
