@@ -32,7 +32,7 @@ OBJ=PhoenixQuaternion.o PhoenixMath.o PhoenixSpatial.o PhoenixCore.o \
  PhoenixVertexDescriptor.o PhoenixVolume.o PhoenixFrustum.o \
  PhoenixCamera.o PhoenixMathGeometry.o PhoenixTexture.o PhoenixModel.o \
  PhoenixShader.o PhoenixCollision.o PhoenixMilkshapeLoader.o PhoenixSkybox.o \
- PhoenixTransform.o PhoenixFrameBuffer.o PhoenixModelHelper.o
+ PhoenixTransform.o PhoenixFrameBuffer.o PhoenixModelHelper.o PhoenixDDSImage.o 
 #/////////////////////////////////////////////////////////////////
 all:  linux
 
@@ -53,5 +53,5 @@ libs: $(OBJ)
 libsstatic: $(OBJ)
 	ar rcs ../bin/libPhoenix.a $(OBJ)  
 winlibs: $(OBJ)
-	#$(CC) -shared $(OBJ) -o ../bin/Phoenix.dll $(LDFLAGS_WIN)
+#$(CC) -shared $(OBJ) -o ../bin/Phoenix.dll $(LDFLAGS_WIN)
 	i686-mingw32-ar rcs ../bin/libPhoenix.a $(OBJ)  
