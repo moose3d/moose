@@ -1,6 +1,8 @@
 #ifndef __PhoenixDDSHeader_h__
 #define __PhoenixDDSHeader_h__
 /////////////////////////////////////////////////////////////////
+#include <fstream>
+/////////////////////////////////////////////////////////////////
 #ifndef WORD 
 typedef unsigned short WORD;
 #endif
@@ -13,6 +15,17 @@ typedef void *LPVOID;
 #ifndef LONG
 typedef long LONG;
 #endif
+/////////////////////////////////////////////////////////////////
+/// FourCC's : 
+///  http://en.wikipedia.org/wiki/FOURCC
+///  http://www.fourcc.org/indexcod.htm
+/////////////////////////////////////////////////////////////////
+#define MAKE_FOURCC(A,B,C,D) ((A<<24) | (B<<16) | (C<<8)| D)
+#define FOURCC_DXT1 MAKE_FOURCC('D','X','T','1')
+#define FOURCC_DXT2 MAKE_FOURCC('D','X','T','2')
+#define FOURCC_DXT3 MAKE_FOURCC('D','X','T','3')
+#define FOURCC_DXT4 MAKE_FOURCC('D','X','T','4')
+#define FOURCC_DXT5 MAKE_FOURCC('D','X','T','5')
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -115,6 +128,57 @@ namespace Phoenix
       DDSCAPS2  ddsCaps;  
       DWORD  dwTextureStage;   
     } DDSURFACEDESC2;
+    /////////////////////////////////////////////////////////////////
+    /// Types for DDS image format
+    enum DDS_FORMAT_TYPE
+    {
+      DDS_FORMAT_DXT1,
+      DDS_FORMAT_DXT2,
+      DDS_FORMAT_DXT3,
+      DDS_FORMAT_DXT4,
+      DDS_FORMAT_DXT5
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Actual data for DDS image
+    class CDDSImage
+    {
+    private:
+      size_t		m_nWidth;
+      size_t		m_nHeight;
+      int		m_iComponents;
+      DDS_FORMAT_TYPE	m_Format;
+      int		m_iNumMipMaps;
+      unsigned char *	m_pPixels;
+    public:
+      ////////////////////
+      /// Constructor.
+      CDDSImage();
+      ////////////////////
+      /// Destructor.
+      ~CDDSImage();
+      ////////////////////
+      /// Loads image from given path.
+      /// \param szFilename Path
+      /// \returns IMG_OK on success, something else on error.
+      int Load( const char *szFilename );
+      ////////////////////
+      /// Returns pointer to bytes representing image.
+      /// \returns Pointer to pixel data.
+      unsigned char * GetPixelData();
+      ////////////////////
+      /// Returns current format.
+      /// \return image format.
+      DDS_FORMAT_TYPE GetFormat() const {	return m_Format; } 
+      size_t	      GetWidth() const {	return m_nWidth; }
+      size_t	      GetHeight() const {	return m_nHeight; }
+      int	      GetNumMipMaps() const {	return m_iNumMipMaps; }
+      int	      GetComponents() const { return m_iComponents; }
+    private:
+      ////////////////////
+      /// Cleans up existing data.
+      void Destroy();
+    };
+    /////////////////////////////////////////////////////////////////
   }
 }
 /////////////////////////////////////////////////////////////////
