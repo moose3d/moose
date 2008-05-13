@@ -176,6 +176,12 @@ Phoenix::Graphics::COglRendererFeatures::HasFramebufferObjects() const
 }
 /////////////////////////////////////////////////////////////////
 int
+Phoenix::Graphics::COglRendererFeatures::HasTextureCompressionS3TC() const
+{
+  return m_bEXT_texture_compression_s3tc;
+}
+/////////////////////////////////////////////////////////////////
+int
 Phoenix::Graphics::COglRendererFeatures::GetMaxLights() const
 {
   return m_iMaxLights;
@@ -227,6 +233,28 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   stream << "GL_MAX_ELEMENTS_INDICES  = " << obj.GetMaxElementsIndices() << std::endl;
   stream << "GL_MAX_COLOR_ATTACHMENTS = " << obj.GetMaxColorAttachments() << std::endl;
   stream << "GL_MAX_DRAW_BUFFERS  = " << obj.GetMaxDrawBuffers() << std::endl;
+  // GLenum err;
+//   int iNumFormats = -1;
+//   glGetIntegerv( GL_NUM_COMPRESSED_TEXTURE_FORMATS, &iNumFormats );
+//   stream << "GL_NUM_COMPRESSED_TEXTURE_FORMATS  = " << iNumFormats << std::endl;
+//   while ( (err = glGetError()) != GL_NO_ERROR )
+//   {
+//     stream << "ERR: " << gluErrorString( err ) << endl;
+//   }
+//   if ( iNumFormats > 0 )
+//   {
+//     GLint *aFormatEnums = new GLint[iNumFormats];
+//     glGetIntegerv( GL_COMPRESSED_TEXTURE_FORMATS,     aFormatEnums);
+    
+//     for( int i=0;i<iNumFormats; ++i)
+//     {
+//       stream << "format " << aFormatEnums[i] << endl;
+//       while ( (err = glGetError()) != GL_NO_ERROR )
+//       {
+// 	stream << "ERR: " << gluErrorString( err ) << endl;
+//       }
+//     }
+//   }
   return stream;
 }
 /////////////////////////////////////////////////////////////////
@@ -679,6 +707,9 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
 {
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
+  ////////////////////
+  /// Sanity check.
+  if ( !GetFeatures().HasTextureCompressionS3TC() ) return NULL;
   ////////////////////
   CDDSImage *pImage = new CDDSImage();
   COglTexture *pTexture = NULL;

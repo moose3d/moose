@@ -195,21 +195,23 @@ namespace Phoenix
     {
     protected:
       /// vertex_program support flag.
-      int m_bARB_vertex_program;
+      bool m_bARB_vertex_program;
       /// vertex_shader support flag.
-      int m_bARB_vertex_shader;
+      bool m_bARB_vertex_shader;
       /// fragment_shader support flag.
-      int m_bARB_fragment_shader;
+      bool m_bARB_fragment_shader;
       /// vertex_array support flag.
-      int m_bEXT_vertex_array;
+      bool m_bEXT_vertex_array;
       /// vertex_buffer_object support flag.
-      int m_bARB_vertex_buffer_object;
+      bool m_bARB_vertex_buffer_object;
       /// multitexture support flag.
-      int m_bARB_multitexture;
+      bool m_bARB_multitexture;
       /// shader_objects support flag.
-      int m_bARB_shader_objects;
+      bool m_bARB_shader_objects;
       /// framebuffer object support flag.
-      int m_bEXT_framebuffer_object;
+      bool m_bEXT_framebuffer_object;
+      /// GL_EXT_texture_compression_s3tc, used for compressed DDS textures
+      bool m_bEXT_texture_compression_s3tc;
       /// Max number of supported lights.
       int m_iMaxLights;
       /// GL_MAX_ELEMENTS_VERTICES, used to create optimal render batches.
@@ -220,6 +222,7 @@ namespace Phoenix
       int m_iMaxColorAttachments;
       /// GL_MAX_DRAW_BUFFERS, used in frame buffers.
       int m_iMaxDrawBuffers;
+      
     public:
       ////////////////////
       /// Default constructor.
@@ -256,6 +259,10 @@ namespace Phoenix
       /// Is EXT_framebuffer_object supported.
       /// \return 1 if supported, 0 otherwise.
       int HasFramebufferObjects() const;
+      ////////////////////
+      /// Is EXT_texture_compression_s3tc supported.
+      /// \return 1 if supported, 0 otherwise.
+      int HasTextureCompressionS3TC() const;
       ////////////////////
       /// Get maximum number of lights.
       /// \return maximum number of lights.
