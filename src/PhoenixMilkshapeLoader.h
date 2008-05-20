@@ -322,6 +322,7 @@ namespace Phoenix
       /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
       /// Remember to call ResetVertices(), ResetNormals(), etc. if you have created a resource
       /// from those pointers. Remember to use ALL or NONE indices, otherwise memory leak will occur.
+      /// \warning Vertex color data creation is not implemented yet.
       /// \param iVertexCompareFlags Which components of vertices are used in comparision when creating lists. By default, all.
       void GenerateModelData( int iVertexCompareFlags = 
 			      Phoenix::Spatial::VERTEX_COMP_TEXCOORD | 
@@ -347,6 +348,10 @@ namespace Phoenix
       {
 	return m_pTexCoords;
       }
+      inline Phoenix::Graphics::CVertexDescriptor * GetVertexColors() const
+      {
+	return m_pColors;
+      }
       inline std::vector<Phoenix::Graphics::CIndexArray *> & GetIndices() 
       {
 	return m_vecIndices;
@@ -362,6 +367,10 @@ namespace Phoenix
       inline void ResetTexCoords()
       {
 	m_pTexCoords = NULL;
+      }
+      inline void ResetVertexColors()
+      {
+	m_pColors = NULL;
       }
       inline void ResetIndices()
       {
