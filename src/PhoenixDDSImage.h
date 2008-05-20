@@ -2,18 +2,20 @@
 #define __PhoenixDDSHeader_h__
 /////////////////////////////////////////////////////////////////
 #include <fstream>
+#include <sys/types.h>
 /////////////////////////////////////////////////////////////////
 #ifndef WORD 
-typedef unsigned short WORD;
+typedef int16_t WORD;
 #endif
 #ifndef DWORD
-typedef unsigned long DWORD;
+typedef u_int32_t DWORD;
 #endif
 #ifndef LPVOID
-typedef void *LPVOID;
+// Pointers are tricky, 64-bit ones wreak havoc unless we define them as 32-bit.
+typedef u_int32_t LPVOID; 
 #endif
 #ifndef LONG
-typedef long LONG;
+typedef int32_t LONG;
 #endif
 /////////////////////////////////////////////////////////////////
 /// FourCC's : 
