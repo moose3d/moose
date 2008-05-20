@@ -63,15 +63,15 @@ using std::string;
     pLoader->ResetTexCoords();						\
   }									\
   /* load colors */							\
-  if ( iFlags & OPT_VERTEX_COLORS )					\
-  {									\
-    /* Create texcoord handle */					\
-    assert ( g_DefaultVertexManager->Create(pLoader->GetTexCoords(),	\
-					    name + "_texcoords0",	\
-					    rModel.GetTextureCoordinateHandle()) == 0);	\
-									\
-  }									\
-									\
+   if ( iFlags & OPT_VERTEX_COLORS )					\
+   {									\
+     /* Create texcoord handle */					\
+     /*assert ( g_DefaultVertexManager->Create(pLoader->GetVertexColors(),*/ \
+     /*name + "_colors",*/						\
+     /*  rModel.GetTextureCoordinateHandle()) == 0);		     */ \
+ 									\
+   }									\
+ 									\
 
 /////////////////////////////////////////////////////////////////
 int
