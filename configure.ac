@@ -79,7 +79,7 @@ DEPENDENCYNOTFOUND=0;
 if test $TRISTRIPPER_NOTFOUND = 1; then
 	AC_MSG_NOTICE()
 	AC_MSG_NOTICE(the tristripper library is required.)
-	AC_MSG_NOTICE(it can be obtained from users.pandora.be/tfautre/softdev/tristripper/ )
+	AC_MSG_NOTICE(it can be obtained from http://users.pandora.be/tfautre/softdev/tristripper/ )
 	AC_MSG_NOTICE()
  	if test $TRISTRIPPER_PATHSET = 1; then
 		AC_MSG_NOTICE(cant find tristripper in given path '$with_tristripper'.)
@@ -87,6 +87,9 @@ if test $TRISTRIPPER_NOTFOUND = 1; then
 		AC_MSG_NOTICE(if tristripper is installed elsewhere use --with-tristripper=prefix.)
  	fi
  	DEPENDENCYNOTFOUND=1;
+	AC_DEFINE(TRISTRIPPER, 1, is tristripper library available. )
+else
+	AC_DEFINE(TRISTRIPPER, 0, is tristripper library available. )
 fi
 
 dnl **** Check for freetype2 library *****
