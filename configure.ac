@@ -1,17 +1,32 @@
+AC_PREREQ(2.61)
 AC_INIT(src/Phoenix/Phoenix.h)
-
-AM_INIT_AUTOMAKE(Phoenix,0.99)
-
-AC_CONFIG_HEADERS(src/Phoenix/config.h)
-
-AC_LANG(C++)
-AC_PROG_CC
-
+AC_CONFIG_HEADER(src/Phoenix/config.h)
+AM_INIT_AUTOMAKE(Phoenix, 0.99, entity@iki.fi)
+# Checks for programs.
 AC_PROG_CXX
+AC_PROG_CC
+AC_LANG(C++)
 
+# Checks for libraries.
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([memory.h stdlib.h string.h sys/time.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
 AC_PROG_INSTALL
-
 AC_PROG_LIBTOOL
+
+# Checks for library functions.
+AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt strdup])
+
 
 
 
@@ -107,13 +122,46 @@ else
 	$DEPENDENCYNOTFOUND=1;
 fi
 
+dnl **** check for SDL ****
 
+AC_CHECK_PROGS(sdl_devel,[sdl-config],false)
+
+if test "$sdl_devel" != "false"; then
+     CXXFLAGS="$CXXFLAGS `${sdl_devel} --cflags`"
+     CFLAGS="$CFLAGS `${sdl_devel} --cflags`"
+     LDFLAGS="$LDFLAGS `${sdl_devel} --libs`"
+
+     AC_MSG_CHECKING([for the SDL ])
+     AC_COMPILE_IFELSE( 
+     [ #include <SDL.h> ],
+     [
+       AC_MSG_RESULT(yes)
+       SDL_NOTFOUND=0;
+     ],
+     [
+       AC_MSG_RESULT(no)
+       SDL_NOTFOUND=1;
+     ]
+     )
+
+     if test $SDL_NOTFOUND = 1; then
+	$DEPENDENCYNOTFOUND=1;
+	AC_MSG_NOTICE()
+	AC_MSG_ERROR(SDL library not found!)
+     fi
+
+else
+	$DEPENDENCYNOTFOUND=1;
+fi
 
 # error ABORT if one of the libraries was not found
 if test $DEPENDENCYNOTFOUND = 1; then
 	AC_MSG_NOTICE()
 	AC_MSG_ERROR(library not found! Try './configure --help'.)
 fi	
+
+
+
 
 
 # overwrite global variable (used for Makefile generation)
