@@ -24,6 +24,7 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
+AC_TYPE_UINT32_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_PROG_INSTALL
@@ -62,8 +63,6 @@ if test  $TRISTRIPPER_PATHSET = 1 ; then
 		CFLAGS="$CFLAGS -I$with_tristripper/include"
 		LDFLAGS="$LDFLAGS -L$with_tristripper/lib"
 fi
-
-
 
 # output of action
 AC_MSG_CHECKING([for the tristripper header])
@@ -104,88 +103,50 @@ else
 fi
 
 dnl **** Check for freetype2 library *****
+AC_CHECK_FT2(,
+	[ 
+	  FREETYPE_NOTFOUND=0;
+	  CFLAGS="$CFLAGS $FT2_CFLAGS";
+	  CXXFLAGS="$CXXFLAGS $FT2_CFLAGS";
+	  LIBS="$LIBS $FT2_LIBS";
+	],
+	[
+	  FREETYPE_NOTFOUND=1;
+ 	  $DEPENDENCYNOTFOUND=1;
+	]
+)
 
-AC_CHECK_PROGS(ft_devel,[freetype-config freetype2-config],false)
 
-if test "$ft_devel" != "false"; then
-     ac_freetype_libs=`$ft_devel --libs`
-     ac_freetype_incl=`$ft_devel --cflags`
-     CXXFLAGS="$CXXFLAGS $ac_freetype_incl"
-     CFLAGS="$CFLAGS $ac_freetype_incl"
-     LDFLAGS="$LDFLAGS $ac_freetype_libs"
-     AC_MSG_CHECKING([for the Freetype2 ])
-     AC_COMPILE_IFELSE( 
-     [ #include <ft2build.h>
-       #include FT_FREETYPE_H ],
-     [
-       AC_MSG_RESULT(yes)
-       FREETYPE_NOTFOUND=0;
-     ],
-     [
-       AC_MSG_RESULT(no)
-       FREETYPE_NOTFOUND=1;
-     ]
-     )
-     if test $FREETYPE_NOTFOUND = 1; then
-	$DEPENDENCYNOTFOUND=1;
-	AC_MSG_NOTICE()
-	AC_MSG_ERROR(Freetype library not found!)
-     fi
-
-else
-	$DEPENDENCYNOTFOUND=1;
-fi
+dnl *******************************
+dnl ****      check for SDL    ****
+dnl *******************************
 
 AM_PATH_SDL(1.2.11, 
 	    [
-		SDL_NOTFOUND=0;
-	    ], 
-	    [
+		SDL_NOTFOUND=0,
+		CFLAGS="$CFLAGS $SDL_CFLAGS"
+		CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
+		LIBS="$LIBS $SDL_LIBS"
+	    ],
+	    [ 
 		SDL_NOTFOUND=1;
 	    ]
 )
 
-dnl **** check for SDL ****
-
-AC_CHECK_PROGS(sdl_devel,[sdl-config],false)
-
-if test "$sdl_devel" != "false"; then
-     CXXFLAGS="$CXXFLAGS `${sdl_devel} --cflags`"
-     CFLAGS="$CFLAGS `${sdl_devel} --cflags`"
-     LDFLAGS="$LDFLAGS `${sdl_devel} --libs`"
-
-     AC_MSG_CHECKING([for the SDL ])
-     AC_COMPILE_IFELSE( 
-     [ #include <SDL.h> ],
-     [
-       AC_MSG_RESULT(yes)
-       SDL_NOTFOUND=0;
-     ],
-     [
-       AC_MSG_RESULT(no)
-       SDL_NOTFOUND=1;
-     ]
-     )
-
-     if test $SDL_NOTFOUND = 1; then
+if test $SDL_NOTFOUND = 1; then
 	$DEPENDENCYNOTFOUND=1;
 	AC_MSG_NOTICE()
 	AC_MSG_ERROR(SDL library not found!)
-     fi
-
-else
-	$DEPENDENCYNOTFOUND=1;
+	AC_MSG_NOTICE()
 fi
+
 
 # error ABORT if one of the libraries was not found
 if test $DEPENDENCYNOTFOUND = 1; then
 	AC_MSG_NOTICE()
-	AC_MSG_ERROR(library not found! Try './configure --help'.)
+	AC_MSG_ERROR(Library not found! Try './configure --help'.)
+	AC_MSG_NOTICE()
 fi	
-
-
-
-
 
 # overwrite global variable (used for Makefile generation)
 AC_SUBST(GLOBALCXXFLAGS, $CXXFLAGS )
