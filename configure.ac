@@ -45,7 +45,7 @@ AC_ARG_WITH(tristripper,
 # adding the static library 'libtristripper.a'
 
 # adding the lib to the files to link
-LIBS="-ltristripper $LIBS"
+
 
 # introduce the optional configure parameter for the path of libXXX.a
 AC_ARG_WITH(tristripper,
@@ -62,6 +62,7 @@ if test  $TRISTRIPPER_PATHSET = 1 ; then
 		CXXFLAGS="$CXXFLAGS -I$with_tristripper/include"
 		CFLAGS="$CFLAGS -I$with_tristripper/include"
 		LDFLAGS="$LDFLAGS -L$with_tristripper/lib"
+		LIBS="-ltristripper $LIBS"
 fi
 
 # output of action
@@ -87,23 +88,26 @@ DEPENDENCYNOTFOUND=0;
 
 # error output if tristripper-headers not found
 if test $TRISTRIPPER_NOTFOUND = 1; then
-	AC_MSG_NOTICE()
-	AC_MSG_NOTICE(the tristripper library is required.)
-	AC_MSG_NOTICE(it can be obtained from http://users.pandora.be/tfautre/softdev/tristripper/ )
-	AC_MSG_NOTICE()
- 	if test $TRISTRIPPER_PATHSET = 1; then
-		AC_MSG_NOTICE(cant find tristripper in given path '$with_tristripper'.)
- 	else
-		AC_MSG_NOTICE(if tristripper is installed elsewhere use --with-tristripper=prefix.)
- 	fi
- 	DEPENDENCYNOTFOUND=1;
-	AC_DEFINE(TRISTRIPPER, 1, is tristripper library available. )
-else
+#	AC_MSG_NOTICE()
+#	AC_MSG_NOTICE(the tristripper library is required.)
+#	AC_MSG_NOTICE(it can be obtained from http://users.pandora.be/tfautre/softdev/tristripper/ )
+#	AC_MSG_NOTICE()
+# 	if test $TRISTRIPPER_PATHSET = 1; then
+#		AC_MSG_NOTICE(cant find tristripper in given path '$with_tristripper'.)
+# 	else
+#		AC_MSG_NOTICE(if tristripper is installed elsewhere use --with-tristripper=prefix.)
+# 	fi
+ 	#DEPENDENCYNOTFOUND=1;
 	AC_DEFINE(TRISTRIPPER, 0, is tristripper library available. )
+else
+	AC_DEFINE(TRISTRIPPER, 1, is tristripper library available. )
+
 fi
 
 dnl **** Check for freetype2 library *****
+
 AC_LANG(C)
+
 AC_CHECK_FT2(,
 	[ 
 	  FREETYPE_NOTFOUND=0;
@@ -113,7 +117,7 @@ AC_CHECK_FT2(,
 	],
 	[
 	  FREETYPE_NOTFOUND=1;
- 	  $DEPENDENCYNOTFOUND=1;
+ 	  DEPENDENCYNOTFOUND=1;
 	]
 )
 
