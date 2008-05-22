@@ -1,11 +1,16 @@
 AC_PREREQ(2.61)
 AC_INIT(src/Phoenix/Phoenix.h)
+
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
 AC_CONFIG_HEADER(src/Phoenix/config.h)
 AM_INIT_AUTOMAKE(Phoenix, 0.99, entity@iki.fi)
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
 AC_LANG(C++)
+
 
 # Checks for libraries.
 
@@ -27,8 +32,14 @@ AC_PROG_LIBTOOL
 # Checks for library functions.
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt strdup])
 
-
-
+AC_ARG_WITH(tristripper,
+	AC_HELP_STRING(
+	    [--with-tristripper=prefix],
+	    [try this for the tristripper-library prefix install directory]
+	  ),
+	  TRISTRIPPER_PATHSET=1,
+	  TRISTRIPPER_PATHSET=0
+)
 
 # adding the static library 'libtristripper.a'
 
@@ -124,6 +135,15 @@ if test "$ft_devel" != "false"; then
 else
 	$DEPENDENCYNOTFOUND=1;
 fi
+
+AM_PATH_SDL(1.2.11, 
+	    [
+		SDL_NOTFOUND=0;
+	    ], 
+	    [
+		SDL_NOTFOUND=1;
+	    ]
+)
 
 dnl **** check for SDL ****
 
