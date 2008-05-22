@@ -1,9 +1,9 @@
 #ifndef __PhoenixMilkshapeLoader_h__
 #define __PhoenixMilkshapeLoader_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixVertexDescriptor.h"
-#include "PhoenixIndexArray.h"
-#include "PhoenixSpatial.h"
+#include <PhoenixVertexDescriptor.h>
+#include <PhoenixIndexArray.h>
+#include <PhoenixSpatial.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -394,9 +394,11 @@ namespace Phoenix
 	// ... otherwise return NULL
 	return NULL;
       }
+
       ////////////////////
       /// Creates triangle strips from triangle list.
       void Stripify();
+
     private:
       ////////////////////
       /// Copy constructor (since model has pointer members).
