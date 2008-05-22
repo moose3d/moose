@@ -4,19 +4,11 @@
 #include <fstream>
 #include <sys/types.h>
 /////////////////////////////////////////////////////////////////
-#ifndef WORD 
-typedef int16_t WORD;
-#endif
-#ifndef DWORD
-typedef u_int32_t DWORD;
-#endif
-#ifndef LPVOID
 // Pointers are tricky, 64-bit ones wreak havoc unless we define them as 32-bit.
-typedef u_int32_t LPVOID; 
-#endif
-#ifndef LONG
-typedef int32_t LONG;
-#endif
+#define LPVOID  uint32_t
+#define LONG    int32_t
+#define DWORD   uint32_t
+#define WORD    int16_t
 /////////////////////////////////////////////////////////////////
 /// FourCC's : 
 ///  http://en.wikipedia.org/wiki/FOURCC
