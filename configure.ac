@@ -103,6 +103,7 @@ else
 fi
 
 dnl **** Check for freetype2 library *****
+AC_LANG(C)
 AC_CHECK_FT2(,
 	[ 
 	  FREETYPE_NOTFOUND=0;
@@ -116,7 +117,7 @@ AC_CHECK_FT2(,
 	]
 )
 
-
+AC_LANG(C++)
 dnl *******************************
 dnl ****      check for SDL    ****
 dnl *******************************
