@@ -21,6 +21,8 @@ namespace Phoenix
       CVector3<float>		m_vTarget;
       /// Target weight / importance
       float			m_fTargetWeight;
+      /// Bounding sphere for this flock.
+      Phoenix::Volume::CSphere  m_BoundingSphere;
     public:
       ////////////////////
       /// Constructor.
@@ -50,9 +52,9 @@ namespace Phoenix
     {
     private:
       /// Object bounding sphere
-      Phoenix::Volume::CSphere	m_boundingSphere;
+      Phoenix::Volume::CSphere	m_BoundingSphere;
       /// Index in flock array
-      int			m_iIndex;
+      size_t			m_nIndex;
     public:
       ////////////////////
       /// Constructor.
@@ -72,7 +74,7 @@ namespace Phoenix
       /// belong to a flock.
       /// \returns true if belongs to a flock
       /// \returns false if does not.
-      const int BelongsToFlock() const;
+      const bool BelongsToFlock() const;
       ////////////////////
       /// Steers to avoid crowding among closest boids.
       /// \param lstClosest List of currently closest boids.
@@ -88,7 +90,7 @@ namespace Phoenix
 
     };
   } // namespace AI
-vvvv} // namespace Phoenix
+} // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 #endif
 
