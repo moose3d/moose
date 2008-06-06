@@ -145,6 +145,43 @@ if test $SDL_NOTFOUND = 1; then
 	AC_MSG_NOTICE()
 fi
 
+dnl **************************
+dnl check OpenGL
+dnl **************************
+HAVE_OPENGL=no
+OPENGL_LIBS=" -lGL -lGLU "
+AC_CHECK_LIB(GL, glPushMatrix, HAVE_OPENGL=yes, HAVE_OPENGL=no, )
+AC_CHECK_HEADER(GL/gl.h,, [HAVE_OPENGL=no; OPENGL_LIBS="";])
+AM_CONDITIONAL(HAVE_OPENGL, test $HAVE_OPENGL = yes)
+AC_MSG_CHECKING(opengl)
+AC_MSG_RESULT($HAVE_OPENGL)
+if test $HAVE_OPENGL = 0; then
+	$DEPENDENCYNOTFOUND=1;
+	AC_MSG_NOTICE()
+	AC_MSG_ERROR(OpenGL library not found!)
+	AC_MSG_NOTICE()
+else
+	LIBS="$LIBS $OPENGL_LIBS"
+fi
+
+dnl **************************
+dnl check GLee
+dnl **************************
+HAVE_GLEE=no
+GLEE_LIBS=" -lGLee "
+
+AC_CHECK_HEADER(GL/GLee.h,HAVE_GLEE=yes, [HAVE_GLEE=no; GLEE_LIBS="";])
+AM_CONDITIONAL(HAVE_GLEE, test $HAVE_GLEE = yes)
+AC_MSG_CHECKING(GLee)
+AC_MSG_RESULT($HAVE_GLEE)
+if test $HAVE_GLEE = 0; then
+	$DEPENDENCYNOTFOUND=1;
+	AC_MSG_NOTICE()
+	AC_MSG_ERROR(GLee library not found!)
+	AC_MSG_NOTICE()
+else
+	LIBS="$LIBS $GLEE_LIBS"
+fi
 
 # error ABORT if one of the libraries was not found
 if test $DEPENDENCYNOTFOUND = 1; then
