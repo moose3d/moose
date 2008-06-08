@@ -456,6 +456,9 @@ namespace Phoenix
       /// \param tType TEXTURE_TYPE.
       void CommitFilter( Phoenix::Graphics::TEXTURE_FILTER tFilter, Phoenix::Graphics::TEXTURE_TYPE tType );
       ////////////////////
+      /// Commits multiple filters stored in vector into given texture type.
+      void CommitFilters( const std::vector<Phoenix::Graphics::TEXTURE_FILTER> &vecFilters, Phoenix::Graphics::TEXTURE_TYPE tType );
+      ////////////////////
       /// Creates a shader from files.
       /// \param strVertexShader Path to vertex shader source.
       /// \param strFragmentShader Path to fragment shader source.

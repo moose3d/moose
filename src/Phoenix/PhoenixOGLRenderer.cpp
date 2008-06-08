@@ -953,12 +953,12 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
       { 
 	CommitTexture( i, pTexture ); 
 	// Apply texture filters.
-	std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
-      
-	for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
-	{
-	  CommitFilter( vecFilters[nFilter], pTexture->GetType() );
-	}
+	// std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
+	// 	for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
+	// 	{
+	// 	  CommitFilter( vecFilters[nFilter], pTexture->GetType() );
+	// 	}
+	CommitFilters( model.GetTextureFilters(i), pTexture->GetType() );
       }
     }
   }
@@ -1079,6 +1079,16 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
   //  case ENV_COLOR:
   //glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, pNode->GetTexEnvColor().GetValues()); 
   //break;  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitFilters( const std::vector<Phoenix::Graphics::TEXTURE_FILTER> &vecFilters, Phoenix::Graphics::TEXTURE_TYPE tType )
+{
+  // Apply texture filters.
+  for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
+  {
+    CommitFilter( vecFilters[nFilter], tType );
+  }
 }
 /////////////////////////////////////////////////////////////////
 int
@@ -1735,11 +1745,18 @@ void
 Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, int bWireframe )
 {
   GLUquadric *pQuadric = gluNewQuadric();
+
+  // Set drawing style.
+  if ( bWireframe )	gluQuadricDrawStyle( pQuadric, GLU_LINE  );
+  else			gluQuadricDrawStyle( pQuadric, GLU_FILL  );
+
+  // Translate and render
   glPushMatrix();
-  gluQuadricDrawStyle( pQuadric, GLU_SILHOUETTE );
     glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
     gluSphere(pQuadric, sphere.GetRadius(), 16, 16);
   glPopMatrix();
+
+  // free memory
   gluDeleteQuadric(pQuadric);
   pQuadric = NULL;
 }
