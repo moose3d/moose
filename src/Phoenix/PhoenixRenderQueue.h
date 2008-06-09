@@ -77,7 +77,8 @@ Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &
   typename std::list<TYPE>::iterator it = m_lstObjects.begin();
   for( ; it != m_lstObjects.end(); it++)
   {
-    rAdapter.Commit(renderer, *it);
+    (*it)->Render( renderer );
+    //rAdapter.Commit(renderer, *it);
     //ogl.CommitModel( *it );
   }      
 }

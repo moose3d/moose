@@ -258,7 +258,7 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   return stream;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL)
+Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NULL)
 {
   
 }
@@ -293,6 +293,8 @@ Phoenix::Graphics::COglRenderer::Finalize()
     DISABLE_ALL_TEXTURES();
 
   }
+  // Reset camera.
+  m_pCamera = NULL;
   // Remember call buffer swapping from another source.
 }
 /////////////////////////////////////////////////////////////////
@@ -909,6 +911,7 @@ Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglText
 void 
 Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
 {
+  m_pCamera = &camera;
   ////////////////////
   // Handle updating of view and projection, if they are changed.
   if ( camera.IsProjectionChanged()) camera.UpdateProjection();
@@ -924,6 +927,12 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultTransposeMatrixf( camera.GetViewMatrix().GetArray());
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CCamera * 
+Phoenix::Graphics::COglRenderer::GetCurrentCamera() const
+{
+  return m_pCamera;
 }
 /////////////////////////////////////////////////////////////////
 void

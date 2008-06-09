@@ -1,7 +1,7 @@
 #ifndef __PhoenixShader_h__
 #define __PhoenixShader_h__
 /////////////////////////////////////////////////////////////////
-#include <PhoenixRenderable.h>
+//#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -9,7 +9,7 @@ namespace Phoenix
   {
     ////////////////////
     /// Class for programmable shaders.
-    class CShader : public Phoenix::Graphics::CRenderable
+    class CShader
     {
     private:
       /// OpenGL program id.

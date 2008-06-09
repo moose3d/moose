@@ -5,6 +5,7 @@
 #include "PhoenixMath.h"
 #include "PhoenixTransform.h"
 #include "PhoenixVolume.h"
+#include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
 #include <vector>
 /////////////////////////////////////////////////////////////////
@@ -22,14 +23,12 @@ namespace Phoenix
     /// \warn animated sections?
     /// \warn Or does gameobject rendering have anything to do with this all?
     /// ************************************************************
-    template <typename TYPE>
-    class CGameObject : public Phoenix::Math::CTransformable
+    class CGameObject : public Phoenix::Graphics::CRenderable,
+			public Phoenix::Math::CTransformable
     {
     private:
       /// Model objects
       std::vector< Phoenix::Core::CHandle<Phoenix::Graphics::CModel> > m_vecModelHandles;
-      /// Object type
-      TYPE				m_Type;
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
       /// Model bounding box.
@@ -79,13 +78,21 @@ namespace Phoenix
       /// \param nIndex New index.
       void SetSpatialIndex( unsigned int nIndex );
       ////////////////////
+      /// Calculates world bounding box.
+      /// \param box Oriented box where transformed box is stored.
+      void CalculateWorldBoundingBox( Phoenix::Volume::COrientedBox & box ) const;
+      ////////////////////
+      /// Calculates world bounding sphere.
+      /// \param sphere Sphere where transformed sphere is stored.
+      void CalculateWorldBoundingSphere( Phoenix::Volume::CSphere & sphere ) const;
+      ////////////////////
       /// Returns the type of this object.
       /// \returns object type
-      const TYPE GetType() const;
+      //const TYPE GetType() const;
       ////////////////////
       /// Sets object type.
       /// \param type Object type.
-      void SetType(TYPE type);
+      //void SetType(TYPE type);
       ////////////////////
       /// Returns number of model handles in this object.
       /// \returns Number of allocated model handles.
@@ -94,97 +101,105 @@ namespace Phoenix
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-Phoenix::Scene::CGameObject<TYPE>::CGameObject( size_t nNumModels ) : m_Type((TYPE)0), m_nSpatialIndex(0)
+inline 
+Phoenix::Scene::CGameObject::CGameObject( size_t nNumModels ) : m_nSpatialIndex(0)
 {
   if ( nNumModels == 0 ) nNumModels = 1;
   for ( size_t i=0;i<nNumModels;i++)
     m_vecModelHandles.push_back(Phoenix::Core::CHandle<Phoenix::Graphics::CModel>());
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-Phoenix::Scene::CGameObject<TYPE>::~CGameObject()
+inline
+Phoenix::Scene::CGameObject::~CGameObject()
 {
   
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject<TYPE>::GetModelHandle( size_t nIndex )
+Phoenix::Scene::CGameObject::GetModelHandle( size_t nIndex )
 {
   assert( nIndex < m_vecModelHandles.size());
   return m_vecModelHandles[nIndex];
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject<TYPE>::GetModelHandle( size_t nIndex) const
+Phoenix::Scene::CGameObject::GetModelHandle( size_t nIndex) const
 {
   assert( nIndex < m_vecModelHandles.size());
   return m_vecModelHandles[nIndex];
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline Phoenix::Volume::CSphere & 
-Phoenix::Scene::CGameObject<TYPE>::GetBoundingSphere()
+Phoenix::Scene::CGameObject::GetBoundingSphere()
 {
   return m_BoundingSphere;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline const Phoenix::Volume::CSphere & 
-Phoenix::Scene::CGameObject<TYPE>::GetBoundingSphere() const
+Phoenix::Scene::CGameObject::GetBoundingSphere() const
 {
   return m_BoundingSphere;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline Phoenix::Volume::COrientedBox & 
-Phoenix::Scene::CGameObject<TYPE>::GetBoundingBox()
+Phoenix::Scene::CGameObject::GetBoundingBox()
 {
   return m_BoundingBox;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline const Phoenix::Volume::COrientedBox & 
-Phoenix::Scene::CGameObject<TYPE>::GetBoundingBox() const
+Phoenix::Scene::CGameObject::GetBoundingBox() const
 {
   return m_BoundingBox;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline unsigned int 
-Phoenix::Scene::CGameObject<TYPE>::GetSpatialIndex() const 
+Phoenix::Scene::CGameObject::GetSpatialIndex() const 
 {
   return m_nSpatialIndex;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline void 
-Phoenix::Scene::CGameObject<TYPE>::SetSpatialIndex( unsigned int nIndex )
+Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
 {
   m_nSpatialIndex = nIndex;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-inline const TYPE
-Phoenix::Scene::CGameObject<TYPE>::GetType() const
-{
-  return m_Type;
-}
+// inline const TYPE
+// Phoenix::Scene::CGameObject::GetType() const
+// {
+//   return m_Type;
+// }
+// /////////////////////////////////////////////////////////////////
+// inline void
+// Phoenix::Scene::CGameObject::SetType(TYPE type) 
+// {
+//   m_Type = type;
+// }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-inline void
-Phoenix::Scene::CGameObject<TYPE>::SetType(TYPE type) 
-{
-  m_Type = type;
-}
-/////////////////////////////////////////////////////////////////
-template<typename TYPE>
 inline size_t 
-Phoenix::Scene::CGameObject<TYPE>::GetNumModels() const
+Phoenix::Scene::CGameObject::GetNumModels() const
 {
   return m_vecModelHandles.size();
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Scene::CGameObject::CalculateWorldBoundingBox( Phoenix::Volume::COrientedBox & box ) const
+{
+  // Transform box according to world transformation
+  box = GetBoundingBox();
+  box.Move( GetWorldTransform().GetTranslation() );
+  box.AppendToRotation( GetWorldTransform().GetRotation() );
+  // update box values
+  box.CalculatePlanes();
+  box.CalculateCorners();
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Scene::CGameObject::CalculateWorldBoundingSphere( Phoenix::Volume::CSphere & sphere ) const
+{
+  sphere = GetBoundingSphere();
+  sphere.Move( GetWorldTransform().GetTranslation());
 }
 /////////////////////////////////////////////////////////////////
 #endif

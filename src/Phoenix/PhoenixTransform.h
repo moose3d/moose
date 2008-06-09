@@ -14,7 +14,7 @@ namespace Phoenix
     /// A class which stores scaling, rotation and translation into
     /// 4x4 matrix and provides methods for easily changing any of 
     /// those components.
-    class CTransform : public Phoenix::Graphics::CRenderable
+    class CTransform
     {
     protected:
       /// Is this transform changed.
@@ -33,8 +33,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Default constructor.
-      CTransform() : Phoenix::Graphics::CRenderable(Phoenix::Graphics::RT_TRANSFORM),
-		     m_bChanged(0),
+      CTransform() : m_bChanged(0),
                      m_fScaling(1.0f),
                      m_mTransform(1,0,0,0,
 				  0,1,0,0,

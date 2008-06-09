@@ -113,8 +113,7 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////
     /// Class for grouping blending operations. 
-    class CBlendingOperation : public Phoenix::Core::CEnableable,
-                               public Phoenix::Graphics::CRenderable
+    class CBlendingOperation : public Phoenix::Core::CEnableable
     {
     private:
       BLEND_SRC_TYPE m_tBlendSrcType;
@@ -122,7 +121,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor. 
-      CBlendingOperation() : Phoenix::Core::CEnableable(), Phoenix::Graphics::CRenderable(Phoenix::Graphics::RT_BLENDING), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
+      CBlendingOperation() : Phoenix::Core::CEnableable(), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
       ////////////////////
       /// Assigns src operation for blending.
       /// \param tType Blending source operation;
@@ -149,8 +148,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Class grouping alpha testing properties.
-    class CAlphaTestOperation : public Phoenix::Core::CEnableable,
-			        public Phoenix::Graphics::CRenderable
+    class CAlphaTestOperation : public Phoenix::Core::CEnableable
     {
     private:
       ALPHA_TEST_TYPE m_tTestType;
@@ -158,7 +156,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      CAlphaTestOperation() : Phoenix::Graphics::CRenderable(Phoenix::Graphics::RT_ALPHA_TEST), m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
+      CAlphaTestOperation() : m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
       ////////////////////
       /// Assigns test type.
       /// \param tType ALPHA_TEST_TYPE.
@@ -350,6 +348,7 @@ namespace Phoenix
       Phoenix::Graphics::COglRendererFeatures *m_pFeatures;
       /// Alpha test operation
       CAlphaTestOperation		       m_AlphaTest;
+      Phoenix::Graphics::CCamera	       *m_pCamera;
     public:
       ////////////////////
       /// Default constructor
@@ -445,6 +444,10 @@ namespace Phoenix
       /// Sets view using camera.
       /// \param camera Camera.
       void CommitCamera( Phoenix::Graphics::CCamera &camera );
+      ////////////////////
+      /// Returns pointer to active camera.
+      /// \returns Pointer to camera. NULL if not set.
+      Phoenix::Graphics::CCamera * GetCurrentCamera() const;
       ////////////////////
       /// Renders a complete model.
       /// \param model Model object. 

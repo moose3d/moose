@@ -4,7 +4,6 @@
 #define __PhoenixIndexArray_h__
 /////////////////////////////////////////////////////////////////
 #include <PhoenixCore.h>
-#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -23,8 +22,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
-    class CIndexArray : public Phoenix::Core::CCacheable<unsigned int>,
-			public Phoenix::Graphics::CRenderable
+    class CIndexArray : public Phoenix::Core::CCacheable<unsigned int>
     {
     protected:
       /// Number of indices in this array.
@@ -39,9 +37,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor. Initializes index count and sets drawable indices to max indices.
-      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : Phoenix::Graphics::CRenderable(RT_INDEXARRAY),
-								     m_nNumIndices(nNumIndices), 
-								     m_nType(nType), 
+      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), 
 								     m_nNumDrawableIndices(nNumIndices)
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];

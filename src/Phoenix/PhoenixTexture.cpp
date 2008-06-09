@@ -10,7 +10,6 @@ Phoenix::Graphics::COglBase::COglBase( unsigned int nId ) : m_nOglId(nId)
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture::COglTexture( unsigned int nId, TEXTURE_TYPE tType ) : COglBase(nId), 
-										      CRenderable(RT_TEXTURE), 
 										      m_tTextureType(tType)
 {
   

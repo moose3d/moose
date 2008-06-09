@@ -2,49 +2,26 @@
 #define __PhoenixRenderable_h__
 /////////////////////////////////////////////////////////////////
 #include <PhoenixCore.h>
+#include <PhoenixDefaultEntities.h>
+
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics 
   {
-    enum RENDERABLE_TYPE
-    {
-      RT_BLENDING = 0,
-      RT_ALPHA_TEST,
-      RT_VERTEXDESCRIPTOR,
-      RT_INDEXARRAY,
-      RT_TEXTURE,
-      RT_SHADER,
-      RT_STATE,
-      RT_MATERIAL,
-      RT_TRANSFORM
-    };
-    /////////////////////////////////////////////////////////////////
-    /// Base class for all renderable things. Useful when sorting them
-    /// in RenderQueue.
+    class COglRenderer;
+    ///////////////////
+    /// Interface for rendereable objects.
     class CRenderable 
     {
-    protected: 
-      /// Type of this renderable.
-      RENDERABLE_TYPE m_tRenderableType;
-      ////////////////////
-      /// Constructor, forces type.
-      /// \param type Type of this renderable.
-      CRenderable( RENDERABLE_TYPE type ) : m_tRenderableType(type)
-      {
-	
-      }
     public:
-      ////////////////////
-      /// Returns type of this renderable.
-      /// \returns Type of this renderable.
-      RENDERABLE_TYPE GetRenderableType()
-      {
-	return m_tRenderableType;
-      }
+      virtual ~CRenderable() {}
+      virtual void		Render( Phoenix::Graphics::COglRenderer & renderer ) = 0;
+      virtual bool		IsTransparent() = 0;
+      //virtual Phoenix::Default::TEXTURE_HANDLE	GetTextureHandle( size_t nTexId = 0) = 0;
+      //virtual Phoenix::Default::SHADER_HANDLE	GetShaderHandle() = 0;
     };
-  }
-}
-
+  } // namespace Graphics
+} // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 #endif

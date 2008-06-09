@@ -1,7 +1,7 @@
 #ifndef __PhoenixTexture_h__
 #define __PhoenixTexture_h__
 /////////////////////////////////////////////////////////////////
-#include <PhoenixRenderable.h>
+//#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -65,8 +65,7 @@ namespace Phoenix
 
     /////////////////////////////////////////////////////////////////
     /// Class for textures.
-    class COglTexture : public COglBase,
-			public Phoenix::Graphics::CRenderable
+    class COglTexture : public COglBase
     {
     private:
       TEXTURE_TYPE		m_tTextureType;

@@ -11,7 +11,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// A material class which holds the attributes which define
     /// the appearance of an object.
-    class CMaterial : public Phoenix::Graphics::CRenderable
+    class CMaterial 
     {
     protected:
       /// The diffuse color for this material.
@@ -75,8 +75,7 @@ namespace Phoenix
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Graphics::CMaterial::CMaterial() : Phoenix::Graphics::CRenderable(RT_MATERIAL),
-						   m_vDiffuse(0.8f,0.8f,0.8f,1.0f), m_vAmbient(0.2f,0.2f,0.2f,1.0f), 
+inline Phoenix::Graphics::CMaterial::CMaterial() : m_vDiffuse(0.8f,0.8f,0.8f,1.0f), m_vAmbient(0.2f,0.2f,0.2f,1.0f), 
 						   m_vSpecular(0.0f,0.0f,0.0f,1.0f), m_vEmission(0.0f,0.0f,0.0f,1.0f),
 						   m_fShininess(0.0f) 
 {
