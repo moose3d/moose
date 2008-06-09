@@ -1,5 +1,5 @@
 #include <UnitTest++/UnitTest++.h>
-#include "PhoenixOctree.h"
+#include <PhoenixOctree.h>
 #include <string>
 #include <iostream>
 using namespace Phoenix::Spatial;

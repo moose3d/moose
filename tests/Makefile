@@ -4,7 +4,7 @@ all: unit
 	g++ -g -Wall $(UNIT_OBJ) -o PhoenixTest -lUnitTest++ -lPhoenix
 unit: $(UNIT_OBJ)
 .cpp.o: $@.cpp 
-	g++ -c -g -Wall -I../src $(@:.o=.cpp) -o $@ 
+	g++ -c -g -Wall -I/usr/include/Phoenix $(@:.o=.cpp) -o $@ 
 .PHONY: clean
 clean:
 	rm -f *.o a.out $(UNIT_OBJ)

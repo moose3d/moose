@@ -1,4 +1,4 @@
-#include "../src/PhoenixAVLTree.h"
+#include <PhoenixAVLTree.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 #include <math.h>

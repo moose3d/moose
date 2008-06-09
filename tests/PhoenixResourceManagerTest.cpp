@@ -1,6 +1,6 @@
 #include <UnitTest++/UnitTest++.h>
-#include "PhoenixCore.h"
-#include "PhoenixResourceManager.h"
+#include <PhoenixCore.h>
+#include <PhoenixResourceManager.h>
 #include <string>
 #include <iostream>
 /////////////////////////////////////////////////////////////////

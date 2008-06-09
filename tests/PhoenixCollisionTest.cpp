@@ -1,5 +1,5 @@
-#include "../src/PhoenixCollision.h"
-#include "../src/PhoenixMath.h"
+#include <PhoenixCollision.h>
+#include <PhoenixMath.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 /////////////////////////////////////////////////////////////////

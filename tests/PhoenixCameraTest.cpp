@@ -1,4 +1,4 @@
-#include "../src/PhoenixCamera.h"
+#include <PhoenixCamera.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 /////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-#include "../src/PhoenixVector2.h"
+#include <PhoenixVector2.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 #include <sstream>

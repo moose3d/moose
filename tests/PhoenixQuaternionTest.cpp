@@ -1,4 +1,4 @@
-#include "../src/PhoenixQuaternion.h"
+#include <PhoenixQuaternion.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 /////////////////////////////////////////////////////////////////

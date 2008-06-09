@@ -1,4 +1,4 @@
-#include "../src/PhoenixMatrix3x3.h"
+#include <PhoenixMatrix3x3.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 /////////////////////////////////////////////////////////////////

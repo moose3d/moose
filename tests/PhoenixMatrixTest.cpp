@@ -1,5 +1,5 @@
-#include "../src/PhoenixVector4.h"
-#include "../src/PhoenixVector3.h"
+#include <PhoenixVector4.h>
+#include <PhoenixVector3.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 /////////////////////////////////////////////////////////////////
