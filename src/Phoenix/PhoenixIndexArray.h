@@ -38,6 +38,7 @@ namespace Phoenix
       ////////////////////
       /// Constructor. Initializes index count and sets drawable indices to max indices.
       CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), 
+								     m_nType(nType),
 								     m_nNumDrawableIndices(nNumIndices)
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
