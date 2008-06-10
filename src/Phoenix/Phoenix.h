@@ -40,3 +40,4 @@
 #include "PhoenixModelHelper.h"
 #include "PhoenixGuiSystem.h"
 #include "PhoenixDDSImage.h"
+#include "PhoenixEventHandler.h"
