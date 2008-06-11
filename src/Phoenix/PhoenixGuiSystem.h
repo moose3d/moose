@@ -7,7 +7,7 @@
 #include <PhoenixTransform.h>
 #include <PhoenixGraph.h>
 #include <PhoenixTransformGraph.h>
-#include <PhoenixStateMachine.h>
+#include <PhoenixMessageSystem.h>
 #include <string>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
