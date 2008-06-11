@@ -41,3 +41,4 @@
 #include "PhoenixGuiSystem.h"
 #include "PhoenixDDSImage.h"
 #include "PhoenixEventHandler.h"
+#include "PhoenixMessageSystem.h"
