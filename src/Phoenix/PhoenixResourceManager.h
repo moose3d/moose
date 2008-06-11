@@ -72,6 +72,9 @@ namespace Phoenix
       
       TAG * operator*() const;
       TAG * operator->() const;
+      ////////////////////
+      /// Assignment operator, duplicates handles in manager.
+      void operator=( const CHandle<TAG> & handle );
     };
     ////////////////////
     /// Resource Name class. This is used in Hash table.
@@ -761,6 +764,14 @@ Phoenix::Core::CHandle<TAG>::~CHandle()
 {
   // this has to be released, otherwise we'll go see the boogie man. :)
   Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->Release(*this);
+}
+/////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline void 
+Phoenix::Core::CHandle<TAG>::operator=( const Phoenix::Core::CHandle<TAG> & handle )
+{
+  Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->Release( *this );
+  Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->DuplicateHandle( handle, *this );
 }
 /////////////////////////////////////////////////////////////////
 #endif
