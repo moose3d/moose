@@ -20,14 +20,14 @@ namespace Phoenix
       GUI_ELEMENT = 0
     };
     /// Message types for GUI elements.
-    enum GUI_MESSAGE_TYPES 
-    {
-      GUI_MSG_MOUSE_MOTION = 0,
-      GUI_MSG_MOUSE_DOWN,
-      GUI_MSG_MOUSE_UP,
-      GUI_MSG_MOUSE_CLICK,
-      GUI_NUM_OF_MESSAGE_TYPES
-    };
+    // enum GUI_MESSAGE_TYPES 
+    //       {
+    //       GUI_MSG_MOUSE_MOTION = 0,
+    //       GUI_MSG_MOUSE_DOWN,
+    //       GUI_MSG_MOUSE_UP,
+    //       GUI_MSG_MOUSE_CLICK,
+    //       GUI_NUM_OF_MESSAGE_TYPES
+    //     };
     
     /////////////////////////////////////////////////////////////////
     /// Base class for mouse events.
