@@ -14,13 +14,13 @@ namespace Phoenix
     /// Base for all messages passed. Child classes may contain 
     /// additional message data, interpreted by message adapters.
     template <typename OBJECT_TYPE, typename MSG_TYPE>
-    class CMessage : public CTypeBase<MSG_TYPE>
+    class CMessage : public Phoenix::Core::CTypeBase<MSG_TYPE>
     {
     protected:
       /// Handle to receiver.
-      CHandle<OBJECT_TYPE> m_hReceiver;
+      Phoenix::Core::CHandle<OBJECT_TYPE> m_hReceiver;
       /// Handle to sender.
-      CHandle<OBJECT_TYPE> m_hSender;
+      Phoenix::Core::CHandle<OBJECT_TYPE> m_hSender;
       /// Timestamp of this message.
       Phoenix::Core::CTimeStamp	   m_tTimeStamp;
     public:
@@ -33,19 +33,19 @@ namespace Phoenix
       ////////////////////
       /// Returns reference to handle of sender.
       /// \returns Handle to sender.
-      CHandle<OBJECT_TYPE> & GetSender();
+      Phoenix::Core::CHandle<OBJECT_TYPE> & GetSender();
       ////////////////////
       /// Returns reference to handle of sender.
       /// \returns Handle to sender.
-      const CHandle<OBJECT_TYPE> & GetSender() const;
+      const Phoenix::Core::CHandle<OBJECT_TYPE> & GetSender() const;
       ////////////////////
       /// Returns reference to handle of receiver.
       /// \returns Handle to receiver.
-      CHandle<OBJECT_TYPE> & GetReceiver();
+      Phoenix::Core::CHandle<OBJECT_TYPE> & GetReceiver();
       ////////////////////
       /// Returns reference to handle of receiver.
       /// \returns Handle to receiver.
-      const CHandle<OBJECT_TYPE> & GetReceiver() const;
+      const Phoenix::Core::CHandle<OBJECT_TYPE> & GetReceiver() const;
       ////////////////////
       /// Assign timestamp.
       /// \param tTimeStamp Timestamp to be set in milliseconds.
@@ -67,13 +67,13 @@ namespace Phoenix
     {
       friend class CMessageRouter<OBJECT_TYPE,MSG_TYPE>;
     protected:
-      std::vector< CHandle<OBJECT_TYPE> * > m_vecObjects;
+      std::vector< Phoenix::Core::CHandle<OBJECT_TYPE> * > m_vecObjects;
       ////////////////////
       /// Returns reference to object handle vector.
       /// \returns vector with pointers to handles.
 
     public:
-      std::vector< CHandle<OBJECT_TYPE> * > & GetObjectHandles() { return m_vecObjects; }
+      std::vector< Phoenix::Core::CHandle<OBJECT_TYPE> * > & GetObjectHandles() { return m_vecObjects; }
       ////////////////////
       /// Constructor.
       CReceiverQueue();
@@ -83,11 +83,11 @@ namespace Phoenix
       ////////////////////
       /// Adds object as receiver. Another handle is formed from given handle.
       /// \param hObject Handle to object.
-      void PushReceiver( const CHandle<OBJECT_TYPE> &hObject );
+      void PushReceiver( const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject );
       ////////////////////
       /// Removes receiver from queue.
       /// \param hObject Handle to object.
-      void RemoveReceiver( const CHandle<OBJECT_TYPE> &hObject );
+      void RemoveReceiver( const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject );
       ////////////////////
       /// Sends message to all (or just to receiver) in this queue.
       /// \param rMessage 
@@ -132,12 +132,12 @@ namespace Phoenix
       /// Sets given object to receive all messages typed MSG_TYPE.
       /// \param rType Message type to be received
       /// \param hObject Receiver object handle.
-      void RegisterReceiver( const MSG_TYPE & rType, const CHandle<OBJECT_TYPE> &hObject );
+      void RegisterReceiver( const MSG_TYPE & rType, const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject );
       ////////////////////
       /// Unregisters object from receiving messages typed MSG_TYPE.
       /// \param rType Message type to be unregistered.
       /// \param hObject Receiver object handle.
-      void UnregisterReceiver( const MSG_TYPE & rType, const CHandle<OBJECT_TYPE> &hObject );
+      void UnregisterReceiver( const MSG_TYPE & rType, const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject );
       ////////////////////
       /// Enqueues message with timestamp. 
       /// \param pMessage Pointer to message to be sent.
@@ -198,28 +198,28 @@ Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::~CMessage()
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline CHandle<OBJECT_TYPE> &
+inline Phoenix::Core::CHandle<OBJECT_TYPE> &
 Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetSender()
 {
   return m_hSender;
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline const CHandle<OBJECT_TYPE> &
+inline const Phoenix::Core::CHandle<OBJECT_TYPE> &
 Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetSender() const
 {
   return m_hSender;
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline CHandle<OBJECT_TYPE> &
+inline Phoenix::Core::CHandle<OBJECT_TYPE> &
 Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetReceiver()
 {
   return m_hReceiver;
 }
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
-inline const CHandle<OBJECT_TYPE> &
+inline const Phoenix::Core::CHandle<OBJECT_TYPE> &
 Phoenix::AI::CMessage<OBJECT_TYPE,MSG_TYPE>::GetReceiver() const
 {
   return m_hReceiver;
@@ -255,13 +255,13 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::CReceiverQueue()
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::~CReceiverQueue()
 {
-  typename std::vector< CHandle<OBJECT_TYPE> * >::iterator it;
+  typename std::vector< Phoenix::Core::CHandle<OBJECT_TYPE> * >::iterator it;
   it = m_vecObjects.begin();
 
   // Release handles 
   for( ; it != m_vecObjects.end(); it++)
   {
-    CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *(*it) );
+    Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *(*it) );
     delete *it;
   }
   // cleanup
@@ -270,10 +270,10 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::~CReceiverQueue()
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 void
-Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PushReceiver( const CHandle<OBJECT_TYPE> &hObject )
+Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PushReceiver( const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject )
 {
 
-  CHandle<OBJECT_TYPE> *pHandle = new CHandle<OBJECT_TYPE>();
+  Phoenix::Core::CHandle<OBJECT_TYPE> *pHandle = new Phoenix::Core::CHandle<OBJECT_TYPE>();
   Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle< OBJECT_TYPE> >::GetInstance()->DuplicateHandle( hObject, *pHandle);
   // Not thread-safe, requires mutex
   m_vecObjects.push_back( pHandle );
@@ -282,10 +282,10 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PushReceiver( const CHandle<O
 /////////////////////////////////////////////////////////////////
 template <typename OBJECT_TYPE, typename MSG_TYPE>
 void
-Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::RemoveReceiver( const CHandle<OBJECT_TYPE> &hObject )
+Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::RemoveReceiver( const Phoenix::Core::CHandle<OBJECT_TYPE> &hObject )
 {
 
-  typename std::vector<CHandle<OBJECT_TYPE> *>::iterator it;
+  typename std::vector<Phoenix::Core::CHandle<OBJECT_TYPE> *>::iterator it;
   it = m_vecObjects.begin();
   
   // Release handles 
@@ -294,7 +294,7 @@ Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::RemoveReceiver( const CHandle
     // Release and Erase
     if ( hObject == *(*it) )
     {
-      CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *(*it) );      
+      Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->Release( *(*it) );      
       delete *it;
       m_vecObjects.erase( it );
       break;
@@ -307,7 +307,7 @@ template <class MESSAGE_ADAPTER>
 void
 Phoenix::AI::CReceiverQueue<OBJECT_TYPE,MSG_TYPE>::PropagateMessage( const Phoenix::AI::CMessage<OBJECT_TYPE, MSG_TYPE> &rMessage, MESSAGE_ADAPTER &rMsgAdapter )
 {
-  typename std::vector<CHandle<OBJECT_TYPE> * >::iterator it;
+  typename std::vector<Phoenix::Core::CHandle<OBJECT_TYPE> * >::iterator it;
   it = m_vecObjects.begin();
   OBJECT_TYPE *pObject = NULL;
   if ( rMessage.GetReceiver().IsNull())

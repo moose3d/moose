@@ -69,7 +69,8 @@ namespace Phoenix
       virtual void HandleMouseMotion( const CMouseEventBase & me, CGuiElement<BASE_COMPONENT_TYPE> & element ) {}
     };
     /////////////////////////////////////////////////////////////////
-#define GUI_ELEMENT_TNODE_TYPE Phoenix::Scene::CTransformNode<GUI_ELEMENT_TYPE, BASE_COMPONENT_TYPE, Phoenix::Core::CHandle<BASE_COMPONENT_TYPE > >
+    //#define GUI_ELEMENT_TNODE_TYPE Phoenix::Scene::CTransformNode<GUI_ELEMENT_TYPE, BASE_COMPONENT_TYPE, Phoenix::Core::CHandle<BASE_COMPONENT_TYPE > >
+#define GUI_ELEMENT_TNODE_TYPE Phoenix::Scene::CTransformNode
     template< class BASE_COMPONENT_TYPE > class CGuiSystem;
     ////////////////////
     /// Base class for every GUI object.
@@ -192,7 +193,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Handles entering to node while traversing
-      int Enter( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
+      int Enter( Phoenix::Core::CGraphNode *pNode )
       {
 	HandleTransform( static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode));
 	// not culling
@@ -200,7 +201,7 @@ namespace Phoenix
       }
       ////////////////////  
       /// Handles exiting  node while traversing
-      void Leave( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
+      void Leave( Phoenix::Core::CGraphNode *pNode )
       {
 	//NOP
       }
@@ -216,15 +217,15 @@ namespace Phoenix
 	// If this node is root
 	if ( pNode->GetArrivingEdges().empty())
 	{
-	  pNode->GetResource()->SetWorldTransform( pNode->GetResource()->GetLocalTransform() );
+	  pNode->GetTransformable()->SetWorldTransform( pNode->GetTransformable()->GetLocalTransform() );
 	}
 	else 
 	{
 	  pParentWorldTransform = 
-	  &static_cast<GUI_ELEMENT_TNODE_TYPE *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetResource()->GetWorldTransform();
+	  &static_cast<GUI_ELEMENT_TNODE_TYPE *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetTransformable()->GetWorldTransform();
 	  Multiply( *pParentWorldTransform, 
-		    pNode->GetResource()->GetLocalTransform(), 
-		    pNode->GetResource()->GetWorldTransform());
+		    pNode->GetTransformable()->GetLocalTransform(), 
+		    pNode->GetTransformable()->GetWorldTransform());
       
 	}
       }
@@ -241,17 +242,17 @@ namespace Phoenix
       CGuiRenderAdapter() {}
       ////////////////////
       /// Handles entering to node while traversing
-      int Enter( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
+      int Enter( Phoenix::Core::CGraphNode *pNode )
       {
-	adapter.Process( *static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetResource() );
+	adapter.Process( *static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetTransformable() );
 	// visibility check, if is not visible, children shall be culled.
-	return ! static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetResource()->IsVisible();
+	//return ! static_cast<GUI_ELEMENT_TNODE_TYPE *>(pNode)->GetTransformable()->IsVisible();
 
-	//return 0;
+	return 0;
       }
       ////////////////////  
       /// Handles exiting  node while traversing
-      void Leave( CGraphNode<GUI_ELEMENT_TYPE> *pNode )
+      void Leave( Phoenix::Core::CGraphNode *pNode )
       {
 	//NOP
       }
@@ -320,19 +321,19 @@ namespace Phoenix
     template <class OBJECT_TYPE> 
     struct SorterZ
     {
-      inline bool operator()( CHandle<OBJECT_TYPE> * hFirst, CHandle<OBJECT_TYPE> * hSecond )
+      inline bool operator()( Phoenix::Core::CHandle<OBJECT_TYPE> * hFirst, Phoenix::Core::CHandle<OBJECT_TYPE> * hSecond )
       {
 	if ( hFirst->IsNull() )  return false;
 	if ( hSecond->IsNull() ) return true;
-	return ( CResourceManager<OBJECT_TYPE, CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hFirst)->GetWorldTransform().GetMatrix()(2,3) >
-		 CResourceManager<OBJECT_TYPE, CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hSecond)->GetWorldTransform().GetMatrix()(2,3) );
+	return ( Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hFirst)->GetWorldTransform().GetMatrix()(2,3) >
+		 Phoenix::Core::CResourceManager<OBJECT_TYPE, Phoenix::Core::CHandle<OBJECT_TYPE> >::GetInstance()->GetResource(*hSecond)->GetWorldTransform().GetMatrix()(2,3) );
 	
       }
     };
     /////////////////////////////////////////////////////////////////
     /// Class for GUI system.
     template< class BASE_COMPONENT_TYPE >
-    class CGuiSystem : private Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>
+    class CGuiSystem : private Phoenix::Core::CGraph
     {
     protected:
       /// pointer to root window.
@@ -374,13 +375,13 @@ namespace Phoenix
       }
       ////////////////////
       /// Updates element positions / scaling.
-      void EvaluateLayout( CGraphNode<GUI_ELEMENT_TYPE> * pNode = NULL )
+      void EvaluateLayout( Phoenix::Core::CGraphNode * pNode = NULL )
       {
 	if ( !pNode )
 	{
-	  pNode = static_cast<CGraphNode<GUI_ELEMENT_TYPE> *>(m_pBaseWindow->GetTransformNode());
+	  pNode = static_cast<Phoenix::Core::CGraphNode *>(m_pBaseWindow->GetTransformNode());
 	}
-	TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE>, GUI_ELEMENT_TYPE, std::string, int>( pNode, &m_updaterAdapter );
+	Phoenix::Core::TravelDF<CGuiUpdateAdapter<BASE_COMPONENT_TYPE> >( pNode, &m_updaterAdapter );
         SorterZ< BASE_COMPONENT_TYPE > sort_func;
 	m_msgRouter.SortReceivers( sort_func );
       }
@@ -403,7 +404,7 @@ namespace Phoenix
       template< typename ELEMENT_TYPE > ELEMENT_TYPE * Create( const char *szResourceName)
       {
 	// create node for transformation graph.
-	GUI_ELEMENT_TNODE_TYPE *pNode = Phoenix::Core::CGraph<GUI_ELEMENT_TYPE>::CreateNode<GUI_ELEMENT_TNODE_TYPE>();
+	GUI_ELEMENT_TNODE_TYPE *pNode = Phoenix::Core::CGraph::CreateNode<GUI_ELEMENT_TNODE_TYPE>();
 	// Create actual button, and pass proper pointer to transform node
 	ELEMENT_TYPE *pElement = new ELEMENT_TYPE();
 	pElement->SetTransformNode(pNode);
