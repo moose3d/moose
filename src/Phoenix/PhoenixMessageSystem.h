@@ -175,7 +175,7 @@ namespace Phoenix
       /// Destructor.
       ~CMessageQueue();
       ////////////////////
-      /// Enqueues message. Time complexity is O( number of message types registered )
+      /// Enqueues message. Time complexity is O( log number of message types registered )
       void EnqueueMessage( Phoenix::AI::CMessage *pMessage, 
 			   const Phoenix::Core::CTimeStamp & tTimeStamp);
       ////////////////////
@@ -236,7 +236,8 @@ Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
   HandlerMap::iterator it = m_mapHandlers.find(TypeInfo(typeid(*pMessage)));
   if ( it != m_mapHandlers.end())
   {
-    // seek proper handler object
+    // seek proper handler object; this causes linear complexity, better way would be to
+    // create a map or AVLTree for handlers.
     Handlers::iterator itHandlerFunc = (*it).second->GetHandlers().begin();
     Handlers::iterator itEnd = (*it).second->GetHandlers().end();
     for( ; itHandlerFunc != itEnd; itHandlerFunc++)
