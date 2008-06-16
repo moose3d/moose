@@ -33,19 +33,14 @@ AC_PROG_LIBTOOL
 # Checks for library functions.
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt strdup])
 
-AC_ARG_WITH(tristripper,
-	AC_HELP_STRING(
-	    [--with-tristripper=prefix],
-	    [try this for the tristripper-library prefix install directory]
-	  ),
-	  TRISTRIPPER_PATHSET=1,
-	  TRISTRIPPER_PATHSET=0
-)
+
 
 # adding the static library 'libtristripper.a'
 
-# adding the lib to the files to link
-
+# check for CEGUI
+PKG_CHECK_MODULES(CEGUI, CEGUI >= 0.6.0 CEGUI-OPENGL >= 0.6.0)
+CFLAGS="$CFLAGS $CEGUI_CFLAGS"
+LIBS="$LIBS $CEGUI_LIBS"
 
 # introduce the optional configure parameter for the path of libXXX.a
 AC_ARG_WITH(tristripper,

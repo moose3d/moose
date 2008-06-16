@@ -38,7 +38,6 @@
 #include "PhoenixObjectUpdater.h"
 #include "PhoenixStateMachine.h"
 #include "PhoenixModelHelper.h"
-//#include "PhoenixGuiSystem.h"
+#include "PhoenixGuiSystem.h"
 #include "PhoenixDDSImage.h"
-#include "PhoenixEventHandler.h"
 #include "PhoenixMessageSystem.h"

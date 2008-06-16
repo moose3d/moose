@@ -1,11 +1,15 @@
-#include <Phoenix/CGuiSystem.h>
+#include <PhoenixGuiSystem.h>
 #include <SDL.h>
+#include <CEGUI.h>
+#include <CEGUIDefaultResourceProvider.h>
+#include <RendererModules/OpenGLGUIRenderer/openglrenderer.h>
 /////////////////////////////////////////////////////////////////
-Phoenix::GUI::CGuiSystem::Initialize()
+void
+Phoenix::GUI::CGuiSystem::Initialize( size_t nWidth, size_t nHeight)
 {
   //CSDLScreen::m_ScreenParams.
   // \TODO Fix screen width and height
-  CEGUI::OpenGLRenderer* myRenderer = new CEGUI::OpenGLRenderer( 0, 640, 480 ); 
+  CEGUI::OpenGLRenderer* myRenderer = new CEGUI::OpenGLRenderer( 0, nWidth, nHeight ); 
   new CEGUI::System(myRenderer);
 }
 /////////////////////////////////////////////////////////////////
@@ -31,12 +35,14 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
   CEGUI::WindowManager::setDefaultResourceGroup("layouts");
   CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts"); 
 
-  // load in the scheme file, which auto-loads the TaharezLook imageset
-  CEGUI::SchemeManager::getSingleton().loadScheme( "TaharezLook.scheme" );
-
   // load in a font.  The first font loaded automatically becomes the default font.
   //if(! CEGUI::FontManager::getSingleton().isFontPresent( "Commonwealth-10" ) )
   CEGUI::FontManager::getSingleton().createFont( "Iconified-12.font" );
+
+  // load in the scheme file, which auto-loads the TaharezLook imageset
+  CEGUI::SchemeManager::getSingleton().loadScheme( "TaharezLook.scheme" );
+
+
     
   using namespace CEGUI;
   Window* myRoot = WindowManager::getSingleton().loadWindowLayout( "test.layout" );
@@ -50,7 +56,7 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::InjectMouseUp( SDL_Event & e )
+Phoenix::GUI::CGuiSystem::InjectMouseUp( GuiEvent & e )
 {
   switch ( e.button.button )
   {
@@ -67,7 +73,7 @@ Phoenix::GUI::CGuiSystem::InjectMouseUp( SDL_Event & e )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::InjectMouseDown( SDL_Event & e )
+Phoenix::GUI::CGuiSystem::InjectMouseDown( GuiEvent & e )
 {
   switch ( e.button.button )
   {
@@ -92,13 +98,13 @@ Phoenix::GUI::CGuiSystem::InjectMouseDown( SDL_Event & e )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::InjectMouseMotion( SDL_Event & e )
+Phoenix::GUI::CGuiSystem::InjectMouseMotion( GuiEvent & e )
 {
   CEGUI::System::getSingleton().injectMousePosition(  static_cast<float>(e.motion.x), static_cast<float>(e.motion.y) );
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::InjectKeyDown( SDL_Event & e )
+Phoenix::GUI::CGuiSystem::InjectKeyDown( GuiEvent & e )
 {
   // to tell CEGUI that a key was pressed, we inject the scancode.
   CEGUI::System::getSingleton().injectKeyDown(e.key.keysym.scancode);
@@ -112,7 +118,7 @@ Phoenix::GUI::CGuiSystem::InjectKeyDown( SDL_Event & e )
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::InjectKeyUp( SDL_Event & e )
+Phoenix::GUI::CGuiSystem::InjectKeyUp( GuiEvent & e )
 {
   CEGUI::System::getSingleton().injectKeyUp(e.key.keysym.scancode);
 }
@@ -123,3 +129,12 @@ Phoenix::GUI::CGuiSystem::Update( size_t nPassedTime )
   CEGUI::System::getSingleton().injectTimePulse( static_cast<float>(nPassedTime*0.001f) );
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::GUI::CGuiSystem::SelectGUI( const char *szRootName )
+{
+  //System::getSingleton().setGUISheet( myRoot );
+}
+/////////////////////////////////////////////////////////////////
+// WindowManager& winMgr = WindowManager::getSingleton ();
+  /*winMgr.getWindow("testButton")->subscribeEvent( PushButton::EventClicked,
+    &handleTestButton); */
