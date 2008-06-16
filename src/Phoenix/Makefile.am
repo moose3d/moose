@@ -1,7 +1,6 @@
 ## Source directory
 @SET_MAKE@
-AM_CFLAGS = $(CEGUI_CFLAGS)
-
+AM_CFLAGS = $(CEGUI_CFLAGS) $(LIBCONFIG_CFLAGS)
 GENERIC_RELEASE=0:0:1
 GENERIC_LIBRARY_VERSION=1:0:0
 GENERIC_LIBRARY_NAME="Phoenix"
@@ -18,5 +17,5 @@ INCLUDES = -I$(top_srcdir) $(CEGUI_CFLAGS)
 
 lib_LTLIBRARIES= libPhoenix.la
 libPhoenix_la_SOURCES= $(h_sources) $(cc_sources)
-libPhoenix_la_LIBADD = $(CEGUI_LIBS)
+libPhoenix_la_LIBADD = $(CEGUI_LIBS) $(LIBCONFIG_LIBS) 
 #libPhoenix_0_99_la_LDFLAGS= -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)

@@ -42,6 +42,11 @@ PKG_CHECK_MODULES(CEGUI, CEGUI >= 0.6.0 CEGUI-OPENGL >= 0.6.0)
 CFLAGS="$CFLAGS $CEGUI_CFLAGS"
 LIBS="$LIBS $CEGUI_LIBS"
 
+PKG_CHECK_MODULES(LIBCONFIG, libconfig++ >= 1.2.1)
+CFLAGS="$CFLAGS $LIBCONFIG_CFLAGS"
+LIBS="$LIBS $LIBCONFIG_LIBS"
+
+
 # introduce the optional configure parameter for the path of libXXX.a
 AC_ARG_WITH(tristripper,
 	AC_HELP_STRING(

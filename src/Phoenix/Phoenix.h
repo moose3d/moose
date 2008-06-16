@@ -2,8 +2,8 @@
 
 // This fixes error on win32 platforms with CTimer
 #undef GetCurrentTime
-
 /////////////////////////////////////////////////////////////////
+#include "PhoenixGuiSystem.h"
 #include "PhoenixAVLTree.h"
 #include "PhoenixCore.h"
 #include "PhoenixGlobals.h"
@@ -38,6 +38,5 @@
 #include "PhoenixObjectUpdater.h"
 #include "PhoenixStateMachine.h"
 #include "PhoenixModelHelper.h"
-#include "PhoenixGuiSystem.h"
 #include "PhoenixDDSImage.h"
 #include "PhoenixMessageSystem.h"
