@@ -190,4 +190,7 @@ AC_SUBST(GLOBALCXXFLAGS, $CXXFLAGS )
 AC_SUBST(GLOBALCFLAGS, $CFLAGS )
 AC_SUBST(GLOBALLDFLAGS, $LDFLAGS )
 
-AC_OUTPUT(Makefile src/Phoenix/Makefile)
+AC_OUTPUT( Makefile \
+	   src/Phoenix/Makefile \
+	   phoenix.pc
+)

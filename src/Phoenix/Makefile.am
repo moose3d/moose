@@ -18,5 +18,5 @@ INCLUDES = -I$(top_srcdir) $(CEGUI_CFLAGS)
 
 lib_LTLIBRARIES= libPhoenix.la
 libPhoenix_la_SOURCES= $(h_sources) $(cc_sources)
-libsomething_la_LIBADD = $(CEGUI_LIBS)
+libPhoenix_la_LIBADD = $(CEGUI_LIBS)
 #libPhoenix_0_99_la_LDFLAGS= -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
