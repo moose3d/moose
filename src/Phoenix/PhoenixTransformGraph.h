@@ -11,7 +11,6 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Transform node template, allows several different objects to be 
     /// attached to each other via typing mechanism.
-    /// \warning Objects MUST BE managed by respective ResourceManager!
     class CTransformNode : public Phoenix::Core::CGraphNode
     {
       friend class Phoenix::Core::CGraph;

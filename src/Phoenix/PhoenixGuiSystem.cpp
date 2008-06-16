@@ -86,7 +86,10 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
   {
     cerr << "Setting not found!"  << endl;
   }
-  
+  catch ( CEGUI::InvalidRequestException & ex )
+  {
+    cerr << ex.getMessage() << endl;
+  }
   
 }
   /////////////////////////////////////////////////////////////////

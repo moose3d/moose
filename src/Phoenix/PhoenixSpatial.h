@@ -483,7 +483,7 @@ namespace Phoenix
       COrientable();
       /////////////////////////////////////////////////////////////////
       /// The destructor.
-      ~COrientable() {   }
+      virtual ~COrientable() {}
       /////////////////////////////////////////////////////////////////
       /// Rotates object given degrees over axis (1,0,0)
       /// \param fDegrees the degrees the object is rotated around axis.

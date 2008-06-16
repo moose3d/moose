@@ -42,7 +42,7 @@ namespace Phoenix
       CGameObject( size_t nNumModels = 1);
       ////////////////////
       /// Destructor.
-      ~CGameObject();
+      virtual ~CGameObject() {}
       ////////////////////
       /// Returns model handle.
       /// \param nIndex Which model handle is returned.
@@ -107,12 +107,6 @@ Phoenix::Scene::CGameObject::CGameObject( size_t nNumModels ) : m_nSpatialIndex(
   if ( nNumModels == 0 ) nNumModels = 1;
   for ( size_t i=0;i<nNumModels;i++)
     m_vecModelHandles.push_back(Phoenix::Core::CHandle<Phoenix::Graphics::CModel>());
-}
-/////////////////////////////////////////////////////////////////
-inline
-Phoenix::Scene::CGameObject::~CGameObject()
-{
-  
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 

@@ -77,6 +77,31 @@ namespace Phoenix
       void operator=( const CHandle<TAG> & handle );
     };
     ////////////////////
+    /// Class for objects that know their position in ResourceManager.
+    template< class OBJECT_TYPE >
+    class CHandled
+    {
+    protected:
+      /// Handle to object itself.
+      Phoenix::Core::CHandle< OBJECT_TYPE > m_hThis;
+      virtual ~CHandled() { } 
+    public:
+      ////////////////////
+      /// Returns reference to object handle.
+      /// \returns Reference to object handle.
+      const Phoenix::Core::CHandle< OBJECT_TYPE > & GetObjectHandle() const 
+      {
+	return m_hThis;
+      }
+      ////////////////////
+      /// Returns reference to object handle.
+      /// \returns Reference to object handle.
+      Phoenix::Core::CHandle< OBJECT_TYPE > & GetObjectHandle() 
+      {
+	return m_hThis;
+      }
+    };
+    ////////////////////
     /// Resource Name class. This is used in Hash table.
     class CResourceName : public CNullable
     {

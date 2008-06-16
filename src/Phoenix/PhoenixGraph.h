@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string.h>
 #include <assert.h>
+#include <iostream>
 namespace Phoenix
 {
   namespace Core
@@ -195,7 +196,7 @@ namespace Phoenix
       CGraphNode( const CGraphNode &Node);
       ////////////////////
       /// Returns the graph where node is in.
-      inline CGraph * GetGraph();
+      CGraph * GetGraph();
       ////////////////////
       /// Sets the status of visited flag.
       /// \param bFlag boolean value for visited (1 = visited, 0 = unvisited )
@@ -354,5 +355,70 @@ namespace Phoenix
     
   } // namespace Core
 } // namespace Phoenix
+/////////////////////////////////////////////////////////////////
+#define HAS_UNTRAVERSED_EDGES( N ) ( (unsigned int)(N->GetColor()) < N->GetOutDegree())
+#define IS_VISITED( N ) ( N->GetColor() > 0 )
+/////////////////////////////////////////////////////////////////
+template <class TRAVELLER_TYPE>
+void  
+Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
+{
+  std::stack< CGraphNode *> stckNodes;
+  EdgeListType  lstEdges;
+  CGraphEdge *pEdge = NULL;
+  if ( pStartNode ==NULL ) 
+  {
+    std::cerr << "pStartNode is NULL" << std::endl;
+    return;
+  } 
+
+  pStartNode->GetGraph()->SetColor(0);         // Clear number of processed nodes
+  stckNodes.push(pStartNode);
+
+  while ( !stckNodes.empty())
+  {
+    CGraphNode *pNode = stckNodes.top();
+    if ( IS_VISITED(pNode) )
+    {
+      if ( HAS_UNTRAVERSED_EDGES(pNode))
+      {
+	pEdge = lstEdges.front();
+	lstEdges.pop_front();
+	pEdge->GetFromNode()->SetColor(pEdge->GetFromNode()->GetColor()+1);
+	stckNodes.push(pEdge->GetToNode());
+      }
+      else
+      {
+	pTraveller->Leave(pNode );
+	//pNode->SetVisited(0);
+	pNode->SetColor(0);
+	stckNodes.pop();
+      }
+    }
+    else
+    {
+      int bCulled = pTraveller->Enter(pNode);
+      //pNode->SetVisited(1);
+      if ( pNode->HasLeavingEdges() && !bCulled)
+      {
+	lstEdges.insert( lstEdges.begin(), pNode->GetLeavingEdges().begin(), 
+			 pNode->GetLeavingEdges().end());
+	pEdge = lstEdges.front();
+	lstEdges.pop_front();
+	pEdge->GetFromNode()->SetColor( pEdge->GetFromNode()->GetColor() + 1 );
+	stckNodes.push( pEdge->GetToNode());
+      }
+      else 
+      {
+	pTraveller->Leave(pNode);
+	//pNode->SetVisited(0);
+	pNode->SetColor(0);
+	stckNodes.pop();
+      }
+    }
+  }
+  // Just to be safe, cleanup. stckNodes IS empty if we're here.
+  lstEdges.clear();
+}
 /////////////////////////////////////////////////////////////////
 #endif

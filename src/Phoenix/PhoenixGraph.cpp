@@ -231,68 +231,6 @@ Phoenix::Core::CGraph::SetColor( unsigned int nColor )
 /*   return NULL; */
 /* }; */
 ////////////////////////////////////////////////////////////////////////////
-template <class TRAVELLER_TYPE>
-void  
-Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
-{
-  std::stack< CGraphNode *> stckNodes;
-  EdgeListType  lstEdges;
-  CGraphEdge *pEdge = NULL;
-  if ( pStartNode ==NULL ) 
-  {
-    std::cerr << "pStartNode is NULL" << std::endl;
-    return;
-  } 
-
-  pStartNode->GetGraph()->SetColor(0);         // Clear number of processed nodes
-  stckNodes.push(pStartNode);
-
-  while ( !stckNodes.empty())
-  {
-    CGraphNode *pNode = stckNodes.top();
-    if ( IS_VISITED(pNode) )
-    {
-      if ( HAS_UNTRAVERSED_EDGES(pNode))
-      {
-	pEdge = lstEdges.front();
-	lstEdges.pop_front();
-	pEdge->GetFromNode()->SetColor(pEdge->GetFromNode()->GetColor()+1);
-	stckNodes.push(pEdge->GetToNode());
-      }
-      else
-      {
-	pTraveller->Leave(pNode );
-	//pNode->SetVisited(0);
-	pNode->SetColor(0);
-	stckNodes.pop();
-      }
-    }
-    else
-    {
-      int bCulled = pTraveller->Enter(pNode);
-      //pNode->SetVisited(1);
-      if ( pNode->HasLeavingEdges() && !bCulled)
-      {
-	lstEdges.insert( lstEdges.begin(), pNode->GetLeavingEdges().begin(), 
-			 pNode->GetLeavingEdges().end());
-	pEdge = lstEdges.front();
-	lstEdges.pop_front();
-	pEdge->GetFromNode()->SetColor( pEdge->GetFromNode()->GetColor() + 1 );
-	stckNodes.push( pEdge->GetToNode());
-      }
-      else 
-      {
-	pTraveller->Leave(pNode);
-	//pNode->SetVisited(0);
-	pNode->SetColor(0);
-	stckNodes.pop();
-      }
-    }
-  }
-  // Just to be safe, cleanup. stckNodes IS empty if we're here.
-  lstEdges.clear();
-}
-
 /////////////////////////////////////////////////////////////////
 /* Phoenix::Core::CGraphNode::CGraphNode( const CGraphNode &Node)  */
 /* { */
@@ -308,7 +246,7 @@ Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
 
 /* } */
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Core::CGraph *
+Phoenix::Core::CGraph *
 Phoenix::Core::CGraphNode::GetGraph()
 {
   return m_pGraph;
