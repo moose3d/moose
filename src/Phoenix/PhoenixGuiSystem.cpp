@@ -33,21 +33,26 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
 
     CEGUI::DefaultResourceProvider *rp = 
     static_cast<CEGUI::DefaultResourceProvider*>  (CEGUI::System::getSingleton().getResourceProvider());
-    
+    string schemes = config.lookup("gui_config.paths.schemes");
+    string imagesets = config.lookup("gui_config.paths.imagesets");
+    string fonts = config.lookup("gui_config.paths.fonts");
+    string layouts = config.lookup("gui_config.paths.layouts");
+    string looknfeel = config.lookup("gui_config.paths.looknfeel");
+    string scripts = config.lookup("gui_config.paths.lua_scripts");
     // "Resources/Config/CEGUI/..."
-    rp->setResourceGroupDirectory("schemes",      (string &)config.lookup("gui_config.paths.schemes"));
-    rp->setResourceGroupDirectory("imagesets",    (string &)config.lookup("gui_config.paths.imagesets"));
-    rp->setResourceGroupDirectory("fonts",        (string &)config.lookup("gui_config.paths.fonts"));
-    rp->setResourceGroupDirectory("layouts",      (string &)config.lookup("gui_config.paths.layouts"));
-    rp->setResourceGroupDirectory("looknfeels",   (string &)config.lookup("gui_config.paths.looknfeel"));
-    rp->setResourceGroupDirectory("lua_scripts",  (string &)config.lookup("gui_config.paths.lua_scripts")); 
+    rp->setResourceGroupDirectory("schemes",      schemes);
+    rp->setResourceGroupDirectory("imagesets",    imagesets);
+    rp->setResourceGroupDirectory("fonts",        fonts);
+    rp->setResourceGroupDirectory("layouts",      layouts);
+    rp->setResourceGroupDirectory("looknfeels",   looknfeel);
+    rp->setResourceGroupDirectory("lua_scripts",  scripts); 
 
-//     rp->setResourceGroupDirectory("schemes",      "datafiles/schemes/");
-//     rp->setResourceGroupDirectory("imagesets",    "datafiles/imagesets/");
-//     rp->setResourceGroupDirectory("fonts",        "datafiles/fonts/");
-//     rp->setResourceGroupDirectory("layouts",      "datafiles/layouts/");
-//     rp->setResourceGroupDirectory("looknfeels",   "datafiles/looknfeel/");
-//     rp->setResourceGroupDirectory("lua_scripts",  "datafiles/lua_scripts/"); 
+    //     rp->setResourceGroupDirectory("schemes",      "datafiles/schemes/");
+    //     rp->setResourceGroupDirectory("imagesets",    "datafiles/imagesets/");
+    //     rp->setResourceGroupDirectory("fonts",        "datafiles/fonts/");
+    //     rp->setResourceGroupDirectory("layouts",      "datafiles/layouts/");
+    //     rp->setResourceGroupDirectory("looknfeels",   "datafiles/looknfeel/");
+    //     rp->setResourceGroupDirectory("lua_scripts",  "datafiles/lua_scripts/"); 
 
     // Set the default resource groups.
     CEGUI::Imageset::setDefaultResourceGroup("imagesets");
@@ -59,16 +64,18 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
 
     // load in a font.  The first font loaded automatically becomes the default font.
     //if(! CEGUI::FontManager::getSingleton().isFontPresent( "Commonwealth-10" ) )
-
+    string font = config.lookup("gui_config.defaults.font");
+    cerr << "font is: " <<  font << endl;
     //CEGUI::FontManager::getSingleton().createFont( "Iconified-12.font" );
-    CEGUI::FontManager::getSingleton().createFont( (string &)config.lookup("gui_config.defaults.font"));
-    
+    CEGUI::FontManager::getSingleton().createFont( font );
+    string scheme = config.lookup("gui_config.defaults.scheme" );
     // load in the scheme file, which auto-loads the TaharezLook imageset
     //CEGUI::SchemeManager::getSingleton().loadScheme( "TaharezLook.scheme" );
-    CEGUI::SchemeManager::getSingleton().loadScheme( (string &)config.lookup("gui_config.defaults.scheme" ));
+    CEGUI::SchemeManager::getSingleton().loadScheme( scheme );
     
     //CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( "test.layout" );
-    CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( (string &)config.lookup("gui_config.defaults.layout") );
+    string layout = config.lookup("gui_config.defaults.layout");
+    CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( layout );
 
     CEGUI::System::getSingleton().setGUISheet( myRoot );
 
@@ -92,87 +99,102 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
   }
   
 }
-  /////////////////////////////////////////////////////////////////
-  void 
-  Phoenix::GUI::CGuiSystem::InjectMouseUp( GuiEvent & e )
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::InjectMouseUp( GuiEvent & e )
+{
+  switch ( e.button.button )
   {
-    switch ( e.button.button )
-    {
-    case SDL_BUTTON_LEFT:
-      CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::LeftButton);
-      break;
-    case SDL_BUTTON_MIDDLE:
-      CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::MiddleButton);
-      break;
-    case SDL_BUTTON_RIGHT:
-      CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::RightButton);
-      break;
-    }
+  case SDL_BUTTON_LEFT:
+    CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::LeftButton);
+    break;
+  case SDL_BUTTON_MIDDLE:
+    CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::MiddleButton);
+    break;
+  case SDL_BUTTON_RIGHT:
+    CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::RightButton);
+    break;
   }
-  /////////////////////////////////////////////////////////////////
-  void 
-  Phoenix::GUI::CGuiSystem::InjectMouseDown( GuiEvent & e )
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::InjectMouseDown( GuiEvent & e )
+{
+  switch ( e.button.button )
   {
-    switch ( e.button.button )
-    {
-      // handle real mouse buttons
-    case SDL_BUTTON_LEFT:
-      CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::LeftButton);
-      break;
-    case SDL_BUTTON_MIDDLE:
-      CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::MiddleButton);
-      break;
-    case SDL_BUTTON_RIGHT:
-      CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::RightButton);
-      break;
-      // handle the mouse wheel
-    case SDL_BUTTON_WHEELDOWN:
-      CEGUI::System::getSingleton().injectMouseWheelChange( -1 );
-      break;
-    case SDL_BUTTON_WHEELUP:
-      CEGUI::System::getSingleton().injectMouseWheelChange( +1 );
-      break;
-    }
+    // handle real mouse buttons
+  case SDL_BUTTON_LEFT:
+    CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::LeftButton);
+    break;
+  case SDL_BUTTON_MIDDLE:
+    CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::MiddleButton);
+    break;
+  case SDL_BUTTON_RIGHT:
+    CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::RightButton);
+    break;
+    // handle the mouse wheel
+  case SDL_BUTTON_WHEELDOWN:
+    CEGUI::System::getSingleton().injectMouseWheelChange( -1 );
+    break;
+  case SDL_BUTTON_WHEELUP:
+    CEGUI::System::getSingleton().injectMouseWheelChange( +1 );
+    break;
   }
-  /////////////////////////////////////////////////////////////////
-  void 
-  Phoenix::GUI::CGuiSystem::InjectMouseMotion( GuiEvent & e )
-  {
-    CEGUI::System::getSingleton().injectMousePosition(  static_cast<float>(e.motion.x), static_cast<float>(e.motion.y) );
-  }
-  /////////////////////////////////////////////////////////////////
-  void 
-  Phoenix::GUI::CGuiSystem::InjectKeyDown( GuiEvent & e )
-  {
-    // to tell CEGUI that a key was pressed, we inject the scancode.
-    CEGUI::System::getSingleton().injectKeyDown(e.key.keysym.scancode);
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::InjectMouseMotion( GuiEvent & e )
+{
+  CEGUI::System::getSingleton().injectMousePosition(  static_cast<float>(e.motion.x), static_cast<float>(e.motion.y) );
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::InjectKeyDown( GuiEvent & e )
+{
+  // to tell CEGUI that a key was pressed, we inject the scancode.
+  CEGUI::System::getSingleton().injectKeyDown(e.key.keysym.scancode);
     
-    // as for the character it's a litte more complicated. we'll use for translated unicode value.
-    // this is described in more detail below.
-    if (e.key.keysym.unicode != 0)
-    {
-      CEGUI::System::getSingleton().injectChar(e.key.keysym.unicode);
-    }
-  }
-  /////////////////////////////////////////////////////////////////
-  void 
-  Phoenix::GUI::CGuiSystem::InjectKeyUp( GuiEvent & e )
+  // as for the character it's a litte more complicated. we'll use for translated unicode value.
+  // this is described in more detail below.
+  if (e.key.keysym.unicode != 0)
   {
-    CEGUI::System::getSingleton().injectKeyUp(e.key.keysym.scancode);
+    CEGUI::System::getSingleton().injectChar(e.key.keysym.unicode);
   }
-  /////////////////////////////////////////////////////////////////
-  void 
-  Phoenix::GUI::CGuiSystem::Update( size_t nPassedTime )
-  {
-    CEGUI::System::getSingleton().injectTimePulse( static_cast<float>(nPassedTime*0.001f) );
-  }
-  /////////////////////////////////////////////////////////////////
-  void
-  Phoenix::GUI::CGuiSystem::SelectGUI( const char *szRootName )
-  {
-    //System::getSingleton().setGUISheet( myRoot );
-  }
-  /////////////////////////////////////////////////////////////////
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::InjectKeyUp( GuiEvent & e )
+{
+  CEGUI::System::getSingleton().injectKeyUp(e.key.keysym.scancode);
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::Update( size_t nPassedTime )
+{
+  CEGUI::System::getSingleton().injectTimePulse( static_cast<float>(nPassedTime*0.001f) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::GUI::CGuiSystem::SelectGUI( const char *szRootName )
+{
+  //System::getSingleton().setGUISheet( myRoot );
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::Render()
+{
+  CEGUI::System::getSingleton().renderGUI();
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::SetWindowText( const char *szWinName, const char *szText )
+{
+  CEGUI::WindowManager& winMgr = CEGUI::WindowManager::getSingleton();
+  CEGUI::Window* pWindow = winMgr.getWindow(szWinName);
+  if ( pWindow )
+    pWindow->setText(szText);
+}
+/////////////////////////////////////////////////////////////////
   // WindowManager& winMgr = WindowManager::getSingleton ();
   /*winMgr.getWindow("testButton")->subscribeEvent( PushButton::EventClicked,
     &handleTestButton); */

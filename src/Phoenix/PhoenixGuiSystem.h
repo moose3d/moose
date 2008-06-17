@@ -40,11 +40,17 @@ namespace Phoenix
       ///  Injects key down event into GUI system.
       void InjectKeyUp( GuiEvent & e );
       ////////////////////
+      /// Renders gui.
+      void Render();
+      ////////////////////
       /// Updates system.
       void Update( size_t nPassedTime );
       ////////////////////
       /// Selects which GUI layout is shown.
       void SelectGUI( const char *szRootName );
+      ////////////////////
+      /// Sets window text.
+      void SetWindowText( const char *szWinName, const char *szText );
       ////////////////////
       /// Sets handler for element with static member function / normal function.
       /// \param szElementName Name of element in GUI config files.
