@@ -41,6 +41,7 @@ namespace Phoenix
 				  0,0,0,1 ),
                      m_qRotation(0.0f,0.0f,0.0f,1.0f),
                      m_vTranslation(0.0f,0.0f,0.0f) { }
+      virtual ~CTransform()  {}
       ////////////////////
       /// Adds hook to given matrix.
       /// \param pMatrix A pointer to CMatrix4x4f.
@@ -131,6 +132,7 @@ namespace Phoenix
       Phoenix::Math::CTransform m_LocalTransform;
       Phoenix::Math::CTransform m_WorldTransform;
     public:
+      virtual ~CTransformable() {} 
       ////////////////////
       /// Returns reference to local transform.
       /// \returns Local transform

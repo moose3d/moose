@@ -21,6 +21,7 @@ namespace Phoenix
     /// \brief A class for an directed edge between two nodes in a graph.
     class CGraphEdge
     {
+#define GRAPH_EDGE_IMPL(NAME)  NAME( CGraphNode *pFrom,  CGraphNode *pTo ) : CGraphEdge(pFrom, pTo)  {}
       friend class CGraphNode;
       friend class CGraph;
     protected:
@@ -187,13 +188,13 @@ namespace Phoenix
     
       }
       ////////////////////
-      /// Destructor
-      virtual ~CGraphNode();
-
+      /// Destructor. Should be invoked with extreme care since it only removes this node
+      /// not the children nor does it fix the parent pointers of the children.
+      virtual ~CGraphNode() {}
     public:
       ////////////////////
       /// Copy constructor
-      CGraphNode( const CGraphNode &Node);
+      CGraphNode( const CGraphNode &Node );
       ////////////////////
       /// Returns the graph where node is in.
       CGraph * GetGraph();
@@ -244,7 +245,8 @@ namespace Phoenix
       ////////////////////
       ///  Adds an edge from this to given node
       /// \param pTo A pointer to CGraphNode.
-      CGraphEdge * AddEdge( CGraphNode *pTo );
+      template< class GRAPH_EDGE >
+      GRAPH_EDGE * AddEdge( CGraphNode *pTo );
       ////////////////////
       ///  Removes and edge leading from this node to giben node.
       /// \param pTo A pointer to CGraphNode.
@@ -301,7 +303,8 @@ namespace Phoenix
       ////////////////////
       /// Adds an edge between pNodeFrom and pNodeTo.
       /// Returns Pointer to edge if ok, NULL on error
-      CGraphEdge * AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo);
+      template< class GRAPH_EDGE>
+      GRAPH_EDGE * AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo);
       ////////////////////
       /// Removes an edge,
       void DeleteEdge( CGraphEdge *pEdge );
@@ -419,6 +422,39 @@ Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
   }
   // Just to be safe, cleanup. stckNodes IS empty if we're here.
   lstEdges.clear();
+}
+/////////////////////////////////////////////////////////////////
+template< class GRAPH_EDGE>
+GRAPH_EDGE *
+Phoenix::Core::CGraph::AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo )
+{
+  if ( pNodeFrom == NULL )
+  {
+    std::cerr << "FromNode is NULL" << std::endl;
+    return NULL;
+  }
+  
+  if ( pNodeTo == NULL )
+  {
+    std::cerr << "ToNode is NULL" << std::endl;
+    return NULL;
+  }
+  
+  assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!");
+
+  
+  GRAPH_EDGE *pEdge = new GRAPH_EDGE( pNodeFrom, pNodeTo);
+  pNodeFrom->GetLeavingEdges().push_back( pEdge );
+  pNodeTo->GetArrivingEdges().push_back( pEdge );
+  m_lstEdges.push_back(pEdge);
+  return pEdge;
+}
+/////////////////////////////////////////////////////////////////
+template< class GRAPH_EDGE >
+GRAPH_EDGE *
+Phoenix::Core::CGraphNode::AddEdge( CGraphNode *pTo )
+{
+  return m_pGraph->AddEdge<GRAPH_EDGE>( this, pTo );
 }
 /////////////////////////////////////////////////////////////////
 #endif

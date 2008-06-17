@@ -42,30 +42,6 @@ Phoenix::Core::CGraph::DeleteNode( CGraphNode *pNode )
   
 }
 /////////////////////////////////////////////////////////////////
-CGraphEdge *
-Phoenix::Core::CGraph::AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo )
-{
-  if ( pNodeFrom == NULL )
-  {
-    std::cerr << "FromNode is NULL" << std::endl;
-    return NULL;
-  }
-  
-  if ( pNodeTo == NULL )
-  {
-    std::cerr << "ToNode is NULL" << std::endl;
-    return NULL;
-  }
-  assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!");
-
-  
-  CGraphEdge *pEdge = new CGraphEdge( pNodeFrom, pNodeTo);
-  pNodeFrom->GetLeavingEdges().push_back( pEdge );
-  pNodeTo->GetArrivingEdges().push_back( pEdge );
-  m_lstEdges.push_back(pEdge);
-  return pEdge;
-}
-/////////////////////////////////////////////////////////////////
 void
 Phoenix::Core::CGraph::DeleteEdge( Phoenix::Core::CGraphEdge *pEdge)
 {
@@ -252,13 +228,6 @@ Phoenix::Core::CGraphNode::GetGraph()
   return m_pGraph;
 }
 /////////////////////////////////////////////////////////////////
-/// The destructor, should be invoked with extreme care since it only removes this node
-/// not the children nor does it fix the parent pointers of the children.
-Phoenix::Core::CGraphNode::~CGraphNode()
-{
-  
-}
-/////////////////////////////////////////////////////////////////
 void
 Phoenix::Core::CGraphNode::SetVisited(int bFlag )
 {
@@ -319,12 +288,6 @@ int
 Phoenix::Core::CGraphNode::IsChanged()
 {
   return m_bChanged;
-}
-/////////////////////////////////////////////////////////////////
-CGraphEdge *
-Phoenix::Core::CGraphNode::AddEdge( CGraphNode *pTo )
-{
-  return m_pGraph->AddEdge( this, pTo );
 }
 /////////////////////////////////////////////////////////////////
 int 

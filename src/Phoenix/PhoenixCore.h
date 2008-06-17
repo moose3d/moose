@@ -32,6 +32,7 @@ namespace Phoenix
       /// Constructor.
       CNullable() : m_bIsNull(1) { }
     public:
+      virtual ~CNullable() {}
       ////////////////////
       /// Assigns null state.
       /// \param bNull Nullification state.
@@ -52,6 +53,7 @@ namespace Phoenix
       /// Default constructor. Disables object.
       CEnableable() : m_bEnabled(0) { }
     public:
+      virtual ~CEnableable() {}
       ////////////////////
       /// Returns is object enabled or disabled.
       /// \returns true for enabled, false for disabled.
@@ -72,6 +74,7 @@ namespace Phoenix
       /// Default constructor. Unselects object.
       CSelectable() : m_bSelected(0){ }
     public:
+      virtual ~CSelectable() {}
       ////////////////////
       /// Returns is object selected or unselected.
       /// \returns true for selected, false for unselected.
@@ -92,6 +95,7 @@ namespace Phoenix
       /// Constructor. Unfocuses object.
       CFocusable() : m_bHasFocus(0) {}
     public:
+      virtual ~CFocusable() {}
       ////////////////////
       /// Checks is this element focused.
       /// \returns Non-zero on focus, zero otherwise.

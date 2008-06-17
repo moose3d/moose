@@ -25,6 +25,9 @@ namespace Phoenix
     class CStateEdge : public Phoenix::Core::CGraphEdge,
 		       public Phoenix::Core::CTypeBase<INPUT_TYPE>
     {
+    public:
+      CStateEdge( Phoenix::Core::CGraphNode *pFrom, Phoenix::Core::CGraphNode *pTo ) : Phoenix::Core::CGraphEdge( pFrom, pTo ) 
+      {}
     };
     ////////////////////
     /// Finite State Machine. 
@@ -66,8 +69,8 @@ namespace Phoenix
       /// \param nInput Name of input that ignites transition.
       void AddTransition( const STATE_TYPE & nFromState, const STATE_TYPE &nToState, const INPUT_TYPE &nInput )
       {
-	Phoenix::Core::CGraphEdge *pEdge = Phoenix::Core::CGraph::AddEdge( m_vecStates[nFromState], m_vecStates[nToState] );
-	static_cast<Phoenix::AI::CStateEdge<INPUT_TYPE> *>(pEdge)->SetType(nInput);
+	Phoenix::AI::CStateEdge<INPUT_TYPE> *pEdge = Phoenix::Core::CGraph::AddEdge<Phoenix::AI::CStateEdge<INPUT_TYPE> >( m_vecStates[nFromState], m_vecStates[nToState] );
+	pEdge->SetType(nInput);
       }
       ////////////////////
       /// Returns name of next state on given input.
