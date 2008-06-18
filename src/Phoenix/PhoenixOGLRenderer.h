@@ -663,6 +663,9 @@ namespace Phoenix
       /// \param rIndexArray Reference to IndexArray.
       void RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray );
       ////////////////////
+      /// Disables possibly active cache buffers.
+      void DisableCaches();
+      ////////////////////
       /// Creates a framebuffer.
       /// \param nWidth Framebuffer width.
       /// \param nHeight Framebuffer height.

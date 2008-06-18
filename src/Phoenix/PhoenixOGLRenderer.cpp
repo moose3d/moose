@@ -1803,10 +1803,69 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   {
     glGenBuffersARB(1, &rVertexDescriptor.GetCache());
     glBindBufferARB( GL_ARRAY_BUFFER_ARB, rVertexDescriptor.GetCache());
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     sizeof(float)*3*rVertexDescriptor.GetSize(), 
-		     rVertexDescriptor.GetPointer<float>(), 
-		     GL_STATIC_DRAW_ARB);
+    size_t nBytes = 0;
+
+    // determine proper buffer size.
+    switch ( rVertexDescriptor.GetType())
+    {
+    case ELEMENT_TYPE_VERTEX_3F:
+    case ELEMENT_TYPE_COLOR_3F:
+    case ELEMENT_TYPE_NORMAL_3F:
+      nBytes =  sizeof(float)*3*rVertexDescriptor.GetSize();
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
+		       nBytes, 
+		       rVertexDescriptor.GetPointer<float>(), 
+		       GL_STATIC_DRAW_ARB);
+      break;
+    case ELEMENT_TYPE_COLOR_4UB:
+      nBytes =  sizeof(unsigned char)*4*rVertexDescriptor.GetSize();
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
+		       nBytes, 
+		       rVertexDescriptor.GetPointer<unsigned char>(), 
+		       GL_STATIC_DRAW_ARB);
+      break;
+    case ELEMENT_TYPE_COLOR_4F:
+      nBytes =  sizeof(float)*4*rVertexDescriptor.GetSize();
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
+		       nBytes, 
+		       rVertexDescriptor.GetPointer<float>(), 
+		       GL_STATIC_DRAW_ARB);
+      break;
+    case ELEMENT_TYPE_TEX_2F:
+      nBytes =  sizeof(float)*2*rVertexDescriptor.GetSize();
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
+		       nBytes, 
+		       rVertexDescriptor.GetPointer<float>(), 
+		       GL_STATIC_DRAW_ARB);
+      break;
+    case ELEMENT_TYPE_UNIFORM_1F:
+    case ELEMENT_TYPE_UNIFORM_2F:
+    case ELEMENT_TYPE_UNIFORM_3F:
+    case ELEMENT_TYPE_UNIFORM_4F:
+    case ELEMENT_TYPE_UNIFORM_1I:
+    case ELEMENT_TYPE_UNIFORM_2I:
+    case ELEMENT_TYPE_UNIFORM_3I:
+    case ELEMENT_TYPE_UNIFORM_4I:
+    case ELEMENT_TYPE_UNIFORM_2X2F:
+    case ELEMENT_TYPE_UNIFORM_3X3F:
+    case ELEMENT_TYPE_UNIFORM_4X4F:
+    case ELEMENT_TYPE_ATTRIB_1F:
+    case ELEMENT_TYPE_ATTRIB_2F:
+    case ELEMENT_TYPE_ATTRIB_3F:
+    case ELEMENT_TYPE_ATTRIB_4F:
+    case ELEMENT_TYPE_ATTRIB_1I:
+    case ELEMENT_TYPE_ATTRIB_2I:
+    case ELEMENT_TYPE_ATTRIB_3I:
+    case ELEMENT_TYPE_ATTRIB_4I:
+    case ELEMENT_TYPE_ATTRIB_1UB:
+    case ELEMENT_TYPE_ATTRIB_2UB:
+    case ELEMENT_TYPE_ATTRIB_3UB:
+    case ELEMENT_TYPE_ATTRIB_4UB:
+    case ELEMENT_TYPE_NULL:
+      // these types do not need caching.
+      return 3;
+      break;
+    }
 
     // Prepare for case that data does not fit
     if ( glGetError() == GL_OUT_OF_MEMORY )
@@ -1889,6 +1948,14 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray &
     glDeleteBuffersARB( 1, &rIndexArray.GetCache());
     rIndexArray.SetState(Phoenix::Core::CACHE_NOCACHE);
   }
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::DisableCaches()
+{
+  // disable VBO objects
+  glBindBufferARB( GL_ARRAY_BUFFER_ARB,		0 );
+  glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
 }
 /////////////////////////////////////////////////////////////////
 void 
