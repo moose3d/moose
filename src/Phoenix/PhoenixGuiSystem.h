@@ -26,19 +26,19 @@ namespace Phoenix
       void LoadResources( const char *szPath );
       ////////////////////
       ///  Injects mouse up event into GUI system.
-      void InjectMouseUp( GuiEvent & e );
+      bool InjectMouseUp( GuiEvent & e );
       ////////////////////
       ///  Injects mouse down event into GUI system.
-      void InjectMouseDown( GuiEvent & e );
+      bool InjectMouseDown( GuiEvent & e );
       ////////////////////
       ///  Injects mouse motion event into GUI system.
-      void InjectMouseMotion( GuiEvent & e);
+      bool InjectMouseMotion( GuiEvent & e);
       ////////////////////
       ///  Injects key down event into GUI system.
-      void InjectKeyDown( GuiEvent & e );
+      bool InjectKeyDown( GuiEvent & e );
       ////////////////////
       ///  Injects key down event into GUI system.
-      void InjectKeyUp( GuiEvent & e );
+      bool InjectKeyUp( GuiEvent & e );
       ////////////////////
       /// Renders gui.
       void Render();

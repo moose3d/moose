@@ -100,72 +100,77 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
   
 }
 /////////////////////////////////////////////////////////////////
-void 
+bool
 Phoenix::GUI::CGuiSystem::InjectMouseUp( GuiEvent & e )
 {
   switch ( e.button.button )
   {
   case SDL_BUTTON_LEFT:
-    CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::LeftButton);
+    return CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::LeftButton);
     break;
   case SDL_BUTTON_MIDDLE:
-    CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::MiddleButton);
+    return CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::MiddleButton);
     break;
   case SDL_BUTTON_RIGHT:
-    CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::RightButton);
+    return CEGUI::System::getSingleton().injectMouseButtonUp(CEGUI::RightButton);
     break;
   }
+  return 0;
 }
 /////////////////////////////////////////////////////////////////
-void 
+bool
 Phoenix::GUI::CGuiSystem::InjectMouseDown( GuiEvent & e )
 {
   switch ( e.button.button )
   {
     // handle real mouse buttons
   case SDL_BUTTON_LEFT:
-    CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::LeftButton);
+    return CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::LeftButton);
     break;
   case SDL_BUTTON_MIDDLE:
-    CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::MiddleButton);
+    return CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::MiddleButton);
     break;
   case SDL_BUTTON_RIGHT:
-    CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::RightButton);
+    return CEGUI::System::getSingleton().injectMouseButtonDown(CEGUI::RightButton);
     break;
     // handle the mouse wheel
   case SDL_BUTTON_WHEELDOWN:
-    CEGUI::System::getSingleton().injectMouseWheelChange( -1 );
+    return CEGUI::System::getSingleton().injectMouseWheelChange( -1 );
     break;
   case SDL_BUTTON_WHEELUP:
-    CEGUI::System::getSingleton().injectMouseWheelChange( +1 );
+    return CEGUI::System::getSingleton().injectMouseWheelChange( +1 );
     break;
   }
+  return 0;
 }
 /////////////////////////////////////////////////////////////////
-void 
+bool
 Phoenix::GUI::CGuiSystem::InjectMouseMotion( GuiEvent & e )
 {
-  CEGUI::System::getSingleton().injectMousePosition(  static_cast<float>(e.motion.x), static_cast<float>(e.motion.y) );
+  return CEGUI::System::getSingleton().injectMousePosition(  static_cast<float>(e.motion.x), static_cast<float>(e.motion.y) );
 }
 /////////////////////////////////////////////////////////////////
-void 
+bool
 Phoenix::GUI::CGuiSystem::InjectKeyDown( GuiEvent & e )
 {
+  
   // to tell CEGUI that a key was pressed, we inject the scancode.
-  CEGUI::System::getSingleton().injectKeyDown(e.key.keysym.scancode);
+  bool bRetval = CEGUI::System::getSingleton().injectKeyDown(e.key.keysym.scancode);
     
   // as for the character it's a litte more complicated. we'll use for translated unicode value.
   // this is described in more detail below.
   if (e.key.keysym.unicode != 0)
   {
-    CEGUI::System::getSingleton().injectChar(e.key.keysym.unicode);
+    bRetval = bRetval || CEGUI::System::getSingleton().injectChar(e.key.keysym.unicode);
   }
+  
+  return bRetval;
 }
 /////////////////////////////////////////////////////////////////
-void 
+bool
 Phoenix::GUI::CGuiSystem::InjectKeyUp( GuiEvent & e )
 {
-  CEGUI::System::getSingleton().injectKeyUp(e.key.keysym.scancode);
+  return CEGUI::System::getSingleton().injectKeyUp(e.key.keysym.scancode);
 }
 /////////////////////////////////////////////////////////////////
 void 
