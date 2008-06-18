@@ -101,6 +101,36 @@ namespace Phoenix
 	return *m_hHandler;
       }
     };
+    /////////////////////////////////////////////////////////////////
+    template <class CLASS_TYPE, class MESSAGE_TYPE>
+    class CMemberPtrFunctionHandler : public CHandlerFunctionBase
+    {
+    private:
+      CLASS_TYPE *m_pObj;
+      typedef void (CLASS_TYPE::* MemberFunc)(MESSAGE_TYPE *);
+      MemberFunc m_Function;
+      
+    public:
+      ////////////////////
+      /// 
+      CMemberPtrFunctionHandler( CLASS_TYPE *pObj, MemberFunc memFunc) : m_pObj(pObj), m_Function(memFunc) 
+      {
+	assert(pObj != NULL);
+      };
+      ////////////////////
+      /// Calls registered event handler.
+      /// \param pEvent Pointer to event to be handled.
+      void Call(const Phoenix::AI::CMessage* pMessage)
+      {
+	(m_pObj->*m_Function)(static_cast<MESSAGE_TYPE*>(pMessage));
+      }
+      ////////////////////
+      /// Returns pointer to object.
+      void * GetObjectPtr()
+      {
+	return m_pObj;
+      }
+    };
     typedef std::list< CHandlerFunctionBase *> Handlers;
     /////////////////////////////////////////////////////////////////
     /// Contains a list of handler functions to be called.
@@ -184,13 +214,25 @@ namespace Phoenix
       void EnqueueMessage( Phoenix::AI::CMessage *pMessage, 
 			   const Phoenix::Core::CTimeStamp & tTimeStamp,
 			   const Phoenix::Core::CHandle<CLASS_TYPE> & hReceiver );
+      
       ////////////////////
-      /// Registers handler for specific event.
+      /// Enqueues sole message. Time complexity is O( number of objects handling same type of event).
+      template <class CLASS_TYPE >
+      void EnqueueMessage( Phoenix::AI::CMessage *pMessage, 
+			   const Phoenix::Core::CTimeStamp & tTimeStamp,
+			   CLASS_TYPE * pObj );
+
+      ////////////////////
+      /// Registers handler for specific event using handle.
       template <class CLASS_TYPE, class MESSAGE_TYPE>
       void RegisterHandler( const Phoenix::Core::CHandle<CLASS_TYPE> & hReceiver, 
 			    void (CLASS_TYPE::*memFunc)(MESSAGE_TYPE*));
 
-     
+      ////////////////////
+      /// Registers handler for specific event using pointer to object.
+      template <class CLASS_TYPE, class MESSAGE_TYPE>
+      void RegisterHandler( CLASS_TYPE *pObj, 
+			    void (CLASS_TYPE::*memFunc)(MESSAGE_TYPE*));
       void Update();
       void Prepare();
 
@@ -225,6 +267,25 @@ Phoenix::AI::CMessageQueue::RegisterHandler( const Phoenix::Core::CHandle<CLASS_
   }
 }
 /////////////////////////////////////////////////////////////////
+template <class CLASS_TYPE, class MESSAGE_TYPE>
+void 
+Phoenix::AI::CMessageQueue::RegisterHandler( CLASS_TYPE * pObj, void (CLASS_TYPE::*memFunc)(MESSAGE_TYPE*))
+{
+  TypeInfo typeInfo = TypeInfo(typeid(MESSAGE_TYPE));
+  HandlerMap::iterator it = m_mapHandlers.find(typeInfo);
+  if ( it == m_mapHandlers.end())
+  {
+    // create new handlerlist
+    m_mapHandlers[typeInfo] = new CHandlerList();
+    // push handler into list.
+    m_mapHandlers[typeInfo]->PushReceiver( new Phoenix::AI::CMemberPtrFunctionHandler<CLASS_TYPE, MESSAGE_TYPE>(pObj, memFunc) );
+  }
+  else
+  {
+    it->second->PushReceiver( new Phoenix::AI::CMemberPtrFunctionHandler<CLASS_TYPE, MESSAGE_TYPE>(pObj, memFunc) );
+  }
+}
+/////////////////////////////////////////////////////////////////
 template <class CLASS_TYPE >
 void 
 Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage, 
@@ -243,6 +304,39 @@ Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
     for( ; itHandlerFunc != itEnd; itHandlerFunc++)
     {
       if ( (*itHandlerFunc)->GetObjectPtr() == (void *)*hReceiver)
+      {                              
+	m_priqSoleMessages.push( new SoleMessageHandlerPair( (*itHandlerFunc), pMessage ) );
+	return;
+      }
+    }
+    // if we get here, no handler was found
+    delete pMessage;
+  }
+  else
+  {
+    delete pMessage;
+  }
+
+}
+/////////////////////////////////////////////////////////////////
+template <class CLASS_TYPE >
+void 
+Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage, 
+					    const Phoenix::Core::CTimeStamp & tTimeStamp,
+					    CLASS_TYPE * pObj )
+{
+  pMessage->SetTimeStamp(GetCurrentTime() + tTimeStamp);
+  // Find handler for message
+  HandlerMap::iterator it = m_mapHandlers.find(TypeInfo(typeid(*pMessage)));
+  if ( it != m_mapHandlers.end())
+  {
+    // seek proper handler object; this causes linear complexity, better way would be to
+    // create a map or AVLTree for handlers.
+    Handlers::iterator itHandlerFunc = (*it).second->GetHandlers().begin();
+    Handlers::iterator itEnd = (*it).second->GetHandlers().end();
+    for( ; itHandlerFunc != itEnd; itHandlerFunc++)
+    {
+      if ( (*itHandlerFunc)->GetObjectPtr() == (void *)pObj)
       {                              
 	m_priqSoleMessages.push( new SoleMessageHandlerPair( (*itHandlerFunc), pMessage ) );
 	return;
