@@ -1,79 +1,81 @@
 #ifndef __PhoenixObjectUpdater_h__
 #define __PhoenixObjectUpdater_h__
 /////////////////////////////////////////////////////////////////
+#include <Phoenix/PhoenixResourceManager.h>
 #include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Core
   {
+    class IUpdateable
+    {
+    public:
+      virtual ~IUpdateable() {};
+      virtual void Update( size_t nPassedTimeMS ) = 0;
+    };
+    class IHandlerBase
+    {
+    public:
+      virtual ~IHandlerBase() {};
+      virtual void Update( size_t nPassedTimeMS ) = 0;
+      virtual bool IsNull() const = 0;
+    };
     /////////////////////////////////////////////////////////////////
-    /// Template class for updater object. 
     template<class TYPE>
+    class CUpdateableObjectHandler : public IHandlerBase
+    {
+    private:
+      Phoenix::Core::CHandle<TYPE> m_hThis;
+    public:
+      ////////////////////
+      /// Just to make sure that object actually has the Update-method.
+      CUpdateableObjectHandler( const Phoenix::Core::CHandle<TYPE> & hHandle )
+      {
+	m_hThis = hHandle;
+      }
+      
+      void Update( size_t nPassedTimeMS ) 
+      {
+	static_cast<IUpdateable *>(*m_hThis)->Update( nPassedTimeMS );
+      }
+      
+      bool IsNull() const { return m_hThis.IsNull(); }
+    };
+    /////////////////////////////////////////////////////////////////
+    /// Class for updater object. 
     class CObjectUpdater
     {
     protected:
+      typedef std::vector< IHandlerBase * > UpdateableVector;
       /// Holds all handles to updateable objects
-      std::vector< CHandle<TYPE> * > m_vecUpdateables;
+      UpdateableVector m_vecUpdateables;
     public:
-      ////////////////////
-      /// Constructor.
-      CObjectUpdater();
+      
       ////////////////////
       /// Destructor.
-      ~CObjectUpdater();
+      virtual ~CObjectUpdater();
       ////////////////////
-      //void Update( unsigned int nTimeMS = 0 );
+      void Update( size_t nTimeMS = 0 );
       ////////////////////
       /// Updates all objects assigned to updater.
       /// \param rAdapter Adapter object which does the actual updating.
       /// \param nTimeMS Passed time in milliseconds since last Update().
-      template<class ADAPTER> void Update( ADAPTER &rAdapter, unsigned int nTimeMS = 0 );
+      //template<class ADAPTER> void Update( ADAPTER &rAdapter, unsigned int nTimeMS = 0 );
       ////////////////////
       /// Begins managing given object.
       /// \param hResource Handle to an object which will be updated.
+      template<class TYPE>
       void Manage( const Phoenix::Core::CHandle<TYPE> & hResource);
     };
   }
 };
 /////////////////////////////////////////////////////////////////
 template<class TYPE>
-Phoenix::Core::CObjectUpdater<TYPE>::CObjectUpdater()
-{
-  
-}
-/////////////////////////////////////////////////////////////////
-template<class TYPE>
-Phoenix::Core::CObjectUpdater<TYPE>::~CObjectUpdater()
-{
-  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> > *pManager = Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance();
-  for(size_t n=0;n<m_vecUpdateables.size();n++)
-  {
-    pManager->Release(*m_vecUpdateables[n]);
-    delete m_vecUpdateables[n];
-  }
-  m_vecUpdateables.clear();
-}
-/////////////////////////////////////////////////////////////////
-template<class TYPE>
 inline void
-Phoenix::Core::CObjectUpdater<TYPE>::Manage( const Phoenix::Core::CHandle<TYPE> &hResource )
+Phoenix::Core::CObjectUpdater::Manage( const Phoenix::Core::CHandle<TYPE> &hResource )
 {
-  m_vecUpdateables.push_back( new Phoenix::Core::CHandle<TYPE>() );
-  Phoenix::Core::CResourceManager<TYPE, Phoenix::Core::CHandle<TYPE> >::GetInstance()->DuplicateHandle( hResource, *m_vecUpdateables.back() );
-  //assert( !m_vecUpdateables.back().IsNull());
-}
-/////////////////////////////////////////////////////////////////
-template<class TYPE>
-template<class ADAPTER> 
-void 
-Phoenix::Core::CObjectUpdater<TYPE>::Update( ADAPTER &rAdapter, unsigned int nTimeMS )
-{
-  for(size_t n=0;n<m_vecUpdateables.size();n++)
-  {
-    //rAdapter.Update( pTemp, nTimeMS );
-    rAdapter.Update( *(*m_vecUpdateables[n]), nTimeMS);
-  } 
+  m_vecUpdateables.push_back( new CUpdateableObjectHandler<TYPE>(hResource) );
 }
 /////////////////////////////////////////////////////////////////
 #endif

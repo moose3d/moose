@@ -1,11 +1,12 @@
 #ifndef __PhoenixDefaultEntities_h__
 #define __PhoenixDefaultEntities_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixResourceManager.h"
-#include "PhoenixTexture.h"
-#include "PhoenixShader.h"
-#include "PhoenixVertexDescriptor.h"
-#include "PhoenixIndexArray.h"
+#include <PhoenixResourceManager.h>
+#include <PhoenixObjectUpdater.h>
+#include <PhoenixTexture.h>
+#include <PhoenixShader.h>
+#include <PhoenixVertexDescriptor.h>
+#include <PhoenixIndexArray.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -32,6 +33,14 @@ namespace Phoenix
     
 #endif
 #endif
+    /////////////////////////////////////////////////////////////////
+    /// Default object updater object.
+    class CPhoenixObjectUpdater : public Phoenix::Core::CObjectUpdater, 
+				  public Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>
+    {
+      friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;
+    };
+
   }; // namespace Default
 }; // namespace Phoenix
 ////////////////////
@@ -40,6 +49,7 @@ namespace Phoenix
 #define g_DefaultVertexManager  (Phoenix::Default::VertexManager::GetInstance())
 #define g_DefaultIndexManager   (Phoenix::Default::IndexManager::GetInstance())
 #define g_DefaultShaderManager   (Phoenix::Default::ShaderManager::GetInstance())
+#define g_DefaultUpdater   (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
 ////////////////////
 // Constants
 #define TEXTURE_HANDLE_COUNT 8
