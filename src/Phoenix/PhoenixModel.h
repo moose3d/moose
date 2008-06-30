@@ -59,22 +59,9 @@ namespace Phoenix
       /// \returns TEXTURE_HANDLE
       TEXTURE_HANDLE    & GetTextureHandle( unsigned int nId = 0);
       ////////////////////
-      /// Sets texture handle.
-      /// \param nId Which texture unit is handled. By default it is zero, the first.
-      /// \param handle Handle to texture.
-      //void		SetTextureHandle( TEXTURE_HANDLE handle, unsigned int nId = 0 );
-      ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
       VERTEX_HANDLE     & GetVertexHandle();
-      ////////////////////
-      /// Sets vertex descriptor handle.
-      /// \param handle Handle to vertex descriptor.
-      //void		SetVertexHandle( VERTEX_HANDLE handle );
-      ////////////////////
-      /// Sets vertex descriptor handle.
-      /// \param handle Handle to vertex descriptor.
-      //void		SetNormalHandle( VERTEX_HANDLE handle );
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
@@ -95,10 +82,6 @@ namespace Phoenix
       /// Returns handle to shader.
       /// \returns SHADER_HANDLE.
       SHADER_HANDLE  & GetShaderHandle();
-      ////////////////////
-      /// Sets shader handle.
-      /// \param handle Handle to shader.
-      //void		SetShaderHandle( SHADER_HANDLE handle );
       ////////////////////
       /// Inserts shader parameter with name.
       /// \param sName Parameter name in shaders.
@@ -126,11 +109,6 @@ namespace Phoenix
       /// Returns reference to shader parameters.
       /// \returns Vector of string-float pairs.
       std::vector< std::pair<std::string, float> > & GetShaderFloatParameters();
-      ////////////////////
-      /// Sets texture coordinate vertexdescriptor handle.
-      /// \param handle Handle to vertexdescriptor with texture coordinates.
-      /// \param nId To which texture unit these coordinates are applied. By default the first (zero).
-      //void		SetTextureCoordinateHandle( VERTEX_HANDLE handle, unsigned int nId = 0);
       ////////////////////
       /// Returns handle to Texture Coordinate vertex descriptor.
       /// \param nId From which texture unit these coordinates are retrieved. By default, the first one (zero).

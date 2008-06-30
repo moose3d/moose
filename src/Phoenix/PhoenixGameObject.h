@@ -86,14 +86,6 @@ namespace Phoenix
       /// \param sphere Sphere where transformed sphere is stored.
       void CalculateWorldBoundingSphere( Phoenix::Volume::CSphere & sphere ) const;
       ////////////////////
-      /// Returns the type of this object.
-      /// \returns object type
-      //const TYPE GetType() const;
-      ////////////////////
-      /// Sets object type.
-      /// \param type Object type.
-      //void SetType(TYPE type);
-      ////////////////////
       /// Returns number of model handles in this object.
       /// \returns Number of allocated model handles.
       size_t GetNumModels() const;

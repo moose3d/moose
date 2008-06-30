@@ -1264,7 +1264,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nVertexShader, strLog );
-      std::cerr << strLog << std::endl;      
+      std::cerr << "Error in vertex shader: " << strLog << std::endl;      
     }
 
   }
@@ -1293,7 +1293,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nFragmentShader, strLog );
-      std::cerr << strLog << std::endl;      
+      std::cerr << "Error in fragment shader: "<< strLog << std::endl;      
     }
 
 

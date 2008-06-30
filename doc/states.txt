@@ -1,0 +1,37 @@
+Does the number of state changes matter?
+
+
+Yes it does, the more you have the more work the driver and graphics card is having todo, however some state changes cost less than others, as such the type of state change tends to matter more as you shouldnt be doing redundant changes anyway.
+
+What counts as changing a state?
+
+
+Anything which effects the way OpenGL is currently configured is considered a state change, this includes setting a new drawing colour, binding a texture or performing a translation. All of these operations cause something to change somewhere in the OpenGL pipeline, ofcourse some are more expensive than others.
+
+What are the most expensive state changes?
+
+
+The order from most to least expensive is basically;
+
+
+    * Binding a Shader
+
+    * Binding a Texture
+
+    * Updating a GLSL texture sampler uniform
+
+    * VBO data pointers
+
+    * Everything else
+
+
+
+State changes which are client side are the cheapest you'll get.
+
+Shader state changes require alot of configuration to be changed inside the GPU, thus why its lot of work. If the shader only has a vertex shader then its a bit cheaper to setup but still places them near the top.
+
+When a texture is bound the GPU has to flush alot of caches and state again from an uncached state reading texture data from video ram.
+
+GLSL texture samplers are a new one, the reason it is expensive to change/update these is because when you do so the driver has to perform a lookup to make sure the current sampler can be bound to the requested texture unit. The good news is that GLSL Program objects track the state of these uniforms and thus you can often set and forget the uniform values.
+
+VBO data pointers can cost you a bit as the drivers very often do setup work, however as to when you take the hit depends on the driver, NV tend todo their work when you issue a gl*Pointer() function call and I'm not sure when ATI do theirs.
