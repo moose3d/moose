@@ -88,6 +88,23 @@ namespace Phoenix
       BLEND_DST_DST_ALPHA	    = GL_DST_ALPHA,
       BLEND_DST_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA
     };
+    ////////////////////
+    /// Cache access performance _hint_, does not guarantee anything.
+    /// Static  ( define once, use many times.)
+    /// Dynamic ( define multiple times, use multiple times)
+    /// Stream  ( define and use once per frame).
+    enum CACHE_ACCESS_TYPE
+    {
+      CACHE_STATIC_DRAW  = GL_STATIC_DRAW_ARB,   
+      CACHE_STATIC_READ  = GL_STATIC_READ_ARB,   
+      CACHE_STATIC_COPY  = GL_STATIC_COPY_ARB,   
+      CACHE_DYNAMIC_DRAW = GL_DYNAMIC_DRAW_ARB,
+      CACHE_DYNAMIC_READ = GL_DYNAMIC_READ_ARB,
+      CACHE_DYNAMIC_COPY = GL_DYNAMIC_COPY_ARB,
+      CACHE_STREAM_DRAW  = GL_STREAM_DRAW_ARB,
+      CACHE_STREAM_READ  = GL_STREAM_READ_ARB,
+      CACHE_STREAM_COPY  = GL_STREAM_COPY_ARB
+    };
     /////////////////////////////////////////////////////////////////
     /// BufferType
     enum BUFFER_TYPE 
@@ -645,15 +662,19 @@ namespace Phoenix
       ////////////////////
       /// Creates cache for VertexDescriptor, or updates existing if necessary.
       /// \param rVertexDescriptor Reference to VertexDescriptor.
+      /// \param tType Cache access performance hint, by default CACHE_STATIC_DRAW ( data transfer strictly from app to GL )
       /// \returns zero on success.
       /// \returns non-zero on error.
-      int CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor );
+      int CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor, 
+		       Phoenix::Graphics::CACHE_ACCESS_TYPE tType = Phoenix::Graphics::CACHE_STATIC_DRAW  );
       ////////////////////
       /// Creates cache for IndexArray, or updates existing if necessary.
       /// \param rIndexArray Reference to IndexArray.
+      /// \param tType Cache access performance hint, by default CACHE_STATIC_DRAW ( data transfer strictly from app to GL )
       /// \returns zero on success.
       /// \returns non-zero on error.
-      int CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray );
+      int CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray, 
+		       Phoenix::Graphics::CACHE_ACCESS_TYPE tType = Phoenix::Graphics::CACHE_STATIC_DRAW);
       ////////////////////
       /// Removes existing cache from VertexDescriptor.
       /// \param rVertexDescriptor Reference to VertexDescriptor.
