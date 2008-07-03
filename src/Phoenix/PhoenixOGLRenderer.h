@@ -19,6 +19,7 @@
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -355,7 +356,37 @@ namespace Phoenix
 	m_fLineHeight = fHeight;
       }
     };
+    /////////////////////////////////////////////////////////////////
+    /// Renderstate object. This is used to determine when to 
+    /// commit vertexdescriptors, indices, textures. Especially when VBOs
+    /// are used, this comes in handy, since changing VBO is costly.
+    class CRenderState
+    {
+    public:
+      Phoenix::Graphics::CVertexDescriptor *m_pVertexBuffer;
+      Phoenix::Graphics::CVertexDescriptor *m_pColorBuffer;
+      Phoenix::Graphics::CVertexDescriptor *m_pTexCoordBuffer;
+      Phoenix::Graphics::CVertexDescriptor *m_pNormalBuffer;
+      Phoenix::Graphics::CIndexArray	   *m_pIndexArray;
+      Phoenix::Graphics::CShader	   *m_pShader;
+      Phoenix::Graphics::COglTexture       *m_pTexture[TEXTURE_HANDLE_COUNT];
 
+      ////////////////////
+      /// Constructor.
+      CRenderState() : m_pVertexBuffer(NULL), 
+		       m_pColorBuffer(NULL), 
+		       m_pTexCoordBuffer(NULL), 
+		       m_pNormalBuffer(NULL),
+		       m_pIndexArray(NULL),
+		       m_pShader(NULL) 
+      {
+	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;++i)
+	{
+	  m_pTexture[i] = NULL;
+	}
+
+      }
+    };
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
     class COglRenderer
@@ -366,6 +397,8 @@ namespace Phoenix
       /// Alpha test operation
       CAlphaTestOperation		       m_AlphaTest;
       Phoenix::Graphics::CCamera	       *m_pCamera;
+      Phoenix::Graphics::CRenderState	       m_RenderState;
+      GLUquadric *			       m_pQuadric;
     public:
       ////////////////////
       /// Default constructor
@@ -748,6 +781,10 @@ namespace Phoenix
       /// Returns information about current rendering hardware and opengl.
       /// \returns Reference to features object.
       const COglRendererFeatures & GetFeatures();
+      ////////////////////
+      /// Returns current renderstate.
+      /// \returns Reference to current renderstate.
+      Phoenix::Graphics::CRenderState & GetRenderState();
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
@@ -763,6 +800,12 @@ inline void
 Phoenix::Graphics::COglRenderer::CommitColor( unsigned char bR, unsigned char bG, unsigned char bB, unsigned char bA)
 {
   glColor4ub( bR,bG,bB,bA );
+}
+/////////////////////////////////////////////////////////////////
+inline Phoenix::Graphics::CRenderState & 
+Phoenix::Graphics::COglRenderer::GetRenderState()
+{
+  return m_RenderState;
 }
 /////////////////////////////////////////////////////////////////
 #endif
