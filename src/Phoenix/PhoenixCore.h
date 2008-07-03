@@ -10,6 +10,7 @@
 #include <list>
 #include <assert.h>
 #include <sys/time.h>
+#include <math.h>
 /////////////////////////////////////////////////////////////////
 using std::string;
 using std::vector;
@@ -147,6 +148,15 @@ namespace Phoenix
 
       }
       ////////////////////
+      /// Parametrized constructor.
+      /// \param iSeconds Passed seconds.
+      /// \param iMS Passed milliseconds.
+      CTimeStamp( float fSeconds ) 
+      {
+	m_iSeconds = static_cast<int>(fSeconds);
+        m_iMilliSeconds = static_cast<short int>(roundf((fSeconds-m_iSeconds)*1000.0f));
+      }
+      ////////////////////
       /// Sets passed seconds.
       /// \param nSeconds Passed seconds.
       void SetSeconds( int iSeconds )
@@ -229,7 +239,7 @@ namespace Phoenix
 	int iMS = GetMilliSeconds() - rAnother.GetMilliSeconds();
 	if ( iMS < 0 )
 	{
-	  iSeconds--;
+	  --iSeconds;
 	  iMS += 1000;
 	}
 	return CTimeStamp( iSeconds, iMS);
@@ -244,7 +254,7 @@ namespace Phoenix
 	int iMS = GetMilliSeconds() + rAnother.GetMilliSeconds();
 	if ( iMS > 1000 )
 	{
-	  iSeconds++;
+	  ++iSeconds;
 	  iMS -= 1000;
 	}
 	return CTimeStamp( iSeconds, iMS);

@@ -9,15 +9,24 @@ TEST( PhoenixTimeStamp )
 {
   CTimeStamp tTime(10,100);
   CTimeStamp tTime2(10,200);
+
+  CTimeStamp tTime3(10.200f);
+  CTimeStamp tTime4(10.100f);
+
   CTimeStamp tTimeRes;  
   
   ////////////////////
   CHECK_EQUAL( 10, tTime.GetSeconds() );
-  CHECK_EQUAL( 10, tTime2.GetSeconds() );
-  
   CHECK_EQUAL( 100, tTime.GetMilliSeconds());
-  CHECK_EQUAL( 200, tTime2.GetMilliSeconds());
 
+  CHECK_EQUAL( 10, tTime2.GetSeconds() );
+  CHECK_EQUAL( 200, tTime2.GetMilliSeconds());
+  
+  CHECK_EQUAL( 10, tTime3.GetSeconds() );
+  CHECK_EQUAL( 200, tTime3.GetMilliSeconds());
+  
+  CHECK_EQUAL( 10, tTime4.GetSeconds() );
+  CHECK_EQUAL( 100, tTime4.GetMilliSeconds());
 }
 /////////////////////////////////////////////////////////////////
 TEST( PhoenixTimeStamp_Addition )
