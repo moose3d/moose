@@ -64,7 +64,8 @@ namespace Phoenix
     /// Is given point inside triangle.
     /// \param vPoint Point to be checked.
     /// \param aVertices Corner vertices of triangle.
-    int PointInsideTriangle( const Phoenix::Math::CVector3<float> &vPoint, 
+    /// \return true if is, false otherwise.
+    bool PointInsideTriangle( const Phoenix::Math::CVector3<float> &vPoint, 
 			     const Phoenix::Math::CVector3<float> & vVertex0,
 			     const Phoenix::Math::CVector3<float> & vVertex1,
 			     const Phoenix::Math::CVector3<float> & vVertex2 );
@@ -78,6 +79,19 @@ namespace Phoenix
     /// \param vPointOfIntersection     If line intersects, the point of intersection inside triangle. Otherwise undefined.
     /// \returns non-zero on intersection, zero otherwise.
     int LineIntersectsTriangle( const Phoenix::Math::CLine & line,
+				const Phoenix::Math::CVector3<float> & vVertex0,
+				const Phoenix::Math::CVector3<float> & vVertex1,
+				const Phoenix::Math::CVector3<float> & vVertex2,
+				Phoenix::Math::CVector3<float> &vPointOfIntersection );
+    ////////////////////
+    /// Does given ray intersect static triangle.
+    /// \param ray			Ray to be checked.
+    /// \param vVertex0			First vertex of triangle.
+    /// \param vVertex1			Second vertex of triangle.
+    /// \param vVertex2			Third vertex of triangle.
+    /// \param vPointOfIntersection     If ray intersects, the point of intersection inside triangle. Otherwise undefined.
+    /// \returns true on intersection, false otherwise.
+    bool RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
 				const Phoenix::Math::CVector3<float> & vVertex0,
 				const Phoenix::Math::CVector3<float> & vVertex1,
 				const Phoenix::Math::CVector3<float> & vVertex2,

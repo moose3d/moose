@@ -148,7 +148,7 @@ Phoenix::Collision::LineIntersectsSphere( const CLine &line,
   return iIntersects;
 }
 /////////////////////////////////////////////////////////////////
-int
+bool
 Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint, 
 					 const CVector3<float> & vVertex0,
 					 const CVector3<float> & vVertex1,
@@ -156,9 +156,9 @@ Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint,
 {
   CVector3<float> vVect1, vVect2;
   float fAngle = 0.0f;
-  if ( vPoint == vVertex0) return 1;
-  if ( vPoint == vVertex1) return 1;
-  if ( vPoint == vVertex2) return 1;
+  if ( vPoint == vVertex0) return true;
+  if ( vPoint == vVertex1) return true;
+  if ( vPoint == vVertex2) return true;
   vVect1 = vVertex0 - vPoint;
   vVect2 = vVertex1 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
@@ -193,6 +193,25 @@ Phoenix::Collision::LineIntersectsTriangle( const Phoenix::Math::CLine & line,
     return PointInsideTriangle( vPointOfIntersection, vVertex0, vVertex1, vVertex2 );
   }
   return 0;
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
+					   const Phoenix::Math::CVector3<float> & vVertex0,
+					   const Phoenix::Math::CVector3<float> & vVertex1,
+					   const Phoenix::Math::CVector3<float> & vVertex2,
+					   Phoenix::Math::CVector3<float> &vPointOfIntersection )
+{
+  CPlane triPlane;
+  // Calculate triangle plane and check does it intersect the plane.
+  triPlane.Calculate( (vVertex1-vVertex0).Cross( vVertex2-vVertex0), vVertex0);
+  
+  
+  if ( RayIntersectsPlane( triPlane, ray, vPointOfIntersection) )
+  {
+    return PointInsideTriangle( vPointOfIntersection, vVertex0, vVertex1, vVertex2 );
+  }
+  return false;
 }
 /////////////////////////////////////////////////////////////////
 float 
