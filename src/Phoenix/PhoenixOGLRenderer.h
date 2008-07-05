@@ -7,7 +7,7 @@
 #include "PhoenixVector4.h"
 #include "PhoenixCamera.h"
 #include "PhoenixTexture.h"
-#include "PhoenixModel.h"
+#include "PhoenixRenderable.h"
 #include "PhoenixShader.h"
 #include "PhoenixLight.h"
 #include "PhoenixMaterial.h"
@@ -500,9 +500,9 @@ namespace Phoenix
       Phoenix::Graphics::CCamera * GetCurrentCamera() const;
       ////////////////////
       /// Renders a complete model.
-      /// \param model Model object. 
+      /// \param renderable Renderable object. 
       /// \param iExcludeOpt Which model data should not be renderered.
-      void CommitModel( Phoenix::Graphics::CModel &model, int iExcludeOpt = 0 );
+      void CommitRenderable( Phoenix::Graphics::CRenderable &renderable, int iExcludeOpt = 0 );
       ////////////////////
       /// Commits a texture filter.
       /// \param tFilter Which filter will be applied.

@@ -75,7 +75,7 @@ using std::string;
 
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, CModel & rModel, int iFlags  )
+Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, CRenderable & rModel, int iFlags  )
 {
 
   LOAD_COMMON_STUFF();
@@ -102,7 +102,7 @@ Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char *szName, C
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char * szName, Phoenix::Graphics::CModel & rModel, std::list<std::string> & lstGroupNames, int iFlags )
+Phoenix::Data::LoadMilkshapeModel( const char *szFilename, const char * szName, Phoenix::Graphics::CRenderable & rModel, std::list<std::string> & lstGroupNames, int iFlags )
 {
 
   LOAD_COMMON_STUFF();

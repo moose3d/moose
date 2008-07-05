@@ -6,7 +6,7 @@
 using std::cerr;
 using std::endl;
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CSkybox::CSkybox() : CModel()
+Phoenix::Graphics::CSkybox::CSkybox() 
 {
   Phoenix::Graphics::CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_TEXCOORDS);
   Phoenix::Graphics::CVertexDescriptor *pVertices  = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_VERTICES);

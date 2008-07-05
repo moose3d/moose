@@ -1019,12 +1019,12 @@ Phoenix::Graphics::COglRenderer::GetCurrentCamera() const
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
+Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int iExcludeOpts )
 {
   // Retrieve resources
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
-  CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(model.GetVertexHandle());
+  CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(renderable.GetVertexHandle());
   CIndexArray *pIndices = NULL;
   
   if ( !(iExcludeOpts & M_TEXTURE_DATA) )
@@ -1032,8 +1032,8 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
     // Commit textures
     for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
     {
-      pTemp    = g_DefaultVertexManager->GetResource(  model.GetTextureCoordinateHandle(i));
-      pTexture = g_DefaultTextureManager->GetResource( model.GetTextureHandle(i) );
+      pTemp    = g_DefaultVertexManager->GetResource(  renderable.GetTextureCoordinateHandle(i));
+      pTexture = g_DefaultTextureManager->GetResource( renderable.GetTextureHandle(i) );
     
       // check that texcoord resources actually exist
       if ( pTemp     != NULL ) 
@@ -1045,39 +1045,39 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
       { 
 	CommitTexture( i, pTexture ); 
 	// Apply texture filters.
-	// std::vector<TEXTURE_FILTER> &vecFilters = model.GetTextureFilters(i);
+	// std::vector<TEXTURE_FILTER> &vecFilters = renderable.GetTextureFilters(i);
 	// 	for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
 	// 	{
 	// 	  CommitFilter( vecFilters[nFilter], pTexture->GetType() );
 	// 	}
-	CommitFilters( model.GetTextureFilters(i), pTexture->GetType() );
+	CommitFilters( renderable.GetTextureFilters(i), pTexture->GetType() );
       }
     }
   }
   // if shader exists
-  if ( !( iExcludeOpts & M_SHADER_DATA ) && model.GetShaderHandle().IsNull() == 0 )
+  if ( !( iExcludeOpts & M_SHADER_DATA ) && renderable.GetShaderHandle().IsNull() == 0 )
   {
-    CShader *pShader = g_DefaultShaderManager->GetResource(model.GetShaderHandle());
+    CShader *pShader = g_DefaultShaderManager->GetResource(renderable.GetShaderHandle());
     CommitShader( pShader );
     CVertexDescriptor *pParam = NULL;
     // Go through all parameters and commit them
-    for(unsigned int nSP=0; nSP< model.GetShaderParameters().size(); nSP++)
+    for(unsigned int nSP=0; nSP< renderable.GetShaderParameters().size(); nSP++)
     {
-      pParam = g_DefaultVertexManager->GetResource( *model.GetShaderParameters()[nSP].second );
+      pParam = g_DefaultVertexManager->GetResource( *renderable.GetShaderParameters()[nSP].second );
       if ( pParam != NULL )
       {
-	CommitShaderParam( *pShader, model.GetShaderParameters()[nSP].first, *pParam );
+	CommitShaderParam( *pShader, renderable.GetShaderParameters()[nSP].first, *pParam );
       }
     }
     // Go through all int parameters and commit them
-    for(unsigned int nSP=0; nSP< model.GetShaderIntParameters().size(); nSP++)
+    for(unsigned int nSP=0; nSP< renderable.GetShaderIntParameters().size(); nSP++)
     {
-      CommitUniformShaderParam( *pShader, model.GetShaderIntParameters()[nSP].first, model.GetShaderIntParameters()[nSP].second );
+      CommitUniformShaderParam( *pShader, renderable.GetShaderIntParameters()[nSP].first, renderable.GetShaderIntParameters()[nSP].second );
     }
     // Go through all float parameters and commit them
-    for(unsigned int nSP=0; nSP< model.GetShaderFloatParameters().size(); nSP++)
+    for(unsigned int nSP=0; nSP< renderable.GetShaderFloatParameters().size(); nSP++)
     {
-      CommitUniformShaderParam( *pShader, model.GetShaderFloatParameters()[nSP].first, model.GetShaderFloatParameters()[nSP].second );
+      CommitUniformShaderParam( *pShader, renderable.GetShaderFloatParameters()[nSP].first, renderable.GetShaderFloatParameters()[nSP].second );
     }
   }
   // check and commit resources
@@ -1086,16 +1086,16 @@ Phoenix::Graphics::COglRenderer::CommitModel( CModel &model, int iExcludeOpts )
     CommitVertexDescriptor ( pVertices ); 
   }
   // commit normals
-  if ( !( iExcludeOpts & M_NORMAL_DATA ) && model.GetNormalHandle().IsNull() == 0 ) 
+  if ( !( iExcludeOpts & M_NORMAL_DATA ) && renderable.GetNormalHandle().IsNull() == 0 ) 
   { 
-    CommitVertexDescriptor( g_DefaultVertexManager->GetResource(model.GetNormalHandle()) ); 
+    CommitVertexDescriptor( g_DefaultVertexManager->GetResource(renderable.GetNormalHandle()) ); 
   }
   // commit indices
   if ( !( iExcludeOpts & M_INDEX_DATA ))
   {
-    for(unsigned int n=0;n<model.GetIndexHandles().size();n++)
+    for(unsigned int n=0;n<renderable.GetIndexHandles().size();n++)
     {
-      pIndices = g_DefaultIndexManager->GetResource( *model.GetIndexHandles()[n] );
+      pIndices = g_DefaultIndexManager->GetResource( *renderable.GetIndexHandles()[n] );
       if ( pIndices  != NULL ) 
       { 
 	CommitPrimitive ( pIndices );         

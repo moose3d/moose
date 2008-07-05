@@ -2,7 +2,7 @@
 #define __PhoenixSkybox_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixDefaultEntities.h"
-#include "PhoenixModel.h"
+#include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
 #define PHOENIX_SKYBOX_TEXCOORDS "PHOENIX_SKYBOX_TEXCOORDS"
 #define PHOENIX_SKYBOX_VERTICES  "PHOENIX_SKYBOX_VERTICES"
@@ -28,7 +28,7 @@ namespace Phoenix
 
     /////////////////////////////////////////////////////////////////
     /// Skybox class.
-    class CSkybox : public CModel
+    class CSkybox : public CRenderable
     {
     protected:
       

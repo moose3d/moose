@@ -1,15 +1,15 @@
-#include "PhoenixModel.h"
+#include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CModel::CModel()
+Phoenix::Graphics::CRenderable::CRenderable()
 {
 
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CModel::~CModel()
+Phoenix::Graphics::CRenderable::~CRenderable()
 {
   // nullify all handles
   for(unsigned int i=0;i<TEXTURE_HANDLE_COUNT;i++)
@@ -35,88 +35,59 @@ Phoenix::Graphics::CModel::~CModel()
     g_DefaultVertexManager->Release( *m_vShaderParams[i].second);
     delete m_vShaderParams[i].second;
   }
-  
 }
 /////////////////////////////////////////////////////////////////
 TEXTURE_HANDLE &
-Phoenix::Graphics::CModel::GetTextureHandle( unsigned int nId ) 
+Phoenix::Graphics::CRenderable::GetTextureHandle( unsigned int nId ) 
 {
   return m_aTextureHandles[nId % TEXTURE_HANDLE_COUNT];
 }
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CModel::SetTextureHandle(TEXTURE_HANDLE handle, unsigned int nId) 
-// {
-  
-//   m_aTextureHandles[nId % TEXTURE_HANDLE_COUNT] = handle; 
-// }
-/////////////////////////////////////////////////////////////////
 VERTEX_HANDLE &
-Phoenix::Graphics::CModel::GetVertexHandle() 
+Phoenix::Graphics::CRenderable::GetVertexHandle() 
 {
   return m_VertexDescriptorHandle;
 }
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CModel::SetVertexHandle(VERTEX_HANDLE handle) 
-// {
-//   m_VertexDescriptorHandle = handle; 
-// }
-/////////////////////////////////////////////////////////////////
 VERTEX_HANDLE &
-Phoenix::Graphics::CModel::GetNormalHandle() 
+Phoenix::Graphics::CRenderable::GetNormalHandle() 
 {
   return m_VertexNormalHandle;
 }
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CModel::SetNormalHandle(VERTEX_HANDLE handle) 
-// {
-//   m_VertexNormalHandle = handle; 
-// }
-/////////////////////////////////////////////////////////////////
 std::vector<INDEX_HANDLE * > &
-Phoenix::Graphics::CModel::GetIndexHandles()
+Phoenix::Graphics::CRenderable::GetIndexHandles()
 {
   return m_vecIndexArrayHandles;
 }
 /////////////////////////////////////////////////////////////////
 const std::vector<INDEX_HANDLE * > &
-Phoenix::Graphics::CModel::GetIndexHandles() const
+Phoenix::Graphics::CRenderable::GetIndexHandles() const
 {
   return m_vecIndexArrayHandles;
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::AddIndexHandle(INDEX_HANDLE *pHandle) 
+Phoenix::Graphics::CRenderable::AddIndexHandle(INDEX_HANDLE *pHandle) 
 {
   m_vecIndexArrayHandles.push_back( pHandle); 
 }
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CModel::SetTextureCoordinateHandle( VERTEX_HANDLE handle, unsigned int nId )
-// {
-//   if ( nId < TEXTURE_HANDLE_COUNT )
-//   {
-//     m_aTextureCoordinateHandles[nId] = handle;
-//   }
-// }
-/////////////////////////////////////////////////////////////////
 VERTEX_HANDLE &
-Phoenix::Graphics::CModel::GetTextureCoordinateHandle( unsigned int nId )
+Phoenix::Graphics::CRenderable::GetTextureCoordinateHandle( unsigned int nId )
 {
   return m_aTextureCoordinateHandles[nId % TEXTURE_HANDLE_COUNT];
 }
 /////////////////////////////////////////////////////////////////
 vector<TEXTURE_FILTER> & 
-Phoenix::Graphics::CModel::GetTextureFilters( unsigned int nId )
+Phoenix::Graphics::CRenderable::GetTextureFilters( unsigned int nId )
 {
   assert( nId < TEXTURE_HANDLE_COUNT && "nId Over TEXTURE_HANDLE_COUNT");
   return m_aTextureFilters[nId];
 }
 /////////////////////////////////////////////////////////////////
 void   
-Phoenix::Graphics::CModel::AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId )
+Phoenix::Graphics::CRenderable::AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned int nId )
 {
   if ( nId < TEXTURE_HANDLE_COUNT )
   {
@@ -125,19 +96,13 @@ Phoenix::Graphics::CModel::AddTextureFilter( TEXTURE_FILTER tTexFilter, unsigned
 }
 /////////////////////////////////////////////////////////////////
 SHADER_HANDLE &
-Phoenix::Graphics::CModel::GetShaderHandle() 
+Phoenix::Graphics::CRenderable::GetShaderHandle() 
 {
   return m_ShaderHandle;
 }
 /////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CModel::SetShaderHandle( SHADER_HANDLE handle )
-// {
-//   m_ShaderHandle = handle;
-// }
-/////////////////////////////////////////////////////////////////
 std::ostream & 
-Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CModel & model )
+Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & model )
 {
   for( int i =0;i<TEXTURE_HANDLE_COUNT; i++)
   {
@@ -172,49 +137,49 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CM
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::SetShaderParameter( const char *sName, VERTEX_HANDLE *pHandle )
+Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, VERTEX_HANDLE *pHandle )
 {
   m_vShaderParams.push_back( std::make_pair( string(sName), pHandle)  );
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::SetShaderParameter( const char *sName, float fValue )
+Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, float fValue )
 {
   m_vShaderFloatParams.push_back( std::make_pair( string(sName), fValue)  );
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::SetShaderParameter( const char *sName, int iValue )
+Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, int iValue )
 {
   m_vShaderIntParams.push_back( std::make_pair( string(sName), iValue)  );
 }
 /////////////////////////////////////////////////////////////////
 std::vector< std::pair<std::string, VERTEX_HANDLE *> > & 
-Phoenix::Graphics::CModel::GetShaderParameters() 
+Phoenix::Graphics::CRenderable::GetShaderParameters() 
 {
   return m_vShaderParams;
 }
 /////////////////////////////////////////////////////////////////
 std::vector< std::pair<std::string, int> > & 
-Phoenix::Graphics::CModel::GetShaderIntParameters() 
+Phoenix::Graphics::CRenderable::GetShaderIntParameters() 
 {
   return m_vShaderIntParams;
 }
 /////////////////////////////////////////////////////////////////
 std::vector< std::pair<std::string, float> > & 
-Phoenix::Graphics::CModel::GetShaderFloatParameters() 
+Phoenix::Graphics::CRenderable::GetShaderFloatParameters() 
 {
   return m_vShaderFloatParams;
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CModel::SetTransparent( bool bFlag ) 
+Phoenix::Graphics::CRenderable::SetTransparent( bool bFlag ) 
 {
   m_bTransparent = bFlag;
 }
 /////////////////////////////////////////////////////////////////
 bool
-Phoenix::Graphics::CModel::IsTransparent() const
+Phoenix::Graphics::CRenderable::IsTransparent() const
 {
   return m_bTransparent;
 }

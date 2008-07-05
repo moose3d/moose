@@ -1,7 +1,6 @@
 #ifndef __PhoenixGameObject_h__
 #define __PhoenixGameObject_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixModel.h"
 #include "PhoenixMath.h"
 #include "PhoenixTransform.h"
 #include "PhoenixVolume.h"
@@ -27,8 +26,8 @@ namespace Phoenix
 			public Phoenix::Math::CTransformable
     {
     private:
-      /// Model objects
-      std::vector< Phoenix::Core::CHandle<Phoenix::Graphics::CModel> > m_vecModelHandles;
+      /// Renderable objects
+      std::vector< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> > m_vecRenderableHandles;
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
       /// Model bounding box.
@@ -38,21 +37,21 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor. 
-      /// \param nNumModels Number models in this gameobject.
-      CGameObject( size_t nNumModels = 1);
+      /// \param nNumRenderabls Number renderables in this gameobject.
+      CGameObject( size_t nNumRenderables = 1);
       ////////////////////
       /// Destructor.
       virtual ~CGameObject() {}
       ////////////////////
-      /// Returns model handle.
-      /// \param nIndex Which model handle is returned.
-      /// \returns Model handle reference.
-      Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle( size_t nIndex = 0);
+      /// Returns renderable handle.
+      /// \param nIndex Which renderable handle is returned.
+      /// \returns Renderable handle reference.
+      Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & GetRenderableHandle( size_t nIndex = 0);
       ////////////////////
-      /// Returns model handle.
+      /// Returns renderable handle.
       /// \param nIndex Which model handle is returned.
       /// \returns Model handle reference.
-      const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & GetModelHandle( size_t nIndex = 0) const;
+      const Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & GetRenderableHandle( size_t nIndex = 0) const;
       ////////////////////
       /// Returns bounding sphere.
       /// \returns Reference to bounding sphere. 
@@ -86,33 +85,33 @@ namespace Phoenix
       /// \param sphere Sphere where transformed sphere is stored.
       void CalculateWorldBoundingSphere( Phoenix::Volume::CSphere & sphere ) const;
       ////////////////////
-      /// Returns number of model handles in this object.
-      /// \returns Number of allocated model handles.
-      size_t GetNumModels() const;
+      /// Returns number of renderable handles in this object.
+      /// \returns Number of allocated renderable handles.
+      size_t GetNumRenderables() const;
     };
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline 
-Phoenix::Scene::CGameObject::CGameObject( size_t nNumModels ) : m_nSpatialIndex(0)
+Phoenix::Scene::CGameObject::CGameObject( size_t nNumRenderables ) : m_nSpatialIndex(0)
 {
-  if ( nNumModels == 0 ) nNumModels = 1;
-  for ( size_t i=0;i<nNumModels;i++)
-    m_vecModelHandles.push_back(Phoenix::Core::CHandle<Phoenix::Graphics::CModel>());
+  if ( nNumRenderables == 0 ) nNumRenderables = 1;
+  for ( size_t i=0;i<nNumRenderables;i++)
+    m_vecRenderableHandles.push_back(Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable>());
 }
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject::GetModelHandle( size_t nIndex )
+inline Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & 
+Phoenix::Scene::CGameObject::GetRenderableHandle( size_t nIndex )
 {
-  assert( nIndex < m_vecModelHandles.size());
-  return m_vecModelHandles[nIndex];
+  assert( nIndex < m_vecRenderableHandles.size());
+  return m_vecRenderableHandles[nIndex];
 }
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Core::CHandle<Phoenix::Graphics::CModel> & 
-Phoenix::Scene::CGameObject::GetModelHandle( size_t nIndex) const
+inline const Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & 
+Phoenix::Scene::CGameObject::GetRenderableHandle( size_t nIndex) const
 {
-  assert( nIndex < m_vecModelHandles.size());
-  return m_vecModelHandles[nIndex];
+  assert( nIndex < m_vecRenderableHandles.size());
+  return m_vecRenderableHandles[nIndex];
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Volume::CSphere & 
@@ -164,9 +163,9 @@ Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
 // }
 /////////////////////////////////////////////////////////////////
 inline size_t 
-Phoenix::Scene::CGameObject::GetNumModels() const
+Phoenix::Scene::CGameObject::GetNumRenderables() const
 {
-  return m_vecModelHandles.size();
+  return m_vecRenderableHandles.size();
 }
 /////////////////////////////////////////////////////////////////
 inline void 
