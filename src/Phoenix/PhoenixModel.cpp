@@ -207,3 +207,15 @@ Phoenix::Graphics::CModel::GetShaderFloatParameters()
   return m_vShaderFloatParams;
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CModel::SetTransparent( bool bFlag ) 
+{
+  m_bTransparent = bFlag;
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::Graphics::CModel::IsTransparent() const
+{
+  return m_bTransparent;
+}
+/////////////////////////////////////////////////////////////////

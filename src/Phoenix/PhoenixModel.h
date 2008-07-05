@@ -42,10 +42,13 @@ namespace Phoenix
       std::vector<INDEX_HANDLE *> m_vecIndexArrayHandles;
       /// Handle to a shader
       SHADER_HANDLE     m_ShaderHandle;
+      /// Transparency flag.
+      bool				      m_bTransparent;
       /// Shader parameters
       vector< std::pair<std::string, VERTEX_HANDLE * > > m_vShaderParams;
       vector< std::pair<std::string, int> >   m_vShaderIntParams;
       vector< std::pair<std::string, float> > m_vShaderFloatParams;
+
     public:
       ////////////////////
       /// Constructor.
@@ -130,7 +133,16 @@ namespace Phoenix
       /// \param model Model object.
       /// \returns Reference to output stream.
       friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CModel & model );
+      ////////////////////
+      /// Sets transparency flag.
+      /// \param bFlag True for transparent, false for opaque.
+      void SetTransparent( bool bFlag );
+      ////////////////////
+      /// Returns transparency setting.
+      /// \returns true for transparent, false for opaque.
+      bool IsTransparent() const;
     };
   }; // namespace Graphics
 }; // namespace Phoenix
+/////////////////////////////////////////////////////////////////
 #endif
