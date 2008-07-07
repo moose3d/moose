@@ -20,15 +20,11 @@ Phoenix::Graphics::CRenderable::~CRenderable()
   
   g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
   g_DefaultVertexManager->Release( m_VertexNormalHandle );
-
-  // Releases dynamically allocatated INDEX_HANDLEs
-  for(unsigned int i=0;i<GetIndexHandles().size();i++)
-  {
-    g_DefaultIndexManager->Release(*GetIndexHandles()[i]);
-    delete GetIndexHandles()[i];
-  }
+  g_DefaultVertexManager->Release( GetListIndices() );
+  g_DefaultVertexManager->Release( GetStripIndices() );
+  
   g_DefaultShaderManager->Release(m_ShaderHandle);
-
+  
   // Releases dynamically allocatated VERTEX_HANDLEs
   for(unsigned int i=0;i<m_vShaderParams.size();i++)
   {
@@ -55,23 +51,35 @@ Phoenix::Graphics::CRenderable::GetNormalHandle()
   return m_VertexNormalHandle;
 }
 /////////////////////////////////////////////////////////////////
-std::vector<INDEX_HANDLE * > &
-Phoenix::Graphics::CRenderable::GetIndexHandles()
+INDEX_HANDLE &	
+Phoenix::Graphics::CRenderable::GetListIndices()
 {
-  return m_vecIndexArrayHandles;
+  return m_hTriListIndices;
 }
 /////////////////////////////////////////////////////////////////
-const std::vector<INDEX_HANDLE * > &
-Phoenix::Graphics::CRenderable::GetIndexHandles() const
+INDEX_HANDLE &	
+Phoenix::Graphics::CRenderable::GetStripIndices()
 {
-  return m_vecIndexArrayHandles;
+  return m_hTriStripIndices;
 }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Graphics::CRenderable::AddIndexHandle(INDEX_HANDLE *pHandle) 
-{
-  m_vecIndexArrayHandles.push_back( pHandle); 
-}
+// std::vector<INDEX_HANDLE * > &
+// Phoenix::Graphics::CRenderable::GetIndexHandles()
+// {
+//   return m_vecIndexArrayHandles;
+// }
+// /////////////////////////////////////////////////////////////////
+// const std::vector<INDEX_HANDLE * > &
+// Phoenix::Graphics::CRenderable::GetIndexHandles() const
+// {
+//   return m_vecIndexArrayHandles;
+// }
+/////////////////////////////////////////////////////////////////
+// void
+// Phoenix::Graphics::CRenderable::AddIndexHandle(INDEX_HANDLE *pHandle) 
+// {
+//   m_vecIndexArrayHandles.push_back( pHandle); 
+// }
 /////////////////////////////////////////////////////////////////
 VERTEX_HANDLE &
 Phoenix::Graphics::CRenderable::GetTextureCoordinateHandle( unsigned int nId )
@@ -125,12 +133,15 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
   }
   stream << "VERTEX_HANDLE = " << model.m_VertexDescriptorHandle.GetIndex();
   stream << (model.m_VertexDescriptorHandle.IsNull() ? "(null)" : "" ) << endl;
+  
+  //for( unsigned int i=0;i<model.GetIndexHandles().size();i++)
+  //{
+  stream << "list INDEX_HANDLE = "  << model.GetListIndices().GetIndex();
+  stream << (model.GetListIndices().IsNull() ? "(null)" : "" ) << endl;
 
-  for( unsigned int i=0;i<model.GetIndexHandles().size();i++)
-  {
-    stream << "INDEX_HANDLE = "  << model.GetIndexHandles()[i]->GetIndex();
-    stream << (model.GetIndexHandles()[i]->IsNull() ? "(null)" : "" ) << endl;
-  }
+  stream << "strip INDEX_HANDLE = "  << model.GetStripIndices().GetIndex();
+  stream << (model.GetStripIndices().IsNull() ? "(null)" : "" ) << endl;
+  //}
   stream << "SHADER_HANDLE = " << model.m_ShaderHandle.GetIndex();
   stream << (model.m_ShaderHandle.IsNull() ? "(null)" : "" ) << endl;
   return stream;
@@ -154,19 +165,19 @@ Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, int iValu
   m_vShaderIntParams.push_back( std::make_pair( string(sName), iValue)  );
 }
 /////////////////////////////////////////////////////////////////
-std::vector< std::pair<std::string, VERTEX_HANDLE *> > & 
+Phoenix::Graphics::ShaderParams & 
 Phoenix::Graphics::CRenderable::GetShaderParameters() 
 {
   return m_vShaderParams;
 }
 /////////////////////////////////////////////////////////////////
-std::vector< std::pair<std::string, int> > & 
+Phoenix::Graphics::ShaderIntParams & 
 Phoenix::Graphics::CRenderable::GetShaderIntParameters() 
 {
   return m_vShaderIntParams;
 }
 /////////////////////////////////////////////////////////////////
-std::vector< std::pair<std::string, float> > & 
+Phoenix::Graphics::ShaderFloatParams & 
 Phoenix::Graphics::CRenderable::GetShaderFloatParameters() 
 {
   return m_vShaderFloatParams;

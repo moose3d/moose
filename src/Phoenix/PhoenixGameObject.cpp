@@ -4,7 +4,19 @@
 using namespace Phoenix::Scene;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-
+Phoenix::Scene::CGameObject::~CGameObject()
+{
+  RenderableHandleList::iterator it;
+  for( size_t i=0;i< m_LodLevels.size(); i++ )
+  {
+    it = m_LodLevels[i].begin();
+    for( ; it != m_LodLevels[i].end(); it++)
+    {  
+      // delete handle, it knows how to free itself properly.
+      delete *it;
+    }					       
+  }
+}
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Scene::CGameObject::UpdateTransforms()
@@ -15,9 +27,8 @@ Phoenix::Scene::CGameObject::UpdateTransforms()
     it = m_LodLevels[i].begin();
     for( ; it != m_LodLevels[i].end(); it++)
     {  
-      
-      (*(*it))->SetWorldTransform( GetWorldTransform());
-      (*(*it))->SetLocalTransform( GetLocalTransform());
+      (*(**it))->SetWorldTransform( GetWorldTransform());
+      (*(**it))->SetLocalTransform( GetLocalTransform());
     }					       
   }
 }

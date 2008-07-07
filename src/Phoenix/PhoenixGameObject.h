@@ -21,7 +21,7 @@ namespace Phoenix
     /// can consist of several renderables that are drawn consequently. 
     /// Each object may have several LOD levels.
     typedef std::vector< std::pair<float,size_t> >				LodDistanceLevel;
-    typedef std::list< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> > RenderableHandleList;
+    typedef std::list< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> *> RenderableHandleList;
     typedef std::vector< RenderableHandleList >				        LodLevelObjects;
 
     class CGameObject : public Phoenix::Math::CTransformable
@@ -46,7 +46,7 @@ namespace Phoenix
       CGameObject( size_t nLodLevels = 1 );
       ////////////////////
       /// Destructor.
-      virtual ~CGameObject() {}
+      virtual ~CGameObject();
       ////////////////////
       /// Returns renderable handles for given lod level.
       /// \param nLodLevel Lod level.
@@ -182,6 +182,7 @@ Phoenix::Scene::CGameObject::GetRenderableObjects( size_t nLodLevel )
   {
     return m_LodLevels[nLodLevel];
   }
+  return m_LodLevels[m_LodLevels.size()-1];
 }
 /////////////////////////////////////////////////////////////////
 inline const Phoenix::Scene::RenderableHandleList & 
@@ -191,6 +192,7 @@ Phoenix::Scene::CGameObject::GetRenderableObjects( size_t nLodLevel ) const
   {
     return m_LodLevels[nLodLevel];
   }
+  return m_LodLevels[m_LodLevels.size()-1];
 }
 /////////////////////////////////////////////////////////////////
 #endif

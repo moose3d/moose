@@ -1101,14 +1101,21 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   // commit indices
   if ( !( iExcludeOpts & M_INDEX_DATA ))
   {
-    for(unsigned int n=0;n<renderable.GetIndexHandles().size();n++)
-    {
-      pIndices = *( *renderable.GetIndexHandles()[n] );
-      if ( pIndices  != NULL ) 
-      { 
-	CommitPrimitive ( pIndices );         
-      }
-    }
+//     for(unsigned int n=0;n<renderable.GetIndexHandles().size();n++)
+//     {
+//       pIndices = *( *renderable.GetIndexHandles()[n] );
+//       if ( pIndices  != NULL ) 
+//       { 
+// 	CommitPrimitive ( pIndices );         
+//       }
+//     }
+
+    if ( !renderable.GetStripIndices().IsNull()) 
+      CommitPrimitive( *renderable.GetStripIndices());
+
+    if ( !renderable.GetListIndices().IsNull()) 
+      CommitPrimitive( *renderable.GetListIndices());
+
   }
   RollbackTransform();
 }

@@ -40,7 +40,6 @@ namespace Phoenix
     {
       friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;
     };
-
   }; // namespace Default
 }; // namespace Phoenix
 ////////////////////
@@ -48,8 +47,10 @@ namespace Phoenix
 #define g_DefaultTextureManager (Phoenix::Default::TextureManager::GetInstance())
 #define g_DefaultVertexManager  (Phoenix::Default::VertexManager::GetInstance())
 #define g_DefaultIndexManager   (Phoenix::Default::IndexManager::GetInstance())
-#define g_DefaultShaderManager   (Phoenix::Default::ShaderManager::GetInstance())
-#define g_DefaultUpdater   (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
+#define g_DefaultShaderManager  (Phoenix::Default::ShaderManager::GetInstance())
+#define g_DefaultUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
+#define g_UniqueNameStr         (CUniqueNameCreator::GetInstance()->GetUniqueName())
+#define g_UniqueName            (CUniqueNameCreator::GetInstance()->GetUniqueName().c_str())
 ////////////////////
 // Constants
 #define TEXTURE_HANDLE_COUNT 8

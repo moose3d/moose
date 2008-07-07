@@ -24,6 +24,9 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    typedef vector< std::pair<std::string, VERTEX_HANDLE * > > ShaderParams;
+    typedef vector< std::pair<std::string, int> >	       ShaderIntParams;
+    typedef vector< std::pair<std::string, float> >	       ShaderFloatParams;
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
     class CRenderable : public Phoenix::Math::CTransformable
@@ -40,16 +43,17 @@ namespace Phoenix
       /// Handle to vertex normals.
       VERTEX_HANDLE			      m_VertexNormalHandle;
       /// Handle to index arrays for triangle list and/or Triangle strips.
-      std::vector<INDEX_HANDLE *>	      m_vecIndexArrayHandles;
+      //std::vector<INDEX_HANDLE *>	      m_vecIndexArrayHandles;
+      INDEX_HANDLE			      m_hTriListIndices;
+      INDEX_HANDLE			      m_hTriStripIndices;
       /// Handle to a shader
       SHADER_HANDLE			      m_ShaderHandle;
       /// Transparency flag.
       bool				      m_bTransparent;
       /// Shader parameters
-      vector< std::pair<std::string, VERTEX_HANDLE * > > m_vShaderParams;
-      vector< std::pair<std::string, int> >   m_vShaderIntParams;
-      vector< std::pair<std::string, float> > m_vShaderFloatParams;
-
+      ShaderParams			      m_vShaderParams;
+      ShaderIntParams			      m_vShaderIntParams;
+      ShaderFloatParams			      m_vShaderFloatParams;
     public:
       ////////////////////
       /// Constructor.
@@ -71,13 +75,17 @@ namespace Phoenix
       /// \returns VERTEX_HANDLE.
       VERTEX_HANDLE    & GetNormalHandle();
       ////////////////////
-      /// Returns reference to a vector with handles to index arrays.
-      /// \returns vector consisting of INDEX_HANDLEs.
-      std::vector<INDEX_HANDLE *>	& GetIndexHandles();
+      /// Returns reference to a handle with triangle lists indices .
+      /// \returns INDEX_HANDLE.
+      INDEX_HANDLE &	GetListIndices();
+      ////////////////////
+      /// Returns reference to a handle with triangle strip indices .
+      /// \returns INDEX_HANDLE.
+      INDEX_HANDLE &	GetStripIndices();
       ////////////////////
       /// Returns reference to a vector with handles to index arrays.
       /// \returns vector consisting of INDEX_HANDLEs.
-      const std::vector<INDEX_HANDLE *>	& GetIndexHandles() const;
+      ///const std::vector<INDEX_HANDLE *>	& GetIndexHandles() const;
       ////////////////////
       /// Adds index array handle to a vector.
       /// \param handle Handle to index array.
@@ -104,15 +112,15 @@ namespace Phoenix
       ////////////////////
       /// Returns reference to shader parameters.
       /// \returns Vector of string-VERTEX_HANDLE pairs.
-      std::vector< std::pair<std::string, VERTEX_HANDLE *> > & GetShaderParameters();
+      ShaderParams & GetShaderParameters();
       ////////////////////
       /// Returns reference to shader parameters.
       /// \returns Vector of string-int pairs.
-      std::vector< std::pair<std::string, int> > & GetShaderIntParameters();
+      ShaderIntParams & GetShaderIntParameters();
       ////////////////////
       /// Returns reference to shader parameters.
       /// \returns Vector of string-float pairs.
-      std::vector< std::pair<std::string, float> > & GetShaderFloatParameters();
+      ShaderFloatParams & GetShaderFloatParameters();
       ////////////////////
       /// Returns handle to Texture Coordinate vertex descriptor.
       /// \param nId From which texture unit these coordinates are retrieved. By default, the first one (zero).

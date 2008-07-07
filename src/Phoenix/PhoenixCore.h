@@ -693,8 +693,30 @@ namespace Phoenix
       }
     };
     
+    class CUniqueNameCreator : public CSingleton<CUniqueNameCreator>,
+			       protected CTimer
+    {
+      friend class Phoenix::Core::CSingleton<CUniqueNameCreator>;
+    private:
+      size_t m_nCount;
+      CUniqueNameCreator() : m_nCount(0){}
+    public:
+      std::string GetUniqueName( const char *szPrefix = NULL )
+      {
+	std::ostringstream name;
+	Reset();
+	Phoenix::Core::CTimeStamp time = GetCurrentTime();
+	if ( szPrefix ) 
+	  name << szPrefix;
+	else
+	  name << "__PHOENIX__";
+	name << time.GetSeconds() << time.GetMilliSeconds() << "_" << m_nCount++ ;
+	return name.str();
+      }
+    };
   }; // namespace core
 }// namespace Phoenix
+// initialize name call count 
 /////////////////////////////////////////////////////////////////
 #include "PhoenixObjectCounter.h"
 /////////////////////////////////////////////////////////////////
