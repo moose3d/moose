@@ -748,6 +748,10 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
   glGenTextures( 1, &iTexId);
   pTexture = new COglTexture( iTexId, tType );
 
+  // set texture dimensions
+  pTexture->SetHeight( pImage->GetHeight());
+  pTexture->SetWidth( pImage->GetWidth());
+
   // check memory allocation
   if ( !pTexture ) 
   {
@@ -844,6 +848,9 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
   pTexture = new COglTexture( iTexId, tType );
+  // set texture dimensions
+  pTexture->SetHeight( pImage->GetHeight());
+  pTexture->SetWidth( pImage->GetWidth());
 
   // check memory allocation
   if ( !pTexture ) 
@@ -899,7 +906,10 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
   COglTexture *pTexture = new COglTexture( iTexId, tType );
-  
+  // set texture dimensions
+  pTexture->SetHeight( nHeight );
+  pTexture->SetWidth( nWidth );
+
   // check memory allocation
   if ( !pTexture ) 
   {
@@ -941,7 +951,9 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
   COglTexture *pTexture = new COglTexture( iTexId, tType );
-  
+  // set texture dimensions
+  pTexture->SetHeight( nHeight );
+  pTexture->SetWidth( nWidth );
   // check memory allocation
   if ( !pTexture ) 
   {
@@ -1305,11 +1317,12 @@ Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, cons
   }
   
   return CreateShaderFromSource( strVSSource.size() > 0 ? strVSSource.c_str() : NULL,
-				 strFSSource.size() > 0 ? strFSSource.c_str() : NULL );
+				 strFSSource.size() > 0 ? strFSSource.c_str() : NULL, szVertexShader, szFragmentShader );
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CShader * 
-Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode)
+Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode, 
+							 const char * szVSname, const char * szFSname)
 {
   int bHasShader = 0;
   int iState = 0; // compile and link status
@@ -1347,7 +1360,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nVertexShader, strLog );
-      std::cerr << "Error in vertex shader: " << strLog << std::endl;      
+      std::cerr << "Error in vertex shader " << (szVSname == NULL  ? "" : szVSname) << " : " << strLog << std::endl;      
     }
 
   }
@@ -1376,7 +1389,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nFragmentShader, strLog );
-      std::cerr << "Error in fragment shader: "<< strLog << std::endl;      
+      std::cerr << "Error in fragment shader " << (szFSname == NULL ? "" : szFSname) << strLog << std::endl;      
     }
 
 

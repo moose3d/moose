@@ -1,7 +1,7 @@
 #ifndef __PhoenixObjectUpdater_h__
 #define __PhoenixObjectUpdater_h__
 /////////////////////////////////////////////////////////////////
-#include <Phoenix/PhoenixResourceManager.h>
+#include "PhoenixResourceManager.h"
 #include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix

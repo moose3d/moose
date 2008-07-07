@@ -65,10 +65,13 @@ namespace Phoenix
 
     /////////////////////////////////////////////////////////////////
     /// Class for textures.
+    typedef unsigned int ResolutionType;
     class COglTexture : public COglBase
     {
     private:
       TEXTURE_TYPE		m_tTextureType;
+      ResolutionType		m_nWidth;
+      ResolutionType		m_nHeight;
     public:
       ////////////////////
       /// Constructor.
@@ -82,6 +85,22 @@ namespace Phoenix
       /// Returns OpenGL texture type.
       /// \returns Texture type.
       TEXTURE_TYPE GetType() const;
+      ////////////////////
+      /// Returns texture width.
+      /// \returns texture width.
+      ResolutionType GetWidth() const;
+      ////////////////////
+      /// Returns texture height.
+      /// \returns texture height.
+      ResolutionType GetHeight() const;
+      ////////////////////
+      /// Sets texture width.
+      /// \param width Texture width.
+      void SetWidth( ResolutionType width );
+      ////////////////////
+      /// Sets texture height.
+      /// \param height Texture height.
+      void SetHeight( ResolutionType height );
     };
   }; // namespace Graphics
 }; // namespace Phoenix
