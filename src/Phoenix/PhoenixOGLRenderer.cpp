@@ -1033,10 +1033,12 @@ Phoenix::Graphics::COglRenderer::GetCurrentCamera() const
 void
 Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int iExcludeOpts )
 {
+
+  CommitTransform( renderable.GetWorldTransform());
   // Retrieve resources
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
-  CVertexDescriptor *pVertices = g_DefaultVertexManager->GetResource(renderable.GetVertexHandle());
+  CVertexDescriptor *pVertices = *renderable.GetVertexHandle();
   CIndexArray *pIndices = NULL;
   
   if ( !(iExcludeOpts & M_TEXTURE_DATA) )
@@ -1044,8 +1046,8 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
     // Commit textures
     for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
     {
-      pTemp    = g_DefaultVertexManager->GetResource(  renderable.GetTextureCoordinateHandle(i));
-      pTexture = g_DefaultTextureManager->GetResource( renderable.GetTextureHandle(i) );
+      pTemp    = *renderable.GetTextureCoordinateHandle(i);
+      pTexture = *renderable.GetTextureHandle(i);
     
       // check that texcoord resources actually exist
       if ( pTemp     != NULL ) 
@@ -1056,12 +1058,6 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
       if ( pTexture  != NULL ) 
       { 
 	CommitTexture( i, pTexture ); 
-	// Apply texture filters.
-	// std::vector<TEXTURE_FILTER> &vecFilters = renderable.GetTextureFilters(i);
-	// 	for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
-	// 	{
-	// 	  CommitFilter( vecFilters[nFilter], pTexture->GetType() );
-	// 	}
 	CommitFilters( renderable.GetTextureFilters(i), pTexture->GetType() );
       }
     }
@@ -1069,13 +1065,13 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   // if shader exists
   if ( !( iExcludeOpts & M_SHADER_DATA ) && renderable.GetShaderHandle().IsNull() == 0 )
   {
-    CShader *pShader = g_DefaultShaderManager->GetResource(renderable.GetShaderHandle());
+    CShader *pShader = *renderable.GetShaderHandle();
     CommitShader( pShader );
     CVertexDescriptor *pParam = NULL;
     // Go through all parameters and commit them
     for(unsigned int nSP=0; nSP< renderable.GetShaderParameters().size(); nSP++)
     {
-      pParam = g_DefaultVertexManager->GetResource( *renderable.GetShaderParameters()[nSP].second );
+      pParam = *( *renderable.GetShaderParameters()[nSP].second );
       if ( pParam != NULL )
       {
 	CommitShaderParam( *pShader, renderable.GetShaderParameters()[nSP].first, *pParam );
@@ -1100,20 +1096,21 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   // commit normals
   if ( !( iExcludeOpts & M_NORMAL_DATA ) && renderable.GetNormalHandle().IsNull() == 0 ) 
   { 
-    CommitVertexDescriptor( g_DefaultVertexManager->GetResource(renderable.GetNormalHandle()) ); 
+    CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
   }
   // commit indices
   if ( !( iExcludeOpts & M_INDEX_DATA ))
   {
     for(unsigned int n=0;n<renderable.GetIndexHandles().size();n++)
     {
-      pIndices = g_DefaultIndexManager->GetResource( *renderable.GetIndexHandles()[n] );
+      pIndices = *( *renderable.GetIndexHandles()[n] );
       if ( pIndices  != NULL ) 
       { 
 	CommitPrimitive ( pIndices );         
       }
     }
   }
+  RollbackTransform();
 }
 /////////////////////////////////////////////////////////////////
 void 

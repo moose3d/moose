@@ -4,7 +4,6 @@
 #include <PhoenixMatrix4x4.h>
 #include <PhoenixQuaternion.h>
 #include <PhoenixVector3.h>
-#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {

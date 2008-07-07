@@ -30,7 +30,7 @@ namespace Phoenix
       ////////////////////
       /// Renders current queue using renderer and given adapter.
       /// \param renderer OpenGL renderer.
-      void Render( Phoenix::Graphics::COglRenderer &renderer );
+      template<class ADAPTER_CLASS> void Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS & functionObject );
       ////////////////////
       /// Clears current queue.
       void Clear();
@@ -69,13 +69,14 @@ Phoenix::Graphics::CRenderQueue<TYPE>::Clear()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
+template<class ADAPTER_CLASS> 
 void 
-Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &renderer)
+Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS & functionObject)
 {
   typename std::list<TYPE>::iterator it = m_lstObjects.begin();
   for( ; it != m_lstObjects.end(); it++)
   {
-    (*it)->Render( renderer );
+    functionObject( renderer, *it);
   }      
 }
 /////////////////////////////////////////////////////////////////

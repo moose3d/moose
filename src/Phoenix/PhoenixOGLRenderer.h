@@ -16,6 +16,7 @@
 #include "PhoenixSpatial.h"
 #include "PhoenixFrameBuffer.h"
 #include <PhoenixRenderable.h>
+#include "PhoenixGlobals.h"
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>

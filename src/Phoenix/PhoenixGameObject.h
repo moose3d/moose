@@ -10,48 +10,53 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+  namespace Graphics 
+  {
+    class COglRenderer;
+  }
   namespace Scene
   {
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game. One object 
-    /// can consist of several models. 
-    /// ************************************************************
-    /// \warn THIS NEEDS RETHINKING. 
-    /// \warn Should a gameobject consist of several models,
-    /// \warn or just one model with different indices for different LODs and 
-    /// \warn animated sections?
-    /// \warn Or does gameobject rendering have anything to do with this all?
-    /// ************************************************************
-    class CGameObject : public Phoenix::Graphics::CRenderable,
-			public Phoenix::Math::CTransformable
+    /// can consist of several renderables that are drawn consequently. 
+    /// Each object may have several LOD levels.
+    typedef std::vector< std::pair<float,size_t> >				LodDistanceLevel;
+    typedef std::list< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> > RenderableHandleList;
+    typedef std::vector< RenderableHandleList >				        LodLevelObjects;
+
+    class CGameObject : public Phoenix::Math::CTransformable
     {
     private:
       /// Renderable objects
-      std::vector< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> > m_vecRenderableHandles;
+      LodLevelObjects			m_LodLevels;
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
       /// Model bounding box.
       Phoenix::Volume::COrientedBox	m_BoundingBox;
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
+      /// which renderable is selected according to distance.
+      LodDistanceLevel			m_LodDistanceLevel;       
+      /// Which lod level is active.
+      size_t				m_LodLevel;      
     public:
       ////////////////////
       /// Constructor. 
-      /// \param nNumRenderabls Number renderables in this gameobject.
-      CGameObject( size_t nNumRenderables = 1);
+      /// \param nLodLevels Number lod levels in this gameobjects.
+      CGameObject( size_t nLodLevels = 1 );
       ////////////////////
       /// Destructor.
       virtual ~CGameObject() {}
       ////////////////////
-      /// Returns renderable handle.
-      /// \param nIndex Which renderable handle is returned.
-      /// \returns Renderable handle reference.
-      Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & GetRenderableHandle( size_t nIndex = 0);
+      /// Returns renderable handles for given lod level.
+      /// \param nLodLevel Lod level.
+      /// \returns List of renderable handles.
+      Phoenix::Scene::RenderableHandleList & GetRenderableObjects( size_t nLodLevel );
       ////////////////////
-      /// Returns renderable handle.
-      /// \param nIndex Which model handle is returned.
-      /// \returns Model handle reference.
-      const Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & GetRenderableHandle( size_t nIndex = 0) const;
+      /// Returns renderable handles for given lod level.
+      /// \param nLodLevel Lod level.
+      /// \returns List of renderable handles.
+      const Phoenix::Scene::RenderableHandleList & GetRenderableObjects( size_t nLodLevel ) const;
       ////////////////////
       /// Returns bounding sphere.
       /// \returns Reference to bounding sphere. 
@@ -85,33 +90,28 @@ namespace Phoenix
       /// \param sphere Sphere where transformed sphere is stored.
       void CalculateWorldBoundingSphere( Phoenix::Volume::CSphere & sphere ) const;
       ////////////////////
-      /// Returns number of renderable handles in this object.
-      /// \returns Number of allocated renderable handles.
-      size_t GetNumRenderables() const;
+      /// Returns number of lod levels in this object.
+      /// \returns Number of lod levels.
+      size_t GetNumLodLevels() const;
+      
+      //void SelectRenderable( float fLodValue );
+      //void AddLodDistanceAndIndex( float fDistance, size_t nIndex );*/
+      
+      ////////////////////
+      /// Updates all renderable transforms to match current transform.
+      /// Call this every time you move object.
+      void UpdateTransforms();
+
     };
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline 
-Phoenix::Scene::CGameObject::CGameObject( size_t nNumRenderables ) : m_nSpatialIndex(0)
+Phoenix::Scene::CGameObject::CGameObject( size_t nLodLevels ) : m_nSpatialIndex(0)
 {
-  if ( nNumRenderables == 0 ) nNumRenderables = 1;
-  for ( size_t i=0;i<nNumRenderables;i++)
-    m_vecRenderableHandles.push_back(Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable>());
-}
-/////////////////////////////////////////////////////////////////
-inline Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & 
-Phoenix::Scene::CGameObject::GetRenderableHandle( size_t nIndex )
-{
-  assert( nIndex < m_vecRenderableHandles.size());
-  return m_vecRenderableHandles[nIndex];
-}
-/////////////////////////////////////////////////////////////////
-inline const Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> & 
-Phoenix::Scene::CGameObject::GetRenderableHandle( size_t nIndex) const
-{
-  assert( nIndex < m_vecRenderableHandles.size());
-  return m_vecRenderableHandles[nIndex];
+  if ( nLodLevels == 0 ) nLodLevels = 1;
+  for ( size_t i=0;i<nLodLevels;i++)
+    m_LodLevels.push_back( Phoenix::Scene::RenderableHandleList() );
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Volume::CSphere & 
@@ -150,22 +150,10 @@ Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
   m_nSpatialIndex = nIndex;
 }
 /////////////////////////////////////////////////////////////////
-// inline const TYPE
-// Phoenix::Scene::CGameObject::GetType() const
-// {
-//   return m_Type;
-// }
-// /////////////////////////////////////////////////////////////////
-// inline void
-// Phoenix::Scene::CGameObject::SetType(TYPE type) 
-// {
-//   m_Type = type;
-// }
-/////////////////////////////////////////////////////////////////
 inline size_t 
-Phoenix::Scene::CGameObject::GetNumRenderables() const
+Phoenix::Scene::CGameObject::GetNumLodLevels() const
 {
-  return m_vecRenderableHandles.size();
+  return m_LodLevels.size();
 }
 /////////////////////////////////////////////////////////////////
 inline void 
@@ -185,6 +173,24 @@ Phoenix::Scene::CGameObject::CalculateWorldBoundingSphere( Phoenix::Volume::CSph
 {
   sphere = GetBoundingSphere();
   sphere.Move( GetWorldTransform().GetTranslation());
+}
+/////////////////////////////////////////////////////////////////
+inline Phoenix::Scene::RenderableHandleList & 
+Phoenix::Scene::CGameObject::GetRenderableObjects( size_t nLodLevel )
+{
+  if ( nLodLevel < m_LodLevels.size())
+  {
+    return m_LodLevels[nLodLevel];
+  }
+}
+/////////////////////////////////////////////////////////////////
+inline const Phoenix::Scene::RenderableHandleList & 
+Phoenix::Scene::CGameObject::GetRenderableObjects( size_t nLodLevel ) const
+{
+  if ( nLodLevel < m_LodLevels.size())
+  {
+    return m_LodLevels[nLodLevel];
+  }
 }
 /////////////////////////////////////////////////////////////////
 #endif

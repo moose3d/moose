@@ -7,6 +7,7 @@
 #include "PhoenixIndexArray.h"
 #include "PhoenixTexture.h"
 #include "PhoenixDefaultEntities.h"
+#include "PhoenixTransform.h"
 #include <vector>
 #include <iostream>
 #include <utility>
@@ -25,7 +26,7 @@ namespace Phoenix
   {
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
-    class CRenderable
+    class CRenderable : public Phoenix::Math::CTransformable
     {
     protected:
       /// Handle to textures.
