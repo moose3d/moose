@@ -309,8 +309,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   case ELEMENT_TYPE_VERTEX_3F:
     glEnableClientState( GL_VERTEX_ARRAY );
     // check if this was previously set
-    if ( GetRenderState().m_pVertexBuffer == pBuffer ) break;
-    else GetRenderState().m_pVertexBuffer = pBuffer;
+    //if ( GetRenderState().m_pVertexBuffer == pBuffer ) break;
+    //else GetRenderState().m_pVertexBuffer = pBuffer;
 
     if ( pBuffer->IsCached()) 
     {
@@ -328,8 +328,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_COLOR_ARRAY );
 
     // check if this was previously set
-    if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
-    else GetRenderState().m_pColorBuffer = pBuffer;
+    //if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
+    //else GetRenderState().m_pColorBuffer = pBuffer;
 
     if ( pBuffer->IsCached()) 
     {
@@ -345,8 +345,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   case ELEMENT_TYPE_COLOR_3F:
     glEnableClientState( GL_COLOR_ARRAY );
     // check if this was previously set
-    if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
-    else GetRenderState().m_pColorBuffer = pBuffer;
+    //if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
+    //else GetRenderState().m_pColorBuffer = pBuffer;
 
     if ( pBuffer->IsCached()) 
     {
@@ -362,8 +362,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   case ELEMENT_TYPE_COLOR_4F:
     glEnableClientState( GL_COLOR_ARRAY );
     // check if this was previously set
-    if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
-    else GetRenderState().m_pColorBuffer = pBuffer;
+    //if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
+    //else GetRenderState().m_pColorBuffer = pBuffer;
 
     if ( pBuffer->IsCached()) 
     {
@@ -383,8 +383,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
     // check if this was previously set
-    if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
-    else GetRenderState().m_pTexCoordBuffer = pBuffer;
+    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
+    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
 
     if ( pBuffer->IsCached()) 
     {
@@ -401,8 +401,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_NORMAL_ARRAY );
 
     // check if this was previously set
-    if ( GetRenderState().m_pNormalBuffer == pBuffer ) break;
-    else GetRenderState().m_pNormalBuffer = pBuffer;
+    //if ( GetRenderState().m_pNormalBuffer == pBuffer ) break;
+    //else GetRenderState().m_pNormalBuffer = pBuffer;
     
     if ( pBuffer->IsCached()) 
     {
@@ -524,7 +524,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     glPrimitive = GL_QUADS;
     break;
   }
-  bool bIsActive = (GetRenderState().m_pIndexArray == pIndexBuffer ) ;
+  //bool bIsActive = (GetRenderState().m_pIndexArray == pIndexBuffer ) ;
   GLenum iIndexBufferType;
   GLvoid *pIndices;
 
@@ -541,7 +541,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     pIndices = pIndexBuffer->IsCached() ? 0 :  pIndexBuffer->GetPointer<unsigned int>();
   }
 
-  if ( !bIsActive )
+  //if ( !bIsActive )
   {
     if ( pIndices == 0 )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
@@ -560,20 +560,20 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 //     // Draw cached
 //     if ( pIndexBuffer->IsCached())
 //     {
-//       if ( !bIsActive )
+//       //if ( !bIsActive )
 //       {
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
-// 	GetRenderState().m_pIndexArray = pIndexBuffer;
+// 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
 //       glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
 // 		      GL_UNSIGNED_SHORT,  0);
 //     }
 //     else // Draw uncached
 //     {
-//       if ( !bIsActive)
+//       //if ( !bIsActive)
 //       {
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-// 	GetRenderState().m_pIndexArray = pIndexBuffer;
+// 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
 //       glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
 // 		      GL_UNSIGNED_SHORT, 
@@ -585,10 +585,10 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 //     // Draw cached
 //     if ( pIndexBuffer->IsCached())
 //     {
-//       if ( !bIsActive)
+//       //if ( !bIsActive)
 //       {
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
-// 	GetRenderState().m_pIndexArray = pIndexBuffer;
+// 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
 //       glDrawElements( glPrimitive, 
 // 		      pIndexBuffer->GetDrawableCount(), 
@@ -596,10 +596,10 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 //     }
 //     else // Draw uncached
 //     {
-//       if ( !bIsActive)
+//       //if ( !bIsActive)
 //       {
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-// 	GetRenderState().m_pIndexArray = pIndexBuffer;
+// 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
 //       glDrawElements( glPrimitive, 
 // 		      pIndexBuffer->GetDrawableCount(), 
