@@ -8,6 +8,7 @@ using std::endl;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::CSkybox() 
 {
+  
   Phoenix::Graphics::CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_TEXCOORDS);
   Phoenix::Graphics::CVertexDescriptor *pVertices  = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_VERTICES);
   Phoenix::Graphics::CIndexArray *pIndices         = g_DefaultIndexManager->GetResource(PHOENIX_SKYBOX_INDICES);
@@ -94,13 +95,13 @@ Phoenix::Graphics::CSkybox::CSkybox()
     
     pTexCoords->GetPointer<float>()[46] = 0.0f;
     pTexCoords->GetPointer<float>()[47] = 1.0f;
-
+    
     assert(g_DefaultVertexManager->Create( pTexCoords, PHOENIX_SKYBOX_TEXCOORDS, GetTextureCoordinateHandle(0)) == 0);
     
   }
   else
     assert(g_DefaultVertexManager->AttachHandle( PHOENIX_SKYBOX_TEXCOORDS, GetTextureCoordinateHandle(0)) == 0);
-
+  
   /////////////////////////////////////////////////////////////////
   if ( pVertices == NULL )
   {
@@ -216,7 +217,6 @@ Phoenix::Graphics::CSkybox::CSkybox()
 
   /////////////////////////////////////////////////////////////////
   pIndices = g_DefaultIndexManager->GetResource("PHOENIX_SKYBOX_INDICES1");
-  AddIndexHandle( new INDEX_HANDLE());
   /////////////////////////////////////////////////////////////////
   if ( pIndices == NULL )
   {
@@ -227,12 +227,12 @@ Phoenix::Graphics::CSkybox::CSkybox()
     pIndices->GetPointer<unsigned short int>()[2] = 2;
     pIndices->GetPointer<unsigned short int>()[3] = 3;
     
-    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES1", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES1", m_hIndices[SKYBOX_FLOOR]) == 0);
   } else
-    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES1", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES1", m_hIndices[SKYBOX_FLOOR]) == 0);
+
   /////////////////////////////////////////////////////////////////
   pIndices = g_DefaultIndexManager->GetResource("PHOENIX_SKYBOX_INDICES2");
-  AddIndexHandle( new INDEX_HANDLE());
   /////////////////////////////////////////////////////////////////
   if ( pIndices == NULL )
   {
@@ -241,13 +241,12 @@ Phoenix::Graphics::CSkybox::CSkybox()
     pIndices->GetPointer<unsigned short int>()[1] = 5;
     pIndices->GetPointer<unsigned short int>()[2] = 6;
     pIndices->GetPointer<unsigned short int>()[3] = 7;
-    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES2", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES2", m_hIndices[SKYBOX_CEILING]) == 0);
   }
   else
-    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES2", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES2", m_hIndices[SKYBOX_CEILING]) == 0);
   /////////////////////////////////////////////////////////////////
   pIndices = g_DefaultIndexManager->GetResource("PHOENIX_SKYBOX_INDICES3");
-  AddIndexHandle( new INDEX_HANDLE());
   if ( pIndices == NULL )
   {
     pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 4);
@@ -256,14 +255,12 @@ Phoenix::Graphics::CSkybox::CSkybox()
     pIndices->GetPointer<unsigned short int>()[2] = 10;
     pIndices->GetPointer<unsigned short int>()[3] = 11;
 
-    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES3", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES3", m_hIndices[SKYBOX_FRONT]) == 0);
   } 
   else
-    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES3", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES3", m_hIndices[SKYBOX_FRONT]) == 0);
   /////////////////////////////////////////////////////////////////
   pIndices = g_DefaultIndexManager->GetResource("PHOENIX_SKYBOX_INDICES4");
-  AddIndexHandle( new INDEX_HANDLE());
-
   if ( pIndices == NULL )
   {
     pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 4);
@@ -271,13 +268,12 @@ Phoenix::Graphics::CSkybox::CSkybox()
     pIndices->GetPointer<unsigned short int>()[1] = 13;
     pIndices->GetPointer<unsigned short int>()[2] = 14;
     pIndices->GetPointer<unsigned short int>()[3] = 15;
-    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES4", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES4", m_hIndices[SKYBOX_REAR]) == 0);
   }
   else 
-    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES4", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES4", m_hIndices[SKYBOX_REAR]) == 0);
 
   pIndices = g_DefaultIndexManager->GetResource("PHOENIX_SKYBOX_INDICES5");
-  AddIndexHandle( new INDEX_HANDLE());
   if ( pIndices == NULL )
   {
     pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 4);
@@ -286,13 +282,12 @@ Phoenix::Graphics::CSkybox::CSkybox()
     pIndices->GetPointer<unsigned short int>()[2] = 18;
     pIndices->GetPointer<unsigned short int>()[3] = 19;
 
-    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES5", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES5", m_hIndices[SKYBOX_LEFT]) == 0);
   }
   else
-    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES5", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES5", m_hIndices[SKYBOX_LEFT]) == 0);
 
   pIndices = g_DefaultIndexManager->GetResource("PHOENIX_SKYBOX_INDICES6");
-  AddIndexHandle( new INDEX_HANDLE());
     
   if ( pIndices == NULL )
   {
@@ -302,14 +297,21 @@ Phoenix::Graphics::CSkybox::CSkybox()
     pIndices->GetPointer<unsigned short int>()[2] = 22;
     pIndices->GetPointer<unsigned short int>()[3] = 23;
 
-    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES6", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, "PHOENIX_SKYBOX_INDICES6", m_hIndices[SKYBOX_RIGHT]) == 0);
   }
   else
-    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES6", *GetIndexHandles().back()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( "PHOENIX_SKYBOX_INDICES6", m_hIndices[SKYBOX_RIGHT]) == 0);
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::~CSkybox()
 {
   
+}
+/////////////////////////////////////////////////////////////////
+INDEX_HANDLE &
+Phoenix::Graphics::CSkybox::GetWallIndices( Phoenix::Graphics::SKYBOX_WALL_TYPE nIndex )
+{
+  // return only indices from first six ( array size)
+  return m_hIndices[nIndex % 6];
 }
 /////////////////////////////////////////////////////////////////

@@ -39,6 +39,8 @@ namespace Phoenix
       LodDistanceLevel			m_LodDistanceLevel;       
       /// Which lod level is active.
       size_t				m_LodLevel;      
+      /// Should this object be rendered.
+      bool				m_bIsRenderable;
     public:
       ////////////////////
       /// Constructor. 
@@ -101,13 +103,21 @@ namespace Phoenix
       /// Updates all renderable transforms to match current transform.
       /// Call this every time you move object.
       void UpdateTransforms();
-
+      ////////////////////
+      /// Adds new renderable handle to given lod level and 
+      /// \par attaches resource by name to it.
+      /// \param szResourceName Name of the Renderable resource.
+      /// \param nLodLevel To which lod level renderable is added.
+      void AddRenderable( const char *szResourceName, size_t nLodLevel  );
+      
+      bool ShouldBeRendered() const;
+      void SetRenderable( bool bFlag );
     };
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline 
-Phoenix::Scene::CGameObject::CGameObject( size_t nLodLevels ) : m_nSpatialIndex(0)
+Phoenix::Scene::CGameObject::CGameObject( size_t nLodLevels ) : m_nSpatialIndex(0),m_bIsRenderable(true)
 {
   if ( nLodLevels == 0 ) nLodLevels = 1;
   for ( size_t i=0;i<nLodLevels;i++)
@@ -193,6 +203,18 @@ Phoenix::Scene::CGameObject::GetRenderableObjects( size_t nLodLevel ) const
     return m_LodLevels[nLodLevel];
   }
   return m_LodLevels[m_LodLevels.size()-1];
+}
+/////////////////////////////////////////////////////////////////
+inline bool
+Phoenix::Scene::CGameObject::ShouldBeRendered() const
+{
+  return m_bIsRenderable;
+}
+/////////////////////////////////////////////////////////////////
+inline void 
+Phoenix::Scene::CGameObject::SetRenderable( bool bFlag )
+{
+  m_bIsRenderable = bFlag;
 }
 /////////////////////////////////////////////////////////////////
 #endif

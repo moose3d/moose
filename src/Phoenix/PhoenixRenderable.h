@@ -42,6 +42,8 @@ namespace Phoenix
       VERTEX_HANDLE			      m_VertexDescriptorHandle;
       /// Handle to vertex normals.
       VERTEX_HANDLE			      m_VertexNormalHandle;
+      /// Handle to vertex colors.
+      VERTEX_HANDLE			      m_VertexColorHandle;
       /// Handle to index arrays for triangle list and/or Triangle strips.
       //std::vector<INDEX_HANDLE *>	      m_vecIndexArrayHandles;
       INDEX_HANDLE			      m_hTriListIndices;
@@ -75,6 +77,10 @@ namespace Phoenix
       /// \returns VERTEX_HANDLE.
       VERTEX_HANDLE    & GetNormalHandle();
       ////////////////////
+      /// Returns handle to vertex descriptor.
+      /// \returns VERTEX_HANDLE.
+      VERTEX_HANDLE    & GetColorHandle();
+      ////////////////////
       /// Returns reference to a handle with triangle lists indices .
       /// \returns INDEX_HANDLE.
       INDEX_HANDLE &	GetListIndices();
@@ -89,7 +95,7 @@ namespace Phoenix
       ////////////////////
       /// Adds index array handle to a vector.
       /// \param handle Handle to index array.
-      void		AddIndexHandle( INDEX_HANDLE * pHandle );
+      //void		AddIndexHandle( INDEX_HANDLE * pHandle );
       ////////////////////
       /// Returns handle to shader.
       /// \returns SHADER_HANDLE.

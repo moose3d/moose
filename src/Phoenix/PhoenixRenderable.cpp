@@ -20,8 +20,8 @@ Phoenix::Graphics::CRenderable::~CRenderable()
   
   g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
   g_DefaultVertexManager->Release( m_VertexNormalHandle );
-  g_DefaultVertexManager->Release( GetListIndices() );
-  g_DefaultVertexManager->Release( GetStripIndices() );
+  g_DefaultIndexManager->Release( GetListIndices() );
+  g_DefaultIndexManager->Release( GetStripIndices() );
   
   g_DefaultShaderManager->Release(m_ShaderHandle);
   
@@ -49,6 +49,12 @@ VERTEX_HANDLE &
 Phoenix::Graphics::CRenderable::GetNormalHandle() 
 {
   return m_VertexNormalHandle;
+}
+/////////////////////////////////////////////////////////////////
+VERTEX_HANDLE &
+Phoenix::Graphics::CRenderable::GetColorHandle() 
+{
+  return m_VertexColorHandle;
 }
 /////////////////////////////////////////////////////////////////
 INDEX_HANDLE &	
@@ -136,11 +142,11 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
   
   //for( unsigned int i=0;i<model.GetIndexHandles().size();i++)
   //{
-  stream << "list INDEX_HANDLE = "  << model.GetListIndices().GetIndex();
-  stream << (model.GetListIndices().IsNull() ? "(null)" : "" ) << endl;
+  stream << "list INDEX_HANDLE = "  << model.m_hTriListIndices.GetIndex();
+  stream << (model.m_hTriListIndices.IsNull() ? "(null)" : "" ) << endl;
 
-  stream << "strip INDEX_HANDLE = "  << model.GetStripIndices().GetIndex();
-  stream << (model.GetStripIndices().IsNull() ? "(null)" : "" ) << endl;
+  stream << "strip INDEX_HANDLE = "  << model.m_hTriStripIndices.GetIndex();
+  stream << (model.m_hTriStripIndices.IsNull() ? "(null)" : "" ) << endl;
   //}
   stream << "SHADER_HANDLE = " << model.m_ShaderHandle.GetIndex();
   stream << (model.m_ShaderHandle.IsNull() ? "(null)" : "" ) << endl;

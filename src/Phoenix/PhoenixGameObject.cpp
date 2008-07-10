@@ -2,6 +2,7 @@
 #include "PhoenixOGLRenderer.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Scene;
+using namespace Phoenix::Core;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::~CGameObject()
@@ -33,3 +34,13 @@ Phoenix::Scene::CGameObject::UpdateTransforms()
   }
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t nLodLevel  )
+{
+  CHandle<CRenderable> *pHandle = new CHandle<CRenderable>();
+  GetRenderableObjects(nLodLevel).push_back( pHandle );
+
+  assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->AttachHandle( szResourceName, *pHandle ) == 0);
+}
+/////////////////////////////////////////////////////////////////
+

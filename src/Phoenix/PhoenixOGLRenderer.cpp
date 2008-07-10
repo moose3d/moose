@@ -1098,6 +1098,13 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   { 
     CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
   }
+
+  // Commit colors
+  if ( !renderable.GetColorHandle().IsNull() ) 
+  {
+    CommitVertexDescriptor( *renderable.GetColorHandle() );
+  }
+
   // commit indices
   if ( !( iExcludeOpts & M_INDEX_DATA ))
   {
@@ -1761,15 +1768,14 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   mView(1,3) = 0.0f;
   mView(2,3) = 0.0f;
 
-  std::vector<INDEX_HANDLE * >::iterator it = skybox.GetIndexHandles().begin();
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
   
   COglTexture *pTexture = NULL;
   CIndexArray *pIndices = NULL;
 
-  CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource(skybox.GetTextureCoordinateHandle(0));
-  CVertexDescriptor *pVertices  = g_DefaultVertexManager->GetResource(skybox.GetVertexHandle());  
+  CVertexDescriptor *pTexCoords = *skybox.GetTextureCoordinateHandle(0);
+  CVertexDescriptor *pVertices  = *skybox.GetVertexHandle();  
   if ( pVertices  != NULL ) 
   {
     CommitVertexDescriptor( pVertices );
@@ -1777,10 +1783,11 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   
   if ( pTexCoords != NULL ) CommitVertexDescriptor( pTexCoords );
   /////////////////////////////////////////////////////////////////
-  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(0) );
-  pIndices = g_DefaultIndexManager->GetResource(*(*it));
-  it++;
+  pTexture = *skybox.GetTextureHandle(0) ;
+  pIndices = *skybox.GetWallIndices( SKYBOX_FLOOR );
+
   if (pTexture) CommitTexture( 0, pTexture ); 
+
   // // Apply texture filters.
 //   std::vector<TEXTURE_FILTER> &vecFilters = skybox.GetTextureFilters(0);
 //   for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
@@ -1792,46 +1799,42 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 
   /////////////////////////////////////////////////////////////////
 
-  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(1) );
-  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
-  it++;
+  pTexture = *skybox.GetTextureHandle(1);
+  pIndices = *skybox.GetWallIndices( SKYBOX_CEILING );
+
   if ( pTexture ) CommitTexture( 0, pTexture ); 
   if ( pIndices ) CommitPrimitive( pIndices );
 
   /////////////////////////////////////////////////////////////////
 
-  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(2) );
-  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
-  it++;
+  pTexture = *skybox.GetTextureHandle(2);
+  pIndices = *skybox.GetWallIndices( SKYBOX_FRONT );
+
   if (pTexture) CommitTexture( 0, pTexture ); 
   if ( pIndices )  CommitPrimitive( pIndices );
   
-//   /////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
 
-  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(3) );
-  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
-  it++;
+  pTexture = *skybox.GetTextureHandle(3);
+  pIndices = *skybox.GetWallIndices( SKYBOX_REAR );
+
   if (pTexture) CommitTexture( 0, pTexture );
   if ( pIndices )  CommitPrimitive( pIndices );
   
-//   /////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
 
-  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(4) );
-  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
-  it++;
-  if (pTexture) 
-  {
-    CommitTexture( 0, pTexture ); 
-    
-  }
+  pTexture = *skybox.GetTextureHandle(4);
+  pIndices = *skybox.GetWallIndices( SKYBOX_LEFT );
+
+  if (pTexture)    CommitTexture( 0, pTexture ); 
   if ( pIndices )  CommitPrimitive( pIndices );
 
-//   /////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////
 
-  pTexture = g_DefaultTextureManager->GetResource( skybox.GetTextureHandle(5) );
-  pIndices = g_DefaultIndexManager->GetResource( *(*it));    
+  pTexture = *skybox.GetTextureHandle(5);
+  pIndices = *skybox.GetWallIndices( SKYBOX_RIGHT );
   
-  if (pTexture) CommitTexture( 0, pTexture ); 
+  if (pTexture)    CommitTexture( 0, pTexture ); 
   if ( pIndices )  CommitPrimitive( pIndices );
 
   glPopMatrix();
