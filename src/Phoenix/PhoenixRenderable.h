@@ -8,6 +8,7 @@
 #include "PhoenixTexture.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixTransform.h"
+#include "PhoenixRenderState.h"
 #include <vector>
 #include <iostream>
 #include <utility>
@@ -24,6 +25,7 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    // typedefs for readability (and maintanence)
     typedef vector< std::pair<std::string, VERTEX_HANDLE * > > ShaderParams;
     typedef vector< std::pair<std::string, int> >	       ShaderIntParams;
     typedef vector< std::pair<std::string, float> >	       ShaderFloatParams;
@@ -50,12 +52,20 @@ namespace Phoenix
       INDEX_HANDLE			      m_hTriStripIndices;
       /// Handle to a shader
       SHADER_HANDLE			      m_ShaderHandle;
-      /// Transparency flag.
-      bool				      m_bTransparent;
+
       /// Shader parameters
       ShaderParams			      m_vShaderParams;
+      /// Shader integer parameters
       ShaderIntParams			      m_vShaderIntParams;
+      /// Shader float parameters
       ShaderFloatParams			      m_vShaderFloatParams;
+      
+      /// Transparency flag.
+      //bool				      m_bTransparent;      
+      /// Renderstate.
+      Phoenix::Graphics::CRenderState	      m_RenderState;
+      
+      
     public:
       ////////////////////
       /// Constructor.
@@ -148,14 +158,16 @@ namespace Phoenix
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
       friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & renderable );
-      ////////////////////
-      /// Sets transparency flag.
-      /// \param bFlag True for transparent, false for opaque.
-      void SetTransparent( bool bFlag );
-      ////////////////////
-      /// Returns transparency setting.
-      /// \returns true for transparent, false for opaque.
-      bool IsTransparent() const;
+      // ////////////////////
+//       /// Sets transparency flag.
+//       /// \param bFlag True for transparent, false for opaque.
+//       void SetTransparent( bool bFlag );
+//       ////////////////////
+//       /// Returns transparency setting.
+//       /// \returns true for transparent, false for opaque.
+//       bool IsTransparent() const;
+      Phoenix::Graphics::CRenderState & GetRenderState();
+      
     };
   }; // namespace Graphics
 }; // namespace Phoenix

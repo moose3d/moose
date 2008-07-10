@@ -2,6 +2,10 @@
 #ifndef __PhoenixOGLRenderer_h__
 #define __PhoenixOGLRenderer_h__
 /////////////////////////////////////////////////////////////////
+#include <GL/GLee.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+/////////////////////////////////////////////////////////////////
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixVector4.h"
@@ -17,194 +21,15 @@
 #include "PhoenixFrameBuffer.h"
 #include <PhoenixRenderable.h>
 #include "PhoenixGlobals.h"
-/////////////////////////////////////////////////////////////////
-#include <GL/GLee.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "PhoenixRenderState.h"
+#include "PhoenixBlendingOperation.h"
+#include "PhoenixAlphaTestOperation.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
   {
-    /// Which model data is left unrendered.
-    enum MODEL_EXCLUDE_DATA 
-    {
-      M_TEXTURE_DATA = 1,
-      M_SHADER_DATA = 1 << 1,
-      M_NORMAL_DATA = 1 << 2,
-      M_INDEX_DATA = 1 << 3
-    };
-    enum CLIENT_STATE_TYPE 
-    {
-      CLIENT_STATE_VERTEX_ARRAY = 0,
-      CLIENT_STATE_COLOR_ARRAY = 1,
-      CLIENT_STATE_TEX0_ARRAY,
-      CLIENT_STATE_TEX1_ARRAY,
-      CLIENT_STATE_TEX2_ARRAY,
-      CLIENT_STATE_TEX3_ARRAY,
-      CLIENT_STATE_TEX4_ARRAY,
-      CLIENT_STATE_TEX5_ARRAY,
-      CLIENT_STATE_TEX6_ARRAY,
-      CLIENT_STATE_TEX7_ARRAY
-    };
-    enum STATE_TYPE
-    {
-      STATE_LIGHTING = GL_LIGHTING,
-      STATE_DEPTH_TEST = GL_DEPTH_TEST,
-      STATE_ALPHA_TEST = GL_ALPHA_TEST,
-      STATE_BLENDING   = GL_BLEND,
-      STATE_DEPTH_WRITE = GL_TRUE,
-      STATE_FACECULLING = GL_CULL_FACE
-    };
-    enum ALPHA_TEST_TYPE
-    {
-      ALPHA_ALWAYS           = GL_ALWAYS,
-      ALPHA_NEVER	     = GL_NEVER,
-      ALPHA_LESS	     = GL_LESS,
-      ALPHA_EQUAL	     = GL_EQUAL,
-      ALPHA_LESS_OR_EQUAL    = GL_LEQUAL,
-      ALPHA_GREATER	     = GL_GREATER,
-      ALPHA_NOT_EQUAL	     = GL_NOTEQUAL,
-      ALPHA_GREATER_OR_EQUAL = GL_GEQUAL
-    };
-    enum BLEND_SRC_TYPE
-    {
-      BLEND_SRC_ZERO                = GL_ZERO,     
-      BLEND_SRC_ONE                 = GL_ONE,
-      BLEND_SRC_DST_COLOR           = GL_DST_COLOR,
-      BLEND_SRC_ONE_MINUS_DST_COLOR = GL_ONE_MINUS_DST_COLOR,
-      BLEND_SRC_SRC_ALPHA           = GL_SRC_ALPHA,
-      BLEND_SRC_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,
-      BLEND_SRC_DST_ALPHA           = GL_DST_ALPHA,
-      BLEND_SRC_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA,
-      BLEND_SRC_SRC_ALPHA_SATURATE  = GL_SRC_ALPHA_SATURATE
-    };
-    enum BLEND_DST_TYPE
-    {
-      BLEND_DST_ZERO		    = GL_ZERO,
-      BLEND_DST_ONE		    = GL_ONE,
-      BLEND_DST_SRC_COLOR	    = GL_SRC_COLOR,
-      BLEND_DST_ONE_MINUS_SRC_COLOR = GL_ONE_MINUS_SRC_COLOR,
-      BLEND_DST_SRC_ALPHA	    = GL_SRC_ALPHA,
-      BLEND_DST_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,    
-      BLEND_DST_DST_ALPHA	    = GL_DST_ALPHA,
-      BLEND_DST_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA
-    };
-    ////////////////////
-    /// Cache access performance _hint_, does not guarantee anything.
-    /// Static  ( define once, use many times.)
-    /// Dynamic ( define multiple times, use multiple times)
-    /// Stream  ( define and use once per frame).
-    enum CACHE_ACCESS_TYPE
-    {
-      CACHE_STATIC_DRAW  = GL_STATIC_DRAW_ARB,   
-      CACHE_STATIC_READ  = GL_STATIC_READ_ARB,   
-      CACHE_STATIC_COPY  = GL_STATIC_COPY_ARB,   
-      CACHE_DYNAMIC_DRAW = GL_DYNAMIC_DRAW_ARB,
-      CACHE_DYNAMIC_READ = GL_DYNAMIC_READ_ARB,
-      CACHE_DYNAMIC_COPY = GL_DYNAMIC_COPY_ARB,
-      CACHE_STREAM_DRAW  = GL_STREAM_DRAW_ARB,
-      CACHE_STREAM_READ  = GL_STREAM_READ_ARB,
-      CACHE_STREAM_COPY  = GL_STREAM_COPY_ARB
-    };
-    /////////////////////////////////////////////////////////////////
-    /// BufferType
-    enum BUFFER_TYPE 
-    { 
-      COLOR_BUFFER = 0,
-      DEPTH_BUFFER = 1
-    };
-    /////////////////////////////////////////////////////////////////
-    /// Frame buffer flags
-    enum FBO_BUFFER_FLAG
-    {
-      FBO_COLOR_BUFFER = 1 << 0,
-      FBO_DEPTH_BUFFER = 1 << 1
-    };
-    ////////////////////
-    /// Texture formats
-    enum TEXTURE_FORMAT
-    {
-      TEX_FORMAT_RGBA = GL_RGBA,
-      TEX_FORMAT_RGB  = GL_RGB,
-      TEX_FORMAT_DEPTH_COMPONENT = GL_DEPTH_COMPONENT
-    };
-    
-    /////////////////////////////////////////////////////////////////
-    /// Class for grouping blending operations. 
-    class CBlendingOperation : public Phoenix::Core::CEnableable
-    {
-    private:
-      BLEND_SRC_TYPE m_tBlendSrcType;
-      BLEND_DST_TYPE m_tBlendDstType;
-    public:
-      ////////////////////
-      /// Constructor. 
-      CBlendingOperation() : Phoenix::Core::CEnableable(), m_tBlendSrcType(BLEND_SRC_ONE), m_tBlendDstType(BLEND_DST_ZERO) {}
-      ////////////////////
-      /// Assigns src operation for blending.
-      /// \param tType Blending source operation;
-      inline void SetSourceOperation( BLEND_SRC_TYPE tType)
-      {
-	m_tBlendSrcType = tType;
-      }
-      ////////////////////
-      /// Assigns dest operation for blending.
-      /// \param tType Blending dest operation;
-      inline void SetDestinationOperation( BLEND_DST_TYPE tType)
-      {
-	m_tBlendDstType = tType;
-      }
-      ////////////////////
-      /// Assigns operations for blending.
-      /// \param tSource Source operation.
-      /// \param tDestination Destination operation.
-      inline void SetOperation( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination )
-      {
-	m_tBlendSrcType = tSource;
-	m_tBlendDstType = tDestination;
-      }
-    };
-    /////////////////////////////////////////////////////////////////
-    /// Class grouping alpha testing properties.
-    class CAlphaTestOperation : public Phoenix::Core::CEnableable
-    {
-    private:
-      ALPHA_TEST_TYPE m_tTestType;
-      float	      m_fRefValue;
-    public:
-      ////////////////////
-      /// Constructor.
-      CAlphaTestOperation() : m_tTestType(ALPHA_ALWAYS), m_fRefValue(0.0f) {}
-      ////////////////////
-      /// Assigns test type.
-      /// \param tType ALPHA_TEST_TYPE.
-      inline void SetTest( ALPHA_TEST_TYPE tType )
-      { 
-	m_tTestType = tType; 
-      }
-      ////////////////////
-      /// Returns current alpha test.
-      /// \returns Current ALPHA_TEST_TYPE.
-      inline ALPHA_TEST_TYPE GetTest() const 
-      { 
-	return m_tTestType; 
-      }
-      ////////////////////
-      /// Assigns reference value.
-      /// \param fValue Reference value to be set.
-      inline void SetReference( float fValue )
-      {
-	m_fRefValue = fValue;
-      }
-      ////////////////////
-      /// Returns reference value.
-      /// \brief Returns current reference value.
-      inline float GetReference () const
-      {
-	return m_fRefValue;
-      }
-    };
+
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
@@ -357,37 +182,7 @@ namespace Phoenix
 	m_fLineHeight = fHeight;
       }
     };
-    /////////////////////////////////////////////////////////////////
-    /// Renderstate object. This is used to determine when to 
-    /// commit vertexdescriptors, indices, textures. Especially when VBOs
-    /// are used, this comes in handy, since changing VBO is costly.
-    class CRenderState
-    {
-    public:
-      Phoenix::Graphics::CVertexDescriptor *m_pVertexBuffer;
-      Phoenix::Graphics::CVertexDescriptor *m_pColorBuffer;
-      Phoenix::Graphics::CVertexDescriptor *m_pTexCoordBuffer;
-      Phoenix::Graphics::CVertexDescriptor *m_pNormalBuffer;
-      Phoenix::Graphics::CIndexArray	   *m_pIndexArray;
-      Phoenix::Graphics::CShader	   *m_pShader;
-      Phoenix::Graphics::COglTexture       *m_pTexture[TEXTURE_HANDLE_COUNT];
-
-      ////////////////////
-      /// Constructor.
-      CRenderState() : m_pVertexBuffer(NULL), 
-		       m_pColorBuffer(NULL), 
-		       m_pTexCoordBuffer(NULL), 
-		       m_pNormalBuffer(NULL),
-		       m_pIndexArray(NULL),
-		       m_pShader(NULL) 
-      {
-	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;++i)
-	{
-	  m_pTexture[i] = NULL;
-	}
-
-      }
-    };
+    
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
     class COglRenderer

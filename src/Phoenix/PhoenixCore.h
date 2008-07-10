@@ -27,7 +27,7 @@ namespace Phoenix
     {
     private:
       /// State
-      int m_bIsNull;
+      bool m_bIsNull;
     protected:
       ////////////////////
       /// Constructor.
@@ -37,18 +37,18 @@ namespace Phoenix
       ////////////////////
       /// Assigns null state.
       /// \param bNull Nullification state.
-      inline void SetNull(int bNull) { m_bIsNull = bNull; }
+      inline void SetNull(bool bNull) { m_bIsNull = bNull; }
       ////////////////////
       /// Returns nullification state.
       /// \returns state.
-      inline int IsNull() const { return m_bIsNull; }
+      inline bool IsNull() const { return m_bIsNull; }
     };
     /////////////////////////////////////////////////////////////////
     class CEnableable
     {
     private:
       /// Is object enabled.
-      int		m_bEnabled;
+      bool		m_bEnabled;
     protected:
       ////////////////////
       /// Default constructor. Disables object.
@@ -58,18 +58,18 @@ namespace Phoenix
       ////////////////////
       /// Returns is object enabled or disabled.
       /// \returns true for enabled, false for disabled.
-      int IsEnabled() const {   return m_bEnabled; }
+      bool IsEnabled() const {   return m_bEnabled; }
       ////////////////////
       /// Sets object enabled or disabled.
       /// \param bFlag Boolean flag - true for enabling, false for disabling.
-      void SetEnabled(int bFlag ) { m_bEnabled = bFlag; }
+      void SetEnabled(bool bFlag ) { m_bEnabled = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
     class CSelectable
     {
     private:
       /// Is object selected.
-      int		m_bSelected;
+      bool		m_bSelected;
     protected:
       ////////////////////
       /// Default constructor. Unselects object.
@@ -79,18 +79,18 @@ namespace Phoenix
       ////////////////////
       /// Returns is object selected or unselected.
       /// \returns true for selected, false for unselected.
-      int IsSelected() const {   return m_bSelected; }
+      bool IsSelected() const {   return m_bSelected; }
       ////////////////////
       /// Sets object selected or unselected.
       /// \param bFlag Boolean flag - true for selecting, false for unselecting.
-      void SetSelected(int bFlag ) { m_bSelected = bFlag; }
+      void SetSelected( bool bFlag ) { m_bSelected = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
     class CFocusable
     {
     private:
       /// Does this element have current focus.
-      int	m_bHasFocus;
+      bool	m_bHasFocus;
     protected:
       ////////////////////
       /// Constructor. Unfocuses object.
@@ -100,11 +100,11 @@ namespace Phoenix
       ////////////////////
       /// Checks is this element focused.
       /// \returns Non-zero on focus, zero otherwise.
-      int HasFocus() const { return m_bHasFocus;  }
+      bool HasFocus() const { return m_bHasFocus;  }
       ////////////////////
       /// Sets focus flag.
       /// \param bFlag Non-zero for focus on, 0 for unfocus.
-      void SetFocus( int bFlag ) { m_bHasFocus = bFlag; }
+      void SetFocus( bool bFlag ) { m_bHasFocus = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
     /// Template base for each typed object.

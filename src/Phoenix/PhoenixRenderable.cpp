@@ -189,15 +189,21 @@ Phoenix::Graphics::CRenderable::GetShaderFloatParameters()
   return m_vShaderFloatParams;
 }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Graphics::CRenderable::SetTransparent( bool bFlag ) 
+Phoenix::Graphics::CRenderState & 
+Phoenix::Graphics::CRenderable::GetRenderState()
 {
-  m_bTransparent = bFlag;
+  return m_RenderState;
 }
 /////////////////////////////////////////////////////////////////
-bool
-Phoenix::Graphics::CRenderable::IsTransparent() const
-{
-  return m_bTransparent;
-}
+// void
+// Phoenix::Graphics::CRenderable::SetTransparent( bool bFlag ) 
+// {
+//   m_bTransparent = bFlag;
+// }
+// /////////////////////////////////////////////////////////////////
+// bool
+// Phoenix::Graphics::CRenderable::IsTransparent() const
+// {
+//   return m_bTransparent;
+// }
 /////////////////////////////////////////////////////////////////

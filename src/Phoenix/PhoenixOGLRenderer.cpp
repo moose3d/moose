@@ -549,7 +549,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
     // store current indexbuffer pointer to renderstate
-    GetRenderState().m_pIndexArray = pIndexBuffer;
+    //GetRenderState().m_pIndexArray = pIndexBuffer;
   }
   glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
 		  iIndexBufferType,  pIndices);
@@ -977,12 +977,12 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
   
-  if ( m_RenderState.m_pTexture[nTexUnit] != pTexture )
+  //if ( m_RenderState.m_pTexture[nTexUnit] != pTexture )
   {
     // Bind texture
     glBindTexture( GetGLTextureType( pTexture->GetType() ), pTexture->GetID() ); 
     // Set texture pointer to renderstate 
-    m_RenderState.m_pTexture[nTexUnit] = pTexture;
+    // m_RenderState.m_pTexture[nTexUnit] = pTexture;
   }
 
   glEnable( GetGLTextureType( pTexture->GetType() ) );
