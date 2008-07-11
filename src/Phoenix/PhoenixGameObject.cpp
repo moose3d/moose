@@ -1,5 +1,7 @@
 #include "PhoenixGameObject.h"
 #include "PhoenixOGLRenderer.h"
+#include "PhoenixModelHelper.h"
+#include "PhoenixDefaultEntities.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
@@ -13,10 +15,14 @@ Phoenix::Scene::CGameObject::~CGameObject()
     it = m_LodLevels[i].begin();
     for( ; it != m_LodLevels[i].end(); it++)
     {  
+      // Destroy renderable from manager
+      (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->Destroy(**it);
       // delete handle, it knows how to free itself properly.
       delete *it;
     }					       
+    m_LodLevels[i].clear();
   }
+  
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -34,13 +40,22 @@ Phoenix::Scene::CGameObject::UpdateTransforms()
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
-Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t nLodLevel  )
+CRenderable *
+Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName )
 {
+  // Create renderable
+  CRenderable *pRenderable = new CRenderable();
+  // create handle to renderable
   CHandle<CRenderable> *pHandle = new CHandle<CRenderable>();
+  // Add renderable handle to given lod level
   GetRenderableObjects(nLodLevel).push_back( pHandle );
 
-  assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->AttachHandle( szResourceName, *pHandle ) == 0);
+  // Assign handle to renderable and manage object
+  assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->Create( pRenderable, g_UniqueName, *pHandle) == 0);
+  // Attach proper data to renderable.
+  g_ModelHelper->CreateRenderable( szResourceName, *pRenderable, szGroupName );
+  // Return new renderable object
+  return pRenderable;
 }
 /////////////////////////////////////////////////////////////////
 

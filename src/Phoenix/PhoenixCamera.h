@@ -346,6 +346,10 @@ namespace Phoenix
       ////////////////////
       /// Resets decal offset value - practically same as SetDecalOffset( 0.0f, * ), but without calculations.
       void ResetDecalOffset();
+      /////////////////////////////
+      /// Returns trackball rotation point.
+      /// \returns trackball rotation point.
+      Phoenix::Math::CVector3<float> GetFocusPoint();
     };
   }; // namespace Graphics
 }; // Phoenix

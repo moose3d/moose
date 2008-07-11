@@ -12,7 +12,7 @@ using std::ostringstream;
 using std::string;
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const char *szName, int iFlags )
+Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const char *szName, int iFlags, const char **aszGroupNames )
 {
   // delete previous loader.
   if ( m_pLoader ) 
@@ -75,6 +75,33 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
     /*  rModel.GetTextureCoordinateHandle()) == 0);		     */ 
  									
   }									
+  
+  if ( aszGroupNames == NULL || aszGroupNames[0] == NULL )
+  {
+    ostringstream stream;  
+    stream << name << "_list_indices";
+    assert( g_DefaultIndexManager->Create( m_pLoader->GetIndices()[0], 
+					   stream.str().c_str()) == 0 );     
+    m_pLoader->ResetIndices();
+  }
+  else
+  {
+    size_t nGroupIndex = 0;
+    
+    for( ; aszGroupNames[nGroupIndex]; ++nGroupIndex)
+    {
+      CIndexArray *pIndices = m_pLoader->GetGroupIndices( aszGroupNames[nGroupIndex] );
+      assert ( pIndices != NULL && "Group is NULL" );
+
+      ostringstream stream;  
+      stream << name << "_" << aszGroupNames[nGroupIndex] << "_indices";
+      assert( g_DefaultIndexManager->Create( pIndices, 
+					     stream.str().c_str()) == 0 );
+      m_pLoader->ResetGroup( aszGroupNames[nGroupIndex] );
+    }
+  }
+  
+  
   // All ok
   return 0;
 }
@@ -83,32 +110,21 @@ int
 Phoenix::Data::CModelHelper::CreateRenderable( const char *szName, CRenderable & rModel, const char *szGroupName )
 {
   string name = szName;
-  assert( g_DefaultVertexManager->AttachHandle( name + "_vertices",	rModel.GetVertexHandle()) == 0);
-  assert(  g_DefaultVertexManager->AttachHandle( name + "_normals",	rModel.GetNormalHandle()) == 0);
-  assert(  g_DefaultVertexManager->AttachHandle( name + "_texcoords0",	rModel.GetTextureCoordinateHandle()) == 0);
-  
-  /// Create index handles
-  assert ( m_pLoader->GetIndices().size() == 1 && "Too many triangle indices");
 
+  g_DefaultVertexManager->AttachHandle( name + "_vertices",	rModel.GetVertexHandle());
+  g_DefaultVertexManager->AttachHandle( name + "_normals",	rModel.GetNormalHandle());
+  g_DefaultVertexManager->AttachHandle( name + "_texcoords0",	rModel.GetTextureCoordinateHandle());
+
+ 
   if ( szGroupName == NULL )
   {
-    ostringstream stream;  
-    stream << name << "_list_indices";
-    assert( g_DefaultIndexManager->Create( m_pLoader->GetIndices()[0], 
-					   stream.str().c_str(), 
-					   rModel.GetListIndices()) == 0 );     
-    m_pLoader->ResetIndices();
+    assert( g_DefaultIndexManager->AttachHandle( name + "_list_indices",  rModel.GetListIndices()) == 0 );     
   }
   else
   {
-    CIndexArray *pIndices = m_pLoader->GetGroupIndices( szGroupName );
-    assert ( pIndices != NULL && "Group is NULL");
     ostringstream stream;  
     stream << name << "_" << szGroupName << "_indices";
-    assert( g_DefaultIndexManager->Create( pIndices, 
-					   stream.str().c_str(), 
-					   rModel.GetListIndices()) == 0 );
-    m_pLoader->ResetGroup( szGroupName );
+    assert( g_DefaultIndexManager->AttachHandle( stream.str().c_str(), rModel.GetListIndices()) == 0 );
   }
   
   return 0;

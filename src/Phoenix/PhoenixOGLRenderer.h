@@ -29,7 +29,40 @@ namespace Phoenix
 {
   namespace Graphics
   {
-
+    /////////////////////////////////////////////////////////////////
+    /// Holds information about current renderstates.
+    class CInternalRenderState
+    {
+    public:
+      Phoenix::Graphics::COglTexture *m_pTexture[TEXTURE_HANDLE_COUNT];
+    public:      
+      
+      CInternalRenderState()
+      {
+	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;i++)
+	{
+	  m_pTexture[i] = NULL;
+	}
+      }
+      ////////////////////
+      /// Tests is texture unit bound to current texture.
+      /// \param nTexUnit Texture unit where texture binding is evaluated.
+      /// \param pTexture Pointer to evaluated texture.
+      inline bool IsCurrentTexture( size_t nTexUnit, COglTexture *pTexture ) const
+      {
+	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
+	return (m_pTexture[nTexUnit] == pTexture);
+      }
+      ////////////////////
+      /// Sets currently assigned texture.
+      /// \param nTexUnit Texture unit where texture will be bound.
+      /// \param pTexture Pointer to texture.
+      inline void SetCurrentTexture( size_t nTexUnit, COglTexture *pTexture )
+      {
+	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
+	m_pTexture[nTexUnit] = pTexture;
+      }
+    };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
@@ -193,8 +226,9 @@ namespace Phoenix
       /// Alpha test operation
       CAlphaTestOperation		       m_AlphaTest;
       Phoenix::Graphics::CCamera	       *m_pCamera;
-      Phoenix::Graphics::CRenderState	       m_RenderState;
+      Phoenix::Graphics::CInternalRenderState  m_RenderState;
       GLUquadric *			       m_pQuadric;
+      
     public:
       ////////////////////
       /// Default constructor
@@ -465,6 +499,10 @@ namespace Phoenix
       /// \param tDestination Destination operation.
       void CommitBlending( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination);
       ////////////////////
+      /// Commits blending.
+      /// \param rBlendingOp Blending operation.
+      void CommitBlending( Phoenix::Graphics::CBlendingOperation & rBlendingOp );
+      ////////////////////
       /// Commits skybox.
       /// \param skybox Skybox to be committed for rendering.
       /// \param camera Current camera where skybox will be applied.
@@ -583,7 +621,7 @@ namespace Phoenix
       ////////////////////
       /// Returns current renderstate.
       /// \returns Reference to current renderstate.
-      Phoenix::Graphics::CRenderState & GetRenderState();
+      Phoenix::Graphics::CInternalRenderState & GetRenderState();
     };
     /////////////////////////////////////////////////////////////////  
   }; // namespace Graphics
@@ -601,7 +639,7 @@ Phoenix::Graphics::COglRenderer::CommitColor( unsigned char bR, unsigned char bG
   glColor4ub( bR,bG,bB,bA );
 }
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Graphics::CRenderState & 
+inline Phoenix::Graphics::CInternalRenderState & 
 Phoenix::Graphics::COglRenderer::GetRenderState()
 {
   return m_RenderState;

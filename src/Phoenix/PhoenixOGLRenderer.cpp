@@ -977,12 +977,12 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
   
-  //if ( m_RenderState.m_pTexture[nTexUnit] != pTexture )
+  if ( ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
   {
     // Bind texture
     glBindTexture( GetGLTextureType( pTexture->GetType() ), pTexture->GetID() ); 
     // Set texture pointer to renderstate 
-    // m_RenderState.m_pTexture[nTexUnit] = pTexture;
+    GetRenderState().SetCurrentTexture( nTexUnit, pTexture);
   }
 
   glEnable( GetGLTextureType( pTexture->GetType() ) );
@@ -1001,6 +1001,7 @@ Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglText
   {
     DISABLE_ALL_TEXTURES();
   }
+  GetRenderState().SetCurrentTexture( nTexUnit, NULL);
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -1040,33 +1041,46 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   CVertexDescriptor *pTemp = NULL;
   CVertexDescriptor *pVertices = *renderable.GetVertexHandle();
   CIndexArray *pIndices = NULL;
-  
-  if ( !(iExcludeOpts & M_TEXTURE_DATA) )
+  CRenderState & state = renderable.GetRenderState();
+  CommitBlending( state.GetBlendingOperation());
+
+  // Check depth mask write flag.
+  if ( state.GetDepthWrite().IsEnabled()) {  CommitState( STATE_DEPTH_WRITE );  } 
+  else DisableState( STATE_DEPTH_WRITE );
+
+  // Check depth test flag.
+  if ( state.GetDepthTest().IsEnabled()) CommitState( STATE_DEPTH_TEST ); 
+  else DisableState( STATE_DEPTH_TEST );
+  // Check face culling flag.
+  if ( state.GetFaceCulling().IsEnabled()) CommitState( STATE_FACECULLING );
+  else DisableState( STATE_FACECULLING );
+  // Commit textures
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
-    // Commit textures
-    for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
-    {
-      pTemp    = *renderable.GetTextureCoordinateHandle(i);
-      pTexture = *renderable.GetTextureHandle(i);
+    pTemp    = *renderable.GetTextureCoordinateHandle(i);
+    pTexture = *renderable.GetTextureHandle(i);
     
-      // check that texcoord resources actually exist
-      if ( pTemp     != NULL ) 
-      { 
-	CommitVertexDescriptor( pTemp, i ); 
-      } 
-      // check that texture resource exists
-      if ( pTexture  != NULL ) 
-      { 
-	CommitTexture( i, pTexture ); 
-	CommitFilters( renderable.GetTextureFilters(i), pTexture->GetType() );
-      }
+    // check that texcoord resources actually exist
+    if ( pTemp     != NULL ) 
+    { 
+      CommitVertexDescriptor( pTemp, i ); 
+    } 
+    // check that texture resource exists
+    if ( pTexture  != NULL ) 
+    { 
+      CommitTexture( i, pTexture ); 
+      CommitFilters( renderable.GetTextureFilters(i), pTexture->GetType() );
     }
+    else 
+      DisableTexture(i, NULL);
   }
-  // if shader exists
-  if ( !( iExcludeOpts & M_SHADER_DATA ) && renderable.GetShaderHandle().IsNull() == 0 )
+
+
+  CShader *pShader = *renderable.GetShaderHandle();
+  CommitShader( pShader );
+
+  if ( !renderable.GetShaderHandle().IsNull())
   {
-    CShader *pShader = *renderable.GetShaderHandle();
-    CommitShader( pShader );
     CVertexDescriptor *pParam = NULL;
     // Go through all parameters and commit them
     for(unsigned int nSP=0; nSP< renderable.GetShaderParameters().size(); nSP++)
@@ -1088,42 +1102,17 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
       CommitUniformShaderParam( *pShader, renderable.GetShaderFloatParameters()[nSP].first, renderable.GetShaderFloatParameters()[nSP].second );
     }
   }
+
   // check and commit resources
-  if ( pVertices != NULL ) 
-  { 
-    CommitVertexDescriptor ( pVertices ); 
-  }
+  if ( pVertices != NULL )			    CommitVertexDescriptor ( pVertices ); 
   // commit normals
-  if ( !( iExcludeOpts & M_NORMAL_DATA ) && renderable.GetNormalHandle().IsNull() == 0 ) 
-  { 
-    CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
-  }
-
+  if ( !renderable.GetNormalHandle().IsNull() )     CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
   // Commit colors
-  if ( !renderable.GetColorHandle().IsNull() ) 
-  {
-    CommitVertexDescriptor( *renderable.GetColorHandle() );
-  }
-
-  // commit indices
-  if ( !( iExcludeOpts & M_INDEX_DATA ))
-  {
-//     for(unsigned int n=0;n<renderable.GetIndexHandles().size();n++)
-//     {
-//       pIndices = *( *renderable.GetIndexHandles()[n] );
-//       if ( pIndices  != NULL ) 
-//       { 
-// 	CommitPrimitive ( pIndices );         
-//       }
-//     }
-
-    if ( !renderable.GetStripIndices().IsNull()) 
-      CommitPrimitive( *renderable.GetStripIndices());
-
-    if ( !renderable.GetListIndices().IsNull()) 
-      CommitPrimitive( *renderable.GetListIndices());
-
-  }
+  if ( !renderable.GetColorHandle().IsNull()  )     CommitVertexDescriptor( *renderable.GetColorHandle() );
+  
+  if ( !renderable.GetStripIndices().IsNull() )     CommitPrimitive( *renderable.GetStripIndices() );
+  if ( !renderable.GetListIndices().IsNull()  )     CommitPrimitive( *renderable.GetListIndices() );
+  
   RollbackTransform();
 }
 /////////////////////////////////////////////////////////////////
@@ -1756,6 +1745,18 @@ void
 Phoenix::Graphics::COglRenderer::CommitBlending( BLEND_SRC_TYPE tSource, BLEND_DST_TYPE tDestination)
 {
   glBlendFunc( static_cast<GLenum>(tSource),static_cast<GLenum>(tDestination));
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitBlending( Phoenix::Graphics::CBlendingOperation & rBlendingOp )
+{
+  if ( rBlendingOp.IsEnabled() ) 
+  {
+    CommitState( STATE_BLENDING );
+    CommitBlending( rBlendingOp.GetSourceOperation(), rBlendingOp.GetDestinationOperation());
+  }
+  else 
+    DisableState( STATE_BLENDING );
 }
 /////////////////////////////////////////////////////////////////
 void

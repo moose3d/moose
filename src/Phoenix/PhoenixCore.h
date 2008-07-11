@@ -28,11 +28,11 @@ namespace Phoenix
     private:
       /// State
       bool m_bIsNull;
-    protected:
+    public:
       ////////////////////
       /// Constructor.
       CNullable() : m_bIsNull(1) { }
-    public:
+
       virtual ~CNullable() {}
       ////////////////////
       /// Assigns null state.
@@ -49,11 +49,11 @@ namespace Phoenix
     private:
       /// Is object enabled.
       bool		m_bEnabled;
-    protected:
+    public:
       ////////////////////
       /// Default constructor. Disables object.
       CEnableable() : m_bEnabled(0) { }
-    public:
+
       virtual ~CEnableable() {}
       ////////////////////
       /// Returns is object enabled or disabled.
@@ -63,6 +63,8 @@ namespace Phoenix
       /// Sets object enabled or disabled.
       /// \param bFlag Boolean flag - true for enabling, false for disabling.
       void SetEnabled(bool bFlag ) { m_bEnabled = bFlag; }
+
+      inline void operator=( bool bFlag ) { SetEnabled(bFlag); }
     };
     /////////////////////////////////////////////////////////////////
     class CSelectable
@@ -70,11 +72,10 @@ namespace Phoenix
     private:
       /// Is object selected.
       bool		m_bSelected;
-    protected:
+    public:
       ////////////////////
       /// Default constructor. Unselects object.
       CSelectable() : m_bSelected(0){ }
-    public:
       virtual ~CSelectable() {}
       ////////////////////
       /// Returns is object selected or unselected.
@@ -91,11 +92,10 @@ namespace Phoenix
     private:
       /// Does this element have current focus.
       bool	m_bHasFocus;
-    protected:
+    public:
       ////////////////////
       /// Constructor. Unfocuses object.
       CFocusable() : m_bHasFocus(0) {}
-    public:
       virtual ~CFocusable() {}
       ////////////////////
       /// Checks is this element focused.

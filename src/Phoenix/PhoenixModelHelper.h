@@ -29,9 +29,10 @@ namespace Phoenix
       /// \param szFilename Path to milkshape model file.
       /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
+      /// \param aszGroupNames Array of group names, last item must be NULL.
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      int LoadMilkshapeModel( const char *szFilename, const char * szName, int iFlags = 0 );
+      int LoadMilkshapeModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0 );
       ////////////////////
       /// Initializes CRenderable object from currently loaded data.
       /// \attention This function does not add Renderable itself into RenderableManager.

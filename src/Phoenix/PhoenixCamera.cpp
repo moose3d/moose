@@ -708,7 +708,12 @@ Phoenix::Graphics::CCamera::ResetDecalOffset()
   m_fDecalOffset = 1.0f;
 }
 /////////////////////////////////////////////////////////////////
-
+Phoenix::Math::CVector3<float> 
+Phoenix::Graphics::CCamera::GetFocusPoint()
+{
+  return GetPosition()+GetForwardVector()*GetTrackballDistance();
+}
+/////////////////////////////////////////////////////////////////
 // Float clip[16];
 //   float modl[16], proj[16];
 //   glGetFloatv( GL_PROJECTION_MATRIX, proj );

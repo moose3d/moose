@@ -42,6 +42,18 @@ namespace Phoenix
 	m_tBlendSrcType = tSource;
 	m_tBlendDstType = tDestination;
       }
+      ////////////////////
+      /// \returns blending source operation.
+      BLEND_SRC_TYPE GetSourceOperation() const
+      {
+	return m_tBlendSrcType;
+      }
+      ////////////////////
+      /// \returns blending destination operation.
+      BLEND_DST_TYPE GetDestinationOperation() const 
+      {
+	return m_tBlendDstType;
+      }
     };
   }
 }

@@ -108,7 +108,9 @@ namespace Phoenix
       /// \par attaches resource by name to it.
       /// \param szResourceName Name of the Renderable resource.
       /// \param nLodLevel To which lod level renderable is added.
-      void AddRenderable( const char *szResourceName, size_t nLodLevel  );
+      /// \param szGroupName Group name for indices. By default NULL, meaning all indices.
+      /// \returns Renderable pointer.
+      Phoenix::Graphics::CRenderable * AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL  );
       
       bool ShouldBeRendered() const;
       void SetRenderable( bool bFlag );
