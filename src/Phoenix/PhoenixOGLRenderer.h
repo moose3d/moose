@@ -104,40 +104,40 @@ namespace Phoenix
       COglRendererFeatures();
       ////////////////////
       /// Is vertex_program extension supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasVertexProgram() const;
+      /// \return true if supported, false otherwise.
+      bool HasVertexProgram() const;
       ////////////////////
       /// Is vertex_shader extension supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasVertexShader() const;
+      /// \return true if supported, false otherwise.
+      bool HasVertexShader() const;
       ////////////////////
       /// Is fragment_shader extension supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasFragmentShader() const;
+      /// \return true if supported, false otherwise.
+      bool HasFragmentShader() const;
       ////////////////////
       /// Is vertex_array supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasVertexArray() const;
+      /// \return true if supported, false otherwise.
+      bool HasVertexArray() const;
       ////////////////////
       /// Is vertex_buffer_object supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasVertexBufferObject() const;
+      /// \return true if supported, false otherwise.
+      bool HasVertexBufferObject() const;
       ////////////////////
       /// Is multitexture supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasMultitexture() const;
+      /// \return true if supported, false otherwise.
+      bool HasMultitexture() const;
       ////////////////////
       /// Is shader_objects supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasShaderObjects() const;
+      /// \return true if supported, false otherwise.
+      bool HasShaderObjects() const;
       ////////////////////
       /// Is EXT_framebuffer_object supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasFramebufferObjects() const;
+      /// \return true if supported, false otherwise.
+      bool HasFramebufferObjects() const;
       ////////////////////
       /// Is EXT_texture_compression_s3tc supported.
-      /// \return 1 if supported, 0 otherwise.
-      int HasTextureCompressionS3TC() const;
+      /// \return true if supported, false otherwise.
+      bool HasTextureCompressionS3TC() const;
       ////////////////////
       /// Get maximum number of lights.
       /// \return maximum number of lights.
@@ -303,6 +303,11 @@ namespace Phoenix
       /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
       /// \returns Pointer to COglTexture.
       Phoenix::Graphics::COglTexture * CreateCompressedTexture( const char * strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
+      ////////////////////
+      /// Creates new cube texture from TGA images.
+      /// \param szFiles texture filenames for tga image.
+      /// \returns Pointer to COglTexture.
+      Phoenix::Graphics::COglTexture * CreateCubeTexture( const char * szFiles[6] );
       ////////////////////
       /// Creates new empty texture.
       /// \param nWidth width of texture.

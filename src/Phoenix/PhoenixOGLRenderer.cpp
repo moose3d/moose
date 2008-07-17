@@ -35,6 +35,7 @@ const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT,
 /////////////////////////////////////////////////////////////////
 #define DISABLE_ALL_TEXTURES(){			\
     glDisable(GL_TEXTURE_2D);			\
+    glDisable(GL_TEXTURE_CUBE_MAP);		\
     glDisable(GL_TEXTURE_RECTANGLE_ARB);	\
 }
 /////////////////////////////////////////////////////////////////
@@ -51,6 +52,9 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
     break;
   case TEXTURE_RECT:
     iRetval = GL_TEXTURE_RECTANGLE_ARB;
+    break;
+  case TEXTURE_CUBE:
+    iRetval = GL_TEXTURE_CUBE_MAP;
     break;
   }
   return iRetval;
@@ -92,15 +96,17 @@ Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
   Init();
   // Check for required extensions:
-  if ( GLEE_ARB_vertex_program	)  m_bARB_vertex_program  = 1;
-  if ( GLEE_ARB_vertex_shader	)  m_bARB_vertex_shader   = 1;
-  if ( GLEE_ARB_fragment_shader )  m_bARB_fragment_shader = 1;
-  if ( GLEE_ARB_shader_objects	)  m_bARB_shader_objects  = 1;
-  if ( GLEE_EXT_vertex_array	)  m_bEXT_vertex_array    = 1;
-  if ( GLEE_ARB_multitexture	)  m_bARB_multitexture     = 1;
+  m_bARB_vertex_program  = GLEE_ARB_vertex_program;
+  m_bARB_vertex_shader   = GLEE_ARB_vertex_shader;
+  m_bARB_fragment_shader = GLEE_ARB_fragment_shader;
+  m_bARB_shader_objects  = GLEE_ARB_shader_objects;
+  m_bEXT_vertex_array    = GLEE_EXT_vertex_array;
+  m_bARB_multitexture    = GLEE_ARB_multitexture;
 
-  if ( GLEE_ARB_vertex_buffer_object	) m_bARB_vertex_buffer_object = 1;
-  if ( GLEE_EXT_framebuffer_object	)  m_bEXT_framebuffer_object    = 1;
+  m_bARB_vertex_buffer_object     = GLEE_ARB_vertex_buffer_object;
+  m_bEXT_framebuffer_object       = GLEE_EXT_framebuffer_object;
+  m_bEXT_texture_compression_s3tc = GLEE_EXT_texture_compression_s3tc;
+
   glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
   glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
   glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);  
@@ -127,55 +133,55 @@ Phoenix::Graphics::COglRendererFeatures::Init()
   m_iMaxDrawBuffers = 0;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasVertexProgram() const
 {
   return m_bARB_vertex_program;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasVertexShader() const
 {
   return m_bARB_vertex_shader;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasFragmentShader() const
 {
   return m_bARB_fragment_shader;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasVertexArray() const
 {
   return m_bEXT_vertex_array;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasVertexBufferObject() const
 {
   return m_bARB_vertex_buffer_object;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasMultitexture() const
 {
   return m_bARB_multitexture;
 }
 /////////////////////////////////////////////////////////////////
-int 
+bool 
 Phoenix::Graphics::COglRendererFeatures::HasShaderObjects() const
 {
   return m_bARB_shader_objects;
 }
 /////////////////////////////////////////////////////////////////
-int
+bool
 Phoenix::Graphics::COglRendererFeatures::HasFramebufferObjects() const
 {
   return m_bEXT_framebuffer_object;
 }
 /////////////////////////////////////////////////////////////////
-int
+bool
 Phoenix::Graphics::COglRendererFeatures::HasTextureCompressionS3TC() const
 {
   return m_bEXT_texture_compression_s3tc;
@@ -286,7 +292,7 @@ Phoenix::Graphics::COglRenderer::ClearBuffer(Phoenix::Graphics::BUFFER_TYPE tTyp
 void
 Phoenix::Graphics::COglRenderer::Finalize()
 {
-  glFinish();
+  //glFinish();
   // disable textures, these tend to make nasty problems.
   for( int i=0;i<TEXTURE_HANDLE_COUNT;i++)
   {
@@ -397,6 +403,27 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
     break;
+  case ELEMENT_TYPE_TEX_3F:
+    if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
+    else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
+
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    // check if this was previously set
+    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
+    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glTexCoordPointer(3, GL_FLOAT, 0, 0);
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glTexCoordPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
+    break;
   case ELEMENT_TYPE_NORMAL_3F:
     glEnableClientState( GL_NORMAL_ARRAY );
 
@@ -459,6 +486,7 @@ Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pB
     glDisableClientState( GL_COLOR_ARRAY );
     break;
   case ELEMENT_TYPE_TEX_2F:
+  case ELEMENT_TYPE_TEX_3F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
     else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -522,6 +550,9 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     break;
   case PRIMITIVE_QUAD_LIST:
     glPrimitive = GL_QUADS;
+    break;
+  case PRIMITIVE_QUAD_STRIP:
+    glPrimitive = GL_QUAD_STRIP;
     break;
   }
   //bool bIsActive = (GetRenderState().m_pIndexArray == pIndexBuffer ) ;
@@ -868,6 +899,12 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
   glEnable( iGLType );
   glBindTexture(iGLType, pTexture->GetID());  
 
+  // Set default texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+  
   int nSize;
   int nOffset = 0;
   int nWidth = pImage->GetWidth();
@@ -896,6 +933,105 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
 
 #undef CLEANUP  	   
 
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
+{
+  // Files must not be null
+  if ( szFiles == NULL ) return NULL;
+  
+  unsigned int iTexId;
+  glGenTextures( 1, &iTexId);
+  COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_CUBE );
+
+  for( size_t i=0;i<6;i++)
+  {
+    ////////////////////
+    CTGAImage *pImage = CTGAImage::LoadImage( szFiles[i] );
+    assert ( pImage != NULL && "Unable to load TGA image for CUBE TEXTURE." );
+    ////////////////////
+    int    iGLInternalFormat = 3;
+    GLenum iGLformat = GL_RGB;
+    ////////////////////
+    // Check correct depth
+    switch (pImage->GetBPP())
+    {
+    case 8:
+      iGLInternalFormat = 1;
+      iGLformat = GL_LUMINANCE;
+      break;
+    case 16:
+      iGLInternalFormat = 2;
+      iGLformat = GL_LUMINANCE_ALPHA;
+      break;
+    case 24:
+      iGLInternalFormat = 3;
+      iGLformat = GL_RGB;
+      break;
+    case 32:
+      iGLInternalFormat = 4;
+      iGLformat = GL_RGBA;
+      std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
+      break;
+    default:
+      delete pImage;
+      std::cerr << "Not 8, 16, 24 or 32 BBP image (was " 
+		<< pImage->GetBPP() << "):  '" << szFiles[i] << "'" 
+		<< std::endl;
+      break;
+    }
+    GLenum iGLType = GL_TEXTURE_CUBE_MAP;
+    ////////////////////
+    // create actual gl texture 
+    glEnable( iGLType );
+    glBindTexture( iGLType, pTexture->GetID());  
+    ////////////////////
+    // Set default texture parameters
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+    ////////////////////
+    /// Determine proper face id
+    GLenum cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X; 
+    switch (i)
+    {
+    case 0:
+      cubeFace = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+      break;
+    case 1:
+      cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+      break;
+    case 2:
+      cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+      break;
+    case 3:
+      cubeFace = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+      break;
+    case 4:
+      cubeFace = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+      break;
+    case 5:
+      cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+      break;
+    }
+    ////////////////////
+    // Create texture.
+    glTexImage2D( cubeFace, 0, iGLInternalFormat, 
+		  pImage->GetWidth(), pImage->GetHeight(), 0, 
+		  iGLformat,  GL_UNSIGNED_BYTE, pImage->GetImg());
+    ////////////////////
+    // Cleanup data, it is not needed anymore.
+    if ( pImage ) 
+    {
+      delete pImage; 
+      pImage = NULL; 
+    }
+
+  } // for ( size_t
+  return pTexture;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture * 
@@ -977,7 +1113,7 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
   
-  if ( ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
+  if ( true || ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
   {
     // Bind texture
     glBindTexture( GetGLTextureType( pTexture->GetType() ), pTexture->GetID() ); 
@@ -1040,7 +1176,7 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
   CVertexDescriptor *pVertices = *renderable.GetVertexHandle();
-  CIndexArray *pIndices = NULL;
+
   CRenderState & state = renderable.GetRenderState();
   CommitBlending( state.GetBlendingOperation());
 
@@ -1772,72 +1908,17 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
   
-  COglTexture *pTexture = NULL;
-  CIndexArray *pIndices = NULL;
-
+  COglTexture *pTexture = *skybox.GetTextureHandle(0);
+  CIndexArray *pIndices = *skybox.GetListIndices();
   CVertexDescriptor *pTexCoords = *skybox.GetTextureCoordinateHandle(0);
   CVertexDescriptor *pVertices  = *skybox.GetVertexHandle();  
-  if ( pVertices  != NULL ) 
-  {
-    CommitVertexDescriptor( pVertices );
-  }
+
+  if ( pVertices )  CommitVertexDescriptor( pVertices );
+  if ( pTexCoords ) CommitVertexDescriptor( pTexCoords );
+  if ( pTexture )   CommitTexture( 0, pTexture ); 
+  if ( pIndices )   CommitPrimitive( pIndices );
+  /////////////////////////////////////////////////////////////////
   
-  if ( pTexCoords != NULL ) CommitVertexDescriptor( pTexCoords );
-  /////////////////////////////////////////////////////////////////
-  pTexture = *skybox.GetTextureHandle(0) ;
-  pIndices = *skybox.GetWallIndices( SKYBOX_FLOOR );
-
-  if (pTexture) CommitTexture( 0, pTexture ); 
-
-  // // Apply texture filters.
-//   std::vector<TEXTURE_FILTER> &vecFilters = skybox.GetTextureFilters(0);
-//   for(unsigned int nFilter=0; nFilter<vecFilters.size(); nFilter++)
-//   {
-//     CommitFilter( vecFilters[nFilter], pTexture->GetType() );
-//   }
-  if ( pIndices ) CommitPrimitive( pIndices );
-
-
-  /////////////////////////////////////////////////////////////////
-
-  pTexture = *skybox.GetTextureHandle(1);
-  pIndices = *skybox.GetWallIndices( SKYBOX_CEILING );
-
-  if ( pTexture ) CommitTexture( 0, pTexture ); 
-  if ( pIndices ) CommitPrimitive( pIndices );
-
-  /////////////////////////////////////////////////////////////////
-
-  pTexture = *skybox.GetTextureHandle(2);
-  pIndices = *skybox.GetWallIndices( SKYBOX_FRONT );
-
-  if (pTexture) CommitTexture( 0, pTexture ); 
-  if ( pIndices )  CommitPrimitive( pIndices );
-  
-  /////////////////////////////////////////////////////////////////
-
-  pTexture = *skybox.GetTextureHandle(3);
-  pIndices = *skybox.GetWallIndices( SKYBOX_REAR );
-
-  if (pTexture) CommitTexture( 0, pTexture );
-  if ( pIndices )  CommitPrimitive( pIndices );
-  
-  /////////////////////////////////////////////////////////////////
-
-  pTexture = *skybox.GetTextureHandle(4);
-  pIndices = *skybox.GetWallIndices( SKYBOX_LEFT );
-
-  if (pTexture)    CommitTexture( 0, pTexture ); 
-  if ( pIndices )  CommitPrimitive( pIndices );
-
-   /////////////////////////////////////////////////////////////////
-
-  pTexture = *skybox.GetTextureHandle(5);
-  pIndices = *skybox.GetWallIndices( SKYBOX_RIGHT );
-  
-  if (pTexture)    CommitTexture( 0, pTexture ); 
-  if ( pIndices )  CommitPrimitive( pIndices );
-
   glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
@@ -1916,6 +1997,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   case ELEMENT_TYPE_VERTEX_3F:
   case ELEMENT_TYPE_COLOR_3F:
   case ELEMENT_TYPE_NORMAL_3F:
+  case ELEMENT_TYPE_TEX_3F:
     nBytes =  sizeof(float)*3*rVertexDescriptor.GetSize();
     glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
 		     nBytes, 
