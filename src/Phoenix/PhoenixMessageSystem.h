@@ -28,7 +28,7 @@ namespace Phoenix
     };
     
     ////////////////////
-    /// Base for all messages.
+    /// Base type for all messages.
     class CMessage
     {
     protected:
@@ -65,6 +65,7 @@ namespace Phoenix
       virtual void * GetObjectPtr() = 0;
     };
     /////////////////////////////////////////////////////////////////
+    /// Handler by ...err.. Handle.
     template <class CLASS_TYPE, class MESSAGE_TYPE>
     class CMemberFunctionHandler : public CHandlerFunctionBase
     {
@@ -102,6 +103,7 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
+    /// Handler by object pointer.
     template <class CLASS_TYPE, class MESSAGE_TYPE>
     class CMemberPtrFunctionHandler : public CHandlerFunctionBase
     {
