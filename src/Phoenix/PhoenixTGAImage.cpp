@@ -458,3 +458,42 @@ Phoenix::Graphics::CTGAImage::GetPalette()
   return pPalette;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CTGAImage * 
+Phoenix::Graphics::CTGAImage::LoadImage( const char *szFilename, std::ostream & stream )
+{
+  if ( szFilename == NULL ) return NULL;
+  
+  CTGAImage *pImage = new CTGAImage();
+  bool bOk = false;
+
+  switch ( pImage->Load( szFilename ) )
+  {
+  case IMG_OK:
+    bOk = true;
+    break;
+  case IMG_ERR_NO_FILE:
+    stream << "No such file '" << szFilename << "'" << std::endl;
+    break;
+  case IMG_ERR_UNSUPPORTED:
+    stream << "Unsupported format in file '" << szFilename << "'" << std::endl;
+    break;
+  case IMG_ERR_MEM_FAIL:
+    stream << "Out of memory while loading file '" << szFilename << "'" << std::endl;
+    break;
+  case IMG_ERR_BAD_FORMAT:
+    stream << "Bad format while loading file '" << szFilename << "'" << std::endl;
+    break;
+  }
+  
+  if ( !bOk )
+  {
+    // cleanup
+    if ( pImage ) 
+    {
+      delete pImage; 
+      pImage = NULL; 
+    }
+  }
+  return pImage;
+}
+/////////////////////////////////////////////////////////////////
