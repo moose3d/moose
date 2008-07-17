@@ -9,9 +9,10 @@ namespace Phoenix
   {
     enum TEXTURE_TYPE 
     {
-      TEXTURE_2D = 0,
-      TEXTURE_RECT = 1,
-      TEXTURE_DEPTH2D
+      TEXTURE_2D,      /* Normal 2D texture */
+      TEXTURE_RECT,    /* Rectangular 2D texture */
+      TEXTURE_DEPTH2D, /* 2D depth texture */
+      TEXTURE_CUBE     /* Cube texture map */
     };
     /// Texture filter modes.
     enum TEXTURE_FILTER
