@@ -18,7 +18,8 @@ namespace Phoenix
       PRIMITIVE_TRI_STRIP,
       PRIMITIVE_LINE_LIST,
       PRIMITIVE_LINE_STRIP,
-      PRIMITIVE_QUAD_LIST
+      PRIMITIVE_QUAD_LIST,
+      PRIMITIVE_QUAD_STRIP
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
