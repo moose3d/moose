@@ -114,6 +114,8 @@ namespace Phoenix
       
       bool ShouldBeRendered() const;
       void SetRenderable( bool bFlag );
+      
+      virtual size_t GetLodLevel( float fDistanceSqr ) const;
     };
   }; // namespace Scene
 }; // namespace Phoenix
@@ -219,4 +221,10 @@ Phoenix::Scene::CGameObject::SetRenderable( bool bFlag )
   m_bIsRenderable = bFlag;
 }
 /////////////////////////////////////////////////////////////////
+inline size_t
+Phoenix::Scene::CGameObject::GetLodLevel( float fDistanceSqr ) const
+{
+  return 0;
+}
+////////////////////////////////////////////////////////
 #endif
