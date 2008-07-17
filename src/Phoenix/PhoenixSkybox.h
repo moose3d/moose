@@ -12,25 +12,10 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    enum SKYBOX_WALL_TYPE
-    {
-      SKYBOX_FLOOR,
-      SKYBOX_CEILING,
-      SKYBOX_FRONT,
-      SKYBOX_REAR,
-      SKYBOX_LEFT,
-      SKYBOX_RIGHT,
-      SKYBOX_EXTRA1,
-      SKYBOX_EXTRA2,
-      SKYBOX_WALL_COUNT
-    };
-
     /////////////////////////////////////////////////////////////////
     /// Skybox class.
     class CSkybox : public Phoenix::Graphics::CRenderable
     {
-    protected:
-      INDEX_HANDLE m_hIndices[6];
     public:
       ////////////////////
       /// Constructor.
@@ -38,8 +23,6 @@ namespace Phoenix
       ////////////////////
       /// Destructor.
       ~CSkybox();
-      
-      INDEX_HANDLE & GetWallIndices( SKYBOX_WALL_TYPE nIndex );
     };
   }
 }
