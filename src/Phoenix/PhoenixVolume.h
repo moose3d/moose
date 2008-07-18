@@ -289,6 +289,26 @@ namespace Phoenix
     
     }; // class CSphere
     /////////////////////////////////////////////////////////////////
+    /// Capsule class (sphere swept line)
+    class CCapsule : public Phoenix::Volume::CSphere,
+		     public Phoenix::Math::CLine
+    {
+    public:
+      ////////////////////
+      /// Constructor.
+      /// \param vStart Start point of capsule.
+      /// \param vEnd End point of capsule
+      /// \param fRadius Radius of the capsule sphere.
+      CCapsule( const Phoenix::Math::CVector3<float> & vStart,
+		const Phoenix::Math::CVector3<float> & vEnd,
+		float fRadius ) 
+      {
+	SetRadius( fRadius );
+	SetStart( vStart );
+	SetEnd( vEnd );
+      }
+    }; // class CCapsule
+    /////////////////////////////////////////////////////////////////
     // Class for a Cone
     class CCone : public Phoenix::Spatial::CPositional 
     {
