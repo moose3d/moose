@@ -215,6 +215,39 @@ Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
 }
 /////////////////////////////////////////////////////////////////
 float 
+Phoenix::Collision::LineToLineDistanceSquared( const Phoenix::Math::CLine & line0, const Phoenix::Math::CLine & line1 )
+{
+  CVector3<float> vDir0 = line0.GetDirection();
+  CVector3<float> vDir1 = line1.GetDirection();
+    
+  float fV0DotV1      = vDir0.Dot( vDir1 );
+  //float fMinusV0DotV1 = (-vDir0).Dot(vDir1);
+  float fV0DotV0      = vDir0.Dot(vDir0);
+  float fV1DotV1      = vDir1.Dot(vDir1);
+  
+  float fDenominator = (fV0DotV1*fV0DotV1) - (fV0DotV0*fV1DotV1);
+
+  // if lines are parallel (enough)
+  if ( TOO_CLOSE_TO_ZERO(fDenominator) )
+  {
+    
+  }
+  else
+  {
+    float fMult = 1.0f / fDenominator;
+    CVector3<float> startDiff = line1.GetStart() - line0.GetStart();
+    CVector3<float> vStartDiffDotV0 = startDiff.Dot( vDir0 );
+    CVector3<float> vStartDiffDotV1 = startDiff.Dot( vDir1 );
+    
+    float fT0 = fMult * (-fV1DotV1 * vStartDiffDotV0 + fV0DotV1*vStartDiffDotV1);
+    float fT1 = fMult * (-fV0DotV1 * vStartDiffDotV0 + fV0DotV0*vStartDiffDotV1);
+    
+    return ( (line0.GetStart() + fT0*vDir0) - 
+	     (line1.GetStart() + fT1*vDir1)   ).LengthSqr();
+  }
+}
+/////////////////////////////////////////////////////////////////
+float 
 Phoenix::Collision::PointDistanceFromPlane( const CVector3<float> &vPoint, const CPlane & plane )
 {
   CVector3<float> vNormal;

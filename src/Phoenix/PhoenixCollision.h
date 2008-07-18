@@ -96,6 +96,10 @@ namespace Phoenix
 				const Phoenix::Math::CVector3<float> & vVertex1,
 				const Phoenix::Math::CVector3<float> & vVertex2,
 				Phoenix::Math::CVector3<float> &vPointOfIntersection );
+
+    float LineToLineDistanceSquared( const Phoenix::Math::CLine & line0, const Phoenix::Math::CLine & line1 );
+    
+
     ////////////////////
     /// Returns the floating-point distance from point to a plane.
     /// \param vPoint Point of origin.
