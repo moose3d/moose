@@ -112,9 +112,23 @@ namespace Phoenix
     /// Find closest point on ray to given point.
     /// \param vPoint Point in space.
     /// \param ray Ray which is compared to point.
-    /// \returns Closest position on ray to given point.
-    CVector3<float> ClosestPointOnRay( const CVector3<float> &vPoint,
-    				       const Phoenix::Math::CRay &ray);
+    /// \param Closest position on ray to given point.
+    void ClosestPointOnRay( const CVector3<float> &vPoint,
+			    const Phoenix::Math::CRay &ray,
+			    Phoenix::Math::CVector3<float> & vClosestPoint);
+
+    
+    ////////////////////
+    /// Find closest point on line to given point.
+    /// \param vPoint Point in space.
+    /// \param line Line which is compared to point.
+    /// \param vClosestPoint Closest position on line to given point.
+    void ClosestPointOnLine( const CVector3<float> &vPoint,
+			     const Phoenix::Math::CLine & line,
+			     Phoenix::Math::CVector3<float> & vClosestPoint );
+
+
+
     ////////////////////
     /// Checks whether a plane and box intersect.
     /// \param plane A plane.

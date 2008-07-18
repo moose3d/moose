@@ -217,30 +217,68 @@ Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
 float 
 Phoenix::Collision::LineToLineDistanceSquared( const Phoenix::Math::CLine & line0, const Phoenix::Math::CLine & line1 )
 {
+  // Direction is calculated from end points.
   CVector3<float> vDir0 = line0.GetDirection();
   CVector3<float> vDir1 = line1.GetDirection();
     
   float fV0DotV1      = vDir0.Dot( vDir1 );
-  //float fMinusV0DotV1 = (-vDir0).Dot(vDir1);
-  float fV0DotV0      = vDir0.Dot(vDir0);
-  float fV1DotV1      = vDir1.Dot(vDir1);
+  float fV0DotV0      = vDir0.Dot( vDir0 );
+  float fV1DotV1      = vDir1.Dot( vDir1 );
   
   float fDenominator = (fV0DotV1*fV0DotV1) - (fV0DotV0*fV1DotV1);
 
   // if lines are parallel (enough)
   if ( TOO_CLOSE_TO_ZERO(fDenominator) )
   {
+    // Check distances between each start and end
+    float fDistSqr ;
+    CVector3<float> v00 = line1.GetStart() - line0.GetStart();
+    CVector3<float> v10 = line1.GetStart() - line0.GetEnd();
+    CVector3<float> v01 = line1.GetEnd() - line0.GetStart();
+    CVector3<float> v11 = line1.GetEnd() - line0.GetEnd();
+
     
+    float f00sign = v00.Dot(vDir0);
+    float f10sign = v10.Dot(vDir0);
+    float f01sign = v01.Dot(vDir0);
+    float f11sign = v11.Dot(vDir0);
+    
+    if ( (f00sign < 0.0f && f10sign < 0.0f && f01sign < 0.0f && f11sign < 0.0f) ||
+	 (f00sign > 0.0f && f10sign > 0.0f && f01sign > 0.0f && f11sign > 0.0f) )
+    {
+      // lines do not overlap on direction vector, minimal distance is 
+      // mnin distance between start and end point combinations.
+      fDistSqr = v00.LengthSqr();
+      float fTmp = v10.LengthSqr();
+      if ( fTmp < fDistSqr ) fDistSqr = fTmp;
+
+      fTmp = v01.LengthSqr();
+      if ( fTmp < fDistSqr ) fDistSqr = fTmp;
+
+      fTmp = v11.LengthSqr();
+      if ( fTmp < fDistSqr ) fDistSqr = fTmp;
+    } 
+    else
+    {
+      vDir0.Normalize();
+      f00sign = v00.Dot(vDir0);
+
+      // lines overlap on direction vector, closest point on ray will do
+      // vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );      
+      fDistSqr = (line1.GetStart() - (line0.GetStart()+(vDir0*f00sign))).LengthSqr();
+    }
+    return fDistSqr;
   }
   else
   {
+    // skewed lines, calculate distance square
     float fMult = 1.0f / fDenominator;
     CVector3<float> startDiff = line1.GetStart() - line0.GetStart();
-    CVector3<float> vStartDiffDotV0 = startDiff.Dot( vDir0 );
-    CVector3<float> vStartDiffDotV1 = startDiff.Dot( vDir1 );
+    float fStartDiffDotV0 = startDiff.Dot( vDir0 );
+    float fStartDiffDotV1 = startDiff.Dot( vDir1 );
     
-    float fT0 = fMult * (-fV1DotV1 * vStartDiffDotV0 + fV0DotV1*vStartDiffDotV1);
-    float fT1 = fMult * (-fV0DotV1 * vStartDiffDotV0 + fV0DotV0*vStartDiffDotV1);
+    float fT0 = fMult * (-fV1DotV1 * fStartDiffDotV0 + fV0DotV1*fStartDiffDotV1);
+    float fT1 = fMult * (-fV0DotV1 * fStartDiffDotV0 + fV0DotV0*fStartDiffDotV1);
     
     return ( (line0.GetStart() + fT0*vDir0) - 
 	     (line1.GetStart() + fT1*vDir1)   ).LengthSqr();
@@ -255,13 +293,32 @@ Phoenix::Collision::PointDistanceFromPlane( const CVector3<float> &vPoint, const
   return vNormal.Dot(vPoint) + plane[3];
 }
 /////////////////////////////////////////////////////////////////
-CVector3<float> 
-Phoenix::Collision::ClosestPointOnRay( const CVector3<float> &vPoint, const Phoenix::Math::CRay &ray )
+void
+Phoenix::Collision::ClosestPointOnRay( const CVector3<float> &vPoint, const Phoenix::Math::CRay &ray, CVector3<float> & vClosestPoint )
 {
-  CVector3<float> vStartToPoint = vPoint - ray.GetPosition();
-  float fDot = ray.GetDirection().Dot(vStartToPoint);
-  return ray.GetPosition() + (ray.GetDirection() * fDot );
+  //CVector3<float> vStartToPoint = vPoint - ray.GetPosition();
+  //float fDot = ray.GetDirection().Dot(vStartToPoint);
+  //vClosestPoint = ray.GetPosition() + (ray.GetDirection() * fDot );
+  vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );
 }
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Collision::ClosestPointOnLine( const CVector3<float> &vPoint, const Phoenix::Math::CLine & line, CVector3<float> & vClosestPoint )
+{
+
+  CVector3<float> vStartToPoint = vPoint - line.GetStart();
+  CVector3<float> vLine = line.GetDirection();
+
+  float fLength = vLine.Length();
+  vLine.Normalize();
+  
+  float fDot = vLine.Dot(vStartToPoint);
+
+  if      ( fDot <= 0.0f    ) { vClosestPoint = line.GetStart();  }               // return the starting point
+  else if ( fDot >= fLength ) { vClosestPoint = line.GetEnd();    }               // return the end point
+  else                        { vClosestPoint = line.GetStart() + (vLine*fDot); } // return the point in the middle 
+}
+
 /////////////////////////////////////////////////////////////////
 inline int AxisTestX( const COrientedBox &box,
 		      const CVector3<float> &vEdge,

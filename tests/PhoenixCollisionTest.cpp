@@ -356,7 +356,7 @@ TEST(ClosestPointOnRay)
   CVector3<float> vReal( 0,0,0);
   CVector3<float> vResult;
   
-  vResult = ClosestPointOnRay( vPoint, ray);
+  ClosestPointOnRay( vPoint, ray, vResult);
   CHECK_ARRAY_CLOSE( vReal.GetArray(), vResult.GetArray(), 3, 0.001f);
 }
 /////////////////////////////////////////////////////////////////
@@ -1251,5 +1251,149 @@ TEST(SphereIntersectsCube)
 
   sphere.SetPosition(-2.0,0,0);
   CHECK( SphereIntersectsAACube(sphere, cube) == 0);
+}
+/////////////////////////////////////////////////////////////////
+TEST(LineToLineDistanceSquared_ParallelLines)
+{
+  CLine line0, line1;
+
+  line1.SetStart(0,0,0);
+  line1.SetEnd( 2,0,0);
+  // no overlap, far
+  line0.SetStart( -2,1,0);
+  line0.SetEnd( -1,1,0);
+  CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // no overlap, closer
+  line0.SetStart( -1.01,1.0,0.0);
+  line0.SetEnd( -0.01,1.0,0.0);
+  CHECK_CLOSE( 1.0001f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+  
+  // overlap, border
+  line0.SetStart( -1.00,1.0,0.0);
+  line0.SetEnd( 0.0,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+
+  // overlap, close
+  line0.SetStart( -0.5,1.0,0.0);
+  line0.SetEnd( 0.5,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+  
+  // overlap, full
+  line0.SetStart( 0.5,1.0,0.0);
+  line0.SetEnd( 1.5,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // overlap, border 
+  line0.SetStart( 1.0,1.0,0.0);
+  line0.SetEnd( 2.0,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // overlap, partial
+  line0.SetStart( 1.001,1.0,0.0);
+  line0.SetEnd( 2.001,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // overlap, partial
+  line0.SetStart( 1.999,1.0,0.0);
+  line0.SetEnd( 2.999,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // overlap, border
+  line0.SetStart( 2.0,1.0,0.0);
+  line0.SetEnd( 3.0,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // no overlap, very close
+  line0.SetStart( 2.001,1.0,0.0);
+  line0.SetEnd( 3.001,1.0,0.0);
+  CHECK_CLOSE( 1.000001f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  // no overlap, far
+  line0.SetStart( 3.0,1.0,0.0);
+  line0.SetEnd( 4.0,1.0,0.0);
+  CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  /////////////////////////////////////////////////////////////////
+  /// lines other way
+  line1.SetStart(0,0,0);
+  line1.SetEnd( 2,0,0);
+  // no overlap, far
+  line0.SetStart( -2,1,0);
+  line0.SetEnd( -1,1,0);
+  CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // no overlap, closer
+  line0.SetStart( -1.01,1.0,0.0);
+  line0.SetEnd( -0.01,1.0,0.0);
+  CHECK_CLOSE( 1.0001f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+  
+  // overlap, border
+  line0.SetStart( -1.00,1.0,0.0);
+  line0.SetEnd( 0.0,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // overlap, close
+  line0.SetStart( -0.5,1.0,0.0);
+  line0.SetEnd( 0.5,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+  
+  // overlap, full
+  line0.SetStart( 0.5,1.0,0.0);
+  line0.SetEnd( 1.5,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // overlap, border 
+  line0.SetStart( 1.0,1.0,0.0);
+  line0.SetEnd( 2.0,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // overlap, partial
+  line0.SetStart( 1.001,1.0,0.0);
+  line0.SetEnd( 2.001,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // overlap, partial
+  line0.SetStart( 1.999,1.0,0.0);
+  line0.SetEnd( 2.999,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // overlap, border
+  line0.SetStart( 2.0,1.0,0.0);
+  line0.SetEnd( 3.0,1.0,0.0);
+  CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // no overlap, very close
+  line0.SetStart( 2.001,1.0,0.0);
+  line0.SetEnd( 3.001,1.0,0.0);
+  CHECK_CLOSE( 1.000001f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+  // no overlap, far
+  line0.SetStart( 3.0,1.0,0.0);
+  line0.SetEnd( 4.0,1.0,0.0);
+  CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line1, line0), 0.000001f);
+
+}
+/////////////////////////////////////////////////////////////////
+TEST(LineToLineDistanceSquared_Crossing)
+{
+  CLine line0, line1;
+
+  line1.SetStart(0,0,0);
+  line1.SetEnd( 2,0,0);
+  
+  line0.SetStart( 0,2,0);
+  line0.SetEnd(  0,1,0);
+  CHECK_CLOSE( 1.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
+  line0.SetStart( 0,1.001,0);
+  line0.SetEnd(  0, 0.001,0);
+  CHECK_CLOSE( 0.001f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+  
+  line0.SetStart( 0,1.0,0);
+  line0.SetEnd(  0, 0.0,0);
+  CHECK_CLOSE( 0.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+
 }
 /////////////////////////////////////////////////////////////////
