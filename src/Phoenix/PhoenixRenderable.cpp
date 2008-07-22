@@ -154,21 +154,21 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, VERTEX_HANDLE *pHandle )
+Phoenix::Graphics::CRenderable::AddShaderParameter( const char *sName, VERTEX_HANDLE *pHandle )
 {
   m_vShaderParams.push_back( std::make_pair( string(sName), pHandle)  );
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, float fValue )
+Phoenix::Graphics::CRenderable::AddShaderParameter( const char *sName, float fValue )
 {
-  m_vShaderFloatParams.push_back( std::make_pair( string(sName), fValue)  );
+  m_vShaderFloatParams.insert( std::make_pair( string(sName), fValue)  );
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderable::SetShaderParameter( const char *sName, int iValue )
+Phoenix::Graphics::CRenderable::AddShaderParameter( const char *sName, int iValue )
 {
-  m_vShaderIntParams.push_back( std::make_pair( string(sName), iValue)  );
+  m_vShaderIntParams.insert( std::make_pair( string(sName), iValue)  );
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::ShaderParams & 
@@ -194,16 +194,4 @@ Phoenix::Graphics::CRenderable::GetRenderState()
 {
   return m_RenderState;
 }
-/////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CRenderable::SetTransparent( bool bFlag ) 
-// {
-//   m_bTransparent = bFlag;
-// }
-// /////////////////////////////////////////////////////////////////
-// bool
-// Phoenix::Graphics::CRenderable::IsTransparent() const
-// {
-//   return m_bTransparent;
-// }
 /////////////////////////////////////////////////////////////////

@@ -58,4 +58,17 @@ Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t n
   return pRenderable;
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CGameObject::AddRenderable( CRenderable *pRenderable, size_t nLodLevel )
+{
 
+  // create handle to renderable
+  CHandle<CRenderable> *pHandle = new CHandle<CRenderable>();
+  // Add renderable handle to given lod level
+  GetRenderableObjects(nLodLevel).push_back( pHandle );
+  
+  // Assign handle to renderable and manage object
+  assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->Create( pRenderable, g_UniqueName, *pHandle) == 0 );
+  
+}
+/////////////////////////////////////////////////////////////////

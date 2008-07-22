@@ -424,6 +424,27 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glTexCoordPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
     break;
+  case ELEMENT_TYPE_TEX_4F:
+    if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
+    else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
+
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    // check if this was previously set
+    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
+    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glTexCoordPointer(4, GL_FLOAT, 0, 0);
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glTexCoordPointer(4, GL_FLOAT, 0, pBuffer->GetPointer<float>());
+    }
+    break;
   case ELEMENT_TYPE_NORMAL_3F:
     glEnableClientState( GL_NORMAL_ARRAY );
 
@@ -487,6 +508,7 @@ Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pB
     break;
   case ELEMENT_TYPE_TEX_2F:
   case ELEMENT_TYPE_TEX_3F:
+  case ELEMENT_TYPE_TEX_4F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
     else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -1227,15 +1249,19 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
 	CommitShaderParam( *pShader, renderable.GetShaderParameters()[nSP].first, *pParam );
       }
     }
+
     // Go through all int parameters and commit them
-    for(unsigned int nSP=0; nSP< renderable.GetShaderIntParameters().size(); nSP++)
+    ShaderIntParams::iterator it = renderable.GetShaderIntParameters().begin();
+    for(; it != renderable.GetShaderIntParameters().end(); it++)
     {
-      CommitUniformShaderParam( *pShader, renderable.GetShaderIntParameters()[nSP].first, renderable.GetShaderIntParameters()[nSP].second );
+      cerr << "shader: " << it->first << " param: " << it->second << endl;
+      CommitUniformShaderParam( *pShader, it->first, it->second );
     }
     // Go through all float parameters and commit them
-    for(unsigned int nSP=0; nSP< renderable.GetShaderFloatParameters().size(); nSP++)
+    ShaderFloatParams::iterator itf = renderable.GetShaderFloatParameters().begin();
+    for( ; itf != renderable.GetShaderFloatParameters().end(); it++)
     {
-      CommitUniformShaderParam( *pShader, renderable.GetShaderFloatParameters()[nSP].first, renderable.GetShaderFloatParameters()[nSP].second );
+      CommitUniformShaderParam( *pShader, it->first, it->second );
     }
   }
 
@@ -2012,6 +2038,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
 		     static_cast<GLenum>(tType));
     break;
   case ELEMENT_TYPE_COLOR_4F:
+  case ELEMENT_TYPE_TEX_4F:
     nBytes =  sizeof(float)*4*rVertexDescriptor.GetSize();
     glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
 		     nBytes, 

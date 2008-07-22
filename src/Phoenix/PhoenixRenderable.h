@@ -12,6 +12,7 @@
 #include <vector>
 #include <iostream>
 #include <utility>
+#include <map>
 /////////////////////////////////////////////////////////////////
 using Phoenix::Graphics::CVertexDescriptor;
 using Phoenix::Graphics::CIndexArray;
@@ -26,9 +27,9 @@ namespace Phoenix
   namespace Graphics
   {
     // typedefs for readability (and maintanence)
-    typedef vector< std::pair<std::string, VERTEX_HANDLE * > > ShaderParams;
-    typedef vector< std::pair<std::string, int> >	       ShaderIntParams;
-    typedef vector< std::pair<std::string, float> >	       ShaderFloatParams;
+    typedef std::vector< std::pair<std::string, VERTEX_HANDLE * > > ShaderParams;
+    typedef std::map< std::string, int >	       ShaderIntParams;
+    typedef std::map< std::string, float >	       ShaderFloatParams;
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
     class CRenderable : public Phoenix::Math::CTransformable
@@ -114,17 +115,17 @@ namespace Phoenix
       /// Inserts shader parameter with name.
       /// \param sName Parameter name in shaders.
       /// \param handle Handle to vertexdescriptor.
-      void		SetShaderParameter( const char *sName, VERTEX_HANDLE * pHandle );
+      void		AddShaderParameter( const char *sName, VERTEX_HANDLE * pHandle );
       ////////////////////
       /// Inserts shader parameter with name.
       /// \param sName Parameter name in shaders.
       /// \param fValue Parameter value.
-      void		SetShaderParameter( const char *sName, float fValue );
+      void		AddShaderParameter( const char *sName, float fValue );
       ////////////////////
       /// Inserts shader parameter with name.
       /// \param sName Parameter name in shaders.
       /// \param iValue Parameter value.
-      void		SetShaderParameter( const char *sName, int iValue );
+      void		AddShaderParameter( const char *sName, int iValue );
       ////////////////////
       /// Returns reference to shader parameters.
       /// \returns Vector of string-VERTEX_HANDLE pairs.

@@ -27,6 +27,7 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
   case ELEMENT_TYPE_COLOR_4F:
   case ELEMENT_TYPE_UNIFORM_4F:
   case ELEMENT_TYPE_ATTRIB_4F:
+  case ELEMENT_TYPE_TEX_4F:
   case ELEMENT_TYPE_UNIFORM_2X2F:
     m_pData = new float[4*nNumElements];
     break;
@@ -93,6 +94,7 @@ Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_COLOR_4F:
   case ELEMENT_TYPE_NORMAL_3F:
   case ELEMENT_TYPE_TEX_3F:
+  case ELEMENT_TYPE_TEX_4F:
     delete reinterpret_cast<float *>(m_pData);
     break;
   case ELEMENT_TYPE_COLOR_4UB:

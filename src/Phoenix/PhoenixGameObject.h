@@ -111,7 +111,11 @@ namespace Phoenix
       /// \param szGroupName Group name for indices. By default NULL, meaning all indices.
       /// \returns Renderable pointer.
       Phoenix::Graphics::CRenderable * AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL  );
-      
+      ////////////////////
+      /// Adds existing renderable object to given lod level.
+      /// \param pRenderable Renderable to be added.
+      /// \param nLodLevel To which level renderable is added.
+      void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel);
       bool ShouldBeRendered() const;
       void SetRenderable( bool bFlag );
       
