@@ -49,8 +49,10 @@ namespace Phoenix
 #define g_DefaultIndexManager   (Phoenix::Default::IndexManager::GetInstance())
 #define g_DefaultShaderManager  (Phoenix::Default::ShaderManager::GetInstance())
 #define g_DefaultUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
-#define g_UniqueNameStr         (CUniqueNameCreator::GetInstance()->GetUniqueName())
-#define g_UniqueName            (CUniqueNameCreator::GetInstance()->GetUniqueName().c_str())
+#define g_UniqueNameStr         ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName())
+#define g_UniqueName            ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName().c_str())
+#define CreateUniqueNameStr(A)  ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName(A))
+#define CreateUniqueName(A)     ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName(A).c_str())
 ////////////////////
 // Constants
 #define TEXTURE_HANDLE_COUNT 8
