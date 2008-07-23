@@ -17,8 +17,8 @@ Phoenix::Graphics::CRenderable::~CRenderable()
     g_DefaultTextureManager->Release(m_aTextureHandles[i]);
     g_DefaultVertexManager->Release(m_aTextureCoordinateHandles[i]);
   }
-  
   g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
+  g_DefaultVertexManager->Release( m_VertexColorHandle);
   g_DefaultVertexManager->Release( m_VertexNormalHandle );
   g_DefaultIndexManager->Release( GetListIndices() );
   g_DefaultIndexManager->Release( GetStripIndices() );

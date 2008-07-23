@@ -480,6 +480,8 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
     hashItem.SetObject(resourceName);
     
     m_pResourceHash->Insert( hashItem );
+    // release previously pointed resource (if such exists)
+    Release(Handle);
     Handle.Initialize( nIndex );
     // Add handle to list of handles to be updated. 
     m_vecObjects[nIndex]->ValidateHandle( Handle );
@@ -564,7 +566,11 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::AttachHandle(  const std::st
     handle.Nullify();
     return -1;
   }
-
+  // Release previously pointed resource (if such exists).
+  // This way duplicate AttachHandles() won't case trouble via handle pointers in
+  // resource manager.
+  Release(handle);
+  
   handle.Initialize(hashItem->GetObject().GetIndex());
   m_vecObjects[hashItem->GetObject().GetIndex()]->ValidateHandle( handle );
   return 0;
@@ -589,6 +595,8 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DuplicateHandle( const HANDL
     }
     else
     {
+      // Release previously pointed resource.
+      Release(handle);
       handle.Initialize(nIndex);
       // Add handle to list of handles to be updated. 
       m_vecObjects[nIndex]->ValidateHandle( handle );  

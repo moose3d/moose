@@ -1254,14 +1254,13 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
     ShaderIntParams::iterator it = renderable.GetShaderIntParameters().begin();
     for(; it != renderable.GetShaderIntParameters().end(); it++)
     {
-      cerr << "shader: " << it->first << " param: " << it->second << endl;
       CommitUniformShaderParam( *pShader, it->first, it->second );
     }
     // Go through all float parameters and commit them
     ShaderFloatParams::iterator itf = renderable.GetShaderFloatParameters().begin();
-    for( ; itf != renderable.GetShaderFloatParameters().end(); it++)
+    for( ; itf != renderable.GetShaderFloatParameters().end(); itf++)
     {
-      CommitUniformShaderParam( *pShader, it->first, it->second );
+      CommitUniformShaderParam( *pShader, itf->first, itf->second );
     }
   }
 
