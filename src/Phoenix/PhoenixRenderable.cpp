@@ -20,8 +20,8 @@ Phoenix::Graphics::CRenderable::~CRenderable()
   g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
   g_DefaultVertexManager->Release( m_VertexColorHandle);
   g_DefaultVertexManager->Release( m_VertexNormalHandle );
-  g_DefaultIndexManager->Release( GetListIndices() );
-  g_DefaultIndexManager->Release( GetStripIndices() );
+  g_DefaultIndexManager->Release( GetIndices() );
+
   
   g_DefaultShaderManager->Release(m_ShaderHandle);
   
@@ -58,34 +58,10 @@ Phoenix::Graphics::CRenderable::GetColorHandle()
 }
 /////////////////////////////////////////////////////////////////
 INDEX_HANDLE &	
-Phoenix::Graphics::CRenderable::GetListIndices()
+Phoenix::Graphics::CRenderable::GetIndices()
 {
-  return m_hTriListIndices;
+  return m_hIndices;
 }
-/////////////////////////////////////////////////////////////////
-INDEX_HANDLE &	
-Phoenix::Graphics::CRenderable::GetStripIndices()
-{
-  return m_hTriStripIndices;
-}
-/////////////////////////////////////////////////////////////////
-// std::vector<INDEX_HANDLE * > &
-// Phoenix::Graphics::CRenderable::GetIndexHandles()
-// {
-//   return m_vecIndexArrayHandles;
-// }
-// /////////////////////////////////////////////////////////////////
-// const std::vector<INDEX_HANDLE * > &
-// Phoenix::Graphics::CRenderable::GetIndexHandles() const
-// {
-//   return m_vecIndexArrayHandles;
-// }
-/////////////////////////////////////////////////////////////////
-// void
-// Phoenix::Graphics::CRenderable::AddIndexHandle(INDEX_HANDLE *pHandle) 
-// {
-//   m_vecIndexArrayHandles.push_back( pHandle); 
-// }
 /////////////////////////////////////////////////////////////////
 VERTEX_HANDLE &
 Phoenix::Graphics::CRenderable::GetTextureCoordinateHandle( unsigned int nId )
@@ -142,11 +118,10 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
   
   //for( unsigned int i=0;i<model.GetIndexHandles().size();i++)
   //{
-  stream << "list INDEX_HANDLE = "  << model.m_hTriListIndices.GetIndex();
-  stream << (model.m_hTriListIndices.IsNull() ? "(null)" : "" ) << endl;
+  stream << "INDEX_HANDLE = "  << model.m_hIndices.GetIndex();
+  stream << (model.m_hIndices.IsNull() ? "(null)" : "" ) << endl;
 
-  stream << "strip INDEX_HANDLE = "  << model.m_hTriStripIndices.GetIndex();
-  stream << (model.m_hTriStripIndices.IsNull() ? "(null)" : "" ) << endl;
+  
   //}
   stream << "SHADER_HANDLE = " << model.m_ShaderHandle.GetIndex();
   stream << (model.m_ShaderHandle.IsNull() ? "(null)" : "" ) << endl;

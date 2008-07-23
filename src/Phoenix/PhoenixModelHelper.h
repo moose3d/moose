@@ -30,9 +30,10 @@ namespace Phoenix
       /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
       /// \param aszGroupNames Array of group names, last item must be NULL.
+      /// \param bInterleaved Should arrays be concatenated to form interleaved array. By default, no.
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      int LoadMilkshapeModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0 );
+      int LoadMilkshapeModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0, bool bInterleaved = false );
       ////////////////////
       /// Initializes CRenderable object from currently loaded data.
       /// \attention This function does not add Renderable itself into RenderableManager.
@@ -40,9 +41,10 @@ namespace Phoenix
       /// \param rModel CRenderable where data handles are attached to.
       /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
+      /// \param bInterleaved Use interleaved data.
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, const char *szGroupName = NULL );
+      int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, const char *szGroupName = NULL, bool bInterleaved = false );
       ////////////////////
       /// Initializes CRenderable object from currently loaded data.
       /// \attention This function does not add Model itself into ModelManager.

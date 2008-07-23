@@ -35,6 +35,7 @@ namespace Phoenix
     {
     public:
       Phoenix::Graphics::COglTexture *m_pTexture[TEXTURE_HANDLE_COUNT];
+      Phoenix::Graphics::CShader     *m_pShader;
     public:      
       
       CInternalRenderState()
@@ -43,6 +44,7 @@ namespace Phoenix
 	{
 	  m_pTexture[i] = NULL;
 	}
+	m_pShader = NULL;
       }
       ////////////////////
       /// Tests is texture unit bound to current texture.
@@ -62,6 +64,19 @@ namespace Phoenix
 	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
 	m_pTexture[nTexUnit] = pTexture;
       }
+      ////////////////////
+      /// 
+      inline void SetCurrentShader( CShader *pShader )
+      {
+	m_pShader = pShader;
+      }
+      ////////////////////
+      /// 
+      inline bool IsCurrentShader( CShader *pShader )
+      {
+	return (m_pShader == m_pShader);
+      }
+      
     };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 

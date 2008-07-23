@@ -41,7 +41,7 @@ Phoenix::Scene::CGameObject::UpdateTransforms()
 }
 /////////////////////////////////////////////////////////////////
 CRenderable *
-Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName )
+Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName, bool bInterleaved )
 {
   // Create renderable
   CRenderable *pRenderable = new CRenderable();
@@ -53,7 +53,7 @@ Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t n
   // Assign handle to renderable and manage object
   assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->Create( pRenderable, g_UniqueName, *pHandle) == 0 );
   // Attach proper data to renderable.
-  g_ModelHelper->CreateRenderable( szResourceName, *pRenderable, szGroupName );
+  g_ModelHelper->CreateRenderable( szResourceName, *pRenderable, szGroupName, bInterleaved );
   // Return new renderable object
   return pRenderable;
 }

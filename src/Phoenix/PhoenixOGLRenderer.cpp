@@ -463,6 +463,39 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glNormalPointer( GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
     break;
+
+  case ELEMENT_TYPE_V3F_N3F_T2F:
+
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glClientActiveTextureARB( GL_TEXTURE0_ARB);
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    
+    // check if this was previously set
+    //if ( GetRenderState().m_pNormalBuffer == pBuffer ) break;
+    //else GetRenderState().m_pNormalBuffer = pBuffer;
+    //if ( GetRenderState().m_pVertexBuffer == pBuffer ) break;
+    //else GetRenderState().m_pVertexBuffer = pBuffer;
+    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
+    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+
+    if ( pBuffer->IsCached()) 
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+
+      glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), 0);
+      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*3));
+      glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*6));
+    } 
+    else
+    {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
+
+      glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>());
+      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*3);
+      glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*6);
+    }
+    break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_UNIFORM_2F:
   case ELEMENT_TYPE_UNIFORM_3F:
@@ -515,6 +548,13 @@ Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pB
     break;
   case ELEMENT_TYPE_NORMAL_3F:
     glDisableClientState( GL_NORMAL_ARRAY );
+    break;
+  case ELEMENT_TYPE_V3F_N3F_T2F:
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+    // this descriptor type uses first texunit
+    glClientActiveTextureARB( GL_TEXTURE0_ARB);
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_UNIFORM_2F:
@@ -1251,16 +1291,20 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
     }
 
     // Go through all int parameters and commit them
-    ShaderIntParams::iterator it = renderable.GetShaderIntParameters().begin();
-    for(; it != renderable.GetShaderIntParameters().end(); it++)
     {
-      CommitUniformShaderParam( *pShader, it->first, it->second );
+      ShaderIntParams::iterator it = renderable.GetShaderIntParameters().begin();
+      for(; it != renderable.GetShaderIntParameters().end(); it++)
+      {
+	CommitUniformShaderParam( *pShader, it->first, it->second );
+      }
     }
     // Go through all float parameters and commit them
-    ShaderFloatParams::iterator itf = renderable.GetShaderFloatParameters().begin();
-    for( ; itf != renderable.GetShaderFloatParameters().end(); itf++)
     {
-      CommitUniformShaderParam( *pShader, itf->first, itf->second );
+      ShaderFloatParams::iterator it = renderable.GetShaderFloatParameters().begin();
+      for( ; it != renderable.GetShaderFloatParameters().end(); it++)
+      {
+	CommitUniformShaderParam( *pShader, it->first, it->second );
+      }
     }
   }
 
@@ -1271,8 +1315,8 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   // Commit colors
   if ( !renderable.GetColorHandle().IsNull()  )     CommitVertexDescriptor( *renderable.GetColorHandle() );
   
-  if ( !renderable.GetStripIndices().IsNull() )     CommitPrimitive( *renderable.GetStripIndices() );
-  if ( !renderable.GetListIndices().IsNull()  )     CommitPrimitive( *renderable.GetListIndices() );
+  if ( !renderable.GetIndices().IsNull() )     CommitPrimitive( *renderable.GetIndices() );
+
   
   RollbackTransform();
 }
@@ -1582,13 +1626,18 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
 void
 Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
 {
-  if ( pShader )
+  if ( true || !GetRenderState().IsCurrentShader(pShader) ) 
   {
-    glUseProgram( pShader->GetProgram() );
-  }
-  else
-  {
-    glUseProgram( 0 );
+    if ( pShader )
+    {
+      glUseProgram( pShader->GetProgram() );
+    }
+    else
+    {
+      glUseProgram( 0 );
+    }
+    
+    GetRenderState().SetCurrentShader(pShader);
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -1934,7 +1983,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   glLoadTransposeMatrixf( mView.GetArray());
   
   COglTexture *pTexture = *skybox.GetTextureHandle(0);
-  CIndexArray *pIndices = *skybox.GetListIndices();
+  CIndexArray *pIndices = *skybox.GetIndices();
   CVertexDescriptor *pTexCoords = *skybox.GetTextureCoordinateHandle(0);
   CVertexDescriptor *pVertices  = *skybox.GetVertexHandle();  
 
@@ -2014,7 +2063,6 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   }
   
   glBindBufferARB( GL_ARRAY_BUFFER_ARB, rVertexDescriptor.GetCache());
-  size_t nBytes = 0;
 
   // determine proper buffer size.
   switch ( rVertexDescriptor.GetType())
@@ -2023,32 +2071,19 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   case ELEMENT_TYPE_COLOR_3F:
   case ELEMENT_TYPE_NORMAL_3F:
   case ELEMENT_TYPE_TEX_3F:
-    nBytes =  sizeof(float)*3*rVertexDescriptor.GetSize();
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     nBytes, 
-		     rVertexDescriptor.GetPointer<float>(), 
-		     static_cast<GLenum>(tType));
-    break;
-  case ELEMENT_TYPE_COLOR_4UB:
-    nBytes =  sizeof(unsigned char)*4*rVertexDescriptor.GetSize();
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     nBytes, 
-		     rVertexDescriptor.GetPointer<unsigned char>(), 
-		     static_cast<GLenum>(tType));
-    break;
   case ELEMENT_TYPE_COLOR_4F:
   case ELEMENT_TYPE_TEX_4F:
-    nBytes =  sizeof(float)*4*rVertexDescriptor.GetSize();
+  case ELEMENT_TYPE_TEX_2F:
+  case ELEMENT_TYPE_V3F_N3F_T2F:
     glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     nBytes, 
+		     rVertexDescriptor.GetByteSize(), 
 		     rVertexDescriptor.GetPointer<float>(), 
 		     static_cast<GLenum>(tType));
-    break;
-  case ELEMENT_TYPE_TEX_2F:
-    nBytes =  sizeof(float)*2*rVertexDescriptor.GetSize();
+    
+  case ELEMENT_TYPE_COLOR_4UB:
     glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     nBytes, 
-		     rVertexDescriptor.GetPointer<float>(), 
+		     rVertexDescriptor.GetByteSize(), 
+		     rVertexDescriptor.GetPointer<unsigned char>(), 
 		     static_cast<GLenum>(tType));
     break;
   case ELEMENT_TYPE_UNIFORM_1F:

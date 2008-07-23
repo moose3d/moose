@@ -12,7 +12,7 @@ using std::ostringstream;
 using std::string;
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const char *szName, int iFlags, const char **aszGroupNames )
+Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const char *szName, int iFlags, const char **aszGroupNames, bool bInterleaved )
 {
   // delete previous loader.
   if ( m_pLoader ) 
@@ -46,36 +46,60 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
   m_pLoader->GenerateModelData( iCompFlags );				
 									
   /* Resource allocation is one-way, either everything succeeds or nothing goes.*/ 
-									
-  /* Create vertex handle */						
-  assert( g_DefaultVertexManager->Create(m_pLoader->GetVertices(),  name + "_vertices") == 0); 
-  /* Mark resourcemanager-tracked data so pointers will not be free'd.*/ 
-  m_pLoader->ResetVertices();						
-									
-  /* load vertex normals */						
-  if ( iFlags & OPT_VERTEX_NORMALS )					
-  {									
-    /* Create normal handle */						
-    assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormals(), name + "_normals") == 0); 
-    m_pLoader->ResetNormals();						
-  }									
-  /* load texture coordinates */					
-  if ( iFlags & OPT_VERTEX_TEXCOORDS )					
-  {									
-    /* Create texcoord handle */					
-    assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoords(), name + "_texcoords0") == 0);	
-    m_pLoader->ResetTexCoords();						
-  }									
-  /* load colors */							
-  if ( iFlags & OPT_VERTEX_COLORS )					
-  {									
-    /* Create texcoord handle */					
-    /*assert ( g_DefaultVertexManager->Create(m_pLoader->GetVertexColors(),*/ 
-    /*name + "_colors",*/						
-    /*  rModel.GetTextureCoordinateHandle()) == 0);		     */ 
- 									
-  }									
   
+  if ( bInterleaved )
+  {
+    size_t nNumElements =  m_pLoader->GetVertices()->GetSize();
+    CVertexDescriptor *pInterleaved = new CVertexDescriptor( ELEMENT_TYPE_V3F_N3F_T2F, nNumElements);
+
+    // Copy data into interleaved array
+    for( size_t i=0;i<nNumElements;i++)
+    {
+      pInterleaved->GetPointer<float>(i)[0] = m_pLoader->GetVertices()->GetPointer<float>(i)[0];
+      pInterleaved->GetPointer<float>(i)[1] = m_pLoader->GetVertices()->GetPointer<float>(i)[1];
+      pInterleaved->GetPointer<float>(i)[2] = m_pLoader->GetVertices()->GetPointer<float>(i)[2];
+      
+      pInterleaved->GetPointer<float>(i)[3] = m_pLoader->GetNormals()->GetPointer<float>(i)[0];
+      pInterleaved->GetPointer<float>(i)[4] = m_pLoader->GetNormals()->GetPointer<float>(i)[1];
+      pInterleaved->GetPointer<float>(i)[5] = m_pLoader->GetNormals()->GetPointer<float>(i)[2];
+
+      pInterleaved->GetPointer<float>(i)[6] = m_pLoader->GetTexCoords()->GetPointer<float>(i)[0];
+      pInterleaved->GetPointer<float>(i)[7] = m_pLoader->GetTexCoords()->GetPointer<float>(i)[1];
+    }
+    // manage array
+    assert( g_DefaultVertexManager->Create( pInterleaved,  name + "_interleaved") == 0);
+  }
+  else
+  {
+    // Create vertex handle 
+    assert( g_DefaultVertexManager->Create(m_pLoader->GetVertices(),  name + "_vertices") == 0); 
+    /* Mark resourcemanager-tracked data so pointers will not be free'd.*/ 
+    m_pLoader->ResetVertices();						
+    
+    /* load vertex normals */						
+    if ( iFlags & OPT_VERTEX_NORMALS )					
+    {									
+      /* Create normal handle */						
+      assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormals(), name + "_normals") == 0); 
+      m_pLoader->ResetNormals();						
+    }									
+    /* load texture coordinates */					
+    if ( iFlags & OPT_VERTEX_TEXCOORDS )					
+    {									
+      /* Create texcoord handle */					
+      assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoords(), name + "_texcoords0") == 0);	
+      m_pLoader->ResetTexCoords();						
+    }									
+    /* load colors */							
+    if ( iFlags & OPT_VERTEX_COLORS )					
+    {									
+      /* Create texcoord handle */					
+      /*assert ( g_DefaultVertexManager->Create(m_pLoader->GetVertexColors(),*/ 
+      /*name + "_colors",*/						
+      /*  rModel.GetTextureCoordinateHandle()) == 0);		     */ 
+ 									
+    }									
+  }
   if ( aszGroupNames == NULL || aszGroupNames[0] == NULL )
   {
     ostringstream stream;  
@@ -105,26 +129,32 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
   // All ok
   return 0;
 }
-/////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::CModelHelper::CreateRenderable( const char *szName, CRenderable & rModel, const char *szGroupName )
+Phoenix::Data::CModelHelper::CreateRenderable( const char *szName, CRenderable & rModel, const char *szGroupName, bool bInterleaved )
 {
   string name = szName;
 
-  g_DefaultVertexManager->AttachHandle( name + "_vertices",	rModel.GetVertexHandle());
-  g_DefaultVertexManager->AttachHandle( name + "_normals",	rModel.GetNormalHandle());
-  g_DefaultVertexManager->AttachHandle( name + "_texcoords0",	rModel.GetTextureCoordinateHandle());
-
+  if ( bInterleaved )
+  {
+    g_DefaultVertexManager->AttachHandle( name + "_interleaved", rModel.GetVertexHandle());
+  }
+  else
+  {
+    g_DefaultVertexManager->AttachHandle( name + "_vertices",	rModel.GetVertexHandle());
+    g_DefaultVertexManager->AttachHandle( name + "_normals",	rModel.GetNormalHandle());
+    g_DefaultVertexManager->AttachHandle( name + "_texcoords0",	rModel.GetTextureCoordinateHandle());
+  }
  
   if ( szGroupName == NULL )
   {
-    assert( g_DefaultIndexManager->AttachHandle( name + "_list_indices",  rModel.GetListIndices()) == 0 );     
+    assert( g_DefaultIndexManager->AttachHandle( name + "_list_indices",  rModel.GetIndices()) == 0 );     
   }
   else
   {
     ostringstream stream;  
     stream << name << "_" << szGroupName << "_indices";
-    assert( g_DefaultIndexManager->AttachHandle( stream.str().c_str(), rModel.GetListIndices()) == 0 );
+    assert( g_DefaultIndexManager->AttachHandle( stream.str().c_str(), rModel.GetIndices()) == 0 );
   }
   
   return 0;
@@ -136,30 +166,30 @@ Phoenix::Data::CModelHelper::CreateRenderable( const char *szName, CRenderable &
 
 //   // Load indices
 //   if ( iFlags & OPT_VERTEX_INDICES )
-//   {
-//     std::list<std::string>::iterator it = lstGroupNames.begin();
-//     // Create index handles 
-//     for( ; it != lstGroupNames.end(); it++)
-//     {
-//       CIndexArray *pIndices = pLoader->GetGroupIndices( (*it).c_str() );
-//       assert ( pIndices != NULL && "Group is NULL");
+  //   {
+  //     std::list<std::string>::iterator it = lstGroupNames.begin();
+  //     // Create index handles 
+  //     for( ; it != lstGroupNames.end(); it++)
+  //     {
+  //       CIndexArray *pIndices = pLoader->GetGroupIndices( (*it).c_str() );
+  //       assert ( pIndices != NULL && "Group is NULL");
 
-//       ostringstream stream;  
-//       stream << name << "_" << *it << "_indices";
-//       rModel.AddIndexHandle(new INDEX_HANDLE());
-//       assert( g_DefaultIndexManager->Create( pIndices, 
-// 					     stream.str().c_str(), 
-// 					     *rModel.GetIndexHandles().back()) == 0 );
-//       pLoader->ResetGroup( (*it).c_str() );
+  //       ostringstream stream;  
+  //       stream << name << "_" << *it << "_indices";
+  //       rModel.AddIndexHandle(new INDEX_HANDLE());
+  //       assert( g_DefaultIndexManager->Create( pIndices, 
+  // 					     stream.str().c_str(), 
+  // 					     *rModel.GetIndexHandles().back()) == 0 );
+  //       pLoader->ResetGroup( (*it).c_str() );
 
-//     }
+  //     }
     
-//   }
+  //   }
 
   
-//   return 0;
-// }
-/////////////////////////////////////////////////////////////////
+  //   return 0;
+  // }
+  /////////////////////////////////////////////////////////////////
 void
 Phoenix::Data::CModelHelper::Clear()
 {
@@ -170,4 +200,4 @@ Phoenix::Data::CModelHelper::Clear()
     m_pLoader = NULL;
   }
 }
-/////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////

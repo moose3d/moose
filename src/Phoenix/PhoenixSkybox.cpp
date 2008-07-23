@@ -143,9 +143,9 @@ Phoenix::Graphics::CSkybox::CSkybox()
 
     pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 24);
     CreateIndices( pIndices );
-    assert(g_DefaultIndexManager->Create( pIndices, PHOENIX_SKYBOX_INDICES, GetListIndices()) == 0);
+    assert(g_DefaultIndexManager->Create( pIndices, PHOENIX_SKYBOX_INDICES, GetIndices()) == 0);
   } else
-    assert(g_DefaultIndexManager->AttachHandle( PHOENIX_SKYBOX_INDICES, GetListIndices()) == 0);
+    assert(g_DefaultIndexManager->AttachHandle( PHOENIX_SKYBOX_INDICES, GetIndices()) == 0);
   
 }
 /////////////////////////////////////////////////////////////////

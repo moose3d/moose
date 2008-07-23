@@ -42,19 +42,22 @@ namespace Phoenix
       ELEMENT_TYPE_ATTRIB_1UB,
       ELEMENT_TYPE_ATTRIB_2UB,
       ELEMENT_TYPE_ATTRIB_3UB,
-      ELEMENT_TYPE_ATTRIB_4UB
+      ELEMENT_TYPE_ATTRIB_4UB,
+      // following types are for combined data 
+      ELEMENT_TYPE_V3F_N3F_T2F
     };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
-    class CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>
+    class CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>,
+			      public Phoenix::Core::CTypeBase<ELEMENT_TYPE>
     {  
     protected:
       /// number of elements.
       unsigned int		m_nSize;
       /// element data
       void *			m_pData;
-      /// Element type.
-      ELEMENT_TYPE		m_nType;
+      /// Size of one element in bytes.
+      size_t			m_nElementByteSize;
     public:
       ////////////////////
       /// default constructor.
@@ -66,19 +69,12 @@ namespace Phoenix
       /// Frees reserverd memory.
       ~CVertexDescriptor();
       ////////////////////
-      /// Returns element type.
-      /// \returns ELEMENT_TYPE
-      inline ELEMENT_TYPE GetType() const
-      {
-	return m_nType;
-      }
-      ////////////////////
       /// Returns float pointer.
       /// \returns pointer to float array
       template<typename TYPE> 
-      inline TYPE * GetPointer() const
+      inline TYPE * GetPointer( size_t nElement = 0) const
       {
-	return reinterpret_cast<TYPE *>(m_pData);
+	return reinterpret_cast<TYPE *>(reinterpret_cast<unsigned char *>(m_pData)+(GetElementByteSize()*nElement) );
       }
       ////////////////////
       /// Returns number of elements in descriptor.
@@ -86,6 +82,18 @@ namespace Phoenix
       inline unsigned int GetSize() const
       {
 	return m_nSize;
+      }
+      ////////////////////
+      /// Element byte size.
+      inline size_t GetElementByteSize()  const
+      {
+	return m_nElementByteSize;
+      }
+      ////////////////////
+      /// Returns byte size for entire buffer.
+      inline size_t GetByteSize() const
+      {
+	return GetElementByteSize()*GetSize();
       }
     };
   };  // end namespace Graphics

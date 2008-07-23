@@ -48,12 +48,10 @@ namespace Phoenix
       /// Handle to vertex colors.
       VERTEX_HANDLE			      m_VertexColorHandle;
       /// Handle to index arrays for triangle list and/or Triangle strips.
-      //std::vector<INDEX_HANDLE *>	      m_vecIndexArrayHandles;
-      INDEX_HANDLE			      m_hTriListIndices;
-      INDEX_HANDLE			      m_hTriStripIndices;
+      INDEX_HANDLE			      m_hIndices;
       /// Handle to a shader
       SHADER_HANDLE			      m_ShaderHandle;
-
+      
       /// Shader parameters
       ShaderParams			      m_vShaderParams;
       /// Shader integer parameters
@@ -94,19 +92,7 @@ namespace Phoenix
       ////////////////////
       /// Returns reference to a handle with triangle lists indices .
       /// \returns INDEX_HANDLE.
-      INDEX_HANDLE &	GetListIndices();
-      ////////////////////
-      /// Returns reference to a handle with triangle strip indices .
-      /// \returns INDEX_HANDLE.
-      INDEX_HANDLE &	GetStripIndices();
-      ////////////////////
-      /// Returns reference to a vector with handles to index arrays.
-      /// \returns vector consisting of INDEX_HANDLEs.
-      ///const std::vector<INDEX_HANDLE *>	& GetIndexHandles() const;
-      ////////////////////
-      /// Adds index array handle to a vector.
-      /// \param handle Handle to index array.
-      //void		AddIndexHandle( INDEX_HANDLE * pHandle );
+      INDEX_HANDLE &	GetIndices();
       ////////////////////
       /// Returns handle to shader.
       /// \returns SHADER_HANDLE.
@@ -159,14 +145,9 @@ namespace Phoenix
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
       friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & renderable );
-      // ////////////////////
-//       /// Sets transparency flag.
-//       /// \param bFlag True for transparent, false for opaque.
-//       void SetTransparent( bool bFlag );
-//       ////////////////////
-//       /// Returns transparency setting.
-//       /// \returns true for transparent, false for opaque.
-//       bool IsTransparent() const;
+      ////////////////////
+      /// Returns renderstate.
+      /// \returns Current renderstate settings for renderable.
       Phoenix::Graphics::CRenderState & GetRenderState();
       
     };

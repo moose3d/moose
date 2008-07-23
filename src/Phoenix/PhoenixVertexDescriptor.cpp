@@ -3,7 +3,7 @@
 Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType, 
 							 unsigned int nNumElements) 
 {
-  m_nType = nType;
+  SetType(nType);
   m_nSize = nNumElements;
   switch ( GetType() )
   {
@@ -14,15 +14,18 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
   case ELEMENT_TYPE_TEX_3F:
   case ELEMENT_TYPE_ATTRIB_3F:
     m_pData = new float[3*nNumElements];
+    m_nElementByteSize = sizeof(float)*3;
     break;
   case ELEMENT_TYPE_TEX_2F:
   case ELEMENT_TYPE_ATTRIB_2F:
   case ELEMENT_TYPE_UNIFORM_2F:
     m_pData = new float[2*nNumElements];
+    m_nElementByteSize = sizeof(float)*2;
     break;
   case ELEMENT_TYPE_COLOR_4UB:
   case ELEMENT_TYPE_ATTRIB_4UB:
     m_pData = new unsigned char[4*nNumElements];
+    m_nElementByteSize = sizeof(unsigned char)*4;
     break;
   case ELEMENT_TYPE_COLOR_4F:
   case ELEMENT_TYPE_UNIFORM_4F:
@@ -30,42 +33,56 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
   case ELEMENT_TYPE_TEX_4F:
   case ELEMENT_TYPE_UNIFORM_2X2F:
     m_pData = new float[4*nNumElements];
+    m_nElementByteSize = sizeof(float)*4;
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_ATTRIB_1F:
     m_pData = new float[nNumElements];
+    m_nElementByteSize = sizeof(float);
     break;
   case ELEMENT_TYPE_UNIFORM_1I:
   case ELEMENT_TYPE_ATTRIB_1I:
     m_pData = new int[nNumElements];
+    m_nElementByteSize = sizeof(int);
     break;
   case ELEMENT_TYPE_UNIFORM_2I:
   case ELEMENT_TYPE_ATTRIB_2I:
     m_pData = new int[2*nNumElements];
+    m_nElementByteSize = sizeof(int)*2;
     break;
   case ELEMENT_TYPE_UNIFORM_3I:
   case ELEMENT_TYPE_ATTRIB_3I:
     m_pData = new int[3*nNumElements];
+    m_nElementByteSize = sizeof(int)*3;
     break;
-
   case ELEMENT_TYPE_UNIFORM_4I:
   case ELEMENT_TYPE_ATTRIB_4I:
     m_pData = new int[4*nNumElements];
+    m_nElementByteSize = sizeof(int)*4;
     break;
   case ELEMENT_TYPE_UNIFORM_3X3F:
     m_pData = new float[9*nNumElements];
+    m_nElementByteSize = sizeof(float)*9;
     break;
   case ELEMENT_TYPE_UNIFORM_4X4F:
     m_pData = new float[16*nNumElements];
+    m_nElementByteSize = sizeof(float)*16;
     break;
   case ELEMENT_TYPE_ATTRIB_1UB:
     m_pData = new unsigned char[nNumElements];
+    m_nElementByteSize = sizeof(unsigned char);
     break;
   case ELEMENT_TYPE_ATTRIB_2UB:
     m_pData = new unsigned char[2*nNumElements];
+    m_nElementByteSize = sizeof(unsigned char)*2;
     break;
   case ELEMENT_TYPE_ATTRIB_3UB:
     m_pData = new unsigned char[3*nNumElements];
+    m_nElementByteSize = sizeof(unsigned char)*3;
+    break;
+  case ELEMENT_TYPE_V3F_N3F_T2F:
+    m_pData = new float[8*nNumElements];
+    m_nElementByteSize = sizeof(float)*8;
     break;
   case ELEMENT_TYPE_NULL:
     m_pData = NULL;
@@ -95,6 +112,7 @@ Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_NORMAL_3F:
   case ELEMENT_TYPE_TEX_3F:
   case ELEMENT_TYPE_TEX_4F:
+  case ELEMENT_TYPE_V3F_N3F_T2F:
     delete reinterpret_cast<float *>(m_pData);
     break;
   case ELEMENT_TYPE_COLOR_4UB:

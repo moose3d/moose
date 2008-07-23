@@ -109,8 +109,9 @@ namespace Phoenix
       /// \param szResourceName Name of the Renderable resource.
       /// \param nLodLevel To which lod level renderable is added.
       /// \param szGroupName Group name for indices. By default NULL, meaning all indices.
+      /// \param bInterleaved Attempt to use interleaved data. By default, false.
       /// \returns Renderable pointer.
-      Phoenix::Graphics::CRenderable * AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL  );
+      Phoenix::Graphics::CRenderable * AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL, bool bInterleaved = false);
       ////////////////////
       /// Adds existing renderable object to given lod level.
       /// \param pRenderable Renderable to be added.
