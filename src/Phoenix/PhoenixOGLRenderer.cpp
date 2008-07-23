@@ -1203,14 +1203,14 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   CommitBlending( state.GetBlendingOperation());
 
   // Check depth mask write flag.
-  if ( state.GetDepthWrite().IsEnabled()) {  CommitState( STATE_DEPTH_WRITE );  } 
+  if ( state.GetDepthWrite()) {  CommitState( STATE_DEPTH_WRITE );  } 
   else DisableState( STATE_DEPTH_WRITE );
 
   // Check depth test flag.
-  if ( state.GetDepthTest().IsEnabled()) CommitState( STATE_DEPTH_TEST ); 
+  if ( state.GetDepthTest()) CommitState( STATE_DEPTH_TEST ); 
   else DisableState( STATE_DEPTH_TEST );
   // Check face culling flag.
-  if ( state.GetFaceCulling().IsEnabled()) CommitState( STATE_FACECULLING );
+  if ( state.GetFaceCulling()) CommitState( STATE_FACECULLING );
   else DisableState( STATE_FACECULLING );
   // Commit textures
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)

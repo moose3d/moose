@@ -17,16 +17,16 @@ namespace Phoenix
     private:
       Phoenix::Graphics::CAlphaTestOperation m_AlphaTestOp;
       Phoenix::Graphics::CBlendingOperation  m_BlendingOp;
-      Phoenix::Core::CEnableable	     m_DepthTest;
-      Phoenix::Core::CEnableable	     m_DepthWrite;
-      Phoenix::Core::CEnableable	     m_FaceCulling;
+      bool	     m_DepthTest;
+      bool	     m_DepthWrite;
+      bool	     m_FaceCulling;
     public:      
       inline Phoenix::Graphics::CAlphaTestOperation & GetAlphaOperation()    { return m_AlphaTestOp; }
       inline Phoenix::Graphics::CBlendingOperation  & GetBlendingOperation() { return m_BlendingOp;  }
       inline bool IsTransparent() const    { return m_BlendingOp.IsEnabled(); }
-      inline Phoenix::Core::CEnableable & GetDepthTest()  { return m_DepthTest; }
-      inline Phoenix::Core::CEnableable & GetDepthWrite() { return m_DepthWrite; }
-      inline Phoenix::Core::CEnableable & GetFaceCulling() { return m_FaceCulling; }
+      inline bool & GetDepthTest()  { return m_DepthTest; }
+      inline bool & GetDepthWrite() { return m_DepthWrite; }
+      inline bool & GetFaceCulling() { return m_FaceCulling; }
     };
   }
 }
