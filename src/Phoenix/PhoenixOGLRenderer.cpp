@@ -748,6 +748,9 @@ Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_COLOR_ARRAY:
     glDisableClientState( GL_COLOR_ARRAY );
     break;
+  case CLIENT_STATE_NORMAL_ARRAY:
+    glDisableClientState( GL_NORMAL_ARRAY );
+    break;
   case CLIENT_STATE_TEX0_ARRAY:
   case CLIENT_STATE_TEX1_ARRAY:
   case CLIENT_STATE_TEX2_ARRAY:
@@ -772,6 +775,9 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
     break;
   case CLIENT_STATE_COLOR_ARRAY:
     glEnableClientState( GL_COLOR_ARRAY );
+    break;
+  case CLIENT_STATE_NORMAL_ARRAY:
+    glEnableClientState( GL_NORMAL_ARRAY );
     break;
   case CLIENT_STATE_TEX0_ARRAY:
   case CLIENT_STATE_TEX1_ARRAY:
@@ -1250,7 +1256,7 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   // Retrieve resources
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
-  CVertexDescriptor *pVertices = *renderable.GetVertexHandle();
+
 
   CRenderState & state = renderable.GetRenderState();
   CommitBlending( state.GetBlendingOperation());
@@ -1272,10 +1278,15 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
     pTexture = *renderable.GetTextureHandle(i);
     
     // check that texcoord resources actually exist
-    if ( pTemp     != NULL ) 
-    { 
-      CommitVertexDescriptor( pTemp, i ); 
-    } 
+    if ( pTemp == NULL ) 
+    {
+      glClientActiveTextureARB( GL_TEXTURE0_ARB + i);
+      glDisableClientState( GL_TEXTURE_COORD_ARRAY);
+    }
+    else
+    {
+      CommitVertexDescriptor( pTemp, i );  
+    }
     // check that texture resource exists
     if ( pTexture  != NULL ) 
     { 
@@ -1322,11 +1333,20 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   }
 
   // check and commit resources
-  if ( pVertices != NULL )			    CommitVertexDescriptor ( pVertices ); 
+  if ( renderable.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY ); 
+  else						CommitVertexDescriptor ( *renderable.GetVertexHandle() ); 
+
   // commit normals
-  if ( !renderable.GetNormalHandle().IsNull() )     CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
+  if ( renderable.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );   
+  else						CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
+
   // Commit colors
-  if ( !renderable.GetColorHandle().IsNull()  )     CommitVertexDescriptor( *renderable.GetColorHandle() );
+  if ( renderable.GetColorHandle().IsNull()  )  
+  {
+    glDisableClientState( GL_COLOR_ARRAY );
+    CommitColor( renderable.GetRenderState().GetBaseColor() );
+  }
+  else						CommitVertexDescriptor( *renderable.GetColorHandle() );
   
   if ( !renderable.GetIndices().IsNull() )     CommitPrimitive( *renderable.GetIndices() );
 
@@ -1639,8 +1659,8 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
 void
 Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
 {
-  if ( true || !GetRenderState().IsCurrentShader(pShader) ) 
-  {
+  //if ( true || !GetRenderState().IsCurrentShader(pShader) ) 
+  //{
     if ( pShader )
     {
       glUseProgram( pShader->GetProgram() );
@@ -1651,7 +1671,7 @@ Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
     }
     
     GetRenderState().SetCurrentShader(pShader);
-  }
+    //}
 }
 /////////////////////////////////////////////////////////////////
 void
