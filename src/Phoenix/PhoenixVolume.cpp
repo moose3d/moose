@@ -100,7 +100,7 @@ Phoenix::Volume::CCone::CCone( const CVector3<float> &vPos, const CVector3<float
 Phoenix::Volume::CSphere 
 Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vd )
 {
-  if ( (vd.GetType() != ELEMENT_TYPE_VERTEX_3F) || 
+  if ( (vd.GetType() != ELEMENT_TYPE_VERTEX_3F) && 
        (vd.GetType() != ELEMENT_TYPE_V3F_N3F_T2F) ) 
   {
     return CSphere(CVector3<float>(0,0,0), 0.0f);
@@ -167,7 +167,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
 
   // The returned sphere
 
-  if ( (vd.GetType() != ELEMENT_TYPE_VERTEX_3F) ||
+  if ( (vd.GetType() != ELEMENT_TYPE_VERTEX_3F) &&
        (vd.GetType() != ELEMENT_TYPE_V3F_N3F_T2F)) 
   {
     return CSphere( CVector3<float>(0,0,0), 0.0f);
