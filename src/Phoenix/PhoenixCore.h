@@ -31,7 +31,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      CNullable() : m_bIsNull(1) { }
+      CNullable() : m_bIsNull(true) { }
 
       virtual ~CNullable() {}
       ////////////////////
