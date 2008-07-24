@@ -36,6 +36,10 @@ namespace Phoenix
     public:
       Phoenix::Graphics::COglTexture *m_pTexture[TEXTURE_HANDLE_COUNT];
       Phoenix::Graphics::CShader     *m_pShader;
+      Phoenix::Graphics::CVertexDescriptor *m_pVertices;
+      Phoenix::Graphics::CVertexDescriptor *m_pNormals;
+      Phoenix::Graphics::CVertexDescriptor *m_pTexCoords[TEXTURE_HANDLE_COUNT];
+      Phoenix::Graphics::CIndexArray       *m_pIndices;
     public:      
       
       CInternalRenderState()
@@ -43,8 +47,12 @@ namespace Phoenix
 	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;i++)
 	{
 	  m_pTexture[i] = NULL;
+	  m_pTexCoords[i] = NULL;
 	}
-	m_pShader = NULL;
+	m_pShader   = NULL;
+	m_pVertices = NULL;
+	m_pNormals  = NULL;
+	m_pIndices  = NULL;
       }
       ////////////////////
       /// Tests is texture unit bound to current texture.
@@ -72,11 +80,58 @@ namespace Phoenix
       }
       ////////////////////
       /// 
-      inline bool IsCurrentShader( CShader *pShader )
+      inline bool IsCurrentShader( CShader *pShader ) const
       {
 	return (m_pShader == m_pShader);
       }
+
+      inline bool IsCurrentVertices ( CVertexDescriptor *pVD ) const
+      {
+	return (m_pVertices == pVD);
+      }
+      inline void SetCurrentVertices ( CVertexDescriptor *pVD )
+      {
+	m_pVertices = pVD;
+      }
+
+      inline bool IsCurrentNormals ( CVertexDescriptor *pVD ) const
+      {
+	return (m_pNormals == pVD);
+      }
+
+      inline void SetCurrentNormals ( CVertexDescriptor *pVD )
+      {
+	m_pNormals = pVD;
+      }
       
+      ////////////////////
+      /// tests currently assigned texture coordinates.
+      /// \param nTexUnit Texture unit where texture binding is evaluated.
+      /// \param pVD Pointer to vertexdescriptor.
+      inline bool IsCurrentTexCoord( size_t nTexUnit, CVertexDescriptor *pVD ) const
+      {
+	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
+	return (m_pTexCoords[nTexUnit] == pVD);
+      }
+      ////////////////////
+      /// Sets currently assigned texture coordinates.
+      /// \param nTexUnit Texture unit where texture will be bound.
+      /// \param pVD Pointer to vertexdescriptor.
+      inline void SetCurrentTexCoord( size_t nTexUnit, CVertexDescriptor *pVD )
+      {
+	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
+	m_pTexCoords[nTexUnit] = pVD;
+      }
+      
+      inline bool IsCurrentIndices( CIndexArray *pIndices )
+      {
+	return (m_pIndices == pIndices);
+      }
+
+      inline void SetCurrentIndices( CIndexArray *pIndices )
+      {
+	m_pIndices = pIndices;
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 

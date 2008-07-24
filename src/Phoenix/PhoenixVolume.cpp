@@ -100,7 +100,8 @@ Phoenix::Volume::CCone::CCone( const CVector3<float> &vPos, const CVector3<float
 Phoenix::Volume::CSphere 
 Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vd )
 {
-  if ( vd.GetType() != ELEMENT_TYPE_VERTEX_3F ) 
+  if ( (vd.GetType() != ELEMENT_TYPE_VERTEX_3F) || 
+       (vd.GetType() != ELEMENT_TYPE_V3F_N3F_T2F) ) 
   {
     return CSphere(CVector3<float>(0,0,0), 0.0f);
   }
@@ -110,13 +111,14 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
   CVector3<float> vMinValues;
   unsigned int nNumVertices = vd.GetSize();
   
-  float *pVertices = vd.GetPointer<float>();
+
   
   for ( unsigned int v = 0;v<nNumVertices; v++)
   {
-    float fTempX = pVertices[(v*3)];
-    float fTempY = pVertices[(v*3)+1];
-    float fTempZ = pVertices[(v*3)+2];
+    float *pVertices = vd.GetPointer<float>(v);
+    float fTempX = pVertices[0];
+    float fTempY = pVertices[1];
+    float fTempZ = pVertices[2];
     
     if ( v == 0 )
     {
@@ -165,7 +167,8 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
 
   // The returned sphere
 
-  if ( vd.GetType() != ELEMENT_TYPE_VERTEX_3F ) 
+  if ( (vd.GetType() != ELEMENT_TYPE_VERTEX_3F) ||
+       (vd.GetType() != ELEMENT_TYPE_V3F_N3F_T2F)) 
   {
     return CSphere( CVector3<float>(0,0,0), 0.0f);
   }
@@ -203,7 +206,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   for ( unsigned int v = 1;v<nNumVertices; v++)
   {
     
-    vTemp.Set( &(vd.GetPointer<float>()[v*3]));
+    vTemp.Set( vd.GetPointer<float>(v) );
     fTempDotR = vTemp.Dot( vR );
 
     if ( fTempDotR > fMaxExtent ){
@@ -219,8 +222,8 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
 
   }
   // Assign initial center and radius
-  vMin.Set(&vd.GetPointer<float>()[nMinIndex*3]);
-  vMax.Set(&vd.GetPointer<float>()[nMaxIndex*3]);
+  vMin.Set( vd.GetPointer<float>(nMinIndex) );
+  vMax.Set( vd.GetPointer<float>(nMaxIndex) );
   
   //sphere.SetPosition( (vMin + vMax ) * 0.5f );
   
@@ -240,7 +243,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
   // For each vertex
   for ( unsigned int v = 0;v<nNumVertices; v++)
   {
-    vTemp.Set( &(vd.GetPointer<float>()[v*3]));
+    vTemp.Set( vd.GetPointer<float>(v) );
 
     float fDist = ((vTemp - sphere.GetPosition()).Length());
     float fDistSquared = fDist * fDist;
@@ -322,7 +325,7 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   for ( unsigned int v = 0;v<rVertices.GetSize();v++)
   {
     
-    vTemp.Set(&(rVertices.GetPointer<float>()[v*3]));
+    vTemp.Set( rVertices.GetPointer<float>(v) );
     
     fVertDotR = vTemp.Dot(vR);
     fVertDotS = vTemp.Dot(vS);
@@ -468,9 +471,9 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   for ( unsigned int i = 0;i<indexBuffer.GetNumIndices();i++)
   {
     if ( indexBuffer.IsShortIndices())
-      vTemp.Set(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned short int>()[i]*3]));
+      vTemp.Set( rVertices.GetPointer<float>(indexBuffer.GetPointer<unsigned short int>()[i]) );
     else
-      vTemp.Set(&(rVertices.GetPointer<float>()[indexBuffer.GetPointer<unsigned int>()[i]*3]));
+      vTemp.Set( rVertices.GetPointer<float>(indexBuffer.GetPointer<unsigned int>()[i]) );
 
     fVertDotR = vTemp.Dot(vR);
     fVertDotS = vTemp.Dot(vS);

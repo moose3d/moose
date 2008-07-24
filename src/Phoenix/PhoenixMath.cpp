@@ -444,7 +444,8 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
   
 
   /// Covariance matrix is valid only for 3d coordinates
-  if ( vertexDescriptor.GetType()  != ELEMENT_TYPE_VERTEX_3F ) 
+  if ( (vertexDescriptor.GetType() != ELEMENT_TYPE_VERTEX_3F) && 
+       (vertexDescriptor.GetType() != ELEMENT_TYPE_V3F_N3F_T2F) ) 
   {
     mCovariance.IdentityMatrix();
     return;
@@ -458,21 +459,21 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
   ////////////////////
   // Okay, type is correct.
   // Calculate average position
-  for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize()*3; iVertComponent+=3)
+  for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize(); iVertComponent++)
   {
-    vAveragePos[0] += vertexDescriptor.GetPointer<float>()[iVertComponent];
-    vAveragePos[1] += vertexDescriptor.GetPointer<float>()[iVertComponent+1];
-    vAveragePos[2] += vertexDescriptor.GetPointer<float>()[iVertComponent+2];
+    vAveragePos[0] += vertexDescriptor.GetPointer<float>(iVertComponent)[0];
+    vAveragePos[1] += vertexDescriptor.GetPointer<float>(iVertComponent)[1];
+    vAveragePos[2] += vertexDescriptor.GetPointer<float>(iVertComponent)[2];
   }
   
   vAveragePos /= vertexDescriptor.GetSize();
 
   // Calculate Covariance matrix
-  for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize()*3; iVertComponent+=3)
+  for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize(); iVertComponent++)
   {
-    float fTmpX = vertexDescriptor.GetPointer<float>()[iVertComponent]   - vAveragePos[0];
-    float fTmpY = vertexDescriptor.GetPointer<float>()[iVertComponent+1] - vAveragePos[1];
-    float fTmpZ = vertexDescriptor.GetPointer<float>()[iVertComponent+2] - vAveragePos[2];
+    float fTmpX = vertexDescriptor.GetPointer<float>(iVertComponent)[0] - vAveragePos[0];
+    float fTmpY = vertexDescriptor.GetPointer<float>(iVertComponent)[1] - vAveragePos[1];
+    float fTmpZ = vertexDescriptor.GetPointer<float>(iVertComponent)[2] - vAveragePos[2];
     
     mCovariance(0,0) += fTmpX * fTmpX;
     mCovariance(1,1) += fTmpY * fTmpY;
@@ -491,7 +492,8 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
 {
 
   /// Covariance matrix is valid only for 3d coordinates
-  if ( vertexDescriptor.GetType()  != ELEMENT_TYPE_VERTEX_3F ) 
+  if ( (vertexDescriptor.GetType()  != ELEMENT_TYPE_VERTEX_3F) &&
+       (vertexDescriptor.GetType()  != ELEMENT_TYPE_V3F_N3F_T2F) ) 
   {
     mCovariance.IdentityMatrix();
     return;
@@ -520,9 +522,9 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     else
       nVertexIndex = m_pIndexIntArray[nIndex] * 3;
 
-    vAveragePos[0] += vertexDescriptor.GetPointer<float>()[nVertexIndex];
-    vAveragePos[1] += vertexDescriptor.GetPointer<float>()[nVertexIndex+1];
-    vAveragePos[2] += vertexDescriptor.GetPointer<float>()[nVertexIndex+2];
+    vAveragePos[0] += vertexDescriptor.GetPointer<float>(nVertexIndex)[0];
+    vAveragePos[1] += vertexDescriptor.GetPointer<float>(nVertexIndex)[1];
+    vAveragePos[2] += vertexDescriptor.GetPointer<float>(nVertexIndex)[2];
   }
   
   vAveragePos /= indices.GetNumIndices();
@@ -540,9 +542,9 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     else
       nVertexIndex = m_pIndexIntArray[nIndex] * 3;
 
-    fTmpX = vertexDescriptor.GetPointer<float>()[nVertexIndex]   - vAveragePos[0];
-    fTmpY = vertexDescriptor.GetPointer<float>()[nVertexIndex+1] - vAveragePos[1];
-    fTmpZ = vertexDescriptor.GetPointer<float>()[nVertexIndex+2] - vAveragePos[2];
+    fTmpX = vertexDescriptor.GetPointer<float>(nVertexIndex)[0] - vAveragePos[0];
+    fTmpY = vertexDescriptor.GetPointer<float>(nVertexIndex)[1] - vAveragePos[1];
+    fTmpZ = vertexDescriptor.GetPointer<float>(nVertexIndex)[2] - vAveragePos[2];
     
     mCovariance(0,0) += fTmpX * fTmpX;
     mCovariance(1,1) += fTmpY * fTmpY;

@@ -315,8 +315,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   case ELEMENT_TYPE_VERTEX_3F:
     glEnableClientState( GL_VERTEX_ARRAY );
     // check if this was previously set
-    //if ( GetRenderState().m_pVertexBuffer == pBuffer ) break;
-    //else GetRenderState().m_pVertexBuffer = pBuffer;
+    if ( GetRenderState().IsCurrentVertices( pBuffer ) ) break;
 
     if ( pBuffer->IsCached()) 
     {
@@ -329,6 +328,9 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
       glVertexPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
+
+    GetRenderState().SetCurrentVertices(pBuffer);
+
     break;
   case ELEMENT_TYPE_COLOR_4UB:
     glEnableClientState( GL_COLOR_ARRAY );
@@ -389,8 +391,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
     // check if this was previously set
-    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
-    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+    if ( GetRenderState().IsCurrentTexCoord( nId, pBuffer ) ) break;
+
 
     if ( pBuffer->IsCached()) 
     {
@@ -402,6 +404,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
       glTexCoordPointer(2, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
+    GetRenderState().SetCurrentTexCoord(nId,  pBuffer );
     break;
   case ELEMENT_TYPE_TEX_3F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
@@ -410,8 +413,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
     // check if this was previously set
-    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
-    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+    if ( GetRenderState().IsCurrentTexCoord( nId, pBuffer ) ) break;
+    
 
     if ( pBuffer->IsCached()) 
     {
@@ -423,6 +426,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
       glTexCoordPointer(3, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
+    GetRenderState().SetCurrentTexCoord( nId, pBuffer );
     break;
   case ELEMENT_TYPE_TEX_4F:
     if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
@@ -431,8 +435,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
     // check if this was previously set
-    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
-    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+    if ( GetRenderState().IsCurrentTexCoord( nId, pBuffer ) ) break;
+
 
     if ( pBuffer->IsCached()) 
     {
@@ -444,13 +448,14 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
       glTexCoordPointer(4, GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
+    GetRenderState().SetCurrentTexCoord( nId, pBuffer );
     break;
   case ELEMENT_TYPE_NORMAL_3F:
     glEnableClientState( GL_NORMAL_ARRAY );
 
     // check if this was previously set
-    //if ( GetRenderState().m_pNormalBuffer == pBuffer ) break;
-    //else GetRenderState().m_pNormalBuffer = pBuffer;
+    if ( GetRenderState().IsCurrentNormals( pBuffer ) ) break;    
+
     
     if ( pBuffer->IsCached()) 
     {
@@ -462,39 +467,46 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
       glNormalPointer( GL_FLOAT, 0, pBuffer->GetPointer<float>());
     }
+    GetRenderState().SetCurrentNormals( pBuffer );
     break;
 
   case ELEMENT_TYPE_V3F_N3F_T2F:
 
-    glEnableClientState( GL_NORMAL_ARRAY );
-    glEnableClientState( GL_VERTEX_ARRAY );
     glClientActiveTextureARB( GL_TEXTURE0_ARB);
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState( GL_VERTEX_ARRAY );    
     // check if this was previously set
-    //if ( GetRenderState().m_pNormalBuffer == pBuffer ) break;
-    //else GetRenderState().m_pNormalBuffer = pBuffer;
-    //if ( GetRenderState().m_pVertexBuffer == pBuffer ) break;
-    //else GetRenderState().m_pVertexBuffer = pBuffer;
-    //if ( GetRenderState().m_pTexCoordBuffer == pBuffer ) break;
-    //else GetRenderState().m_pTexCoordBuffer = pBuffer;
+
+    if ( GetRenderState().IsCurrentTexCoord( 0, pBuffer ) && 
+	 GetRenderState().IsCurrentNormals(  pBuffer ) &&
+	 GetRenderState().IsCurrentVertices( pBuffer ) ) 
+    {
+      break;
+    }
+    
 
     if ( pBuffer->IsCached()) 
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
 
-      glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), 0);
-      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*3));
       glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*6));
+      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*3));
+      glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), 0);
     } 
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
 
-      glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>());
-      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*3);
       glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*6);
+      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*3);
+      glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>());
     }
+
+    GetRenderState().SetCurrentTexCoord( 0, pBuffer );
+    GetRenderState().SetCurrentNormals(  pBuffer );
+    GetRenderState().SetCurrentVertices( pBuffer );
+
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
   case ELEMENT_TYPE_UNIFORM_2F:
@@ -634,7 +646,8 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     pIndices = pIndexBuffer->IsCached() ? 0 :  pIndexBuffer->GetPointer<unsigned int>();
   }
 
-  //if ( !bIsActive )
+
+  if ( !GetRenderState().IsCurrentIndices( pIndexBuffer ) )
   {
     if ( pIndices == 0 )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
@@ -642,7 +655,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
     // store current indexbuffer pointer to renderstate
-    //GetRenderState().m_pIndexArray = pIndexBuffer;
+    GetRenderState().SetCurrentIndices(pIndexBuffer);
   }
   glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
 		  iIndexBufferType,  pIndices);
