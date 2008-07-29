@@ -40,3 +40,5 @@
 #include "PhoenixModelHelper.h"
 #include "PhoenixDDSImage.h"
 #include "PhoenixMessageSystem.h"
+#include "PhoenixModelLoader.h"
+#include "PhoenixObjLoader.h"
