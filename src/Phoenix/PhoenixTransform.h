@@ -17,7 +17,7 @@ namespace Phoenix
     {
     protected:
       /// Is this transform changed.
-      unsigned int    m_bChanged;
+      bool    m_bChanged;
       /// Scale factor.
       float		  m_fScaling;
       /// The transformation matrix.
@@ -112,7 +112,14 @@ namespace Phoenix
       /// Appends rotation to current transform.
       /// \param q Rotation quaternion.
       void Rotate( const CQuaternion & q);
-      
+      ////////////////////
+      /// Is this transform been changed.
+      /// \returns true if changed, false otherwise.
+      bool IsChanged() const;
+      ////////////////////
+      /// Set change flag.
+      /// \bFlag true for changed, false for unchanged.
+      void SetChanged(bool bFlag );
     };
     ////////////////////
     /// Multiplies two CTransforms as matrices and stores result.
@@ -130,7 +137,9 @@ namespace Phoenix
     protected:
       Phoenix::Math::CTransform m_LocalTransform;
       Phoenix::Math::CTransform m_WorldTransform;
+      bool m_bChanged;
     public:
+      CTransformable();
       virtual ~CTransformable() {} 
       ////////////////////
       /// Returns reference to local transform.
@@ -156,6 +165,14 @@ namespace Phoenix
       /// Assigns local transform.
       /// \param rTransform transform to be set as local
       void SetLocalTransform( const Phoenix::Math::CTransform & rTransform );
+      ////////////////////
+      /// Is this transformable been updated.
+      /// \returns true if changed, false otherwise.
+      bool IsChanged() const;
+      ////////////////////
+      /// Set change flag.
+      /// \bFlag true for changed, false for unchanged.
+      void SetChanged(bool bFlag );
     };
   }; // namespace Math
 }; // namespace Phoenix
