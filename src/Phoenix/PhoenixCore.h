@@ -500,9 +500,26 @@ namespace Phoenix
 	m_Object = item.GetObject();
       }
     };
+
+    
+    ////////////////////
+    /// Creates hash of string. Uses djb2 algorithm.
+    struct CreateHash 
+    {
+      unsigned int operator()( const std::string &string, size_t nSlots ) 
+      {
+	unsigned int nHash = 5381;
+	int c;
+	const char *pStr = string.c_str();
+	while ( (c = *pStr++) )
+	  nHash = ((nHash << 5) + nHash) + c; /* hash * 33 + c */
+	
+	return nHash % nSlots;
+      }
+    };
     /////////////////////////////////////////////////////////////////
     /// Hash table class for several types.
-    template <typename KEYTYPE, typename OBJECTTYPE>
+    template <typename KEYTYPE, typename OBJECTTYPE, typename HashFunc=CreateHash>
     class CHashTable
     {
     protected:
@@ -528,7 +545,7 @@ namespace Phoenix
       /// \param obj object to be inserted.
       inline void Insert( CHashItem<KEYTYPE,OBJECTTYPE> &obj )
       {
-	unsigned int nHash = CreateHash( obj.GetKey() );
+	unsigned int nHash = HashFunc()( obj.GetKey(), GetSize() );
 	m_pTable[nHash].push_back(obj);
       }
       ////////////////////
@@ -546,7 +563,7 @@ namespace Phoenix
 	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
 	
-	int nHash = CreateHash(nKey);
+	int nHash = HashFunc()(nKey, GetSize());
 	std::vector< CHashItem<KEYTYPE,OBJECTTYPE> > *pHashChain = &m_pTable[nHash];
 	typename std::vector< CHashItem<KEYTYPE,OBJECTTYPE> >::iterator it;
 
@@ -568,7 +585,7 @@ namespace Phoenix
 	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
 	
-	int nHash = CreateHash(nKey);
+	int nHash = HashFunc()(nKey, GetSize());
 	std::vector<CHashItem<KEYTYPE,OBJECTTYPE> > *pHashChain = &m_pTable[nHash];
 	for( unsigned int i =0; i<pHashChain->size();  i++)
 	{
@@ -576,18 +593,7 @@ namespace Phoenix
 	}
 	return NULL;
       }
-        ////////////////////
-      /// Creates hash of string. Uses djb2 algorithm.
-      unsigned int CreateHash( const std::string &string ) const
-      {
-	unsigned int nHash = 5381;
-        int c;
-	const char *pStr = string.c_str();
-	while ( (c = *pStr++) )
-	  nHash = ((nHash << 5) + nHash) + c; /* hash * 33 + c */
-	
-        return nHash % GetSize();
-      }
+      
     };
     /////////////////////////////////////////////////////////////////
     /// Singleton template, which makes creating singleton objects easier.
