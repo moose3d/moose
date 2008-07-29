@@ -136,6 +136,11 @@ Phoenix::Math::CTransform::GetTranslation() const
   return m_vTranslation;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Math::CTransformable::CTransformable()
+{
+  SetChanged(true);
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Math::CTransform & 
 Phoenix::Math::CTransformable::GetLocalTransform()
 {
@@ -164,12 +169,26 @@ void
 Phoenix::Math::CTransformable::SetLocalTransform( const Phoenix::Math::CTransform & rTransform )
 {
   m_LocalTransform = rTransform;
+  SetChanged(true);
 }
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::CTransformable::SetWorldTransform( const Phoenix::Math::CTransform & rTransform )
 {
   m_WorldTransform = rTransform;
+  SetChanged(true);
+}
+/////////////////////////////////////////////////////////////////
+bool 
+Phoenix::Math::CTransform::IsChanged() const
+{
+  return m_bChanged;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Math::CTransform::SetChanged(bool bFlag )
+{
+  m_bChanged = bFlag;
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -188,5 +207,17 @@ Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft,
   RotateVector( rTLeft.GetRotation(), vRightTransl );
   rTransformResult.SetTranslation( vRightTransl + rTLeft.GetTranslation());
   
+}
+/////////////////////////////////////////////////////////////////
+bool 
+Phoenix::Math::CTransformable::IsChanged() const
+{
+  return m_bChanged;
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Math::CTransformable::SetChanged(bool bFlag )
+{
+  m_bChanged = bFlag;
 }
 /////////////////////////////////////////////////////////////////
