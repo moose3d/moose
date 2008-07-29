@@ -103,10 +103,15 @@ inline void CreateIndices( Phoenix::Graphics::CIndexArray *pIndices )
     pIndices->GetPointer<unsigned short int>()[18] = 7;
     pIndices->GetPointer<unsigned short int>()[19] = 1;
 
-    pIndices->GetPointer<unsigned short int>()[20] = 1;
+    /*pIndices->GetPointer<unsigned short int>()[20] = 1;
     pIndices->GetPointer<unsigned short int>()[21] = 7;
     pIndices->GetPointer<unsigned short int>()[22] = 5;
-    pIndices->GetPointer<unsigned short int>()[23] = 2;
+    pIndices->GetPointer<unsigned short int>()[23] = 2;*/
+    // This fixes problem on ATI hardware.
+    pIndices->GetPointer<unsigned short int>()[20] = 2;
+    pIndices->GetPointer<unsigned short int>()[21] = 5;
+    pIndices->GetPointer<unsigned short int>()[22] = 7;
+    pIndices->GetPointer<unsigned short int>()[23] = 1;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::CSkybox() 
