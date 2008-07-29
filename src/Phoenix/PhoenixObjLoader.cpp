@@ -12,6 +12,56 @@ using std::cerr;
 using std::endl;
 using std::ios_base;
 using std::string;
+using namespace Phoenix::Data;
+/////////////////////////////////////////////////////////////////
+struct printIt_t
+{
+  void operator()( ObjVertex & v )
+  {
+    cerr << "v "
+	 << v.x << " "
+	 << v.y << " "
+	 << v.z << endl;
+  }
+
+  void operator()( ObjNormal & v )
+  {
+    cerr << "vn "
+	 << v.x << " "
+	 << v.y << " "
+	 << v.z << endl;
+  }
+  
+  void operator()( ObjTexCoord & tex )
+  {
+    cerr << "vt "
+	 << tex.u << " "
+	 << tex.v << endl;
+  }
+
+  void operator()( ObjFace & face )
+  {
+    cerr << "f ";
+    cerr << face.v1 << "/" ;
+    if ( face.t1 > -1 ) cerr << face.t1 ;
+    cerr << "/";
+    if ( face.n1 > -1) cerr << face.n1;
+    cerr << " ";
+
+    cerr << face.v2 << "/" ;
+    if ( face.t2 > -1 ) cerr << face.t2 ;
+    cerr << "/";
+    if ( face.n2 > -1) cerr << face.n2;
+    cerr << " ";
+
+    cerr << face.v3 << "/" ;
+    if ( face.t3 > -1 ) cerr << face.t3 ;
+    cerr << "/";
+    if ( face.n3 > -1) cerr << face.n3;
+
+    cerr << endl;  
+  }
+} printIt;
 /////////////////////////////////////////////////////////////////
 class CObjException: public exception
 {
@@ -43,7 +93,7 @@ public:
 };
 /////////////////////////////////////////////////////////////////
 const char *
-SkipWhiteSpace( const char *szStr )
+FindSeparator( const char *szStr )
 {
   const char *ptr = szStr;
   if ( szStr == NULL ) return NULL;
@@ -64,7 +114,7 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   char buf[256];
 
   const char *begin = szLine+2;
-  const char *end = SkipWhiteSpace(begin);
+  const char *end = FindSeparator(begin);
 
   // parse for x-coord.
   if ( end[0] == '\0' ) throw CBadFormatException("No vertex coords available.", m_currLine);
@@ -74,7 +124,7 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   
   // parse for y-coord
   begin = end+1;
-  end = SkipWhiteSpace(begin);
+  end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only one vertex coord available", m_currLine);
   strncpy( buf, begin, end-begin);
   buf[end-begin]='\0';
@@ -82,7 +132,7 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
 
   // parse for z-coord
   begin = end+1;
-  end = SkipWhiteSpace(begin);
+  end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only two vertex coords available", m_currLine);
   strncpy( buf, begin, end-begin);
   buf[end-begin]='\0';
@@ -100,7 +150,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   char buf[256];
 
   const char *begin = szLine+2;
-  const char *end = SkipWhiteSpace(begin);
+  const char *end = FindSeparator(begin);
 
   // parse for x-coord.
   if ( end[0] == '\0' ) throw CBadFormatException("No normal coords available.", m_currLine);
@@ -110,7 +160,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   
   // parse for y-coord
   begin = end+1;
-  end = SkipWhiteSpace(begin);
+  end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only one normal coord available", m_currLine);
   strncpy( buf, begin, end-begin);
   buf[end-begin]='\0';
@@ -118,7 +168,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
 
   // parse for z-coord
   begin = end+1;
-  end = SkipWhiteSpace(begin);
+  end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only two normal coords available", m_currLine);
   strncpy( buf, begin, end-begin);
   buf[end-begin]='\0';
@@ -136,7 +186,7 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   char buf[256];
 
   const char *begin = szLine+2;
-  const char *end = SkipWhiteSpace(begin);
+  const char *end = FindSeparator(begin);
   
   // parse for x-coord.
   if ( end[0] == '\0' ) throw CBadFormatException("No texcoords available.", m_currLine);
@@ -146,7 +196,7 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   
   // parse for y-coord
   begin = end+1;
-  end = SkipWhiteSpace(begin);
+  end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only one texcoord available", m_currLine);
   strncpy( buf, begin, end-begin);
   buf[end-begin]='\0';
@@ -161,7 +211,104 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
 void
 Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
 {
+  ObjFace face;
+  char buf[256];
+
+  const char *begin = szLine+2;
+  const char *end = FindSeparator(begin);
+  bool hasMore = true;
+
+  for( int i=0;i<3 && hasMore;i++)
+  {
+    if ( end[0] == '\0' )  
+    {
+      hasMore = false;
+    }
+    // copy current def block to buf and terminate string
+    strncpy( buf, begin, end-begin);
+    buf[end-begin]='\0';
+    // check total length of buf.
+    size_t bufSize = strlen(buf);
+
+    // replace slashes with \0
+    char *faceLine = buf;
+    while ( (faceLine = index(faceLine, '/')) != NULL ) 
+    {
+      faceLine[0] = '\0';
+      faceLine++;
+    }
+  
+    // parse vertex index
+    faceLine = buf;
+
+    switch( i )
+    {
+    case 0:
+      face.v1 = strtol(faceLine, (char **)NULL, 10);  
+      break;
+    case 1: 
+      face.v2 = strtol(faceLine, (char **)NULL, 10);  
+      break;
+    case 2: 
+      face.v3 = strtol(faceLine, (char **)NULL, 10);  
+      break;
+    }
+    // parse texcoord
+    faceLine+=(strlen(faceLine)+1);
+    if ( faceLine < buf+bufSize )
+    {
+      // texcoord is optional
+      if ( strlen( faceLine) > 0 )
+      {
+
+	switch( i )
+	{
+	case 0:
+	  face.t1 = strtol(faceLine, (char **)NULL, 10);  
+	  break;
+	case 1: 
+	  face.t2 = strtol(faceLine, (char **)NULL, 10);  
+	  break;
+	case 2: 
+	  face.t3 = strtol(faceLine, (char **)NULL, 10);  
+	  break;
+	}
+
+      }
+      // parse normal
+      faceLine+=(strlen(faceLine)+1);
+      if ( faceLine < buf+bufSize )
+      {
+	// normal is optional
+	if ( strlen(faceLine) > 0 )
+	{
+	  switch( i )
+	  {
+	  case 0:
+	    face.n1 = strtol(faceLine, (char **)NULL, 10);  
+	    break;
+	  case 1: 
+	    face.n2 = strtol(faceLine, (char **)NULL, 10);  
+	    break;
+	  case 2: 
+	    face.n3 = strtol(faceLine, (char **)NULL, 10);  
+	    break;
+	  }
+
+	}
+
+      } 
+    } 
     
+
+    
+    // parse next face vertex definition
+    begin = (end+1);
+    end = FindSeparator( begin );
+  } 
+
+  m_Faces.push_back(face);
+
 }
 /////////////////////////////////////////////////////////////////
 int 
@@ -233,9 +380,18 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
   {
     cerr << ex.what() << " at " << ex.GetLine() <<  endl;
   }  
+
+#ifdef DEBUG
   cerr << "#vert: " << m_Vertices.size() << endl;
   cerr << "#norm: " << m_Normals.size() << endl;
   cerr << "#texc: " << m_TexCoords.size() << endl;
+  cerr << "#indices: " << m_Faces.size() << endl;
+  for_each( m_Vertices.begin(), m_Vertices.end(), printIt);
+  for_each( m_Normals.begin(), m_Normals.end(), printIt);
+  for_each( m_TexCoords.begin(), m_TexCoords.end(), printIt);
+  for_each( m_Faces.begin(), m_Faces.end(), printIt);
+#endif
+  
   delete pBuffer;
   return iRetval;
 }
