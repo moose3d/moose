@@ -23,6 +23,8 @@ using std::cerr;
 using std::ifstream;
 using std::ios;
 /////////////////////////////////////////////////////////////////
+#define BUFFER_OFFSET(i) ((char *)NULL+(i))
+/////////////////////////////////////////////////////////////////
 /// Famous last words: Eight color buffers is enough for anyone :)
 const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT, 
 				      GL_COLOR_ATTACHMENT1_EXT,
@@ -471,11 +473,12 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     break;
 
   case ELEMENT_TYPE_V3F_N3F_T2F:
-
+    
     glClientActiveTextureARB( GL_TEXTURE0_ARB);
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState( GL_VERTEX_ARRAY );    
+    glDisableClientState( GL_COLOR_ARRAY );
     // check if this was previously set
 
     if ( GetRenderState().IsCurrentTexCoord( 0, pBuffer ) && 
@@ -490,8 +493,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
 
-      glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*6));
-      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), (void *)(sizeof(float)*3));
+      glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), BUFFER_OFFSET(sizeof(float)*6) );
+      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), BUFFER_OFFSET(sizeof(float)*3) );
       glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), 0);
     } 
     else
