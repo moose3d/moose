@@ -33,112 +33,6 @@ Phoenix::Data::CMilkshapeLoader::~CMilkshapeLoader()
   Destroy();
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Data::CMilkshapeLoader::CMilkshapeLoader( const CMilkshapeLoader &ref)
-{
-  // Get sizes 
-  m_nNumVertices = ref.m_nNumVertices;
-  m_nNumTriangles = ref.m_nNumTriangles ;
-  m_nNumGroups = ref.m_nNumGroups;
-  m_nNumMaterials = ref.m_nNumMaterials;
-  m_nNumJoints = ref.m_nNumJoints;
-
-  // Allocate memory 
-  m_pVertices	= new MS3D_Vertex_t[m_nNumVertices];
-  m_pTriangles	= new MS3D_Triangle_t[m_nNumTriangles];
-  m_pGroups	= new MS3D_Group_t[m_nNumGroups];
-  m_pMaterials  = new MS3D_Material_t[m_nNumMaterials];
-  m_pJoints     = new MS3D_Joint_t[m_nNumJoints];
-
-  // Copy data
-  memcpy(m_pVertices, ref.m_pVertices,  sizeof(ref.m_pVertices));
-  memcpy(m_pTriangles,ref.m_pTriangles, sizeof(ref.m_pTriangles));
-  memcpy(m_pGroups,   ref.m_pGroups,    sizeof(ref.m_pGroups) );
-
-  for(unsigned int i=0;i<m_nNumGroups;i++){
-    m_pGroups[i].pTriangleIndices = new WORD[m_pGroups[i].nNumTriangles];
-    memcpy(m_pGroups[i].pTriangleIndices, ref.m_pGroups[i].pTriangleIndices, sizeof(WORD)*m_pGroups[i].nNumTriangles);
-  }
-  
-  memcpy(m_pMaterials,   ref.m_pMaterials,    sizeof(m_pMaterials) );
-  
-  m_Animationdata.fAnimationFPS = ref.m_Animationdata.fAnimationFPS;
-  m_Animationdata.fCurrentTime  = ref.m_Animationdata.fCurrentTime;
-  m_Animationdata.iTotalFrames  = ref.m_Animationdata.iTotalFrames;
- 
-  memcpy(m_pJoints, ref.m_pJoints, sizeof(ref.m_pJoints));
-
-  for(unsigned int i=0;i<m_nNumJoints;i++)
-  {
-    m_pJoints[i].keyFramesRot   = new MS3D_Keyframe_rot_t[m_pJoints[i].nNumKeyFramesRot];
-    m_pJoints[i].keyFramesTrans = new MS3D_Keyframe_pos_t[m_pJoints[i].nNumKeyFramesTrans];
-    memcpy(m_pJoints[i].keyFramesRot,   
-	   ref.m_pJoints[i].keyFramesRot,   
-	   sizeof(ref.m_pJoints[i].keyFramesRot));
-    memcpy(m_pJoints[i].keyFramesTrans, 
-	   ref.m_pJoints[i].keyFramesTrans, 
-	   sizeof(ref.m_pJoints[i].keyFramesTrans));
-  }
-
-  memcpy(m_pVertexWeights, ref.m_pVertexWeights, sizeof(ref.m_pVertexWeights));
-  m_bHasBeenLoaded = ref.m_bHasBeenLoaded;
-}
-/////////////////////////////////////////////////////////////////
-CMilkshapeLoader &
-Phoenix::Data::CMilkshapeLoader::operator=( CMilkshapeLoader obj )
-{
-  Destroy();
-  // Get sizes 
-  m_nNumVertices = obj.m_nNumVertices;
-  m_nNumTriangles = obj.m_nNumTriangles ;
-  m_nNumGroups = obj.m_nNumGroups;
-  m_nNumMaterials = obj.m_nNumMaterials;
-  m_nNumJoints = obj.m_nNumJoints;
-
-  // Allocate memory 
-  m_pVertices	= new MS3D_Vertex_t[m_nNumVertices];
-  m_pTriangles	= new MS3D_Triangle_t[m_nNumTriangles];
-  m_pGroups	= new MS3D_Group_t[m_nNumGroups];
-  m_pMaterials  = new MS3D_Material_t[m_nNumMaterials];
-  m_pJoints     = new MS3D_Joint_t[m_nNumJoints];
-
-  // Copy data
-  memcpy(m_pVertices, obj.m_pVertices,  sizeof(obj.m_pVertices));
-  memcpy(m_pTriangles,obj.m_pTriangles, sizeof(obj.m_pTriangles));
-  memcpy(m_pGroups,   obj.m_pGroups,    sizeof(obj.m_pGroups) );
-
-  for(unsigned int i=0;i<m_nNumGroups;i++){
-    m_pGroups[i].pTriangleIndices = new WORD[m_pGroups[i].nNumTriangles];
-    memcpy(m_pGroups[i].pTriangleIndices, 
-	   obj.m_pGroups[i].pTriangleIndices, 
-	   sizeof(WORD)*m_pGroups[i].nNumTriangles);
-  }
-  
-  memcpy(m_pMaterials,   obj.m_pMaterials,    sizeof(m_pMaterials) );
-
-  m_Animationdata.fAnimationFPS = obj.m_Animationdata.fAnimationFPS;
-  m_Animationdata.fCurrentTime  = obj.m_Animationdata.fCurrentTime;
-  m_Animationdata.iTotalFrames  = obj.m_Animationdata.iTotalFrames;
- 
-  memcpy(m_pJoints, obj.m_pJoints, sizeof(obj.m_pJoints));
-
-  for(unsigned int i=0;i<m_nNumJoints;i++){
-    m_pJoints[i].keyFramesRot   = new MS3D_Keyframe_rot_t[m_pJoints[i].nNumKeyFramesRot];
-    m_pJoints[i].keyFramesTrans = new MS3D_Keyframe_pos_t[m_pJoints[i].nNumKeyFramesTrans];
-    memcpy(m_pJoints[i].keyFramesRot,   
-	   obj.m_pJoints[i].keyFramesRot,   
-	   sizeof(obj.m_pJoints[i].keyFramesRot));
-    memcpy(m_pJoints[i].keyFramesTrans, 
-	   obj.m_pJoints[i].keyFramesTrans, 
-	   sizeof(obj.m_pJoints[i].keyFramesTrans));
-  }
-
-  memcpy(m_pVertexWeights, 
-	 obj.m_pVertexWeights, 
-	 sizeof(obj.m_pVertexWeights));
-  m_bHasBeenLoaded = obj.m_bHasBeenLoaded;
-  return *this;
-}
-/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::Init()
 {
@@ -663,6 +557,7 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
   unsigned int nMaxIndex = 0;
   for(unsigned int i=0;i<vecIndices.size();i++)
   {
+    
     if ( vecIndices[i] > nMaxIndex ) nMaxIndex = vecIndices[i];
 
     if ( pIndices->IsShortIndices() )
@@ -695,7 +590,29 @@ struct TriInd
   MS3D_Triangle_t *ptr;
   int index[3];
 };
-
+/////////////////////////////////////////////////////////////////
+void 
+PrintDiff( MS3D_Triangle_t &a , MS3D_Triangle_t & b, int whichVertex )
+{
+  cerr << "--****-----" << endl;
+  cerr << a.vertexNormals[whichVertex][0] << " != " << b.vertexNormals[whichVertex][0]  << endl;
+  cerr << a.vertexNormals[whichVertex][1] << " != " << b.vertexNormals[whichVertex][1] << endl;
+  cerr << a.vertexNormals[whichVertex][2] << " != " << b.vertexNormals[whichVertex][2] << endl;
+  cerr << a.s[whichVertex] << " != " << b.s[whichVertex] << endl;
+  cerr << a.t[whichVertex] << " != " << b.t[whichVertex] << endl; 
+  cerr << "-------" << endl;
+}
+/////////////////////////////////////////////////////////////////
+/// Compares two triangles by normals and texcoords if they are same.
+inline bool 
+CloseEnough( MS3D_Triangle_t &a , int whichVertex, MS3D_Triangle_t & b, int whichVertexPrev )
+{
+  return ( QUITE_CLOSE_TO( a.vertexNormals[whichVertex][0], b.vertexNormals[whichVertexPrev][0] ) &&  
+	   QUITE_CLOSE_TO( a.vertexNormals[whichVertex][1], b.vertexNormals[whichVertexPrev][1] ) &&
+	   QUITE_CLOSE_TO( a.vertexNormals[whichVertex][2], b.vertexNormals[whichVertexPrev][2] ) &&
+	   QUITE_CLOSE_TO( a.s[whichVertex], b.s[whichVertexPrev] ) &&
+	   QUITE_CLOSE_TO( a.t[whichVertex], b.t[whichVertexPrev] ));
+}
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
@@ -719,10 +636,21 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
     }
   }
 
-
+#ifdef DEBUG
+  for( size_t i=0; i< m_nNumVertices; ++i)
+  {
+    vector< TriInd > & tris = vertTriangles[i];
+    cerr << "vertex " << i ;
+    cerr << "(" ;
+    cerr << m_pVertices[i].vertex[0] << ",";
+    cerr << m_pVertices[i].vertex[1] << ",";
+    cerr << m_pVertices[i].vertex[2] << ")";
+    cerr << " has " << tris.size() << "triangles." << endl;
+  }
+#endif
   vecVertices.clear();
   vecIndices.clear();
-
+  
   // insert new vertices and store indices into TriInd structs.
   for( size_t i=0; i< m_nNumVertices; ++i)
   {
@@ -730,65 +658,33 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
     for( size_t t=0;t< tris.size(); ++t)
     {
       bool foundExisting = false;
-      size_t nIndex = 0;
+      //size_t nIndex = 0;
       int whichVertex = 0;
+      
+      // check which index we must handle
+      if ( tris[t].ptr->vertexIndices[0] == i)        whichVertex = 0;
+      else if ( tris[t].ptr->vertexIndices[1] == i)   whichVertex = 1;
+      else whichVertex = 2; /*( tris[t].ptr->vertexIndices[2] == i)*/  
+      
       
       // go trough all triangles before current 
       for( size_t p=0;p<t; ++p)
       {
+	// another vertex might have _different_ index...
+	int whichVertexPrev = 0;
+	if ( tris[p].ptr->vertexIndices[0] == i)        whichVertexPrev = 0;
+	else if ( tris[p].ptr->vertexIndices[1] == i)   whichVertexPrev = 1;
+	else whichVertexPrev = 2; /*( tris[t].ptr->vertexIndices[2] == i)*/  
+	
+	// if identical vertex exists, use it. (comparing normals and texcoords).
+	if ( CloseEnough( *tris[t].ptr, whichVertex, *tris[p].ptr, whichVertexPrev) )
+	{
+	  foundExisting = true;
+	  tris[t].index[whichVertex] = tris[p].index[whichVertexPrev];
+	  break;
+	}
 
-	// This allows degenerate vertices to be in model, might be slightly slower but hardly noticeable.
-	if ( tris[t].ptr->vertexIndices[0] == i) 
-	{
-	  whichVertex = 0;
-	  // if identical vertex exists, use it. (comparing normals and texcoords).
-	  if ( QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][0], tris[p].ptr->vertexNormals[whichVertex][0] ) &&  
-	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][1], tris[p].ptr->vertexNormals[whichVertex][1] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][2], tris[p].ptr->vertexNormals[whichVertex][2] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->s[whichVertex], tris[p].ptr->s[whichVertex] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->t[whichVertex], tris[p].ptr->t[whichVertex] ) )
-	  {
-	    foundExisting = true;
-	    tris[t].index[whichVertex] = tris[p].index[whichVertex];
-	    break;
-	  }
-	  
-	}
-	
-	if ( tris[t].ptr->vertexIndices[1] == i) 
-	{
-	  whichVertex = 1;
-	  
-	  // if identical vertex exists, use it. (comparing normals and texcoords).
-	  if ( QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][0], tris[p].ptr->vertexNormals[whichVertex][0] ) &&  
-	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][1], tris[p].ptr->vertexNormals[whichVertex][1] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][2], tris[p].ptr->vertexNormals[whichVertex][2] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->s[whichVertex], tris[p].ptr->s[whichVertex] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->t[whichVertex], tris[p].ptr->t[whichVertex] ) )
-	  {
-	    foundExisting = true;
-	    tris[t].index[whichVertex] = tris[p].index[whichVertex];
-	    break;
-	  }
-	}
-	
-	if ( tris[t].ptr->vertexIndices[2] == i) 
-	{
-	  whichVertex = 2;
-	  // if identical vertex exists, use it. (comparing normals and texcoords).
-	  if ( QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][0], tris[p].ptr->vertexNormals[whichVertex][0] ) &&  
-	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][1], tris[p].ptr->vertexNormals[whichVertex][1] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][2], tris[p].ptr->vertexNormals[whichVertex][2] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->s[whichVertex], tris[p].ptr->s[whichVertex] ) &&
-	       QUITE_CLOSE_TO( tris[t].ptr->t[whichVertex], tris[p].ptr->t[whichVertex] ) )
-	  {
-	    foundExisting = true;
-	    tris[t].index[whichVertex] = tris[p].index[whichVertex];
-	    break;
-	  }
-	}
       }
-
       // if existing vertex was not found
       if ( ! foundExisting )
       {
@@ -797,11 +693,19 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
 	CREATE_VERTEX( vertex, (*tris[t].ptr), whichVertex );
 	vecVertices.push_back( vertex );
 	tris[t].index[whichVertex] = vecVertices.size()-1;
-      }
-    }
-  }
-  cerr << "copying index data" << endl;
 
+#ifdef DEBUG
+	cerr << "checking vert" << i << ", inserting : " << vertex << endl;
+#endif
+
+      }
+    } // tris
+  } // vertices
+
+#ifdef DEBUG
+  cerr << "copying index data" << endl;
+  cerr << "#different vertices: " << vecVertices.size() << endl;
+#endif
   //
   // copy index data from TriInd to actual triangles, so it can be 
   // used to create triangle index list
@@ -831,80 +735,30 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
       }
     }
   }
+#ifdef DEBUG
   cerr << "creating triangle list" << endl;
+#endif
   // go through each triangle and create a list.
   
   for(size_t nT=0; nT<m_nNumTriangles; ++nT)
   {
     MS3D_Triangle_t & tri = m_pTriangles[nT];
+    assert( tri.vertexIndices[0] < vecVertices.size() );
+    assert( tri.vertexIndices[1] < vecVertices.size() );
+    assert( tri.vertexIndices[2] < vecVertices.size() );
     vecIndices.push_back( tri.vertexIndices[0] );
     vecIndices.push_back( tri.vertexIndices[1] );
     vecIndices.push_back( tri.vertexIndices[2] );
   }
-  cerr << "about to release triangles" << endl;
 
   delete [] vertTriangles;
-  
-  
-  cerr << "done" << endl;
 
-//   for(unsigned int nT=0; nT<m_nNumTriangles; nT++)
-//   {
-//     struct MS3D_Triangle_t triangle;
-//     triangle = m_pTriangles[nT];
-        
-//     for( unsigned int nV=0;nV<3;nV++)
-//     {
-//       CVertex vertex;    
-//       CREATE_VERTEX( vertex, triangle, nV );
-
-//       // Check does the vertex exist in the list already
-//       bool bFoundVertex = false;
-//       size_t nIndex = 0;
-      
-//       // VertexIndexMap::iterator it = m_viMap.find( vertex );
-//       //       if ( it != m_viMap.end())
-//       //       {
-//       // 	bFoundVertex = true;
-//       // 	nIndex = it->second;
-//       //       }
-//       for( ; nIndex < vecVertices.size(); nIndex++ )
-//       {
-//       	if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
-//       	{
-//       	  bFoundVertex = true;
-//       	  break;
-//       	} 
-//       }
-      
-//       if ( bFoundVertex )
-//       {
-// 	vecIndices.push_back( nIndex );
-//       }
-//       else
-//       {
-// 	vecVertices.push_back( vertex );
-// 	nIndex = vecVertices.size() - 1;
-// 	vecIndices.push_back( nIndex );
-	
-// 	//m_viMap[vertex] = nIndex;
-// 	//cerr << "got vertices: " << endl;
-// 	//for( it = m_viMap.begin(); it!= m_viMap.end(); it++)
-// 	//{
-// 	//  cerr << it->first << endl;
-// 	//}
-// 	//cerr << "---got vertices end -- " << endl;
-// 	//assert ( m_viMap.find(vertex) != m_viMap.end() && "Comparison func trouble" );
-
-//       }
-//     } // for each vertex in triangle
-//   } // for each triangle
 }  // separatevertices
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices, int iVertexCompareFlags )
 {
-  cerr << "starting groupindexmpa" << endl;
+
   m_mapGroups.clear();
   std::list<size_t> lstIndices;
   // for each group
@@ -923,32 +777,6 @@ Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spati
       lstIndices.push_back( triangle.vertexIndices[0] );
       lstIndices.push_back( triangle.vertexIndices[1] );
       lstIndices.push_back( triangle.vertexIndices[2] );
-      /*
-      for( unsigned int nV=0;nV<3;nV++)
-      {
-	CVertex vertex;    
-	CREATE_VERTEX( vertex, triangle, nV );
-	// Check does the vertex exist in the list already
-	bool bFoundVertex = false;
-	size_t nIndex = 0;
-	
-	for( ; nIndex < vecVertices.size(); nIndex++ )
-	{
-	  
-	  if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
-	  {
-	    bFoundVertex = true;
-	    break;
-	  } 
-	}
-	// VertexIndexMap::iterator it = m_viMap.find(vertex);
-	// 	bFoundVertex = (it != m_viMap.end());
-	//nIndex = it->second;
-
-	assert ( bFoundVertex );
-	lstIndices.push_back( nIndex );
-      } // for each vert
-      */
       
     } // for each tri
 
@@ -975,7 +803,6 @@ Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spati
   }
 }
 /////////////////////////////////////////////////////////////////
-
 void
 Phoenix::Data::CMilkshapeLoader::Stripify()
 {
@@ -987,7 +814,6 @@ Phoenix::Data::CMilkshapeLoader::Stripify()
   {
     pIndices = GetIndices()[0];
     if ( pIndices == NULL ) return;
-
   }
   else
   {
@@ -995,7 +821,7 @@ Phoenix::Data::CMilkshapeLoader::Stripify()
     return;
   }
 
-  for(unsigned int i=0;i<pIndices->GetNumIndices();i++)
+  for(unsigned int i=0; i<pIndices->GetNumIndices(); i++)
   {
     if ( pIndices->IsShortIndices())
     {
