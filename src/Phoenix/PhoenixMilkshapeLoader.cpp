@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <list>
 /////////////////////////////////////////////////////////////////
 #ifdef TRISTRIPPER
   #include <tri_stripper.h>
@@ -20,6 +21,7 @@ using std::cerr;
 using std::endl;
 using std::vector;
 using std::map;
+using std::list;
 /////////////////////////////////////////////////////////////////
 Phoenix::Data::CMilkshapeLoader::CMilkshapeLoader()
 {
@@ -687,85 +689,241 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
  											   \
 }
 /////////////////////////////////////////////////////////////////
+
+struct TriInd
+{
+  MS3D_Triangle_t *ptr;
+  int index[3];
+};
+
+/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
 						     vector<unsigned int> &vecIndices,
 						     int iVertexCompareFlags )
 {
   
-  //m_viMap.clear();
+  // Collect all triangles connected to 
+  vector< TriInd > * vertTriangles = new vector<TriInd>[m_nNumVertices];
+  
+  for(size_t nT=0; nT<m_nNumTriangles; nT++)
+  {
+    for( int v=0;v<3;++v)
+    {
+      TriInd ti;
+      ti.ptr = &m_pTriangles[nT];
+      ti.index[0] = -1;
+      ti.index[1] = -1;
+      ti.index[2] = -1;
+      vertTriangles[ m_pTriangles[nT].vertexIndices[v] ].push_back( ti );
+    }
+  }
+
+
   vecVertices.clear();
   vecIndices.clear();
-  for(unsigned int nT=0; nT<m_nNumTriangles; nT++)
+
+  // insert new vertices and store indices into TriInd structs.
+  for( size_t i=0; i< m_nNumVertices; ++i)
   {
-    struct MS3D_Triangle_t triangle;
-    triangle = m_pTriangles[nT];
-    
-
-    for( unsigned int nV=0;nV<3;nV++)
+    vector< TriInd > & tris = vertTriangles[i];
+    for( size_t t=0;t< tris.size(); ++t)
     {
-      CVertex vertex;    
-      CREATE_VERTEX( vertex, triangle, nV );
-
-      // Check does the vertex exist in the list already
-      bool bFoundVertex = false;
+      bool foundExisting = false;
       size_t nIndex = 0;
+      int whichVertex = 0;
       
-      // VertexIndexMap::iterator it = m_viMap.find( vertex );
-      //       if ( it != m_viMap.end())
-      //       {
-      // 	bFoundVertex = true;
-      // 	nIndex = it->second;
-      //       }
-      for( ; nIndex < vecVertices.size(); nIndex++ )
+      // go trough all triangles before current 
+      for( size_t p=0;p<t; ++p)
       {
-      	if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
-      	{
-      	  bFoundVertex = true;
-      	  break;
-      	} 
-      }
-      
-      if ( bFoundVertex )
-      {
-	vecIndices.push_back( nIndex );
-      }
-      else
-      {
-	vecVertices.push_back( vertex );
-	nIndex = vecVertices.size() - 1;
-	vecIndices.push_back( nIndex );
-	
-	//m_viMap[vertex] = nIndex;
-	//cerr << "got vertices: " << endl;
-	//for( it = m_viMap.begin(); it!= m_viMap.end(); it++)
-	//{
-	//  cerr << it->first << endl;
-	//}
-	//cerr << "---got vertices end -- " << endl;
-	//assert ( m_viMap.find(vertex) != m_viMap.end() && "Comparison func trouble" );
 
+	// This allows degenerate vertices to be in model, might be slightly slower but hardly noticeable.
+	if ( tris[t].ptr->vertexIndices[0] == i) 
+	{
+	  whichVertex = 0;
+	  // if identical vertex exists, use it. (comparing normals and texcoords).
+	  if ( QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][0], tris[p].ptr->vertexNormals[whichVertex][0] ) &&  
+	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][1], tris[p].ptr->vertexNormals[whichVertex][1] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][2], tris[p].ptr->vertexNormals[whichVertex][2] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->s[whichVertex], tris[p].ptr->s[whichVertex] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->t[whichVertex], tris[p].ptr->t[whichVertex] ) )
+	  {
+	    foundExisting = true;
+	    tris[t].index[whichVertex] = tris[p].index[whichVertex];
+	    break;
+	  }
+	  
+	}
+	
+	if ( tris[t].ptr->vertexIndices[1] == i) 
+	{
+	  whichVertex = 1;
+	  
+	  // if identical vertex exists, use it. (comparing normals and texcoords).
+	  if ( QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][0], tris[p].ptr->vertexNormals[whichVertex][0] ) &&  
+	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][1], tris[p].ptr->vertexNormals[whichVertex][1] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][2], tris[p].ptr->vertexNormals[whichVertex][2] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->s[whichVertex], tris[p].ptr->s[whichVertex] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->t[whichVertex], tris[p].ptr->t[whichVertex] ) )
+	  {
+	    foundExisting = true;
+	    tris[t].index[whichVertex] = tris[p].index[whichVertex];
+	    break;
+	  }
+	}
+	
+	if ( tris[t].ptr->vertexIndices[2] == i) 
+	{
+	  whichVertex = 2;
+	  // if identical vertex exists, use it. (comparing normals and texcoords).
+	  if ( QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][0], tris[p].ptr->vertexNormals[whichVertex][0] ) &&  
+	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][1], tris[p].ptr->vertexNormals[whichVertex][1] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->vertexNormals[whichVertex][2], tris[p].ptr->vertexNormals[whichVertex][2] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->s[whichVertex], tris[p].ptr->s[whichVertex] ) &&
+	       QUITE_CLOSE_TO( tris[t].ptr->t[whichVertex], tris[p].ptr->t[whichVertex] ) )
+	  {
+	    foundExisting = true;
+	    tris[t].index[whichVertex] = tris[p].index[whichVertex];
+	    break;
+	  }
+	}
       }
-    } // for each vertex in triangle
-  } // for each triangle
+
+      // if existing vertex was not found
+      if ( ! foundExisting )
+      {
+	// insert new vertex, normal, texcoord and index
+	CVertex vertex;    
+	CREATE_VERTEX( vertex, (*tris[t].ptr), whichVertex );
+	vecVertices.push_back( vertex );
+	tris[t].index[whichVertex] = vecVertices.size()-1;
+      }
+    }
+  }
+  cerr << "copying index data" << endl;
+
+  //
+  // copy index data from TriInd to actual triangles, so it can be 
+  // used to create triangle index list
+  for( size_t i=0; i< m_nNumVertices; ++i)
+  {
+    vector< TriInd > & tris = vertTriangles[i];
+
+    for( size_t t=0;t< tris.size(); ++t)
+    {
+      // copy index position only if set (not -1)
+      if ( tris[t].index[0] > -1 )
+      {
+	assert( tris[t].index[0] > -1 && tris[t].index[0] < vecVertices.size());
+	tris[t].ptr->vertexIndices[0] = tris[t].index[0];
+      } 
+
+      if ( tris[t].index[1] > -1)
+      {
+	assert( tris[t].index[1] > -1 && tris[t].index[1] < vecVertices.size());
+	tris[t].ptr->vertexIndices[1] = tris[t].index[1];
+      }
+
+      if ( tris[t].index[2] > -1)
+      {
+	assert( tris[t].index[2] > -1 && tris[t].index[2] < vecVertices.size());
+	tris[t].ptr->vertexIndices[2] = tris[t].index[2];
+      }
+    }
+  }
+  cerr << "creating triangle list" << endl;
+  // go through each triangle and create a list.
+  
+  for(size_t nT=0; nT<m_nNumTriangles; ++nT)
+  {
+    MS3D_Triangle_t & tri = m_pTriangles[nT];
+    vecIndices.push_back( tri.vertexIndices[0] );
+    vecIndices.push_back( tri.vertexIndices[1] );
+    vecIndices.push_back( tri.vertexIndices[2] );
+  }
+  cerr << "about to release triangles" << endl;
+
+  delete [] vertTriangles;
+  
+  
+  cerr << "done" << endl;
+
+//   for(unsigned int nT=0; nT<m_nNumTriangles; nT++)
+//   {
+//     struct MS3D_Triangle_t triangle;
+//     triangle = m_pTriangles[nT];
+        
+//     for( unsigned int nV=0;nV<3;nV++)
+//     {
+//       CVertex vertex;    
+//       CREATE_VERTEX( vertex, triangle, nV );
+
+//       // Check does the vertex exist in the list already
+//       bool bFoundVertex = false;
+//       size_t nIndex = 0;
+      
+//       // VertexIndexMap::iterator it = m_viMap.find( vertex );
+//       //       if ( it != m_viMap.end())
+//       //       {
+//       // 	bFoundVertex = true;
+//       // 	nIndex = it->second;
+//       //       }
+//       for( ; nIndex < vecVertices.size(); nIndex++ )
+//       {
+//       	if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
+//       	{
+//       	  bFoundVertex = true;
+//       	  break;
+//       	} 
+//       }
+      
+//       if ( bFoundVertex )
+//       {
+// 	vecIndices.push_back( nIndex );
+//       }
+//       else
+//       {
+// 	vecVertices.push_back( vertex );
+// 	nIndex = vecVertices.size() - 1;
+// 	vecIndices.push_back( nIndex );
+	
+// 	//m_viMap[vertex] = nIndex;
+// 	//cerr << "got vertices: " << endl;
+// 	//for( it = m_viMap.begin(); it!= m_viMap.end(); it++)
+// 	//{
+// 	//  cerr << it->first << endl;
+// 	//}
+// 	//cerr << "---got vertices end -- " << endl;
+// 	//assert ( m_viMap.find(vertex) != m_viMap.end() && "Comparison func trouble" );
+
+//       }
+//     } // for each vertex in triangle
+//   } // for each triangle
 }  // separatevertices
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices, int iVertexCompareFlags )
 {
+  cerr << "starting groupindexmpa" << endl;
   m_mapGroups.clear();
   std::list<size_t> lstIndices;
   // for each group
   for( size_t g=0;g<m_nNumGroups;g++)
   {
     struct MS3D_Group_t group = m_pGroups[g];
-    struct MS3D_Triangle_t triangle;
+    
     lstIndices.clear();
-
+    
     // for each triangle in Group
     for( size_t t=0; t<group.nNumTriangles; t++)
     {
-      triangle = m_pTriangles[group.pTriangleIndices[t]];
+      MS3D_Triangle_t & triangle = m_pTriangles[group.pTriangleIndices[t]];
+
+      // at this point, triangle indices have been optimized 
+      lstIndices.push_back( triangle.vertexIndices[0] );
+      lstIndices.push_back( triangle.vertexIndices[1] );
+      lstIndices.push_back( triangle.vertexIndices[2] );
+      /*
       for( unsigned int nV=0;nV<3;nV++)
       {
 	CVertex vertex;    
@@ -790,6 +948,8 @@ Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spati
 	assert ( bFoundVertex );
 	lstIndices.push_back( nIndex );
       } // for each vert
+      */
+      
     } // for each tri
 
     // Create index array from indices
