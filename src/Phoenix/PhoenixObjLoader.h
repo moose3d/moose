@@ -48,8 +48,10 @@ namespace Phoenix
     {
     private:
       /// vertices.
-      Phoenix::Data::ObjNormalVector   m_Normals;
+      Phoenix::Data::ObjVertexVector   m_Vertices;
       /// Normals.
+      Phoenix::Data::ObjNormalVector   m_Normals;
+      // texcoords
       Phoenix::Data::ObjTexCoordVector m_TexCoords;
       /// Faces.
       Phoenix::Data::ObjFaceVector     m_Faces;
