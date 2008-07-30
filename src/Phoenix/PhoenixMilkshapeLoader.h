@@ -418,10 +418,10 @@ namespace Phoenix
     private:
       ////////////////////
       /// Copy constructor (since model has pointer members).
-      CMilkshapeLoader( const CMilkshapeLoader &ref);
+      CMilkshapeLoader( const CMilkshapeLoader &ref) {}
       ////////////////////
       /// Assignment operator ( since model has pointer members).
-      CMilkshapeLoader &operator=( CMilkshapeLoader obj );
+      void operator=( const CMilkshapeLoader & obj ) {}
       ////////////////////
       /// Initializes the model structures.
       void		Init();
