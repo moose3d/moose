@@ -400,13 +400,14 @@ namespace Phoenix
       /// For debugging.
       friend std::ostream & operator<<( std::ostream & stream, const CVertex & vertex)
       {
-	stream << vertex.GetPosition() << ",";
+	stream << "pos: " << vertex.GetPosition();
+	stream << "tc:  " ;
 	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
 	{
 	  stream << vertex.m_vTexCoord[iT] << ",";
 	}
-	stream << vertex.m_vNormal << ",";
-	stream << vertex.m_vColor;
+	stream << "n: " << vertex.m_vNormal << ",";
+	stream << "c: " << vertex.m_vColor;
 	return stream;
       }
     };
