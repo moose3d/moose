@@ -198,6 +198,12 @@ namespace Phoenix
 	// Reset color to grayish
 	m_vColor[0] = m_vColor[1] = m_vColor[2] = 200;
 	m_vColor[3] = 255;
+
+	m_vAttrib4[0] = m_vAttrib4[1] = m_vAttrib4[2] = m_vAttrib4[3] = 0.0f;
+	m_vAttrib3[0] = m_vAttrib3[1] = m_vAttrib3[2] = 0.0f;
+	m_vAttrib2[0] = m_vAttrib2[1] = 0.0f; 
+	m_fAttrib1 = 0.0f;
+
       }
 
       //       bool operator==( const CVertex & vert)
@@ -283,7 +289,7 @@ namespace Phoenix
       ////////////////////
       /// Returns normal vector.
       /// \returns Normal vector reference.
-      inline const Phoenix::Math::CVector3<float> GetNormal() const
+      inline const Phoenix::Math::CVector3<float> & GetNormal() const
       {
 	return m_vNormal;
       }
