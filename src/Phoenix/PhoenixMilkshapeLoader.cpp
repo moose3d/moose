@@ -3,6 +3,7 @@
 #include <PhoenixMilkshapeLoader.h>
 #include <fstream>
 #include <vector>
+#include <map>
 /////////////////////////////////////////////////////////////////
 #ifdef TRISTRIPPER
   #include <tri_stripper.h>
@@ -18,7 +19,7 @@ using namespace Phoenix::Spatial;
 using std::cerr;
 using std::endl;
 using std::vector;
-
+using std::map;
 /////////////////////////////////////////////////////////////////
 Phoenix::Data::CMilkshapeLoader::CMilkshapeLoader()
 {
@@ -619,6 +620,7 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
 {
   vector<CVertex> vecVertices;
   vector<unsigned int> vecIndices;
+
   CreateTriangleList( vecVertices, vecIndices, iVertexCompareFlags );
   CreateGroupIndexMap( vecVertices, iVertexCompareFlags );
 
@@ -685,12 +687,13 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
  											   \
 }
 /////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
 void 
 Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
 						     vector<unsigned int> &vecIndices,
 						     int iVertexCompareFlags )
 {
+  
+  //m_viMap.clear();
   vecVertices.clear();
   vecIndices.clear();
   for(unsigned int nT=0; nT<m_nNumTriangles; nT++)
@@ -707,14 +710,20 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
       // Check does the vertex exist in the list already
       bool bFoundVertex = false;
       size_t nIndex = 0;
+      
+      // VertexIndexMap::iterator it = m_viMap.find( vertex );
+      //       if ( it != m_viMap.end())
+      //       {
+      // 	bFoundVertex = true;
+      // 	nIndex = it->second;
+      //       }
       for( ; nIndex < vecVertices.size(); nIndex++ )
       {
-
-	if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
-	{
-	  bFoundVertex = true;
-	  break;
-	} 
+      	if ( vecVertices[nIndex].Compare(vertex, iVertexCompareFlags ) ) 
+      	{
+      	  bFoundVertex = true;
+      	  break;
+      	} 
       }
       
       if ( bFoundVertex )
@@ -724,7 +733,18 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
       else
       {
 	vecVertices.push_back( vertex );
-	vecIndices.push_back( vecVertices.size() - 1 );
+	nIndex = vecVertices.size() - 1;
+	vecIndices.push_back( nIndex );
+	
+	//m_viMap[vertex] = nIndex;
+	//cerr << "got vertices: " << endl;
+	//for( it = m_viMap.begin(); it!= m_viMap.end(); it++)
+	//{
+	//  cerr << it->first << endl;
+	//}
+	//cerr << "---got vertices end -- " << endl;
+	//assert ( m_viMap.find(vertex) != m_viMap.end() && "Comparison func trouble" );
+
       }
     } // for each vertex in triangle
   } // for each triangle
@@ -763,6 +783,10 @@ Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spati
 	    break;
 	  } 
 	}
+	// VertexIndexMap::iterator it = m_viMap.find(vertex);
+	// 	bFoundVertex = (it != m_viMap.end());
+	//nIndex = it->second;
+
 	assert ( bFoundVertex );
 	lstIndices.push_back( nIndex );
       } // for each vert
