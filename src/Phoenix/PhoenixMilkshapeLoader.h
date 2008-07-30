@@ -243,6 +243,17 @@ namespace Phoenix
       // weights[2] is the weight for boneIds[1]
       // 1.0f - weights[0] - weights[1] - weights[2] is the weight for boneIds[2]
     } PACKED;
+
+    struct MSVertexCompare
+    {
+      bool operator()( const Phoenix::Spatial::CVertex & v1, const Phoenix::Spatial::CVertex & v2) const
+      {
+	if ( v1.GetPosition()[0] < v2.GetPosition()[0] ) return true;
+	return false;
+
+      }
+    };
+    typedef std::map<Phoenix::Spatial::CVertex, size_t, Phoenix::Data::MSVertexCompare> VertexIndexMap;
     /////////////////////////////////////////////////////////////////
     /// Actual model class, which encapsulates structs above.
     class CMilkshapeLoader
@@ -262,6 +273,11 @@ namespace Phoenix
       std::vector<Phoenix::Graphics::CIndexArray *> m_vecIndices;
       /// Map of group names to index arrays.
       std::map<std::string, Phoenix::Graphics::CIndexArray *> m_mapGroups;
+      
+      /////////////////////////////////////////////////////////////////
+      
+      // vertex to index mapping.
+      VertexIndexMap m_viMap;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
