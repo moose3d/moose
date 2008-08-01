@@ -13,15 +13,15 @@ namespace Phoenix
     public:
       virtual ~CModelLoader() {}
       virtual int Load( const char *szFilename ) = 0;
-      virtual Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) = 0;
-      virtual Phoenix::Graphics::CVertexDescriptor * GetColorArray() = 0;
-      virtual Phoenix::Graphics::CVertexDescriptor * GetNormalArray() = 0;
-      virtual Phoenix::Graphics::CVertexDescriptor * GetVertexArray() = 0;
+      virtual Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const = 0;
+      virtual Phoenix::Graphics::CVertexDescriptor * GetColorArray() const = 0;
+      virtual Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const = 0;
+      virtual Phoenix::Graphics::CVertexDescriptor * GetVertexArray() const = 0;
 
       virtual Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = 
-									  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) = 0;
+									  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const = 0;
       
-      virtual Phoenix::Graphics::CIndexArray *	     GetIndices()  = 0;
+      virtual Phoenix::Graphics::CIndexArray *	     GetIndexArray( const char *szGroupName = NULL ) const = 0;
     };
   }
 }
