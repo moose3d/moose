@@ -4,6 +4,7 @@
 #include <PhoenixVertexDescriptor.h>
 #include <PhoenixIndexArray.h>
 #include <PhoenixSpatial.h>
+#include <PhoenixModelLoader.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -256,7 +257,7 @@ namespace Phoenix
     typedef std::map<Phoenix::Spatial::CVertex, size_t, Phoenix::Data::MSVertexCompare> VertexIndexMap;
     /////////////////////////////////////////////////////////////////
     /// Actual model class, which encapsulates structs above.
-    class CMilkshapeLoader
+    class CMilkshapeLoader : public Phoenix::Data::CModelLoader
     {
     private:
       /// indicates does this model have data loaded.
@@ -270,14 +271,9 @@ namespace Phoenix
       /// Vertex texture coordinates.
       Phoenix::Graphics::CVertexDescriptor *m_pTexCoords;
       /// Vector of triangle indices (either a strip with one list or just a list).
-      std::vector<Phoenix::Graphics::CIndexArray *> m_vecIndices;
+      Phoenix::Graphics::CIndexArray      *m_pIndices;
       /// Map of group names to index arrays.
       std::map<std::string, Phoenix::Graphics::CIndexArray *> m_mapGroups;
-      
-      /////////////////////////////////////////////////////////////////
-      
-      // vertex to index mapping.
-      VertexIndexMap m_viMap;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
@@ -334,86 +330,26 @@ namespace Phoenix
       /// \param szFilename Path to file as zero-terminated char array.
       /// \returns Non-zero on error, zero otherwise.
       int Load(const char * szFilename);
+      
       ////////////////////
       /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
-      /// Remember to call ResetVertices(), ResetNormals(), etc. if you have created a resource
-      /// from those pointers. Remember to use ALL or NONE indices, otherwise memory leak will occur.
-      /// \warning Vertex color data creation is not implemented yet.
       /// \param iVertexCompareFlags Which components of vertices are used in comparision when creating lists. By default, all.
-      void GenerateModelData( int iVertexCompareFlags = 
-			      Phoenix::Spatial::VERTEX_COMP_TEXCOORD | 
-			      Phoenix::Spatial::VERTEX_COMP_POSITION | 
-			      Phoenix::Spatial::VERTEX_COMP_NORMAL | 
-			      Phoenix::Spatial::VERTEX_COMP_COLOR);
-      ////////////////////
-      /// Creates new vertex for every occasion where position is same
-      /// but normal and/or texture coordinate is different.
-      /// \param vecVertices Vector of new vertices.
-      /// \param vecIndices Vector of new indices representing triangle list.
-      void CreateTriangleList( std::vector<Phoenix::Spatial::CVertex> &vecVertices, std::vector<unsigned int> &vecIndices, int iVertexCompareFlags );
+      void GenerateModelData();
       
-      inline Phoenix::Graphics::CVertexDescriptor * GetVertices() const 
-      {
-	return m_pPositions;
-      }
-      inline Phoenix::Graphics::CVertexDescriptor * GetNormals() const
-      {
-	return m_pNormals;
-      }
-      inline Phoenix::Graphics::CVertexDescriptor * GetTexCoords() const
-      {
-	return m_pTexCoords;
-      }
-      inline Phoenix::Graphics::CVertexDescriptor * GetVertexColors() const
-      {
-	return m_pColors;
-      }
-      inline std::vector<Phoenix::Graphics::CIndexArray *> & GetIndices() 
-      {
-	return m_vecIndices;
-      }
-      inline void ResetVertices()
-      {
-	m_pPositions = NULL;
-      }
-      inline void ResetNormals()
-      {
-	m_pNormals = NULL;
-      }
-      inline void ResetTexCoords()
-      {
-	m_pTexCoords = NULL;
-      }
-      inline void ResetVertexColors()
-      {
-	m_pColors = NULL;
-      }
-      inline void ResetIndices()
-      {
-	GetIndices().clear();
-      }
-      inline void ResetGroup( const char *szName )
-      {
-	assert( m_mapGroups.find(std::string(szName)) != m_mapGroups.end() && "Group does not exist!");
-	m_mapGroups.erase(std::string(szName));
-      }
-      inline Phoenix::Graphics::CIndexArray * GetGroupIndices( const char *szName )
-      {
-	std::map<std::string, Phoenix::Graphics::CIndexArray *>::iterator it;
-	it = m_mapGroups.find(std::string(szName));
-
-	// Check that we found it...
-	if ( it != m_mapGroups.end())
-	{
-	  return (*it).second;
-	}
-	// ... otherwise return NULL
-	return NULL;
-      }
+      
+      Phoenix::Graphics::CVertexDescriptor * GetVertexArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetColorArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const;
+      Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const;
+      Phoenix::Graphics::CIndexArray *       GetIndexArray( const char *szGroupName = NULL ) const;
+      
+      
+      
 
       ////////////////////
       /// Creates triangle strips from triangle list.
-      void Stripify();
+      //void Stripify();
 
     private:
       ////////////////////
@@ -464,7 +400,13 @@ namespace Phoenix
       ////////////////////
       /// Creates IndexArrays for each group, stores them into a map.
       /// Should be called after CreateTriangleList( ... ).
-      void CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices, int iVertexCompareFlags );
+      void CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices );
+      ////////////////////
+      /// Creates new vertex for every occasion where position is same
+      /// but normal and/or texture coordinate is different.
+      /// \param vecVertices Vector of new vertices.
+      /// \param vecIndices Vector of new indices representing triangle list.
+      void CreateTriangleList( std::vector<Phoenix::Spatial::CVertex> &vecVertices, std::vector<unsigned int> &vecIndices );
     };
     //////////////////////////////////////////////////////////////// 
   }; // namespace Data

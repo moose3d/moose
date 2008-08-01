@@ -60,6 +60,7 @@ Phoenix::Data::CMilkshapeLoader::Init()
   m_pNormals = NULL;
   m_pColors = NULL;
   m_pTexCoords = NULL;
+  m_pIndices = NULL;
 }
 /////////////////////////////////////////////////////////////////
 // Frees the memory reserved by the model 
@@ -91,11 +92,7 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
   DELETE(m_pNormals);
   DELETE(m_pColors);
   DELETE(m_pTexCoords);
-  while( GetIndices().size() > 0 )
-  {
-    DELETE(GetIndices()[GetIndices().size()-1]);
-    GetIndices().pop_back();
-  }
+  DELETE(m_pIndices);
   // Release group names
   while( !m_mapGroups.empty() )
   {
@@ -158,15 +155,10 @@ Phoenix::Data::CMilkshapeLoader::Load(const char *szFilename)
   
   // Read vertex data 
   pWorkBuffer = Handle_Vertices( pWorkBuffer, pBuffer+iFilesize );
-  // Read Triangle data
   pWorkBuffer = Handle_Triangles( pWorkBuffer );
-  // Read Group data
   pWorkBuffer = Handle_Groups( pWorkBuffer );
-  // Read Material data
   pWorkBuffer = Handle_Materials( pWorkBuffer );
-  // Read Keyframe data 
   pWorkBuffer = Handle_Keyframer( pWorkBuffer );
-  // Read Joints data 
   pWorkBuffer = Handle_Joints( pWorkBuffer );
   
   
@@ -512,30 +504,25 @@ Phoenix::Data::CMilkshapeLoader::Handle_Joints( unsigned char *pWorkBuffer)
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
+Phoenix::Data::CMilkshapeLoader::GenerateModelData()
 {
   vector<CVertex> vecVertices;
   vector<unsigned int> vecIndices;
 
-  CreateTriangleList( vecVertices, vecIndices, iVertexCompareFlags );
-  CreateGroupIndexMap( vecVertices, iVertexCompareFlags );
+  CreateTriangleList( vecVertices, vecIndices );
+  CreateGroupIndexMap( vecVertices );
 
   DELETE(m_pPositions);
   DELETE(m_pNormals);
   DELETE(m_pTexCoords);
-  // delete all previous index arrays, if any
-  while( GetIndices().size() > 0 )
-  {
-    delete GetIndices()[GetIndices().size()-1];
-    GetIndices().pop_back();
-  }
+  DELETE(m_pIndices );
   cerr << "generating model data" << vecVertices.size() << endl;
   
   // Create new descriptors / array
   m_pPositions = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, vecVertices.size());
   m_pNormals = new CVertexDescriptor(ELEMENT_TYPE_NORMAL_3F, vecVertices.size());
   m_pTexCoords = new CVertexDescriptor(ELEMENT_TYPE_TEX_2F, vecVertices.size());
-  CIndexArray *pIndices = new CIndexArray(PRIMITIVE_TRI_LIST, vecIndices.size());
+  m_pIndices = new CIndexArray(PRIMITIVE_TRI_LIST, vecIndices.size());
   unsigned int nIndex = 0;
   
   for(unsigned int i=0;i<vecVertices.size();i++)
@@ -557,20 +544,18 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData( int iVertexCompareFlags )
   unsigned int nMaxIndex = 0;
   for(unsigned int i=0;i<vecIndices.size();i++)
   {
-    
     if ( vecIndices[i] > nMaxIndex ) nMaxIndex = vecIndices[i];
-
-    if ( pIndices->IsShortIndices() )
+    
+    if ( m_pIndices->IsShortIndices() )
     {
-      pIndices->GetPointer<unsigned short int>()[i] = vecIndices[i];
+      m_pIndices->GetPointer<unsigned short int>()[i] = vecIndices[i];
     }
     else
     {
-      pIndices->GetPointer<unsigned int>()[i] = vecIndices[i];
+      m_pIndices->GetPointer<unsigned int>()[i] = vecIndices[i];
     }
   }
-  cerr << " max index : " << nMaxIndex << endl;
-  GetIndices().push_back( pIndices );
+  
 }
 /////////////////////////////////////////////////////////////////
 #define CREATE_VERTEX( VERTEX, TRIANGLE, T_VERTEXINDEX ) {			   \
@@ -615,9 +600,7 @@ CloseEnough( MS3D_Triangle_t &a , int whichVertex, MS3D_Triangle_t & b, int whic
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
-						     vector<unsigned int> &vecIndices,
-						     int iVertexCompareFlags )
+Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices, vector<unsigned int> &vecIndices)
 {
   
   // Collect all triangles connected to 
@@ -718,19 +701,19 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
       // copy index position only if set (not -1)
       if ( tris[t].index[0] > -1 )
       {
-	assert( tris[t].index[0] > -1 && tris[t].index[0] < vecVertices.size());
+	assert( tris[t].index[0] > -1 && (size_t)tris[t].index[0] < vecVertices.size());
 	tris[t].ptr->vertexIndices[0] = tris[t].index[0];
       } 
 
       if ( tris[t].index[1] > -1)
       {
-	assert( tris[t].index[1] > -1 && tris[t].index[1] < vecVertices.size());
+	assert( tris[t].index[1] > -1 && (size_t)tris[t].index[1] < vecVertices.size());
 	tris[t].ptr->vertexIndices[1] = tris[t].index[1];
       }
 
       if ( tris[t].index[2] > -1)
       {
-	assert( tris[t].index[2] > -1 && tris[t].index[2] < vecVertices.size());
+	assert( tris[t].index[2] > -1 && (size_t)tris[t].index[2] < vecVertices.size());
 	tris[t].ptr->vertexIndices[2] = tris[t].index[2];
       }
     }
@@ -756,7 +739,7 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
 }  // separatevertices
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices, int iVertexCompareFlags )
+Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spatial::CVertex> &vecVertices  )
 {
 
   m_mapGroups.clear();
@@ -803,101 +786,168 @@ Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spati
   }
 }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Data::CMilkshapeLoader::Stripify()
-{
-#ifdef TRISTRIPPER
-  triangle_stripper::indices triangleIndices;
-  CIndexArray *pIndices = NULL;
+// void
+// Phoenix::Data::CMilkshapeLoader::Stripify()
+// {
+// #ifdef TRISTRIPPER
+//   triangle_stripper::indices triangleIndices;
+//   CIndexArray *pIndices = NULL;
   
-  if ( GetIndices().size() == 1 )
+//   if ( GetIndices().size() == 1 )
+//   {
+//     pIndices = GetIndices()[0];
+//     if ( pIndices == NULL ) return;
+//   }
+//   else
+//   {
+//     cerr << "Too many index lists for stripification! I can use only one!" << endl;
+//     return;
+//   }
+
+//   for(unsigned int i=0; i<pIndices->GetNumIndices(); i++)
+//   {
+//     if ( pIndices->IsShortIndices())
+//     {
+//       triangleIndices.push_back(pIndices->GetPointer<unsigned short int>()[i]);
+//     }
+//     else
+//     {
+//       triangleIndices.push_back(pIndices->GetPointer<unsigned int>()[i]);
+//     }
+//   }
+//   triangle_stripper::primitive_vector primitiveVector;
+//   triangle_stripper::tri_stripper triStripper( triangleIndices );
+  
+//   triStripper.SetMinStripSize(2);
+//   triStripper.SetCacheSize(0);
+//   triStripper.SetBackwardSearch(true);
+//   triStripper.Strip( &primitiveVector );
+  
+//   unsigned int nStripCount = 0;
+//   unsigned int nListCount = 0;
+//   unsigned int nListLength = 0;
+//   unsigned int nStripAvgLength = 0;
+//   unsigned int nStripTriangleCount = 0;
+
+//   for( unsigned int i=0;i<primitiveVector.size();i++)
+//   {
+//     if( primitiveVector[i].Type == triangle_stripper::TRIANGLE_STRIP)
+//     {
+//       nStripCount++;
+//       nStripAvgLength += primitiveVector[i].Indices.size();
+//       nStripTriangleCount += primitiveVector[i].Indices.size()-2;
+//     }
+//     else
+//     {
+//       nListCount++;
+//       nListLength += primitiveVector[i].Indices.size();
+
+//     }
+//   }
+//   nStripAvgLength /= nStripCount;
+//   cerr << "Created " << nStripCount << " strips. Average length " << nStripAvgLength << ", in total " << nStripTriangleCount << " triangles drawn as stripped." << endl;
+//   cerr << "Created " << nListCount << " lists. " << nListLength / 3  << " triangles drawn unstripped." << endl;
+
+//   // Remove original triangle list.
+//   delete GetIndices()[0];
+//   GetIndices().clear();
+//   pIndices = NULL;
+  
+//   // for each batch of primitives
+//   for( unsigned int i=0;i<primitiveVector.size();i++)
+//   {
+//     // Check which type of primitive we got
+//     if ( primitiveVector[i].Type == triangle_stripper::TRIANGLE_STRIP )
+//     {
+//       pIndices = new CIndexArray(PRIMITIVE_TRI_STRIP, primitiveVector[i].Indices.size());
+//     }
+//     else
+//     {
+//       pIndices = new CIndexArray(PRIMITIVE_TRI_LIST, primitiveVector[i].Indices.size());
+//     }
+//     // Copy indices into indexarray
+//     for(unsigned int p=0;p<primitiveVector[i].Indices.size();p++)
+//     {
+//       if (pIndices->IsShortIndices())
+//       {
+// 	pIndices->GetPointer<unsigned short int>()[p] = primitiveVector[i].Indices[p];
+//       }
+//       else
+//       {
+// 	pIndices->GetPointer<unsigned int>()[p] = primitiveVector[i].Indices[p];
+//       }
+//     }
+//     // Put index array into vector
+//     GetIndices().push_back( pIndices );
+//   }
+// #endif
+// }
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::GetVertexArray() const
+{
+  return new CVertexDescriptor( *m_pPositions);
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::GetNormalArray() const
+{
+  return new CVertexDescriptor( *m_pNormals);
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::GetTexCoordArray( size_t nTexUnit ) const
+{
+  return new CVertexDescriptor( *m_pTexCoords);
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::GetColorArray() const
+{
+  return new CVertexDescriptor( *m_pColors);
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CIndexArray * 
+Phoenix::Data::CMilkshapeLoader::GetIndexArray( const char *szGroupName  ) const
+{
+  CIndexArray *pIndexArray = NULL;
+  if ( szGroupName == NULL )
   {
-    pIndices = GetIndices()[0];
-    if ( pIndices == NULL ) return;
+    pIndexArray = new CIndexArray( *m_pIndices );
   }
   else
   {
-    cerr << "Too many index lists for stripification! I can use only one!" << endl;
-    return;
+    std::map<std::string, Phoenix::Graphics::CIndexArray *>::const_iterator it;
+    it = m_mapGroups.find(std::string(szGroupName));
+    // Check that we found it...
+    if ( it != m_mapGroups.end())
+    {
+      // create new indexarray.
+      pIndexArray = new CIndexArray( *((*it).second) );
+    }
+    
   }
-
-  for(unsigned int i=0; i<pIndices->GetNumIndices(); i++)
-  {
-    if ( pIndices->IsShortIndices())
-    {
-      triangleIndices.push_back(pIndices->GetPointer<unsigned short int>()[i]);
-    }
-    else
-    {
-      triangleIndices.push_back(pIndices->GetPointer<unsigned int>()[i]);
-    }
-  }
-  triangle_stripper::primitive_vector primitiveVector;
-  triangle_stripper::tri_stripper triStripper( triangleIndices );
-  
-  triStripper.SetMinStripSize(2);
-  triStripper.SetCacheSize(0);
-  triStripper.SetBackwardSearch(true);
-  triStripper.Strip( &primitiveVector );
-  
-  unsigned int nStripCount = 0;
-  unsigned int nListCount = 0;
-  unsigned int nListLength = 0;
-  unsigned int nStripAvgLength = 0;
-  unsigned int nStripTriangleCount = 0;
-
-  for( unsigned int i=0;i<primitiveVector.size();i++)
-  {
-    if( primitiveVector[i].Type == triangle_stripper::TRIANGLE_STRIP)
-    {
-      nStripCount++;
-      nStripAvgLength += primitiveVector[i].Indices.size();
-      nStripTriangleCount += primitiveVector[i].Indices.size()-2;
-    }
-    else
-    {
-      nListCount++;
-      nListLength += primitiveVector[i].Indices.size();
-
-    }
-  }
-  nStripAvgLength /= nStripCount;
-  cerr << "Created " << nStripCount << " strips. Average length " << nStripAvgLength << ", in total " << nStripTriangleCount << " triangles drawn as stripped." << endl;
-  cerr << "Created " << nListCount << " lists. " << nListLength / 3  << " triangles drawn unstripped." << endl;
-
-  // Remove original triangle list.
-  delete GetIndices()[0];
-  GetIndices().clear();
-  pIndices = NULL;
-  
-  // for each batch of primitives
-  for( unsigned int i=0;i<primitiveVector.size();i++)
-  {
-    // Check which type of primitive we got
-    if ( primitiveVector[i].Type == triangle_stripper::TRIANGLE_STRIP )
-    {
-      pIndices = new CIndexArray(PRIMITIVE_TRI_STRIP, primitiveVector[i].Indices.size());
-    }
-    else
-    {
-      pIndices = new CIndexArray(PRIMITIVE_TRI_LIST, primitiveVector[i].Indices.size());
-    }
-    // Copy indices into indexarray
-    for(unsigned int p=0;p<primitiveVector[i].Indices.size();p++)
-    {
-      if (pIndices->IsShortIndices())
-      {
-	pIndices->GetPointer<unsigned short int>()[p] = primitiveVector[i].Indices[p];
-      }
-      else
-      {
-	pIndices->GetPointer<unsigned int>()[p] = primitiveVector[i].Indices[p];
-      }
-    }
-    // Put index array into vector
-    GetIndices().push_back( pIndices );
-  }
-#endif
+  return pIndexArray;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CVertexDescriptor * 
+Phoenix::Data::CMilkshapeLoader::GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType ) const
+{
+  CVertexDescriptor *pData = new CVertexDescriptor( tType, m_pPositions->GetSize() );
+  for( size_t i=0;i<m_pPositions->GetSize(); ++i)
+  {
+    pData->GetPointer<float>(i)[0] = m_pPositions->GetPointer<float>(i)[0];
+    pData->GetPointer<float>(i)[1] = m_pPositions->GetPointer<float>(i)[1];
+    pData->GetPointer<float>(i)[2] = m_pPositions->GetPointer<float>(i)[2];
 
+    pData->GetPointer<float>(i)[3] = m_pNormals->GetPointer<float>(i)[0];
+    pData->GetPointer<float>(i)[4] = m_pNormals->GetPointer<float>(i)[1];
+    pData->GetPointer<float>(i)[5] = m_pNormals->GetPointer<float>(i)[2];
+
+    pData->GetPointer<float>(i)[6] = m_pTexCoords->GetPointer<float>(i)[0];
+    pData->GetPointer<float>(i)[7] = m_pTexCoords->GetPointer<float>(i)[1];
+
+  }
+  return pData;
+}
+/////////////////////////////////////////////////////////////////
