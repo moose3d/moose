@@ -38,57 +38,37 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
   string name = szName;							
   
   /* determine which data is used in comparison */			
-  int iCompFlags = VERTEX_COMP_POSITION;				
-  if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL; 
-  if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;	
-  if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD; 
+  // int iCompFlags = VERTEX_COMP_POSITION;				
+//   if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL; 
+//   if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;	
+//   if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD; 
 									
-  m_pLoader->GenerateModelData( iCompFlags );				
+  m_pLoader->GenerateModelData(  );				
 									
   /* Resource allocation is one-way, either everything succeeds or nothing goes.*/ 
   
   if ( bInterleaved )
   {
-    size_t nNumElements =  m_pLoader->GetVertices()->GetSize();
-    CVertexDescriptor *pInterleaved = new CVertexDescriptor( ELEMENT_TYPE_V3F_N3F_T2F, nNumElements);
-
-    // Copy data into interleaved array
-    for( size_t i=0;i<nNumElements;i++)
-    {
-      pInterleaved->GetPointer<float>(i)[0] = m_pLoader->GetVertices()->GetPointer<float>(i)[0];
-      pInterleaved->GetPointer<float>(i)[1] = m_pLoader->GetVertices()->GetPointer<float>(i)[1];
-      pInterleaved->GetPointer<float>(i)[2] = m_pLoader->GetVertices()->GetPointer<float>(i)[2];
-      
-      pInterleaved->GetPointer<float>(i)[3] = m_pLoader->GetNormals()->GetPointer<float>(i)[0];
-      pInterleaved->GetPointer<float>(i)[4] = m_pLoader->GetNormals()->GetPointer<float>(i)[1];
-      pInterleaved->GetPointer<float>(i)[5] = m_pLoader->GetNormals()->GetPointer<float>(i)[2];
-
-      pInterleaved->GetPointer<float>(i)[6] = m_pLoader->GetTexCoords()->GetPointer<float>(i)[0];
-      pInterleaved->GetPointer<float>(i)[7] = m_pLoader->GetTexCoords()->GetPointer<float>(i)[1];
-    }
+    CVertexDescriptor *pInterleaved = m_pLoader->GetInterleavedArray();
     // manage array
     assert( g_DefaultVertexManager->Create( pInterleaved,  name + "_interleaved") == 0);
   }
   else
   {
     // Create vertex handle 
-    assert( g_DefaultVertexManager->Create(m_pLoader->GetVertices(),  name + "_vertices") == 0); 
-    /* Mark resourcemanager-tracked data so pointers will not be free'd.*/ 
-    m_pLoader->ResetVertices();						
+    assert( g_DefaultVertexManager->Create(m_pLoader->GetVertexArray(),  name + "_vertices") == 0); 
     
     /* load vertex normals */						
     if ( iFlags & OPT_VERTEX_NORMALS )					
     {									
       /* Create normal handle */						
-      assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormals(), name + "_normals") == 0); 
-      m_pLoader->ResetNormals();						
+      assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormalArray(), name + "_normals") == 0); 
     }									
     /* load texture coordinates */					
     if ( iFlags & OPT_VERTEX_TEXCOORDS )					
     {									
       /* Create texcoord handle */					
-      assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoords(), name + "_texcoords0") == 0);	
-      m_pLoader->ResetTexCoords();						
+      assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoordArray(), name + "_texcoords0") == 0);	
     }									
     /* load colors */							
     if ( iFlags & OPT_VERTEX_COLORS )					
@@ -104,9 +84,7 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
   {
     ostringstream stream;  
     stream << name << "_list_indices";
-    assert( g_DefaultIndexManager->Create( m_pLoader->GetIndices()[0], 
-					   stream.str().c_str()) == 0 );     
-    m_pLoader->ResetIndices();
+    assert( g_DefaultIndexManager->Create( m_pLoader->GetIndexArray(), stream.str().c_str()) == 0 );     
   }
   else
   {
@@ -114,14 +92,12 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
     
     for( ; aszGroupNames[nGroupIndex]; ++nGroupIndex)
     {
-      CIndexArray *pIndices = m_pLoader->GetGroupIndices( aszGroupNames[nGroupIndex] );
+      CIndexArray *pIndices = m_pLoader->GetIndexArray( aszGroupNames[nGroupIndex] );
       assert ( pIndices != NULL && "Group is NULL" );
 
       ostringstream stream;  
       stream << name << "_" << aszGroupNames[nGroupIndex] << "_indices";
-      assert( g_DefaultIndexManager->Create( pIndices, 
-					     stream.str().c_str()) == 0 );
-      m_pLoader->ResetGroup( aszGroupNames[nGroupIndex] );
+      assert( g_DefaultIndexManager->Create( pIndices, stream.str().c_str()) == 0 );
     }
   }
   
