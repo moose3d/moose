@@ -63,15 +63,15 @@ namespace Phoenix
       /// \param szFilename name of file.
       int Load( const char *szFilename );
       
-      Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0);
-      Phoenix::Graphics::CVertexDescriptor * GetColorArray();
-      Phoenix::Graphics::CVertexDescriptor * GetNormalArray();
-      Phoenix::Graphics::CVertexDescriptor * GetVertexArray();
+      Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const;
+      Phoenix::Graphics::CVertexDescriptor * GetColorArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetVertexArray() const;
 
       Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = 
-								  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F);
+								  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const;
       
-      Phoenix::Graphics::CIndexArray *	     GetIndices();      
+      Phoenix::Graphics::CIndexArray *	     GetIndexArray( const char *szGroupName = NULL ) const;      
     private:
       ////////////////////
       /// Parses position data from zero-terminated line.

@@ -534,7 +534,6 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   case ELEMENT_TYPE_ATTRIB_2UB:
   case ELEMENT_TYPE_ATTRIB_3UB:
   case ELEMENT_TYPE_ATTRIB_4UB:
-  case ELEMENT_TYPE_NULL:
     break;
   }
 }
@@ -594,7 +593,6 @@ Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pB
   case ELEMENT_TYPE_ATTRIB_2UB:
   case ELEMENT_TYPE_ATTRIB_3UB:
   case ELEMENT_TYPE_ATTRIB_4UB:
-  case ELEMENT_TYPE_NULL:
     break;
   }
 }
@@ -607,9 +605,6 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
   ////////////////////
   switch ( pIndexBuffer->GetPrimitiveType())
   {
-  case PRIMITIVE_NULL:
-    /// NOP
-    return;
   case PRIMITIVE_POINT_LIST:
     glPrimitive = GL_POINTS;
     break;
@@ -2145,7 +2140,6 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   case ELEMENT_TYPE_ATTRIB_2UB:
   case ELEMENT_TYPE_ATTRIB_3UB:
   case ELEMENT_TYPE_ATTRIB_4UB:
-  case ELEMENT_TYPE_NULL:
     // these types do not need caching.
     return 3;
     break;

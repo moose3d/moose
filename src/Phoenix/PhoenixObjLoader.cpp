@@ -397,37 +397,37 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CObjLoader::GetTexCoordArray( size_t nTexUnit )
+Phoenix::Data::CObjLoader::GetTexCoordArray( size_t nTexUnit ) const
 {
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CObjLoader::GetColorArray()
+Phoenix::Data::CObjLoader::GetColorArray() const
 {
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CObjLoader::GetNormalArray()
+Phoenix::Data::CObjLoader::GetNormalArray() const
 {
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CObjLoader::GetVertexArray()
+Phoenix::Data::CObjLoader::GetVertexArray() const
 {
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CObjLoader::GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType)
+Phoenix::Data::CObjLoader::GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType) const
 {
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CIndexArray *	     
-Phoenix::Data::CObjLoader::GetIndices()
+Phoenix::Data::CObjLoader::GetIndexArray( const char *szGroupName ) const
 {
   return NULL;
 }
