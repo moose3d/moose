@@ -12,8 +12,7 @@ namespace Phoenix
     ////////////////////
     enum PRIMITIVE_TYPE
     {
-      PRIMITIVE_NULL = 0,
-      PRIMITIVE_POINT_LIST = 1,
+      PRIMITIVE_POINT_LIST,
       PRIMITIVE_TRI_LIST,
       PRIMITIVE_TRI_STRIP,
       PRIMITIVE_LINE_LIST,
@@ -44,6 +43,16 @@ namespace Phoenix
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
+      }
+      ////////////////////
+      /// Copy constructor.
+      CIndexArray( const CIndexArray & obj )
+      {
+	m_nNumIndices = obj.m_nNumIndices;
+	m_nType = obj.m_nType;
+	m_nNumDrawableIndices = m_nNumIndices;
+	m_pIndexData = new char[ GetByteSize() ];
+	memcpy( m_pIndexData, obj.m_pIndexData, GetByteSize());
       }
       ////////////////////
       /// Destructor.
@@ -104,6 +113,13 @@ namespace Phoenix
 	  m_nNumDrawableIndices = GetNumIndices();
 	else
 	  m_nNumDrawableIndices = nCount;
+      }
+      ////////////////////
+      /// Returns byte size for entire array.
+      inline size_t GetByteSize()
+      {
+	if ( IsShortIndices()) return (sizeof(unsigned short int)*GetNumIndices());
+	return (sizeof(unsigned int)*GetNumIndices());
       }
     };
     /////////////////////////////////////////////////////////////////

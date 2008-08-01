@@ -84,9 +84,6 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
     m_pData = new float[8*nNumElements];
     m_nElementByteSize = sizeof(float)*8;
     break;
-  case ELEMENT_TYPE_NULL:
-    m_pData = NULL;
-    break;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -132,9 +129,16 @@ Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_ATTRIB_4I:
     delete reinterpret_cast<int *>(m_pData);
     break;
-  case ELEMENT_TYPE_NULL:
-    break;
   }
   m_pData = NULL;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( const Phoenix::Graphics::CVertexDescriptor & obj )
+{
+  SetType(obj.GetType());
+  m_nSize = obj.GetSize();
+  m_nElementByteSize = obj.m_nElementByteSize;
+  m_pData = new char[ obj.GetByteSize() ];
+  memcpy( m_pData, obj.m_pData, GetByteSize() );
 }
 /////////////////////////////////////////////////////////////////

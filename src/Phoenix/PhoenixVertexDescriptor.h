@@ -11,8 +11,7 @@ namespace Phoenix
   {
     enum ELEMENT_TYPE
     {
-      ELEMENT_TYPE_NULL = 0,
-      ELEMENT_TYPE_VERTEX_3F = 1,
+      ELEMENT_TYPE_VERTEX_3F,
       ELEMENT_TYPE_NORMAL_3F,
       ELEMENT_TYPE_COLOR_4UB,
       ELEMENT_TYPE_COLOR_3F,
@@ -65,6 +64,9 @@ namespace Phoenix
       /// \param nNumElements how many elements this vertexbuffer have (ie. number of vertices).
       /// \par   Not the number of elements in vertex (3 floats), but #vertices.
       CVertexDescriptor( ELEMENT_TYPE nType, unsigned int nNumElements);
+      ////////////////////
+      /// Copy constructor.
+      CVertexDescriptor( const Phoenix::Graphics::CVertexDescriptor & obj );
       ////////////////////
       /// Frees reserverd memory.
       ~CVertexDescriptor();
