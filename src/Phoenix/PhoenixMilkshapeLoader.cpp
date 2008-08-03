@@ -88,17 +88,7 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
   
   DELETE(m_pJoints);
   DELETE(m_pVertexWeights);  
-  DELETE(m_pPositions);
-  DELETE(m_pNormals);
-  DELETE(m_pColors);
-  DELETE(m_pTexCoords);
-  DELETE(m_pIndices);
-  // Release group names
-  while( !m_mapGroups.empty() )
-  {
-    DELETE ((*m_mapGroups.begin()).second);
-    m_mapGroups.erase( m_mapGroups.begin());
-  }
+  
   m_Animationdata.fAnimationFPS = 0.0;
   m_Animationdata.fCurrentTime = 0.0;
   m_Animationdata.iTotalFrames = 0;
@@ -641,7 +631,6 @@ Phoenix::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertice
     for( size_t t=0;t< tris.size(); ++t)
     {
       bool foundExisting = false;
-      //size_t nIndex = 0;
       int whichVertex = 0;
       
       // check which index we must handle

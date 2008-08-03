@@ -262,18 +262,6 @@ namespace Phoenix
     private:
       /// indicates does this model have data loaded.
       int  m_bHasBeenLoaded;
-      /// Vertex positions.
-      Phoenix::Graphics::CVertexDescriptor *m_pPositions;
-      /// Vertex normals.
-      Phoenix::Graphics::CVertexDescriptor *m_pNormals;
-      /// Vertex colors.
-      Phoenix::Graphics::CVertexDescriptor *m_pColors;
-      /// Vertex texture coordinates.
-      Phoenix::Graphics::CVertexDescriptor *m_pTexCoords;
-      /// Vector of triangle indices (either a strip with one list or just a list).
-      Phoenix::Graphics::CIndexArray      *m_pIndices;
-      /// Map of group names to index arrays.
-      std::map<std::string, Phoenix::Graphics::CIndexArray *> m_mapGroups;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
