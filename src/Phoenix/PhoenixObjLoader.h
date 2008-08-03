@@ -2,6 +2,7 @@
 #define __PhoenixObjLoader_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixModelLoader.h"
+#include "PhoenixSpatial.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -29,10 +30,10 @@ namespace Phoenix
       ObjFace() : v1(-1), v2(-1), v3(-1),
 		  t1(-1), t2(-1), t3(-1),
 		  n1(-1), n2(-1), n3(-1)  {}
-      
-      int v1,v2,v3;
-      int t1,t2,t3;
-      int n1,n2,n3;
+
+      int v1,v2,v3;		// Vertices for face
+      int t1,t2,t3;		// Texcoords for face vertices
+      int n1,n2,n3;		// normals for face vertices
       
     };
 
@@ -41,7 +42,8 @@ namespace Phoenix
     typedef std::vector<Phoenix::Data::ObjNormal>   ObjNormalVector;
     typedef std::vector<Phoenix::Data::ObjTexCoord> ObjTexCoordVector;
     typedef std::vector<Phoenix::Data::ObjFace>     ObjFaceVector;
-    
+    typedef std::list< std::string >                GroupList;
+    typedef std::map< std::string, std::list<ObjFace *> > GroupFaces;
     /////////////////////////////////////////////////////////////////
     /// Class for loading .obj models.
     class CObjLoader : public CModelLoader
@@ -57,6 +59,11 @@ namespace Phoenix
       Phoenix::Data::ObjFaceVector     m_Faces;
       /// Currently processed line.
       size_t			       m_currLine;
+      /// Currently selected groups.
+      GroupList	       m_currGroups;
+      /// 
+      GroupFaces	m_mapGroupFaces;
+
     public:
       ////////////////////
       /// Loads model.
@@ -89,6 +96,14 @@ namespace Phoenix
       /// Parses face data from zero-terminated line.
       /// \param szLine line to be parsed.
       void ParseFace( const char *szLine );
+      ////////////////////
+      /// Parses group data from zero-terminated line.
+      /// \param szLine line to be parsed.
+      void ParseGroups( const char *szLine );
+      ////////////////////
+      /// Generates separate arrays for position, normal, and texcoord data.
+      void GenerateModelData();
+
     };
   }
 }
