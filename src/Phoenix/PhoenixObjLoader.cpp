@@ -113,6 +113,11 @@ FindSeparator( const char *szStr )
   return ptr;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Data::CObjLoader::CObjLoader()
+{
+
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Data::CObjLoader::~CObjLoader()
 {
   
@@ -260,8 +265,7 @@ Phoenix::Data::CObjLoader::ParseGroups( const char *szLine )
 
       cerr << "group name is now: '" << tmp << "'" << endl;      
       m_currGroups.push_back( tmp );  
-      if ( m_mapGroupFaces.find( tmp ) == m_mapGroupFaces.end())
-	m_mapGroupFaces.insert( make_pair(tmp, std::list<size_t>()));
+      
     }
     // parse for y-coord
     begin = end+1;
@@ -284,8 +288,7 @@ Phoenix::Data::CObjLoader::ParseGroups( const char *szLine )
     else tmp = buf;
       cerr << "group name is now: '" << tmp << "'" << endl;      
     m_currGroups.push_back( tmp );  
-    if ( m_mapGroupFaces.find( tmp ) == m_mapGroupFaces.end())
-      m_mapGroupFaces.insert( make_pair(tmp, std::list<size_t>()));
+    
   }
   assert( begin <= szLine+strlen(szLine ));
   assert( end <= szLine+strlen(szLine ));  
@@ -393,8 +396,7 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
   GroupFaces::iterator faceListIt;
   for ( ; it != m_currGroups.end(); it++)
   {
-    assert( m_mapGroupFaces.find(*it) != m_mapGroupFaces.end());
-    m_mapGroupFaces[(*it)].push_back( m_Faces.size()-1 );
+    m_mapGroupFaces[*it].push_back(m_Faces.size()-1);
   }
   assert( begin <= szLine+strlen(szLine ));
   assert( end <= szLine+strlen(szLine ));    
@@ -409,8 +411,8 @@ Phoenix::Data::CObjLoader::ParseObject( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  m_objName = buf;
-  cerr << "obj name is now : '" << m_objName << "'" << endl;
+  m_objName = string(buf);
+  //cerr << "obj name is now : '" << m_objName << "'" << endl;
   assert( begin < szLine+strlen(szLine ));
   assert( end < szLine+strlen(szLine ));    
 }
@@ -452,7 +454,7 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
   
   line = pBuffer;
   size_t nChars = 0;
-  //m_mapGroupFaces = new GroupFaces();
+
   try 
   {
     while( nChars < nFilesize )
@@ -485,8 +487,7 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
   for_each( m_TexCoords.begin(), m_TexCoords.end(), printIt);
   for_each( m_Faces.begin(), m_Faces.end(), printIt);
 #endif
-  //GenerateModelData();
-
+  GenerateModelData();
   delete [] pBuffer;
   return iRetval;
 }
@@ -738,14 +739,16 @@ Phoenix::Data::CObjLoader::GenerateModelData()
     }
   }
 #ifdef DEBUG
-
-#endif
   cerr << "total groups: " << m_mapGroupFaces.size() << endl;
+#endif
+
   // Create indices for groups
   GroupFaces::iterator it = m_mapGroupFaces.begin();
   for( ; it != m_mapGroupFaces.end(); it++)
   {
+#ifdef DEBUG
     cerr << "group : " << it->first  << endl;
+#endif
     // Create index array; each triangle has three vertices
     CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, (it->second).size()*3);
 
