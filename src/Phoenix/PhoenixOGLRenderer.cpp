@@ -889,13 +889,15 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
   // create actual gl texture 
   glEnable( iGLType );
   glBindTexture(iGLType, pTexture->GetID());  
+  // build mipmaps 
+  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE); 
   glTexImage2D( iGLType, 0, iGLInternalFormat, 
 		pImage->GetWidth(), pImage->GetHeight(), 0, 
 		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
   // build mipmaps 
-  gluBuild2DMipmaps(iGLType, iGLInternalFormat, 
+  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat, 
 		    pImage->GetWidth(), pImage->GetHeight(),
-		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
+		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
   
   
   glDisable( iGLType );
