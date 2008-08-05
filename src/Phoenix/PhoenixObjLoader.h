@@ -65,6 +65,7 @@ namespace Phoenix
       GroupFaces	m_mapGroupFaces;
       std::string       m_objName;
     public:
+      CObjLoader();
       virtual ~CObjLoader();
       ////////////////////
       /// Loads model.
