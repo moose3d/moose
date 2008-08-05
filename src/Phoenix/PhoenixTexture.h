@@ -1,6 +1,8 @@
 #ifndef __PhoenixTexture_h__
 #define __PhoenixTexture_h__
 /////////////////////////////////////////////////////////////////
+#include <GL/GLee.h>
+#include <GL/gl.h>
 //#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -42,23 +44,26 @@ namespace Phoenix
     {
     protected:
       /// OpenGL id.
-      unsigned int m_nOglId;
+      GLuint m_nOglId;
     public:
       ////////////////////
       /// Constructor.
       /// \param nId OpenGL id number.
-      COglBase( unsigned int nId );
+      COglBase( GLuint nId );
+      ////////////////////
+      /// Destructor.
+      virtual ~COglBase();
       ////////////////////
       /// Returns OpenGL texture id.
       /// \returns Texture id.
-      inline unsigned int & GetID() 
+      inline GLuint & GetID() 
       {
 	return m_nOglId;
       }
       ////////////////////
       /// Returns OpenGL texture id.
       /// \returns Texture id.
-      inline const unsigned int & GetID() const
+      inline const GLuint & GetID() const
       {
 	return m_nOglId;
       }
@@ -81,7 +86,7 @@ namespace Phoenix
       COglTexture( unsigned int nId, TEXTURE_TYPE tType );
       ////////////////////
       /// Destructor.
-      ~COglTexture();
+      virtual ~COglTexture();
       ////////////////////
       /// Returns OpenGL texture type.
       /// \returns Texture type.
