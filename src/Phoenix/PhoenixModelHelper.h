@@ -21,9 +21,11 @@ namespace Phoenix
     {
       friend class Phoenix::Core::CSingleton<CModelHelper>;
     private:
-      CMilkshapeLoader *m_pLoader;
-      CModelHelper() : m_pLoader( NULL ) {}
+      CModelLoader *m_pLoader;
+      float	    m_fScale;
+      CModelHelper() : m_pLoader( NULL ), m_fScale(1.0f) {}
     public:
+      void SetScaling( float fScale );
       ////////////////////
       /// Loads milkshape file.
       /// \param szFilename Path to milkshape model file.
@@ -34,6 +36,16 @@ namespace Phoenix
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
       int LoadMilkshapeModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0, bool bInterleaved = false );
+      ////////////////////
+      /// Loads OBJ file.
+      /// \param szFilename Path to OBJ model file.
+      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
+      /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
+      /// \param aszGroupNames Array of group names, last item must be NULL.
+      /// \param bInterleaved Should arrays be concatenated to form interleaved array. By default, no.
+      /// \returns On success, zero.
+      /// \returns On failure, non-zero.
+      int LoadObjModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0, bool bInterleaved = false );
       ////////////////////
       /// Initializes CRenderable object from currently loaded data.
       /// \attention This function does not add Renderable itself into RenderableManager.

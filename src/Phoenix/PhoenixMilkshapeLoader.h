@@ -259,9 +259,6 @@ namespace Phoenix
     /// Actual model class, which encapsulates structs above.
     class CMilkshapeLoader : public Phoenix::Data::CModelLoader
     {
-    private:
-      /// indicates does this model have data loaded.
-      int  m_bHasBeenLoaded;
     public:
       /// Vertex array size.
       WORD m_nNumVertices;
@@ -273,10 +270,7 @@ namespace Phoenix
       WORD m_nNumMaterials;
       /// Joint array size.
       WORD m_nNumJoints;
-      //unsigned int m_nNumGroupComments;
-      //unsigned int m_nNumMaterialComments;
-      //unsigned int m_nNumJointComments;
-      //unsigned int m_nHasModelComment;
+      
       /////////////////////////////////////////////////////////////////
       /// Vertex data itself.
       MS3D_Vertex_t         *m_pVertices;
@@ -301,13 +295,17 @@ namespace Phoenix
       //MS3D_Comment_t  *m_pMaterialComments;
       //MS3D_Comment_t  *m_pJointComments;
       //MS3D_Comment_t  *m_pModelComments;
+      //unsigned int m_nNumGroupComments;
+      //unsigned int m_nNumMaterialComments;
+      //unsigned int m_nNumJointComments;
+      //unsigned int m_nHasModelComment;
     public:
       ////////////////////
       /// Constructor.
       CMilkshapeLoader();
       ////////////////////
       /// Desctructor.
-      ~CMilkshapeLoader();
+      virtual ~CMilkshapeLoader();
       ////////////////////
       /// Loads the model data from file.
       /// \param  sFilename Path to file as string.
@@ -318,28 +316,17 @@ namespace Phoenix
       /// \param szFilename Path to file as zero-terminated char array.
       /// \returns Non-zero on error, zero otherwise.
       int Load(const char * szFilename);
-      
-      ////////////////////
-      /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
-      /// \param iVertexCompareFlags Which components of vertices are used in comparision when creating lists. By default, all.
-      void GenerateModelData();
-      
-      
-      Phoenix::Graphics::CVertexDescriptor * GetVertexArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetVertexArray( float fScale = 1.0f) const;
       Phoenix::Graphics::CVertexDescriptor * GetColorArray() const;
       Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const;
       Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const;
       Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const;
       Phoenix::Graphics::CIndexArray *       GetIndexArray( const char *szGroupName = NULL ) const;
-      
-      
-      
-
-      ////////////////////
-      /// Creates triangle strips from triangle list.
-      //void Stripify();
-
     private:
+      ////////////////////
+      /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.
+      /// \param iVertexCompareFlags Which components of vertices are used in comparision when creating lists. By default, all.
+      void GenerateModelData();
       ////////////////////
       /// Copy constructor (since model has pointer members).
       CMilkshapeLoader( const CMilkshapeLoader &ref) {}

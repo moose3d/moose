@@ -43,7 +43,7 @@ namespace Phoenix
     typedef std::vector<Phoenix::Data::ObjTexCoord> ObjTexCoordVector;
     typedef std::vector<Phoenix::Data::ObjFace>     ObjFaceVector;
     typedef std::list< std::string >                GroupList;
-    typedef std::map< std::string, std::list<ObjFace *> > GroupFaces;
+    typedef std::map< std::string, std::list<size_t> > GroupFaces;
     /////////////////////////////////////////////////////////////////
     /// Class for loading .obj models.
     class CObjLoader : public CModelLoader
@@ -63,8 +63,9 @@ namespace Phoenix
       GroupList	       m_currGroups;
       /// 
       GroupFaces	m_mapGroupFaces;
-
+      std::string       m_objName;
     public:
+      virtual ~CObjLoader();
       ////////////////////
       /// Loads model.
       /// \param szFilename name of file.
@@ -73,7 +74,7 @@ namespace Phoenix
       Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const;
       Phoenix::Graphics::CVertexDescriptor * GetColorArray() const;
       Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const;
-      Phoenix::Graphics::CVertexDescriptor * GetVertexArray() const;
+      Phoenix::Graphics::CVertexDescriptor * GetVertexArray( float fScale = 1.0f ) const;
 
       Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = 
 								  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const;
@@ -100,6 +101,10 @@ namespace Phoenix
       /// Parses group data from zero-terminated line.
       /// \param szLine line to be parsed.
       void ParseGroups( const char *szLine );
+      ////////////////////
+      /// Parses object name data from zero-terminated line.
+      /// \param szLine line to be parsed.
+      void ParseObject( const char *szLine );
       ////////////////////
       /// Generates separate arrays for position, normal, and texcoord data.
       void GenerateModelData();

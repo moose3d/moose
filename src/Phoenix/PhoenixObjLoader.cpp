@@ -17,7 +17,8 @@ using namespace Phoenix::Data;
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-#define DELETE(OBJ) if(OBJ != NULL ) delete OBJ; OBJ=NULL;
+//#define DELETE(OBJ) delete OBJ; OBJ=NULL;
+//#define DEBUG
 /////////////////////////////////////////////////////////////////
 struct printIt_t
 {
@@ -104,11 +105,17 @@ FindSeparator( const char *szStr )
   if ( szStr == NULL ) return NULL;
   while( ptr[0] != '\t' && 
 	 ptr[0] != ' '  &&
-	 ptr[0] != '\0' )
+	 ptr[0] != '\0' &&
+	 ptr[0] != '\r' )
   {
     ++ptr;
   }
   return ptr;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Data::CObjLoader::~CObjLoader()
+{
+  
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -120,10 +127,11 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
 
   const char *begin = szLine+2;
   const char *end = FindSeparator(begin);
-
+  
   // parse for x-coord.
   if ( end[0] == '\0' ) throw CBadFormatException("No vertex coords available.", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   vert.x = strtof(buf, (char **)NULL);
   
@@ -131,7 +139,8 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   begin = end+1;
   end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only one vertex coord available", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   vert.y = strtof(buf, (char **)NULL);
 
@@ -139,12 +148,15 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   begin = end+1;
   end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only two vertex coords available", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   vert.z = strtof(buf, (char **)NULL);
 
   // insert vertex into vertex vector
   m_Vertices.push_back( vert );
+  assert( begin < szLine+strlen(szLine ));
+  assert( end < szLine+strlen(szLine ));
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -159,7 +171,8 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
 
   // parse for x-coord.
   if ( end[0] == '\0' ) throw CBadFormatException("No normal coords available.", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   normal.x = strtof(buf, (char **)NULL);
   
@@ -167,7 +180,8 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   begin = end+1;
   end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only one normal coord available", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   normal.y = strtof(buf, (char **)NULL);
 
@@ -175,7 +189,8 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   begin = end+1;
   end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only two normal coords available", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   normal.z = strtof(buf, (char **)NULL);
 
@@ -195,7 +210,8 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   
   // parse for x-coord.
   if ( end[0] == '\0' ) throw CBadFormatException("No texcoords available.", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   texc.u = strtof(buf, (char **)NULL);
   
@@ -203,12 +219,15 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   begin = end+1;
   end = FindSeparator(begin);
   if ( begin[0] == '\0' ) throw CBadFormatException("Only one texcoord available", m_currLine);
-  strncpy( buf, begin, end-begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   texc.v = strtof(buf, (char **)NULL);
 
   // insert normal into normal vector
   m_TexCoords.push_back( texc );
+  assert( begin < szLine+strlen(szLine ));
+  assert( end < szLine+strlen(szLine ));
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -219,16 +238,30 @@ Phoenix::Data::CObjLoader::ParseGroups( const char *szLine )
 
   const char *begin = szLine+2;
   const char *end = FindSeparator(begin);
-
+  string prefix = m_objName + "_";
   // there can be several groups
   while ( end[0] != '\0' )
   {
     strncpy( buf, begin, 256);
+    assert( end-begin < 256 );
     buf[end-begin]='\0';
     if ( strlen( buf) > 0 )
     {
-      m_currGroups.push_back( std::string(buf) );  
-      m_mapGroupFaces[ std::string(buf) ];
+      string tmp;
+      // if group has object name prefix (and other name data), remove it.
+      if ( strstr(buf, prefix.c_str()) == buf &&
+	   strlen(buf) > prefix.size()  )
+      {
+
+	tmp = buf+prefix.size();
+
+      }
+      else tmp = buf;
+
+      cerr << "group name is now: '" << tmp << "'" << endl;      
+      m_currGroups.push_back( tmp );  
+      if ( m_mapGroupFaces.find( tmp ) == m_mapGroupFaces.end())
+	m_mapGroupFaces.insert( make_pair(tmp, std::list<size_t>()));
     }
     // parse for y-coord
     begin = end+1;
@@ -236,13 +269,26 @@ Phoenix::Data::CObjLoader::ParseGroups( const char *szLine )
   }
   // copy last group, if such exists.
   strncpy( buf, begin, 256);
+
+  assert( end-begin < 256 );
   buf[end-begin]='\0';
   if ( strlen( buf) > 0 )
   {
-    m_currGroups.push_back( std::string(buf) );  
-    m_mapGroupFaces[std::string(buf)];
+    string tmp;
+    // if group has object name prefix, remove it.
+    if ( strstr(buf, prefix.c_str()) == buf &&
+	 strlen(buf) > prefix.size() )
+    {
+      tmp = buf+prefix.size();
+    }
+    else tmp = buf;
+      cerr << "group name is now: '" << tmp << "'" << endl;      
+    m_currGroups.push_back( tmp );  
+    if ( m_mapGroupFaces.find( tmp ) == m_mapGroupFaces.end())
+      m_mapGroupFaces.insert( make_pair(tmp, std::list<size_t>()));
   }
-  
+  assert( begin <= szLine+strlen(szLine ));
+  assert( end <= szLine+strlen(szLine ));  
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -262,7 +308,8 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
       hasMore = false;
     }
     // copy current def block to buf and terminate string
-    strncpy( buf, begin, end-begin);
+    strncpy( buf, begin, 256);
+    assert( end-begin < 256 );
     buf[end-begin]='\0';
     // check total length of buf.
     size_t bufSize = strlen(buf);
@@ -346,9 +393,26 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
   GroupFaces::iterator faceListIt;
   for ( ; it != m_currGroups.end(); it++)
   {
-    m_mapGroupFaces[(*it)].push_back( &m_Faces.back() );
+    assert( m_mapGroupFaces.find(*it) != m_mapGroupFaces.end());
+    m_mapGroupFaces[(*it)].push_back( m_Faces.size()-1 );
   }
-  
+  assert( begin <= szLine+strlen(szLine ));
+  assert( end <= szLine+strlen(szLine ));    
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Data::CObjLoader::ParseObject( const char *szLine )
+{
+  char buf[256];
+  const char *begin = szLine+2;
+  const char *end = FindSeparator(begin);
+  strncpy( buf, begin, 256);
+  assert( end-begin < 256 );
+  buf[end-begin]='\0';
+  m_objName = buf;
+  cerr << "obj name is now : '" << m_objName << "'" << endl;
+  assert( begin < szLine+strlen(szLine ));
+  assert( end < szLine+strlen(szLine ));    
 }
 /////////////////////////////////////////////////////////////////
 int 
@@ -388,7 +452,7 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
   
   line = pBuffer;
   size_t nChars = 0;
-
+  //m_mapGroupFaces = new GroupFaces();
   try 
   {
     while( nChars < nFilesize )
@@ -398,6 +462,7 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
       else if ( strstr( line, "vn " ) == line ) ParseNormal( line );
       else if ( strstr( line, "f "  ) == line )	ParseFace( line );
       else if ( strstr( line, "g "  ) == line )	ParseGroups( line );
+      else if ( strstr( line, "o "  ) == line ) ParseObject( line );
       // proceed to next line
       size_t strsize = (strlen(line) + 1);
       line += strsize;
@@ -420,9 +485,9 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
   for_each( m_TexCoords.begin(), m_TexCoords.end(), printIt);
   for_each( m_Faces.begin(), m_Faces.end(), printIt);
 #endif
-  GenerateModelData();
+  //GenerateModelData();
 
-  delete pBuffer;
+  delete [] pBuffer;
   return iRetval;
 }
 /////////////////////////////////////////////////////////////////
@@ -626,15 +691,15 @@ Phoenix::Data::CObjLoader::GenerateModelData()
 
     vecIndices.push_back( face.v1 );
     vecIndices.push_back( face.v2 );
-    vecIndices.push_back( face.v2 );
+    vecIndices.push_back( face.v3 );
   }
 
   delete [] allFaces;
 
-  DELETE(m_pPositions);
-  DELETE(m_pNormals);
-  DELETE(m_pTexCoords);
-  DELETE(m_pIndices );
+  delete m_pPositions;
+  delete m_pNormals;
+  delete m_pTexCoords;
+  delete m_pIndices;
 
   // Create new descriptors / array
   m_pPositions = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, vecVertices.size());
@@ -672,42 +737,64 @@ Phoenix::Data::CObjLoader::GenerateModelData()
       m_pIndices->GetPointer<unsigned int>()[i] = vecIndices[i];
     }
   }
+#ifdef DEBUG
 
-
+#endif
+  cerr << "total groups: " << m_mapGroupFaces.size() << endl;
   // Create indices for groups
   GroupFaces::iterator it = m_mapGroupFaces.begin();
   for( ; it != m_mapGroupFaces.end(); it++)
   {
-
+    cerr << "group : " << it->first  << endl;
     // Create index array; each triangle has three vertices
     CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, (it->second).size()*3);
 
-    std::list<ObjFace *> & faceList = it->second;
-    std::list< ObjFace *>::iterator facePtrIt = faceList.begin();
-
+    std::list< size_t > & faceList = it->second;
+    std::list< size_t >::iterator faceIndexIt = faceList.begin();
+    
     size_t nIndex = 0;    
     // copy indices into array
-    for( ; facePtrIt != faceList.end(); facePtrIt++ )
+    for( ; faceIndexIt != faceList.end(); faceIndexIt++ )
     {
       if ( pIndices->IsShortIndices())
       {
-	pIndices->GetPointer<unsigned short int>()[nIndex++] = (*facePtrIt)->v1;
-	pIndices->GetPointer<unsigned short int>()[nIndex++] = (*facePtrIt)->v2;
-	pIndices->GetPointer<unsigned short int>()[nIndex++] = (*facePtrIt)->v3;
+	pIndices->GetPointer<unsigned short int>()[nIndex++] = m_Faces[*faceIndexIt].v1;
+	pIndices->GetPointer<unsigned short int>()[nIndex++] = m_Faces[*faceIndexIt].v2;
+	pIndices->GetPointer<unsigned short int>()[nIndex++] = m_Faces[*faceIndexIt].v3;
+      }
+      else 
+      {
+	pIndices->GetPointer<unsigned int>()[nIndex++] = m_Faces[*faceIndexIt].v1;
+	pIndices->GetPointer<unsigned int>()[nIndex++] = m_Faces[*faceIndexIt].v2;
+	pIndices->GetPointer<unsigned int>()[nIndex++] = m_Faces[*faceIndexIt].v3;
       }
     }
     
     // insert index array into map
     m_mapGroups[it->first] = pIndices;
-    
+
   }
-  
+  m_Faces.clear();
+  m_Vertices.clear();
+  m_Normals.clear();
+  m_currGroups.clear();
+  m_mapGroupFaces.clear();
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CObjLoader::GetVertexArray() const
+Phoenix::Data::CObjLoader::GetVertexArray( float fScale ) const
 {
-  return new CVertexDescriptor( *m_pPositions);
+  CVertexDescriptor *pVD = new CVertexDescriptor( *m_pPositions);
+  if ( QUITE_CLOSE_TO(fScale, 1.0f) )
+  {
+    for( size_t i=0; i<pVD->GetSize(); i++)
+    {
+      pVD->GetPointer<float>(i)[0] *= fScale;
+      pVD->GetPointer<float>(i)[1] *= fScale;
+      pVD->GetPointer<float>(i)[2] *= fScale;
+    }
+  }
+  return pVD;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 

@@ -4,9 +4,9 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
-#define PHOENIX_SKYBOX_TEXCOORDS "PHOENIX_SKYBOX_TEXCOORDS"
-#define PHOENIX_SKYBOX_VERTICES  "PHOENIX_SKYBOX_VERTICES"
-#define PHOENIX_SKYBOX_INDICES   "PHOENIX_SKYBOX_INDICES"
+#define PHOENIX_SKYBOX_TEXCOORDS    "PHOENIX_SKYBOX_TEXCOORDS"
+#define PHOENIX_SKYBOX_VERTICES     "PHOENIX_SKYBOX_VERTICES"
+#define PHOENIX_SKYBOX_INDICES      "PHOENIX_SKYBOX_INDICES"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -19,7 +19,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      CSkybox();
+      CSkybox( bool bATIfix = false );
       ////////////////////
       /// Destructor.
       ~CSkybox();

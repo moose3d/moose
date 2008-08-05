@@ -37,7 +37,7 @@ namespace Phoenix
       virtual Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const = 0;
       virtual Phoenix::Graphics::CVertexDescriptor * GetColorArray() const = 0;
       virtual Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const = 0;
-      virtual Phoenix::Graphics::CVertexDescriptor * GetVertexArray() const = 0;
+      virtual Phoenix::Graphics::CVertexDescriptor * GetVertexArray( float fScale = 1.0f) const = 0;
 
       virtual Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = 
 									  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const = 0;

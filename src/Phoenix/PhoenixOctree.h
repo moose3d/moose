@@ -279,13 +279,7 @@ namespace Phoenix
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 /// Macro for easier deletion
-#define PHOENIX_DELETE(A) \
- {\
-  if ( A != NULL ){\
-    delete A;\
-    A = NULL;\
-  }\
-}
+#define PHOENIX_DELETE(A) delete A; A = NULL;
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode() : CAxisAlignedCube()

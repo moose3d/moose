@@ -219,9 +219,23 @@ Phoenix::Graphics::COglRendererFeatures::GetMaxDrawBuffers() const
   return m_iMaxDrawBuffers;
 }
 /////////////////////////////////////////////////////////////////
+const char *
+Phoenix::Graphics::COglRendererFeatures::GetVendor() const
+{
+  return reinterpret_cast<const char*>(glGetString( GL_VENDOR ));
+}
+/////////////////////////////////////////////////////////////////
+const char *
+Phoenix::Graphics::COglRendererFeatures::GetRenderer() const
+{
+  return reinterpret_cast<const char *>(glGetString( GL_RENDERER ));
+}
+/////////////////////////////////////////////////////////////////
 std::ostream &
 Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &obj)
 {
+  stream << "OpenGL vendor:" << obj.GetVendor() << std::endl;
+  stream << "OpenGL renderer:" << obj.GetRenderer() << std::endl;
   stream << "OpenGL extensions:" << std::endl;
   stream << "------------------" << std::endl;
   stream << "GL_ARB_vertex_program "  << ( obj.HasVertexProgram() ? "YES" : "NO" ) << endl;

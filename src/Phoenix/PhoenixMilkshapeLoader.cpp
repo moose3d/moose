@@ -10,8 +10,6 @@
   #include <tri_stripper.h>
 #endif
 /////////////////////////////////////////////////////////////////
-#define DELETE(OBJ) if(OBJ != NULL ) delete OBJ; OBJ=NULL;
-/////////////////////////////////////////////////////////////////
 using std::fstream;
 using std::ios;
 using namespace Phoenix::Data;
@@ -54,7 +52,7 @@ Phoenix::Data::CMilkshapeLoader::Init()
 
   m_pJoints = NULL;
   m_pVertexWeights = NULL;
-  m_bHasBeenLoaded = 0;
+
 
   m_pPositions = NULL;
   m_pNormals = NULL;
@@ -70,25 +68,25 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
 {
   
   unsigned int i = 0;
-  DELETE(m_pVertices);
-  DELETE(m_pTriangles);
-  DELETE(m_pMaterials);
+  delete [] m_pVertices;
+  delete [] m_pTriangles;
+  delete [] m_pMaterials;
   // Groups have pointer members
   for( i=0;i<m_nNumGroups;i++ )
   {
-    DELETE(m_pGroups[i].pTriangleIndices);
+    delete [] m_pGroups[i].pTriangleIndices;
   }
-  DELETE(m_pGroups);
+  delete [] m_pGroups;
   // Joints have pointer members
   for( i=0;i<m_nNumJoints;i++ )
   {
-    DELETE( m_pJoints[i].keyFramesRot);
-    DELETE( m_pJoints[i].keyFramesTrans);    
+    delete [] m_pJoints[i].keyFramesRot;
+    delete [] m_pJoints[i].keyFramesTrans;    
   }
   
-  DELETE(m_pJoints);
-  DELETE(m_pVertexWeights);  
-  
+  delete [] m_pJoints;
+  delete [] m_pVertexWeights;  
+
   m_Animationdata.fAnimationFPS = 0.0;
   m_Animationdata.fCurrentTime = 0.0;
   m_Animationdata.iTotalFrames = 0;
@@ -99,7 +97,7 @@ Phoenix::Data::CMilkshapeLoader::Destroy()
   m_nNumMaterials = 0;
   m_nNumJoints = 0;
 
-  m_bHasBeenLoaded = 0;
+
 
 }
 /////////////////////////////////////////////////////////////////
@@ -129,8 +127,7 @@ Phoenix::Data::CMilkshapeLoader::Load(const char *szFilename)
     cerr << "Invalid file, loading cancelled." << std::endl;
     return 1;
   }
-
-  if ( m_bHasBeenLoaded ) Destroy();
+  Destroy();
   // --------------- READ DATA -----------------------------------
   
   unsigned char *pBuffer = Read_Into_Buffer(fFile, &iFilesize);
@@ -154,14 +151,12 @@ Phoenix::Data::CMilkshapeLoader::Load(const char *szFilename)
   
   // --------------- FINISHED ------------------------------------
 
-  if ( pBuffer != NULL ) 
-  {
-    delete pBuffer;
-  }
+  
+  delete [] pBuffer;
   pBuffer = NULL;
   fFile.close();
-  m_bHasBeenLoaded = 1;
 
+  GenerateModelData();
   return iRetval;
 }
 /////////////////////////////////////////////////////////////////
@@ -219,7 +214,7 @@ Phoenix::Data::CMilkshapeLoader::Read_Into_Buffer( std::fstream &File, unsigned 
   // check for reading errors
   if( File.bad())
   {
-    delete pBuffer;
+    delete [] pBuffer;
     pBuffer = NULL;
   }
   return pBuffer;
@@ -501,11 +496,11 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
 
   CreateTriangleList( vecVertices, vecIndices );
   CreateGroupIndexMap( vecVertices );
-
-  DELETE(m_pPositions);
-  DELETE(m_pNormals);
-  DELETE(m_pTexCoords);
-  DELETE(m_pIndices );
+  
+  delete m_pPositions;
+  delete m_pNormals;
+  delete m_pTexCoords;
+  delete m_pIndices;
   cerr << "generating model data" << vecVertices.size() << endl;
   
   // Create new descriptors / array
@@ -873,7 +868,7 @@ Phoenix::Data::CMilkshapeLoader::CreateGroupIndexMap( std::vector<Phoenix::Spati
 // }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor * 
-Phoenix::Data::CMilkshapeLoader::GetVertexArray() const
+Phoenix::Data::CMilkshapeLoader::GetVertexArray( float fScale ) const
 {
   return new CVertexDescriptor( *m_pPositions);
 }

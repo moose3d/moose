@@ -60,11 +60,11 @@ namespace Phoenix
       {
 	if ( IsShortIndices())
 	{
-	  delete reinterpret_cast<unsigned short int *>(m_pIndexData);
+	  delete [] reinterpret_cast<unsigned short int *>(m_pIndexData);
 	}
 	else 
 	{
-	  delete reinterpret_cast<unsigned int *>(m_pIndexData);
+	  delete [] reinterpret_cast<unsigned int *>(m_pIndexData);
 	}
       }
       ////////////////////

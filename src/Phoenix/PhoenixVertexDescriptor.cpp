@@ -84,6 +84,9 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
     m_pData = new float[8*nNumElements];
     m_nElementByteSize = sizeof(float)*8;
     break;
+  default:
+    assert( NULL && "Wrong type" );
+    break;
   }
 }
 /////////////////////////////////////////////////////////////////
@@ -110,14 +113,14 @@ Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_TEX_3F:
   case ELEMENT_TYPE_TEX_4F:
   case ELEMENT_TYPE_V3F_N3F_T2F:
-    delete reinterpret_cast<float *>(m_pData);
+    delete [] reinterpret_cast<float *>(m_pData);
     break;
   case ELEMENT_TYPE_COLOR_4UB:
   case ELEMENT_TYPE_ATTRIB_1UB:
   case ELEMENT_TYPE_ATTRIB_2UB:
   case ELEMENT_TYPE_ATTRIB_3UB:
   case ELEMENT_TYPE_ATTRIB_4UB:
-    delete reinterpret_cast<unsigned char *>(m_pData);
+    delete [] reinterpret_cast<unsigned char *>(m_pData);
     break;
   case ELEMENT_TYPE_UNIFORM_4I:
   case ELEMENT_TYPE_UNIFORM_3I:
@@ -127,7 +130,7 @@ Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_ATTRIB_2I:
   case ELEMENT_TYPE_ATTRIB_3I:
   case ELEMENT_TYPE_ATTRIB_4I:
-    delete reinterpret_cast<int *>(m_pData);
+    delete [] reinterpret_cast<int *>(m_pData);
     break;
   }
   m_pData = NULL;

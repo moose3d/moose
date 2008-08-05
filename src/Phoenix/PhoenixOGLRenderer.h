@@ -232,6 +232,12 @@ namespace Phoenix
       /// for printing out supported features.
       friend std::ostream &operator<<(std::ostream &stream, 
 				      const COglRendererFeatures &obj);
+      ////////////////////
+      /// \returns vendor string.
+      const char *GetVendor() const;
+      ////////////////////
+      /// \returns renderer string.
+      const char *GetRenderer() const;
     protected:
       /// Initializes the supported values.
       void Init();
