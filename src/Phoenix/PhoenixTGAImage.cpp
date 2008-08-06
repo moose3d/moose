@@ -193,7 +193,7 @@ Phoenix::Graphics::CTGAImage::Load(const string & szFilename)
       break;      
     }
   default:
-    std::cerr << "UNSUPPORTED FORMAT " << (int)bEnc << std::endl;
+    //std::cerr << "UNSUPPORTED FORMAT " << (int)bEnc << std::endl;
     return IMG_ERR_UNSUPPORTED;
   }
  
@@ -214,22 +214,22 @@ Phoenix::Graphics::CTGAImage::ReadHeader() // Examine the header and populate ou
   short ColMapStart,ColMapLen;
   short x1,y1,x2,y2;
  
-   if(pData==NULL)
+  if(pData==NULL)
     return IMG_ERR_NO_FILE;
  
-   if(pData[1]>1)    // 0 (RGB) and 1 (Indexed) are the only types we know about
+  if(pData[1]>1)    // 0 (RGB) and 1 (Indexed) are the only types we know about
     return IMG_ERR_UNSUPPORTED;
  
-   bEnc=pData[2];     // Encoding flag  1 = Raw indexed image
-                      //                2 = Raw RGB
-                      //                3 = Raw greyscale
-                      //                9 = RLE indexed
-                      //               10 = RLE RGB
-                      //               11 = RLE greyscale
-                      //               32 & 33 Other compression, indexed
+  bEnc=pData[2];     // Encoding flag  1 = Raw indexed image
+  //                2 = Raw RGB
+  //                3 = Raw greyscale
+  //                9 = RLE indexed
+  //               10 = RLE RGB
+  //               11 = RLE greyscale
+  //               32 & 33 Other compression, indexed
  
-    if(bEnc>11)       // We don't want 32 or 33
-     return IMG_ERR_UNSUPPORTED;
+  if(bEnc>11)       // We don't want 32 or 33
+    return IMG_ERR_UNSUPPORTED;
  
  
   // Get palette info
@@ -237,11 +237,11 @@ Phoenix::Graphics::CTGAImage::ReadHeader() // Examine the header and populate ou
   memcpy(&ColMapLen,&pData[5],2);
  
   // Reject indexed images if not a VGA palette (256 entries with 24 bits per entry)
-   if(pData[1]==1) // Indexed
-    {
-     if(ColMapStart!=0 || ColMapLen!=256 || pData[7]!=24)
+  if(pData[1]==1) // Indexed
+  {
+    if(ColMapStart!=0 || ColMapLen!=256 || pData[7]!=24)
       return IMG_ERR_UNSUPPORTED;
-    }
+  }
  
   // Get image window and produce width & height values
   memcpy(&x1,&pData[8],2);
@@ -252,19 +252,19 @@ Phoenix::Graphics::CTGAImage::ReadHeader() // Examine the header and populate ou
   iWidth=(x2-x1);
   iHeight=(y2-y1);
  
-   if(iWidth<1 || iHeight<1)
+  if(iWidth<1 || iHeight<1)
     return IMG_ERR_BAD_FORMAT;
  
   // Bits per Pixel
   iBPP=pData[16];
-  std::cerr << "received " << iBPP << " bit image" << std::endl;
+  //std::cerr << "received " << iBPP << " bit image" << std::endl;
   // Check flip / interleave byte
-   if(pData[17]>32) // Interleaved data
+  if(pData[17]>32) // Interleaved data
     return IMG_ERR_UNSUPPORTED;
  
   // Calculate image size
   lImageSize=(iWidth * iHeight * (iBPP/8));
- 
+
   return IMG_OK;
 }
 ///////////////////////////////////////////////////////////////// 
@@ -488,11 +488,9 @@ Phoenix::Graphics::CTGAImage::LoadImage( const char *szFilename, std::ostream & 
   if ( !bOk )
   {
     // cleanup
-    if ( pImage ) 
-    {
-      delete pImage; 
-      pImage = NULL; 
-    }
+    delete pImage; 
+    pImage = NULL; 
+
   }
   return pImage;
 }
