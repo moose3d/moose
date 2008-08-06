@@ -515,8 +515,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
 
-      glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*6);
-      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+sizeof(float)*3);
+      glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+6);
+      glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>()+3);
       glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), pBuffer->GetPointer<float>());
     }
 
@@ -1350,11 +1350,8 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
       }
     }
   }
-
-  // check and commit resources
-  if ( renderable.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY ); 
-  else						CommitVertexDescriptor ( *renderable.GetVertexHandle() ); 
-
+  
+  
   // commit normals
   if ( renderable.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );   
   else						CommitVertexDescriptor( *renderable.GetNormalHandle() ); 
@@ -1367,6 +1364,11 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable, int 
   }
   else						CommitVertexDescriptor( *renderable.GetColorHandle() );
   
+  // commit position data
+  if ( renderable.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY ); 
+  else						CommitVertexDescriptor ( *renderable.GetVertexHandle() ); 
+  
+
   if ( !renderable.GetIndices().IsNull() )     CommitPrimitive( *renderable.GetIndices() );
 
   
