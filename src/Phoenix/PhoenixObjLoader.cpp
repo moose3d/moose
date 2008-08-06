@@ -1,5 +1,6 @@
 #include "PhoenixObjLoader.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixVector3.h"
 #include <fstream>
 #include <string.h>
 #include <string>
@@ -171,7 +172,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   
   char buf[256];
 
-  const char *begin = szLine+2;
+  const char *begin = szLine+3; // "vn " is 3 char
   const char *end = FindSeparator(begin);
 
   // parse for x-coord.
@@ -199,6 +200,11 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   buf[end-begin]='\0';
   normal.z = strtof(buf, (char **)NULL);
 
+  CVector3<float> vNorm(normal.x,normal.y,normal.z);
+  vNorm.Normalize();
+  normal.x = vNorm[0];
+  normal.y = vNorm[1];
+  normal.z = vNorm[2];
   // insert normal into normal vector
   m_Normals.push_back( normal );
 }
@@ -210,7 +216,7 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   
   char buf[256];
 
-  const char *begin = szLine+2;
+  const char *begin = szLine+3; // "vt " is 3 chars
   const char *end = FindSeparator(begin);
   
   // parse for x-coord.
@@ -476,6 +482,7 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
   {
     cerr << ex.what() << " at " << ex.GetLine() <<  endl;
   }  
+  
 
 #ifdef DEBUG
   cerr << "#vert: " << m_Vertices.size() << endl;
