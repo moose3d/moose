@@ -889,8 +889,13 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
   // create actual gl texture 
   glEnable( iGLType );
   glBindTexture(iGLType, pTexture->GetID());  
-  // build mipmaps 
+  /// ****************************************
+  /// build mipmaps automatically.
+  /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
+  /// Somehow it prevents it occurring.
+  /// ****************************************
   glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE); 
+  
   glTexImage2D( iGLType, 0, iGLInternalFormat, 
 		pImage->GetWidth(), pImage->GetHeight(), 0, 
 		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
