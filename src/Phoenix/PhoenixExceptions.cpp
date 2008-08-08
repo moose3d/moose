@@ -1,0 +1,13 @@
+#include "PhoenixExceptions.h"
+/////////////////////////////////////////////////////////////////
+Phoenix::Exceptions::CNullPointerException::CNullPointerException( const char *szReason )
+{
+  reason = szReason;
+}
+/////////////////////////////////////////////////////////////////
+const char *
+Phoenix::Exceptions::CNullPointerException::what() const throw()
+{
+  return reason.c_str();
+}
+/////////////////////////////////////////////////////////////////
