@@ -595,7 +595,12 @@ namespace Phoenix
       /// Renders a sphere.
       /// \param sphere Sphere to be rendered.
       /// \param bWireframe Is sphere rendered as wireframe. Default true.
-      void CommitSphere( const Phoenix::Volume::CSphere &sphere, int bWireframe = 1 );
+      void CommitSphere( const Phoenix::Volume::CSphere &sphere, bool bWireframe = true );
+      ////////////////////
+      /// Renders a box.
+      /// \param box OBB to be rendered.
+      /// \param bWireframe Is sphere rendered as wireframe. Default true.
+      void CommitBox( const Phoenix::Volume::COrientedBox &box, bool bWireframe = true );
       ////////////////////
       /// Renders a quad with texcoords, color and normal. Vertices must be given in counter-clockwise order.
       /// \param vertexOne First vertex.

@@ -2066,7 +2066,7 @@ Phoenix::Graphics::COglRenderer::RollbackTransform()
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, int bWireframe )
+Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, bool bWireframe )
 {
   if ( !m_pQuadric )
     m_pQuadric = gluNewQuadric();
@@ -2080,6 +2080,42 @@ Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &s
     glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
     gluSphere(m_pQuadric, sphere.GetRadius(), 16, 16);
   glPopMatrix();
+
+
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox &box, bool bWireframe )
+{
+  //   if ( !m_pQuadric )
+  //       m_pQuadric = gluNewQuadric();
+
+//   // Set drawing style.
+//   if ( bWireframe )	gluQuadricDrawStyle( m_pQuadric, GLU_LINE  );
+//   else			gluQuadricDrawStyle( m_pQuadric, GLU_FILL  );
+
+//   // Translate and render
+//   glPushMatrix();
+//     glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
+//     gluSphere(m_pQuadric, sphere.GetRadius(), 16, 16);
+//   glPopMatrix();
+
+
+  glBegin( GL_QUAD_STRIP );
+  
+  using namespace Phoenix::Volume;
+  glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
+  
+  glEnd();
 
 
 }
