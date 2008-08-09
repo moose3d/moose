@@ -4,6 +4,7 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixSpatial.h"
 #include <iostream>
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
@@ -13,10 +14,12 @@ using namespace Phoenix::Spatial;
 using std::cerr;
 using std::endl;
 /////////////////////////////////////////////////////////////////
-LINE_PLANE_INTERSECTION
-Phoenix::Collision::LineIntersectsPlane( const CPlane &plane,
-					 const CLine &line,
-					 CVector3<float> &vCollisionPoint )
+#define PLANE_DOT_POS( PLANE, POS ) (PLANE[0]*POS[0] + PLANE[1]*POS[1] + PLANE[2]*POS[2] + PLANE[3])
+/////////////////////////////////////////////////////////////////
+LINESEGM_PLANE_INTERSECTION
+Phoenix::Collision::LineSegmentIntersectsPlane( const CPlane &plane,
+						const CLineSegment &line,
+						CVector3<float> &vCollisionPoint )
 {
   
   float fDistanceOne = 0.0f, fDistanceTwo = 0.0f;
@@ -92,60 +95,115 @@ Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
 }
 /////////////////////////////////////////////////////////////////
 int 
-Phoenix::Collision::LineIntersectsSphere( const CLine &line,
+Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
 					 CVector3<float> *pvIntersection0, 
 					 CVector3<float> *pvIntersection1, 
 					 const CSphere &Sphere)
 {
+
   int iIntersects = 0;
-  CVector3<float> vSphereToRayStart = line.GetStart() - Sphere.GetPosition();
+  CVector3<float> vL = Sphere.GetPosition() - ray.GetPosition();
+  float fS = vL.Dot(ray.GetDirection());
+  float fLsqr = vL.Dot(vL);
+  float fRsqr = Sphere.GetRadiusSqr();
+
+  if ( fS < -EPSILON && fLsqr > fRsqr)
+  {
+    return 0;
+  }
   
-  CVector3<float> vStartToEnd = line.GetDirection();
-  // Check does it intersect
-  float fA = vStartToEnd.Dot(vStartToEnd);
-  float fB = 2.0f * ( vStartToEnd.Dot(vSphereToRayStart));
-  float fC = Sphere.GetPosition().Dot(Sphere.GetPosition()) + 
-             line.GetStart().Dot(line.GetStart()) - 
-             (2.0f *(Sphere.GetPosition().Dot(line.GetStart()))) - 
-             Sphere.GetRadiusSqr();
+  float fMsqr = fLsqr - fS*fS;
+  
+  if ( fMsqr > fRsqr ) return 0;
+  
+  // are there one or two intersection points
+  float fQ = sqrtf( fRsqr - fMsqr);
+  iIntersects =  TOO_CLOSE_TO_ZERO(fQ) ? 1 : 2;
 
+  // calculate intersections only when needed.
+  if ( pvIntersection0 != NULL || pvIntersection1 != NULL )
+  {
+    float fQ = sqrtf( fRsqr - fMsqr);
 
-  float fIntersection = fB * fB - 4.0f * fA * fC;
-  float fMu = 0.0f;
-  // No intersection
-  if ( fIntersection < -0.001f ) 
-  {
-    iIntersects = 0;
-  } // Intersects in one point
-  else if ( fIntersection >= -0.001f && fIntersection <= 0.0f)
-  {
-    fMu = -fB / (2.0f * fA );
-    if ( pvIntersection0 != NULL ) *pvIntersection0 = line.GetStart() + fMu * vStartToEnd;
-    if ( pvIntersection1 != NULL ) *pvIntersection1 = line.GetStart() + fMu * vStartToEnd;
-    iIntersects = 1;
-  } 
-  else  // Intersects in two points
-  {
-    CVector3<float> vInt0, vInt1;
+    if ( fLsqr > fRsqr && iIntersects == 2 ) 
+    {
+      float fTfirst = fS - fQ;
+      float fTsecond = fS + fQ;
+      iIntersects = 2;
+      if ( pvIntersection0 != NULL )
+      {
+	*pvIntersection0 = ray.GetPosition()+fTfirst*ray.GetDirection();
+      }
+      if ( pvIntersection1 != NULL )
+      {
+	*pvIntersection1 = ray.GetPosition()+fTsecond*ray.GetDirection();
+      }
 
-    fMu = (-fB - sqrt(fIntersection)) / (2.0f * fA );
-    vInt0 = line.GetStart() + fMu * vStartToEnd;
+    }
+    else
+    {
+      float fT = fS + fQ;
+      CVector3<float> vPoint = ray.GetPosition()+fT*ray.GetDirection();
+      if ( pvIntersection0 != NULL )
+      {
+	*pvIntersection0 = vPoint;
+      }
+      if ( pvIntersection1 != NULL )
+      {
+	*pvIntersection1 = vPoint;
+      }
+    }
     
-    fMu = (-fB + sqrt(fIntersection)) / (2.0f * fA );
-    vInt1 = line.GetStart() + fMu * vStartToEnd; 
-
-    if ( pvIntersection0 != NULL ) 
-    {
-      *pvIntersection0 = vInt0;
-    }
-    if ( pvIntersection1 != NULL ) 
-    {
-      *pvIntersection1 = vInt1;
-    }
-    iIntersects = 2;
-
   }
   return iIntersects;
+  //   int iIntersects = 0;
+//   CVector3<float> vSphereToRayStart = ray.GetPosition() - Sphere.GetPosition();
+  
+//   // Check does it intersect
+//   float fA = ray.GetDirection().Dot(ray.GetDirection());
+//   float fB = 2.0f * ( ray.GetDirection().Dot(vSphereToRayStart));
+//   float fC = Sphere.GetPosition().Dot(Sphere.GetPosition()) + 
+//              line.GetStart().Dot(line.GetStart()) - 
+//              (2.0f *(Sphere.GetPosition().Dot(line.GetStart()))) - 
+//              Sphere.GetRadiusSqr();
+
+
+//   float fIntersection = fB * fB - 4.0f * fA * fC;
+//   float fMu = 0.0f;
+//   // No intersection
+//   if ( fIntersection < -0.001f ) 
+//   {
+//     iIntersects = 0;
+//   } // Intersects in one point
+//   else if ( fIntersection >= -0.001f && fIntersection <= 0.0f)
+//   {
+//     fMu = -fB / (2.0f * fA );
+//     if ( pvIntersection0 != NULL ) *pvIntersection0 = line.GetStart() + fMu * ray.GetDirection();
+//     if ( pvIntersection1 != NULL ) *pvIntersection1 = line.GetStart() + fMu * ray.GetDirection();
+//     iIntersects = 1;
+//   } 
+//   else  // Intersects in two points
+//   {
+//     CVector3<float> vInt0, vInt1;
+
+//     fMu = (-fB - sqrt(fIntersection)) / (2.0f * fA );
+//     vInt0 = line.GetStart() + fMu * ray.GetDirection();
+    
+//     fMu = (-fB + sqrt(fIntersection)) / (2.0f * fA );
+//     vInt1 = line.GetStart() + fMu * ray.GetDirection(); 
+
+//     if ( pvIntersection0 != NULL ) 
+//     {
+//       *pvIntersection0 = vInt0;
+//     }
+//     if ( pvIntersection1 != NULL ) 
+//     {
+//       *pvIntersection1 = vInt1;
+//     }
+//     iIntersects = 2;
+
+//   }
+//   return iIntersects;
 }
 /////////////////////////////////////////////////////////////////
 bool
@@ -175,18 +233,18 @@ Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint,
 }
 /////////////////////////////////////////////////////////////////
 int 
-Phoenix::Collision::LineIntersectsTriangle( const Phoenix::Math::CLine & line,
-					    const Phoenix::Math::CVector3<float> & vVertex0,
-					    const Phoenix::Math::CVector3<float> & vVertex1,
-					    const Phoenix::Math::CVector3<float> & vVertex2,
-					    Phoenix::Math::CVector3<float> &vPointOfIntersection )
+Phoenix::Collision::LineSegmentIntersectsTriangle( const Phoenix::Math::CLineSegment & line,
+						   const Phoenix::Math::CVector3<float> & vVertex0,
+						   const Phoenix::Math::CVector3<float> & vVertex1,
+						   const Phoenix::Math::CVector3<float> & vVertex2,
+						   Phoenix::Math::CVector3<float> &vPointOfIntersection )
 {
   
   CPlane triPlane;
   //CVector3<float> vPoint;
   // Calculate triangle plane and check does it intersect the plane.
   triPlane.Calculate( (vVertex1-vVertex0).Cross( vVertex2-vVertex0), vVertex0);
-  LINE_PLANE_INTERSECTION tType = LineIntersectsPlane( triPlane, line, vPointOfIntersection );
+  LINESEGM_PLANE_INTERSECTION tType = LineSegmentIntersectsPlane( triPlane, line, vPointOfIntersection );
   if ( tType == POINT_IN_PLANE)
   {
     // if line intersects plane, then proceed to test triangle with interesection point.
@@ -215,7 +273,7 @@ Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
 }
 /////////////////////////////////////////////////////////////////
 float 
-Phoenix::Collision::LineToLineDistanceSquared( const Phoenix::Math::CLine & line0, const Phoenix::Math::CLine & line1 )
+Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1 )
 {
   // Direction is calculated from end points.
   CVector3<float> vDir0 = line0.GetDirection();
@@ -297,13 +355,22 @@ void
 Phoenix::Collision::ClosestPointOnRay( const CVector3<float> &vPoint, const Phoenix::Math::CRay &ray, CVector3<float> & vClosestPoint )
 {
   //CVector3<float> vStartToPoint = vPoint - ray.GetPosition();
-  //float fDot = ray.GetDirection().Dot(vStartToPoint);
   //vClosestPoint = ray.GetPosition() + (ray.GetDirection() * fDot );
-  vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );
+  float fDot = ray.GetDirection().Dot(vPoint - ray.GetPosition());
+  if ( fDot > 0.0f )
+    vClosestPoint = ray.GetPosition() + (ray.GetDirection() * fDot );
+  else
+    vClosestPoint = ray.GetPosition();
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Collision::ClosestPointOnLine( const CVector3<float> &vPoint, const Phoenix::Math::CLine & line, CVector3<float> & vClosestPoint )
+Phoenix::Collision::ClosestPointOnLine( const CVector3<float> &vPoint, const Phoenix::Math::CLine &line, CVector3<float> & vClosestPoint )
+{
+  vClosestPoint = line.GetPosition() + (line.GetDirection() * (line.GetDirection().Dot(vPoint - line.GetPosition())) );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Collision::ClosestPointOnLineSegment( const CVector3<float> &vPoint, const Phoenix::Math::CLineSegment & line, CVector3<float> & vClosestPoint )
 {
 
   CVector3<float> vStartToPoint = vPoint - line.GetStart();
@@ -833,9 +900,9 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	 fan_iterator != lstTriangleFans.end();
 	 fan_iterator++)
     {
-      std::list<Phoenix::Math::CPlane>::iterator plane_it;
-      for( plane_it = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
-	   plane_it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
+      std::list<Phoenix::Math::CPlane>::const_iterator plane_it;
+      for( plane_it = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin(); 
+	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end(); 
 	   plane_it++)
       {
 	ClipPolygon( *plane_it, *fan_iterator );
@@ -910,9 +977,9 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	 fan_iterator++ )
     {
       
-      std::list<Phoenix::Math::CPlane>::iterator plane_it;
-      for( plane_it  = const_cast<CDecalVolume &>(decalVolume).Planes().begin(); 
-	   plane_it != const_cast<CDecalVolume &>(decalVolume).Planes().end(); 
+      std::list<Phoenix::Math::CPlane>::const_iterator plane_it;
+      for( plane_it  = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin(); 
+	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end(); 
 	   plane_it++)
       {
 	ClipPolygon( *plane_it, *fan_iterator );
@@ -1132,5 +1199,176 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   // swap vertex lists
   lstVerticesNew.swap( lstVertices );
   
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Collision::VOLUME_INTERSECTION
+Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Phoenix::Volume::CPolytope & poly )
+{
+
+  
+  // The effective radius of the box respect to a plane
+  float fEffRadius;
+  float fDot;	
+  
+  CVector3<float> vNormal;
+  /////////////////////////////////////////////////////////////////
+  // When box length (principal axis) is much greater than the two others,
+  // it is better to use line segment test for better accuracy.
+  /////////////////////////////////////////////////////////////////
+  bool bUseLineSegmentTest = (( obBox.GetLength()-obBox.GetWidth() ) > (obBox.GetHalfWidth())) || 
+                             (( obBox.GetLength()-obBox.GetHeight()) > (obBox.GetHalfHeight()));
+  
+  if ( bUseLineSegmentTest ) 
+  {
+    float fDot2;
+    // The line seqment
+    CVector3<float> vQ1 = obBox.GetPosition() + (obBox.GetForwardVector()*(obBox.GetLength() * 0.5f)) ;
+    CVector3<float> vQ2 = vQ1 - (obBox.GetForwardVector()*obBox.GetLength()) ;
+    std::list<Phoenix::Math::CPlane>::const_iterator planeIt;
+
+    // for each plane do
+    for( planeIt = poly.GetPlanes().begin(); planeIt != poly.GetPlanes().end(); planeIt++ ){
+      
+      vNormal.Set( planeIt->GetArray() );
+
+      // Since axes from COrientable are always Unit length,
+      // we include proper dimensions in the equation.
+      fEffRadius = 0.5f * ( fabsf( (obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal) ) +
+			    fabsf( (obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal) ) );
+      
+      // Calculate 4D dot product between a plane and the line endpoints
+      fDot  = vNormal.Dot( vQ1) + (*planeIt)[4];
+      fDot2 = vNormal.Dot( vQ2) + (*planeIt)[4];
+
+      if (fDot <= -fEffRadius && fDot2 <= -fEffRadius)
+      {
+	return OUTSIDE;
+
+      } else if ( (fDot < -fEffRadius && fDot2 > -fEffRadius)){
+	// Cut off the part from the cylinder which lies outside the frustum
+	float fT = (fEffRadius + fDot2) / vNormal.Dot(vQ2-vQ1) ;
+	
+	vQ1 = vQ2 + (fT*(vQ1-vQ2));
+
+      } else if ( fDot2 < -fEffRadius && fDot > -fEffRadius ){
+	
+	// Cut off the part from the cylinder which lies outside the frustum
+	float fT = (fEffRadius + fDot) / vNormal.Dot(vQ1-vQ2) ;
+	vQ2 = vQ1 + (fT*(vQ2-vQ1));
+      }
+      
+    }  
+    
+  } else {
+
+    std::list<Phoenix::Math::CPlane>::const_iterator planeIt;
+    // for each plane do
+    for( planeIt = poly.GetPlanes().begin(); planeIt != poly.GetPlanes().end(); planeIt++ ){
+      
+      vNormal.Set( planeIt->GetArray());
+
+      // Since axes from COrientable are always Unit length,
+      // we include proper dimensions in the equation.
+      
+      fEffRadius = 0.5f * ( fabsf((obBox.GetForwardVector()*obBox.GetLength()).Dot(vNormal)) +
+			    fabsf((obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal)) +
+			    fabsf((obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal)) );
+      
+      // Calculate 4D dot product between plane and box center
+      fDot  = vNormal.Dot( obBox.GetPosition()) + (*planeIt)[4];
+
+      if ( fDot <= -fEffRadius )
+      {
+	return OUTSIDE;
+      }
+      
+    }  
+  }
+  // Ok, volumes intersect.
+  return INTERSECTION;
+}
+/////////////////////////////////////////////////////////////////
+VOLUME_INTERSECTION
+Phoenix::Collision::SphereIntersectsPolytope( const CSphere &sphere, const Phoenix::Volume::CPolytope & poly ) 
+{
+  float fDistance = 0.0f;
+  int iType;
+  bool bIntersection = false;
+  std::list<Phoenix::Math::CPlane>::const_iterator planeIt;
+  
+  for( planeIt = poly.GetPlanes().begin();planeIt != poly.GetPlanes().end(); planeIt++ )
+  {
+    iType = Phoenix::Collision::SphereIntersectsPlane( *planeIt, sphere, fDistance);
+
+    // If the object is behind of any of the planes (on negative half-side), 
+    // then it is outside the frustum
+    if (iType < 0)
+    {
+      return OUTSIDE;
+    }
+
+    // If the object intersects any of the planes, 
+    // then might be intersecting the frustum
+    if (iType == 0) 
+    {
+      bIntersection = 1;
+    }
+  }  
+  // If sphere intersected one or more planes, it is partially in frustum.
+  if ( bIntersection )
+    return INTERSECTION;
+  
+  // if we end up here, the object is neither behind or intersecting of any of the 
+  // planes. Hence, it is inside.
+  return INSIDE;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Collision::VOLUME_INTERSECTION  
+Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedBox &aabb, const Phoenix::Volume::CPolytope & poly )
+{
+  CVector3<float> vNormal;
+  CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
+  float fEffectiveRadius;
+
+  std::list<Phoenix::Math::CPlane>::const_iterator it;
+  for( it = poly.GetPlanes().begin(); it != poly.GetPlanes().end(); it++)
+  {  
+    const CPlane &plane = *it;
+    vNormal.Set( const_cast<float *>(plane.GetArray()));
+    fEffectiveRadius = fabsf((aabb.GetHalfWidth() *vX).Dot(vNormal)) + 
+                       fabsf((aabb.GetHalfHeight()*vY).Dot(vNormal)) + 
+                       fabsf((aabb.GetHalfLength()*vZ).Dot(vNormal));
+    if( PLANE_DOT_POS(plane, aabb.GetPosition()) <= -fEffectiveRadius) return OUTSIDE;    
+  }
+  
+  // Frustum intersects box.
+  return INTERSECTION;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Collision::VOLUME_INTERSECTION  
+Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedCube &aabb, const Phoenix::Volume::CPolytope & poly )
+{
+  
+  CVector3<float> vNormal;
+  float fEffectiveRadius;
+  
+  CVector3<float> vHalfWidthX(aabb.GetHalfWidth(),0.0f,0.0f);
+  CVector3<float> vHalfWidthY(0.0f, aabb.GetHalfWidth(), 0.0f);
+  CVector3<float> vHalfWidthZ(0.0f, 0.0f, aabb.GetHalfWidth());
+  
+  std::list<Phoenix::Math::CPlane>::const_iterator it;
+  for( it = poly.GetPlanes().begin(); it != poly.GetPlanes().end(); it++)
+  {  
+    const CPlane &plane = *it; 
+    vNormal.Set( const_cast<float *>(plane.GetArray()));
+    fEffectiveRadius = fabsf(vHalfWidthX.Dot(vNormal)) + 
+                       fabsf(vHalfWidthY.Dot(vNormal)) + 
+                       fabsf(vHalfWidthZ.Dot(vNormal));
+    
+    if( PLANE_DOT_POS(plane, aabb.GetPosition()) <= -fEffectiveRadius) return OUTSIDE;    
+  }
+
+  // Frustum intersects cube.
+  return INTERSECTION;
 }
 /////////////////////////////////////////////////////////////////

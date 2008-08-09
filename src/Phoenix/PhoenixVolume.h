@@ -53,12 +53,22 @@ namespace Phoenix
 	m_lstPlanes.push_back(Plane);
       }
       ////////////////////
-      std::list<Phoenix::Math::CPlane> &Planes()
+      // std::list<Phoenix::Math::CPlane> &Planes() __attribute__((deprecated))
+//       {
+// 	return m_lstPlanes;
+//       }
+      ////////////////////
+      std::list<Phoenix::Math::CPlane> &GetPlanes() 
       {
 	return m_lstPlanes;
       }
       ////////////////////
-      unsigned int GetNumPlanes()
+      const std::list<Phoenix::Math::CPlane> & GetPlanes() const
+      {
+	return m_lstPlanes;
+      }
+      ////////////////////
+      size_t GetNumPlanes()
       {
 	return m_lstPlanes.size();
       }
@@ -291,7 +301,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Capsule class (sphere swept line)
     class CCapsule : public Phoenix::Volume::CSphere,
-		     public Phoenix::Math::CLine
+		     public Phoenix::Math::CLineSegment
     {
     public:
       ////////////////////
@@ -304,8 +314,7 @@ namespace Phoenix
 		float fRadius ) 
       {
 	SetRadius( fRadius );
-	SetStart( vStart );
-	SetEnd( vEnd );
+	Set( vStart, vEnd );
       }
     }; // class CCapsule
     /////////////////////////////////////////////////////////////////

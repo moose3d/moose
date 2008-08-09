@@ -2,6 +2,7 @@
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixModelHelper.h"
 #include "PhoenixDefaultEntities.h"
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;

@@ -1,4 +1,5 @@
 #include "PhoenixVertexDescriptor.h"
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType, 
 							 unsigned int nNumElements) 

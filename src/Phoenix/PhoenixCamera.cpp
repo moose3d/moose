@@ -44,6 +44,7 @@ Phoenix::Graphics::CCamera::SetFieldOfView(float fDegrees)
 {
   m_fFieldOfView = fDegrees;
   m_bOrtho = 0;
+  m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
   SetProjectionChanged(1);
 }
 /////////////////////////////////////////////////////////////////
@@ -340,7 +341,7 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ
 {
 
   // Convert mouse coordinates to opengl window coordinates 
-  // ( as it would fill entire screen )
+  // ( as it would fill entire screen - there can be _two_ or _more_ viewports on one screen. )
   float fOglX = fX - (float)m_aViewport[0];
   float fOglY = fY - (float)m_aViewport[1];
   
@@ -357,6 +358,7 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ
   {
     // (Top - bottom) / 2
     fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
+    
   }   
   else
   {
@@ -393,8 +395,9 @@ Phoenix::Graphics::CCamera::EyeToWorld( const CVector3<float> &vPosition )
 CVector3<float> 
 Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
 {
+
   // Convert mouse coordinates to opengl window coordinates 
-  // ( as it would fill entire screen )
+  // ( as it would fill entire screen - there can be _two_ or _more_ viewports on one screen. )
   float fOglX = fX - (float)m_aViewport[0];
   float fOglY = fY - (float)m_aViewport[1];
   
@@ -440,13 +443,14 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   vTmp[3] = 1.0f;
   
   vTmp = m_mViewInv * vTmp;
+  
+  // if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
+//   {
+//     vTmp[0] /= vTmp[3];
+//     vTmp[1] /= vTmp[3];
+//     vTmp[2] /= vTmp[3];
+//   }
 
-  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
-  {
-    vTmp[0] /= vTmp[3];
-    vTmp[1] /= vTmp[3];
-    vTmp[2] /= vTmp[3];
-  }
   return CVector3<float>(vTmp[0],vTmp[1],vTmp[2]);
 }
 /////////////////////////////////////////////////////////////////
@@ -481,22 +485,24 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
   CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint[0], 
 						   vStartPoint[1],
 						   1.0f);
-  CLine line;
-  line.SetStart( vOrig );
-  line.SetEnd( vEnd );
+  CRay ray;
+  ray.SetPosition( vOrig );
+  ray.SetDirection( vEnd-vOrig );
+  //CLineSegment line;
+  //line.Set( vOrig, vEnd );
   /////////////////////////////////////////////////////////////////
   CVector3<float> vIntersection0;
   CVector3<float> vIntersection1;
   CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
   /////////////////////////////////////////////////////////////////
-  if ( Collision::LineIntersectsSphere( line, &vIntersection0, NULL, sphere) >= 1)
+  if ( Collision::RayIntersectsSphere( ray, &vIntersection0, NULL, sphere) >= 1)
   {
     vOrig = WindowCoordinatesToWorld( vEndPoint[0], vEndPoint[1], 0.0f);
     vEnd = WindowCoordinatesToWorld( vEndPoint[0], vEndPoint[1],  1.0f);
-    line.SetStart( vOrig );
-    line.SetEnd( vEnd );
+    ray.SetPosition( vOrig );
+    ray.SetDirection( vEnd-vOrig);
     /////////////////////////////////////////////////////////////////
-    if ( Collision::LineIntersectsSphere( line, &vIntersection1, NULL, sphere) >= 1)
+    if ( Collision::RayIntersectsSphere( ray, &vIntersection1, NULL, sphere) >= 1)
     {
       vOrig = vIntersection0 - sphere.GetPosition();
       vEnd  = vIntersection1 - sphere.GetPosition();

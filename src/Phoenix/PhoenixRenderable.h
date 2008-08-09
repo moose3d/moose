@@ -133,7 +133,7 @@ namespace Phoenix
       /// Returns texture filters for given texture.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1.  By default, it is first (zero).
       /// \returns Reference to texture filter vector. 
-      vector<TEXTURE_FILTER> & GetTextureFilters( unsigned int nId = 0 );
+      std::vector<TEXTURE_FILTER> & GetTextureFilters( unsigned int nId = 0 );
       ////////////////////
       /// Adds texture filter to given texture.
       /// \param tTexFilter TEXTURE_FILTER to insert.

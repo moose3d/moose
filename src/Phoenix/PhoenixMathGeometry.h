@@ -80,79 +80,86 @@ namespace Phoenix
       friend std::ostream& operator<<( std::ostream &stream, const CQuad & quad );
     }; // class CQuad
     /////////////////////////////////////////////////////////////////
-    /// Abstraction for rays. 
-    class CRay : public Phoenix::Spatial::COneDirectional, public Phoenix::Spatial::CPositional
+    /// Abstraction for 3d lines. Infinitely thin and long, extending both directions
+    /// from reference point.
+    class CLine : public Phoenix::Spatial::COneDirectional, 
+		  public Phoenix::Spatial::CPositional
     {
     public:
       ////////////////////
-      /// Constructor.
-      CRay() 
-      {
-	SetDirection(0,0,-1);
-	SetPosition(0,0,0);
-      }
-    }; // class CRay
+      /// Default constructor. 
+      /// \param vPos Reference point through which line goes.
+      /// \param vDir Line direction - should .
+      CLine( const Phoenix::Math::CVector3<float> & vPos = CVector3<float>(0,0,0), 
+	     const Phoenix::Math::CVector3<float> & vDir = CVector3<float>(0,0,-1) ) : COneDirectional( vDir ),
+										       CPositional(vPos){ }
+
+    }; // class CLine
+    /////////////////////////////////////////////////////////////////
+    /// Abstraction for rays ( like lines, but extend only to one direction. ).
+    class CRay : public CLine
+    {
+      
+    };
     /////////////////////////////////////////////////////////////////
     /// Abstraction for lines.
-    class CLine : protected CRay
+    class CLineSegment : public CLine
     {
+    protected:
+      float m_fDistanceStart;
+      float m_fDistanceEnd;
     public:
-      CLine()
+      ////////////////////
+      /// Constructs line segment using two points in 3d space.
+      CLineSegment( )
       {
-	SetStart(0,0,0);
-	SetEnd(0,0,0);
+	CLine::SetPosition( 0.0f,0.0f,0.0f );
+	COneDirectional::SetDirection( 0.0f,0.0f,-1.0f);
+	m_fDistanceStart = 0.0f;
+	m_fDistanceEnd   = 0.0f;
       }
       ////////////////////
-      /// Assigns starting point.
-      /// \param fX X-component of start point.
-      /// \param fY Y-component of start point.
-      /// \param fZ Z-component of start point.
-      inline void SetStart( float fX, float fY, float fZ)
+      /// Constructs line segment using two points in 3d space.
+      CLineSegment( const Phoenix::Math::CVector3<float> & vStart, 
+		    const Phoenix::Math::CVector3<float> & vEnd )
       {
-	CRay::SetPosition(fX, fY, fZ);
+	Set(vStart, vEnd);
       }
       ////////////////////
-      /// Assigns starting point.
-      /// \param vPoint Starting point of line.
-      inline void SetStart( const CVector3<float> &vPoint )
+      /// 
+      void Set( const Phoenix::Math::CVector3<float> & vStart, 
+		const Phoenix::Math::CVector3<float> & vEnd )
       {
-	CRay::SetPosition(vPoint);
+	// Set direction from start to end.
+	CVector3<float> vDir = (vEnd - vStart);
+	float fLength = vDir.Length();
+	vDir.Normalize();
+	SetDirection(vDir);
+	// start is reference point
+	CLine::SetPosition( vStart );
+	
+ 	m_fDistanceStart = 0.0f; 
+	m_fDistanceEnd = fLength;
       }
-      ////////////////////
-      /// Assigns end point.
-      /// \param vPoint End point of line.
-      inline void SetEnd( float fX, float fY, float fZ )
-      {
-	CRay::SetDirection(fX, fY, fZ);
-      }
-      ////////////////////
-      /// Assigns end point.
-      /// \param vPoint End point of line.
-      inline void SetEnd( const CVector3<float> &vPoint )
-      {
-	CRay::SetDirection(vPoint);
-      }
+      inline void SetDistanceStart( float fValue ) { m_fDistanceStart = fValue; }
+      inline void SetDistanceEnd( float fValue ) { m_fDistanceEnd = fValue; }
+      float GetDistanceStart() const { return m_fDistanceStart; }
+      float GetDistanceEnd() const { return m_fDistanceEnd; }
       ////////////////////
       /// Returns start point.
       /// \returns CVector3<float> representing start point.
-      inline const CVector3<float> GetStart() const
+      inline CVector3<float> GetStart() const
       {
-	return CRay::GetPosition();
+	return GetPosition()+GetDirection()*GetDistanceStart();
       }
       ////////////////////
       /// Returns end point.
       /// \returns CVector3<float> representing end point.
-      inline const CVector3<float> GetEnd() const
+      inline CVector3<float> GetEnd() const
       {
-	return CRay::GetDirection();
+	return GetPosition()+GetDirection()*GetDistanceEnd();
       }
-      ////////////////////
-      /// Returns direction.
-      /// \returns Unnormalized direction vector from start to end point.
-      inline CVector3<float> GetDirection() const
-      {
-	return GetEnd() - GetStart();
-      }
+      
     };
     /////////////////////////////////////////////////////////////////
   }; // namespace Math

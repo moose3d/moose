@@ -60,8 +60,7 @@ namespace Phoenix
       /// \param pTexture Pointer to evaluated texture.
       inline bool IsCurrentTexture( size_t nTexUnit, COglTexture *pTexture ) const
       {
-	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
-	return (m_pTexture[nTexUnit] == pTexture);
+	return (m_pTexture[nTexUnit % TEXTURE_HANDLE_COUNT] == pTexture);
       }
       ////////////////////
       /// Sets currently assigned texture.
@@ -69,8 +68,7 @@ namespace Phoenix
       /// \param pTexture Pointer to texture.
       inline void SetCurrentTexture( size_t nTexUnit, COglTexture *pTexture )
       {
-	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
-	m_pTexture[nTexUnit] = pTexture;
+	m_pTexture[nTexUnit % TEXTURE_HANDLE_COUNT] = pTexture;
       }
       ////////////////////
       /// 
@@ -110,8 +108,7 @@ namespace Phoenix
       /// \param pVD Pointer to vertexdescriptor.
       inline bool IsCurrentTexCoord( size_t nTexUnit, CVertexDescriptor *pVD ) const
       {
-	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
-	return (m_pTexCoords[nTexUnit] == pVD);
+	return (m_pTexCoords[nTexUnit % TEXTURE_HANDLE_COUNT] == pVD);
       }
       ////////////////////
       /// Sets currently assigned texture coordinates.
@@ -119,8 +116,7 @@ namespace Phoenix
       /// \param pVD Pointer to vertexdescriptor.
       inline void SetCurrentTexCoord( size_t nTexUnit, CVertexDescriptor *pVD )
       {
-	assert( nTexUnit < TEXTURE_HANDLE_COUNT );
-	m_pTexCoords[nTexUnit] = pVD;
+	m_pTexCoords[nTexUnit % TEXTURE_HANDLE_COUNT] = pVD;
       }
       
       inline bool IsCurrentIndices( CIndexArray *pIndices )

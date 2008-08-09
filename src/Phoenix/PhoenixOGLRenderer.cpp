@@ -11,6 +11,7 @@
 #include "PhoenixDDSImage.h"
 #include "PhoenixDefaultEntities.h"
 #include <fstream>
+#include <assert.h>
 #include <ft2build.h>
 // include freetype stuff
 #include FT_FREETYPE_H
@@ -22,6 +23,7 @@ using std::endl;
 using std::cerr;
 using std::ifstream;
 using std::ios;
+using std::string;
 /////////////////////////////////////////////////////////////////
 #define BUFFER_OFFSET(i) ((char *)NULL+(i))
 /////////////////////////////////////////////////////////////////

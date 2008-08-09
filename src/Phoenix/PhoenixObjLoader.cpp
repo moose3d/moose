@@ -6,6 +6,7 @@
 #include <string>
 #include <exception>
 #include <iostream>
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 using std::fstream;
 using std::ios;
@@ -13,6 +14,7 @@ using std::exception;
 using std::cerr;
 using std::endl;
 using std::ios_base;
+using std::vector;
 using std::string;
 using namespace Phoenix::Data;
 using namespace Phoenix::Spatial;
@@ -161,8 +163,8 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
 
   // insert vertex into vertex vector
   m_Vertices.push_back( vert );
-  assert( begin < szLine+strlen(szLine ));
-  assert( end < szLine+strlen(szLine ));
+  assert( begin <= szLine+strlen(szLine ));
+  assert( end <= szLine+strlen(szLine ));
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -418,9 +420,9 @@ Phoenix::Data::CObjLoader::ParseObject( const char *szLine )
   assert( end-begin < 256 );
   buf[end-begin]='\0';
   m_objName = string(buf);
-  //cerr << "obj name is now : '" << m_objName << "'" << endl;
-  assert( begin < szLine+strlen(szLine ));
-  assert( end < szLine+strlen(szLine ));    
+  cerr << "obj name is now : '" << m_objName << "'" << endl;
+  assert( begin <= szLine+strlen(szLine ));
+  assert( end <= szLine+strlen(szLine ));    
 }
 /////////////////////////////////////////////////////////////////
 int 

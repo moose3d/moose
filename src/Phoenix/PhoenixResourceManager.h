@@ -75,6 +75,10 @@ namespace Phoenix
       ////////////////////
       /// Assignment operator, duplicates handles in manager.
       void operator=( const CHandle<TAG> & handle );
+      ////////////////////
+      /// Assignment operator via resource name directly.
+      /// \param szResourceName Name of resource which will be attached to this handle.
+      void operator=( const char *szResourceName );
     };
     ////////////////////
     /// Class for objects that know their position in ResourceManager.
@@ -764,7 +768,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResourceName( const HANDL
 {
   if ( handle.IsNull() || handle.GetIndex() >= GetSize())
   {
-    return string();
+    return std::string();
   }
   return m_vecObjects[handle.GetIndex()]->GetName();
 }
@@ -807,4 +811,11 @@ Phoenix::Core::CHandle<TAG>::operator=( const Phoenix::Core::CHandle<TAG> & hand
   Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->DuplicateHandle( handle, *this );
 }
 /////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline void 
+Phoenix::Core::CHandle<TAG>::operator=( const char *szResourceName )
+{
+  Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->Release( *this );
+  Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->AttachHandle( szResourceName, *this );
+}
 #endif

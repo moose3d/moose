@@ -14,19 +14,23 @@ TEST( PhoenixObjLoader )
   CVertexDescriptor *pVertices = pLoader->GetVertexArray();
   cerr << "# vertices loaded: " << pVertices->GetSize() << endl;
   CIndexArray *pIndices = pLoader->GetIndexArray();
+
   cerr << "# indices : " << pIndices->GetNumIndices() << endl;
   delete pIndices;
 
   pIndices = pLoader->GetIndexArray( "testgroup1");
-  cerr << "# indices in testgroup1: " << pIndices->GetNumIndices() << endl;
+  if ( pIndices != NULL )
+    cerr << "# indices in testgroup1: " << pIndices->GetNumIndices() << endl;
   delete pIndices;
 
   pIndices = pLoader->GetIndexArray( "testgroup2");
-  cerr << "# indices in testgroup2: " << pIndices->GetNumIndices() << endl;
+  if ( pIndices != NULL )
+    cerr << "# indices in testgroup2: " << pIndices->GetNumIndices() << endl;
   delete pIndices;
 
   pIndices = pLoader->GetIndexArray( "testgroup3");
-  cerr << "# indices in testgroup3: " << pIndices->GetNumIndices() << endl;
+  if ( pIndices != NULL )
+    cerr << "# indices in testgroup3: " << pIndices->GetNumIndices() << endl;
   delete pIndices;
 
   delete pVertices;

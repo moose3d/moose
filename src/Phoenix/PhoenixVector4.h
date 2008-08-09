@@ -76,7 +76,7 @@ namespace Phoenix
       }
       ////////////////////
       /// The parametrized constructor copies data from an existing array.
-      inline void Set( TYPE *pArray )
+      inline void Set( const TYPE *pArray )
       {
 	m_pValues[0] = pArray[0];
 	m_pValues[1] = pArray[1];
@@ -383,7 +383,7 @@ namespace Phoenix
       }
       ////////////////////
       /// The parametrized constructor copies data from an existing array.
-      inline void Set( float *pArray )
+      inline void Set( const float *pArray )
       {
 	m_pValues[0] = pArray[0];
 	m_pValues[1] = pArray[1];

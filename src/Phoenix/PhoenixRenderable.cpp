@@ -1,7 +1,12 @@
 #include "PhoenixRenderable.h"
+#include <assert.h>
+#include <string>
+
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
+using std::vector;
+using std::string;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CRenderable::CRenderable()

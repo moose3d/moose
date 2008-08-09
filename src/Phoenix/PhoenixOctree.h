@@ -813,7 +813,7 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamer
     lstNodePtrs.pop_front();
     
     // Check does cube intersect frustum
-    if ( camera.Frustum().IntersectsCube(*pNode))
+    if ( Phoenix::Collision::AABBIntersectsPolytope( *pNode, camera.Frustum()) )
     {
       // Check do objects intersect frustum and if so, 
       // insert them into list
@@ -824,7 +824,7 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamer
 	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
 
 	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
-	     camera.Frustum().IntersectsSphere( sphere))
+	     Phoenix::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ))
 	{
 	  list.push_back( *it );
 	}

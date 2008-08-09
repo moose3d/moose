@@ -8,12 +8,8 @@
 #include <vector>
 #include <map>
 #include <list>
-#include <assert.h>
 #include <sys/time.h>
 #include <math.h>
-/////////////////////////////////////////////////////////////////
-using std::string;
-using std::vector;
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -506,11 +502,11 @@ namespace Phoenix
     /// Creates hash of string. Uses djb2 algorithm.
     struct CreateHash 
     {
-      unsigned int operator()( const std::string &string, size_t nSlots ) 
+      unsigned int operator()( const std::string &str, size_t nSlots ) 
       {
 	unsigned int nHash = 5381;
 	int c;
-	const char *pStr = string.c_str();
+	const char *pStr = str.c_str();
 	while ( (c = *pStr++) )
 	  nHash = ((nHash << 5) + nHash) + c; /* hash * 33 + c */
 	
@@ -529,9 +525,9 @@ namespace Phoenix
     public:
       ////////////////////
       /// Default constructor.
-      CHashTable( unsigned int nSize) : m_nSize(nSize) 
+      CHashTable( unsigned int nSize ) : m_nSize(nSize) 
       {
-	assert ( m_nSize > 0 );
+	if ( m_nSize < 1 ) m_nSize = 1;
 	m_pTable = new std::vector< CHashItem<KEYTYPE,OBJECTTYPE> >[GetSize()];
       }
       ////////////////////

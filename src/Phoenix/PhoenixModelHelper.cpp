@@ -5,6 +5,7 @@
 #include "PhoenixSpatial.h"
 #include <sstream>
 #include <string>
+#include <assert.h>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Data;

@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>
+#include <PhoenixExceptions.h>
 #include <iomanip>
 #include <algorithm>
 #include <list>
@@ -117,7 +118,7 @@ namespace Phoenix
       /// 
       CMemberPtrFunctionHandler( CLASS_TYPE *pObj, MemberFunc memFunc) : m_pObj(pObj), m_Function(memFunc) 
       {
-	assert(pObj != NULL);
+	if (m_pObj == NULL )  throw Phoenix::Exceptions::CNullPointerException("CMemberPtrFunctionHandler: Object is NULL!");
       };
       ////////////////////
       /// Calls registered event handler.

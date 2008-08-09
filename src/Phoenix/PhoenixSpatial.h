@@ -104,13 +104,14 @@ namespace Phoenix
       COneDirectional() {}
       ////////////////////
       /// Constructor.
-      COneDirectional( const Phoenix::Math::CVector3<float> & vDir ) : m_vDirection(vDir) { }
+      COneDirectional( const Phoenix::Math::CVector3<float> & vDir ) { SetDirection(vDir); }
       ////////////////////
       /// Assigns direction.
       /// \param vDirection direction vector to be assigned.
       inline void SetDirection( const Phoenix::Math::CVector3<float> & vDirection )
       {
 	m_vDirection = vDirection;
+	m_vDirection.Normalize();
       }
       ////////////////////
       /// Assigns direction.
@@ -122,14 +123,15 @@ namespace Phoenix
 	m_vDirection[0] = fX;
 	m_vDirection[1] = fY;
 	m_vDirection[2] = fZ;
+	m_vDirection.Normalize();
       }
       ////////////////////
       /// Returns direction.
       /// \returns Vector with current direction.
-      inline Phoenix::Math::CVector3<float> & GetDirection() 
-      {
-	return m_vDirection;
-      }
+      // inline Phoenix::Math::CVector3<float> & GetDirection() 
+//       {
+// 	return m_vDirection;
+//       }
       ////////////////////
       /// Returns direction.
       /// \returns Vector with current direction.
