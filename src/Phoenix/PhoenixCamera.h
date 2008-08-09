@@ -270,7 +270,7 @@ namespace Phoenix
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as eye coordinates.
-      Phoenix::Math::CVector3<float> WindowCoordinatesToEye( float fX, float fY, float fZ  );
+      Phoenix::Math::CVector3<float> UnProjectToEye( float fX, float fY, float fZ  );
       ////////////////////
       /// Converts eye coordinates into world coordinates.
       /// \param vPosition The position in eye coordinates which is converted into world coordinates.
@@ -283,7 +283,7 @@ namespace Phoenix
       /// \param fZ z coordinate, 0.0f as the near clipping plane, 
       ///                         1.0f as the far clipping plane.
       /// \returns CVector3<float> the window coordinates as world coordinates.
-      Phoenix::Math::CVector3<float> WindowCoordinatesToWorld( float fX, float fY, float fZ);
+      Phoenix::Math::CVector3<float> UnProject( float fX, float fY, float fZ);
       ////////////////////
       /// Creates an imaginary trackball and rotates camera using two
       /// positions on the surface of the sphere.
@@ -317,12 +317,12 @@ namespace Phoenix
       /// Converts world coordinates into screen coordinates.
       /// \param vPosition Position in world coordinates.
       /// \returns CVector3<float> position in window coordinates.
-      Phoenix::Math::CVector3<float> WorldCoordinatesToScreen( const Phoenix::Math::CVector3<float> &vPosition);
+      Phoenix::Math::CVector3<float> Project( const Phoenix::Math::CVector3<float> &vPosition);
       ////////////////////
       /// Converts world coordinates into eye coordinates.
       /// \param vPosition Position in world coordinates.
       /// \returns CVector3<float> position in eye coordinates.
-      Phoenix::Math::CVector3<float> WorldCoordinatesToEye( const Phoenix::Math::CVector3<float> &vPosition);
+      Phoenix::Math::CVector3<float> ProjectToEye( const Phoenix::Math::CVector3<float> &vPosition);
       ////////////////////
       /// Returns trackball center distance.
       /// \return point distance along forward vector.

@@ -337,7 +337,7 @@ Phoenix::Graphics::CCamera::UpdateView()
 /////////////////////////////////////////////////////////////////
 // 0,0 lower left corner
 CVector3<float> 
-Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ )
+Phoenix::Graphics::CCamera::UnProjectToEye( float fX, float fY, float fZ )
 {
 
   // Convert mouse coordinates to opengl window coordinates 
@@ -348,7 +348,7 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToEye( float fX, float fY, float fZ
   float fCenterX = (m_aViewport[2] * 0.5f);
   float fCenterY = (m_aViewport[3] * 0.5f); 
   
-  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+  float fAspect =  (float)m_aViewport[3]/(float)m_aViewport[2];
 
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
@@ -393,7 +393,7 @@ Phoenix::Graphics::CCamera::EyeToWorld( const CVector3<float> &vPosition )
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float> 
-Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float fZ)
+Phoenix::Graphics::CCamera::UnProject( float fX, float fY, float fZ)
 {
 
   // Convert mouse coordinates to opengl window coordinates 
@@ -403,11 +403,12 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   
   float fCenterX = (m_aViewport[2] * 0.5f);
   float fCenterY = (m_aViewport[3] * 0.5f); 
-  
-  float fAspect =  (float)m_aViewport[2]/(float)m_aViewport[3];
+  // We use FovY, so aspect is not width / height, but height / width.
+  float fAspect =  (float)m_aViewport[3]/(float)m_aViewport[2];
   
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
+
   float fZInEye = m_fNearClipping + (m_fFarClipping - m_fNearClipping)*fZ;
   /////////////////////////////////////////////////////////////////
   // the distance from center to edge of frustum.
@@ -428,7 +429,6 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   float fH;
   if ( IsOrthogonal())
   {
-
     fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
   } 
   else
@@ -437,15 +437,16 @@ Phoenix::Graphics::CCamera::WindowCoordinatesToWorld( float fX, float fY, float 
   }
   // GetOrthoPlanes()[3]... will make all orthogonal views work too. ie. ortho(0,1,0,1).
   CVector4<float> vTmp;
-  vTmp[0] = fH * fAspect * fNormX + ((GetOrthoPlanes()[3] + GetOrthoPlanes()[2])*0.5f);
-  vTmp[1] = fH * fNormY + ((GetOrthoPlanes()[1] + GetOrthoPlanes()[0])*0.5f);
+  vTmp[0] = fH * fNormX + ((GetOrthoPlanes()[3] + GetOrthoPlanes()[2])*0.5f);
+  vTmp[1] = fH * fAspect * fNormY + ((GetOrthoPlanes()[1] + GetOrthoPlanes()[0])*0.5f);
   vTmp[2] = -fZInEye;
   vTmp[3] = 1.0f;
-  
+  //cerr << "vTmp " << vTmp << endl;
   vTmp = m_mViewInv * vTmp;
-  
+  ////////////////////
+  // m_mViewInv[3][3] should be 1.
   // if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
-//   {
+  //   {
 //     vTmp[0] /= vTmp[3];
 //     vTmp[1] /= vTmp[3];
 //     vTmp[2] /= vTmp[3];
@@ -479,12 +480,12 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 int
 Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint, CQuaternion & qResult )
 {
-  CVector3<float> vOrig = WindowCoordinatesToWorld( vStartPoint[0], 
-						    vStartPoint[1],
+  CVector3<float> vOrig = UnProject( vStartPoint[0], 
+				     vStartPoint[1],
 						    0.0f);
-  CVector3<float> vEnd = WindowCoordinatesToWorld( vStartPoint[0], 
-						   vStartPoint[1],
-						   1.0f);
+  CVector3<float> vEnd = UnProject( vStartPoint[0], 
+				    vStartPoint[1],
+				    1.0f);
   CRay ray;
   ray.SetPosition( vOrig );
   ray.SetDirection( vEnd-vOrig );
@@ -497,8 +498,8 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
   /////////////////////////////////////////////////////////////////
   if ( Collision::RayIntersectsSphere( ray, &vIntersection0, NULL, sphere) >= 1)
   {
-    vOrig = WindowCoordinatesToWorld( vEndPoint[0], vEndPoint[1], 0.0f);
-    vEnd = WindowCoordinatesToWorld( vEndPoint[0], vEndPoint[1],  1.0f);
+    vOrig = UnProject( vEndPoint[0], vEndPoint[1], 0.0f);
+    vEnd = UnProject( vEndPoint[0], vEndPoint[1],  1.0f);
     ray.SetPosition( vOrig );
     ray.SetDirection( vEnd-vOrig);
     /////////////////////////////////////////////////////////////////
@@ -520,7 +521,7 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 #undef TRACKBALL_FUDGE_FACTOR
 /////////////////////////////////////////////////////////////////
 CVector3<float>
-Phoenix::Graphics::CCamera::WorldCoordinatesToEye( const CVector3<float> &vPosition)
+Phoenix::Graphics::CCamera::ProjectToEye( const CVector3<float> &vPosition)
 {
   CVector4<float> vTmp;
 
@@ -534,7 +535,7 @@ Phoenix::Graphics::CCamera::WorldCoordinatesToEye( const CVector3<float> &vPosit
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float>
-Phoenix::Graphics::CCamera::WorldCoordinatesToScreen( const CVector3<float> &vPosition)
+Phoenix::Graphics::CCamera::Project( const CVector3<float> &vPosition)
 {
 
   
