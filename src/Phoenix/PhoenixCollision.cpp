@@ -900,7 +900,7 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	 fan_iterator != lstTriangleFans.end();
 	 fan_iterator++)
     {
-      std::list<Phoenix::Math::CPlane>::const_iterator plane_it;
+      std::vector<Phoenix::Math::CPlane>::const_iterator plane_it;
       for( plane_it = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin(); 
 	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end(); 
 	   plane_it++)
@@ -977,7 +977,7 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	 fan_iterator++ )
     {
       
-      std::list<Phoenix::Math::CPlane>::const_iterator plane_it;
+      std::vector<Phoenix::Math::CPlane>::const_iterator plane_it;
       for( plane_it  = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin(); 
 	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end(); 
 	   plane_it++)
@@ -1218,13 +1218,14 @@ Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Pho
   bool bUseLineSegmentTest = (( obBox.GetLength()-obBox.GetWidth() ) > (obBox.GetHalfWidth())) || 
                              (( obBox.GetLength()-obBox.GetHeight()) > (obBox.GetHalfHeight()));
   
+  
   if ( bUseLineSegmentTest ) 
   {
     float fDot2;
     // The line seqment
     CVector3<float> vQ1 = obBox.GetPosition() + (obBox.GetForwardVector()*(obBox.GetLength() * 0.5f)) ;
     CVector3<float> vQ2 = vQ1 - (obBox.GetForwardVector()*obBox.GetLength()) ;
-    std::list<Phoenix::Math::CPlane>::const_iterator planeIt;
+    std::vector<Phoenix::Math::CPlane>::const_iterator planeIt;
 
     // for each plane do
     for( planeIt = poly.GetPlanes().begin(); planeIt != poly.GetPlanes().end(); planeIt++ ){
@@ -1237,14 +1238,15 @@ Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Pho
 			    fabsf( (obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal) ) );
       
       // Calculate 4D dot product between a plane and the line endpoints
-      fDot  = vNormal.Dot( vQ1) + (*planeIt)[4];
-      fDot2 = vNormal.Dot( vQ2) + (*planeIt)[4];
+      fDot  = vNormal.Dot( vQ1) + (*planeIt)[3];
+      fDot2 = vNormal.Dot( vQ2) + (*planeIt)[3];
 
       if (fDot <= -fEffRadius && fDot2 <= -fEffRadius)
       {
 	return OUTSIDE;
 
       } else if ( (fDot < -fEffRadius && fDot2 > -fEffRadius)){
+	
 	// Cut off the part from the cylinder which lies outside the frustum
 	float fT = (fEffRadius + fDot2) / vNormal.Dot(vQ2-vQ1) ;
 	
@@ -1261,7 +1263,7 @@ Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Pho
     
   } else {
 
-    std::list<Phoenix::Math::CPlane>::const_iterator planeIt;
+    std::vector<Phoenix::Math::CPlane>::const_iterator planeIt;
     // for each plane do
     for( planeIt = poly.GetPlanes().begin(); planeIt != poly.GetPlanes().end(); planeIt++ ){
       
@@ -1275,8 +1277,8 @@ Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Pho
 			    fabsf((obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal)) );
       
       // Calculate 4D dot product between plane and box center
-      fDot  = vNormal.Dot( obBox.GetPosition()) + (*planeIt)[4];
-
+      fDot  = vNormal.Dot( obBox.GetPosition()) + (*planeIt)[3];
+      
       if ( fDot <= -fEffRadius )
       {
 	return OUTSIDE;
@@ -1294,12 +1296,11 @@ Phoenix::Collision::SphereIntersectsPolytope( const CSphere &sphere, const Phoen
   float fDistance = 0.0f;
   int iType;
   bool bIntersection = false;
-  std::list<Phoenix::Math::CPlane>::const_iterator planeIt;
-  
+  std::vector<Phoenix::Math::CPlane>::const_iterator planeIt;
   for( planeIt = poly.GetPlanes().begin();planeIt != poly.GetPlanes().end(); planeIt++ )
   {
     iType = Phoenix::Collision::SphereIntersectsPlane( *planeIt, sphere, fDistance);
-
+    
     // If the object is behind of any of the planes (on negative half-side), 
     // then it is outside the frustum
     if (iType < 0)
@@ -1330,7 +1331,7 @@ Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedB
   CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
   float fEffectiveRadius;
 
-  std::list<Phoenix::Math::CPlane>::const_iterator it;
+  std::vector<Phoenix::Math::CPlane>::const_iterator it;
   for( it = poly.GetPlanes().begin(); it != poly.GetPlanes().end(); it++)
   {  
     const CPlane &plane = *it;
@@ -1356,7 +1357,7 @@ Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedC
   CVector3<float> vHalfWidthY(0.0f, aabb.GetHalfWidth(), 0.0f);
   CVector3<float> vHalfWidthZ(0.0f, 0.0f, aabb.GetHalfWidth());
   
-  std::list<Phoenix::Math::CPlane>::const_iterator it;
+  std::vector<Phoenix::Math::CPlane>::const_iterator it;
   for( it = poly.GetPlanes().begin(); it != poly.GetPlanes().end(); it++)
   {  
     const CPlane &plane = *it; 
