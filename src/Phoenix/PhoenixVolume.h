@@ -41,43 +41,38 @@ namespace Phoenix
     class CPolytope
     {
     protected:
-      std::list<Phoenix::Math::CPlane> m_lstPlanes;
+      std::vector<Phoenix::Math::CPlane> m_Planes;
     public:
       ////////////////////
-      CPolytope()      {}
+      CPolytope( size_t nNumPlanes = 1)      { m_Planes.reserve(nNumPlanes); }
       ////////////////////
-      ~CPolytope()      { m_lstPlanes.clear();  }
+      ~CPolytope()      { m_Planes.clear();  }
       ////////////////////
       void AddPlane( Phoenix::Math::CPlane &Plane )
       {
-	m_lstPlanes.push_back(Plane);
+	m_Planes.push_back(Plane);
       }
       ////////////////////
-      // std::list<Phoenix::Math::CPlane> &Planes() __attribute__((deprecated))
-//       {
-// 	return m_lstPlanes;
-//       }
-      ////////////////////
-      std::list<Phoenix::Math::CPlane> &GetPlanes() 
+      std::vector<Phoenix::Math::CPlane> &GetPlanes() 
       {
-	return m_lstPlanes;
+	return m_Planes;
       }
       ////////////////////
-      const std::list<Phoenix::Math::CPlane> & GetPlanes() const
+      const std::vector<Phoenix::Math::CPlane> & GetPlanes() const
       {
-	return m_lstPlanes;
+	return m_Planes;
       }
       ////////////////////
       size_t GetNumPlanes()
       {
-	return m_lstPlanes.size();
+	return m_Planes.size();
       }
       ////////////////////
       friend std::ostream& operator<<( std::ostream &stream, const Phoenix::Volume::CPolytope & polytope )
       {
-	std::list<Phoenix::Math::CPlane>::const_iterator it = polytope.m_lstPlanes.begin();
+	std::vector<Phoenix::Math::CPlane>::const_iterator it = polytope.m_Planes.begin();
 	stream << "KDOP planes:" << std::endl;
-	for( ; it != polytope.m_lstPlanes.end(); it++)
+	for( ; it != polytope.m_Planes.end(); it++)
 	{
 	  stream << *it << std::endl;
 	}
