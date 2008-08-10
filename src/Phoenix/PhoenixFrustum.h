@@ -43,9 +43,6 @@ namespace Phoenix
       
   
     protected:
-      ////////////////////
-      /// The pointers to the planes.
-      Phoenix::Math::CPlane * m_aPlanes[NUM_FRUSTUM_PLANES];   
       /// The corners of the frustum box.
       Phoenix::Math::CVector3<float> m_aCorners[NUM_FRUSTUM_CORNERS];  
       /////////////////////////////////////////////////////////////////

@@ -1,15 +1,15 @@
 #include "PhoenixFrustum.h"
 #include "PhoenixCollision.h"
-#include <list>
+#include <vector>
 /////////////////////////////////////////////////////////////////
-using std::list;
+using std::vector;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFrustum::CFrustum()
 {
-  // Add planes to the list 
+  // Add planes to the vector
   CPlane top,bottom,left,right,near,far;
 
   AddPlane( top );
@@ -18,35 +18,24 @@ Phoenix::Graphics::CFrustum::CFrustum()
   AddPlane( right );
   AddPlane( near );
   AddPlane( far );
-
-  // Make pointers to the planes
-  list<CPlane>::iterator it = GetPlanes().begin();
-  
-  m_aPlanes[TOP]    = &(*it); it++;
-  m_aPlanes[BOTTOM] = &(*it); it++;  
-  m_aPlanes[LEFT]   = &(*it); it++;  
-  m_aPlanes[RIGHT]  = &(*it); it++;  
-  m_aPlanes[BACK]   = &(*it); it++;  
-  m_aPlanes[FRONT]    = &(*it); 
-
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::CFrustum::SetPlane(FRUSTUM_PLANE nIndex, CPlane &vPlane)
 {
-  *(m_aPlanes[nIndex]) = vPlane;
+  m_Planes[nIndex] = vPlane;
 }
 /////////////////////////////////////////////////////////////////
 CPlane &
 Phoenix::Graphics::CFrustum::GetPlane( FRUSTUM_PLANE nIndex )
 {
-  return *(m_aPlanes[nIndex]);
+  return m_Planes[nIndex];
 }
 /////////////////////////////////////////////////////////////////
 const CPlane &
 Phoenix::Graphics::CFrustum::GetPlane( FRUSTUM_PLANE nIndex ) const
 {
-  return *(m_aPlanes[nIndex]);
+  return m_Planes[nIndex];
 }
 /////////////////////////////////////////////////////////////////
 CVector3<float>
