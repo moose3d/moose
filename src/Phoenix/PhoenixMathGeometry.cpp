@@ -84,22 +84,6 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
   stream << quad.GetPosition() << "," << quad.GetWidth() << "x" << quad.GetHeight() << endl;
   return stream;
 }
-/////////////////////////////////////////////////////////////////
-#define APPLY_CORRECT_VALUES(R,S,T,rmax,rmin,smax, smin,tmax, tmin) {		\
- obOrientedBox[COrientedBox::FRONT].SetNormal(-R)[CPlane::D]  = rmax;	\
-  obOrientedBox[COrientedBox::BACK].SetNormal(R)[CPlane::D]   = -rmin;	\
-										\
-  obOrientedBox[COrientedBox::RIGHT].SetNormal(-S)[CPlane::D] = smax;	\
-  obOrientedBox[COrientedBox::LEFT].SetNormal(S)[CPlane::D]   = -smin;	\
-										\
-  obOrientedBox[COrientedBox::TOP].SetNormal(-T)[CPlane::D]   = tmax;	\
-  obOrientedBox[COrientedBox::BOTTOM].SetNormal(T)[CPlane::D] = -tmin;	\
-  /* The orientation will be formed so, that the forward vector will point along*/ \
-  /* principal axis (largest eigenvalue ), right vector along vector with*/        \
-  /* second largest and up points to vector with lowest eigenvalue*/               \
-  obOrientedBox.SetOrientation(  T, R, S );                                  \
-}
-
 // /////////////////////////////////////////////////////////////////
 // Phoenix::Math::CSphere 
 // Phoenix::Math::CalculateBoundingSphereTight( VertexDescriptor pVertices, const CIndexBuffer &indexBuffer )
