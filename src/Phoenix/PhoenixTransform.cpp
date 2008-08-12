@@ -136,6 +136,16 @@ Phoenix::Math::CTransform::GetTranslation() const
   return m_vTranslation;
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::CTransform::SetIdentity()
+{
+  m_bChanged = false;
+  m_fScaling = 1.0f;
+  m_mTransform.IdentityMatrix();
+  m_qRotation.Identity();
+  m_vTranslation[0] = m_vTranslation[1] = m_vTranslation[2] = 0.0f;
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Math::CTransformable::CTransformable()
 {
   SetChanged(true);

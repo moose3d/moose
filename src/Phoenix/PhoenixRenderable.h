@@ -26,13 +26,14 @@ namespace Phoenix
 {
   namespace Graphics
   {
+    class COglRenderer;
     // typedefs for readability (and maintanence)
     typedef std::vector< std::pair<std::string, VERTEX_HANDLE * > > ShaderParams;
     typedef std::map< std::string, int >	       ShaderIntParams;
     typedef std::map< std::string, float >	       ShaderFloatParams;
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
-    class CRenderable : public Phoenix::Math::CTransformable
+    class CRenderable
     {
     protected:
       /// Handle to textures.
@@ -63,8 +64,8 @@ namespace Phoenix
       //bool				      m_bTransparent;      
       /// Renderstate.
       Phoenix::Graphics::CRenderState	      m_RenderState;
-      
-      
+      /// How renderable should be transformed.
+      Phoenix::Math::CTransform		      *m_pTransform;
     public:
       ////////////////////
       /// Constructor.
@@ -149,7 +150,16 @@ namespace Phoenix
       /// Returns renderstate.
       /// \returns Current renderstate settings for renderable.
       Phoenix::Graphics::CRenderState & GetRenderState();
+      ////////////////////
+      /// Renders this renderable using renderer.
+      /// Overwrite this method to specialize rendering.
+      /// \param renderer Renderer to be used.
+      virtual void Render( COglRenderer & renderer );
       
+      Phoenix::Math::CTransform * GetTransform();
+
+      void	   SetTransform( Phoenix::Math::CTransform *pTransform );
+
     };
   }; // namespace Graphics
 }; // namespace Phoenix

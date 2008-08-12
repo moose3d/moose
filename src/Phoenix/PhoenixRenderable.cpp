@@ -1,7 +1,7 @@
 #include "PhoenixRenderable.h"
+#include "PhoenixOGLRenderer.h"
 #include <assert.h>
 #include <string>
-
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
@@ -9,7 +9,7 @@ using std::vector;
 using std::string;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CRenderable::CRenderable()
+Phoenix::Graphics::CRenderable::CRenderable() : m_pTransform(NULL)
 {
 
 }
@@ -173,5 +173,130 @@ Phoenix::Graphics::CRenderState &
 Phoenix::Graphics::CRenderable::GetRenderState()
 {
   return m_RenderState;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderable::Render( COglRenderer & renderer )
+{
+  if ( m_pTransform != NULL )
+    renderer.CommitTransform( *m_pTransform );
+  ////////////////////
+  // Retrieve resources
+  COglTexture *pTexture = NULL;
+  CVertexDescriptor *pTemp = NULL;
+
+
+  CRenderState & state = GetRenderState();
+  renderer.CommitBlending( state.GetBlendingOperation());
+  ////////////////////
+  // Check depth mask write flag.
+  if ( state.GetDepthWrite()) {  renderer.CommitState( STATE_DEPTH_WRITE );  } 
+  else renderer.DisableState( STATE_DEPTH_WRITE );
+  ////////////////////
+  // Check depth test flag.
+  if ( state.GetDepthTest()) renderer.CommitState( STATE_DEPTH_TEST ); 
+  else renderer.DisableState( STATE_DEPTH_TEST );
+  ////////////////////
+  // Check face culling flag.
+  if ( state.GetFaceCulling()) renderer.CommitState( STATE_FACECULLING );
+  else renderer.DisableState( STATE_FACECULLING );
+
+  ////////////////////
+  // Commit textures
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    pTemp    = *GetTextureCoordinateHandle(i);
+    pTexture = *GetTextureHandle(i);
+    
+    // check that texcoord resources actually exist
+    if ( pTemp == NULL ) 
+    {
+      glClientActiveTextureARB( GL_TEXTURE0_ARB + i);
+      glDisableClientState( GL_TEXTURE_COORD_ARRAY);
+    }
+    else
+    {
+      renderer.CommitVertexDescriptor( pTemp, i );  
+    }
+    // check that texture resource exists
+    if ( pTexture  != NULL ) 
+    { 
+      renderer.CommitTexture( i, pTexture ); 
+      renderer.CommitFilters( GetTextureFilters(i), pTexture->GetType() );
+    }
+    else 
+      renderer.DisableTexture(i, NULL);
+  }
+
+
+  CShader *pShader = *GetShaderHandle();
+  renderer.CommitShader( pShader );
+
+  if ( !GetShaderHandle().IsNull())
+  {
+    CVertexDescriptor *pParam = NULL;
+    // Go through all parameters and commit them
+    for(unsigned int nSP=0; nSP< GetShaderParameters().size(); nSP++)
+    {
+      pParam = *( *GetShaderParameters()[nSP].second );
+      if ( pParam != NULL )
+      {
+	renderer.CommitShaderParam( *pShader, GetShaderParameters()[nSP].first, *pParam );
+      }
+    }
+
+    // Go through all int parameters and commit them
+    {
+      ShaderIntParams::iterator it = GetShaderIntParameters().begin();
+      for(; it != GetShaderIntParameters().end(); it++)
+      {
+	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
+      }
+    }
+    // Go through all float parameters and commit them
+    {
+      ShaderFloatParams::iterator it = GetShaderFloatParameters().begin();
+      for( ; it != GetShaderFloatParameters().end(); it++)
+      {
+	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
+      }
+    }
+  }
+  
+  
+  // commit normals
+  if ( GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );   
+  else	renderer.CommitVertexDescriptor( *GetNormalHandle() ); 
+
+  // Commit colors
+  if ( GetColorHandle().IsNull()  )  
+  {
+    glDisableClientState( GL_COLOR_ARRAY );
+    renderer.CommitColor( GetRenderState().GetBaseColor() );
+  }
+  else	renderer.CommitVertexDescriptor( *GetColorHandle() );
+  
+  // commit position data
+  if ( GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY ); 
+  else	renderer.CommitVertexDescriptor ( *GetVertexHandle() ); 
+  
+
+  if ( !GetIndices().IsNull() )     
+    renderer.CommitPrimitive( *GetIndices() );
+
+  if ( m_pTransform != NULL )
+    renderer.RollbackTransform();
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Math::CTransform *
+Phoenix::Graphics::CRenderable::GetTransform()
+{
+  return m_pTransform;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderable::SetTransform( Phoenix::Math::CTransform *pTransform )
+{
+  m_pTransform = pTransform;
 }
 /////////////////////////////////////////////////////////////////

@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: Phoenix
 Description: 3D game development tool library.
-Requires: CEGUI CEGUI-OPENGL sdl
+Requires: CEGUI CEGUI-OPENGL sdl vorbis
 Version: @VERSION@
-Libs: -L${libdir} -lPhoenix -lGLee -lGL -lGLU -lfreetype 
+Libs: -L${libdir} -lPhoenix -lGLee -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal
 Cflags: -I${includedir}/Phoenix  

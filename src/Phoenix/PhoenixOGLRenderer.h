@@ -408,8 +408,7 @@ namespace Phoenix
       ////////////////////
       /// Renders a complete model.
       /// \param renderable Renderable object. 
-      /// \param iExcludeOpt Which model data should not be renderered.
-      void CommitRenderable( Phoenix::Graphics::CRenderable &renderable, int iExcludeOpt = 0 );
+      void CommitRenderable( Phoenix::Graphics::CRenderable &renderable );
       ////////////////////
       /// Commits a texture filter.
       /// \param tFilter Which filter will be applied.

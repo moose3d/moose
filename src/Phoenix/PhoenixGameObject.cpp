@@ -26,20 +26,20 @@ Phoenix::Scene::CGameObject::~CGameObject()
   
 }
 /////////////////////////////////////////////////////////////////
-void 
-Phoenix::Scene::CGameObject::UpdateTransforms()
-{
-  RenderableHandleList::iterator it;
-  for( size_t i=0;i< m_LodLevels.size(); i++ )
-  {
-    it = m_LodLevels[i].begin();
-    for( ; it != m_LodLevels[i].end(); it++)
-    {  
-      (*(**it))->SetWorldTransform( GetWorldTransform());
-      (*(**it))->SetLocalTransform( GetLocalTransform());
-    }					       
-  }
-}
+// void 
+// Phoenix::Scene::CGameObject::UpdateTransforms()
+// {
+//   RenderableHandleList::iterator it;
+//   for( size_t i=0;i< m_LodLevels.size(); i++ )
+//   {
+//     it = m_LodLevels[i].begin();
+//     for( ; it != m_LodLevels[i].end(); it++)
+//     {  
+//       (*(**it))->SetWorldTransform( GetWorldTransform());
+//       (*(**it))->SetLocalTransform( GetLocalTransform());
+//     }					       
+//   }
+// }
 /////////////////////////////////////////////////////////////////
 CRenderable *
 Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName, bool bInterleaved )
@@ -55,6 +55,8 @@ Phoenix::Scene::CGameObject::AddRenderable( const char *szResourceName, size_t n
   assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->Create( pRenderable, g_UniqueName, *pHandle) == 0 );
   // Attach proper data to renderable.
   g_ModelHelper->CreateRenderable( szResourceName, *pRenderable, szGroupName, bInterleaved );
+  // renderables follow transformations of this object
+  pRenderable->SetTransform( &GetWorldTransform() );
   // Return new renderable object
   return pRenderable;
 }
@@ -70,6 +72,7 @@ Phoenix::Scene::CGameObject::AddRenderable( CRenderable *pRenderable, size_t nLo
   
   // Assign handle to renderable and manage object
   assert( (CResourceManager<CRenderable, CHandle<CRenderable> >::GetInstance())->Create( pRenderable, g_UniqueName, *pHandle) == 0 );
-  
+  // renderables follow transformations of this object
+  pRenderable->SetTransform( &GetWorldTransform() );  
 }
 /////////////////////////////////////////////////////////////////

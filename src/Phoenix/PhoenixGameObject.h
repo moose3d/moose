@@ -102,7 +102,7 @@ namespace Phoenix
       ////////////////////
       /// Updates all renderable transforms to match current transform.
       /// Call this every time you move object.
-      void UpdateTransforms();
+      //void UpdateTransforms();
       ////////////////////
       /// Adds new renderable handle to given lod level and 
       /// \par attaches resource by name to it.

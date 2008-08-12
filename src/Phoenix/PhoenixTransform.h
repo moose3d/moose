@@ -120,6 +120,9 @@ namespace Phoenix
       /// Set change flag.
       /// \bFlag true for changed, false for unchanged.
       void SetChanged(bool bFlag );
+      ////////////////////
+      /// Resets all transforms.
+      void SetIdentity();
     };
     ////////////////////
     /// Multiplies two CTransforms as matrices and stores result.

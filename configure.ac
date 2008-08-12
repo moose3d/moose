@@ -6,6 +6,7 @@ AC_CANONICAL_TARGET
 
 AC_CONFIG_HEADER(src/Phoenix/config.h)
 AM_INIT_AUTOMAKE(Phoenix, 0.99, entity@iki.fi)
+AC_PROG_RANLIB
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -46,6 +47,10 @@ PKG_CHECK_MODULES(LIBCONFIG, libconfig++ >= 1.2.1)
 CFLAGS="$CFLAGS $LIBCONFIG_CFLAGS"
 LIBS="$LIBS $LIBCONFIG_LIBS"
 
+
+PKG_CHECK_MODULES(vorbis, vorbis >= 1.2.0)
+CFLAGS="$CFLAGS $LIBVORBIS_CFLAGS"
+LIBS="$LIBS $LIBVORBIS_LIBS"
 
 # introduce the optional configure parameter for the path of libXXX.a
 AC_ARG_WITH(tristripper,

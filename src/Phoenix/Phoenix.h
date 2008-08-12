@@ -42,3 +42,12 @@
 #include "PhoenixMessageSystem.h"
 #include "PhoenixModelLoader.h"
 #include "PhoenixObjLoader.h"
+#include <PhoenixALObjectArray.h>
+#include <PhoenixALSampleTypes.h>
+#include <PhoenixALSoundTypes.h>
+#include <PhoenixAudioSystem.h>
+#include <PhoenixListener.h>
+#include <PhoenixOggSample.h>
+#include <PhoenixOggStreamSample.h>
+#include <PhoenixSoundBase.h>
+#include <PhoenixSoundSampleBase.h>
