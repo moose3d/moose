@@ -1,11 +1,8 @@
-
-
-// This fixes error on win32 platforms with CTimer
-#undef GetCurrentTime
 /////////////////////////////////////////////////////////////////
 #ifdef WIN32
 #include "PhoenixWindowsWrapper.h"
 #endif
+/////////////////////////////////////////////////////////////////
 #include "PhoenixGuiSystem.h"
 #include "PhoenixAVLTree.h"
 #include "PhoenixCore.h"
@@ -54,3 +51,4 @@
 #include <PhoenixOggStreamSample.h>
 #include <PhoenixSoundBase.h>
 #include <PhoenixSoundSampleBase.h>
+/////////////////////////////////////////////////////////////////

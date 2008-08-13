@@ -1056,7 +1056,7 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
   for( size_t i=0;i<6;i++)
   {
     ////////////////////
-    CTGAImage *pImage = CTGAImage::LoadImage( szFiles[i], std::cerr);
+    CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
     assert ( pImage != NULL && "Unable to load TGA image for CUBE TEXTURE." );
     ////////////////////
     int    iGLInternalFormat = 3;

@@ -459,7 +459,7 @@ Phoenix::Graphics::CTGAImage::GetPalette()
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CTGAImage * 
-Phoenix::Graphics::CTGAImage::LoadImage( const char *szFilename, std::ostream & stream )
+Phoenix::Graphics::CTGAImage::LoadTGAImage( const char *szFilename, std::ostream & stream )
 {
   if ( szFilename == NULL ) return NULL;
   

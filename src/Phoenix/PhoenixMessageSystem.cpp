@@ -15,7 +15,7 @@ Phoenix::AI::CMessageQueue::~CMessageQueue()
 void 
 Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage, const Phoenix::Core::CTimeStamp & tTimeStamp )
 {
-  pMessage->SetTimeStamp( GetCurrentTime()+tTimeStamp );
+  pMessage->SetTimeStamp( GetTime()+tTimeStamp );
   m_priqMessages.push( pMessage );
 }
 /////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ Phoenix::AI::CMessageQueue::GetNextMessage()
   
   Phoenix::AI::CMessage * pMessage = m_priqMessages.top();
   //std::cerr << "Current time is : " << GetCurrentTime() << " vs. " << pMessage->GetTimeStamp() << std::endl;
-  if ( pMessage->GetTimeStamp() <= GetCurrentTime() )
+  if ( pMessage->GetTimeStamp() <= GetTime() )
   {
     m_priqMessages.pop();
     return pMessage;
@@ -73,7 +73,7 @@ Phoenix::AI::CMessageQueue::GetNextSoleMessage()
   Phoenix::AI::CMessage * pMessage = pPair->second;
 
   //std::cerr << "(SoleMessage) : Current time is : " << GetCurrentTime() << " vs. " << pMessage->GetTimeStamp() << std::endl;
-  if ( pMessage->GetTimeStamp() <= GetCurrentTime() )
+  if ( pMessage->GetTimeStamp() <= GetTime() )
   {
     m_priqSoleMessages.pop();
     return pPair;

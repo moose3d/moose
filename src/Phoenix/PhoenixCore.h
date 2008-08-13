@@ -315,7 +315,7 @@ namespace Phoenix
       ////////////////////
       /// Returns current time.
       /// \returns Current time.
-      CTimeStamp GetCurrentTime() const
+      CTimeStamp GetTime() const
       {
 	return m_StartTime + m_PassedTime;
       }
@@ -324,7 +324,7 @@ namespace Phoenix
       /// starting time, the passed time will be set as starting time.
       /// \param iSec Time in seconds
       /// \param iMS Time in milliseconds.
-      void SetCurrentTime( int iSec, short iMS )
+      void SetTime( int iSec, short iMS )
       {
 	CTimeStamp tTime(iSec, iMS );
 	if ( tTime < m_StartTime ) 
@@ -343,7 +343,7 @@ namespace Phoenix
       void Update()
       {
 	gettimeofday(&m_TimeVal, NULL);
-	SetCurrentTime( m_TimeVal.tv_sec, (short)(m_TimeVal.tv_usec * 0.001f) );
+	SetTime( m_TimeVal.tv_sec, (short)(m_TimeVal.tv_usec * 0.001f) );
       }
       ////////////////////
       /// Updates start time.
@@ -717,7 +717,7 @@ namespace Phoenix
       {
 	std::ostringstream name;
 	Reset();
-	Phoenix::Core::CTimeStamp time = GetCurrentTime();
+	Phoenix::Core::CTimeStamp time = GetTime();
 	if ( szPrefix ) 
 	  name << szPrefix;
 	else

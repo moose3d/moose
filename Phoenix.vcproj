@@ -421,6 +421,30 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\Libs\freetype\lib\freetype.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\Libs\GLee\GL\GLee.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\Program Files\Microsoft SDKs\Windows\v6.0A\Lib\GlU32.Lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\Program Files\Microsoft SDKs\Windows\v6.0A\Lib\OpenGL32.Lib"
+				>
+			</File>
+			<File
+				RelativePath="..\Libs\SDL-1.2.13\lib\SDL.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\Libs\SDL-1.2.13\lib\SDLmain.lib"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"
@@ -589,22 +613,6 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\Libs\freetype\lib\freetype.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\Libs\GLee\GL\GLee.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\..\Program Files\Microsoft SDKs\Windows\v6.0A\Lib\GlU32.Lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\..\Program Files\Microsoft SDKs\Windows\v6.0A\Lib\OpenGL32.Lib"
-			>
-		</File>
-		<File
 			RelativePath=".\src\phoenix\PhoenixEventHandler.cpp~"
 			>
 		</File>
@@ -622,14 +630,6 @@
 		</File>
 		<File
 			RelativePath=".\src\phoenix\PhoenixMessageSystem.cpp~"
-			>
-		</File>
-		<File
-			RelativePath="..\Libs\SDL-1.2.13\lib\SDL.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\Libs\SDL-1.2.13\lib\SDLmain.lib"
 			>
 		</File>
 	</Files>

@@ -1,7 +1,6 @@
 #ifndef __PhoenixStateMachine_h__
 #define __PhoenixStateMachine_h__
 /////////////////////////////////////////////////////////////////
-#undef GetCurrentTime
 #include <PhoenixGraph.h>
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>

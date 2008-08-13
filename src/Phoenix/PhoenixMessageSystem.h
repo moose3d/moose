@@ -295,7 +295,7 @@ Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
 					    const Phoenix::Core::CTimeStamp & tTimeStamp,
 					    const Phoenix::Core::CHandle<CLASS_TYPE> & hReceiver )
 {
-  pMessage->SetTimeStamp(GetCurrentTime() + tTimeStamp);
+  pMessage->SetTimeStamp(GetTime() + tTimeStamp);
   // Find handler for message
   HandlerMap::iterator it = m_mapHandlers.find(TypeInfo(typeid(*pMessage)));
   if ( it != m_mapHandlers.end())
@@ -328,7 +328,7 @@ Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
 					    const Phoenix::Core::CTimeStamp & tTimeStamp,
 					    CLASS_TYPE * pObj )
 {
-  pMessage->SetTimeStamp(GetCurrentTime() + tTimeStamp);
+  pMessage->SetTimeStamp(GetTime() + tTimeStamp);
   // Find handler for message
   HandlerMap::iterator it = m_mapHandlers.find(TypeInfo(typeid(*pMessage)));
   if ( it != m_mapHandlers.end())

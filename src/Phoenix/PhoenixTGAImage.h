@@ -23,7 +23,7 @@ namespace Phoenix
       unsigned char* GetImg();       // Return a pointer to image data
       unsigned char* GetPalette();   // Return a pointer to VGA palette
       /// Loads image.
-      static CTGAImage * LoadImage( const char *szFilename, std::ostream & stream = std::cerr );
+      static CTGAImage * LoadTGAImage( const char *szFilename, std::ostream & stream = std::cerr );
     private:
       short int iWidth,iHeight,iBPP;
       unsigned long lImageSize;
