@@ -440,7 +440,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::SetNeighbor( Phoenix::Spatial::OCTREE_NEIGH
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode<TYPE> * 
+inline Phoenix::Spatial::COctreeNode<TYPE> * 
 Phoenix::Spatial::COctreeNode<TYPE>::GetNeighbor( Phoenix::Spatial::OCTREE_NEIGHBOR iNeighbor )
 {
   return m_pNeighbors[iNeighbor];

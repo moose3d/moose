@@ -3,6 +3,11 @@
 #include "PhoenixMath.h"
 #include <assert.h>
 #include <iostream>
+#ifdef WIN32
+// isnan() is C99
+#include <float.h>
+#define isnan( VAL ) _isnan(VAL)
+#endif
 using namespace std;
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Math;
@@ -39,7 +44,7 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
   float wy = qQuat[3] * qQuat[1];
   float wx = qQuat[3] * qQuat[0];
   
-  mMatrix(0,0) = 1.0 - yy - yy - zz - zz;
+  mMatrix(0,0) = 1.0f - yy - yy - zz - zz;
   mMatrix(0,1) = xy + xy - wz - wz;
   mMatrix(0,2) = xz + xz + wy + wy;
   mMatrix(0,3) = 0.0f;
@@ -51,7 +56,7 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
   
   mMatrix(2,0) = xz + xz - wy - wy;
   mMatrix(2,1) = yz + yz + wx + wx;
-  mMatrix(2,2) = 1.0 - xx - xx - yy - yy;
+  mMatrix(2,2) = 1.0f - xx - xx - yy - yy;
   mMatrix(2,3) = 0.0f;
   
   mMatrix(3,0) = 0.0f;
@@ -466,7 +471,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
     vAveragePos[2] += vertexDescriptor.GetPointer<float>(iVertComponent)[2];
   }
   
-  vAveragePos /= vertexDescriptor.GetSize();
+  vAveragePos /= static_cast<float>(vertexDescriptor.GetSize());
 
   // Calculate Covariance matrix
   for(unsigned int iVertComponent = 0;iVertComponent < vertexDescriptor.GetSize(); iVertComponent++)
@@ -483,7 +488,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
 
   }    
-  mCovariance /= vertexDescriptor.GetSize();
+  mCovariance /= static_cast<float>(vertexDescriptor.GetSize());
   //return mCovariance;
 }
 /////////////////////////////////////////////////////////////////
@@ -527,7 +532,7 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     vAveragePos[2] += vertexDescriptor.GetPointer<float>(nVertexIndex)[2];
   }
   
-  vAveragePos /= indices.GetNumIndices();
+  vAveragePos /= static_cast<float>(indices.GetNumIndices());
 
   float fTmpX;
   float fTmpY;
@@ -554,7 +559,7 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
 
   }    
-  mCovariance /= indices.GetNumIndices();
+  mCovariance /= static_cast<float>(indices.GetNumIndices());
 
   //return mCovariance;
 }
@@ -903,7 +908,7 @@ Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
   float fSinAngle = sqrt( 1.0f - fCosAngle * fCosAngle );
   
   /// If denominator is too close to zero.
-  if ( fabs(fSinAngle < EPSILON)) fSinAngle = 1;
+  if ( fabsf(fSinAngle < EPSILON)) fSinAngle = 1;
   /// The axis.
   float f1DivSinAngle = 1.0f / fSinAngle;
   vAxis[0] = qQuat[0] * f1DivSinAngle;

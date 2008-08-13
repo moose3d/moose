@@ -261,12 +261,12 @@ namespace Phoenix
       int  GetColor();
       ////////////////////
       ///  Returns the In-degree of this node
-      /// \returns unsigned int the number of arriving edges.
-      unsigned int GetInDegree();
+      /// \returns the number of arriving edges.
+      size_t GetInDegree();
       ////////////////////
       ///  Returns the Out-degree of this node
-      /// \returns unsigned int the number of leaving edges.
-      unsigned int GetOutDegree();
+      /// \returns the number of leaving edges.
+      size_t GetOutDegree();
     };
     /////////////////////////////////////////////////////////////////
     class CGraph
@@ -335,12 +335,12 @@ namespace Phoenix
 	return t;
       }
       ////////////////////
-      inline const unsigned int GetNodeCount() const
+      inline const size_t GetNodeCount() const
       {
 	return m_lstNodes.size();
       }
       ////////////////////
-      inline const unsigned int GetEdgeCount() const
+      inline const size_t GetEdgeCount() const
       {
 	return m_lstEdges.size();
       }

@@ -1,5 +1,9 @@
 #include "PhoenixListener.h"
+#ifdef WIN32
+#include <al.h>
+#else
 #include <AL/al.h>
+#endif
 namespace libname = Phoenix::Sound;
 /////////////////////////////////////////////////////////////////
 libname::CListener::CListener()

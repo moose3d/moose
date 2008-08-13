@@ -52,7 +52,7 @@ namespace Phoenix
     {  
     protected:
       /// number of elements.
-      unsigned int		m_nSize;
+      size_t 		        m_nSize;
       /// element data
       void *			m_pData;
       /// Size of one element in bytes.
@@ -81,7 +81,7 @@ namespace Phoenix
       ////////////////////
       /// Returns number of elements in descriptor.
       /// \returns Number of elements.
-      inline unsigned int GetSize() const
+      inline size_t GetSize() const
       {
 	return m_nSize;
       }

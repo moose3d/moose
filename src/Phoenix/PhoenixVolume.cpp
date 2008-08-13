@@ -109,7 +109,7 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
   // Minimum and maximum values for each coordinates.
   CVector3<float> vMaxValues;
   CVector3<float> vMinValues;
-  unsigned int nNumVertices = vd.GetSize();
+  size_t nNumVertices = vd.GetSize();
   
 
   
@@ -142,7 +142,7 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
 
   if ( fabs(vDist[0]) > fabs(vDist[1])){
 
-    if ( fabs(vDist[0] > fabs(vDist[2]))){
+    if ( fabs(vDist[0]) > fabs(vDist[2]) ){
       fMaxRadius = vDist[0] * 0.5f;
     } else {
       fMaxRadius = vDist[2] * 0.5f;
@@ -150,7 +150,7 @@ Phoenix::Volume::CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescri
 
   } else {
 
-    if ( fabs(vDist[1] > fabs(vDist[2]))){
+    if ( fabs(vDist[1]) > fabs(vDist[2]) ){
       fMaxRadius = vDist[1] * 0.5f;
     } else {
       fMaxRadius = vDist[2] * 0.5f;
@@ -173,7 +173,7 @@ Phoenix::Volume::CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexD
     return CSphere( CVector3<float>(0,0,0), 0.0f);
   }
   CSphere sphere;
-  unsigned int nNumVertices = vd.GetSize();
+  size_t nNumVertices = vd.GetSize();
   
   float fLambda1,fLambda2,fLambda3;  
   

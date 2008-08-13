@@ -297,11 +297,11 @@ Phoenix::Graphics::CCamera::UpdateProjection()
     m_mProjection(2,2) = -((fFar + fNear ) / ( fFar - fNear ));
     m_mProjection(2,3) = (-2.0f * fFar * fNear) / (fFar - fNear );
     m_mProjection(3,2) = -1.0f;
-    m_mProjection(3,3) = 0.0;
+    m_mProjection(3,3) = 0.0f;
      
-    m_mProjectionInv(0,0) = (fW + fW) / (2.0 * fNear);
+    m_mProjectionInv(0,0) = (fW + fW) / (2.0f * fNear);
     m_mProjectionInv(0,3) = 0.0f; //((r+l) / 2n)
-    m_mProjectionInv(1,1) = (fH + fH ) / (2.0 * fNear);
+    m_mProjectionInv(1,1) = (fH + fH ) / (2.0f * fNear);
     m_mProjectionInv(1,3) = 0.0f; // t + b / 2n
     m_mProjectionInv(2,3) = -1.0f;
     m_mProjectionInv(3,2) = (-(fFar - fNear))  / (2.0f * fFar * fNear );
@@ -480,11 +480,11 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 int
 Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint, CQuaternion & qResult )
 {
-  CVector3<float> vOrig = UnProject( vStartPoint[0], 
-				     vStartPoint[1],
+  CVector3<float> vOrig = UnProject( static_cast<float>(vStartPoint[0]), 
+				     static_cast<float>(vStartPoint[1]),
 						    0.0f);
-  CVector3<float> vEnd = UnProject( vStartPoint[0], 
-				    vStartPoint[1],
+  CVector3<float> vEnd = UnProject( static_cast<float>(vStartPoint[0]), 
+				    static_cast<float>(vStartPoint[1]),
 				    1.0f);
   CRay ray;
   ray.SetPosition( vOrig );
@@ -498,8 +498,8 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
   /////////////////////////////////////////////////////////////////
   if ( Collision::RayIntersectsSphere( ray, &vIntersection0, NULL, sphere) >= 1)
   {
-    vOrig = UnProject( vEndPoint[0], vEndPoint[1], 0.0f);
-    vEnd = UnProject( vEndPoint[0], vEndPoint[1],  1.0f);
+    vOrig = UnProject( static_cast<float>(vEndPoint[0]), static_cast<float>(vEndPoint[1]), 0.0f);
+    vEnd = UnProject( static_cast<float>(vEndPoint[0]), static_cast<float>(vEndPoint[1]),  1.0f);
     ray.SetPosition( vOrig );
     ray.SetDirection( vEnd-vOrig);
     /////////////////////////////////////////////////////////////////

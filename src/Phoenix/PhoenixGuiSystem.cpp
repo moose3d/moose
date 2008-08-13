@@ -81,17 +81,17 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
 
 
   }  
-  catch( libconfig::ParseException ex )
+  catch( libconfig::ParseException & ex )
   {
     cerr << "parse exception" << ex.getError() << endl;
   }
-  catch( libconfig::FileIOException ex )
+  catch( libconfig::FileIOException & ex )
   {
     cerr << "Couldn't load file." << endl;
   }
-  catch ( libconfig::SettingNotFoundException ex )
+  catch ( libconfig::SettingNotFoundException & ex )
   {
-    cerr << "Setting not found!"  << endl;
+    cerr << "Setting not found!" << endl;
   }
   catch ( CEGUI::InvalidRequestException & ex )
   {

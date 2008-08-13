@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <fstream>
 #include <sys/types.h>
+#ifndef WIN32
 /////////////////////////////////////////////////////////////////
 // Pointers are tricky, 64-bit ones wreak havoc unless we define them as 32-bit.
 #define LPVOID  uint32_t
@@ -21,11 +22,15 @@
 #define FOURCC_DXT4 MAKE_FOURCC('D','X','T','4')
 #define FOURCC_DXT5 MAKE_FOURCC('D','X','T','5')
 #define FOURCC(i) (((i & 0xff000000) >> 24) | ((i & 0x00ff0000) >> 8) | ((i & 0x0000ff00) << 8) | ((i & 0x000000ff) << 24))
+#endif
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics 
   {
+#ifdef WIN32
+#include <ddraw.h>
+#else
     ////////////////////
     /// Structs as described in MSDN;
     /// http://msdn.microsoft.com/en-us/library/aa454679.aspx
@@ -123,6 +128,8 @@ namespace Phoenix
       DDSCAPS2  ddsCaps;  
       DWORD  dwTextureStage;   
     } DDSURFACEDESC2;
+    
+#endif
     /////////////////////////////////////////////////////////////////
     /// Types for DDS image format
     enum DDS_FORMAT_TYPE

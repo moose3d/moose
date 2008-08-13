@@ -1,10 +1,15 @@
 #ifndef __COpenALObject_h__
 #define __COpenALObject_h__
 /////////////////////////////////////////////////////////////////
+#ifdef WIN32
+#include <al.h>
+#else
 #include <AL/al.h>
+#endif
 #include <ostream>
 #include <iostream>
 #include <assert.h>
+#include <string>
 /////////////////////////////////////////////////////////////////
 #define ReportALErrors()					\
 {								\

@@ -14,10 +14,15 @@ namespace Phoenix
 {
   namespace Data
   {
-
+#ifdef __GNUC__
+#define PACKED __attribute__ ((packed))
+#else
+#define PACKED
+#endif
+#pragma pack(1)
     /////////////////////////////////////////////////////////////////
     // So we can use the structs directly while reading the MS3D file
-#define PACKED __attribute__((packed))
+
     /////////////////////////////////////////////////////////////////
     // Loader class for Milkshape 3D format (.ms3d) v1.3 & v1.4
     // using http://astronomy.swin.edu.au/~pbourke/dataformats/ms3d/ms3dspec.h 
@@ -244,7 +249,7 @@ namespace Phoenix
       // weights[2] is the weight for boneIds[1]
       // 1.0f - weights[0] - weights[1] - weights[2] is the weight for boneIds[2]
     } PACKED;
-
+#pragma pack()
     struct MSVertexCompare
     {
       bool operator()( const Phoenix::Spatial::CVertex & v1, const Phoenix::Spatial::CVertex & v2) const

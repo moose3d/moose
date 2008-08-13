@@ -332,13 +332,13 @@ Phoenix::Core::CGraphNode::GetColor()
   return m_iColor;
 }
 /////////////////////////////////////////////////////////////////
-unsigned int
+size_t
 Phoenix::Core::CGraphNode::GetInDegree()
 {
   return m_lstArriving.size();
 }
 /////////////////////////////////////////////////////////////////
-unsigned int
+size_t
 Phoenix::Core::CGraphNode::GetOutDegree()
 {
   return m_lstLeaving.size();

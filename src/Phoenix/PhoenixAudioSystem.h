@@ -1,8 +1,13 @@
 #ifndef __CAudioSystem_h__
 #define __CAudioSystem_h__
 /////////////////////////////////////////////////////////////////
+#ifdef WIN32
+#include <al.h>
+#include <alc.h>
+#else
 #include <AL/al.h>
 #include <AL/alc.h>
+#endif
 #include "PhoenixCore.h"
 #include "PhoenixListener.h"
 /////////////////////////////////////////////////////////////////

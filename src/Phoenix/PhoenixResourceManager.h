@@ -23,7 +23,7 @@ namespace Phoenix
     class CHandle : public CNullable
     {
     private:
-      unsigned int m_nIndex;
+      size_t m_nIndex;
     public:
       ////////////////////
       /// Constructor.
@@ -34,14 +34,14 @@ namespace Phoenix
       //////////////////// 
       /// Returns index.
       /// \returns current index pointed by handle.
-      inline unsigned int GetIndex() const
+      inline size_t GetIndex() const
       {
 	return m_nIndex;
       }
       ////////////////////
       /// Initializes handle.
       /// \param nIndex Index where handle points.
-      inline void Initialize( unsigned int nIndex )
+      inline void Initialize( size_t nIndex )
       {
 	m_nIndex = nIndex;
 	SetNull(0);
@@ -113,7 +113,7 @@ namespace Phoenix
       /// Resource name.
       std::string m_strName;
       /// Resource index in manager array.
-      unsigned int m_nIndex;
+      size_t m_nIndex;
     public:
       ////////////////////
       /// Constructor.
@@ -138,14 +138,14 @@ namespace Phoenix
       ////////////////////
       /// Sets index.
       /// \param Resource index.
-      void SetIndex( unsigned int nIndex )
+      void SetIndex( size_t nIndex )
       {
 	m_nIndex = nIndex;
       }
       ////////////////////
       /// Returns index.
       /// \returns Resource index.
-      unsigned int GetIndex() const
+      size_t GetIndex() const
       {
 	return m_nIndex;
       }
@@ -253,7 +253,7 @@ namespace Phoenix
       ////////////////////
       /// Updates all handles to this resource. Before nullifiy
       /// \param nIndex New index for this resource in ResourceManager's array.
-      void UpdateAllHandles( unsigned int nIndex )
+      void UpdateAllHandles( size_t nIndex )
       {
 	typename std::list<HANDLE *>::iterator it  = m_lstHandles.begin();
 	typename std::list<HANDLE *>::iterator end = m_lstHandles.end();
@@ -395,7 +395,7 @@ namespace Phoenix
       ////////////////////
       /// Gets number of currently managed objects.
       /// \returns Number of managed objects.
-      unsigned int GetSize() const;
+      size_t GetSize() const;
       ////////////////////
       /// Returns resource name where this handle refers to.
       /// \param handle Handle which resource name is retrieved.
@@ -411,7 +411,7 @@ namespace Phoenix
       ////////////////////
       /// Removes a resource from manager.
       /// \param nIndex Index of resource array.
-      void Destroy( unsigned int nIndex ); 
+      void Destroy( size_t nIndex ); 
     };
   };
 };
@@ -471,7 +471,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
 
     // Insert object into manager and get its index
     m_vecObjects.push_back( pResource );
-    unsigned int nIndex = m_vecObjects.size() - 1;
+    size_t nIndex = m_vecObjects.size() - 1;
 
     // Create object with name and index mapping
     CResourceName resourceName;
@@ -526,7 +526,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
 
     // Insert object into manager and get its index
     m_vecObjects.push_back( pResource );
-    unsigned int nIndex = m_vecObjects.size() - 1;
+    size_t nIndex = m_vecObjects.size() - 1;
 
     // Create object with name and index mapping
     CResourceName resourceName;
@@ -614,7 +614,7 @@ void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DeleteMemory()
 {
   // Deletes resource pointers and objects inside them
-  for( unsigned int nObj = 0;nObj<m_vecObjects.size();nObj++)
+  for( size_t nObj = 0;nObj<m_vecObjects.size();nObj++)
   {
     if ( m_vecObjects[nObj] != NULL )
     {
@@ -675,7 +675,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetResource( const char *szR
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
-inline unsigned int
+inline size_t
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::GetSize() const
 {
   return m_vecObjects.size();
@@ -698,7 +698,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( const std::string &
   CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(strName);
   
   if ( pHashItem == NULL ) return;
-  unsigned int nIndex = pHashItem->GetObject().GetIndex();
+  size_t nIndex = pHashItem->GetObject().GetIndex();
   // Destroy by index.
   Destroy( nIndex );
 
@@ -726,7 +726,7 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( HANDLE & handle )
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
 void
-Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( unsigned int nIndex )
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( size_t nIndex )
 {
   
   if ( nIndex < m_vecObjects.size() - 1 )

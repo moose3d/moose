@@ -1,12 +1,15 @@
 #include "PhoenixObjLoader.h"
 #include "PhoenixSpatial.h"
 #include "PhoenixVector3.h"
+#include "PhoenixConvert.h"
 #include <fstream>
 #include <string.h>
 #include <string>
 #include <exception>
 #include <iostream>
+#include <sstream>
 #include <assert.h>
+#include <stdlib.h>
 /////////////////////////////////////////////////////////////////
 using std::fstream;
 using std::ios;
@@ -16,9 +19,11 @@ using std::endl;
 using std::ios_base;
 using std::vector;
 using std::string;
+using std::istringstream;
 using namespace Phoenix::Data;
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Graphics;
+using namespace Phoenix::Core;
 /////////////////////////////////////////////////////////////////
 //#define DELETE(OBJ) delete OBJ; OBJ=NULL;
 //#define DEBUG
@@ -141,7 +146,7 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  vert.x = strtof(buf, (char **)NULL);
+  vert.x = convertTo<float>( std::string(buf) );
   
   // parse for y-coord
   begin = end+1;
@@ -150,7 +155,7 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  vert.y = strtof(buf, (char **)NULL);
+  vert.y = convertTo<float>( std::string(buf) );
 
   // parse for z-coord
   begin = end+1;
@@ -159,7 +164,7 @@ Phoenix::Data::CObjLoader::ParsePosition( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  vert.z = strtof(buf, (char **)NULL);
+  vert.z = convertTo<float>( std::string(buf) );
 
   // insert vertex into vertex vector
   m_Vertices.push_back( vert );
@@ -182,7 +187,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  normal.x = strtof(buf, (char **)NULL);
+  normal.x = convertTo<float>( std::string(buf) );
   
   // parse for y-coord
   begin = end+1;
@@ -191,7 +196,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  normal.y = strtof(buf, (char **)NULL);
+  normal.y = convertTo<float>( std::string(buf) );
 
   // parse for z-coord
   begin = end+1;
@@ -200,7 +205,7 @@ Phoenix::Data::CObjLoader::ParseNormal( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  normal.z = strtof(buf, (char **)NULL);
+  normal.z = convertTo<float>( std::string(buf) );
 
   CVector3<float> vNorm(normal.x,normal.y,normal.z);
   vNorm.Normalize();
@@ -226,7 +231,7 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  texc.u = strtof(buf, (char **)NULL);
+  texc.u = convertTo<float>( std::string(buf) );
   
   // parse for y-coord
   begin = end+1;
@@ -235,7 +240,7 @@ Phoenix::Data::CObjLoader::ParseTexCoord( const char *szLine )
   strncpy( buf, begin, 256);
   assert( end-begin < 256 );
   buf[end-begin]='\0';
-  texc.v = strtof(buf, (char **)NULL);
+  texc.v = convertTo<float>( std::string(buf) );
 
   // insert normal into normal vector
   m_TexCoords.push_back( texc );
@@ -327,7 +332,7 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
 
     // replace slashes with \0
     char *faceLine = buf;
-    while ( (faceLine = index(faceLine, '/')) != NULL ) 
+    while ( (faceLine = strstr(faceLine, "/")) != NULL ) 
     {
       faceLine[0] = '\0';
       faceLine++;
@@ -339,13 +344,13 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
     switch( i )
     {
     case 0:
-      face.v1 = strtol(faceLine, (char **)NULL, 10) - 1;  
+      face.v1 = convertTo<int>( std::string(faceLine) ) - 1;
       break;
     case 1: 
-      face.v2 = strtol(faceLine, (char **)NULL, 10) - 1;  
+      face.v2 = convertTo<int>( std::string(faceLine) ) - 1;  
       break;
     case 2: 
-      face.v3 = strtol(faceLine, (char **)NULL, 10) - 1;  
+      face.v3 = convertTo<int>( std::string(faceLine) ) - 1;  
       break;
     }
     // parse texcoord
@@ -358,13 +363,13 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
 	switch( i )
 	{
 	case 0:
-	  face.t1 = strtol(faceLine, (char **)NULL, 10) - 1;  
+	  face.t1 = convertTo<int>( std::string(faceLine) ) - 1;  
 	  break;
 	case 1: 
-	  face.t2 = strtol(faceLine, (char **)NULL, 10) - 1;  
+	  face.t2 = convertTo<int>( std::string(faceLine) ) - 1;  
 	  break;
 	case 2: 
-	  face.t3 = strtol(faceLine, (char **)NULL, 10) - 1;  
+	  face.t3 = convertTo<int>( std::string(faceLine) ) - 1;  
 	  break;
 	}
 
@@ -379,13 +384,13 @@ Phoenix::Data::CObjLoader::ParseFace( const char *szLine )
 	  switch( i )
 	  {
 	  case 0:
-	    face.n1 = strtol(faceLine, (char **)NULL, 10) - 1;  
+	    face.n1 = convertTo<int>( std::string(faceLine) ) - 1;  
 	    break;
 	  case 1: 
-	    face.n2 = strtol(faceLine, (char **)NULL, 10) - 1;  
+	    face.n2 = convertTo<int>( std::string(faceLine) ) - 1;  
 	    break;
 	  case 2: 
-	    face.n3 = strtol(faceLine, (char **)NULL, 10) - 1;  
+	    face.n3 = convertTo<int>( std::string(faceLine) ) - 1;  
 	    break;
 	  }
 	}
@@ -454,7 +459,7 @@ Phoenix::Data::CObjLoader::Load( const char *szFilename )
 
   // replace line breaks with \0
   char *line = pBuffer;
-  while ( (line = index(line, '\n')) != NULL ) 
+  while ( (line = strstr(line, "\n")) != NULL ) 
   {
     line[0] = '\0';
     line++;

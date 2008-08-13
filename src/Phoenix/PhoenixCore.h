@@ -8,7 +8,11 @@
 #include <vector>
 #include <map>
 #include <list>
+#ifdef WIN32
+#include "PhoenixWindowsWrapper.h"
+#else
 #include <sys/time.h>
+#endif
 #include <math.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -16,7 +20,7 @@ namespace Phoenix
   namespace Core 
   {
     /// magic number for hash table size and other stuff, too.
-    const unsigned int PHOENIX_MAGIC_NUMBER = 33;
+    const size_t PHOENIX_MAGIC_NUMBER = 33;
     /////////////////////////////////////////////////////////////////
     /// Nullable entity.
     class CNullable
@@ -274,10 +278,10 @@ namespace Phoenix
     protected:
       /// The passed time relative to nStartTimeMS in milliseconds.
       Phoenix::Core::CTimeStamp m_StartTime;
-      //unsigned int m_nPassedTimeMS;
+      //size_t m_nPassedTimeMS;
       /// The starting time in milliseconds where passed time is calculated from.
       Phoenix::Core::CTimeStamp m_PassedTime;
-      //unsigned int m_nStartTimeMS;
+      //size_t m_nStartTimeMS;
       /// Time value for Update().
       struct timeval m_TimeVal;
     public:
@@ -374,7 +378,7 @@ namespace Phoenix
     {
     protected:
       /// The number of frames.
-      unsigned int m_nFrameCount;
+      size_t m_nFrameCount;
     public:
       ////////////////////
       /// The constructor.
@@ -483,6 +487,12 @@ namespace Phoenix
 	return m_Object;
       }
       ////////////////////
+      /// Returns reference to object.
+      inline const OBJECTTYPE & GetObject() const
+      {
+	return m_Object;
+      }
+      ////////////////////
       /// Comparison operator.
       inline bool operator==( const CHashItem & item ) const
       {
@@ -490,7 +500,7 @@ namespace Phoenix
       }
       ////////////////////
       /// Assignment operator.
-      inline void operator=(CHashItem &item)
+      inline void operator=(const CHashItem &item)
       {
 	m_Key    = item.GetKey();
 	m_Object = item.GetObject();
@@ -502,7 +512,7 @@ namespace Phoenix
     /// Creates hash of string. Uses djb2 algorithm.
     struct CreateHash 
     {
-      unsigned int operator()( const std::string &str, size_t nSlots ) 
+      size_t operator()( const std::string &str, size_t nSlots ) 
       {
 	unsigned int nHash = 5381;
 	int c;
@@ -521,11 +531,11 @@ namespace Phoenix
     protected:
       /// vector of vector of objects.
       std::vector< CHashItem<KEYTYPE,OBJECTTYPE> > *m_pTable;
-      unsigned int		   m_nSize;
+      size_t		   m_nSize;
     public:
       ////////////////////
       /// Default constructor.
-      CHashTable( unsigned int nSize ) : m_nSize(nSize) 
+      CHashTable( size_t nSize ) : m_nSize(nSize) 
       {
 	if ( m_nSize < 1 ) m_nSize = 1;
 	m_pTable = new std::vector< CHashItem<KEYTYPE,OBJECTTYPE> >[GetSize()];
@@ -541,13 +551,13 @@ namespace Phoenix
       /// \param obj object to be inserted.
       inline void Insert( CHashItem<KEYTYPE,OBJECTTYPE> &obj )
       {
-	unsigned int nHash = HashFunc()( obj.GetKey(), GetSize() );
+	size_t nHash = HashFunc()( obj.GetKey(), GetSize() );
 	m_pTable[nHash].push_back(obj);
       }
       ////////////////////
       /// Returns size of this CHashTable
       /// \return number of hash slots.
-      inline int GetSize() const
+      inline size_t GetSize() const
       {
 	return m_nSize;
       }
@@ -559,7 +569,7 @@ namespace Phoenix
 	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
 	
-	int nHash = HashFunc()(nKey, GetSize());
+	size_t nHash = HashFunc()(nKey, GetSize());
 	std::vector< CHashItem<KEYTYPE,OBJECTTYPE> > *pHashChain = &m_pTable[nHash];
 	typename std::vector< CHashItem<KEYTYPE,OBJECTTYPE> >::iterator it;
 
@@ -581,9 +591,9 @@ namespace Phoenix
 	CHashItem<KEYTYPE,OBJECTTYPE> item;
 	item.SetKey(nKey);
 	
-	int nHash = HashFunc()(nKey, GetSize());
+	size_t nHash = HashFunc()(nKey, GetSize());
 	std::vector<CHashItem<KEYTYPE,OBJECTTYPE> > *pHashChain = &m_pTable[nHash];
-	for( unsigned int i =0; i<pHashChain->size();  i++)
+	for( size_t i =0; i<pHashChain->size();  i++)
 	{
 	  if ((*pHashChain)[i] == item ) return (&(*pHashChain)[i]);
 	}

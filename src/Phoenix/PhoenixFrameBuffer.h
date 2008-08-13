@@ -39,12 +39,12 @@ namespace Phoenix
       /// Returns texture handle of selected colorbuffer.
       /// \param nColorBuffer Which color buffer.
       /// \returns TEXTURE_HANDLE
-      Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle( unsigned int nColorBuffer = 0);
+      Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle( size_t nColorBuffer = 0);
       ////////////////////
       /// Returns texture handle of selected colorbuffer.
       /// \param nColorBuffer Which color buffer.
       /// \returns TEXTURE_HANDLE
-      const Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle( unsigned int nColorBuffer = 0) const;
+      const Phoenix::Default::TEXTURE_HANDLE & GetTextureHandle( size_t nColorBuffer = 0) const;
       ////////////////////
       /// Returns reference to depth buffer id.
       /// \returns Depth Buffer id.
@@ -67,7 +67,7 @@ Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBu
 /////////////////////////////////////////////////////////////////
 inline
 Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBufferId, unsigned int nWidth, unsigned int nHeight ) : COglBase(nFrameBufferId), 
-																      CDimensional2D(nWidth, nHeight), 
+																      CDimensional2D(static_cast<float>(nWidth), static_cast<float>(nHeight)), 
 																      m_nDepthBufferId(0)
 {
   
@@ -86,13 +86,13 @@ Phoenix::Graphics::CFrameBufferObject::GetDepthBufferId() const
 }
 /////////////////////////////////////////////////////////////////
 inline const Phoenix::Default::TEXTURE_HANDLE & 
-Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( unsigned int nUnit ) const
+Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( size_t nUnit ) const
 {
   return m_hTextures[nUnit % TEXTURE_HANDLE_COUNT];
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Default::TEXTURE_HANDLE & 
-Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( unsigned int nUnit )
+Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( size_t nUnit )
 {
   return m_hTextures[nUnit % TEXTURE_HANDLE_COUNT];
 }

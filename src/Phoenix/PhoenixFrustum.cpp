@@ -1,5 +1,6 @@
 #include "PhoenixFrustum.h"
 #include "PhoenixCollision.h"
+#include "PhoenixMathGeometry.h"
 #include <vector>
 /////////////////////////////////////////////////////////////////
 using std::vector;
@@ -10,14 +11,13 @@ using namespace Phoenix::Volume;
 Phoenix::Graphics::CFrustum::CFrustum()
 {
   // Add planes to the vector
-  CPlane top,bottom,left,right,near,far;
-
-  AddPlane( top );
-  AddPlane( bottom );
-  AddPlane( left );
-  AddPlane( right );
-  AddPlane( near );
-  AddPlane( far );
+  CPlane plane;
+  AddPlane( plane);
+  AddPlane( plane);
+  AddPlane( plane );
+  AddPlane( plane );
+  AddPlane( plane );
+  AddPlane( plane );
 }
 /////////////////////////////////////////////////////////////////
 void

@@ -1,8 +1,15 @@
 #ifndef __CSoundSampleBase_h__
 #define __CSoundSampleBase_h__
+/////////////////////////////////////////////////////////////////
+#ifdef WIN32
+#include <al.h>
+#include <alc.h>
+#else
 #include <AL/al.h>
 #include <AL/alc.h>
+#endif
 #include <stdlib.h>
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound

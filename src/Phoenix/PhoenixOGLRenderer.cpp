@@ -66,14 +66,20 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFontset::CFontset() : m_nDisplayLists(0)
 {
-  
+  // initialize texture pointers to NULL
+  for( size_t t=0;t<Phoenix::Globals::MAX_FONT_CHARACTERS;++t)
+  {
+    m_ppTextures[t] = NULL;
+  }
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CFontset::~CFontset()
 {
-  
-  // delete textures
-  delete [] m_ppTextures;
+  for( size_t t=0;t<Phoenix::Globals::MAX_FONT_CHARACTERS;++t)
+  {
+     // delete textures, this is static array of pointers. delete only pointed textures.
+     delete m_ppTextures[0];
+  }
 // Release lists
   glDeleteLists( GetDisplayList(), Phoenix::Globals::MAX_FONT_CHARACTERS );
 }
@@ -1050,7 +1056,7 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
   for( size_t i=0;i<6;i++)
   {
     ////////////////////
-    CTGAImage *pImage = CTGAImage::LoadImage( szFiles[i] );
+    CTGAImage *pImage = CTGAImage::LoadImage( szFiles[i], std::cerr);
     assert ( pImage != NULL && "Unable to load TGA image for CUBE TEXTURE." );
     ////////////////////
     int    iGLInternalFormat = 3;
@@ -2462,7 +2468,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     if ( n == WHITESPACE )
     {
       glNewList(pFontset->GetDisplayList()+n,GL_COMPILE);
-      glTranslatef(nFontSize*0.2, 0, 0);
+      glTranslatef(nFontSize*0.2f, 0, 0);
       glEndList();
       continue;
     } 
@@ -2489,8 +2495,8 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     if ( ftFace->glyph->bitmap.width == 0 ) continue;
     ////////////////////
     // Round dimensions up to closes power of two.
-    float fLog2Height = log(ftFace->glyph->bitmap.rows)/log(2);
-    float fLog2Width  = log(ftFace->glyph->bitmap.width)/log(2);
+    float fLog2Height = log(static_cast<float>(ftFace->glyph->bitmap.rows))/log(2.0f);
+    float fLog2Width  = log(static_cast<float>(ftFace->glyph->bitmap.width))/log(2.0f);
     ////////////////////
     // Rounding error check.
     if ( (fLog2Height - (int)fLog2Height) < EPSILON ) fLog2Height = (int)fLog2Height;

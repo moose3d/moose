@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Window;
 /// declare visiblity for static member.
-extern CSDLScreenParams Phoenix::Window::CSDLScreen::m_SDLScreenParams;
+CSDLScreenParams Phoenix::Window::CSDLScreen::m_SDLScreenParams;
 /////////////////////////////////////////////////////////////////
 Phoenix::Window::CSDLScreenParams::CSDLScreenParams()
 {

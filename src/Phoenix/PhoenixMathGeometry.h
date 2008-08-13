@@ -51,7 +51,7 @@ namespace Phoenix
       void SetWidth( float fWidth )
       {
 	m_fWidth = fWidth;
-	m_fHalfWidth = m_fWidth * 0.5;
+	m_fHalfWidth = m_fWidth * 0.5f;
       }
       ////////////////////
       /// Sets height
@@ -59,7 +59,7 @@ namespace Phoenix
       void SetHeight( float fHeight )
       {
 	m_fHeight = fHeight;
-	m_fHalfHeight = m_fHeight * 0.5;
+	m_fHalfHeight = m_fHeight * 0.5f;
       }
       float GetWidth() const
       {
