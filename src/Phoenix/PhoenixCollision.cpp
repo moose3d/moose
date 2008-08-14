@@ -1373,3 +1373,97 @@ Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedC
   return INTERSECTION;
 }
 /////////////////////////////////////////////////////////////////
+bool 
+Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox,  float *pfValue )
+{
+  float fT_min,fT_max;
+  float fE, fF;
+  float f1DivF;
+  float fT_1,fT_2;
+  float fHalfValue;
+  int   bStartInsideBox = 1;
+  CVector3<float> vPoint = obBox.GetPosition() - ray.GetPosition();
+
+  if ( fabs(vPoint.Dot(obBox.GetForwardVector())) > obBox.GetHalfLength()) bStartInsideBox = 0;
+  if ( fabs(vPoint.Dot(obBox.GetRightVector())  ) > obBox.GetHalfWidth())  bStartInsideBox = 0;
+  if ( fabs(vPoint.Dot(obBox.GetUpVector())     ) > obBox.GetHalfHeight()) bStartInsideBox = 0;
+
+  if ( bStartInsideBox ) 
+  {
+    if ( pfValue != NULL ) *pfValue = 0.0f;
+    return true;
+  }
+  
+  // for each dimension in OBB do 
+  for ( int i=0;i<3;i++)
+  {
+    // Get correct values for each loop
+    switch ( i )
+    {
+    case 0:
+      fE = obBox.GetForwardVector().Dot( vPoint );
+      fF = obBox.GetForwardVector().Dot( ray.GetDirection() );
+      fHalfValue = obBox.GetHalfLength();
+      break;
+    case 1:
+      fE = obBox.GetRightVector().Dot( vPoint );
+      fF = obBox.GetRightVector().Dot( ray.GetDirection() );
+      fHalfValue = obBox.GetHalfWidth();
+      break;
+    default:
+      fE = obBox.GetUpVector().Dot( vPoint );
+      fF = obBox.GetUpVector().Dot( ray.GetDirection() );
+      fHalfValue = obBox.GetHalfHeight();
+    }
+    
+    if ( TOO_CLOSE_TO_ZERO(fF) )
+    {
+      if (-fE - fHalfValue > 0.0f || -fE + fHalfValue < 0.0f )
+      {
+	return false;
+      }
+    }
+    else 
+    { 
+      f1DivF = 1.0f / fF;
+      fT_1  = (fE + fHalfValue)*f1DivF;
+      fT_2  = (fE - fHalfValue)*f1DivF;
+
+      // Put values in correct order
+      if ( fT_1 > fT_2 ) 
+      {
+	float fTmp = fT_1;
+	fT_1 = fT_2;
+	fT_2 = fTmp;
+      }
+
+      /// Min/max comparison, first loop initializes values,
+      if ( i == 0 )
+      {
+	fT_min = fT_1;
+	fT_max = fT_2;
+      } 
+      else
+      {
+	if ( fT_1 > fT_min) fT_min = fT_1;
+	if ( fT_2 < fT_max) fT_max = fT_2;
+      }
+      // Perform tests, and exit on non-intersection.
+      if ( fT_min > fT_max ) return false;
+      if ( fT_max < 0.0f   ) return false;
+    
+    } // close to zero 
+  } // for
+
+  ////////////////////
+  /// Set distance from origin to closest intersection point 
+  if ( pfValue != NULL ) 
+  {
+    if ( fT_min > 0.0f) *pfValue = fT_min;
+    else                *pfValue = fT_max;
+  }    
+  // return intersection
+  return true;
+
+}
+/////////////////////////////////////////////////////////////////

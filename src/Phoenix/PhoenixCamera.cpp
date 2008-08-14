@@ -722,6 +722,13 @@ Phoenix::Graphics::CCamera::GetFocusPoint()
   return GetPosition()+GetForwardVector()*GetTrackballDistance();
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CCamera::CreateRay( float fX, float fY, CRay & ray)
+{
+  ray.SetPosition( UnProject( fX, fY,  0.0f) );
+  ray.SetDirection( UnProject( fX, fY, 1.0f) - ray.GetPosition() );
+}
+/////////////////////////////////////////////////////////////////
 // Float clip[16];
 //   float modl[16], proj[16];
 //   glGetFloatv( GL_PROJECTION_MATRIX, proj );

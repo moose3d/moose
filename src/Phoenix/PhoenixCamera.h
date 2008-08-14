@@ -350,6 +350,12 @@ namespace Phoenix
       /// Returns trackball rotation point.
       /// \returns trackball rotation point.
       Phoenix::Math::CVector3<float> GetFocusPoint();
+      ////////////////////
+      /// Creates ray in world space eminating, from opengl screen coordinates. (lower-left is 0,0)
+      /// \param fX x-coordinate.
+      /// \param fY y-coordinate.
+      /// \param ray Ray where values are stored.
+      void CreateRay( float fX, float fY, Phoenix::Math::CRay & ray);
     };
   }; // namespace Graphics
 }; // Phoenix

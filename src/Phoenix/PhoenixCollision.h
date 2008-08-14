@@ -135,8 +135,8 @@ namespace Phoenix
     /// \param line Line which is compared to point.
     /// \param Closest position on line to given point.
     void ClosestPointOnLine( const CVector3<float> &vPoint,
-			    const Phoenix::Math::CLine &line,
-			    Phoenix::Math::CVector3<float> & vClosestPoint);
+			     const Phoenix::Math::CLine &line,
+			     Phoenix::Math::CVector3<float> & vClosestPoint);
 
     
     ////////////////////
@@ -317,7 +317,16 @@ namespace Phoenix
     /// \returns INTERSECTS if the intersect
     /// \return OUTSIDE if the do not intersect.
     VOLUME_INTERSECTION  AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedCube &aabb, const Phoenix::Volume::CPolytope & poly );
-    
+    ////////////////////
+    /// Checks intersection with ray and OBB.
+    /// \param ray Ray object.
+    /// \param obBox The oriented box which is checked 
+    /// \param pfValue optional pointer to float variable that receives distance from  
+    ///                ray origin to closest intersection point. By default, value is NULL.
+    /// \returns false if ray does not intersect OBB. pfValue is undetermined. 
+    ///          true if ray intersects OBB. pfValue is set to closest distance. 
+    bool RayIntersectsOBB( const Phoenix::Math::CRay &ray, const Phoenix::Volume::COrientedBox &obBox,  float *pfValue = NULL );
+      
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
     /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
@@ -339,14 +348,7 @@ namespace Phoenix
     /* 				       float * pVertices,  */
     /* 				       unsigned int nNumVertices);   */
     
-    /*     /// \brief Checks intersection with ray and OBB: */
-    /*     /// \param vRayDir The direction of the line. || vRayDir || has to be 1. */
-    /*     /// \param vRayStart A point of ray origin. */
-    /*     /// \param obBox The oriented box which is checked */
-    /*     /// \param pfValue pointer to float variable receives distance from  */
-    /*     ///                ray origin to closest intersection point. */
-    /*     /// \returns 0 if ray does not intersect OBB. pfValue is undetermined. */
-    /*     ///          1 if ray intersects OBB. pfValue is set to closest distance. */
+
     /*     int RayIntersectsOBB( const CVector3<float> &vRayStart,  */
     /* 			  const CVector3<float> &vRayDir, */
     /* 			  const Phoenix::Volume::COrientedBox &obBox, */
@@ -430,7 +432,7 @@ namespace Phoenix
     /* /\* 			       float fQuadHeightDiv2 ); *\/ */
     /* /\*     } *\/ */
 
-  } // namespace Collision
+      } // namespace Collision
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline int 
