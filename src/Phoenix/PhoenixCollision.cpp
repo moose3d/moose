@@ -1383,7 +1383,7 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
   float fHalfValue;
   int   bStartInsideBox = 1;
   CVector3<float> vPoint = obBox.GetPosition() - ray.GetPosition();
-
+  bool bFirstTime = true;
   if ( fabs(vPoint.Dot(obBox.GetForwardVector())) > obBox.GetHalfLength()) bStartInsideBox = 0;
   if ( fabs(vPoint.Dot(obBox.GetRightVector())  ) > obBox.GetHalfWidth())  bStartInsideBox = 0;
   if ( fabs(vPoint.Dot(obBox.GetUpVector())     ) > obBox.GetHalfHeight()) bStartInsideBox = 0;
@@ -1437,11 +1437,12 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
 	fT_2 = fTmp;
       }
 
-      /// Min/max comparison, first loop initializes values,
-      if ( i == 0 )
+      /// Min/max comparison, initialise min/max on first time.
+      if ( bFirstTime )
       {
 	fT_min = fT_1;
 	fT_max = fT_2;
+	bFirstTime = false;
       } 
       else
       {
