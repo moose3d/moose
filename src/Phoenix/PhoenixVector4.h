@@ -5,13 +5,14 @@
 #include <ostream>
 #include <math.h>
 #include <PhoenixMathUtils.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Math
   {
     template <typename TYPE>
-    class CVector4
+    class PHOENIX_API CVector4
     {
     protected:
       /// Is the data referenced vie m_pValues member pointer.
@@ -318,7 +319,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// specialized template
     template <>
-    class CVector4<float>
+    class PHOENIX_API CVector4<float>
     {
     protected:
       /// Is the data referenced vie m_pValues member pointer.

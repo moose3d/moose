@@ -3,12 +3,13 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSoundSampleBase.h"
 #include "PhoenixALObjectArray.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
-    class CALSample : public CSoundSampleBase,
+    class PHOENIX_API CALSample : public CSoundSampleBase,
 		      public CALObjectArray<1>
     {
     public:
@@ -16,7 +17,7 @@ namespace Phoenix
       ~CALSample();
     };
     /////////////////////////////////////////////////////////////////
-    class CALStreamSample : public CSoundSampleBase,
+    class PHOENIX_API CALStreamSample : public CSoundSampleBase,
 			    public CALObjectArray<2>
     {
     protected:

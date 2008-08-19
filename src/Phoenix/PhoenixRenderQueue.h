@@ -4,6 +4,7 @@
 #include "PhoenixOctree.h"
 #include "PhoenixCamera.h"
 #include "PhoenixOGLRenderer.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -12,7 +13,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Class for collecting and sorting renderable objects.
     template<typename TYPE>
-    class CRenderQueue
+    class PHOENIX_API CRenderQueue
     {
     protected:
       std::list<TYPE> m_lstObjects;

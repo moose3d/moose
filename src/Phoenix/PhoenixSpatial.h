@@ -9,18 +9,19 @@
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixMatrix3x3.h"
 #include "PhoenixDefaultEntities.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Math 
   {
-    void RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector);
+    void PHOENIX_API RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector);
   }
   namespace Spatial
   {
     /////////////////////////////////////////////////////////////////
     /// The base class for Objects with position.
-    class CPositional 
+    class PHOENIX_API CPositional 
     {
     protected:
       /// Vector where position is stored.
@@ -93,7 +94,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// The class for single-directional object.
-    class COneDirectional 
+    class PHOENIX_API COneDirectional 
     {
     protected:
       /// Direction vector.
@@ -168,7 +169,7 @@ namespace Phoenix
     };
     ////////////////////
     /// Vertex class for some cases where it is easier to handle things as a blob.
-    class CVertex : public Phoenix::Spatial::CPositional
+    class PHOENIX_API CVertex : public Phoenix::Spatial::CPositional
     {
     public:
       /// Vertex normal.
@@ -415,7 +416,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Triangle class for editors.
-    class CTriangle 
+    class PHOENIX_API CTriangle 
     {
     protected:
       /// Vertices in a triangle
@@ -471,7 +472,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Generic orientable object. Contains base vectors
     /// which are rotated using the provided methods.
-    class COrientable
+    class PHOENIX_API COrientable
     {
     protected:
 
@@ -632,7 +633,7 @@ namespace Phoenix
 
     ////////////////////
     /// A class which provides dimensions in 1D (or n-dimensional object with equivalent size in all dimensions.
-    class CDimensional1D
+    class PHOENIX_API CDimensional1D
     {
     protected:
       /// The width.
@@ -681,7 +682,7 @@ namespace Phoenix
     }; // CDimensional1D
     /////////////////////////////////////////////////////////////////
     /// A class which provides dimensions in 2D - width, height.
-    class CDimensional2D : public CDimensional1D
+    class PHOENIX_API CDimensional2D : public CDimensional1D
     {
     protected:
       /// The height.
@@ -732,7 +733,7 @@ namespace Phoenix
     }; // CDimensional2D
     /////////////////////////////////////////////////////////////////
     /// A class which provides dimensions in 3D - width, height and length.
-    class CDimensional3D : public CDimensional2D
+    class PHOENIX_API CDimensional3D : public CDimensional2D
     {
     protected:
       /// The length.

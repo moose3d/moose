@@ -8,6 +8,7 @@
 #include <string.h>
 #include <assert.h>
 #include <iostream>
+#include "PhoenixAPI.h"
 namespace Phoenix
 {
   namespace Core
@@ -19,7 +20,7 @@ namespace Phoenix
     class CGraph;
     /////////////////////////////////////////////////////////////////
     /// \brief A class for an directed edge between two nodes in a graph.
-    class CGraphEdge
+    class PHOENIX_API CGraphEdge
     {
 #define GRAPH_EDGE_IMPL(NAME)  NAME( CGraphNode *pFrom,  CGraphNode *pTo ) : CGraphEdge(pFrom, pTo)  {}
       friend class CGraphNode;
@@ -153,7 +154,7 @@ namespace Phoenix
     typedef std::list< CGraphEdge * > EdgeListType;
     typedef std::list< CGraphNode * > NodeListType;
 
-    class CGraphNode 
+    class PHOENIX_API CGraphNode 
     {
       friend class CGraph;
       friend class CGraphEdge;
@@ -269,7 +270,7 @@ namespace Phoenix
       size_t GetOutDegree();
     };
     /////////////////////////////////////////////////////////////////
-    class CGraph
+    class PHOENIX_API CGraph
     {
     public:  
 

@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <stdlib.h>
 #include <PhoenixCore.h>
-//#include <PhoenixRenderable.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix 
 {
@@ -47,8 +47,8 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
-    class CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>,
-			      public Phoenix::Core::CTypeBase<ELEMENT_TYPE>
+    class PHOENIX_API CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>,
+					  public Phoenix::Core::CTypeBase<ELEMENT_TYPE>
     {  
     protected:
       /// number of elements.

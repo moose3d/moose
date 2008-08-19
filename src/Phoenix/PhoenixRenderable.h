@@ -9,6 +9,7 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixTransform.h"
 #include "PhoenixRenderState.h"
+#include "PhoenixAPI.h"
 #include <vector>
 #include <iostream>
 #include <utility>
@@ -33,7 +34,7 @@ namespace Phoenix
     typedef std::map< std::string, float >	       ShaderFloatParams;
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
-    class CRenderable
+    class PHOENIX_API CRenderable
     {
     protected:
       /// Handle to textures.

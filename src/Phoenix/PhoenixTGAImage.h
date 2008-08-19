@@ -2,6 +2,7 @@
 #define __PhoenixTGAImage_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixGlobals.h"
+#include "PhoenixAPI.h"
 #include <iostream>
 #include <fstream>
 #include <memory.h>
@@ -11,7 +12,7 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    class CTGAImage
+    class PHOENIX_API CTGAImage
     {
     public:
       CTGAImage();

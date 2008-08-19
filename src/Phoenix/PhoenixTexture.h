@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <GL/gl.h>
+#include "PhoenixAPI.h"
 //#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -40,7 +41,7 @@ namespace Phoenix
       };
     /////////////////////////////////////////////////////////////////
     /// OpenGL base class.
-    class COglBase
+    class PHOENIX_API COglBase
     {
     protected:
       /// OpenGL id.
@@ -72,7 +73,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Class for textures.
     typedef unsigned int ResolutionType;
-    class COglTexture : public COglBase
+    class PHOENIX_API COglTexture : public COglBase
     {
     private:
       TEXTURE_TYPE		m_tTextureType;

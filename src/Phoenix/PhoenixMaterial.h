@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <PhoenixVector4.h>
 #include <PhoenixRenderable.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -11,7 +12,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// A material class which holds the attributes which define
     /// the appearance of an object.
-    class CMaterial 
+    class PHOENIX_API CMaterial 
     {
     protected:
       /// The diffuse color for this material.

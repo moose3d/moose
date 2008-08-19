@@ -4,6 +4,7 @@
 #include "PhoenixMathUtils.h"
 #include "PhoenixVector3.h"
 #include "PhoenixVector4.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 using Phoenix::Math::CVector3;
 using Phoenix::Math::CVector4;
@@ -14,7 +15,7 @@ namespace Phoenix
   {
     ////////////////////
     /// Quaternion class.
-    class CQuaternion  : public CVector4<float>
+    class PHOENIX_API CQuaternion  : public CVector4<float>
     {
 
     public:

@@ -4,12 +4,13 @@
 #include "PhoenixSoundBase.h"
 #include "PhoenixALObjectArray.h"
 #include "PhoenixALSampleTypes.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
-    class CALSoundOperations : virtual public CALObjectArray<1>,
+    class PHOENIX_API CALSoundOperations : virtual public CALObjectArray<1>,
 			       virtual public CSoundBase
     {
     public:
@@ -25,7 +26,7 @@ namespace Phoenix
       void CommitChanges();
     };
     /////////////////////////////////////////////////////////////////
-    class CALSound : public CALSoundOperations
+    class PHOENIX_API CALSound : public CALSoundOperations
     {
     public:
       CALSound();
@@ -34,7 +35,7 @@ namespace Phoenix
   
     };
     /////////////////////////////////////////////////////////////////
-    class CALStreamSound : public CALSoundOperations
+    class PHOENIX_API CALStreamSound : public CALSoundOperations
     {
     protected:
       CALStreamSample *m_pStream;

@@ -5,6 +5,7 @@
 #include "PhoenixTransform.h"
 #include "PhoenixVolume.h"
 #include "PhoenixRenderable.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 #include <vector>
 /////////////////////////////////////////////////////////////////
@@ -24,7 +25,7 @@ namespace Phoenix
     typedef std::list< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> *> RenderableHandleList;
     typedef std::vector< RenderableHandleList >				        LodLevelObjects;
 
-    class CGameObject : public Phoenix::Math::CTransformable
+    class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable
     {
     private:
       /// Renderable objects

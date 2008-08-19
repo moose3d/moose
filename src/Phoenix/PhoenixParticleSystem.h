@@ -7,6 +7,7 @@
 #include <PhoenixVolume.h>
 #include <PhoenixVertexDescriptor.h>
 #include <PhoenixIndexArray.h>
+#include "PhoenixAPI.h"
 #include <list>
 #include <iostream>
 namespace Phoenix 
@@ -15,7 +16,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// The Particle base class, contains properties of a single particle.
-    class CParticle 
+    class PHOENIX_API CParticle 
     {
     public:
       ///  Current position in the world. 
@@ -37,7 +38,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Particle System.
     template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
-    class CParticleSystem 
+    class PHOENIX_API CParticleSystem 
     {
     private:
       /// Particle array
@@ -112,7 +113,7 @@ namespace Phoenix
     /// CompletePolicy for handling size, color, velocity, energy, and position.
     template < class PARTICLE_TYPE, class ColorPolicy, class SizePolicy, class VelocityPolicy, 
     class EnergyPolicy, class PositionPolicy>
-    class CCompletePolicy
+    class PHOENIX_API CCompletePolicy
     {
     public:
       /// Size policy.
@@ -150,7 +151,7 @@ namespace Phoenix
     }; // end of CCompletePolicy
     /////////////////////////////////////////////////////////////////
     // Classe for measuring time difference within policies (using milliseconds). 
-    class CMillisecondPolicyBase 
+    class PHOENIX_API CMillisecondPolicyBase 
     {
     protected:
       /// Passed time in milliseconds
@@ -177,7 +178,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Class for measuring time difference within policies (using seconds).
-    class CSecondPolicyBase
+    class PHOENIX_API CSecondPolicyBase
     {
     protected:
       /// Passed time in seconds
@@ -203,7 +204,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Class for measuring time difference within policies (using timestamp).
-    class CTimeStampPolicyBase
+    class PHOENIX_API CTimeStampPolicyBase
     {
     protected:
       /// Passed time in seconds
@@ -232,7 +233,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Template for GravityAction.
     template <class PARTICLE_TYPE>
-    class CGravityAction : public CSecondPolicyBase
+    class PHOENIX_API CGravityAction : public CSecondPolicyBase
     {
     private:
       /// Gravity values.
@@ -259,7 +260,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     // Template for MoveAction.
     template <class PARTICLE_TYPE>
-    class CMoveAction : public CSecondPolicyBase
+    class PHOENIX_API CMoveAction : public CSecondPolicyBase
     {
     public:
       ////////////////////
@@ -273,7 +274,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Template for SizeInitializer.
     template <class PARTICLE_TYPE>
-    class CSizeInitializer
+    class PHOENIX_API CSizeInitializer
     {
     public:
       /// Size value.
@@ -293,7 +294,7 @@ namespace Phoenix
     /// Template for policy which does not do a thing. 
     /// Can be used when some policy will not matter.
     template <class PARTICLE_TYPE>
-    class CNullPolicy
+    class PHOENIX_API CNullPolicy
     {
     public:
       ////////////////////
@@ -307,7 +308,7 @@ namespace Phoenix
     }; // end of CNullPolicy
     /////////////////////////////////////////////////////////////////
     template <class PARTICLE_TYPE>
-    class CEnergyInitializer
+    class PHOENIX_API CEnergyInitializer
     {
     public:
       /// Initial energy.
@@ -330,7 +331,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     // A velocity initializer for particle system
     template <class PARTICLE_TYPE>
-    class CVelocityInitializer
+    class PHOENIX_API CVelocityInitializer
     {
     public:
       /// Velocity vector.
@@ -353,7 +354,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// A color initializer for particle system.
     template <class PARTICLE_TYPE>
-    class CColorInitializer
+    class PHOENIX_API CColorInitializer
     {
     public:
       /// Color value.

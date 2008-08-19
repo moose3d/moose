@@ -4,13 +4,14 @@
 #include <sstream>
 #include <string>
 #include <stdexcept>
+#include "PhoenixAPI.h"
 ///////////////////////////////////////////////////////////////
 namespace Phoenix
 {
 	namespace Core
 	{
 		/// Runtime exception for conversion.
-		class CBadConversion : public std::runtime_error {
+		class PHOENIX_API CBadConversion : public std::runtime_error {
 		public:
 			CBadConversion(const std::string& s)
 				: std::runtime_error(s)

@@ -1,12 +1,14 @@
 #ifndef __PhoenixObjectCounter_h__
 #define __PhoenixObjectCounter_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixAPI.h"
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Core
   {
     template <typename CountedType> 
-    class CObjectCounter { 
+    class PHOENIX_API CObjectCounter { 
     private: 
       static size_t m_nCount;  // number of existing objects 
     protected: 

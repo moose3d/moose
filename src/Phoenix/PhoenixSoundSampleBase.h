@@ -9,6 +9,7 @@
 #include <AL/alc.h>
 #endif
 #include <stdlib.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -16,7 +17,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Class for generic sound sample. All other sample classes should be inherited from this.
-    class CSoundSampleBase
+    class PHOENIX_API CSoundSampleBase
     {
     protected:
       ALenum     m_Format;

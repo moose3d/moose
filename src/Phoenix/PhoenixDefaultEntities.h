@@ -7,6 +7,7 @@
 #include <PhoenixShader.h>
 #include <PhoenixVertexDescriptor.h>
 #include <PhoenixIndexArray.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -35,7 +36,7 @@ namespace Phoenix
 #endif
     /////////////////////////////////////////////////////////////////
     /// Default object updater object.
-    class CPhoenixObjectUpdater : public Phoenix::Core::CObjectUpdater, 
+    class PHOENIX_API CPhoenixObjectUpdater : public Phoenix::Core::CObjectUpdater, 
 				  public Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>
     {
       friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;

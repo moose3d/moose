@@ -4,6 +4,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSpatial.h"
 #include "PhoenixVolume.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 #define NUM_FRUSTUM_CORNERS 8
 #define NUM_FRUSTUM_PLANES  6
@@ -14,7 +15,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// The frustum class for culling.
-    class CFrustum : public Phoenix::Volume::CPolytope
+    class PHOENIX_API CFrustum : public Phoenix::Volume::CPolytope
     {
     public:
       typedef Phoenix::Volume::BBOX_PLANE_TYPE FRUSTUM_PLANE ;

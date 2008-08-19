@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixModelLoader.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -46,7 +47,7 @@ namespace Phoenix
     typedef std::map< std::string, std::list<size_t> > GroupFaces;
     /////////////////////////////////////////////////////////////////
     /// Class for loading .obj models.
-    class CObjLoader : public CModelLoader
+    class PHOENIX_API CObjLoader : public CModelLoader
     {
     private:
       /// vertices.

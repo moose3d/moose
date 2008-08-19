@@ -3,13 +3,14 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSpatial.h"
 #include "PhoenixVector3.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
-    class CSoundBase : public Phoenix::Spatial::CPositional,
-		       public Phoenix::Spatial::COneDirectional
+    class PHOENIX_API CSoundBase : public Phoenix::Spatial::CPositional,
+				   public Phoenix::Spatial::COneDirectional
     {
     protected:
       Phoenix::Math::CVector3<float> m_vVelocity;

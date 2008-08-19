@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <fstream>
 #include <sys/types.h>
+#include "PhoenixAPI.h"
 #ifndef WIN32
 /////////////////////////////////////////////////////////////////
 // Pointers are tricky, 64-bit ones wreak havoc unless we define them as 32-bit.
@@ -142,7 +143,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Actual data for DDS image
-    class CDDSImage
+    class PHOENIX_API CDDSImage
     {
     private:
       size_t		m_nWidth;

@@ -4,6 +4,7 @@
 #include "PhoenixCore.h"
 #include "PhoenixBlendingOperation.h"
 #include "PhoenixAlphaTestOperation.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -12,7 +13,7 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////
     /// Renderstate object. Helps to sort things by transparency, for instance.
-    class CRenderState
+    class PHOENIX_API CRenderState
     {
     private:
       Phoenix::Graphics::CAlphaTestOperation m_AlphaTestOp;

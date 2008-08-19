@@ -4,6 +4,7 @@
 #include "PhoenixCore.h"
 #include "PhoenixSpatial.h"
 #include "PhoenixMathGeometry.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -17,7 +18,7 @@ namespace Phoenix
     };
     ////////////////////
     /// Class for lights.
-    class CLight : public Phoenix::Spatial::CPositional,
+    class PHOENIX_API CLight : public Phoenix::Spatial::CPositional,
                    public Phoenix::Spatial::COneDirectional,
                    public Phoenix::Core::CEnableable
     {

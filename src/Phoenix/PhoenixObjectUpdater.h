@@ -2,19 +2,20 @@
 #define __PhoenixObjectUpdater_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixResourceManager.h"
+#include "PhoenixAPI.h"
 #include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Core
   {
-    class IUpdateable
+    class PHOENIX_API IUpdateable
     {
     public:
       virtual ~IUpdateable() {};
       virtual void Update( size_t nPassedTimeMS ) = 0;
     };
-    class IHandlerBase
+    class PHOENIX_API IHandlerBase
     {
     public:
       virtual ~IHandlerBase() {};
@@ -23,7 +24,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     template<class TYPE>
-    class CUpdateableObjectHandler : public IHandlerBase
+    class PHOENIX_API CUpdateableObjectHandler : public IHandlerBase
     {
     private:
       Phoenix::Core::CHandle<TYPE> m_hThis;
@@ -44,7 +45,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Class for updater object. 
-    class CObjectUpdater
+    class PHOENIX_API CObjectUpdater
     {
     protected:
       typedef std::vector< IHandlerBase * > UpdateableVector;

@@ -3,13 +3,14 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVector3.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
     class CAudioSystem;
-    class CListener : public Phoenix::Spatial::COrientable,
+    class PHOENIX_API CListener : public Phoenix::Spatial::COrientable,
 		      public Phoenix::Spatial::CPositional
     {
       friend class CAudioSystem;

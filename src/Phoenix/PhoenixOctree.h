@@ -7,6 +7,7 @@
 #include "PhoenixCamera.h"
 #include "PhoenixCollision.h"
 #include <iostream>
+#include  "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -38,7 +39,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Octreenode class template.
     template<typename TYPE>
-    class COctreeNode : public Phoenix::Volume::CAxisAlignedCube
+    class PHOENIX_API COctreeNode : public Phoenix::Volume::CAxisAlignedCube
     {
     protected:
       std::list< TYPE > m_lstObjects;
@@ -134,7 +135,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Octree class template.
     template<typename TYPE>
-    class COctree : protected Phoenix::Spatial::CDimensional1D
+    class PHOENIX_API COctree : protected Phoenix::Spatial::CDimensional1D
     {
     protected:
       /// Number of total nodes in this Octree.

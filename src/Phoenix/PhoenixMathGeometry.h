@@ -6,6 +6,7 @@
 #include "PhoenixSpatial.h"
 #include <list>
 #include <iostream>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -14,7 +15,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     // The plane class, always normalized. ( || Normal || == 1 )
     /////////////////////////////////////////////////////////////////
-    class CPlane : public Phoenix::Math::CVector4<float>
+    class PHOENIX_API CPlane : public Phoenix::Math::CVector4<float>
     {
     public:
       CPlane();
@@ -31,7 +32,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     // The class for a Quad
-    class CQuad : public Phoenix::Spatial::CPositional 
+    class PHOENIX_API CQuad : public Phoenix::Spatial::CPositional 
     {
     protected:
       // The width of the quad
@@ -82,7 +83,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Abstraction for 3d lines. Infinitely thin and long, extending both directions
     /// from reference point.
-    class CLine : public Phoenix::Spatial::COneDirectional, 
+    class PHOENIX_API CLine : public Phoenix::Spatial::COneDirectional, 
 		  public Phoenix::Spatial::CPositional
     {
     public:
@@ -97,13 +98,13 @@ namespace Phoenix
     }; // class CLine
     /////////////////////////////////////////////////////////////////
     /// Abstraction for rays ( like lines, but extend only to one direction. ).
-    class CRay : public CLine
+    class PHOENIX_API CRay : public CLine
     {
       
     };
     /////////////////////////////////////////////////////////////////
     /// Abstraction for lines.
-    class CLineSegment : public CLine
+    class PHOENIX_API CLineSegment : public CLine
     {
     protected:
       float m_fDistanceStart;

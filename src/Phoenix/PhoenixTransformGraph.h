@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <PhoenixTransform.h>
 #include <PhoenixGraph.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -11,7 +12,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Transform node template, allows several different objects to be 
     /// attached to each other via typing mechanism.
-    class CTransformNode : public Phoenix::Core::CGraphNode
+    class PHOENIX_API CTransformNode : public Phoenix::Core::CGraphNode
     {
       friend class Phoenix::Core::CGraph;
     public:

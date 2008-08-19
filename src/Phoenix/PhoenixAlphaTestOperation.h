@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
 #include "PhoenixOGLConsts.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -10,7 +11,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Class grouping alpha testing properties.
-    class CAlphaTestOperation : public Phoenix::Core::CEnableable
+    class PHOENIX_API CAlphaTestOperation : public Phoenix::Core::CEnableable
     {
     private:
       Phoenix::Graphics::ALPHA_TEST_TYPE m_tTestType;

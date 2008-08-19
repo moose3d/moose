@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include "PhoenixAPI.h"
 #ifdef WIN32
 #include "PhoenixWindowsWrapper.h"
 #else
@@ -23,7 +24,7 @@ namespace Phoenix
     const size_t PHOENIX_MAGIC_NUMBER = 33;
     /////////////////////////////////////////////////////////////////
     /// Nullable entity.
-    class CNullable
+    class PHOENIX_API CNullable
     {
     private:
       /// State
@@ -44,7 +45,7 @@ namespace Phoenix
       inline bool IsNull() const { return m_bIsNull; }
     };
     /////////////////////////////////////////////////////////////////
-    class CEnableable
+    class PHOENIX_API CEnableable
     {
     private:
       /// Is object enabled.
@@ -67,7 +68,7 @@ namespace Phoenix
       inline void operator=( bool bFlag ) { SetEnabled(bFlag); }
     };
     /////////////////////////////////////////////////////////////////
-    class CSelectable
+    class PHOENIX_API CSelectable
     {
     private:
       /// Is object selected.
@@ -87,7 +88,7 @@ namespace Phoenix
       void SetSelected( bool bFlag ) { m_bSelected = bFlag; }
     };
     /////////////////////////////////////////////////////////////////
-    class CFocusable
+    class PHOENIX_API CFocusable
     {
     private:
       /// Does this element have current focus.
@@ -109,7 +110,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Template base for each typed object.
     template <typename TYPE>
-    class CTypeBase
+    class PHOENIX_API CTypeBase
     {
     protected:
       /// Stores the type
@@ -126,7 +127,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Timestamp for various things.
-    class CTimeStamp
+    class PHOENIX_API CTimeStamp
     {
     protected:
       /// Passed seconds 
@@ -273,7 +274,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Generic timer for calculating passed time.
-    class CTimer 
+    class PHOENIX_API CTimer 
     {
     protected:
       /// The passed time relative to nStartTimeMS in milliseconds.
@@ -374,7 +375,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// A FPS Counter class for reporting framerate.
-    class CFpsCounter : public CTimer
+    class PHOENIX_API CFpsCounter : public CTimer
     {
     protected:
       /// The number of frames.
@@ -449,7 +450,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// The base object for hash table storing.
     template<typename KEYTYPE, typename OBJECTTYPE>
-    class CHashItem
+    class PHOENIX_API CHashItem
     {
     protected:
       /// The identification number for the object.
@@ -526,7 +527,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Hash table class for several types.
     template <typename KEYTYPE, typename OBJECTTYPE, typename HashFunc=CreateHash>
-    class CHashTable
+    class PHOENIX_API CHashTable
     {
     protected:
       /// vector of vector of objects.
@@ -604,7 +605,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Singleton template, which makes creating singleton objects easier.
     template <class T>
-    class CSingleton
+    class PHOENIX_API CSingleton
     {
 
     private:
@@ -655,7 +656,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Template class for different cache objects.
     template<typename CACHE_TYPE>
-    class CCacheable
+    class PHOENIX_API CCacheable
     {
     protected:
       CACHE_STATE_TYPE m_nState;
@@ -705,7 +706,7 @@ namespace Phoenix
       }
     };
     
-    class CUniqueNameCreator : public CSingleton<CUniqueNameCreator>,
+    class PHOENIX_API CUniqueNameCreator : public CSingleton<CUniqueNameCreator>,
 			       protected CTimer
     {
       friend class Phoenix::Core::CSingleton<CUniqueNameCreator>;

@@ -1,13 +1,15 @@
 #ifndef __PhoenixExceptions_h__
 #define __PhoenixExceptions_h__
+/////////////////////////////////////////////////////////////////
 #include <exception>
 #include <string>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Exceptions
   {
-    class CNullPointerException : public std::exception
+    class PHOENIX_API CNullPointerException : public std::exception
     {
     private:
       std::string reason;

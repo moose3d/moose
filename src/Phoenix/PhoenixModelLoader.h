@@ -4,12 +4,13 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixDefaultEntities.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Data
   {
-    class CModelLoader
+    class PHOENIX_API CModelLoader
     {
     protected:
       /// Vertex positions.

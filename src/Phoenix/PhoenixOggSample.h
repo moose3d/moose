@@ -2,12 +2,13 @@
 #define __COggSample_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixALSampleTypes.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
-    class COggSample : public CALSample
+    class PHOENIX_API COggSample : public CALSample
     {
     public:
       bool Load( const char *szFilename );

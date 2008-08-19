@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixGraph.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixAPI.h"
 #include <queue>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -10,8 +11,8 @@ namespace Phoenix
   namespace AI
   {
     /////////////////////////////////////////////////////////////////
-    class CSearchNode : public Phoenix::Core::CGraphNode,
-			public Phoenix::Spatial::CPositional
+    class PHOENIX_API CSearchNode : public Phoenix::Core::CGraphNode,
+				    public Phoenix::Spatial::CPositional
     {
       friend class Phoenix::Core::CGraph;
     private:
@@ -46,7 +47,7 @@ namespace Phoenix
     typedef std::list<CSearchNode *>	       ClosedList;
     typedef std::list<CSearchNode *>	       FinalPathList;
     /////////////////////////////////////////////////////////////////
-    class CAStarSearch 
+    class PHOENIX_API CAStarSearch 
     {
     protected:
 

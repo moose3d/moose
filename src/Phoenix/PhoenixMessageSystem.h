@@ -4,6 +4,7 @@
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>
 #include <PhoenixExceptions.h>
+#include "PhoenixAPI.h"
 #include <iomanip>
 #include <algorithm>
 #include <list>
@@ -15,7 +16,7 @@ namespace Phoenix
 {
   namespace AI
   {
-    class TypeInfo
+    class PHOENIX_API TypeInfo
     {
     private:
       const std::type_info & m_TypeInfo;
@@ -30,7 +31,7 @@ namespace Phoenix
     
     ////////////////////
     /// Base type for all messages.
-    class CMessage
+    class PHOENIX_API CMessage
     {
     protected:
       /// Timestamp of this message.
@@ -50,7 +51,7 @@ namespace Phoenix
     };
 
     /////////////////////////////////////////////////////////////////
-    class CHandlerFunctionBase
+    class PHOENIX_API CHandlerFunctionBase
     {
     public:
       virtual ~CHandlerFunctionBase() {}
@@ -68,7 +69,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Handler by ...err.. Handle.
     template <class CLASS_TYPE, class MESSAGE_TYPE>
-    class CMemberFunctionHandler : public CHandlerFunctionBase
+    class PHOENIX_API CMemberFunctionHandler : public CHandlerFunctionBase
     {
     private:
       Phoenix::Core::CHandle<CLASS_TYPE> m_hHandler;
@@ -106,7 +107,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Handler by object pointer.
     template <class CLASS_TYPE, class MESSAGE_TYPE>
-    class CMemberPtrFunctionHandler : public CHandlerFunctionBase
+    class PHOENIX_API CMemberPtrFunctionHandler : public CHandlerFunctionBase
     {
     private:
       CLASS_TYPE *m_pObj;
@@ -137,7 +138,7 @@ namespace Phoenix
     typedef std::list< CHandlerFunctionBase *> Handlers;
     /////////////////////////////////////////////////////////////////
     /// Contains a list of handler functions to be called.
-    class CHandlerList 
+    class PHOENIX_API CHandlerList 
     {
     protected:
      
@@ -166,7 +167,7 @@ namespace Phoenix
     ////////////////////
     /// Message router. 
     typedef std::pair< Phoenix::AI::CHandlerFunctionBase *, Phoenix::AI::CMessage *> SoleMessageHandlerPair;
-    class CMessageQueue : protected Phoenix::Core::CTimer,
+    class PHOENIX_API CMessageQueue : protected Phoenix::Core::CTimer,
 			  public Phoenix::Core::CSingleton<CMessageQueue>
     {
       friend class Phoenix::Core::CSingleton<CMessageQueue>;

@@ -3,6 +3,7 @@
 #define __PhoenixSDLScreen_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
 
@@ -13,7 +14,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// The Screen Singleton. Each application can have only one screen where
     /// drawing occurs. Hence, the Singleton nature.
-    class CSDLScreenParams 
+    class PHOENIX_API CSDLScreenParams 
     {
     public:
       /// The number of red bits  
@@ -46,7 +47,7 @@ namespace Phoenix
 				       const CSDLScreenParams & oglSP);
     };
     /////////////////////////////////////////////////////////////////
-    class CSDLScreen : public CSingleton<CSDLScreen>
+    class PHOENIX_API CSDLScreen : public CSingleton<CSDLScreen>
     {
       friend class CSingleton<CSDLScreen>;
     private:

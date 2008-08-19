@@ -3,12 +3,13 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixALSampleTypes.h"
 #include <vorbis/vorbisfile.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
-    class COggStreamSample : public CALStreamSample
+    class PHOENIX_API COggStreamSample : public CALStreamSample
     {
     private:
       OggVorbis_File  m_OggFile;

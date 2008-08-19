@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
 #include "PhoenixOGLConsts.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -10,7 +11,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Class for grouping blending operations. 
-    class CBlendingOperation : public Phoenix::Core::CEnableable
+    class PHOENIX_API CBlendingOperation : public Phoenix::Core::CEnableable
     {
     private:
       BLEND_SRC_TYPE m_tBlendSrcType;

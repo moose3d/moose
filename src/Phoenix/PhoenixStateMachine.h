@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <iostream>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -15,13 +16,13 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////    
     template <typename STATE_TYPE>
-    class CState : public Phoenix::Core::CGraphNode,
+    class PHOENIX_API CState : public Phoenix::Core::CGraphNode,
 		   public Phoenix::Core::CTypeBase<STATE_TYPE>
     {
     };
 
     template <typename INPUT_TYPE>
-    class CStateEdge : public Phoenix::Core::CGraphEdge,
+    class PHOENIX_API CStateEdge : public Phoenix::Core::CGraphEdge,
 		       public Phoenix::Core::CTypeBase<INPUT_TYPE>
     {
     public:
@@ -31,7 +32,7 @@ namespace Phoenix
     ////////////////////
     /// Finite State Machine. 
     template <typename STATE_TYPE, typename INPUT_TYPE>
-    class CStateMachine : public Phoenix::Core::CGraph
+    class PHOENIX_API CStateMachine : public Phoenix::Core::CGraph
     {
     protected:
       typedef std::vector< CState< STATE_TYPE> *> StateVector;

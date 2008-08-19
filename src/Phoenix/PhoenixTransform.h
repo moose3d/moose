@@ -4,6 +4,7 @@
 #include <PhoenixMatrix4x4.h>
 #include <PhoenixQuaternion.h>
 #include <PhoenixVector3.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -13,7 +14,7 @@ namespace Phoenix
     /// A class which stores scaling, rotation and translation into
     /// 4x4 matrix and provides methods for easily changing any of 
     /// those components.
-    class CTransform
+    class PHOENIX_API CTransform
     {
     protected:
       /// Is this transform changed.
@@ -129,13 +130,13 @@ namespace Phoenix
     /// \param rTransformRight Right-side transform.
     /// \param rTransformLeft  Left-side transform.
     /// \param rTransformResult Resulting transform.
-    void Multiply( const CTransform & rTransformLeft, 
-		   const CTransform & rTransformRight, 
-		   CTransform & rTransformResult);
+    PHOENIX_API void Multiply( const CTransform & rTransformLeft, 
+			       const CTransform & rTransformRight, 
+			       CTransform & rTransformResult);
 
     /////////////////////////////////////////////////////////////////
     /// Transformable base class
-    class CTransformable 
+    class PHOENIX_API CTransformable 
     {
     protected:
       Phoenix::Math::CTransform m_LocalTransform;

@@ -2,6 +2,7 @@
 #define __CGuiSystem_h__
 #include <CEGUI.h>
 #include <stdlib.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 union SDL_Event;
 
@@ -15,7 +16,7 @@ namespace Phoenix
     typedef SDL_Event GuiEvent;
     ////////////////////
     /// Adapter for CEGUI.
-    class CGuiSystem
+    class PHOENIX_API CGuiSystem
     {
     public:
       ////////////////////

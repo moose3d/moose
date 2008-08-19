@@ -2,6 +2,7 @@
 #define __PhoenixAVLTree_h__
 #include <stdlib.h>
 #include <iostream>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -15,7 +16,7 @@ namespace Phoenix
       ////////////////////
       /// Data container for each node.
       template< typename Value > 
-      class KeyValue
+      class PHOENIX_API KeyValue
       {
       private:
 	int m_iKey;
@@ -69,7 +70,7 @@ namespace Phoenix
       ////////////////////
       /// A self-balancing binary tree data structure node (AVL-tree node).
       template< class KeyValue >
-      class CAVLTreeNode
+      class PHOENIX_API CAVLTreeNode
       {
       protected:
 	/// Left child.
@@ -576,7 +577,7 @@ namespace Phoenix
       ////////////////////
       /// AVL-tree structure.
       template< class KeyValue >
-      class CAVLTree
+      class PHOENIX_API CAVLTree
       {
       protected:
 	CAVLTreeNode<KeyValue> *m_pRoot;

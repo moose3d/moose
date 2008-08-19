@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixRenderable.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 #define PHOENIX_SKYBOX_TEXCOORDS    "PHOENIX_SKYBOX_TEXCOORDS"
 #define PHOENIX_SKYBOX_VERTICES     "PHOENIX_SKYBOX_VERTICES"
@@ -14,7 +15,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Skybox class.
-    class CSkybox : public Phoenix::Graphics::CRenderable
+    class PHOENIX_API CSkybox : public Phoenix::Graphics::CRenderable
     {
     public:
       ////////////////////

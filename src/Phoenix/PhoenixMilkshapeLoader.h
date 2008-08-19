@@ -5,6 +5,7 @@
 #include <PhoenixIndexArray.h>
 #include <PhoenixSpatial.h>
 #include <PhoenixModelLoader.h>
+#include "PhoenixAPI.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -262,7 +263,7 @@ namespace Phoenix
     typedef std::map<Phoenix::Spatial::CVertex, size_t, Phoenix::Data::MSVertexCompare> VertexIndexMap;
     /////////////////////////////////////////////////////////////////
     /// Actual model class, which encapsulates structs above.
-    class CMilkshapeLoader : public Phoenix::Data::CModelLoader
+    class PHOENIX_API CMilkshapeLoader : public Phoenix::Data::CModelLoader
     {
     public:
       /// Vertex array size.

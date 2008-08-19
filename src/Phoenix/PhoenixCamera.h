@@ -5,6 +5,7 @@
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixSpatial.h"
 #include "PhoenixFrustum.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -12,7 +13,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Camera class.
-    class CCamera : public Phoenix::Spatial::CPositional, public Phoenix::Spatial::COrientable
+    class PHOENIX_API CCamera : public Phoenix::Spatial::CPositional, public Phoenix::Spatial::COrientable
     {
     protected:
       /// field of view angle in degrees.

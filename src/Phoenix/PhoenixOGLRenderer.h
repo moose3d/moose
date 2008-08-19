@@ -24,6 +24,7 @@
 #include "PhoenixRenderState.h"
 #include "PhoenixBlendingOperation.h"
 #include "PhoenixAlphaTestOperation.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -31,7 +32,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Holds information about current renderstates.
-    class CInternalRenderState
+    class PHOENIX_API CInternalRenderState
     {
     public:
       Phoenix::Graphics::COglTexture *m_pTexture[TEXTURE_HANDLE_COUNT];
@@ -132,7 +133,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// \brief A class which tells which OpenGL features are supported 
     /// by underlying hardware
-    class COglRendererFeatures
+    class PHOENIX_API COglRendererFeatures
     {
     protected:
       /// vertex_program support flag.
@@ -241,7 +242,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Fontset for rendering arbitrary text on screen.
     /// \warn Not tested properly!!!
-    class CFontset
+    class PHOENIX_API CFontset
     {
     protected:
       /// Pointers to font textures.
@@ -290,7 +291,7 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
-    class COglRenderer
+    class PHOENIX_API COglRenderer
     {
     protected:
       /// Supported features.

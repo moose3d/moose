@@ -10,6 +10,7 @@
 #include <iostream>
 #include <assert.h>
 #include <string>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 #define ReportALErrors()					\
 {								\
@@ -35,7 +36,7 @@ namespace Phoenix
   namespace Sound
   {
     template< size_t OBJECTS >
-    class CALObjectArray
+    class PHOENIX_API CALObjectArray
     {
     private:
       ALuint m_Objects[OBJECTS];

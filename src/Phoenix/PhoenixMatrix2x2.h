@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include "PhoenixMathUtils.h"
+#include "PhoenixAPI.h"
 namespace Phoenix 
 {
   namespace Math 
@@ -10,7 +11,7 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// The matrix template class 
     template <typename TYPE>
-    class CMatrix2x2
+    class PHOENIX_API CMatrix2x2
     {
     protected:
       TYPE m_aValues[4];

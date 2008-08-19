@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixTexture.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -10,8 +11,8 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// Class for framebuffer objects.
-    class CFrameBufferObject : public Phoenix::Graphics::COglBase,
-			       public Phoenix::Spatial::CDimensional2D
+    class PHOENIX_API CFrameBufferObject : public Phoenix::Graphics::COglBase,
+					   public Phoenix::Spatial::CDimensional2D
     {
     protected:
       /// Handles to a textures.

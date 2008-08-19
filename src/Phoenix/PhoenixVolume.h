@@ -6,6 +6,7 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include <iostream>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -14,31 +15,31 @@ namespace Phoenix
     ////////////////////
     /// Bounding box plane indices.
     enum BBOX_PLANE_TYPE
-    {
-      TOP  = 0,
-      BOTTOM = 1,
-      LEFT = 2,
-      RIGHT = 3,
-      FRONT = 4,
-      BACK = 5
-    };
+      {
+	TOP  = 0,
+	BOTTOM = 1,
+	LEFT = 2,
+	RIGHT = 3,
+	FRONT = 4,
+	BACK = 5
+      };
     ////////////////////
     /// Corner indices for bounding boxes.
     enum  BBOX_CORNER_TYPE
-    {
-      TOP_LEFT_BACK = 0,
-      TOP_LEFT_FRONT = 1,
-      TOP_RIGHT_BACK = 2,
-      TOP_RIGHT_FRONT = 3,
-      BOTTOM_LEFT_BACK = 4,
-      BOTTOM_LEFT_FRONT = 5,
-      BOTTOM_RIGHT_BACK = 6,
-      BOTTOM_RIGHT_FRONT = 7
-    };
+      {
+	TOP_LEFT_BACK = 0,
+	TOP_LEFT_FRONT = 1,
+	TOP_RIGHT_BACK = 2,
+	TOP_RIGHT_FRONT = 3,
+	BOTTOM_LEFT_BACK = 4,
+	BOTTOM_LEFT_FRONT = 5,
+	BOTTOM_RIGHT_BACK = 6,
+	BOTTOM_RIGHT_FRONT = 7
+      };
     /////////////////////////////////////////////////////////////////
     // A class for discrete oriented polytope, defines a convex bounding 
     // volume by set of planes.
-    class CPolytope
+    class PHOENIX_API CPolytope
     {
     protected:
       std::vector<Phoenix::Math::CPlane> m_Planes;
@@ -81,8 +82,8 @@ namespace Phoenix
     }; // CPolytope
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) box.
-    class CAxisAlignedBox : public Phoenix::Spatial::CPositional, 
-                            public Phoenix::Spatial::CDimensional3D
+    class PHOENIX_API CAxisAlignedBox : public Phoenix::Spatial::CPositional, 
+					public Phoenix::Spatial::CDimensional3D
     {
     private:
       CVector3<float> m_vMin;
@@ -100,8 +101,8 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) cube.
-    class CAxisAlignedCube : public Phoenix::Spatial::CPositional, 
-                             public Phoenix::Spatial::CDimensional1D
+    class PHOENIX_API CAxisAlignedCube : public Phoenix::Spatial::CPositional, 
+					 public Phoenix::Spatial::CDimensional1D
     {
     public:
       ////////////////////
@@ -116,9 +117,9 @@ namespace Phoenix
     /// The class for Oriented Box. Forward vector will be the principal axis,
     /// right vector the second and up the third. Dimensions: length = forward,
     /// width = right, height = up.
-    class COrientedBox : public Phoenix::Spatial::CPositional, 
-                         public Phoenix::Spatial::CDimensional3D, 
-			 public Phoenix::Spatial::COrientable
+    class PHOENIX_API COrientedBox : public Phoenix::Spatial::CPositional, 
+				     public Phoenix::Spatial::CDimensional3D, 
+				     public Phoenix::Spatial::COrientable
     {
     protected:
       /// Planes oriented along the box walls.
@@ -133,13 +134,13 @@ namespace Phoenix
 	//memset(m_aCorners,0,sizeof(float)*24);
 	// reset coords. (Is it really necessary?)
 	// m_vecCorners[0][0] = m_vecCorners[0][1] =  m_vecCorners[0][2] = 0.0f;
-// 	m_vecCorners[1][0] = m_vecCorners[1][1] =  m_vecCorners[1][2] = 0.0f;
-//  	m_vecCorners[2][0] = m_vecCorners[2][1] =  m_vecCorners[2][2] = 0.0f;
-//  	m_vecCorners[3][0] = m_vecCorners[3][1] =  m_vecCorners[3][2] = 0.0f;
-//  	m_vecCorners[4][0] = m_vecCorners[4][1] =  m_vecCorners[4][2] = 0.0f;
-//  	m_vecCorners[5][0] = m_vecCorners[5][1] =  m_vecCorners[5][2] = 0.0f;
-//  	m_vecCorners[6][0] = m_vecCorners[6][1] =  m_vecCorners[6][2] = 0.0f;
-//  	m_vecCorners[7][0] = m_vecCorners[7][1] =  m_vecCorners[7][2] = 0.0f;
+	// 	m_vecCorners[1][0] = m_vecCorners[1][1] =  m_vecCorners[1][2] = 0.0f;
+	//  	m_vecCorners[2][0] = m_vecCorners[2][1] =  m_vecCorners[2][2] = 0.0f;
+	//  	m_vecCorners[3][0] = m_vecCorners[3][1] =  m_vecCorners[3][2] = 0.0f;
+	//  	m_vecCorners[4][0] = m_vecCorners[4][1] =  m_vecCorners[4][2] = 0.0f;
+	//  	m_vecCorners[5][0] = m_vecCorners[5][1] =  m_vecCorners[5][2] = 0.0f;
+	//  	m_vecCorners[6][0] = m_vecCorners[6][1] =  m_vecCorners[6][2] = 0.0f;
+	//  	m_vecCorners[7][0] = m_vecCorners[7][1] =  m_vecCorners[7][2] = 0.0f;
 	SetOrientation( Phoenix::Math::CVector3<float>(0,1,0),
 			Phoenix::Math::CVector3<float>(0,0,-1),
 			Phoenix::Math::CVector3<float>(1,0,0));
@@ -233,7 +234,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// The class for generic sphere with center and radius.
-    class CSphere : public Phoenix::Spatial::CPositional
+    class PHOENIX_API CSphere : public Phoenix::Spatial::CPositional
     {
     protected:
       /// Sphere radius.
@@ -298,8 +299,8 @@ namespace Phoenix
     }; // class CSphere
     /////////////////////////////////////////////////////////////////
     /// Capsule class (sphere swept line)
-    class CCapsule : public Phoenix::Volume::CSphere,
-		     public Phoenix::Math::CLineSegment
+    class PHOENIX_API CCapsule : public Phoenix::Volume::CSphere,
+				 public Phoenix::Math::CLineSegment
     {
     public:
       ////////////////////
@@ -317,7 +318,7 @@ namespace Phoenix
     }; // class CCapsule
     /////////////////////////////////////////////////////////////////
     // Class for a Cone
-    class CCone : public Phoenix::Spatial::CPositional 
+    class PHOENIX_API CCone : public Phoenix::Spatial::CPositional 
     {
     protected:
 
@@ -402,10 +403,10 @@ namespace Phoenix
     }; // class CCone
     /////////////////////////////////////////////////////////////////
     /// Decal volume class. Used for creating scorch marks, for instance.
-    class CDecalVolume : public Phoenix::Volume::CPolytope,
-			 public Phoenix::Spatial::CPositional,
-			 public Phoenix::Spatial::CDimensional3D,
-			 protected Phoenix::Spatial::COrientable
+    class PHOENIX_API CDecalVolume : public Phoenix::Volume::CPolytope,
+				     public Phoenix::Spatial::CPositional,
+				     public Phoenix::Spatial::CDimensional3D,
+				     protected Phoenix::Spatial::COrientable
     {
     public:
       ////////////////////
@@ -420,7 +421,7 @@ namespace Phoenix
 		    const Phoenix::Math::CVector3<float> & vNormal,
 		    const Phoenix::Math::CVector3<float> & vTangent,
 		    float fWidth, float fHeight, float fLength) : Phoenix::Spatial::CPositional(vPosition), 
-								  Phoenix::Spatial::CDimensional3D( fWidth, fHeight, fLength )
+      Phoenix::Spatial::CDimensional3D( fWidth, fHeight, fLength )
       {
 	SetDirectionForwardUp( vNormal, vTangent );
 
@@ -470,48 +471,48 @@ namespace Phoenix
     /// Calculates the oriented bounding box for vertices in vertexarray
     /// \param vertexDescriptor Vertices.
     /// \returns Oriented bounding box
-    Phoenix::Volume::COrientedBox    CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    PHOENIX_API Phoenix::Volume::COrientedBox    CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the axis-aligned bounding box for vertices in vertexarray
     /// \param vertexDescriptor Vertices.
     /// \returns Oriented bounding box
-    Phoenix::Volume::CAxisAlignedBox CalculateAlignedBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    PHOENIX_API Phoenix::Volume::CAxisAlignedBox CalculateAlignedBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor using fast but not so accurate algorithm.
     /// \param vertexDescriptor Vertices.
     /// \returns Bounding sphere.
-    Phoenix::Volume::CSphere CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor using slightly slower, but more accurate algorithm
     /// \param vertexDescriptor Vertices.
     /// \returns Bounding sphere.
-    Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor by given set of indices using slightly slower, but more accurate algorithm
     /// \param vertexDescriptor Vertices.
     /// \param indices Which vertices are used.
     /// \returns Bounding sphere.
-    Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor, 
-							   const Phoenix::Graphics::CIndexArray &indices );
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor, 
+								       const Phoenix::Graphics::CIndexArray &indices );
     ////////////////////
     /// Calculates the oriented bounding box for vertices in vertexarray using the given set of indices.
     /// \param vertexDescriptor Vertices.
     /// \param indices Which vertices are used.
     /// \returns Bounding sphere.
-    Phoenix::Volume::COrientedBox CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
-								const Phoenix::Graphics::CIndexArray &elementList );
+    PHOENIX_API Phoenix::Volume::COrientedBox CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
+									    const Phoenix::Graphics::CIndexArray &elementList );
     ////////////////////
     /// Creates a new sphere is the minimum sphere containing two spheres given as arguments.
     /// \param one One sphere.
     /// \param two Another sphere.
     /// \returns Sphere enclosing both spheres.
-    Phoenix::Volume::CSphere MergeSpheres( const Phoenix::Volume::CSphere &one, const Phoenix::Volume::CSphere &two);
+    PHOENIX_API Phoenix::Volume::CSphere MergeSpheres( const Phoenix::Volume::CSphere &one, const Phoenix::Volume::CSphere &two);
     ////////////////////
     /// Creates a new Oriented Box containing two oriented boxes.
     /// \param obOne One oriented box.
     /// \param obTwo Another oriented box.
     /// \returns Bounding box enclosing both boxes.
-    Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
+    PHOENIX_API Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
     
     /////////////////////////////////////////////////////////////////
     // Constructs a 4x4 rotation matrix by inserting the Oriented Box axis 
@@ -522,7 +523,7 @@ namespace Phoenix
     //     Fz Rz Uz 0    R = Right Vector
     //     0  0  0  1    U = Up Vector
     /////////////////////////////////////////////////////////////////
-    Phoenix::Math::CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const Phoenix::Volume::COrientedBox &ob  );
+    PHOENIX_API Phoenix::Math::CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const Phoenix::Volume::COrientedBox &ob  );
   };// namespace Volume
 };// namespace Phoenix
 /////////////////////////////////////////////////////////////////

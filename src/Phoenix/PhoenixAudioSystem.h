@@ -10,12 +10,13 @@
 #endif
 #include "PhoenixCore.h"
 #include "PhoenixListener.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Sound
   {
-    class CAudioSystem : public Phoenix::Core::CSingleton<CAudioSystem>
+    class PHOENIX_API CAudioSystem : public Phoenix::Core::CSingleton<CAudioSystem>
     {
       friend class Phoenix::Core::CSingleton<CAudioSystem>;
     protected:

@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <string>
 #include "PhoenixCore.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -20,7 +21,7 @@ namespace Phoenix
     /// \note
     /// Handles can release themselves now during delete.
     template<typename TAG>
-    class CHandle : public CNullable
+    class PHOENIX_API CHandle : public CNullable
     {
     private:
       size_t m_nIndex;
@@ -83,7 +84,7 @@ namespace Phoenix
     ////////////////////
     /// Class for objects that know their position in ResourceManager.
     template< class OBJECT_TYPE >
-    class CHandled
+    class PHOENIX_API CHandled
     {
     protected:
       /// Handle to object itself.
@@ -107,7 +108,7 @@ namespace Phoenix
     };
     ////////////////////
     /// Resource Name class. This is used in Hash table.
-    class CResourceName : public CNullable
+    class PHOENIX_API CResourceName : public CNullable
     {
     protected:      
       /// Resource name.
@@ -153,7 +154,7 @@ namespace Phoenix
     ////////////////////
     /// Resource class.
     template<typename OBJECTTYPE, typename HANDLE>
-    class CResource
+    class PHOENIX_API CResource
     {
     protected:
       /// Handles which refer to this resource.
@@ -275,7 +276,7 @@ namespace Phoenix
     ////////////////////
     /// Resource Manager class.
     template<typename OBJECTTYPE, typename HANDLE>
-    class CResourceManager : public CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >
+    class PHOENIX_API CResourceManager : public CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >
     {
       friend class CSingleton<CResourceManager<OBJECTTYPE,HANDLE> >;
     protected:

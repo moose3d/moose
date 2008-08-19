@@ -6,6 +6,7 @@
 #include "PhoenixVector3.h"
 #include "PhoenixVolume.h"
 #include "PhoenixSpatial.h"
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -19,7 +20,7 @@ namespace Phoenix
 
     ////////////////////
     /// Flock (Herd, School, Swarm) of boids.
-    class CFlock 
+    class PHOENIX_API CFlock 
     {
     private:
       /// List of boids in this flock ( each boid should belong at 
@@ -59,7 +60,7 @@ namespace Phoenix
     };
     ////////////////////
     /// Autonomous flock member.
-    class CBoid : public Phoenix::Volume::CSphere,
+    class PHOENIX_API CBoid : public Phoenix::Volume::CSphere,
 		  public Phoenix::Spatial::COneDirectional
     {
     private:

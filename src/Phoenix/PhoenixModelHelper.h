@@ -4,6 +4,7 @@
 #include <PhoenixRenderable.h>
 #include <PhoenixMilkshapeLoader.h>
 #include <PhoenixCore.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -17,7 +18,7 @@ namespace Phoenix
     };
     ////////////////////
     /// 
-    class CModelHelper : public Phoenix::Core::CSingleton<CModelHelper>
+    class PHOENIX_API CModelHelper : public Phoenix::Core::CSingleton<CModelHelper>
     {
       friend class Phoenix::Core::CSingleton<CModelHelper>;
     private:

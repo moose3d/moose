@@ -4,6 +4,7 @@
 #define __PhoenixIndexArray_h__
 /////////////////////////////////////////////////////////////////
 #include <PhoenixCore.h>
+#include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -22,7 +23,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
-    class CIndexArray : public Phoenix::Core::CCacheable<unsigned int>
+    class PHOENIX_API CIndexArray : public Phoenix::Core::CCacheable<unsigned int>
     {
     protected:
       /// Number of indices in this array.
