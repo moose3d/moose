@@ -326,6 +326,16 @@ namespace Phoenix
     /// \returns false if ray does not intersect OBB. pfValue is undetermined. 
     ///          true if ray intersects OBB. pfValue is set to closest distance. 
     bool RayIntersectsOBB( const Phoenix::Math::CRay &ray, const Phoenix::Volume::COrientedBox &obBox,  float *pfValue = NULL );
+
+    ////////////////////
+    /// Checks intersection with ray and AABB.
+    /// \param ray Ray object.
+    /// \param aaBox The oriented box which is checked 
+    /// \param pfValue optional pointer to float variable that receives distance from  
+    ///                ray origin to closest intersection point. By default, value is NULL.
+    /// \returns false if ray does not intersect AABB. pfValue is undetermined. 
+    ///          true if ray intersects AABB. pfValue is set to closest distance. 
+    bool RayIntersectsAABB( const Phoenix::Math::CRay &ray, const Phoenix::Volume::CAxisAlignedBox &aaBox,  float *pfValue = NULL );
       
     /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
 
