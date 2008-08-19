@@ -84,16 +84,19 @@ namespace Phoenix
     class CAxisAlignedBox : public Phoenix::Spatial::CPositional, 
                             public Phoenix::Spatial::CDimensional3D
     {
+    private:
+      CVector3<float> m_vMin;
+      CVector3<float> m_vMax;
     public:
       ////////////////////
       /// The constuctor.
-      CAxisAlignedBox()    {}
+      CAxisAlignedBox();
       ////////////////////x
       /// The parametrized constructor.
       CAxisAlignedBox( const CVector3<float> &vCenter, 
-		       float fWidth, float fHeight,  float fLength ) : 
-                             CPositional( vCenter ), 
-                             CDimensional3D( fWidth, fHeight, fLength) {  }
+		       float fWidth, float fHeight,  float fLength );
+      const CVector3<float> & GetMin() const;
+      const CVector3<float> & GetMax() const;
     };
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) cube.
