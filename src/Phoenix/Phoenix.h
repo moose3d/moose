@@ -51,4 +51,5 @@
 #include <PhoenixOggStreamSample.h>
 #include <PhoenixSoundBase.h>
 #include <PhoenixSoundSampleBase.h>
+#include <PhoenixFlock.h>
 /////////////////////////////////////////////////////////////////

@@ -1085,6 +1085,696 @@ TEST(PointIntersectsOBB )
 
 }
 /////////////////////////////////////////////////////////////////
+TEST( RayIntersectsOBB_Origo_Coordinate_Axes )
+{
+  COrientedBox box;
+  CRay ray;
+  float fDistance;
+  
+  box.SetPosition(0,0,0);
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( 3.0f, fDistance, 0.00001f);
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( 3.0f, fDistance, 0.00001f);
+
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( 3.0f, fDistance, 0.00001f);
+
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( 3.0f, fDistance, 0.00001f);
+
+  // ray along negative x
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( 3.0f, fDistance, 0.00001f);
+
+  // ray along positive x
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( 3.0f, fDistance, 0.00001f);
+}
+/////////////////////////////////////////////////////////////////
+TEST( RayIntersectsOBB_X_axes_moving_box )
+{
+  COrientedBox box;
+  CRay ray;
+  float fDistance;
+  
+  box.SetPosition(-2,0,0);
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  box.SetPosition(-1.001f,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  box.SetPosition(-1.0f,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+
+  box.SetPosition(-1.0f,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(-0.999f,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0.0,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+
+  box.SetPosition(0.999,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(1.0,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(1.001f,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  box.SetPosition(2.0f,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(0,-4,0);
+  ray.SetDirection(0,1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(0,4,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+}
+/////////////////////////////////////////////////////////////////
+TEST( RayIntersectsOBB_Y_axes_moving_box )
+{
+  COrientedBox box;
+  CRay ray;
+  float fDistance;
+  
+  box.SetPosition(0,-2,0);
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  box.SetPosition(0,-1.001f,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  box.SetPosition(0,-1.0f,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+
+  box.SetPosition(0,-0.999f,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0.0,0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+
+  box.SetPosition(0,0.999,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0,1.0,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0,1.001f,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  box.SetPosition(0,2.0f,0);
+  // ray along negative z
+  ray.SetPosition(0,0,4);
+  ray.SetDirection(0,0,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(0,0,-4);
+  ray.SetDirection(0,0,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+}
+/////////////////////////////////////////////////////////////////
+TEST( RayIntersectsOBB_Z_axes_moving_box )
+{
+  COrientedBox box;
+  CRay ray;
+  float fDistance;
+  
+  box.SetPosition(0,0,-2);
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(0,-1,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  box.SetPosition(0,0,-1.001f);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  box.SetPosition(0,0,-1.0f);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+
+  box.SetPosition(0,0,-0.999f);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0.0,0,0);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+
+  box.SetPosition(0,0,0.999);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0,0,1.0);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  box.SetPosition(0,0,1.001f);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  box.SetPosition(0,0,2.0f);
+  // ray along negative z
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive z
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along positive y
+  ray.SetPosition(-4,0,0);
+  ray.SetDirection(1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  // ray along negative y
+  ray.SetPosition(4,0,0);
+  ray.SetDirection(-1,0,0);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+}
+/////////////////////////////////////////////////////////////////
+TEST( RayIntersectsOBB_real_world )
+{
+  COrientedBox box;
+  CRay ray;
+  float fDistance;
+  const float SQRT_3 = 1.73205080757f;
+  box.SetPosition(2,2,2);
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  ray.SetPosition(4,4,4);
+  ray.SetDirection(-1,-1,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( SQRT_3, fDistance, 0.0001f);
+
+  ray.SetPosition(4,0,4);
+  ray.SetDirection(-1,1,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( SQRT_3, fDistance, 0.0001f);
+
+  ray.SetPosition(4,4,0);
+  ray.SetDirection(-1,-1,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( SQRT_3, fDistance, 0.0001f);
+  
+  ray.SetPosition(0,4,4);
+  ray.SetDirection(1,-1,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( SQRT_3, fDistance, 0.0001f);
+
+  ray.SetPosition(0,0,0);
+  ray.SetDirection(1,1,1);
+  
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  CHECK_CLOSE( SQRT_3, fDistance, 0.0001f);
+
+  ray.SetPosition(0,0,0);
+  ray.SetDirection(-1,-1,-1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  ray.SetPosition(4,4,4);
+  ray.SetDirection(1,1,1);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+}
+/////////////////////////////////////////////////////////////////
+TEST( RayIntersectsOBB_real_world_2 )
+{
+  COrientedBox box;
+  CRay ray;
+  float fDistance;
+  
+  box.RotateAroundUp(45.0f);
+  box.SetPosition(2,0,-2);
+  
+  box.SetWidth(2.0f);
+  box.SetHeight(2.0f);
+  box.SetLength(2.0f);
+
+  CVector3<float> vTmp(-1,0,-1);
+  vTmp.Normalize();
+
+  ray.SetDirection(1,0,-1);
+
+
+  ray.SetPosition( vTmp + vTmp*2.0f );
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  
+  ray.SetPosition( vTmp + vTmp*0.001f );
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  ray.SetPosition( vTmp - vTmp*0.000001f);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+  
+  ray.SetPosition( vTmp - vTmp*0.001f);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
+
+  ray.SetPosition( -vTmp );
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  ray.SetPosition( -vTmp - vTmp*0.00001f);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  ray.SetPosition( -vTmp - vTmp*0.001f);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+
+  ray.SetPosition( -vTmp - vTmp*2.0f);
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+}
+/////////////////////////////////////////////////////////////////
 TEST( CollisionPoint3Planes )
 {
   CPlane plane1, plane2, plane3;

@@ -18,10 +18,10 @@ struct timezone
   int  tz_dsttime;     /* type of dst correction */
 };
 /////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 inline double round(double x) { return (x-floor(x))>0.5 ? ceil(x) : floor(x); }
 inline float  roundf(float x) { return (x-floorf(x))>0.5 ? ceilf(x) : floorf(x); }
 /////////////////////////////////////////////////////////////////
+
+
 #endif

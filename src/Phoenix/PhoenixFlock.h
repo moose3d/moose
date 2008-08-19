@@ -1,28 +1,37 @@
 #ifndef __PhoenixFlock_h__
 #define __PhoenixFlock_h__
 /////////////////////////////////////////////////////////////////
+#include <vector>
+#include <list>
+#include "PhoenixVector3.h"
+#include "PhoenixVolume.h"
+#include "PhoenixSpatial.h"
+/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace AI
   {
     class CBoid;
+    /////////////////////////////////////////////////////////////////
+    typedef std::vector<CBoid *> BoidPtrVector;
+    typedef std::list<CBoid *> BoidPtrList;
+    /////////////////////////////////////////////////////////////////
+
     ////////////////////
     /// Flock (Herd, School, Swarm) of boids.
-    template <class BOID_TYPE>
     class CFlock 
     {
     private:
       /// List of boids in this flock ( each boid should belong at 
       /// most into one flock)
-      std::vector<BOID_TYPE *>	m_vecBoids;
-      /// Average center of this flock
-      CVector3<float>		m_vCenter;
+      BoidPtrVector			m_vecBoids;
       /// Target of this flock
-      CVector3<float>		m_vTarget;
+      Phoenix::Math::CVector3<float>	m_vTarget;
       /// Target weight / importance
-      float			m_fTargetWeight;
+      float				m_fTargetWeight;
       /// Bounding sphere for this flock.
-      Phoenix::Volume::CSphere  m_BoundingSphere;
+      Phoenix::Volume::CSphere		m_BoundingSphere;
+      Phoenix::Volume::CAxisAlignedBox	m_BoundingBox;
     public:
       ////////////////////
       /// Constructor.
@@ -32,33 +41,39 @@ namespace Phoenix
       ~CFlock();
       ////////////////////
       /// Adds new object into this flock.
-      void AddToFlock( const BOID_TYPE *pBoid );
+      void AddToFlock(  CBoid *pBoid );
       ////////////////////
       /// Removes boid from this flock.
-      void RemoveFromFlock( const BOID_TYPE * pBoid );
+      void RemoveFromFlock(  CBoid * pBoid );
       ////////////////////
       /// Updates all boids.
       void Update();
-
+      void SetTarget( const Phoenix::Math::CVector3<float> & vTargetPos );
+      const CVector3<float> & GetTarget() const;
+      BoidPtrVector & GetBoids();
+      Phoenix::Volume::CSphere & GetBoundingSphere();
     private:
       ////////////////////
       /// Determines which are the local neighbours for each boid
-      void LocateNearestBoids( const BOID_TYPE *pBoid, std::list & lstClosest );
+      void LocateNearestBoids( const CBoid *pBoid, BoidPtrList & lstClosest );
     };
     ////////////////////
     /// Autonomous flock member.
-    class CBoid : public Phoenix::Spatial::CPositional,
+    class CBoid : public Phoenix::Volume::CSphere,
 		  public Phoenix::Spatial::COneDirectional
     {
     private:
-      /// Object bounding sphere
-      Phoenix::Volume::CSphere	m_BoundingSphere;
       /// Index in flock array
-      size_t			m_nIndex;
+      int			m_iIndex;
+      float			m_fSpeed;
+      float			m_fMaxSpeed;
     public:
       ////////////////////
       /// Constructor.
       CBoid();
+      ////////////////////
+      /// Destructor.
+      virtual ~CBoid();
       ////////////////////
       /// Assigns boid location in the array.
       /// \param iIndex Location in flock array. Negative value 
@@ -68,26 +83,30 @@ namespace Phoenix
       /// Returns boid location in flock array.
       /// \returns Positive int - Index of boid location in flock array. 
       /// \returns Negative int - Boid does not belong to a flock
-      const int GetIndex() const;
+      int GetIndex() const;
       ////////////////////
       /// Returns boolean indicating does this boid
       /// belong to a flock.
       /// \returns true if belongs to a flock
       /// \returns false if does not.
-      const bool BelongsToFlock() const;
+      bool BelongsToFlock() const;
       ////////////////////
       /// Steers to avoid crowding among closest boids.
       /// \param lstClosest List of currently closest boids.
-      void CalculateSeparation( const std::list<CBoid *pBoid> & lstClosest );
+      bool CalculateSeparation( const BoidPtrList & lstClosest, Phoenix::Math::CVector3<float> & vec );
       ////////////////////
       /// Steers to average heading of closest boids.
       /// \param lstClosest List of currently closest boids.
-      void CalculateAlignment( const std::list<CBoid *pBoid> & lstClosest);
+      void CalculateAlignment( const BoidPtrList & lstClosest, Phoenix::Math::CVector3<float> & vec);
       ////////////////////
       /// Steers to average position of closest boids.
       /// \param lstClosest List of currently closest boids.
-      void CalculateCohesion( const std::list<CBoid *pBoid> & lstClosest);
+      void CalculateCohesion( const BoidPtrList & lstClosest, Phoenix::Math::CVector3<float> & vec );
 
+      void SetSpeed( float fSpeed );
+      float GetSpeed();
+      void SetMaxSpeed( float fSpeed);
+      float GetMaxSpeed();
     };
   } // namespace AI
 } // namespace Phoenix
