@@ -43,83 +43,76 @@ inline void CreateTexCoords( Phoenix::Graphics::CVertexDescriptor *pTexCoords )
 /////////////////////////////////////////////////////////////////
 inline void CreateVertices( Phoenix::Graphics::CVertexDescriptor *pVertices )
 {
+  // 0. left-front-up
   pVertices->GetPointer<float>()[0] = -1.0f;
   pVertices->GetPointer<float>()[1] =  1.0f;
   pVertices->GetPointer<float>()[2] =  1.0f;
-  
+  // 1. left-front-down
   pVertices->GetPointer<float>()[3] = -1.0f;
   pVertices->GetPointer<float>()[4] = -1.0f;
   pVertices->GetPointer<float>()[5] =  1.0f;
-
+  // 2. left-back-up
   pVertices->GetPointer<float>()[6] = -1.0f;
   pVertices->GetPointer<float>()[7] =  1.0f;
   pVertices->GetPointer<float>()[8] = -1.0f;
-    
+  // 3. left-back-down
   pVertices->GetPointer<float>()[9]  = -1.0f;
   pVertices->GetPointer<float>()[10] = -1.0f;
   pVertices->GetPointer<float>()[11] = -1.0f;
-    
+  // 4. right-back-up
   pVertices->GetPointer<float>()[12] =  1.0f;
   pVertices->GetPointer<float>()[13] =  1.0f;
   pVertices->GetPointer<float>()[14] = -1.0f;
-    
+  // 5. right-back-down
   pVertices->GetPointer<float>()[15] =  1.0f;
   pVertices->GetPointer<float>()[16] = -1.0f;
   pVertices->GetPointer<float>()[17] = -1.0f;
-    
+  // 6. right-front-up
   pVertices->GetPointer<float>()[18] =  1.0f;
   pVertices->GetPointer<float>()[19] =  1.0f;
   pVertices->GetPointer<float>()[20] =  1.0f;
-
+  // 7. right-front-down
   pVertices->GetPointer<float>()[21] =  1.0f;
   pVertices->GetPointer<float>()[22] = -1.0f;
   pVertices->GetPointer<float>()[23] =  1.0f;
 }
 /////////////////////////////////////////////////////////////////
-inline void CreateIndices( Phoenix::Graphics::CIndexArray *pIndices, bool bATIfix )
+inline void CreateIndices( Phoenix::Graphics::CIndexArray *pIndices )
 {
+  // left
     pIndices->GetPointer<unsigned short int>()[0] = 0;
     pIndices->GetPointer<unsigned short int>()[1] = 1;
     pIndices->GetPointer<unsigned short int>()[2] = 3;
     pIndices->GetPointer<unsigned short int>()[3] = 2;
-
+    // back
     pIndices->GetPointer<unsigned short int>()[4] = 2;
     pIndices->GetPointer<unsigned short int>()[5] = 3;
     pIndices->GetPointer<unsigned short int>()[6] = 5;
     pIndices->GetPointer<unsigned short int>()[7] = 4;
-
+    // right
     pIndices->GetPointer<unsigned short int>()[8] = 4;
     pIndices->GetPointer<unsigned short int>()[9] = 5;
     pIndices->GetPointer<unsigned short int>()[10] = 7;
     pIndices->GetPointer<unsigned short int>()[11] = 6;
-
+    // roof
     pIndices->GetPointer<unsigned short int>()[12] = 2;
     pIndices->GetPointer<unsigned short int>()[13] = 4;
     pIndices->GetPointer<unsigned short int>()[14] = 6;
     pIndices->GetPointer<unsigned short int>()[15] = 0;
-
+    // front
     pIndices->GetPointer<unsigned short int>()[16] = 0;
     pIndices->GetPointer<unsigned short int>()[17] = 6;
     pIndices->GetPointer<unsigned short int>()[18] = 7;
     pIndices->GetPointer<unsigned short int>()[19] = 1;
-    if ( bATIfix )
-    {
-      // This fixes problem on ATI hardware.
-      pIndices->GetPointer<unsigned short int>()[20] = 2;
-      pIndices->GetPointer<unsigned short int>()[21] = 5;
-      pIndices->GetPointer<unsigned short int>()[22] = 7;
-      pIndices->GetPointer<unsigned short int>()[23] = 1;
-    } 
-    else
-    {
-      pIndices->GetPointer<unsigned short int>()[20] = 1;
-      pIndices->GetPointer<unsigned short int>()[21] = 7;
-      pIndices->GetPointer<unsigned short int>()[22] = 5;
-      pIndices->GetPointer<unsigned short int>()[23] = 2;
-    }
+    
+    pIndices->GetPointer<unsigned short int>()[20] = 1;
+    pIndices->GetPointer<unsigned short int>()[21] = 7;
+    pIndices->GetPointer<unsigned short int>()[22] = 5;
+    pIndices->GetPointer<unsigned short int>()[23] = 3;
+    
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CSkybox::CSkybox( bool bATIfix) 
+Phoenix::Graphics::CSkybox::CSkybox( ) 
 {
   
   Phoenix::Graphics::CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_TEXCOORDS);
@@ -152,7 +145,7 @@ Phoenix::Graphics::CSkybox::CSkybox( bool bATIfix)
   {
 
     pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 24);
-    CreateIndices( pIndices, bATIfix );
+    CreateIndices( pIndices );
     assert(g_DefaultIndexManager->Create( pIndices, PHOENIX_SKYBOX_INDICES, GetIndices()) == 0);
   } else
     assert(g_DefaultIndexManager->AttachHandle( PHOENIX_SKYBOX_INDICES, GetIndices()) == 0);

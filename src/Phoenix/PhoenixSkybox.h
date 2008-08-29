@@ -20,7 +20,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      CSkybox( bool bATIfix = false );
+      CSkybox();
       ////////////////////
       /// Destructor.
       ~CSkybox();
