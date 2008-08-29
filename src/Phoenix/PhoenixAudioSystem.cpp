@@ -22,14 +22,21 @@ namespace libname = Phoenix::Sound;
   cerr << endl;						\
 }
 /////////////////////////////////////////////////////////////////
-void
+bool
+libname::CAudioSystem::IsOpen() const
+{
+  return (alcGetCurrentContext() != NULL);
+}
+/////////////////////////////////////////////////////////////////
+bool
 libname::CAudioSystem::OpenDevice( const char *szDev )
 {
   m_pDevice = alcOpenDevice( szDev );
   if (m_pDevice == NULL)
   {
     cerr << "Failure, device \'" << szDev << "\' cannot be opened" << endl; 
-    exit(-1);
+    //exit(-1);
+    return false;
   }
 
   //Create context(s)
@@ -51,6 +58,7 @@ libname::CAudioSystem::OpenDevice( const char *szDev )
   CHECK_AL( AL_RENDERER);
   CHECK_AL( AL_EXTENSIONS);
 
+  return true;
 }
 /////////////////////////////////////////////////////////////////
 libname::CAudioSystem::CAudioSystem()

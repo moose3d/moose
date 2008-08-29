@@ -26,7 +26,14 @@ namespace Phoenix
       CAudioSystem();
       virtual ~CAudioSystem();
     public:
-      void OpenDevice ( const char *szDevice = NULL );
+      /// Attempts to open device.
+      /// \param szDevice Device name or path.
+      /// \returns true, if successful. 
+      /// \returns false on failure.
+      bool OpenDevice ( const char *szDevice = NULL );
+      ////////////////////
+      /// Checks is (some) device opened.
+      bool IsOpen() const;
       CListener &	     GetListener();
     };
   }
