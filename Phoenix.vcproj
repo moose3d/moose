@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Phoenix"
 	ProjectGUID="{926EBF05-7661-45DB-A6A7-A7D1725C0BB5}"
 	RootNamespace="Phoenix"
@@ -121,6 +121,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
+				AdditionalOptions="CEGUIBase.lib OpenGLGUIRenderer.lib freetype.lib GLee.lib libconfig++.lib SDL.lib SDLmain.lib opengl32.lib glu32.lib openAL32.lib ogg.lib vorbis.lib vorbisfile.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -169,6 +170,10 @@
 			</File>
 			<File
 				RelativePath=".\src\phoenix\PhoenixALSoundTypes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Phoenix\PhoenixAPI.h"
 				>
 			</File>
 			<File
@@ -421,30 +426,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath="..\Libs\freetype\lib\freetype.lib"
-				>
-			</File>
-			<File
-				RelativePath="..\Libs\GLee\GL\GLee.lib"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\Program Files\Microsoft SDKs\Windows\v6.0A\Lib\GlU32.Lib"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\Program Files\Microsoft SDKs\Windows\v6.0A\Lib\OpenGL32.Lib"
-				>
-			</File>
-			<File
-				RelativePath="..\Libs\SDL-1.2.13\lib\SDL.lib"
-				>
-			</File>
-			<File
-				RelativePath="..\Libs\SDL-1.2.13\lib\SDLmain.lib"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"
@@ -612,26 +593,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\src\phoenix\PhoenixEventHandler.cpp~"
-			>
-		</File>
-		<File
-			RelativePath=".\src\phoenix\PhoenixExceptions.cpp~"
-			>
-		</File>
-		<File
-			RelativePath=".\src\phoenix\PhoenixGameObject.cpp~"
-			>
-		</File>
-		<File
-			RelativePath=".\src\phoenix\PhoenixGraph.cpp~"
-			>
-		</File>
-		<File
-			RelativePath=".\src\phoenix\PhoenixMessageSystem.cpp~"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
