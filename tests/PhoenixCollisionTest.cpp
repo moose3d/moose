@@ -1763,7 +1763,7 @@ TEST( RayIntersectsOBB_real_world_2 )
   CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
 
   ray.SetPosition( -vTmp );
-  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
+  CHECK( RayIntersectsOBB( ray, box, &fDistance ) == true );
 
   ray.SetPosition( -vTmp - vTmp*0.00001f);
   CHECK( RayIntersectsOBB( ray, box, &fDistance ) == false );
@@ -1941,6 +1941,38 @@ TEST(SphereIntersectsCube)
   sphere.SetPosition(-2.0,0,0);
   CHECK( SphereIntersectsAACube(sphere, cube) == 0);
 }
+/////////////////////////////////////////////////////////////////
+TEST( SphereIntersectsCapsule )
+{
+
+  CCapsule capsule(CVector3<float>(2.0f,0,0), CVector3<float>(2.0f,0,-2.0f), 1.0f);
+  CSphere sphere( CVector3<float>(5.0f,0,0), 1.0f);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == false);
+  
+  sphere.SetPosition(4.0,0,0);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == false);
+
+  sphere.SetPosition(4.0,0,-1.0f);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == false);
+  
+  sphere.SetPosition(4.0f-EPSILON,0,0);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == true);
+
+  sphere.SetPosition(4.0f-EPSILON,0,-1.0f);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == true);
+  
+  sphere.SetPosition(3.9f,0,0);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == true);
+
+  sphere.SetPosition(3.9f,0,-1.0f);
+  CHECK( SphereIntersectsCapsule(sphere,capsule) == true);
+
+}
+/////////////////////////////////////////////////////////////////
+// TEST( OBBIntersectsCapsule )
+// {
+  
+// }
 /////////////////////////////////////////////////////////////////
 // TEST(LineToLineDistanceSquared_ParallelLines)
 // {

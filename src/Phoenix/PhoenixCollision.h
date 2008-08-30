@@ -228,6 +228,22 @@ namespace Phoenix
 					    const Phoenix::Volume::CSphere &sphereTwo );
 
     ////////////////////
+    /// Checks does sphere intersect a capsule.
+    /// \param sphere Sphere object.
+    /// \param capsule Capsule object.
+    /// \returns false on non-intersection.
+    /// \returns true on intersection.
+    PHOENIX_API bool SphereIntersectsCapsule( const Phoenix::Volume::CSphere & sphere,
+					      const Phoenix::Volume::CCapsule & capsule );
+    ////////////////////
+    /// Checks does oriented box intersect a capsule.
+    /// \param box Oriented box object.
+    /// \param capsule Capsule object.
+    /// \returns false on non-intersection.
+    /// \returns true on intersection.
+    PHOENIX_API bool OBBIntersectsCapsule( const Phoenix::Volume::COrientedBox & box, 
+					   const Phoenix::Volume::CCapsule & capsule );
+    ////////////////////
     /// Checks do two moving spheres intersect.
     /// \param sphereOne First sphere
     /// \param sphereTwo Second sphere
