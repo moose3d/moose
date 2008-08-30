@@ -374,16 +374,13 @@ Phoenix::Collision::ClosestPointOnLineSegment( const CVector3<float> &vPoint, co
 {
 
   CVector3<float> vStartToPoint = vPoint - line.GetStart();
-  CVector3<float> vLine = line.GetDirection();
-
+  CVector3<float> vLine = line.GetEnd()-line.GetStart();
   float fLength = vLine.Length();
-  vLine.Normalize();
-  
-  float fDot = vLine.Dot(vStartToPoint);
+  float fDot = vStartToPoint.Dot(line.GetDirection());
 
   if      ( fDot <= 0.0f    ) { vClosestPoint = line.GetStart();  }               // return the starting point
   else if ( fDot >= fLength ) { vClosestPoint = line.GetEnd();    }               // return the end point
-  else                        { vClosestPoint = line.GetStart() + (vLine*fDot); } // return the point in the middle 
+  else                        { vClosestPoint = line.GetStart() + (line.GetDirection()*fDot); } // return the point in the middle 
 }
 
 /////////////////////////////////////////////////////////////////
@@ -797,6 +794,34 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
   // if the distance between the centers is less than the sum
   // of the radii, then we have an intersection
   return (vSepAxis.LengthSqr() < fSumOfRadii);
+}
+/////////////////////////////////////////////////////////////////
+bool 
+Phoenix::Collision::SphereIntersectsCapsule( const Phoenix::Volume::CSphere & sphere, const Phoenix::Volume::CCapsule & capsule )
+{
+  // Calculate closest point to sphere center on line segment of capsule
+  CVector3<float> vPointOnSegment;
+  ClosestPointOnLineSegment( sphere.GetPosition(), capsule, vPointOnSegment);
+  // get sum from squared radius of capsule and sphere 
+  float fSumOfRadiiSqr = sphere.GetRadius() + capsule.GetRadius();
+  fSumOfRadiiSqr = fSumOfRadiiSqr * fSumOfRadiiSqr;
+  // compare it to squared distance from line segment point. if under sum of radii, we're intersecting.
+  return ((vPointOnSegment-sphere.GetPosition()).LengthSqr() < fSumOfRadiiSqr);
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::Collision::OBBIntersectsCapsule( const Phoenix::Volume::COrientedBox & box, const Phoenix::Volume::CCapsule & capsule )
+{
+  CVector3<float> vPointOnSegment;
+  ClosestPointOnLineSegment( box.GetPosition(), capsule, vPointOnSegment );
+  CVector3<float> vSegmentToBox = box.GetPosition()-vPointOnSegment;
+  float fDistanceSqr = vSegmentToBox.LengthSqr();
+  vSegmentToBox.Normalize();
+  float fEffRadius = 0.5f * ( fabsf((box.GetForwardVector()*box.GetLength()).Dot(vSegmentToBox)) +
+			      fabsf((box.GetRightVector()*box.GetWidth()).Dot(vSegmentToBox)) +
+			      fabsf((box.GetUpVector()*box.GetHeight()).Dot(vSegmentToBox)) );
+  
+  return ( fDistanceSqr < (capsule.GetRadiusSqr() + (fEffRadius*fEffRadius)) );
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Collision::S2S_COLLISION_TYPE
