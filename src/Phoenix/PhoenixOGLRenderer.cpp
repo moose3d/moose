@@ -1643,107 +1643,127 @@ Phoenix::Graphics::COglRenderer::CommitUniformShaderParam( CShader &shader, cons
 void
 Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char *strParamName, const CVertexDescriptor & vParam )
 {
-  int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName);
-  if ( iLoc != -1 )
+
+  if ( vParam.GetType() >= ELEMENT_TYPE_ATTRIB_1F && vParam.GetType() <= ELEMENT_TYPE_ATTRIB_4UB )
   {
-    switch( vParam.GetType() )
+    int iLoc = glGetAttribLocation(shader.GetProgram(), strParamName);
+    if ( iLoc == -1 )
     {
-    case ELEMENT_TYPE_UNIFORM_1F:
-      if ( vParam.GetSize() == 1) { glUniform1f( iLoc, vParam.GetPointer<float>()[0] ); }
-      else { glUniform1fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
-      break;
-    case ELEMENT_TYPE_UNIFORM_2F:
-      if ( vParam.GetSize() == 1) { glUniform2f( iLoc, vParam.GetPointer<float>()[0],vParam.GetPointer<float>()[1] );  }
-      else { glUniform2fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
-      break;
-    case ELEMENT_TYPE_UNIFORM_3F:
-      if ( vParam.GetSize() == 1) { glUniform3f( iLoc, vParam.GetPointer<float>()[0], vParam.GetPointer<float>()[1], vParam.GetPointer<float>()[2] );  } 
-      else { glUniform3fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
-      break;
-    case ELEMENT_TYPE_UNIFORM_4F:
-      if ( vParam.GetSize() == 1) { glUniform4f( iLoc, vParam.GetPointer<float>()[0], vParam.GetPointer<float>()[1], vParam.GetPointer<float>()[2], vParam.GetPointer<float>()[3] ); }
-      else { glUniform4fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
-      break;
-    case ELEMENT_TYPE_UNIFORM_1I:
-      if ( vParam.GetSize() == 1) { glUniform1i( iLoc, vParam.GetPointer<int>()[0] ); }
-      else { glUniform1iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() ); }
-      break;
-    case ELEMENT_TYPE_UNIFORM_2I:
-      if ( vParam.GetSize() == 1)  { glUniform2i( iLoc, vParam.GetPointer<int>()[0],vParam.GetPointer<int>()[1] );    }
-      else {	glUniform2iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() );      }
-      break;
-    case ELEMENT_TYPE_UNIFORM_3I:
-      if ( vParam.GetSize() == 1) { glUniform3i( iLoc, vParam.GetPointer<int>()[0], vParam.GetPointer<int>()[1], vParam.GetPointer<int>()[2] ); } 
-      else { glUniform3iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() );      }
-      break;
-    case ELEMENT_TYPE_UNIFORM_4I:
-      if ( vParam.GetSize() == 1) { glUniform4i( iLoc, vParam.GetPointer<int>()[0], vParam.GetPointer<int>()[1], vParam.GetPointer<int>()[2], vParam.GetPointer<int>()[3] );  }
-      else                        { glUniform4iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() ); }
-      break;
-    case ELEMENT_TYPE_UNIFORM_2X2F:
-      glUniformMatrix2fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
-      break;
-    case ELEMENT_TYPE_UNIFORM_3X3F:
-      glUniformMatrix3fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
-      break;
-    case ELEMENT_TYPE_UNIFORM_4X4F:
-      glUniformMatrix4fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
-      break;
-    default:
-      break;
-    
-    } 
-  } 
-  else if ( (iLoc = glGetAttribLocation(shader.GetProgram(), strParamName)) != -1 )
-  {
-    
-    glEnableVertexAttribArray(iLoc);
-    switch ( vParam.GetType())
-    {
-    case ELEMENT_TYPE_ATTRIB_1F:
-      glVertexAttribPointer(iLoc, 1, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_2F:
-      glVertexAttribPointer(iLoc, 2, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_3F:
-      glVertexAttribPointer(iLoc, 3, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_4F:
-      glVertexAttribPointer(iLoc, 4, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_1I:
-      glVertexAttribPointer(iLoc, 1, GL_INT, 0, 0, vParam.GetPointer<int>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_2I:
-      glVertexAttribPointer(iLoc, 2, GL_INT, 0, 0, vParam.GetPointer<int>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_3I:
-      glVertexAttribPointer(iLoc, 3, GL_INT, 0, 0, vParam.GetPointer<int>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_4I:
-      glVertexAttribPointer(iLoc, 4, GL_INT, 0, 0, vParam.GetPointer<int>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_1UB:
-      glVertexAttribPointer(iLoc, 1, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_2UB:
-      glVertexAttribPointer(iLoc, 2, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_3UB:
-      glVertexAttribPointer(iLoc, 3, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-      break;
-    case ELEMENT_TYPE_ATTRIB_4UB:
-      glVertexAttribPointer(iLoc, 4, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
-      break;
-    default:
-      break;
+      cerr << "No such parameter '" << strParamName << "' in this shader!" << endl;
     }
+    else
+    {
+      glEnableVertexAttribArray(iLoc);
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      
+      switch ( vParam.GetType())
+      {
+      case ELEMENT_TYPE_ATTRIB_1F:
+	glVertexAttribPointer(iLoc, 1, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_2F:
+	glVertexAttribPointer(iLoc, 2, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_3F:
+	glVertexAttribPointer(iLoc, 3, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_4F:
+	glVertexAttribPointer(iLoc, 4, GL_FLOAT, 0, 0, vParam.GetPointer<float>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_1I:
+	glVertexAttribPointer(iLoc, 1, GL_INT, 0, 0, vParam.GetPointer<int>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_2I:
+	glVertexAttribPointer(iLoc, 2, GL_INT, 0, 0, vParam.GetPointer<int>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_3I:
+	glVertexAttribPointer(iLoc, 3, GL_INT, 0, 0, vParam.GetPointer<int>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_4I:
+	glVertexAttribPointer(iLoc, 4, GL_INT, 0, 0, vParam.GetPointer<int>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_1UB:
+	glVertexAttribPointer(iLoc, 1, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_2UB:
+	glVertexAttribPointer(iLoc, 2, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_3UB:
+	glVertexAttribPointer(iLoc, 3, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+	break;
+      case ELEMENT_TYPE_ATTRIB_4UB:
+	glVertexAttribPointer(iLoc, 4, GL_UNSIGNED_BYTE, 0, 0, vParam.GetPointer<unsigned char>());
+	break;
+      default:
+	cerr << "for param" << strParamName << endl;
+	assert( 0 && "Unknown parameter type (vertexattrib)" );
+	break;
+      }
+    }    
   }
-  else
+  else if ( vParam.GetType() >= ELEMENT_TYPE_UNIFORM_1F && vParam.GetType() <= ELEMENT_TYPE_UNIFORM_4X4F )
   {
-    cerr << "No such parameter '" << strParamName << "' in this shader!" << endl;
+    int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName);
+    if ( iLoc == -1 )
+    {
+      cerr << "No such parameter '" << strParamName << "' in this shader!" << endl;
+    }
+    else
+    {
+      switch( vParam.GetType() )
+      {
+      case ELEMENT_TYPE_UNIFORM_1F:
+	if ( vParam.GetSize() == 1) { glUniform1f( iLoc, vParam.GetPointer<float>()[0] ); }
+	else { glUniform1fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
+	break;
+      case ELEMENT_TYPE_UNIFORM_2F:
+	if ( vParam.GetSize() == 1) { glUniform2f( iLoc, vParam.GetPointer<float>()[0],vParam.GetPointer<float>()[1] );  }
+	else { glUniform2fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
+	break;
+      case ELEMENT_TYPE_UNIFORM_3F:
+	if ( vParam.GetSize() == 1) { glUniform3f( iLoc, vParam.GetPointer<float>()[0], vParam.GetPointer<float>()[1], vParam.GetPointer<float>()[2] );  } 
+	else { glUniform3fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
+	break;
+      case ELEMENT_TYPE_UNIFORM_4F:
+	if ( vParam.GetSize() == 1) { glUniform4f( iLoc, vParam.GetPointer<float>()[0], vParam.GetPointer<float>()[1], vParam.GetPointer<float>()[2], vParam.GetPointer<float>()[3] ); }
+	else { glUniform4fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
+	break;
+      case ELEMENT_TYPE_UNIFORM_1I:
+	if ( vParam.GetSize() == 1) { glUniform1i( iLoc, vParam.GetPointer<int>()[0] ); }
+	else { glUniform1iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() ); }
+	break;
+      case ELEMENT_TYPE_UNIFORM_2I:
+	if ( vParam.GetSize() == 1)  { glUniform2i( iLoc, vParam.GetPointer<int>()[0],vParam.GetPointer<int>()[1] );    }
+	else {	glUniform2iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() );      }
+	break;
+      case ELEMENT_TYPE_UNIFORM_3I:
+	if ( vParam.GetSize() == 1) { glUniform3i( iLoc, vParam.GetPointer<int>()[0], vParam.GetPointer<int>()[1], vParam.GetPointer<int>()[2] ); } 
+	else { glUniform3iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() );      }
+	break;
+      case ELEMENT_TYPE_UNIFORM_4I:
+	if ( vParam.GetSize() == 1) { glUniform4i( iLoc, vParam.GetPointer<int>()[0], vParam.GetPointer<int>()[1], vParam.GetPointer<int>()[2], vParam.GetPointer<int>()[3] );  }
+	else                        { glUniform4iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() ); }
+	break;
+      case ELEMENT_TYPE_UNIFORM_2X2F:
+	glUniformMatrix2fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
+	break;
+      case ELEMENT_TYPE_UNIFORM_3X3F:
+	glUniformMatrix3fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
+	break;
+      case ELEMENT_TYPE_UNIFORM_4X4F:
+	glUniformMatrix4fv( iLoc, vParam.GetSize(), 0, vParam.GetPointer<float>() );
+	break;
+      default:
+	cerr << "for param" << strParamName << endl;
+	assert( 0 && "Unknown parameter type (uniform)" );
+	break;
+      } 
+    }   
   }
+  
+  
+  
+  
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -2060,7 +2080,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   }
   
   glBindBufferARB( GL_ARRAY_BUFFER_ARB, rVertexDescriptor.GetCache());
-
+  
   // determine proper buffer size.
   switch ( rVertexDescriptor.GetType())
   {
