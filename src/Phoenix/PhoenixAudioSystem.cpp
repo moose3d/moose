@@ -34,8 +34,14 @@ libname::CAudioSystem::OpenDevice( const char *szDev )
   m_pDevice = alcOpenDevice( szDev );
   if (m_pDevice == NULL)
   {
-    cerr << "Failure, device \'" << szDev << "\' cannot be opened" << endl; 
-    //exit(-1);
+    if ( szDev != NULL )
+    {
+      cerr << "Failure, device \'" << szDev << "\' cannot be opened" << endl; 
+    }
+    else 
+    {
+      cerr << "Failure, default device cannot be opened." << endl; 
+    }
     return false;
   }
 
