@@ -184,8 +184,7 @@ Phoenix::Graphics::CRenderable::Render( COglRenderer & renderer )
   // Retrieve resources
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
-
-
+  
   CRenderState & state = GetRenderState();
   renderer.CommitBlending( state.GetBlendingOperation());
   ////////////////////
@@ -200,7 +199,10 @@ Phoenix::Graphics::CRenderable::Render( COglRenderer & renderer )
   // Check face culling flag.
   if ( state.GetFaceCulling()) renderer.CommitState( STATE_FACECULLING );
   else renderer.DisableState( STATE_FACECULLING );
-
+  ////////////////////
+  // Check lighting flag
+  if ( state.GetLighting()) renderer.CommitState( STATE_LIGHTING );
+  else renderer.DisableState( STATE_LIGHTING );
   ////////////////////
   // Commit textures
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
@@ -279,7 +281,7 @@ Phoenix::Graphics::CRenderable::Render( COglRenderer & renderer )
   // commit position data
   if ( GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY ); 
   else	renderer.CommitVertexDescriptor ( *GetVertexHandle() ); 
-  
+
 
   if ( !GetIndices().IsNull() )     
     renderer.CommitPrimitive( *GetIndices() );
