@@ -40,17 +40,37 @@ AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt strdup])
 
 # check for CEGUI
 PKG_CHECK_MODULES(CEGUI, CEGUI >= 0.6.0 CEGUI-OPENGL >= 0.6.0)
-CFLAGS="$CFLAGS $CEGUI_CFLAGS"
+CXXFLAGS="$CXXFLAGS $CEGUI_CFLAGS"
 LIBS="$LIBS $CEGUI_LIBS"
 
 PKG_CHECK_MODULES(LIBCONFIG, libconfig++ >= 1.2.1)
-CFLAGS="$CFLAGS $LIBCONFIG_CFLAGS"
+CXXCFLAGS="$CXXCFLAGS $LIBCONFIG_CFLAGS"
 LIBS="$LIBS $LIBCONFIG_LIBS"
 
 
-PKG_CHECK_MODULES(vorbis, vorbis >= 1.2.0)
-CFLAGS="$CFLAGS $LIBVORBIS_CFLAGS"
-LIBS="$LIBS $LIBVORBIS_LIBS"
+PKG_CHECK_MODULES(VORBIS, vorbis >= 1.2.0)
+CXXCFLAGS="$CXXCFLAGS $VORBIS_CFLAGS"
+LIBS="$LIBS $VORBIS_LIBS"
+
+PKG_CHECK_MODULES(OGG, ogg >= 1.1.2)
+CXXCFLAGS="$CXXCFLAGS $OGG_CFLAGS"
+LIBS="$LIBS $OGG_LIBS"
+
+PKG_CHECK_MODULES(VORBISFILE, vorbisfile >= 1.2.0)
+CXXCFLAGS="$CXXCFLAGS $VORBISFILE_CFLAGS"
+LIBS="$LIBS $VORBISFILE_LIBS"
+
+PKG_CHECK_MODULES(OPENAL, openal >= 0.0.8)
+CXXCFLAGS="$CXXCFLAGS $OPENAL_CFLAGS"
+LIBS="$LIBS $OPENAL_LIBS"
+
+PKG_CHECK_MODULES(SDL, sdl >= 1.2.0)
+CXXCFLAGS="$CXXCFLAGS $SDL_CFLAGS"
+LIBS="$LIBS $SDL_LIBS"
+
+PKG_CHECK_MODULES(FREETYPE2, freetype2 > 2.3.5 )
+CXXCFLAGS="$CXXCFLAGS $FREETYPE2_CFLAGS"
+LIBS="$LIBS $FREETYPE2_LIBS"
 
 # introduce the optional configure parameter for the path of libXXX.a
 AC_ARG_WITH(tristripper,
@@ -109,98 +129,48 @@ else
 
 fi
 
-dnl **** Check for freetype2 library *****
-
-AC_LANG(C)
-
-AC_CHECK_FT2(,
-	[ 
-	  FREETYPE_NOTFOUND=0;
-	  CFLAGS="$CFLAGS $FT2_CFLAGS";
-	  CXXFLAGS="$CXXFLAGS $FT2_CFLAGS";
-	  LIBS="$LIBS $FT2_LIBS";
-	],
-	[
-	  FREETYPE_NOTFOUND=1;
- 	  DEPENDENCYNOTFOUND=1;
-	]
-)
-
-AC_LANG(C++)
-dnl *******************************
-dnl ****      check for SDL    ****
-dnl *******************************
-
-AM_PATH_SDL(1.2.11, 
-	    [
-		SDL_NOTFOUND=0,
-		CFLAGS="$CFLAGS $SDL_CFLAGS"
-		CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
-		LIBS="$LIBS $SDL_LIBS"
-	    ],
-	    [ 
-		SDL_NOTFOUND=1;
-	    ]
-)
-
-if test $SDL_NOTFOUND = 1; then
-	$DEPENDENCYNOTFOUND=1;
-	AC_MSG_NOTICE()
-	AC_MSG_ERROR(SDL library not found!)
-	AC_MSG_NOTICE()
-fi
-
 dnl **************************
 dnl check OpenGL
 dnl **************************
-HAVE_OPENGL=no
-OPENGL_LIBS=" -lGL -lGLU "
-AC_CHECK_LIB(GL, glPushMatrix, HAVE_OPENGL=yes, HAVE_OPENGL=no, )
-AC_CHECK_HEADER(GL/gl.h,, [HAVE_OPENGL=no; OPENGL_LIBS="";])
-AM_CONDITIONAL(HAVE_OPENGL, test $HAVE_OPENGL = yes)
-AC_MSG_CHECKING(opengl)
-AC_MSG_RESULT($HAVE_OPENGL)
-if test $HAVE_OPENGL = 0; then
-	$DEPENDENCYNOTFOUND=1;
-	AC_MSG_NOTICE()
-	AC_MSG_ERROR(OpenGL library not found!)
-	AC_MSG_NOTICE()
-else
-	LIBS="$LIBS $OPENGL_LIBS"
-fi
+AC_CHECK_HEADER( [GL/gl.h], [], 
+		 [echo "You need OpenGL!";
+ 		 exit -1;] ) 
+AC_CHECK_LIB( [GL], [glVertex3f], [ LIBS="$LIBS -lGL" ], [
+ 		 echo "You need OpenGL!";
+ 		 exit -1;])
+AC_CHECK_HEADER( [GL/glu.h], [], 
+		 [echo "You need GLU!";
+ 		 exit -1;] ) 
+AC_CHECK_LIB( [GLU], [gluProject], [ LIBS="$LIBS -lGLU" ], [
+ 		 AC_MSG_ERROR(You need GLU!);
+ 		 exit -1;])
+
 
 dnl **************************
 dnl check GLee
 dnl **************************
-HAVE_GLEE=no
-GLEE_LIBS=" -lGLee "
 
-AC_CHECK_HEADER(GL/GLee.h,HAVE_GLEE=yes, [HAVE_GLEE=no; GLEE_LIBS="";])
-AM_CONDITIONAL(HAVE_GLEE, test $HAVE_GLEE = yes)
-AC_MSG_CHECKING(GLee)
-AC_MSG_RESULT($HAVE_GLEE)
-if test $HAVE_GLEE = 0; then
-	$DEPENDENCYNOTFOUND=1;
-	AC_MSG_NOTICE()
-	AC_MSG_ERROR(GLee library not found!)
-	AC_MSG_NOTICE()
-else
-	LIBS="$LIBS $GLEE_LIBS"
-fi
+AC_CHECK_HEADER(GL/GLee.h, [ LIBS="$LIBS -lGLee" ], 
+			   [AC_MSG_ERROR(GLee is missing!);])
 
 # error ABORT if one of the libraries was not found
 if test $DEPENDENCYNOTFOUND = 1; then
 	AC_MSG_NOTICE()
 	AC_MSG_ERROR(Library not found! Try './configure --help'.)
 	AC_MSG_NOTICE()
-fi	
+fi
+
 
 # overwrite global variable (used for Makefile generation)
 AC_SUBST(GLOBALCXXFLAGS, $CXXFLAGS )
-AC_SUBST(GLOBALCFLAGS, $CFLAGS )
+AC_SUBST(GLOBALCFLAGS, $CXXFLAGS )
 AC_SUBST(GLOBALLDFLAGS, $LDFLAGS )
 
 AC_OUTPUT( Makefile \
 	   src/Phoenix/Makefile \
 	   phoenix.pc
 )
+AC_MSG_NOTICE(  );
+AC_MSG_NOTICE( $CXXFLAGS );
+AC_MSG_NOTICE(  );
+AC_MSG_NOTICE( $LIBS );

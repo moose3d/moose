@@ -1,6 +1,6 @@
 ## Source directory
 @SET_MAKE@
-AM_CFLAGS = $(CEGUI_CFLAGS) $(LIBCONFIG_CFLAGS)
+AM_CFLAGS = $(CXXFLAGS) 
 GENERIC_RELEASE=0:0:1
 GENERIC_LIBRARY_VERSION=1:0:0
 GENERIC_LIBRARY_NAME="Phoenix"
@@ -13,7 +13,7 @@ cc_sources = PhoenixALSampleTypes.cpp PhoenixALSoundTypes.cpp PhoenixAudioSystem
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources) 
 
-INCLUDES = -I$(top_srcdir) $(CEGUI_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(CXXFLAGS)
 
 lib_LTLIBRARIES= libPhoenix.la
 libPhoenix_la_SOURCES= $(h_sources) $(cc_sources)
