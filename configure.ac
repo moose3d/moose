@@ -6,7 +6,7 @@ AC_CANONICAL_TARGET
 
 AC_CONFIG_HEADER(src/Phoenix/config.h)
 AM_INIT_AUTOMAKE(Phoenix, 0.99, entity@iki.fi)
-AC_PROG_RANLIB
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -36,7 +36,7 @@ AC_PROG_LIBTOOL
 # Checks for library functions.
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt strdup])
 
-
+CXXFLAGS="$CXXFLAGS -g -Wall"
 
 # adding the static library 'libtristripper.a'
 

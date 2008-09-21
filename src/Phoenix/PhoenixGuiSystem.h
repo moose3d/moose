@@ -24,7 +24,9 @@ namespace Phoenix
       void Initialize( size_t nWidth, size_t nHeight );
       ////////////////////
       /// Setup data files from config file.
-      void LoadResources( const char *szPath );
+      /// \param szPath Path to config file.
+      /// \param szName Name of layout to load.
+      void LoadResources( const char *szPath, const char *szName = NULL );
       ////////////////////
       ///  Injects mouse up event into GUI system.
       bool InjectMouseUp( GuiEvent & e );

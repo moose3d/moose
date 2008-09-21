@@ -21,7 +21,7 @@ Phoenix::GUI::CGuiSystem::Initialize( size_t nWidth, size_t nHeight)
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
+Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath, const char *szName )
 {
   
   libconfig::Config config;
@@ -46,14 +46,7 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
     rp->setResourceGroupDirectory("layouts",      layouts);
     rp->setResourceGroupDirectory("looknfeels",   looknfeel);
     rp->setResourceGroupDirectory("lua_scripts",  scripts); 
-
-    //     rp->setResourceGroupDirectory("schemes",      "datafiles/schemes/");
-    //     rp->setResourceGroupDirectory("imagesets",    "datafiles/imagesets/");
-    //     rp->setResourceGroupDirectory("fonts",        "datafiles/fonts/");
-    //     rp->setResourceGroupDirectory("layouts",      "datafiles/layouts/");
-    //     rp->setResourceGroupDirectory("looknfeels",   "datafiles/looknfeel/");
-    //     rp->setResourceGroupDirectory("lua_scripts",  "datafiles/lua_scripts/"); 
-
+    
     // Set the default resource groups.
     CEGUI::Imageset::setDefaultResourceGroup("imagesets");
     CEGUI::Font::setDefaultResourceGroup("fonts");
@@ -62,19 +55,17 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
     CEGUI::WindowManager::setDefaultResourceGroup("layouts");
     CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts"); 
 
+    string layout_prefix = "gui_config." + string( szName ? szName : "defaults.");
+    
     // load in a font.  The first font loaded automatically becomes the default font.
-    //if(! CEGUI::FontManager::getSingleton().isFontPresent( "Commonwealth-10" ) )
-    string font = config.lookup("gui_config.defaults.font");
-    cerr << "font is: " <<  font << endl;
-    //CEGUI::FontManager::getSingleton().createFont( "Iconified-12.font" );
+    string font = config.lookup( layout_prefix + "font");
+
     CEGUI::FontManager::getSingleton().createFont( font );
-    string scheme = config.lookup("gui_config.defaults.scheme" );
-    // load in the scheme file, which auto-loads the TaharezLook imageset
-    //CEGUI::SchemeManager::getSingleton().loadScheme( "TaharezLook.scheme" );
+    string scheme = config.lookup( layout_prefix + "scheme" );
+
     CEGUI::SchemeManager::getSingleton().loadScheme( scheme );
     
-    //CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( "test.layout" );
-    string layout = config.lookup("gui_config.defaults.layout");
+    string layout = config.lookup( layout_prefix + "layout");
     CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( layout );
 
     CEGUI::System::getSingleton().setGUISheet( myRoot );

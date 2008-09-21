@@ -30,45 +30,45 @@ void
 Phoenix::Math::CPlane::SetNormal( CVector3<float> vNormal )
 {
   vNormal.Normalize();
-  m_pValues[0] = vNormal[0];
-  m_pValues[1] = vNormal[1];
-  m_pValues[2] = vNormal[2];
+  m_aValues[0] = vNormal[0];
+  m_aValues[1] = vNormal[1];
+  m_aValues[2] = vNormal[2];
 }
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::CPlane::Normalize()
 {
-  float fLength = sqrtf( m_pValues[0] * m_pValues[0] + 
-			 m_pValues[1] * m_pValues[1] + 
-			 m_pValues[2] * m_pValues[2] );
+  float fLength = sqrtf( m_aValues[0] * m_aValues[0] + 
+			 m_aValues[1] * m_aValues[1] + 
+			 m_aValues[2] * m_aValues[2] );
   if ( fLength > 0.0f )
   {
     fLength = 1.0f / fLength;
-    m_pValues[0] *= fLength;
-    m_pValues[1] *= fLength;
-    m_pValues[2] *= fLength;
-    m_pValues[3] *= fLength;
+    m_aValues[0] *= fLength;
+    m_aValues[1] *= fLength;
+    m_aValues[2] *= fLength;
+    m_aValues[3] *= fLength;
   } 
   else
   {
-    m_pValues[0] = m_pValues[1] = m_pValues[2] = 0.0f;
+    m_aValues[0] = m_aValues[1] = m_aValues[2] = 0.0f;
   }
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Math::CPlane::SetDistance( float fDistance )
 {
-  m_pValues[3] = fDistance;
+  m_aValues[3] = fDistance;
 }
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Math::CPlane::Calculate( CVector3<float> vNormal, const CVector3<float> & vPoint )
 {
   vNormal.Normalize();
-  m_pValues[0] =  vNormal[0];
-  m_pValues[1] =  vNormal[1];
-  m_pValues[2] =  vNormal[2];
-  m_pValues[3] = -(vNormal.Dot(vPoint));
+  m_aValues[0] =  vNormal[0];
+  m_aValues[1] =  vNormal[1];
+  m_aValues[2] =  vNormal[2];
+  m_aValues[3] = -(vNormal.Dot(vPoint));
 }
 /////////////////////////////////////////////////////////////////
 std::ostream& 
@@ -222,7 +222,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 // {
 
 //   CVector3<float> vNormal;
-//   vNormal.UseExternalData(plane.m_pValues);
+//   vNormal.UseExternalData(plane.m_aValues);
 //   float fDistance = vNormal.Dot( sphere.GetPosition()) + plane.Distance();
 //   fCenterDistance = fDistance;
 
@@ -456,39 +456,39 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   float fHalfLength = rAABB.GetLength()*0.5f;
 //   /////////////////////////////////////////////////////////////////
 //   // Test x axis
-//   if ( rPlane.m_pValues[0] < 0.0f)
+//   if ( rPlane.m_aValues[0] < 0.0f)
 //   {
-//     vCornerMin[0] = rAABB.GetPosition().m_pValues[0] - fHalfWidth;
-//     vCornerMax[0] = rAABB.GetPosition().m_pValues[0] + fHalfWidth;
+//     vCornerMin[0] = rAABB.GetPosition().m_aValues[0] - fHalfWidth;
+//     vCornerMax[0] = rAABB.GetPosition().m_aValues[0] + fHalfWidth;
 //   }
 //   else 
 //   {
-//     vCornerMax[0] = rAABB.GetPosition().m_pValues[0] - fHalfWidth;
-//     vCornerMin[0] = rAABB.GetPosition().m_pValues[0] + fHalfWidth;
+//     vCornerMax[0] = rAABB.GetPosition().m_aValues[0] - fHalfWidth;
+//     vCornerMin[0] = rAABB.GetPosition().m_aValues[0] + fHalfWidth;
 //   }
 //   /////////////////////////////////////////////////////////////////
 //   // Test y axis
-//   if ( rPlane.m_pValues[1] < 0.0f)
+//   if ( rPlane.m_aValues[1] < 0.0f)
 //   {
-//     vCornerMin[1] = rAABB.GetPosition().m_pValues[1] - fHalfHeight;
-//     vCornerMax[1] = rAABB.GetPosition().m_pValues[1] + fHalfHeight;
+//     vCornerMin[1] = rAABB.GetPosition().m_aValues[1] - fHalfHeight;
+//     vCornerMax[1] = rAABB.GetPosition().m_aValues[1] + fHalfHeight;
 //   }
 //   else 
 //   {
-//     vCornerMax[1] = rAABB.GetPosition().m_pValues[1] - fHalfHeight;
-//     vCornerMin[1] = rAABB.GetPosition().m_pValues[1] + fHalfHeight;
+//     vCornerMax[1] = rAABB.GetPosition().m_aValues[1] - fHalfHeight;
+//     vCornerMin[1] = rAABB.GetPosition().m_aValues[1] + fHalfHeight;
 //   }
 //   /////////////////////////////////////////////////////////////////
 //   // Test z axis
-//   if ( rPlane.m_pValues[2] < 0.0f)
+//   if ( rPlane.m_aValues[2] < 0.0f)
 //   {
-//     vCornerMin[2] = rAABB.GetPosition().m_pValues[2] - fHalfLength;
-//     vCornerMax[2] = rAABB.GetPosition().m_pValues[2] + fHalfLength;
+//     vCornerMin[2] = rAABB.GetPosition().m_aValues[2] - fHalfLength;
+//     vCornerMax[2] = rAABB.GetPosition().m_aValues[2] + fHalfLength;
 //   }
 //   else 
 //   {
-//     vCornerMax[2] = rAABB.GetPosition().m_pValues[2] - fHalfLength;
-//     vCornerMin[2] = rAABB.GetPosition().m_pValues[2] + fHalfLength;
+//     vCornerMax[2] = rAABB.GetPosition().m_aValues[2] - fHalfLength;
+//     vCornerMin[2] = rAABB.GetPosition().m_aValues[2] + fHalfLength;
 //   }   
 //   /// Check the intersection of the diagonal line
 //   return LineIntersectsPlane( rPlane, vCornerMin, vCornerMax);
@@ -505,13 +505,13 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   CPlaneIntersectionType iRetval = NO_INTERSECTION;
 //   CVector3<float> vNormal;
 
-//   vNormal.UseExternalData(Plane1.m_pValues);
+//   vNormal.UseExternalData(Plane1.m_aValues);
 //   Math::SetRowVector(mMatrix, 0, vNormal);
   
-//   vNormal.UseExternalData(Plane2.m_pValues);
+//   vNormal.UseExternalData(Plane2.m_aValues);
 //   Math::SetRowVector(mMatrix, 1, vNormal);
 
-//   vNormal.UseExternalData(Plane3.m_pValues);
+//   vNormal.UseExternalData(Plane3.m_aValues);
 //   Math::SetRowVector(mMatrix, 2, vNormal);
 
 //   CVector3<float> vDs(-Plane1[CPlane::D],
@@ -569,17 +569,17 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 
 //   CMatrix4x4f mMatrix = CMatrix4x4f::Identity();
 
-//   mMatrix(0,0) = ob.GetForwardVector().m_pValues[0];
-//   mMatrix(1,0) = ob.GetForwardVector().m_pValues[1];
-//   mMatrix(2,0) = ob.GetForwardVector().m_pValues[2];
+//   mMatrix(0,0) = ob.GetForwardVector().m_aValues[0];
+//   mMatrix(1,0) = ob.GetForwardVector().m_aValues[1];
+//   mMatrix(2,0) = ob.GetForwardVector().m_aValues[2];
 
-//   mMatrix(0,1) = ob.GetRightVector().m_pValues[0];
-//   mMatrix(1,1) = ob.GetRightVector().m_pValues[1];
-//   mMatrix(2,1) = ob.GetRightVector().m_pValues[2];
+//   mMatrix(0,1) = ob.GetRightVector().m_aValues[0];
+//   mMatrix(1,1) = ob.GetRightVector().m_aValues[1];
+//   mMatrix(2,1) = ob.GetRightVector().m_aValues[2];
 
-//   mMatrix(0,2) = ob.GetUpVector().m_pValues[0];
-//   mMatrix(1,2) = ob.GetUpVector().m_pValues[1];
-//   mMatrix(2,2) = ob.GetUpVector().m_pValues[2];
+//   mMatrix(0,2) = ob.GetUpVector().m_aValues[0];
+//   mMatrix(1,2) = ob.GetUpVector().m_aValues[1];
+//   mMatrix(2,2) = ob.GetUpVector().m_aValues[2];
   
 //   return mMatrix;
 // }
@@ -643,7 +643,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //     for( ; planeIt!=kDop.Planes().end(); planeIt++)
 //     {
       
-//       vNormal.UseExternalData( (*planeIt).m_pValues);
+//       vNormal.UseExternalData( (*planeIt).m_aValues);
 //       // Since axes from COrientable are always Unit length,
 //       // we include proper dimensions in the equation.
 //       fEffRadius = 0.5f * ( fabsf( (obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal) ) +
@@ -680,7 +680,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //     for( ;planeIt!=kDop.Planes().end(); planeIt++)
 //     {
       
-//       vNormal.UseExternalData( (*planeIt).m_pValues);
+//       vNormal.UseExternalData( (*planeIt).m_aValues);
 
 //       // Since axes from COrientable are always Unit length,
 //       // we include proper dimensions in the equation.

@@ -57,7 +57,7 @@ namespace Phoenix
       COctreeNode();
       ////////////////////
       /// Destructor.
-      ~COctreeNode();
+      virtual ~COctreeNode();
       ////////////////////
       /// Index accessor method.
       /// \param iSection which node will be returned.
@@ -149,6 +149,7 @@ namespace Phoenix
       /// \param nNumLevels Maximum number of levels in this tree.
       /// \param fWorldSize Max world size.
       COctree( unsigned int nNumLevels, float fWorldSize );
+      virtual ~COctree();
       ////////////////////
       /// Returns total node count in this octree.
       size_t GetNodeCount() const;
@@ -471,6 +472,12 @@ Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nNumLevels, float fWorldS
   // Allocate array for all nodes
   m_pAllNodes = new COctreeNode<TYPE>[m_nNodeCount];
   Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);  
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+Phoenix::Spatial::COctree<TYPE>::~COctree()
+{
+  delete [] m_pAllNodes;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>

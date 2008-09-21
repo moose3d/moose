@@ -83,24 +83,24 @@ namespace Phoenix
       CQuaternion operator * ( const CQuaternion & qQuat ) const;
       inline CQuaternion operator+( const CQuaternion & qQuat ) const 
       {
-	return CQuaternion( m_pValues[0] + qQuat[0],
-			    m_pValues[1] + qQuat[1],
-			    m_pValues[2] + qQuat[2],
-			    m_pValues[3] + qQuat[3]);
+	return CQuaternion( m_aValues[0] + qQuat[0],
+			    m_aValues[1] + qQuat[1],
+			    m_aValues[2] + qQuat[2],
+			    m_aValues[3] + qQuat[3]);
       }
       inline CQuaternion operator-( const CQuaternion & qQuat ) const 
       {
-	return CQuaternion( m_pValues[0] - qQuat[0],
-			    m_pValues[1] - qQuat[1],
-			    m_pValues[2] - qQuat[2],
-			    m_pValues[3] - qQuat[3]);
+	return CQuaternion( m_aValues[0] - qQuat[0],
+			    m_aValues[1] - qQuat[1],
+			    m_aValues[2] - qQuat[2],
+			    m_aValues[3] - qQuat[3]);
       }
       inline CQuaternion operator-() const 
       {
-	return CQuaternion( -m_pValues[0],
-			    -m_pValues[1],
-			    -m_pValues[2],
-			    -m_pValues[3]);
+	return CQuaternion( -m_aValues[0],
+			    -m_aValues[1],
+			    -m_aValues[2],
+			    -m_aValues[3]);
       }
       ////////////////////
       /// So the scaling can be done both ways, from left or right.
@@ -126,42 +126,42 @@ namespace Phoenix
       inline CQuaternion GetInverse() const
       {
 	float f1DivLen = 1.0f/this->Length();
-	return CQuaternion( -(m_pValues[0]*f1DivLen), 
-			    -(m_pValues[1]*f1DivLen),
-			    -(m_pValues[2]*f1DivLen),
-			     (m_pValues[3]*f1DivLen) );
+	return CQuaternion( -(m_aValues[0]*f1DivLen), 
+			    -(m_aValues[1]*f1DivLen),
+			    -(m_aValues[2]*f1DivLen),
+			     (m_aValues[3]*f1DivLen) );
       }
       ////////////////////
       /// Calculates the Quaternion Conjugate of quaternion.
       inline CQuaternion GetConjugate() const
       {
 	
-	return CQuaternion( -(m_pValues[0]), 
-			    -(m_pValues[1]),
-			    -(m_pValues[2]),
-			     (m_pValues[3]) );
+	return CQuaternion( -(m_aValues[0]), 
+			    -(m_aValues[1]),
+			    -(m_aValues[2]),
+			     (m_aValues[3]) );
       }
       ////////////////////
       /// Reverses the quaternion (in rotation sense).
       inline void Reverse()
       {
-	m_pValues[3] = -m_pValues[3];
+	m_aValues[3] = -m_aValues[3];
       }
       ////////////////////
       /// Reverses the quaternion (in rotation sense).
       /// \returns Reversed quaterinon.
       inline CQuaternion GetReverse() const
       {
-	return CQuaternion(m_pValues[0], m_pValues[1], m_pValues[2], -m_pValues[3]);
+	return CQuaternion(m_aValues[0], m_aValues[1], m_aValues[2], -m_aValues[3]);
       }
       ////////////////////
       /// Sets identity quaternion (in multiplication sense).
       inline void Identity() 
       {
-	m_pValues[0] = 0.0f;
-	m_pValues[1] = 0.0f;
-	m_pValues[2] = 0.0f;
-	m_pValues[3] = 1.0f;
+	m_aValues[0] = 0.0f;
+	m_aValues[1] = 0.0f;
+	m_aValues[2] = 0.0f;
+	m_aValues[3] = 1.0f;
       }
       ////////////////////
       /// For simplistic debug outputting.
@@ -174,10 +174,10 @@ namespace Phoenix
       /// The assignment operator.
       inline void operator=( CQuaternion qQuat)
       {
-	m_pValues[0] = qQuat.m_pValues[0];
-	m_pValues[1] = qQuat.m_pValues[1];
-	m_pValues[2] = qQuat.m_pValues[2];
-	m_pValues[3] = qQuat.m_pValues[3];
+	m_aValues[0] = qQuat.m_aValues[0];
+	m_aValues[1] = qQuat.m_aValues[1];
+	m_aValues[2] = qQuat.m_aValues[2];
+	m_aValues[3] = qQuat.m_aValues[3];
       }
     };
   }; // namespace Math

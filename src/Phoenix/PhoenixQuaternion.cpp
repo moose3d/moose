@@ -14,8 +14,8 @@ CQuaternion::operator * ( const CQuaternion & qQuat ) const
   Phoenix::Math::CVector3<float>		vTmp2;
   Phoenix::Math::CVector3<float>		vResult;
   
-  vTmp1.Set( m_pValues );
-  vTmp2.Set( qQuat.m_pValues );
+  vTmp1.Set( m_aValues );
+  vTmp2.Set( qQuat.m_aValues );
   
   vResult =  vTmp1 * qQuat[3];
   vResult += vTmp2 * At(3);
@@ -32,10 +32,10 @@ CQuaternion::CreateFromAxisAngleRad ( float fX, float fY, float fZ, float fRad )
   float thetaDiv2    = fRad * 0.5f;
   float sinThetaDiv2 = sinf ( thetaDiv2 );
 
-  m_pValues[0] = fX * sinThetaDiv2 ;
-  m_pValues[1] = fY * sinThetaDiv2 ;
-  m_pValues[2] = fZ * sinThetaDiv2 ;
-  m_pValues[3] = cosf( thetaDiv2 );  
+  m_aValues[0] = fX * sinThetaDiv2 ;
+  m_aValues[1] = fY * sinThetaDiv2 ;
+  m_aValues[2] = fZ * sinThetaDiv2 ;
+  m_aValues[3] = cosf( thetaDiv2 );  
 }
 /////////////////////////////////////////////////////////////////
 void 
