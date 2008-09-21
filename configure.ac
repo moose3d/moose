@@ -29,7 +29,9 @@ AC_TYPE_UINT32_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_PROG_INSTALL
+AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
+
 
 # Checks for library functions.
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt strdup])
