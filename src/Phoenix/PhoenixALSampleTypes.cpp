@@ -1,9 +1,12 @@
 #include "PhoenixALSampleTypes.h"
+#include <iostream>
+using namespace std;
 namespace libname = Phoenix::Sound;
 /////////////////////////////////////////////////////////////////
 libname::CALSample::CALSample()
 {
   alGenBuffers( 1, &GetALObject());
+  //cerr << "Creating buffer : " << GetALObject() << endl;
   ReportAndHaltOnALErrors();
 }
 /////////////////////////////////////////////////////////////////

@@ -28,6 +28,7 @@ libname::CALSoundOperations::IsPlaying() const
 void 
 libname::CALSoundOperations::Play()
 {
+  //cerr << "playing object: " << GetALObject() << endl;
   alSourcePlay( GetALObject());
 }
 /////////////////////////////////////////////////////////////////
@@ -60,6 +61,7 @@ libname::CALSoundOperations::CommitChanges()
 libname::CALSound::CALSound()
 {
   alGenSources(1, &GetALObject());
+  //cerr << "Creating source : " << GetALObject() << endl;
   ReportAndHaltOnALErrors();
 }
 /////////////////////////////////////////////////////////////////
@@ -73,6 +75,8 @@ void
 libname::CALSound::UseSample( CALSample & sample )
 {
   alSourcei(GetALObject(), AL_BUFFER, sample.GetALObject() );
+  //cerr << "setting sample: " << sample.GetALObject() << " to sound " 
+  //<< GetALObject() << endl;
 }
 /////////////////////////////////////////////////////////////////
 libname::CALStreamSound::CALStreamSound() :  m_pStream(NULL)

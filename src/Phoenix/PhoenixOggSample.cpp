@@ -76,6 +76,7 @@ libname::COggSample::Load( const char *szFilename )
   // closing not necessary, ov_clear does it.
   //fclose(f);
 
+  //cerr << "uploading buffer data to : " << GetALObject() << endl;
   // Upload sound data to buffer
   alBufferData(GetALObject(), GetFormat(), m_pBufferData, bufsize, GetFreq());
   ALenum error = alGetError();
