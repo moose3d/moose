@@ -1,6 +1,21 @@
-h_sources = PhoenixALObjectArray.h PhoenixALSampleTypes.h  PhoenixALSoundTypes.h  PhoenixAudioSystem.h  PhoenixOggSample.h  PhoenixOggStreamSample.h  PhoenixSoundBase.h  PhoenixSoundSampleBase.h 
+AM_CFLAGS = $(CFLAGS) $(CXXFLAGS)
+h_sources = 	PhoenixALObjectArray.h \
+		PhoenixALSampleTypes.h  \
+	    	PhoenixALSoundTypes.h  \
+		PhoenixAudioSystem.h  \
+		PhoenixOggSample.h  \
+		PhoenixOggStreamSample.h  \
+		PhoenixSoundBase.h  \
+		PhoenixSoundSampleBase.h 
 
-cc_sources = PhoenixALSampleTypes.cpp PhoenixALSoundTypes.cpp PhoenixAudioSystem.cpp PhoenixOggSample.cpp PhoenixOggStreamSample.cpp PhoenixSoundBase.cpp PhoenixSoundSampleBase.cpp
+cc_sources = 	PhoenixALSampleTypes.cpp \
+		PhoenixALSoundTypes.cpp \
+		PhoenixAudioSystem.cpp \
+		PhoenixOggSample.cpp \
+		PhoenixOggStreamSample.cpp \
+		PhoenixSoundBase.cpp \
+		PhoenixSoundSampleBase.cpp
+
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
 
