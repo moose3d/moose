@@ -170,6 +170,7 @@ AC_SUBST(GLOBALLDFLAGS, $LDFLAGS )
 
 AC_OUTPUT( Makefile \
 	   src/Phoenix/Makefile \
+	   src/Phoenix/Audio/Makefile \
 	   phoenix.pc
 )
 AC_MSG_NOTICE(  );
