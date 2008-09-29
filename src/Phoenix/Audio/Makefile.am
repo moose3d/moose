@@ -1,4 +1,4 @@
-AM_CFLAGS = $(CFLAGS) $(CXXFLAGS)
+AM_CXXFLAGS = -O0 
 h_sources = 	PhoenixALObjectArray.h \
 		PhoenixALSampleTypes.h  \
 	    	PhoenixALSoundTypes.h  \
