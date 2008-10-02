@@ -5,6 +5,7 @@
 #include "PhoenixMathGeometry.h"
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
+#include "PhoenixTransform.h"
 #include <iostream>
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
@@ -230,7 +231,7 @@ namespace Phoenix
 	stream << "BRB:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_BACK)) << std::endl;
 	return stream;
       }
-    
+      friend void operator*=( Phoenix::Volume::COrientedBox & sphere, const Phoenix::Math::CTransform & transf );
     };
     /////////////////////////////////////////////////////////////////
     /// The class for generic sphere with center and radius.
@@ -295,7 +296,9 @@ namespace Phoenix
       
 	return stream;
       }
-    
+      
+      friend void operator*=( Phoenix::Volume::CSphere & sphere, const Phoenix::Math::CTransform & transf );
+      
     }; // class CSphere
     /////////////////////////////////////////////////////////////////
     /// Capsule class (sphere swept line)
@@ -399,7 +402,7 @@ namespace Phoenix
       /// Get length.
       /// \param Length of cone.
       float GetLength() const;
-
+      
     }; // class CCone
     /////////////////////////////////////////////////////////////////
     /// Decal volume class. Used for creating scorch marks, for instance.
@@ -524,6 +527,7 @@ namespace Phoenix
     //     0  0  0  1    U = Up Vector
     /////////////////////////////////////////////////////////////////
     PHOENIX_API Phoenix::Math::CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const Phoenix::Volume::COrientedBox &ob  );
+    
   };// namespace Volume
 };// namespace Phoenix
 /////////////////////////////////////////////////////////////////

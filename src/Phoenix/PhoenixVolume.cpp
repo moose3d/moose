@@ -918,3 +918,20 @@ Phoenix::Volume::CAxisAlignedBox::GetMax() const
   return m_vMax;
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Volume::operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf ) 
+{
+  // Transform box according to world transformation
+  box.Move( transf.GetTranslation() );
+  box.AppendToRotation( transf.GetRotation() );
+  // Update box values
+  box.CalculatePlanes();
+  box.CalculateCorners();
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::Volume::operator*=( Phoenix::Volume::CSphere & sphere, const Phoenix::Math::CTransform & transf ) 
+{
+  sphere.Move( transf.GetTranslation() );
+}
+/////////////////////////////////////////////////////////////////
