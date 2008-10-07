@@ -407,12 +407,21 @@ namespace Phoenix
       /// Returns reference to Object vector.
       /// \returns Vector of managed objects.
       std::vector<CResource<OBJECTTYPE,HANDLE> *> & GetResources();
+      ////////////////////
+      /// Releases object from manager without destroying it.
+      /// \param handle Handle to managed object.
+      void ReleaseObject( HANDLE & handle );
+      
     private:
       void DeleteMemory();
       ////////////////////
       /// Removes a resource from manager.
-      /// \param nIndex Index of resource array.
+      /// \param nIndex Index of resource array where resource is.
       void Destroy( size_t nIndex ); 
+      ////////////////////
+      /// Releases object from manager without destroying it.
+      /// \param nIndex Index of resource array where object is.
+      void ReleaseObject( size_t nIndex );
     };
   };
 };
@@ -727,6 +736,16 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( HANDLE & handle )
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>
 void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::ReleaseObject( HANDLE & handle )
+{
+  // Null handles won't point to anything. 
+  if ( handle.IsNull() ) return;
+  // Destroy by index.
+  ReleaseObject( handle.GetIndex() );
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( size_t nIndex )
 {
   
@@ -755,6 +774,48 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( size_t nIndex )
   else if ( nIndex == m_vecObjects.size() - 1 )
   {
     std::string strName = m_vecObjects[nIndex]->GetName();
+    delete m_vecObjects[nIndex];
+    m_vecObjects.pop_back();    
+    // Remove key from hash table.
+    m_pResourceHash->Delete( strName );
+  }
+
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::ReleaseObject( size_t nIndex )
+{
+  
+  if ( nIndex < m_vecObjects.size() - 1 )
+  {
+    std::string strName = m_vecObjects[nIndex]->GetName();
+    // Here we loose our track of the object.
+    m_vecObjects[nIndex]->SetObject(NULL);
+    // Remove resource (invalidates also handles)
+    delete m_vecObjects[nIndex];
+    // Assign last resource into place of deleted resource.
+    m_vecObjects[nIndex] = m_vecObjects.back();
+
+    // Remove extra pointer.
+    m_vecObjects.pop_back();    
+
+    // Update handle indices.
+    m_vecObjects[nIndex]->UpdateAllHandles(nIndex);
+
+    // Remove key from hash table.
+    m_pResourceHash->Delete( strName );
+    
+    // Update hashtable's resourcename.index for moved resource
+    CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(m_vecObjects[nIndex]->GetName());
+    pHashItem->GetObject().SetIndex( nIndex );
+
+  }
+  else if ( nIndex == m_vecObjects.size() - 1 )
+  {
+    std::string strName = m_vecObjects[nIndex]->GetName();
+    // Here we loose our track of the object.
+    m_vecObjects[nIndex]->SetObject(NULL);
     delete m_vecObjects[nIndex];
     m_vecObjects.pop_back();    
     // Remove key from hash table.

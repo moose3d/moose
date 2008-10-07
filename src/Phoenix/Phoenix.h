@@ -32,6 +32,7 @@
 #include "PhoenixSkybox.h"
 #include "PhoenixRenderQueue.h"
 #include "PhoenixGameObject.h"
+#include <PhoenixGameRenderable.h>
 #include "PhoenixTransform.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixParticleSystem.h"

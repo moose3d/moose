@@ -18,6 +18,26 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0)
 
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Scene::CSphereBound::CSphereBound()
+{
+
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Scene::CSphereBound::~CSphereBound()
+{
+
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Scene::CBoxBound::CBoxBound()
+{
+
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Scene::CBoxBound::~CBoxBound()
+{
+
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Volume::CSphere & 
 Phoenix::Scene::CSphereBound::GetBoundingSphere()
 {
@@ -48,7 +68,7 @@ Phoenix::Scene::CGameObject::GetSpatialIndex() const
   return m_nSpatialIndex;
 }
 /////////////////////////////////////////////////////////////////
-inline void 
+void 
 Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
 {
   m_nSpatialIndex = nIndex;

@@ -21,6 +21,7 @@ namespace Phoenix
       /// Model bounding sphere
       Phoenix::Volume::CSphere		m_BoundingSphere;
     public:
+      CSphereBound();
       virtual ~CSphereBound();
       ////////////////////
       /// Returns bounding sphere.
@@ -38,6 +39,7 @@ namespace Phoenix
       /// Model bounding box.
       Phoenix::Volume::COrientedBox	m_BoundingBox;
     public:
+      CBoxBound();
       virtual ~CBoxBound();
       ////////////////////
       /// Returns bounding box.
@@ -70,14 +72,7 @@ namespace Phoenix
       /// Sets spatial index of this node.
       /// \param nIndex New index.
       void SetSpatialIndex( unsigned int nIndex );
-      ////////////////////
-      /// Calculates world bounding box.
-      /// \param box Oriented box where transformed box is stored.
-      void CalculateWorldBoundingBox( Phoenix::Volume::COrientedBox & box ) const;
-      ////////////////////
-      /// Calculates world bounding sphere.
-      /// \param sphere Sphere where transformed sphere is stored.
-      void CalculateWorldBoundingSphere( Phoenix::Volume::CSphere & sphere ) const;
+
     };
   }; // namespace Scene
 }; // namespace Phoenix
