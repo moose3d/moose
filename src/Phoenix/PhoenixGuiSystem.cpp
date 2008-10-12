@@ -136,14 +136,20 @@ Phoenix::GUI::CGuiSystem::Initialize( size_t nWidth, size_t nHeight)
 {
   //CSDLScreen::m_ScreenParams.
   // \TODO Fix screen width and height
-  CEGUI::OpenGLRenderer* myRenderer = new CEGUI::OpenGLRenderer( 0, nWidth, nHeight ); 
-  new CEGUI::System(myRenderer);
-  /// enables unicode representation
-  SDL_EnableUNICODE(1);
+
+  // Ok, this is pretty crappy workaround, but it will have to do.
+  if ( CEGUI::System::getSingletonPtr() == NULL )
+  {
+    CEGUI::OpenGLRenderer* myRenderer = new CEGUI::OpenGLRenderer( 0, nWidth, nHeight ); 
+    new CEGUI::System(myRenderer);
+    /// enables unicode representation
+    SDL_EnableUNICODE(1);
+  }
+
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath, const char *szName )
+Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
 {
   libconfig::Config config;
   try 
@@ -176,22 +182,63 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath, const char *szName 
     CEGUI::WindowManager::setDefaultResourceGroup("layouts");
     CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts"); 
     
+
+  }  
+  catch( libconfig::ParseException & ex )
+  {
+    cerr << "parse exception" << ex.getError() << endl;
+  }
+  catch( libconfig::FileIOException & ex )
+  {
+    cerr << "Couldn't load file." << endl;
+  }
+  catch ( libconfig::SettingNotFoundException & ex )
+  {
+    cerr << "Setting not found!" << endl;
+  }
+  catch ( CEGUI::InvalidRequestException & ex )
+  {
+    cerr << ex.getMessage() << endl;
+  }
+  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Phoenix::GUI::CGuiSystem::LoadGUI( const char *szPath, const char *szName )
+{
+  libconfig::Config config;
+  try 
+  {
+    config.readFile( szPath );  
     string layout_prefix = "gui_config." + string( szName ? szName : "defaults");
     layout_prefix += ".";
     // load in a font.  The first font loaded automatically becomes the default font.
     string font = config.lookup( layout_prefix + "font");
 
-    CEGUI::FontManager::getSingleton().createFont( font );
-    string scheme = config.lookup( layout_prefix + "scheme" );
-
-    CEGUI::SchemeManager::getSingleton().loadScheme( scheme );
+    try 
+    {
+      CEGUI::FontManager::getSingleton().createFont( font );
+    } 
+    catch ( CEGUI::AlreadyExistsException & ex )
+    {
+      cerr << ex.getMessage() << endl;
+    }
     
+    string scheme = config.lookup( layout_prefix + "scheme" );
+    try 
+    {
+      CEGUI::SchemeManager::getSingleton().loadScheme( scheme );
+    }
+    catch ( CEGUI::AlreadyExistsException & ex )
+    {
+      cerr << ex.getMessage() << endl;
+    }
     string layout = config.lookup( layout_prefix + "layout");
-    CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( layout );
-
-    CEGUI::System::getSingleton().setGUISheet( myRoot );
-
-
+    CEGUI::Window* newRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( layout );
+    
+    // assign new name to map and set it visible
+    m_mapNameToRoot[string(szName)] = newRoot;
+    CEGUI::System::getSingleton().setGUISheet( newRoot );
   }  
   catch( libconfig::ParseException & ex )
   {
@@ -292,7 +339,13 @@ Phoenix::GUI::CGuiSystem::Update( size_t nPassedTime )
 void
 Phoenix::GUI::CGuiSystem::SelectGUI( const char *szRootName )
 {
-  //System::getSingleton().setGUISheet( myRoot );
+  std::map<std::string, CEGUI::Window *>::iterator  it;
+  it = m_mapNameToRoot.find(string(szRootName));
+
+  if ( it != m_mapNameToRoot.end())
+  {
+    CEGUI::System::getSingleton().setGUISheet( it->second );
+  }
 }
 /////////////////////////////////////////////////////////////////
 void 
