@@ -1,8 +1,10 @@
 #ifndef __CGuiSystem_h__
 #define __CGuiSystem_h__
 #include <CEGUI.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include "PhoenixAPI.h"
+#include <map>
+#include <string>
 /////////////////////////////////////////////////////////////////
 union SDL_Event;
 
@@ -18,15 +20,22 @@ namespace Phoenix
     /// Adapter for CEGUI.
     class PHOENIX_API CGuiSystem
     {
+    private:
+      std::map<std::string, CEGUI::Window *> m_mapNameToRoot;
     public:
       ////////////////////
       /// Init necessary systems.
       void Initialize( size_t nWidth, size_t nHeight );
       ////////////////////
-      /// Setup data files from config file.
+      /// Setup data paths from config file.
       /// \param szPath Path to config file.
       /// \param szName Name of layout to load.
-      void LoadResources( const char *szPath, const char *szName = NULL );
+      void LoadResources( const char *szPath );
+      ////////////////////
+      /// Load GUI layout from config file.
+      /// \param szPath Path to config file.
+      /// \param szName Name of GUI layout to load.
+      void LoadGUI( const char *szPath, const char *szName );
       ////////////////////
       ///  Injects mouse up event into GUI system.
       bool InjectMouseUp( GuiEvent & e );
