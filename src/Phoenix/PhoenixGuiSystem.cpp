@@ -15,7 +15,6 @@ using std::string;
 /////////////////////////////////////////////////////////////////
 CEGUI::uint SDLKeyToCEGUIKey(SDLKey key)
 {
-  cerr << "calling " << __FUNCTION__ << endl;
   using namespace CEGUI;
   switch (key)
   {
@@ -221,7 +220,7 @@ Phoenix::GUI::CGuiSystem::LoadGUI( const char *szPath, const char *szName )
     } 
     catch ( CEGUI::AlreadyExistsException & ex )
     {
-      cerr << ex.getMessage() << endl;
+      // NOP, we got the proper font
     }
     
     string scheme = config.lookup( layout_prefix + "scheme" );
@@ -231,7 +230,7 @@ Phoenix::GUI::CGuiSystem::LoadGUI( const char *szPath, const char *szName )
     }
     catch ( CEGUI::AlreadyExistsException & ex )
     {
-      cerr << ex.getMessage() << endl;
+      // NOP, we got the proper scheme
     }
     string layout = config.lookup( layout_prefix + "layout");
     CEGUI::Window* newRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( layout );
