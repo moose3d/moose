@@ -1,4 +1,5 @@
 #include "PhoenixWindowsWrapper.h"
+#ifdef WIN32
 /////////////////////////////////////////////////////////////////
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
@@ -35,3 +36,4 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
   return 0;
 }
 /////////////////////////////////////////////////////////////////
+#endif

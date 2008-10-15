@@ -10,7 +10,7 @@
 #include <iostream>
 #include <assert.h>
 #include <string>
-#include "PhoenixAPI.h"
+#include "Core/PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 #define ReportALErrors()					\
 {								\

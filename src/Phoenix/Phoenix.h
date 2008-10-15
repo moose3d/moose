@@ -53,4 +53,6 @@
 #include <PhoenixSoundBase.h>
 #include <PhoenixSoundSampleBase.h>
 #include <PhoenixFlock.h>
+#include <PhoenixLog.h>
+#include <PhoenixLogger.h>
 /////////////////////////////////////////////////////////////////

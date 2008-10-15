@@ -174,6 +174,13 @@ AC_SUBST(LDFLAGS, $LDFLAGS )
 AC_OUTPUT( Makefile \
 	   src/Phoenix/Makefile \
 	   src/Phoenix/Audio/Makefile \
+	   src/Phoenix/AI/Makefile \
+	   src/Phoenix/Core/Makefile \
+	   src/Phoenix/Math/Makefile \
+	   src/Phoenix/Spatial/Makefile \
+	   src/Phoenix/Scene/Makefile \
+	   src/Phoenix/Volume/Makefile \
+	   src/Phoenix/Graphics/Makefile \
 	   phoenix.pc
 )
 AC_MSG_NOTICE(  );

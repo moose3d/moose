@@ -54,6 +54,11 @@ namespace Phoenix
 #define g_UniqueName            ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName().c_str())
 #define CreateUniqueNameStr(A)  ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName(A))
 #define CreateUniqueName(A)     ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName(A).c_str())
+/////////////////////////////////////////////////////////////////
+/// Log streams.
+#define g_Error ( Phoenix::Core::CLogger::GetInstance()->Err())
+#define g_Log   ( Phoenix::Core::CLogger::GetInstance()->Msg())
+#define g_Warn  ( Phoenix::Core::CLogger::GetInstance()->Warn())
 ////////////////////
 // Constants
 #define TEXTURE_HANDLE_COUNT 8
