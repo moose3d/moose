@@ -641,6 +641,11 @@ namespace Phoenix
 	  m_pSingleton = NULL;
 	}
       }
+      /// Checks is this object instantiated
+      static bool Exists() 
+      {
+	return (m_pSingleton != NULL);
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Initialize the static member in the derived classes.

@@ -1,3 +1,4 @@
+GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
 h_sources = PhoenixSpatial.h
 cc_sources = PhoenixSpatial.cpp

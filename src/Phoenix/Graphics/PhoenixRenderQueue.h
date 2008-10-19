@@ -29,9 +29,9 @@ namespace Phoenix
       /// \returns Reference to object list.
       std::list<TYPE> & GetObjectList();
       ////////////////////
-      /// Renders current queue using renderer and given adapter.
+      /// Renders current queue using given renderer.
       /// \param renderer OpenGL renderer.
-      template<class ADAPTER_CLASS> void Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS & functionObject );
+      void Render( Phoenix::Graphics::COglRenderer &renderer );
       ////////////////////
       /// Clears current queue.
       void Clear();
@@ -42,7 +42,6 @@ namespace Phoenix
   }
 }
 /////////////////////////////////////////////////////////////////
-
 template<typename TYPE>
 Phoenix::Graphics::CRenderQueue<TYPE>::CRenderQueue()
 {
@@ -70,14 +69,13 @@ Phoenix::Graphics::CRenderQueue<TYPE>::Clear()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-template<class ADAPTER_CLASS> 
 void 
-Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &renderer, ADAPTER_CLASS & functionObject)
+Phoenix::Graphics::CRenderQueue<TYPE>::Render( Phoenix::Graphics::COglRenderer &renderer)
 {
   typename std::list<TYPE>::iterator it = m_lstObjects.begin();
   for( ; it != m_lstObjects.end(); it++)
   {
-    functionObject( renderer, *it);
+    (*it)->Render(renderer); 
   }      
 }
 /////////////////////////////////////////////////////////////////

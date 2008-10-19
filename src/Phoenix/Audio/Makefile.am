@@ -1,3 +1,4 @@
+GENERIC_LIBRARY_NAME="Phoenix"
 AM_CXXFLAGS = -O0 
 h_sources = 	PhoenixALObjectArray.h \
 		PhoenixALSampleTypes.h  \
@@ -17,7 +18,7 @@ cc_sources = 	PhoenixALSampleTypes.cpp \
 		PhoenixSoundSampleBase.cpp \
 		PhoenixListener.cpp 
 
-library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME) 
+library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
 
 INCLUDES =  -I@top_srcdir@/  -I../Core -I../Math -I../Spatial  -I../Graphics

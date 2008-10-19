@@ -1,3 +1,4 @@
+GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
 h_sources = PhoenixAlphaTestOperation.h  PhoenixGameRenderable.h   PhoenixModelHelper.h     PhoenixRenderable.h   PhoenixTexture.h PhoenixBlendingOperation.h   PhoenixGuiSystem.h        PhoenixModelLoader.h     PhoenixRenderQueue.h  PhoenixTGAImage.h PhoenixCamera.h              PhoenixIndexArray.h       PhoenixObjLoader.h       PhoenixRenderState.h  PhoenixVertexDescriptor.h PhoenixDDSImage.h            PhoenixLight.h            PhoenixOGLConsts.h       PhoenixSDLScreen.h PhoenixFrameBuffer.h         PhoenixMaterial.h         PhoenixOGLRenderer.h     PhoenixShader.h PhoenixFrustum.h             PhoenixMilkshapeLoader.h  PhoenixParticleSystem.h  PhoenixSkybox.h
 
