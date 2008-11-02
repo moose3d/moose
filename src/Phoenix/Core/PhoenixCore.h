@@ -186,6 +186,13 @@ namespace Phoenix
 	return m_iSeconds;
       }
       ////////////////////
+      /// Returns passed time as floating-point value in seconds.
+      /// \returns Passed time in seconds.
+      float ToSeconds() const
+      {
+	return static_cast<float>(m_iSeconds) + static_cast<float>(GetMilliSeconds())*0.001f;
+      }
+      ////////////////////
       /// Less than comparison operator.
       /// \param rAnother Another timestamp.
       int operator<( const CTimeStamp & rAnother) const
