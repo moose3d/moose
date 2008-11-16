@@ -61,12 +61,14 @@ namespace Phoenix
       /// \param nLodLevel To which lod level renderable is added.
       /// \param szGroupName Group name for indices. By default NULL, meaning all indices.
       /// \param bInterleaved Attempt to use interleaved data. By default, false.
-      /// \returns Renderable pointer.
+      /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
+      /// \returns Pointer to a Renderable
       Phoenix::Graphics::CRenderable * AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL, bool bInterleaved = false,  Phoenix::Math::CTransform *pWorldTransform = NULL);
       ////////////////////
       /// Adds existing renderable object to given lod level.
       /// \param pRenderable Renderable to be added.
       /// \param nLodLevel To which level renderable is added.
+      /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
       void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL);
     };
   }
