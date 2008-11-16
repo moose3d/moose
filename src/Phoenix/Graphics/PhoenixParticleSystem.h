@@ -84,8 +84,8 @@ namespace Phoenix
       /// Updates the particles with ActionPolicy. 
       /// Particles are ordered so that the living particles are in the front
       /// of particle array.
-      /// \param nPassedTimeInMs Passed time in milliseconds.
-      void Update( unsigned int nPassedTimeInMs );
+      /// \param fSeconds Passed time in seconds.
+      void Update( float fSecondsPassed );
       ////////////////////
       /// An accessor method for particle array
       /// \returns Pointer to particle array.
@@ -128,14 +128,14 @@ namespace Phoenix
       ColorPolicy    m_ColorPolicy;
       ////////////////////
       /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeMS Passed time in milliseconds.
-      inline void Prepare( unsigned int nPassedTimeMS )
+      /// \param fSecondsPassed Passed time in seconds.
+      inline void Prepare(  float fSecondsPassed )
       {
-	m_SizePolicy.Prepare(nPassedTimeMS);
-	m_VelocityPolicy.Prepare(nPassedTimeMS);
-	m_EnergyPolicy.Prepare(nPassedTimeMS);
-	m_PositionPolicy.Prepare(nPassedTimeMS);
-	m_ColorPolicy.Prepare(nPassedTimeMS);
+	m_SizePolicy.Prepare(fSecondsPassed);
+	m_VelocityPolicy.Prepare( fSecondsPassed );
+	m_EnergyPolicy.Prepare(fSecondsPassed);
+	m_PositionPolicy.Prepare(fSecondsPassed);
+	m_ColorPolicy.Prepare(fSecondsPassed);
       }
       ////////////////////
       /// Modifies given particle.
@@ -149,33 +149,33 @@ namespace Phoenix
 	m_ColorPolicy(particle);
       }
     }; // end of CCompletePolicy
-    /////////////////////////////////////////////////////////////////
-    // Classe for measuring time difference within policies (using milliseconds). 
-    class PHOENIX_API CMillisecondPolicyBase 
-    {
-    protected:
-      /// Passed time in milliseconds
-      unsigned int m_nPassedTimeInMS;
-    public:
-      ////////////////////
-      /// Constructor.
-      CMillisecondPolicyBase() : m_nPassedTimeInMS(0) {}
-      ////////////////////
-      /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeInMS Passed milliseconds are stored as milliseconds.
-      inline void Prepare( unsigned int nPassedTimeInMS )
-      {
-	m_nPassedTimeInMS = nPassedTimeInMS;
-      }
-      ////////////////////
-      /// Returns passed time.
-      /// \returns Passed time in milliseconds.
-      inline unsigned int GetPassedTimeMS() const
-      {
-	return m_nPassedTimeInMS;
-      }
+    // /////////////////////////////////////////////////////////////////
+//     // Classe for measuring time difference within policies (using milliseconds). 
+//     class PHOENIX_API CMillisecondPolicyBase 
+//     {
+//     protected:
+//       /// Passed time in milliseconds
+//       unsigned int m_nPassedTimeInMS;
+//     public:
+//       ////////////////////
+//       /// Constructor.
+//       CMillisecondPolicyBase() : m_nPassedTimeInMS(0) {}
+//       ////////////////////
+//       /// Prepares this policy according to given time parameter.
+//       /// \param nPassedTimeInMS Passed milliseconds are stored as milliseconds.
+//       inline void Prepare( unsigned int nPassedTimeInMS )
+//       {
+// 	m_nPassedTimeInMS = nPassedTimeInMS;
+//       }
+//       ////////////////////
+//       /// Returns passed time.
+//       /// \returns Passed time in milliseconds.
+//       inline unsigned int GetPassedTimeMS() const
+//       {
+// 	return m_nPassedTimeInMS;
+//       }
       
-    };
+//     };
     /////////////////////////////////////////////////////////////////
     /// Class for measuring time difference within policies (using seconds).
     class PHOENIX_API CSecondPolicyBase
@@ -190,9 +190,9 @@ namespace Phoenix
       ////////////////////
       /// Prepares this policy according to given time parameter.
       /// \param nPassedTimeInMS Passed milliseconds are stored as seconds.
-      inline void Prepare( unsigned int nPassedTimeInMS )
+      inline void Prepare( float fSecondsPassed )
       {
-	m_fPassedTimeInSec = (float)nPassedTimeInMS * 0.001f;
+	m_fPassedTimeInSec = fSecondsPassed;
       }
       ////////////////////
       /// Returns passed time.
@@ -299,8 +299,8 @@ namespace Phoenix
     public:
       ////////////////////
       /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeInMS Passed time in milliseconds.
-      inline void Prepare( unsigned int nPassedTimeInMS ){}
+      /// \param fSecondsPassed Passed time in seconds.
+      inline void Prepare( float fSecondsPassed ){}
       ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
@@ -316,10 +316,6 @@ namespace Phoenix
       ////////////////////
       /// Default constructor.
       CEnergyInitializer() : m_fEnergy(1.0f){}
-      ////////////////////
-      /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeInMS Passed time in milliseconds.
-      inline void Prepare( unsigned int nPassedTimeInMS ){}
       ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
@@ -339,10 +335,6 @@ namespace Phoenix
       ////////////////////
       /// Default constructor.
       CVelocityInitializer() :m_vVelocity(0,0,0) {}
-      ////////////////////
-      /// Prepares this policy according to given time parameter.
-      /// \param nPassedTimeInMS Passed time in milliseconds.
-      inline void Prepare( unsigned int nPassedTimeInMS ){}
       ////////////////////
       /// Modifies given particle.
       /// \param p particle which values are to be modified.
@@ -470,9 +462,9 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 /////////////////////////////////////////////////////////////////
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
 void
-Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Update( unsigned int nPassedTimeInMs )
+Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Update( float fSecondsPassed )
 {
-  m_ActionPolicy.Prepare( nPassedTimeInMs );
+  m_ActionPolicy.Prepare( fSecondsPassed );
   for(unsigned int i = 0;i<GetAliveCount();)
   {
     PARTICLE_TYPE &p = m_aParticles[i];

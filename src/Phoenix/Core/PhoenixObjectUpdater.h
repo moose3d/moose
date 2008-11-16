@@ -9,20 +9,25 @@ namespace Phoenix
 {
   namespace Core
   {
+    ////////////////////
+    /// Interface for all updateables.
     class PHOENIX_API IUpdateable
     {
     public:
       virtual ~IUpdateable() {};
-      virtual void Update( size_t nPassedTimeMS ) = 0;
+      virtual void Update( float fSecondsPassed ) = 0;
     };
+    ////////////////////
+    /// Handler base.
     class PHOENIX_API IHandlerBase
     {
     public:
       virtual ~IHandlerBase() {};
-      virtual void Update( size_t nPassedTimeMS ) = 0;
+      virtual void Update( float fSecondsPassed ) = 0;
       virtual bool IsNull() const = 0;
     };
     /////////////////////////////////////////////////////////////////
+    /// Handler for updateable objects.
     template<class TYPE>
     class PHOENIX_API CUpdateableObjectHandler : public IHandlerBase
     {
@@ -35,12 +40,16 @@ namespace Phoenix
       {
 	m_hThis = hHandle;
       }
-      
-      void Update( size_t nPassedTimeMS ) 
+      ////////////////////
+      /// Calls update on object to which handle points.
+      /// \param fSecondsPassed Time passed in seconds since last update.
+      void Update( float fSecondsPassed ) 
       {
-	static_cast<IUpdateable *>(*m_hThis)->Update( nPassedTimeMS );
+	static_cast<IUpdateable *>(*m_hThis)->Update( fSecondsPassed );
       }
-      
+      ////////////////////
+      /// Checks is this object handle NULL.
+      /// \returns true if is null, false otherwise.
       bool IsNull() const { return m_hThis.IsNull(); }
     };
     /////////////////////////////////////////////////////////////////
@@ -57,12 +66,7 @@ namespace Phoenix
       /// Destructor.
       virtual ~CObjectUpdater();
       ////////////////////
-      void Update( size_t nTimeMS = 0 );
-      ////////////////////
-      /// Updates all objects assigned to updater.
-      /// \param rAdapter Adapter object which does the actual updating.
-      /// \param nTimeMS Passed time in milliseconds since last Update().
-      //template<class ADAPTER> void Update( ADAPTER &rAdapter, unsigned int nTimeMS = 0 );
+      void Update( float fSecondsPassed );
       ////////////////////
       /// Begins managing given object.
       /// \param hResource Handle to an object which will be updated.

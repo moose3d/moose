@@ -10,7 +10,7 @@ Phoenix::Core::CObjectUpdater::~CObjectUpdater()
 }
 /////////////////////////////////////////////////////////////////
 void 
-Phoenix::Core::CObjectUpdater::Update( size_t nTimeMS )
+Phoenix::Core::CObjectUpdater::Update( float fSecondsPassed  )
 {
   UpdateableVector::iterator it = m_vecUpdateables.begin();
   for( ; it != m_vecUpdateables.end();it++)
@@ -22,7 +22,7 @@ Phoenix::Core::CObjectUpdater::Update( size_t nTimeMS )
     } 
     else
     {
-      (*it)->Update( nTimeMS);
+      (*it)->Update( fSecondsPassed );
     }
   } 
 }
