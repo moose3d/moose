@@ -38,14 +38,14 @@ namespace Phoenix
       /// Just to make sure that object actually has the Update-method.
       CUpdateableObjectHandler( const Phoenix::Core::CHandle<TYPE> & hHandle )
       {
-	m_hThis = hHandle;
+    	  m_hThis = hHandle;
       }
       ////////////////////
       /// Calls update on object to which handle points.
       /// \param fSecondsPassed Time passed in seconds since last update.
-      void Update( float fSecondsPassed ) 
+      void Update( float fSecondsPassed )
       {
-	static_cast<IUpdateable *>(*m_hThis)->Update( fSecondsPassed );
+    	static_cast<IUpdateable *>(*m_hThis)->Update( fSecondsPassed );
       }
       ////////////////////
       /// Checks is this object handle NULL.
@@ -53,7 +53,7 @@ namespace Phoenix
       bool IsNull() const { return m_hThis.IsNull(); }
     };
     /////////////////////////////////////////////////////////////////
-    /// Class for updater object. 
+    /// Class for updater object.
     class PHOENIX_API CObjectUpdater
     {
     protected:
@@ -61,7 +61,7 @@ namespace Phoenix
       /// Holds all handles to updateable objects
       UpdateableVector m_vecUpdateables;
     public:
-      
+
       ////////////////////
       /// Destructor.
       virtual ~CObjectUpdater();

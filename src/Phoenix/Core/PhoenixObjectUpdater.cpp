@@ -9,21 +9,23 @@ Phoenix::Core::CObjectUpdater::~CObjectUpdater()
   m_vecUpdateables.clear();
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Core::CObjectUpdater::Update( float fSecondsPassed  )
 {
   UpdateableVector::iterator it = m_vecUpdateables.begin();
-  for( ; it != m_vecUpdateables.end();it++)
+  while( it != m_vecUpdateables.end() )
   {
-    if ( (*it)->IsNull())
+	if ( (*it)->IsNull())
     {
       delete (*it);
-      m_vecUpdateables.erase(it);
-    } 
+      it = m_vecUpdateables.erase(it);
+    }
     else
     {
       (*it)->Update( fSecondsPassed );
+      ++it;
     }
-  } 
+
+  }
 }
 /////////////////////////////////////////////////////////////////
