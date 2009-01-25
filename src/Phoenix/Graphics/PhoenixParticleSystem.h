@@ -16,9 +16,8 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// The Particle base class, contains properties of a single particle.
-    class PHOENIX_API CParticle 
+    struct PHOENIX_API CParticle 
     {
-    public:
       ///  Current position in the world. 
       ///  \par previous position in the world is a special case, 
       ///  \par must be implemented in inherited class.
@@ -32,9 +31,7 @@ namespace Phoenix
       ///  The scaling factor for the particle shape defined in the 
       ///  \par ParticleSystem.
       float	      m_fSize;
-      
     };
-
     /////////////////////////////////////////////////////////////////
     /// Particle System.
     template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
@@ -93,8 +90,7 @@ namespace Phoenix
       ////////////////////
       /// Intializes system.
       /// \param nNumParticles Number of particles to be created.
-      /// \param vPosition Initial position for each particle.
-      void Init(const size_t &nNumParticles, const Phoenix::Math::CVector3<float> &vPosition );
+      void Init(const size_t nNumParticles );
       /////////////////////////////////////////////////////////////////
       /// Checks is system alive.
       /// \returns Non-zero if system has living particles ( energy > 0 )
@@ -494,7 +490,7 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 /////////////////////////////////////////////////////////////////
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
 void
-Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Init(const size_t &nNumParticles, const Phoenix::Math::CVector3<float> &vPosition )
+Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Init(const size_t nNumParticles )
 {
   size_t nAmount = nNumParticles;
   float  fParticleMaxSize = 0.0f;
