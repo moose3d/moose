@@ -597,6 +597,15 @@ namespace Phoenix
       /// \param bWireframe Is sphere rendered as wireframe. Default true.
       void CommitSphere( const Phoenix::Volume::CSphere &sphere, bool bWireframe = true );
       ////////////////////
+      /// Renders a circle.
+      /// \param vCenter Center of the circle in current coordinate system.
+      /// \param fRadius Circle radius.
+      /// \param vRotation Euler rotation around x,y,z-axes before circle is drawn.
+      /// \param bWireframe Is circle rendered as wireframe (only outer edge). Default true.
+      void CommitCircle( const Phoenix::Math::CVector3<float> & vCenter, 
+			 float fRadius, 
+			 const CVector3<float> & vRotation, bool bWireframe = true );
+      ////////////////////
       /// Renders a box.
       /// \param box OBB to be rendered.
       /// \param bWireframe Is sphere rendered as wireframe. Default true.
