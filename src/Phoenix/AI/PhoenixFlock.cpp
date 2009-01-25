@@ -77,7 +77,7 @@ libname::CFlock::Update()
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Volume::CSphere &
-libname::CFlock::GetBoundingSphere()
+libname::CFlock::GetBoundingSphere() 
 {
   return m_BoundingSphere;
 }
@@ -91,7 +91,7 @@ libname::CFlock::LocateNearestBoids( const CBoid *pBoid, BoidPtrList & lstCloses
   BoidPtrVector::iterator it;
   for( it = m_vecBoids.begin(); it != m_vecBoids.end(); it++)
   {
-    if (  pBoid != *it && SphereIntersectsSphere( *(*it), *pBoid) )
+    if (  pBoid != *it && SphereIntersectsSphere( (*it)->GetNeighborSphere(), pBoid->GetNeighborSphere()) )
     {
       lstClosest.push_back( (*it) );
     }
@@ -222,6 +222,11 @@ libname::CBoid::CalculateCohesion( const BoidPtrList & lstClosest, CVector3<floa
   vLocalAvgPos /= lstClosest.size();
   vec = vLocalAvgPos - GetPosition();
   
-  
+}
+/////////////////////////////////////////////////////////////////
+const Phoenix::Volume::CSphere & 
+libname::CBoid::GetNeighborSphere() const
+{
+  return m_NeighborSphere; 
 }
 /////////////////////////////////////////////////////////////////

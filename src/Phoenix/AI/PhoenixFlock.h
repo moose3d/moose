@@ -60,14 +60,16 @@ namespace Phoenix
     };
     ////////////////////
     /// Autonomous flock member.
-    class PHOENIX_API CBoid : public Phoenix::Volume::CSphere,
-		  public Phoenix::Spatial::COneDirectional
+    class PHOENIX_API CBoid : public Phoenix::Spatial::COneDirectional,
+			      public Phoenix::Spatial::CPositional
     {
     private:
       /// Index in flock array
       int			m_iIndex;
       float			m_fSpeed;
       float			m_fMaxSpeed;
+      Phoenix::Volume::CSphere			m_NeighborSphere; 
+      Phoenix::Volume::CSphere			m_SeparationSphere;
     public:
       ////////////////////
       /// Constructor.
@@ -108,6 +110,8 @@ namespace Phoenix
       float GetSpeed();
       void SetMaxSpeed( float fSpeed);
       float GetMaxSpeed();
+      
+      const Phoenix::Volume::CSphere & GetNeighborSphere() const;
     };
   } // namespace AI
 } // namespace Phoenix
