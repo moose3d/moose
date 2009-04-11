@@ -8,7 +8,6 @@ Phoenix::AI::CMessageQueue::~CMessageQueue()
     delete it->second;
     ++it;
   }
-
   m_mapHandlers.clear();
 }
 /////////////////////////////////////////////////////////////////
