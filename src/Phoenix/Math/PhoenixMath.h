@@ -218,7 +218,7 @@ namespace Phoenix
     /// \param mMatrix Matrix where result is stored.
     PHOENIX_API void QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix);
     ////////////////////
-    /// Returns minimal rotation angle between two vectors.
+    /// Returns minimal rotation angle (in radians) between two vectors.
     /// \return rotation angle.
     PHOENIX_API float AngleBetweenVectors( const CVector3<float> &vVect1, const CVector3<float> &vVect2);
     ////////////////////
