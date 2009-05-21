@@ -72,6 +72,8 @@ namespace Phoenix
       /// \param hResource Handle to an object which will be updated.
       template<class TYPE>
       void Manage( const Phoenix::Core::CHandle<TYPE> & hResource);
+
+      size_t GetUpdateableCount() const;
     };
   }
 };
