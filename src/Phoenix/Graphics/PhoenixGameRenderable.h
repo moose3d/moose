@@ -56,7 +56,7 @@ namespace Phoenix
       virtual size_t GetLodLevel( float fDistanceSqr ) const;
       ////////////////////
       /// Adds new renderable handle to given lod level and 
-      /// \par attaches resource by name to it.
+      /// \par attaches resource by name to it. Use this if your model data is interleaved or grouped.
       /// \param szResourceName Name of the Renderable resource.
       /// \param nLodLevel To which lod level renderable is added.
       /// \param szGroupName Group name for indices. By default NULL, meaning all indices.
@@ -65,7 +65,7 @@ namespace Phoenix
       /// \returns Pointer to a Renderable
       Phoenix::Graphics::CRenderable * AddRenderable( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL, bool bInterleaved = false,  Phoenix::Math::CTransform *pWorldTransform = NULL);
       ////////////////////
-      /// Adds existing renderable object to given lod level.
+      /// Adds existing renderable object to given lod level. Use this only for adding non-grouped renderables.
       /// \param pRenderable Renderable to be added.
       /// \param nLodLevel To which level renderable is added.
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
