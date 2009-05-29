@@ -14,6 +14,10 @@
 #include "PhoenixRenderable.h"
 #include "PhoenixShader.h"
 #include "PhoenixLight.h"
+#include "PhoenixAmbientLight.h"
+#include "PhoenixSpotLight.h"
+#include "PhoenixDirectionalLight.h"
+#include "PhoenixPointLight.h"
 #include "PhoenixMaterial.h"
 #include "PhoenixSkybox.h"
 #include "PhoenixTransform.h"
@@ -41,8 +45,8 @@ namespace Phoenix
       Phoenix::Graphics::CVertexDescriptor *m_pNormals;
       Phoenix::Graphics::CVertexDescriptor *m_pTexCoords[TEXTURE_HANDLE_COUNT];
       Phoenix::Graphics::CIndexArray       *m_pIndices;
-    public:      
-      
+    public:
+
       CInternalRenderState()
       {
 	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;i++)
@@ -72,13 +76,13 @@ namespace Phoenix
 	m_pTexture[nTexUnit % TEXTURE_HANDLE_COUNT] = pTexture;
       }
       ////////////////////
-      /// 
+      ///
       inline void SetCurrentShader( CShader *pShader )
       {
 	m_pShader = pShader;
       }
       ////////////////////
-      /// 
+      ///
       inline bool IsCurrentShader( CShader *pShader ) const
       {
 	return (m_pShader == m_pShader);
@@ -102,7 +106,7 @@ namespace Phoenix
       {
 	m_pNormals = pVD;
       }
-      
+
       ////////////////////
       /// tests currently assigned texture coordinates.
       /// \param nTexUnit Texture unit where texture binding is evaluated.
@@ -119,7 +123,7 @@ namespace Phoenix
       {
 	m_pTexCoords[nTexUnit % TEXTURE_HANDLE_COUNT] = pVD;
       }
-      
+
       inline bool IsCurrentIndices( CIndexArray *pIndices )
       {
 	return (m_pIndices == pIndices);
@@ -131,7 +135,7 @@ namespace Phoenix
       }
     };
     /////////////////////////////////////////////////////////////////
-    /// \brief A class which tells which OpenGL features are supported 
+    /// \brief A class which tells which OpenGL features are supported
     /// by underlying hardware
     class PHOENIX_API COglRendererFeatures
     {
@@ -157,14 +161,14 @@ namespace Phoenix
       /// Max number of supported lights.
       int m_iMaxLights;
       /// GL_MAX_ELEMENTS_VERTICES, used to create optimal render batches.
-      int m_iMaxElementsVertices; 
+      int m_iMaxElementsVertices;
       /// GL_MAX_ELEMENTS_INDICES, used to create optimal render batches.
-      int m_iMaxElementsIndices;  
+      int m_iMaxElementsIndices;
       /// GL_MAX_COLOR_ATTACHMENTS, used in frame buffers.
       int m_iMaxColorAttachments;
       /// GL_MAX_DRAW_BUFFERS, used in frame buffers.
       int m_iMaxDrawBuffers;
-      
+
     public:
       ////////////////////
       /// Default constructor.
@@ -227,7 +231,7 @@ namespace Phoenix
       int  GetMaxDrawBuffers() const;
       ////////////////////
       /// for printing out supported features.
-      friend std::ostream &operator<<(std::ostream &stream, 
+      friend std::ostream &operator<<(std::ostream &stream,
 				      const COglRendererFeatures &obj);
       ////////////////////
       /// \returns vendor string.
@@ -246,11 +250,11 @@ namespace Phoenix
     {
     protected:
       /// Pointers to font textures.
-      Phoenix::Graphics::COglTexture * m_ppTextures[Phoenix::Globals::MAX_FONT_CHARACTERS];   
+      Phoenix::Graphics::COglTexture * m_ppTextures[Phoenix::Globals::MAX_FONT_CHARACTERS];
       /// Width of each character
       unsigned char	m_aCharWidths[Phoenix::Globals::MAX_FONT_CHARACTERS];
       /// Display lists for font letters.
-      GLuint		m_nDisplayLists; 
+      GLuint		m_nDisplayLists;
       /// Height of line
       float		m_fLineHeight;
       ////////////////////
@@ -274,7 +278,7 @@ namespace Phoenix
       ////////////////////
       /// Returns the pointer to array of texture pointers.
       /// \returns Pointer to array of pointers to textures.
-      Phoenix::Graphics::COglTexture * *GetTextures();  
+      Phoenix::Graphics::COglTexture * *GetTextures();
       ////////////////////
       /// Returns line height with this font.
       inline float GetLineHeight() const
@@ -288,7 +292,7 @@ namespace Phoenix
 	m_fLineHeight = fHeight;
       }
     };
-    
+
     /////////////////////////////////////////////////////////////////
     /// Renderer object for OpenGL.
     class PHOENIX_API COglRenderer
@@ -301,7 +305,7 @@ namespace Phoenix
       Phoenix::Graphics::CCamera	       *m_pCamera;
       Phoenix::Graphics::CInternalRenderState  m_RenderState;
       GLUquadric *			       m_pQuadric;
-      
+
     public:
       ////////////////////
       /// Default constructor
@@ -313,7 +317,7 @@ namespace Phoenix
       /// Clears buffer
       void ClearBuffer( BUFFER_TYPE tType);
       ////////////////////
-      /// Forces the rendering commands to be completed. 
+      /// Forces the rendering commands to be completed.
       /// Returns after currently given commands have been executed.
       void Finalize();
       ////////////////////
@@ -385,7 +389,7 @@ namespace Phoenix
       /// Creates new empty texture.
       /// \param nWidth width of texture.
       /// \param nHeight height of texture.
-      /// \param tType TEXTURE_TYPE 
+      /// \param tType TEXTURE_TYPE
       /// \param tFormat TEXTURE FORMAT, by default RGB with alpha channel.
       /// \returns Pointer to COglTexture.
       Phoenix::Graphics::COglTexture * CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, TEXTURE_FORMAT tFormat = TEX_FORMAT_RGBA );
@@ -393,7 +397,7 @@ namespace Phoenix
       /// Creates new texture from existing data.
       /// \param nWidth width of texture.
       /// \param nHeight height of texture.
-      /// \param tType TEXTURE_TYPE 
+      /// \param tType TEXTURE_TYPE
       /// \param pData Pointer to data.
       /// \param tFormat TEXTURE FORMAT, by default RGB with alpha channel.
       /// \returns Pointer to COglTexture.
@@ -408,7 +412,7 @@ namespace Phoenix
       Phoenix::Graphics::CCamera * GetCurrentCamera() const;
       ////////////////////
       /// Renders a complete model.
-      /// \param renderable Renderable object. 
+      /// \param renderable Renderable object.
       void CommitRenderable( Phoenix::Graphics::CRenderable &renderable );
       ////////////////////
       /// Commits a texture filter.
@@ -437,49 +441,49 @@ namespace Phoenix
       /// \param szVSname Optional name for vertex shader ( for error messages ).
       /// \param szFSname Optional name for fragment shader ( for error messages ).
       /// \returns Pointer to shader object. NULL if shader could not be created.
-      Phoenix::Graphics::CShader * CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode, 
+      Phoenix::Graphics::CShader * CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode,
 							   const char * szVSname = NULL, const char * szFSname = NULL);
       ////////////////////
       /// Commits shader.
       /// \param pShader Shader object. If NULL, default rendering pipeline is activated.
       void CommitShader( Phoenix::Graphics::CShader *pShader );
       ////////////////////
-      /// Commits integer shader parameter. 
+      /// Commits integer shader parameter.
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
       /// \param iValue Integer parameter value.
       void CommitUniformShaderParam( Phoenix::Graphics::CShader &shader, const std::string &strParamName, int iValue );
       ////////////////////
-      /// Commits float shader parameter. 
+      /// Commits float shader parameter.
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
       /// \param fValue Float parameter value.
       void CommitUniformShaderParam( Phoenix::Graphics::CShader &shader, const std::string &strParamName, float fValue );
       ////////////////////
-      /// Commits either uniform or vertex attribute shader parameter. 
+      /// Commits either uniform or vertex attribute shader parameter.
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
       /// \param vValue VertexDescriptor with uniform or vertex attribute param values.
-      void CommitShaderParam( Phoenix::Graphics::CShader &shader, const std::string &strParamName, 
+      void CommitShaderParam( Phoenix::Graphics::CShader &shader, const std::string &strParamName,
 			      const Phoenix::Graphics::CVertexDescriptor & vParam);
       ////////////////////
-      /// Commits integer shader parameter. 
+      /// Commits integer shader parameter.
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
       /// \param iValue Integer parameter value.
       void CommitUniformShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName, int iValue );
       ////////////////////
-      /// Commits float shader parameter. 
+      /// Commits float shader parameter.
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
       /// \param fValue Float parameter value.
       void CommitUniformShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName, float fValue );
       ////////////////////
-      /// Commits either uniform or vertex attribute shader parameter. 
+      /// Commits either uniform or vertex attribute shader parameter.
       /// \param shader Shader object where parameter is passed.
       /// \param strParamName Variable name in shader.
       /// \param vValue VertexDescriptor with uniform or vertex attribute param values.
-      void CommitShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName, 
+      void CommitShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName,
 			      const Phoenix::Graphics::CVertexDescriptor & vParam);
 
       ////////////////////
@@ -489,7 +493,7 @@ namespace Phoenix
       /// \returns -1 if not found, otherwise location.
       int LocateAttribShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName );
       ////////////////////
-      /// Seeks shader parameter name. This is rather unnecessary, since CommitShaderParam will do 
+      /// Seeks shader parameter name. This is rather unnecessary, since CommitShaderParam will do
       /// just this - but for completeness, it exists.
       /// \param shader Shader object where parameter is passed.
       /// \param iLoc Parameter location in shader
@@ -545,9 +549,23 @@ namespace Phoenix
       void CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, const Phoenix::Math::CVector2<float> &vValues );
       ////////////////////
       /// Commits light object parameters to given light unit.
-      /// \param light Light reference.
+      /// \param light Pointlight reference.
       /// \param nLightId Light unit, accepted values 0-7, default 0.
-      void CommitLight( const Phoenix::Graphics::CLight &light, unsigned int nLightId = 0);
+      void CommitLight( const Phoenix::Graphics::CPointLight &light, unsigned int nLightId = 0);
+      ////////////////////
+      /// Commits light object parameters to given light unit.
+      /// \param light Spotlight reference.
+      /// \param nLightId Light unit, accepted values 0-7, default 0.
+      void CommitLight( const Phoenix::Graphics::CSpotLight &light, unsigned int nLightId = 0);
+      ////////////////////
+      /// Commits light object parameters to given light unit.
+      /// \param light Directional light reference.
+      /// \param nLightId Light unit, accepted values 0-7, default 0.
+      void CommitLight( const Phoenix::Graphics::CDirectionalLight &light, unsigned int nLightId = 0);
+      ////////////////////
+      /// Commits global ambient light parameters.
+      /// \param light Ambient light reference.
+      void CommitLight( const Phoenix::Graphics::CAmbientLight &light );
       ////////////////////
       /// Disables light unit.
       /// \param nLightId Light unit to be disabled.
@@ -602,8 +620,8 @@ namespace Phoenix
       /// \param fRadius Circle radius.
       /// \param vRotation Euler rotation around x,y,z-axes before circle is drawn.
       /// \param bWireframe Is circle rendered as wireframe (only outer edge). Default true.
-      void CommitCircle( const Phoenix::Math::CVector3<float> & vCenter, 
-			 float fRadius, 
+      void CommitCircle( const Phoenix::Math::CVector3<float> & vCenter,
+			 float fRadius,
 			 const CVector3<float> & vRotation, bool bWireframe = true );
       ////////////////////
       /// Renders a box.
@@ -626,7 +644,7 @@ namespace Phoenix
       /// \param tType Cache access performance hint, by default CACHE_STATIC_DRAW ( data transfer strictly from app to GL )
       /// \returns zero on success.
       /// \returns non-zero on error.
-      int CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor, 
+      int CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor,
 		       Phoenix::Graphics::CACHE_ACCESS_TYPE tType = Phoenix::Graphics::CACHE_STATIC_DRAW  );
       ////////////////////
       /// Creates cache for IndexArray, or updates existing if necessary.
@@ -634,7 +652,7 @@ namespace Phoenix
       /// \param tType Cache access performance hint, by default CACHE_STATIC_DRAW ( data transfer strictly from app to GL )
       /// \returns zero on success.
       /// \returns non-zero on error.
-      int CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray, 
+      int CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray,
 		       Phoenix::Graphics::CACHE_ACCESS_TYPE tType = Phoenix::Graphics::CACHE_STATIC_DRAW);
       ////////////////////
       /// Removes existing cache from VertexDescriptor.
@@ -653,7 +671,7 @@ namespace Phoenix
       /// \param nHeight Framebuffer height.
       /// \param iBufferFlags Which buffers should be included in the framebuffer, use binary OR with FBO_BUFFER_FLAG values.
       /// \returns Pointer to new Frame Buffer Object.
-      Phoenix::Graphics::CFrameBufferObject * CreateFramebuffer( unsigned int nWidth, unsigned int nHeight, 
+      Phoenix::Graphics::CFrameBufferObject * CreateFramebuffer( unsigned int nWidth, unsigned int nHeight,
 								 int iBufferFlags = 0 );
       ////////////////////
       /// Attaches texture to a framebuffer.
@@ -661,8 +679,8 @@ namespace Phoenix
       /// \param hTexture Reference to texture which is attached.
       /// \param nColorBuffer To which colorbuffer this texture will be attahed. Default is first, 0.
       /// \returns Zero on success, non-zero on error.
-      int AttachTextureToFramebuffer( Phoenix::Graphics::CFrameBufferObject & rFBO, 
-				      const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
+      int AttachTextureToFramebuffer( Phoenix::Graphics::CFrameBufferObject & rFBO,
+				      const Phoenix::Default::TEXTURE_HANDLE & hTexture,
 				      unsigned int nColorBuffer = 0 );
       ////////////////////
       /// Attaches framebuffer for rendering to it.
@@ -714,23 +732,23 @@ namespace Phoenix
       /// \returns Reference to current renderstate.
       Phoenix::Graphics::CInternalRenderState & GetRenderState();
     };
-    /////////////////////////////////////////////////////////////////  
+    /////////////////////////////////////////////////////////////////
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline void 
+inline void
 Phoenix::Graphics::COglRenderer::CommitColor( const CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
 }
 /////////////////////////////////////////////////////////////////
-inline void 
+inline void
 Phoenix::Graphics::COglRenderer::CommitColor( unsigned char bR, unsigned char bG, unsigned char bB, unsigned char bA)
 {
   glColor4ub( bR,bG,bB,bA );
 }
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Graphics::CInternalRenderState & 
+inline Phoenix::Graphics::CInternalRenderState &
 Phoenix::Graphics::COglRenderer::GetRenderState()
 {
   return m_RenderState;

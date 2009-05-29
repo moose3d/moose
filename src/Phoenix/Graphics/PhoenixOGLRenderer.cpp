@@ -16,8 +16,8 @@
 // include freetype stuff
 #include FT_FREETYPE_H
 /////////////////////////////////////////////////////////////////
-using namespace Phoenix::Graphics; 
-using namespace Phoenix::Default; 
+using namespace Phoenix::Graphics;
+using namespace Phoenix::Default;
 using namespace Phoenix::Spatial;
 using std::endl;
 using std::cerr;
@@ -28,7 +28,7 @@ using std::string;
 #define BUFFER_OFFSET(i) ((char *)NULL+(i))
 /////////////////////////////////////////////////////////////////
 /// Famous last words: Eight color buffers is enough for anyone :)
-const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT, 
+const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT,
 				      GL_COLOR_ATTACHMENT1_EXT,
 				      GL_COLOR_ATTACHMENT2_EXT,
 				      GL_COLOR_ATTACHMENT3_EXT,
@@ -44,7 +44,7 @@ const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT,
 }
 /////////////////////////////////////////////////////////////////
 /// Returns corresponding opengl texture type.
-inline GLenum 
+inline GLenum
 GetGLTextureType( const TEXTURE_TYPE &tType )
 {
   GLenum iRetval = GL_TEXTURE_2D;
@@ -119,7 +119,7 @@ Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 
   glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
   glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
-  glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);  
+  glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);
   glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &m_iMaxColorAttachments );
   glGetIntegerv( GL_MAX_DRAW_BUFFERS,      &m_iMaxDrawBuffers );
 }
@@ -143,43 +143,43 @@ Phoenix::Graphics::COglRendererFeatures::Init()
   m_iMaxDrawBuffers = 0;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasVertexProgram() const
 {
   return m_bARB_vertex_program;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasVertexShader() const
 {
   return m_bARB_vertex_shader;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasFragmentShader() const
 {
   return m_bARB_fragment_shader;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasVertexArray() const
 {
   return m_bEXT_vertex_array;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasVertexBufferObject() const
 {
   return m_bARB_vertex_buffer_object;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasMultitexture() const
 {
   return m_bARB_multitexture;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Graphics::COglRendererFeatures::HasShaderObjects() const
 {
   return m_bARB_shader_objects;
@@ -203,13 +203,13 @@ Phoenix::Graphics::COglRendererFeatures::GetMaxLights() const
   return m_iMaxLights;
 }
 /////////////////////////////////////////////////////////////////
-int  
+int
 Phoenix::Graphics::COglRendererFeatures::GetMaxElementsVertices() const
 {
   return m_iMaxElementsVertices;
 }
 /////////////////////////////////////////////////////////////////
-int  
+int
 Phoenix::Graphics::COglRendererFeatures::GetMaxElementsIndices() const
 {
   return m_iMaxElementsIndices;
@@ -254,7 +254,7 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   stream << "GL_ARB_multitexture " << ( obj.HasMultitexture() ? "YES" : "NO" ) << endl;
   stream << "GL_ARB_shader_objects " << ( obj.HasShaderObjects() ? "YES" : "NO" ) << endl;
   stream << "GL_EXT_framebuffer_object " << ( obj.HasFramebufferObjects() ? "YES" : "NO" ) << endl;
-  
+
   stream << "------------------" << std::endl;
   stream << "OpenGL environment variables:" << std::endl;
   stream << "------------------" << std::endl;
@@ -275,7 +275,7 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
 //   {
 //     GLint *aFormatEnums = new GLint[iNumFormats];
 //     glGetIntegerv( GL_COMPRESSED_TEXTURE_FORMATS,     aFormatEnums);
-    
+
 //     for( int i=0;i<iNumFormats; ++i)
 //     {
 //       stream << "format " << aFormatEnums[i] << endl;
@@ -290,7 +290,7 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NULL),  m_pQuadric(NULL)
 {
-  
+
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::~COglRenderer()
@@ -329,11 +329,11 @@ Phoenix::Graphics::COglRenderer::Finalize()
   // Remember call buffer swapping from another source.
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
   // implemantation does not take into account if VBO is not supported.
-  
+
   switch( pBuffer->GetType() )
   {
   case ELEMENT_TYPE_VERTEX_3F:
@@ -341,12 +341,12 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     // check if this was previously set
     if ( GetRenderState().IsCurrentVertices( pBuffer ) ) break;
 
-    if ( pBuffer->IsCached()) 
+    if ( pBuffer->IsCached())
     {
 
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glVertexPointer( 3, GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -363,11 +363,11 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     //if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
     //else GetRenderState().m_pColorBuffer = pBuffer;
 
-    if ( pBuffer->IsCached()) 
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glColorPointer(4, GL_UNSIGNED_BYTE, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -380,11 +380,11 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     //if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
     //else GetRenderState().m_pColorBuffer = pBuffer;
 
-    if ( pBuffer->IsCached()) 
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glColorPointer(3, GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -397,11 +397,11 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     //if ( GetRenderState().m_pColorBuffer == pBuffer ) break;
     //else GetRenderState().m_pColorBuffer = pBuffer;
 
-    if ( pBuffer->IsCached()) 
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glColorPointer(4, GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -418,11 +418,11 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     if ( GetRenderState().IsCurrentTexCoord( nId, pBuffer ) ) break;
 
 
-    if ( pBuffer->IsCached()) 
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glTexCoordPointer(2, GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -438,13 +438,13 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
 
     // check if this was previously set
     if ( GetRenderState().IsCurrentTexCoord( nId, pBuffer ) ) break;
-    
 
-    if ( pBuffer->IsCached()) 
+
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glTexCoordPointer(3, GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -462,11 +462,11 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     if ( GetRenderState().IsCurrentTexCoord( nId, pBuffer ) ) break;
 
 
-    if ( pBuffer->IsCached()) 
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glTexCoordPointer(4, GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -478,14 +478,14 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     glEnableClientState( GL_NORMAL_ARRAY );
 
     // check if this was previously set
-    if ( GetRenderState().IsCurrentNormals( pBuffer ) ) break;    
+    if ( GetRenderState().IsCurrentNormals( pBuffer ) ) break;
 
-    
-    if ( pBuffer->IsCached()) 
+
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
       glNormalPointer( GL_FLOAT, 0, 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
@@ -495,30 +495,30 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     break;
 
   case ELEMENT_TYPE_V3F_N3F_T2F:
-    
+
     glClientActiveTextureARB( GL_TEXTURE0_ARB);
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
-    glEnableClientState( GL_VERTEX_ARRAY );    
+    glEnableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     // check if this was previously set
 
-    if ( GetRenderState().IsCurrentTexCoord( 0, pBuffer ) && 
+    if ( GetRenderState().IsCurrentTexCoord( 0, pBuffer ) &&
 	 GetRenderState().IsCurrentNormals(  pBuffer ) &&
-	 GetRenderState().IsCurrentVertices( pBuffer ) ) 
+	 GetRenderState().IsCurrentVertices( pBuffer ) )
     {
       break;
     }
-    
 
-    if ( pBuffer->IsCached()) 
+
+    if ( pBuffer->IsCached())
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
 
       glTexCoordPointer(2, GL_FLOAT, pBuffer->GetElementByteSize(), BUFFER_OFFSET(sizeof(float)*6) );
       glNormalPointer(     GL_FLOAT, pBuffer->GetElementByteSize(), BUFFER_OFFSET(sizeof(float)*3) );
       glVertexPointer(3,   GL_FLOAT, pBuffer->GetElementByteSize(), 0);
-    } 
+    }
     else
     {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0);
@@ -560,7 +560,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
   // implemantation does not take into account if VBO is not supported.
@@ -619,7 +619,7 @@ Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pB
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 {
 
@@ -677,12 +677,12 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
     // store current indexbuffer pointer to renderstate
     GetRenderState().SetCurrentIndices(pIndexBuffer);
   }
-  glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
+  glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(),
 		  iIndexBufferType,  pIndices);
-  
-  // if ( pIndexBuffer->IsShortIndices() )   
+
+  // if ( pIndexBuffer->IsShortIndices() )
 //   {
-    
+
 //     // Draw cached
 //     if ( pIndexBuffer->IsCached())
 //     {
@@ -691,7 +691,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
 // 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
-//       glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
+//       glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(),
 // 		      GL_UNSIGNED_SHORT,  0);
 //     }
 //     else // Draw uncached
@@ -701,8 +701,8 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 // 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
-//       glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(), 
-// 		      GL_UNSIGNED_SHORT, 
+//       glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(),
+// 		      GL_UNSIGNED_SHORT,
 // 		      pIndexBuffer->GetPointer<unsigned short int>());
 //     }
 //   }
@@ -716,8 +716,8 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
 // 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
-//       glDrawElements( glPrimitive, 
-// 		      pIndexBuffer->GetDrawableCount(), 
+//       glDrawElements( glPrimitive,
+// 		      pIndexBuffer->GetDrawableCount(),
 // 		      GL_UNSIGNED_INT,  0);
 //     }
 //     else // Draw uncached
@@ -727,16 +727,16 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 // 	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 // 	//GetRenderState().m_pIndexArray = pIndexBuffer;
 //       }
-//       glDrawElements( glPrimitive, 
-// 		      pIndexBuffer->GetDrawableCount(), 
-// 		      GL_UNSIGNED_INT, 
+//       glDrawElements( glPrimitive,
+// 		      pIndexBuffer->GetDrawableCount(),
+// 		      GL_UNSIGNED_INT,
 // 		      pIndexBuffer->GetPointer<unsigned int>());
 //     }
 //   }
-  
+
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex & rVertex, int iIgnoreFlags )
 {
   // Set multitexture coordinates
@@ -745,7 +745,7 @@ Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex &
   {
     for(int i=0;i<TEXTURE_HANDLE_COUNT;i++)
     {
-      glMultiTexCoord2fARB( GL_TEXTURE0_ARB+i, 
+      glMultiTexCoord2fARB( GL_TEXTURE0_ARB+i,
 			    rVertex.GetTextureCoordinates( i )[0],
 			    rVertex.GetTextureCoordinates( i )[1] );
     }
@@ -753,11 +753,11 @@ Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex &
   /// Normal, color and position data
   if ( !(iIgnoreFlags & VERTEX_COMP_NORMAL) ) glNormal3fv( rVertex.GetNormal().GetArray()) ;
   if ( !(iIgnoreFlags & VERTEX_COMP_COLOR ) ) glColor4ubv( rVertex.GetColor().GetArray() );
-  
+
   glVertex3fv( rVertex.GetPosition().GetArray()) ;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
 {
   switch ( tType)
@@ -785,7 +785,7 @@ Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 {
   switch ( tType)
@@ -815,7 +815,7 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 /////////////////////////////////////////////////////////////////
 
 
-Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
 {
   ////////////////////
@@ -870,7 +870,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
     break;
   default:
     delete pImage;
-    std::cerr << "Not 8, 16, 24 or 32 BBP image (was " << pImage->GetBPP() 
+    std::cerr << "Not 8, 16, 24 or 32 BBP image (was " << pImage->GetBPP()
 	      << "):  '" << strFilename << "'" << std::endl;
     return NULL;
   }
@@ -885,44 +885,44 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
   pTexture->SetWidth( pImage->GetWidth());
 
   // check memory allocation
-  if ( !pTexture ) 
+  if ( !pTexture )
   {
-    std::cerr << "Failed to allocate memory while loading file '" 
+    std::cerr << "Failed to allocate memory while loading file '"
 	      << strFilename << "'" << std::endl;
     return NULL;
   }
-  
+
   GLenum iGLType = GetGLTextureType( tType );
-  
-  // create actual gl texture 
+
+  // create actual gl texture
   glEnable( iGLType );
-  glBindTexture(iGLType, pTexture->GetID());  
+  glBindTexture(iGLType, pTexture->GetID());
   /// ****************************************
   /// build mipmaps automatically.
   /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
   /// Somehow it prevents it occurring.
   /// ****************************************
-  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE); 
-  
-  glTexImage2D( iGLType, 0, iGLInternalFormat, 
-		pImage->GetWidth(), pImage->GetHeight(), 0, 
+  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
+
+  glTexImage2D( iGLType, 0, iGLInternalFormat,
+		pImage->GetWidth(), pImage->GetHeight(), 0,
 		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
-  // build mipmaps 
-  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat, 
+  // build mipmaps
+  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
 		    pImage->GetWidth(), pImage->GetHeight(),
 		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
-  
-  
+
+
   glDisable( iGLType );
 
   // ReleaseMemory
   CLEANUP();
 
-#undef CLEANUP  	   
+#undef CLEANUP
 
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename, TEXTURE_TYPE tType  )
 {
   ////////////////////
@@ -977,7 +977,7 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
     break;
   default:
     delete pImage;
-    std::cerr << "Not in DXT1, DXT3, DXT5 format (was " 
+    std::cerr << "Not in DXT1, DXT3, DXT5 format (was "
 	      << (pImage->GetFormat() == DDS_FORMAT_DXT2  ? "DXT2" : "DXT4")
 	      << "):  '" << strFilename << "'" << std::endl;
     return NULL;
@@ -992,27 +992,27 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
   pTexture->SetWidth( pImage->GetWidth());
 
   // check memory allocation
-  if ( !pTexture ) 
+  if ( !pTexture )
   {
-    std::cerr << "Failed to allocate memory while loading file '" 
+    std::cerr << "Failed to allocate memory while loading file '"
 	      << strFilename << "'" << std::endl;
     return NULL;
   }
-  
 
-  
+
+
   GLenum iGLType = GetGLTextureType( tType );
 
-  // create actual gl texture 
+  // create actual gl texture
   glEnable( iGLType );
-  glBindTexture(iGLType, pTexture->GetID());  
+  glBindTexture(iGLType, pTexture->GetID());
 
   // Set default texture parameters
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
   int nSize;
   int nOffset = 0;
   int nWidth = pImage->GetWidth();
@@ -1022,7 +1022,7 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
   {
     if ( nWidth == 0 ) nWidth = 1;
     if ( nHeight == 0 ) nHeight = 1;
-		       
+
     nSize = ((nWidth+3)/4) * ((nHeight+3)/4) * nBlockSize;
 
     glCompressedTexImage2D( GL_TEXTURE_2D,  i,  glFormat,  nWidth,  nHeight,
@@ -1033,22 +1033,22 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
     nWidth  = (nWidth  / 2);
     nHeight = (nHeight / 2);
   }
-  
+
   glDisable( iGLType );
 
   // ReleaseMemory
   CLEANUP();
 
-#undef CLEANUP  	   
+#undef CLEANUP
 
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
 {
   // Files must not be null
   if ( szFiles == NULL ) return NULL;
-  
+
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
   COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_CUBE );
@@ -1084,26 +1084,26 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
       break;
     default:
       delete pImage;
-      std::cerr << "Not 8, 16, 24 or 32 BBP image (was " 
-		<< pImage->GetBPP() << "):  '" << szFiles[i] << "'" 
+      std::cerr << "Not 8, 16, 24 or 32 BBP image (was "
+		<< pImage->GetBPP() << "):  '" << szFiles[i] << "'"
 		<< std::endl;
       break;
     }
     GLenum iGLType = GL_TEXTURE_CUBE_MAP;
     ////////////////////
-    // create actual gl texture 
+    // create actual gl texture
     glEnable( iGLType );
-    glBindTexture( iGLType, pTexture->GetID());  
+    glBindTexture( iGLType, pTexture->GetID());
     ////////////////////
     // Set default texture parameters
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     ////////////////////
     /// Determine proper face id
-    GLenum cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X; 
+    GLenum cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
     switch (i)
     {
     case 0:
@@ -1127,25 +1127,25 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     }
     ////////////////////
     // Create texture.
-    glTexImage2D( cubeFace, 0, iGLInternalFormat, 
-		  pImage->GetWidth(), pImage->GetHeight(), 0, 
+    glTexImage2D( cubeFace, 0, iGLInternalFormat,
+		  pImage->GetWidth(), pImage->GetHeight(), 0,
 		  iGLformat,  GL_UNSIGNED_BYTE, pImage->GetImg());
     ////////////////////
     // Cleanup data, it is not needed anymore.
-    if ( pImage ) 
+    if ( pImage )
     {
-      delete pImage; 
-      pImage = NULL; 
+      delete pImage;
+      pImage = NULL;
     }
 
   } // for ( size_t
   return pTexture;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, TEXTURE_FORMAT tFormat )
 {
-  
+
   // create texture
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
@@ -1155,7 +1155,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   pTexture->SetWidth( nWidth );
 
   // check memory allocation
-  if ( !pTexture ) 
+  if ( !pTexture )
   {
     std::cerr << "Failed to allocate memory while creating Empty Texture." << std::endl;
     return NULL;
@@ -1174,12 +1174,12 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   if ( tType == TEXTURE_DEPTH2D )
   {
     glTexParameteri( iGLType, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-    glTexImage2D( iGLType, 0, GL_DEPTH_COMPONENT, nWidth, nHeight, 0, 
+    glTexImage2D( iGLType, 0, GL_DEPTH_COMPONENT, nWidth, nHeight, 0,
 		  GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
   }
   else
   {
-    glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0, 
+    glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0,
 		  static_cast<GLenum>(tFormat), GL_UNSIGNED_BYTE, NULL );
   }
 
@@ -1188,7 +1188,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   return pTexture;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture * 
+Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, TEXTURE_TYPE tType, void *pData, TEXTURE_FORMAT tFormat)
 {
    // create texture
@@ -1199,7 +1199,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   pTexture->SetHeight( nHeight );
   pTexture->SetWidth( nWidth );
   // check memory allocation
-  if ( !pTexture ) 
+  if ( !pTexture )
   {
     std::cerr << "Failed to allocate memory while creating Empty Texture." << std::endl;
     return NULL;
@@ -1212,20 +1212,20 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   glBindTexture( iGLType, pTexture->GetID());
   glTexImage2D( iGLType, 0, static_cast<GLenum>(tFormat), nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
   glDisable( iGLType);
-  
+
   return pTexture;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
-  
+
   if ( true || ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
   {
     // Bind texture
-    glBindTexture( GetGLTextureType( pTexture->GetType() ), pTexture->GetID() ); 
-    // Set texture pointer to renderstate 
+    glBindTexture( GetGLTextureType( pTexture->GetType() ), pTexture->GetID() );
+    // Set texture pointer to renderstate
     GetRenderState().SetCurrentTexture( nTexUnit, pTexture);
   }
 
@@ -1233,22 +1233,22 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
 
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
   if ( pTexture != NULL )
   {
     glDisable( GetGLTextureType( pTexture->GetType()));
-  } 
-  else 
+  }
+  else
   {
     DISABLE_ALL_TEXTURES();
   }
   GetRenderState().SetCurrentTexture( nTexUnit, NULL);
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
 {
   m_pCamera = &camera;
@@ -1269,7 +1269,7 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glMultTransposeMatrixf( camera.GetViewMatrix().GetArray());
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CCamera * 
+Phoenix::Graphics::CCamera *
 Phoenix::Graphics::COglRenderer::GetCurrentCamera() const
 {
   return m_pCamera;
@@ -1282,7 +1282,7 @@ Phoenix::Graphics::COglRenderer::CommitRenderable( CRenderable &renderable )
 
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_TYPE tType )
 {
   GLenum glTarget = GetGLTextureType( tType );
@@ -1290,13 +1290,13 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
   switch( tFilter )
   {
   case ENV_MODULATE:
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     break;
   case ENV_DECAL:
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     break;
   case ENV_REPLACE:
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     break;
   case ENV_BLEND:
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
@@ -1347,11 +1347,11 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
     break;
   }
   //  case ENV_COLOR:
-  //glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, pNode->GetTexEnvColor().GetValues()); 
-  //break;  
+  //glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, pNode->GetTexEnvColor().GetValues());
+  //break;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitFilters( const std::vector<Phoenix::Graphics::TEXTURE_FILTER> &vecFilters, Phoenix::Graphics::TEXTURE_TYPE tType )
 {
   // Apply texture filters.
@@ -1365,40 +1365,40 @@ int
 LoadFile( const char * szFilename, std::string &sContents )
 {
 
-  // Temporary container for line 
+  // Temporary container for line
   string sLine;
-  // The file stream 
+  // The file stream
   ifstream fsFile;
-  // open file 
+  // open file
   fsFile.open( szFilename, ios::in );
-  // test for failure 
-  if ( fsFile.is_open() ) 
+  // test for failure
+  if ( fsFile.is_open() )
   {
-    // read line by line 
+    // read line by line
     while( ! fsFile.eof() )
     {
       getline( fsFile, sLine );
       sContents.append( sLine );
       sContents.append( "\n" );
     }
-    // close the file 
+    // close the file
     fsFile.close();
-  } 
-  else 
+  }
+  else
   {
     std::cerr << "The file " << szFilename
 	      << " couldn't be opened."  << std::endl;
     return 1;
   }
   return 0;
-}  
+}
 #define INFO_LOG_BUF_SIZE 1024
 /////////////////////////////////////////////////////////////////
 /// Parses shader/program info log into given string.
 /// \param nObject From which shader/program log is retrieved.
 /// \param strInfoLog String where log is stored.
 /// \param bProgram True for retrieving program info log, False for shader info log
-inline void 
+inline void
 GetInfoLog( unsigned int nObject, std::string &strInfoLog, int bProgram )
 {
   int iInfologLength   = 0;      // total length of log
@@ -1409,7 +1409,7 @@ GetInfoLog( unsigned int nObject, std::string &strInfoLog, int bProgram )
   // Get length of the info log
   if ( bProgram )      glGetProgramiv(nObject, GL_INFO_LOG_LENGTH, &iInfologLength);
   else		       glGetShaderiv(nObject, GL_INFO_LOG_LENGTH, &iInfologLength);
-  
+
   // if info log exists, we parse it
   if (iInfologLength > 0)
   {
@@ -1435,7 +1435,7 @@ GetInfoLog( unsigned int nObject, std::string &strInfoLog, int bProgram )
 /// Wrapper for retrieving shader info log.
 /// \param nShader From which shader log is retrieved.
 /// \param strInfoLog String where log is stored.
-inline void 
+inline void
 GetShaderInfoLog( unsigned int nShader, std::string &strInfoLog )
 {
   GetInfoLog( nShader, strInfoLog, 0 );
@@ -1444,23 +1444,23 @@ GetShaderInfoLog( unsigned int nShader, std::string &strInfoLog )
 /// Wrapper for retrieving program info log.
 /// \param nProg From which program log is retrieved.
 /// \param strInfoLog String where log is stored.
-inline void 
+inline void
 GetProgramInfoLog( unsigned int nProg, std::string &strInfoLog )
 {
   GetInfoLog( nProg, strInfoLog, 1 );
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader * 
+Phoenix::Graphics::CShader *
 Phoenix::Graphics::COglRenderer::CreateShader( const std::string & strVertexShader, const std::string & strFragmentShader )
 {
   return CreateShader(strVertexShader.c_str(), strFragmentShader.c_str());
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader * 
+Phoenix::Graphics::CShader *
 Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, const char * szFragmentShader )
 {
 
- 
+
   string strVSSource, strFSSource;
   ////////////////////
   // Vertex shader loading
@@ -1470,10 +1470,10 @@ Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, cons
     {
       std::cerr << "Failed to load vertex shader '" << szVertexShader << "'" << std::endl;
     }
-    
+
   }
   ////////////////////
-  // Fragment shader loading 
+  // Fragment shader loading
   if ( szFragmentShader != NULL && strlen(szFragmentShader) > 0 )
   {
     if ( LoadFile( szFragmentShader, strFSSource ))
@@ -1481,18 +1481,18 @@ Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, cons
       std::cerr << "Failed to load fragment shader '" << szFragmentShader << "'" << std::endl;
     }
   }
-  
+
   return CreateShaderFromSource( strVSSource.size() > 0 ? strVSSource.c_str() : NULL,
 				 strFSSource.size() > 0 ? strFSSource.c_str() : NULL, szVertexShader, szFragmentShader );
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader * 
-Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode, 
+Phoenix::Graphics::CShader *
+Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode,
 							 const char * szVSname, const char * szFSname)
 {
   int bHasShader = 0;
   int iState = 0; // compile and link status
-  
+
   unsigned int nProgram = glCreateProgram();
   CShader *pShader = new CShader( nProgram );
 
@@ -1510,7 +1510,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     unsigned int nVertexShader = glCreateShader( GL_VERTEX_SHADER );
     int nLength = strlen(szVertexShaderCode); // source code length
     const char *pStrCode = szVertexShaderCode;
-    
+
     // compile source
     glShaderSource(nVertexShader,1, &pStrCode, &nLength );
     glCompileShader( nVertexShader );
@@ -1520,26 +1520,26 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       // compiling went ok
       pShader->SetVertexShader( nVertexShader );
-      bHasShader = 1;	
+      bHasShader = 1;
     }
     else
     {
       string strLog;
       GetShaderInfoLog( nVertexShader, strLog );
-      std::cerr << "Error in vertex shader " << (szVSname == NULL  ? "" : szVSname) << " : " << strLog << std::endl;      
+      std::cerr << "Error in vertex shader " << (szVSname == NULL  ? "" : szVSname) << " : " << strLog << std::endl;
     }
 
   }
 
   ////////////////////
-  // Fragment shader loading 
+  // Fragment shader loading
   if ( szFragmentShaderCode != NULL && strlen(szFragmentShaderCode) > 0 )
   {
-    
+
     unsigned int nFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
     int nLength = strlen(szFragmentShaderCode); // source code length
     const char *pStrCode = szFragmentShaderCode;
-      
+
     glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
     glCompileShader( nFragmentShader );
 
@@ -1555,7 +1555,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     {
       string strLog;
       GetShaderInfoLog( nFragmentShader, strLog );
-      std::cerr << "Error in fragment shader " << (szFSname == NULL ? "" : szFSname) << strLog << std::endl;      
+      std::cerr << "Error in fragment shader " << (szFSname == NULL ? "" : szFSname) << strLog << std::endl;
     }
 
 
@@ -1566,7 +1566,7 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     delete pShader;
     return NULL;
   }
-  
+
   // link shader program
   glLinkProgram(pShader->GetProgram());
   glGetProgramiv(pShader->GetProgram(), GL_LINK_STATUS, &iState);
@@ -1580,14 +1580,14 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
     delete pShader;
     return NULL;
   }
-  
+
   return pShader;
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
 {
-  //if ( true || !GetRenderState().IsCurrentShader(pShader) ) 
+  //if ( true || !GetRenderState().IsCurrentShader(pShader) )
   //{
     if ( pShader )
     {
@@ -1597,7 +1597,7 @@ Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
     {
       glUseProgram( 0 );
     }
-    
+
     GetRenderState().SetCurrentShader(pShader);
     //}
 }
@@ -1655,7 +1655,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
     {
       glEnableVertexAttribArray(iLoc);
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-      
+
       switch ( vParam.GetType())
       {
       case ELEMENT_TYPE_ATTRIB_1F:
@@ -1699,7 +1699,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
 	assert( 0 && "Unknown parameter type (vertexattrib)" );
 	break;
       }
-    }    
+    }
   }
   else if ( vParam.GetType() >= ELEMENT_TYPE_UNIFORM_1F && vParam.GetType() <= ELEMENT_TYPE_UNIFORM_4X4F )
   {
@@ -1721,7 +1721,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
 	else { glUniform2fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
 	break;
       case ELEMENT_TYPE_UNIFORM_3F:
-	if ( vParam.GetSize() == 1) { glUniform3f( iLoc, vParam.GetPointer<float>()[0], vParam.GetPointer<float>()[1], vParam.GetPointer<float>()[2] );  } 
+	if ( vParam.GetSize() == 1) { glUniform3f( iLoc, vParam.GetPointer<float>()[0], vParam.GetPointer<float>()[1], vParam.GetPointer<float>()[2] );  }
 	else { glUniform3fv( iLoc, vParam.GetSize(), vParam.GetPointer<float>() ); }
 	break;
       case ELEMENT_TYPE_UNIFORM_4F:
@@ -1737,7 +1737,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
 	else {	glUniform2iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() );      }
 	break;
       case ELEMENT_TYPE_UNIFORM_3I:
-	if ( vParam.GetSize() == 1) { glUniform3i( iLoc, vParam.GetPointer<int>()[0], vParam.GetPointer<int>()[1], vParam.GetPointer<int>()[2] ); } 
+	if ( vParam.GetSize() == 1) { glUniform3i( iLoc, vParam.GetPointer<int>()[0], vParam.GetPointer<int>()[1], vParam.GetPointer<int>()[2] ); }
 	else { glUniform3iv( iLoc, vParam.GetSize(), vParam.GetPointer<int>() );      }
 	break;
       case ELEMENT_TYPE_UNIFORM_4I:
@@ -1757,16 +1757,16 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
 	cerr << "for param" << strParamName << endl;
 	assert( 0 && "Unknown parameter type (uniform)" );
 	break;
-      } 
-    }   
+      }
+    }
   }
-  
-  
-  
-  
+
+
+
+
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY, float fZ, float fW )
 {
   if( iLoc != -1 )
@@ -1775,7 +1775,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader 
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY, float fZ )
 {
   if( iLoc != -1 )
@@ -1784,7 +1784,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader 
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX, float fY )
 {
   if( iLoc != -1 )
@@ -1793,7 +1793,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader 
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc, float fX )
 {
   if( iLoc != -1 )
@@ -1802,93 +1802,217 @@ Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader 
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
-Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int nLightId)
+/// Sets diffuse, ambient and specular values of a light.
+inline void CommitLightColors( const CLightBase & light, GLenum iLightID )
+{
+	float aTempVector[4];
+	// Set diffuse RGBA intensity
+	aTempVector[0] = (float)light.GetDiffuseColor()[0]/255.0f;
+	aTempVector[1] = (float)light.GetDiffuseColor()[1]/255.0f;
+	aTempVector[2] = (float)light.GetDiffuseColor()[2]/255.0f;
+	aTempVector[3] = (float)light.GetDiffuseColor()[3]/255.0f;
+	glLightfv(iLightID, GL_DIFFUSE, aTempVector);
+
+	// Set ambient RGBA intensity
+	aTempVector[0] = (float)light.GetAmbientColor()[0]/255.0f;
+	aTempVector[1] = (float)light.GetAmbientColor()[1]/255.0f;
+	aTempVector[2] = (float)light.GetAmbientColor()[2]/255.0f;
+	aTempVector[3] = (float)light.GetAmbientColor()[3]/255.0f;
+	glLightfv(iLightID, GL_AMBIENT, aTempVector);
+
+	// Set specular RGBA intensity
+	aTempVector[0] = (float)light.GetSpecularColor()[0]/255.0f;
+	aTempVector[1] = (float)light.GetSpecularColor()[1]/255.0f;
+	aTempVector[2] = (float)light.GetSpecularColor()[2]/255.0f;
+	aTempVector[3] = (float)light.GetSpecularColor()[3]/255.0f;
+	glLightfv(iLightID, GL_SPECULAR, aTempVector);
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitLight( const CDirectionalLight &light, unsigned int nLightId)
 {
   GLenum iLightID = GL_LIGHT0+nLightId;
   glEnable(iLightID);
   float aTempVector[4];
-  switch ( light.GetType())
-  {
-  case DIRECTIONAL:
-    // if we have directional light, the position parameter 
-    // actually defines the direction
-    aTempVector[0] = -light.GetDirection()[0];
-    aTempVector[1] = -light.GetDirection()[1];
-    aTempVector[2] = -light.GetDirection()[2];
-    aTempVector[3] = 0.0f;
-    glLightf(iLightID, GL_SPOT_CUTOFF, 180.0);
 
-    break;
-  case SPOTLIGHT:
-    aTempVector[0] = light.GetPosition()[0];
-    aTempVector[1] = light.GetPosition()[1];
-    aTempVector[2] = light.GetPosition()[2];
-    aTempVector[3] = 1.0f;
-      
-    glLightf( iLightID, GL_SPOT_CUTOFF,    light.GetSpotAngle());
-    glLightfv(iLightID, GL_SPOT_DIRECTION, const_cast<CVector3<float> &>(light.GetDirection()).GetArray());
-      
-    // Set the attenuation parameters
-    glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
-    glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
-    glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+  // if we have directional light, the position parameter
+  // actually defines the direction
+  aTempVector[0] = -light.GetDirection()[0];
+  aTempVector[1] = -light.GetDirection()[1];
+  aTempVector[2] = -light.GetDirection()[2];
+  aTempVector[3] = 0.0f;
+  glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
+  // Set the light position
+  glLightfv(iLightID, GL_POSITION, aTempVector);
 
-    break;
+  // Set the intensity distribution of the light.
+  glLightf(iLightID, GL_SPOT_EXPONENT, 0.0f);
 
-  case POINTLIGHT:
+  // Commit color colors
+  CommitLightColors( light, iLightID );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitLight( const CSpotLight &light, unsigned int nLightId)
+{
+	GLenum iLightID = GL_LIGHT0+nLightId;
+	glEnable(iLightID);
+	float aTempVector[4];
 
-    aTempVector[0] = light.GetPosition()[0];
-    aTempVector[1] = light.GetPosition()[1];
-    aTempVector[2] = light.GetPosition()[2];
-    aTempVector[3] = 1.0f;
+	aTempVector[0] = light.GetPosition()[0];
+	aTempVector[1] = light.GetPosition()[1];
+	aTempVector[2] = light.GetPosition()[2];
+	aTempVector[3] = 1.0f;
 
-    glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
+	glLightf( iLightID, GL_SPOT_CUTOFF,    light.GetSpotAngle());
+	glLightfv(iLightID, GL_SPOT_DIRECTION, const_cast<CVector3<float> &>(light.GetDirection()).GetArray());
 
-    // Set the attenuation parameters
-    glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
-    glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
-    glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
-      
-    break;
-  }
+	// Set the attenuation parameters
+	glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
+	glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
+	glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+
+	// Set the light position
+	glLightfv(iLightID, GL_POSITION, aTempVector);
+		// Set the intensity distribution of the light.
+	glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
+
+	CommitLightColors( light, iLightID );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitLight( const CPointLight &light, unsigned int nLightId)
+{
+  GLenum iLightID = GL_LIGHT0+nLightId;
+  glEnable(iLightID);
+  float aTempVector[4];
+
+
+
+	aTempVector[0] = light.GetPosition()[0];
+	aTempVector[1] = light.GetPosition()[1];
+	aTempVector[2] = light.GetPosition()[2];
+	aTempVector[3] = 1.0f;
+
+	glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
+
+	// Set the attenuation parameters
+	glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
+	glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
+	glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+
 
 
   // Set the light position
   glLightfv(iLightID, GL_POSITION, aTempVector);
-  
+
   // Set the intensity distribution of the light.
-  glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
-  
-  // Set diffuse RGBA intensity 
-  aTempVector[0] = (float)light.GetDiffuseColor()[0]/255.0f;
-  aTempVector[1] = (float)light.GetDiffuseColor()[1]/255.0f;
-  aTempVector[2] = (float)light.GetDiffuseColor()[2]/255.0f;
-  aTempVector[3] = (float)light.GetDiffuseColor()[3]/255.0f;
-  glLightfv(iLightID, GL_DIFFUSE, aTempVector);
+  glLightf(iLightID, GL_SPOT_EXPONENT,  0.0f);
 
-  // Set ambient RGBA intensity
-  aTempVector[0] = (float)light.GetAmbientColor()[0]/255.0f;
-  aTempVector[1] = (float)light.GetAmbientColor()[1]/255.0f;
-  aTempVector[2] = (float)light.GetAmbientColor()[2]/255.0f;
-  aTempVector[3] = (float)light.GetAmbientColor()[3]/255.0f;
-  glLightfv(iLightID, GL_AMBIENT, aTempVector);
-
-  // Set specular RGBA intensity
-  aTempVector[0] = (float)light.GetSpecularColor()[0]/255.0f;
-  aTempVector[1] = (float)light.GetSpecularColor()[1]/255.0f;
-  aTempVector[2] = (float)light.GetSpecularColor()[2]/255.0f;
-  aTempVector[3] = (float)light.GetSpecularColor()[3]/255.0f;
-  glLightfv(iLightID, GL_SPECULAR, aTempVector);
+  CommitLightColors(light, iLightID);
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
+Phoenix::Graphics::COglRenderer::CommitLight( const CAmbientLight &light )
+{
+	const float ONE_DIV_255 = 0.00392156862745098039;
+
+	// ambient light is global mode
+	float array[4] =  { light.GetColor()[0] * ONE_DIV_255,
+						light.GetColor()[1] * ONE_DIV_255,
+						light.GetColor()[2] * ONE_DIV_255,
+						light.GetColor()[3] * ONE_DIV_255};
+
+	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, array );
+}
+/////////////////////////////////////////////////////////////////
+//void
+//Phoenix::Graphics::COglRenderer::CommitLight( const CLight &light, unsigned int nLightId)
+//{
+//  GLenum iLightID = GL_LIGHT0+nLightId;
+//  glEnable(iLightID);
+//  float aTempVector[4];
+//  switch ( light.GetType())
+//  {
+//  case DIRECTIONAL:
+//    // if we have directional light, the position parameter
+//    // actually defines the direction
+//    aTempVector[0] = -light.GetDirection()[0];
+//    aTempVector[1] = -light.GetDirection()[1];
+//    aTempVector[2] = -light.GetDirection()[2];
+//    aTempVector[3] = 0.0f;
+//    glLightf(iLightID, GL_SPOT_CUTOFF, 180.0);
+//
+//    break;
+//  case SPOTLIGHT:
+//    aTempVector[0] = light.GetPosition()[0];
+//    aTempVector[1] = light.GetPosition()[1];
+//    aTempVector[2] = light.GetPosition()[2];
+//    aTempVector[3] = 1.0f;
+//
+//    glLightf( iLightID, GL_SPOT_CUTOFF,    light.GetSpotAngle());
+//    glLightfv(iLightID, GL_SPOT_DIRECTION, const_cast<CVector3<float> &>(light.GetDirection()).GetArray());
+//
+//    // Set the attenuation parameters
+//    glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
+//    glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
+//    glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+//
+//    break;
+//
+//  case POINTLIGHT:
+//
+//    aTempVector[0] = light.GetPosition()[0];
+//    aTempVector[1] = light.GetPosition()[1];
+//    aTempVector[2] = light.GetPosition()[2];
+//    aTempVector[3] = 1.0f;
+//
+//    glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
+//
+//    // Set the attenuation parameters
+//    glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
+//    glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
+//    glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+//
+//    break;
+//  }
+//
+//
+//  // Set the light position
+//  glLightfv(iLightID, GL_POSITION, aTempVector);
+//
+//  // Set the intensity distribution of the light.
+//  glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
+//
+//  // Set diffuse RGBA intensity
+//  aTempVector[0] = (float)light.GetDiffuseColor()[0]/255.0f;
+//  aTempVector[1] = (float)light.GetDiffuseColor()[1]/255.0f;
+//  aTempVector[2] = (float)light.GetDiffuseColor()[2]/255.0f;
+//  aTempVector[3] = (float)light.GetDiffuseColor()[3]/255.0f;
+//  glLightfv(iLightID, GL_DIFFUSE, aTempVector);
+//
+//  // Set ambient RGBA intensity
+//  aTempVector[0] = (float)light.GetAmbientColor()[0]/255.0f;
+//  aTempVector[1] = (float)light.GetAmbientColor()[1]/255.0f;
+//  aTempVector[2] = (float)light.GetAmbientColor()[2]/255.0f;
+//  aTempVector[3] = (float)light.GetAmbientColor()[3]/255.0f;
+//  glLightfv(iLightID, GL_AMBIENT, aTempVector);
+//
+//  // Set specular RGBA intensity
+//  aTempVector[0] = (float)light.GetSpecularColor()[0]/255.0f;
+//  aTempVector[1] = (float)light.GetSpecularColor()[1]/255.0f;
+//  aTempVector[2] = (float)light.GetSpecularColor()[2]/255.0f;
+//  aTempVector[3] = (float)light.GetSpecularColor()[3]/255.0f;
+//  glLightfv(iLightID, GL_SPECULAR, aTempVector);
+//}
+/////////////////////////////////////////////////////////////////
+void
 Phoenix::Graphics::COglRenderer::DisableLight ( unsigned int nLightId )
 {
   glDisable(GL_LIGHT0+nLightId);
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::DisableState( STATE_TYPE tState )
 {
   switch(tState)
@@ -1901,7 +2025,7 @@ Phoenix::Graphics::COglRenderer::DisableState( STATE_TYPE tState )
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
 {
   switch(tState)
@@ -1915,7 +2039,7 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitMaterial( const Phoenix::Graphics::CMaterial & material, int iFace )
 {
   GLenum glFace = iFace ? GL_BACK : GL_FRONT;
@@ -1938,15 +2062,15 @@ Phoenix::Graphics::COglRenderer::CommitBlending( BLEND_SRC_TYPE tSource, BLEND_D
   glBlendFunc( static_cast<GLenum>(tSource),static_cast<GLenum>(tDestination));
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitBlending( Phoenix::Graphics::CBlendingOperation & rBlendingOp )
 {
-  if ( rBlendingOp.IsEnabled() ) 
+  if ( rBlendingOp.IsEnabled() )
   {
     CommitState( STATE_BLENDING );
     CommitBlending( rBlendingOp.GetSourceOperation(), rBlendingOp.GetDestinationOperation());
   }
-  else 
+  else
     DisableState( STATE_BLENDING );
 }
 /////////////////////////////////////////////////////////////////
@@ -1962,18 +2086,18 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
-  
+
   COglTexture *pTexture = *skybox.GetTextureHandle(0);
   CIndexArray *pIndices = *skybox.GetIndices();
   CVertexDescriptor *pTexCoords = *skybox.GetTextureCoordinateHandle(0);
-  CVertexDescriptor *pVertices  = *skybox.GetVertexHandle();  
+  CVertexDescriptor *pVertices  = *skybox.GetVertexHandle();
 
   if ( pVertices )  CommitVertexDescriptor( pVertices );
   if ( pTexCoords ) CommitVertexDescriptor( pTexCoords );
-  if ( pTexture )   CommitTexture( 0, pTexture ); 
+  if ( pTexture )   CommitTexture( 0, pTexture );
   if ( pIndices )   CommitPrimitive( pIndices );
   /////////////////////////////////////////////////////////////////
-  
+
   glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
@@ -1990,7 +2114,7 @@ Phoenix::Graphics::COglRenderer::RollbackTransform()
   glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, bool bWireframe )
 {
   if ( !m_pQuadric )
@@ -2009,8 +2133,8 @@ Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &s
 
 }
 /////////////////////////////////////////////////////////////////
-void 
-Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<float> & vCenter, 
+void
+Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<float> & vCenter,
 					       float fRadius, const CVector3<float> & vRotation,
 					       bool bWireframe )
 {
@@ -2026,7 +2150,7 @@ Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<flo
   glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox &box, bool bWireframe )
 {
   //   if ( !m_pQuadric )
@@ -2044,7 +2168,7 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
 
 
   glBegin( GL_QUAD_STRIP );
-  
+
   using namespace Phoenix::Volume;
   glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
@@ -2056,13 +2180,13 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
   glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
   glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
-  
+
   glEnd();
 
 
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &vertexOne,
 					     const Phoenix::Spatial::CVertex &vertexTwo,
 					     const Phoenix::Spatial::CVertex &vertexThree,
@@ -2086,18 +2210,18 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
 #undef COMMIT_VERTEX
 }
 /////////////////////////////////////////////////////////////////
-int 
+int
 Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor, Phoenix::Graphics::CACHE_ACCESS_TYPE tType )
 {
   if ( !GetFeatures().HasVertexBufferObject() ) return 1;
-  
+
   if(  !rVertexDescriptor.IsCached() )
   {
     glGenBuffersARB(1, &rVertexDescriptor.GetCache());
   }
-  
+
   glBindBufferARB( GL_ARRAY_BUFFER_ARB, rVertexDescriptor.GetCache());
-  
+
   // determine proper buffer size.
   switch ( rVertexDescriptor.GetType())
   {
@@ -2109,15 +2233,15 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   case ELEMENT_TYPE_TEX_4F:
   case ELEMENT_TYPE_TEX_2F:
   case ELEMENT_TYPE_V3F_N3F_T2F:
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     rVertexDescriptor.GetByteSize(), 
-		     rVertexDescriptor.GetPointer<float>(), 
+    glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+		     rVertexDescriptor.GetByteSize(),
+		     rVertexDescriptor.GetPointer<float>(),
 		     static_cast<GLenum>(tType));
-    
+
   case ELEMENT_TYPE_COLOR_4UB:
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB, 
-		     rVertexDescriptor.GetByteSize(), 
-		     rVertexDescriptor.GetPointer<unsigned char>(), 
+    glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+		     rVertexDescriptor.GetByteSize(),
+		     rVertexDescriptor.GetPointer<unsigned char>(),
 		     static_cast<GLenum>(tType));
     break;
   case ELEMENT_TYPE_UNIFORM_1F:
@@ -2165,31 +2289,31 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   return 0;
 }
 /////////////////////////////////////////////////////////////////
-int 
+int
 Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & rIndexArray,
 					      Phoenix::Graphics::CACHE_ACCESS_TYPE tType  )
 {
   if ( !GetFeatures().HasVertexBufferObject() ) return 1;
-  
-  if(  !rIndexArray.IsCached() ) 
+
+  if(  !rIndexArray.IsCached() )
   {
     glGenBuffersARB(1, &rIndexArray.GetCache());
   }
-  
+
   glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, rIndexArray.GetCache());
 
   if ( rIndexArray.IsShortIndices() )
   {
-    glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 
-		     sizeof(unsigned short int)*rIndexArray.GetNumIndices(), 
-		     rIndexArray.GetPointer<unsigned short int>(), 
+    glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+		     sizeof(unsigned short int)*rIndexArray.GetNumIndices(),
+		     rIndexArray.GetPointer<unsigned short int>(),
 		     static_cast<GLenum>(tType));
-  } 
-  else 
+  }
+  else
   {
-    glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 
-		     sizeof(unsigned int)*rIndexArray.GetNumIndices(), 
-		     rIndexArray.GetPointer<unsigned int>(), 
+    glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+		     sizeof(unsigned int)*rIndexArray.GetNumIndices(),
+		     rIndexArray.GetPointer<unsigned int>(),
 		     static_cast<GLenum>(tType));
   }
   // Prepare for case that data does not fit
@@ -2213,7 +2337,7 @@ void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescriptor & rVertexDescriptor )
 {
   if ( !GetFeatures().HasVertexBufferObject() ) return;
-  
+
   if(  !rVertexDescriptor.IsCached() )
   {
     glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
@@ -2226,7 +2350,7 @@ void
 Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray & rIndexArray )
 {
   if ( !GetFeatures().HasVertexBufferObject() ) return;
-  
+
   if(  !rIndexArray.IsCached() )
   {
     glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
@@ -2243,41 +2367,41 @@ Phoenix::Graphics::COglRenderer::DisableCaches()
   glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc,
 						     const Phoenix::Math::CVector4<float> &vValues )
 {
   CommitVertexAttrib( shader, iLoc, vValues[0], vValues[1], vValues[2], vValues[3]);
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc,
 						     const Phoenix::Math::CVector3<float> &vValues )
 {
   CommitVertexAttrib( shader, iLoc, vValues[0], vValues[1], vValues[2]);
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader &shader, int iLoc,
 						     const Phoenix::Math::CVector2<float> &vValues )
 {
   CommitVertexAttrib( shader, iLoc, vValues[0], vValues[1] );
 }
 /////////////////////////////////////////////////////////////////
-int 
+int
 Phoenix::Graphics::COglRenderer::LocateAttribShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName )
 {
-  return glGetAttribLocation( shader.GetProgram(), strParamName );  
+  return glGetAttribLocation( shader.GetProgram(), strParamName );
 }
 /////////////////////////////////////////////////////////////////
-int 
+int
 Phoenix::Graphics::COglRenderer::LocateUniformShaderParam( Phoenix::Graphics::CShader &shader, const char *strParamName )
 {
-  return glGetUniformLocation( shader.GetProgram(), strParamName );  
+  return glGetUniformLocation( shader.GetProgram(), strParamName );
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CFrameBufferObject * 
-Phoenix::Graphics::COglRenderer::CreateFramebuffer( unsigned int nWidth, unsigned int nHeight, 
+Phoenix::Graphics::CFrameBufferObject *
+Phoenix::Graphics::COglRenderer::CreateFramebuffer( unsigned int nWidth, unsigned int nHeight,
 						    int iBufferFlags )
 {
   GLuint iFBO;
@@ -2288,33 +2412,33 @@ Phoenix::Graphics::COglRenderer::CreateFramebuffer( unsigned int nWidth, unsigne
   glGenFramebuffersEXT(1, &iFBO);
   pFBO = new CFrameBufferObject( iFBO, nWidth, nHeight );
 
-  
+
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, pFBO->GetID());
-  
+
   if ( iBufferFlags & FBO_DEPTH_BUFFER )
   {
     ////////////////////
     // Create depth buffer
     glGenRenderbuffersEXT(1, &pFBO->GetDepthBufferId());
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
-    
+
     ////////////////////
     // Attach depth buffer to frame buffer.
-    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, 
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
 			     (unsigned int)pFBO->GetWidth(), (unsigned int)pFBO->GetHeight() );
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
 				 GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
   }
-  
-  
+
+
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
   // Return object pointer.
   return pFBO;
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::CFrameBufferObject & rFBO, 
-							     const Phoenix::Default::TEXTURE_HANDLE & hTexture, 
+Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::CFrameBufferObject & rFBO,
+							     const Phoenix::Default::TEXTURE_HANDLE & hTexture,
 							     unsigned int nColorBuffer )
 {
   int iRetval = 1;
@@ -2325,7 +2449,7 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
 
     // Duplicate handle to texture
-    g_DefaultTextureManager->DuplicateHandle( hTexture, rFBO.GetTextureHandle( nColorBuffer ) );  
+    g_DefaultTextureManager->DuplicateHandle( hTexture, rFBO.GetTextureHandle( nColorBuffer ) );
     ////////////////////
     // Attach texture to framebuffer
     COglTexture *pTexture = g_DefaultTextureManager->GetResource( rFBO.GetTextureHandle(nColorBuffer) );
@@ -2342,13 +2466,13 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
     glTexParameterf( iTexType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf( iTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, 
-			       GL_COLOR_ATTACHMENT0_EXT+nBufferNumber, 
+    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT,
+			       GL_COLOR_ATTACHMENT0_EXT+nBufferNumber,
 			       iTexType, pTexture->GetID(), 0);
-    
+
     /////////////////////////////////////////////////////////////////
     /// THIS MIGHT REQUIRE TINKERING. I don't know should filters be set
-    /// before actually using the texture or not... if there are problems, 
+    /// before actually using the texture or not... if there are problems,
     /// this might be the culprit.
     glGenerateMipmapEXT( iTexType );
     /////////////////////////////////////////////////////////////////
@@ -2356,17 +2480,17 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
     /// If there were any errors, clean up and return NULL.
     if ( status !=  GL_FRAMEBUFFER_COMPLETE_EXT )
     {
-      iRetval = 1;      
+      iRetval = 1;
     }
     // disable frame buffer
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     iRetval = 0;
   }
-  
+
   return iRetval;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBufferCount )
 {
   // Bind frame buffer.
@@ -2382,10 +2506,10 @@ Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFr
   // but this is better; it allows multiple buffers to be rendered via parameter.
   // Output to buffers must be controlled via GLSL fragment shaders.
   glDrawBuffers( nColorBufferCount % TEXTURE_HANDLE_COUNT, g_ColorBufferNames );
-  
+
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitFrameBufferSingle( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBuffer )
 {
   // Bind frame buffer.
@@ -2398,10 +2522,10 @@ Phoenix::Graphics::COglRenderer::CommitFrameBufferSingle( const Phoenix::Graphic
 
   // select render target
   glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT+nColorBuffer);
-  
+
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO )
 {
   // Reset viewport settings
@@ -2410,7 +2534,7 @@ Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::C
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 /////////////////////////////////////////////////////////////////
-/// A handle macro for commiting vertices with N 
+/// A handle macro for commiting vertices with N
 #define COMMIT_COORDINATES( POSX, POSY, TEXX, TEXY ){	\
    glMultiTexCoord2fARB( GL_TEXTURE0_ARB, TEXX, TEXY);	\
    glMultiTexCoord2fARB( GL_TEXTURE1_ARB, TEXX, TEXY);	\
@@ -2423,10 +2547,10 @@ Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::C
    glVertex2f( POSX, POSY );				\
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CFrameBufferObject & rFBO )
 {
-  
+
   glBegin(GL_QUADS);
 
     COMMIT_COORDINATES( 0.0f,            0.0f,		0.0f,            0.0f);
@@ -2437,7 +2561,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CFrameBuff
   glEnd();
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CCamera & rCamera, const Phoenix::Graphics::CFrameBufferObject & rFBO)
 {
   glBegin(GL_QUADS);
@@ -2464,13 +2588,13 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   // Freetype stuff
   FT_Library	ftLibrary;
   FT_Error	ftError;
-  FT_Face	ftFace;  
+  FT_Face	ftFace;
 
   ////////////////////
   // Initialize the font library
-  ftError = FT_Init_FreeType( &ftLibrary ); 
-  if ( ftError ) 
-  { 
+  ftError = FT_Init_FreeType( &ftLibrary );
+  if ( ftError )
+  {
     cerr << "Error initializing FT" << endl;
     return NULL;
   }
@@ -2484,7 +2608,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   }
   ////////////////////
   // Set the character size
-  ftError = FT_Set_Char_Size( ftFace, nFontSize << 6, 0, 0, 0 );        
+  ftError = FT_Set_Char_Size( ftFace, nFontSize << 6, 0, 0, 0 );
 
   if ( ftError )
   {
@@ -2494,11 +2618,11 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   ////////////////////
   // Create fontset.
   pFontset = new CFontset();
-  
+
   ////////////////////
   // Create display lists.
   pFontset->GetDisplayList() = glGenLists(Phoenix::Globals::MAX_FONT_CHARACTERS);
-  
+
   for(unsigned int n=0;n<Phoenix::Globals::MAX_FONT_CHARACTERS;n++)
   {
     // Whitespace has no dimension, it needs special treatment.
@@ -2508,27 +2632,27 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
       glTranslatef(nFontSize*0.2f, 0, 0);
       glEndList();
       continue;
-    } 
+    }
     ////////////////////
-    // For some characters, such as i, a width fixing is 
+    // For some characters, such as i, a width fixing is
     // necessary to make it visible.
     int		bWidthFixApplied = 0;
-    FT_UInt	ftGlyphIndex;    
+    FT_UInt	ftGlyphIndex;
     ftGlyphIndex = FT_Get_Char_Index( ftFace, n );
     ////////////////////
-    ftError = FT_Load_Glyph( ftFace, ftGlyphIndex, FT_LOAD_DEFAULT ); 
-    if ( ftError ) 
-    { 
+    ftError = FT_Load_Glyph( ftFace, ftGlyphIndex, FT_LOAD_DEFAULT );
+    if ( ftError )
+    {
       continue; /* ignore errors */
     }
     ////////////////////
     // convert to an anti-aliased bitmap.
-    ftError = FT_Render_Glyph( ftFace->glyph, FT_RENDER_MODE_NORMAL ); 
-    if ( ftError ) 
-    { 
+    ftError = FT_Render_Glyph( ftFace->glyph, FT_RENDER_MODE_NORMAL );
+    if ( ftError )
+    {
       continue;
     }
-    
+
     if ( ftFace->glyph->bitmap.width == 0 ) continue;
     ////////////////////
     // Round dimensions up to closes power of two.
@@ -2543,7 +2667,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
 
     ////////////////////
     // A fix for really narrow characters.
-    if ( iWidth == 1 ) 
+    if ( iWidth == 1 )
     {
       bWidthFixApplied = 1;
       iWidth = 2;
@@ -2551,11 +2675,11 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     ////////////////////
     // Create two-channel data.
     GLubyte* expanded_data = new GLubyte[ 2 * iWidth * iHeight];
-    for(int j=0; j <iHeight;j++) 
+    for(int j=0; j <iHeight;j++)
     {
       for(int i=0; i < iWidth; i++)
       {
-	expanded_data[2*(i+j*iWidth)]= expanded_data[2*(i+j*iWidth)+1] = 
+	expanded_data[2*(i+j*iWidth)]= expanded_data[2*(i+j*iWidth)+1] =
 	(i>=ftFace->glyph->bitmap.width || j>=ftFace->glyph->bitmap.rows) ?
 	0 : ftFace->glyph->bitmap.buffer[i + ftFace->glyph->bitmap.width*j];
       }
@@ -2563,7 +2687,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     ////////////////////
     // Create texture.
     /*CreateTexture( iWidth, iHeight, TEXTURE_2D, expanded_data );*/
-    
+
     unsigned int iTexId;
     glGenTextures( 1, &iTexId);
     COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_2D );
@@ -2575,7 +2699,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexImage2D( GL_TEXTURE_2D, 0, 4, iWidth, iHeight, 0,
 		  GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
-    
+
     delete [] expanded_data;
     ////////////////////
     // Add pointer to fontset's array as well.
@@ -2594,7 +2718,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     ////////////////////
     // Bind texture
     glBindTexture( GL_TEXTURE_2D, pTexture->GetID());
-    glPushMatrix();    
+    glPushMatrix();
     ////////////////////
     // move new char left so we have correct spacing.
     glTranslatef( ftFace->glyph->bitmap_left, 0,0 );
@@ -2615,7 +2739,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     glEnd();
     glPopMatrix();
     ////////////////////
-    // Advance along x-axis so next letter will be 
+    // Advance along x-axis so next letter will be
     // in correct place.
     if ( bWidthFixApplied )   glTranslatef(ftFace->glyph->advance.x >> 7, 0, 0);
     else		      glTranslatef(ftFace->glyph->advance.x >> 6, 0, 0);
@@ -2634,10 +2758,10 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   return pFontset;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, float fY, const char *szText )
 {
-  
+
   ////////////////////
   /// Sanity check.
   if ( szText == NULL )
@@ -2653,7 +2777,7 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
   glPushAttrib( GL_LIST_BIT );
 
     // Activate preferred fontset
-    glListBase( rFontSet.GetDisplayList() );      
+    glListBase( rFontSet.GetDisplayList() );
     // Store current position
     glPushMatrix();
       glTranslatef( fX, fY, 0.0f);
@@ -2663,12 +2787,12 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
 
 
     glPopMatrix();
-  
+
   glPopAttrib();
   glDisable( GL_TEXTURE_2D );
 }
 /////////////////////////////////////////////////////////////////
-const COglRendererFeatures & 
+const COglRendererFeatures &
 Phoenix::Graphics::COglRenderer::GetFeatures()
 {
   if ( m_pFeatures == NULL )
