@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
-  namespace Math 
+  namespace Math
   {
     void PHOENIX_API RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector);
   }
@@ -21,7 +21,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// The base class for Objects with position.
-    class PHOENIX_API CPositional 
+    class PHOENIX_API CPositional
     {
     protected:
       /// Vector where position is stored.
@@ -33,7 +33,7 @@ namespace Phoenix
       /// Default constructor.
       CPositional() : m_vPosition(0.0f,0.0f,0.0f),m_bPositionChanged(0)
       {
-	
+
       }
       ////////////////////
       /// Parametrized constructor.
@@ -68,7 +68,7 @@ namespace Phoenix
       {
 	return m_vPosition;
       }
-      
+
       ////////////////////
       /// Adds vector to current position.
       /// \param vPosition the movement applied to current position.
@@ -94,7 +94,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// The class for single-directional object.
-    class PHOENIX_API COneDirectional 
+    class PHOENIX_API COneDirectional
     {
     protected:
       /// Direction vector.
@@ -129,7 +129,7 @@ namespace Phoenix
       ////////////////////
       /// Returns direction.
       /// \returns Vector with current direction.
-      // inline Phoenix::Math::CVector3<float> & GetDirection() 
+      // inline Phoenix::Math::CVector3<float> & GetDirection()
 //       {
 // 	return m_vDirection;
 //       }
@@ -146,21 +146,21 @@ namespace Phoenix
 
 
 
-    // WHOA!! This was probably the most mind-boggling thing to fix. This is 
-    // related to the differences between UNIX shared object files (.so) and 
-    // Windows's Dynamically Linked Libraries (.DLL) 
-    // Using Singleton objects in a DLL and application using the DLL without 
+    // WHOA!! This was probably the most mind-boggling thing to fix. This is
+    // related to the differences between UNIX shared object files (.so) and
+    // Windows's Dynamically Linked Libraries (.DLL)
+    // Using Singleton objects in a DLL and application using the DLL without
     // the following extern declaration makes the compiler to create two instances
     // of the singleton; one inside the DLL and one inside the application binary.
-    // And since the point of Singleton is to have a single instance of an object, so 
-    // this nasty feature wreaks havoc on implementation. Following statements 
-    // say that the CSingleton<CMaterialMgr> template has already been 
+    // And since the point of Singleton is to have a single instance of an object, so
+    // this nasty feature wreaks havoc on implementation. Following statements
+    // say that the CSingleton<CMaterialMgr> template has already been
     // created in DLL and should not be created again.
 
     //    class CMaterialMgr;
     //extern template class __declspec(dllimport) CSingleton<CMaterialMgr>;
     /// Vertex comparison flags
-    enum VERTEX_COMP_FLAGS 
+    enum VERTEX_COMP_FLAGS
     {
       VERTEX_COMP_POSITION  = 1 << 0,
       VERTEX_COMP_TEXCOORD  = 1 << 1,
@@ -204,7 +204,7 @@ namespace Phoenix
 
 	m_vAttrib4[0] = m_vAttrib4[1] = m_vAttrib4[2] = m_vAttrib4[3] = 0.0f;
 	m_vAttrib3[0] = m_vAttrib3[1] = m_vAttrib3[2] = 0.0f;
-	m_vAttrib2[0] = m_vAttrib2[1] = 0.0f; 
+	m_vAttrib2[0] = m_vAttrib2[1] = 0.0f;
 	m_fAttrib1 = 0.0f;
 
       }
@@ -213,12 +213,12 @@ namespace Phoenix
 //       {
 // 	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
 // 	{
-// 	  if ( !(m_vTexCoord[iT] == vert.m_vTexCoord[iT]) )  
+// 	  if ( !(m_vTexCoord[iT] == vert.m_vTexCoord[iT]) )
 // 	  {
-// 	    return 0;  
+// 	    return 0;
 // 	  }
 // 	}
-// 	if ( !(GetPosition() == vert.GetPosition())) 
+// 	if ( !(GetPosition() == vert.GetPosition()))
 // 	{
 // 	  return 0;
 // 	}
@@ -237,9 +237,9 @@ namespace Phoenix
 	{
 	  for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)
 	  {
-	    if ( !(m_vTexCoord[iT] == vert.m_vTexCoord[iT]) )  
+	    if ( !(m_vTexCoord[iT] == vert.m_vTexCoord[iT]) )
 	    {
-	      return 0;  
+	      return 0;
 	    }
 	  }
 	}
@@ -247,10 +247,10 @@ namespace Phoenix
 	// position comparision
 	if ( iCompFlags & VERTEX_COMP_POSITION )
 	{
-	  if ( !(GetPosition() == vert.GetPosition())) 
+	  if ( !(GetPosition() == vert.GetPosition()))
 	  {
 	    return 0;
-	  } 
+	  }
 	}
 
 	// normal comparison
@@ -264,7 +264,7 @@ namespace Phoenix
 	{
 	  if ( !(m_vColor      == vert.m_vColor ))     { return 0; }
 	}
-	
+
 	return 1;
       }
       ////////////////////
@@ -332,7 +332,7 @@ namespace Phoenix
       ////////////////////
       /// Returns color vector.
       /// \return Color vector.
-      Phoenix::Math::CVector4<unsigned char> & GetColor() 
+      Phoenix::Math::CVector4<unsigned char> & GetColor()
       {
 	return m_vColor;
       }
@@ -416,7 +416,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Triangle class for editors.
-    class PHOENIX_API CTriangle 
+    class PHOENIX_API CTriangle
     {
     protected:
       /// Vertices in a triangle
@@ -428,7 +428,7 @@ namespace Phoenix
       /// Constructor.
       CTriangle() : m_bSelected(0)
       {
-	
+
       }
       ////////////////////
       /// Is this triangle selected.
@@ -467,7 +467,7 @@ namespace Phoenix
 	vResult = (m_vVertices[2].GetPosition() - m_vVertices[0].GetPosition()).Cross(m_vVertices[1].GetPosition() - m_vVertices[0].GetPosition());
 	vResult.Normalize();
       }
-      
+
     };
     /////////////////////////////////////////////////////////////////
     /// Generic orientable object. Contains base vectors
@@ -482,7 +482,7 @@ namespace Phoenix
       Phoenix::Math::CVector3<float> m_vUpward;
       /// The vector pointing forward.
       Phoenix::Math::CVector3<float> m_vForward;
-      /// The quaternion holding rotations. 
+      /// The quaternion holding rotations.
       Phoenix::Math::CQuaternion m_qRotation;
       /////////////////////////////////////////////////////////////////
       /// A boolean flag indicating the change of rotation.
@@ -515,8 +515,8 @@ namespace Phoenix
       /// \param fAroundWorldXAngle The degrees by which the object is rotated over world x-axis.
       /// \param fAroundWorldYAngle The degrees by which the object is rotated over world y-axis.
       /// \param fAroundWorldZAngle The degrees by which the object is rotated over world z-axis.
-      void Rotate           ( float fAroundWorldXAngle, 
-			      float fAroundWorldYAngle, 
+      void Rotate           ( float fAroundWorldXAngle,
+			      float fAroundWorldYAngle,
 			      float fAroundWorldZAngle );
       /////////////////////////////////////////////////////////////////
       /// Rotates object given degrees over axis "right".
@@ -539,14 +539,14 @@ namespace Phoenix
       /// \param fAroundRightAngle The degrees by which the object is rotated over local right axis.
       /// \param fAroundUpAngle The degrees by which the object is rotated over local up axis.
       /// \param fAroundForwardAngle The degrees by which the object is rotated over local forward axis.
-      void RotateLocal          ( float fAroundRightAngle, 
-				  float fAroundUpAngle, 
+      void RotateLocal          ( float fAroundRightAngle,
+				  float fAroundUpAngle,
 				  float fAroundForwardAngle );
       /////////////////////////////////////////////////////////////////
       /// Initializes the object by assigning axis forward and up, the right
       /// axis is calculated by cross product of the two.
       /// Rotation is set to unit.
-      void         SetDirectionForwardUp   ( Phoenix::Math::CVector3<float> vForward, 
+      void         SetDirectionForwardUp   ( Phoenix::Math::CVector3<float> vForward,
 					     Phoenix::Math::CVector3<float> vUp );
       /////////////////////////////////////////////////////////////////
       /// Return the right vector.
@@ -642,14 +642,14 @@ namespace Phoenix
       float m_fHalfWidth;
       ////////////////////
       /// Constructor. Initializes paramaters.
-      CDimensional1D() : 
-	m_fWidth(0.0f), 
+      CDimensional1D() :
+	m_fWidth(0.0f),
 	m_fHalfWidth(0.0f)
       {
-    
+
       }
       ////////////////////
-      /// The parametrized constructor. 
+      /// The parametrized constructor.
       /// \param fWidth The width of the object
       CDimensional1D( float fWidth )
       {
@@ -660,7 +660,7 @@ namespace Phoenix
       /// Assigns the width.
       /// \param fWidth The value for width.
       inline void SetWidth ( float fWidth  )
-      {  
+      {
 	m_fWidth = fWidth;
 	m_fHalfWidth = m_fWidth * 0.5f;
       }
@@ -668,17 +668,17 @@ namespace Phoenix
       /// Returns the width.
       /// \returns The width.
       inline float GetWidth() const
-      {	
+      {
 	return m_fWidth;
       }
       ////////////////////
       /// Returns half of the width
       /// \returns half of the width
-      inline float GetHalfWidth() const 
+      inline float GetHalfWidth() const
       {
 	return m_fHalfWidth;
       }
-      
+
     }; // CDimensional1D
     /////////////////////////////////////////////////////////////////
     /// A class which provides dimensions in 2D - width, height.
@@ -691,18 +691,18 @@ namespace Phoenix
       float m_fHalfHeight;
       ////////////////////
       /// The constructor. Initializes paramaters.
-      CDimensional2D() : 
+      CDimensional2D() :
 	CDimensional1D(),
-	m_fHeight(0.0f), 
+	m_fHeight(0.0f),
 	m_fHalfHeight(0.0f)
       {
-	
+
       }
       ////////////////////
-      /// The parametrized constructor. 
+      /// The parametrized constructor.
       /// \param fWidth The width of the object
       /// \param fHeight The height of the object
-      CDimensional2D( float fWidth, float fHeight) 
+      CDimensional2D( float fWidth, float fHeight)
       {
 	SetWidth(fWidth);
 	SetHeight(fHeight);
@@ -711,7 +711,7 @@ namespace Phoenix
       ////////////////////
       /// Assigns the height.
       /// \param fHeight The value for height.
-      inline void SetHeight( float fHeight )    
+      inline void SetHeight( float fHeight )
       {
 	m_fHeight = fHeight;
 	m_fHalfHeight = m_fHeight * 0.5f;
@@ -720,13 +720,13 @@ namespace Phoenix
       /// Returns the height.
       /// \returns The height.
       inline float GetHeight() const
-      {	
+      {
 	return m_fHeight;
       }
       ////////////////////
       /// Returns half of the height
       /// \returns half of the height
-      inline float GetHalfHeight() const 
+      inline float GetHalfHeight() const
       {
 	return m_fHalfHeight;
       }
@@ -742,19 +742,19 @@ namespace Phoenix
       float m_fHalfLength;
       ////////////////////
       /// The constructor. Initializes paramaters.
-      CDimensional3D() : 
+      CDimensional3D() :
 	CDimensional2D(),
 	m_fLength(0.0f),
 	m_fHalfLength(0.0f)
       {
-    
+
       }
       ////////////////////
-      /// The parametrized constructor. 
+      /// The parametrized constructor.
       /// \param fWidth The width of the object
       /// \param fHeight The height of the object
       /// \param fLength The length of the object
-      CDimensional3D( float fWidth, float fHeight, float fLength ) 
+      CDimensional3D( float fWidth, float fHeight, float fLength )
       {
 	SetWidth(fWidth);
 	SetHeight(fHeight);
@@ -765,7 +765,7 @@ namespace Phoenix
       /// Assigns the length.
       /// \param fLength The value for length.
       inline void SetLength( float fLength )
-      {	
+      {
 	m_fLength = fLength;
 	m_fHalfLength = m_fLength * 0.5f;
       }
@@ -773,13 +773,13 @@ namespace Phoenix
       /// Returns the length.
       /// \returns The length.
       inline float GetLength() const
-      {	
+      {
 	return m_fLength;
       }
       ////////////////////
       /// Returns half of the length
       /// \returns half of the length
-      inline float GetHalfLength() const 
+      inline float GetHalfLength() const
       {
 	return m_fHalfLength;
       }
