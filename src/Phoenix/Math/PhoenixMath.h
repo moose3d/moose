@@ -1,8 +1,3 @@
-/******************************************************************
- * TODO: Write SRT-transform class. 3d game engine design, pp. 144-145.
- *
- *
- ******************************************************************/ 
 #ifndef __PhoenixMath_h__
 #define __PhoenixMath_h__
 /////////////////////////////////////////////////////////////////
@@ -20,11 +15,11 @@
 #include "PhoenixMathGeometry.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
-namespace Phoenix 
+namespace Phoenix
 {
-  namespace Math 
+  namespace Math
   {
-    
+
     ////////////////////
     /// Generates a Rotation matrix which corresponds to rotation of fRadians rad
     /// over axis (fX, fY, fZ)
@@ -34,12 +29,12 @@ namespace Phoenix
     /// over axis vAxis
     PHOENIX_API void RotationMatrix(const Phoenix::Math::CVector3<float> &vAxis, float fRadians, CMatrix4x4<float> & matrix);
     ////////////////////
-    /// Generates a rotation matrix from (x,y,z) -axis rotations 
+    /// Generates a rotation matrix from (x,y,z) -axis rotations
     /// rotation fX radians using X-axis, fY rad over Y-axis and fZ rad over Z-axis.
     PHOENIX_API void RotationMatrix(float fX, float fY, float fZ, CMatrix4x4<float> & matrix  );
     ////////////////////
-    /// Generates a rotation matrix from (x,y,z) -axis rotations 
-    /// rotation vRadians[X] radians using X-axis, 
+    /// Generates a rotation matrix from (x,y,z) -axis rotations
+    /// rotation vRadians[X] radians using X-axis,
     /// vRadians[Y] rad over Y-axis and vRadians[Z] rad over Z-axis.
     PHOENIX_API void RotationMatrix(const Phoenix::Math::CVector3<float> & vRadians, CMatrix4x4<float> & matrix  );
 
@@ -49,7 +44,7 @@ namespace Phoenix
     /// \param fY Y-axis translation.
     /// \param fZ Z-axis translation.
     /// \param Result matrix.
-    inline void TranslationMatrix(float fX, float fY, float fZ, CMatrix4x4<float> & matrix ) 
+    inline void TranslationMatrix(float fX, float fY, float fZ, CMatrix4x4<float> & matrix )
     {
       matrix.Set(1,0,0,fX,
 		 0,1,0,fY,
@@ -80,17 +75,17 @@ namespace Phoenix
 		  0,0,  fScale,0,
 		  0,0,0,       1 );
     }
-    
+
     ////////////////////
     /// Constructs a Row-Major TBN (Tangent, Bitangent, Normal)-matrix for bump mapping
-    PHOENIX_API void GetTBNMatrix( Phoenix::Math::CVector3<float> vPoint0, 
-		       Phoenix::Math::CVector3<float> vPoint1, 
+    PHOENIX_API void GetTBNMatrix( Phoenix::Math::CVector3<float> vPoint0,
+		       Phoenix::Math::CVector3<float> vPoint1,
 		       Phoenix::Math::CVector3<float> vPoint2,
-		       Phoenix::Math::CVector2<float> vTexCoord0, 
-		       Phoenix::Math::CVector2<float> vTexCoord2, 
+		       Phoenix::Math::CVector2<float> vTexCoord0,
+		       Phoenix::Math::CVector2<float> vTexCoord2,
 		       Phoenix::Math::CVector2<float> vTexCoord3,
 		       CMatrix3x3<float> & matrix );
-    
+
     ////////////////////
     /// Constructs tangent array of 4-vectors for bump mapping. w-coordinate indicates handedness (1.0f or -1.0f).
     /// \param vertices Vertex coordinates.
@@ -152,8 +147,8 @@ namespace Phoenix
     /// \param iRowSkip which row is removed.
     /// \param iColSkip which column is removed.
     /// \param result New smaller square matrix.
-    PHOENIX_API void RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix, 
-			    unsigned int iRowSkip, 
+    PHOENIX_API void RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix,
+			    unsigned int iRowSkip,
 			    unsigned int iColSkip,
 			    CMatrix3x3<float> & result);
     ////////////////////
@@ -162,32 +157,32 @@ namespace Phoenix
     /// \param iRowSkip which row is removed.
     /// \param iColSkip which column is removed.
     /// \param result New smaller square matrix.
-    PHOENIX_API void RemoveRowAndColumn(const CMatrix3x3<float> & mMatrix, 
-			    unsigned int iRowSkip, 
+    PHOENIX_API void RemoveRowAndColumn(const CMatrix3x3<float> & mMatrix,
+			    unsigned int iRowSkip,
 			    unsigned int iColSkip,
 			    CMatrix2x2<float> & result);
-    ////////////////////    
+    ////////////////////
     // Returns the covariance matrix of the vertices in the pVertexDescriptor.
     PHOENIX_API void CovarianceMatrix( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
 			   CMatrix3x3<float> & result);
 
     ////////////////////
-    // Returns the covariance matrix of the vertices in the pVertexDescriptor using the given indices 
+    // Returns the covariance matrix of the vertices in the pVertexDescriptor using the given indices
     PHOENIX_API void CovarianceMatrix(  const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor, const Phoenix::Graphics::CIndexArray &indexBuffer, CMatrix3x3<float> & result );
 
     ////////////////////
-    // Calculates the eigenvectors and eigenvalues for matrix mMatrix 
+    // Calculates the eigenvectors and eigenvalues for matrix mMatrix
     // using the Jacobi method. For matrices with dimensions less than 10,
     // the algorithm is efficient.
-    PHOENIX_API void CalculateEigensystem( CMatrix3x3<float> &mMatrix, 
+    PHOENIX_API void CalculateEigensystem( CMatrix3x3<float> &mMatrix,
 			       float &fLambda1, float &fLambda2, float &fLambda3,
 			       CMatrix3x3<float> &mEigenvectorMatrix);
-  
+
     ////////////////////
     /// Converts a rotation matrix into a quaternion.
     PHOENIX_API void RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix, CQuaternion & result );
-    PHOENIX_API void RotateAroundPoint( const CVector3<float> & vVector, 
-			    const CVector3<float> & vPoint, 
+    PHOENIX_API void RotateAroundPoint( const CVector3<float> & vVector,
+			    const CVector3<float> & vPoint,
 			    const CQuaternion & ref,
 			    CVector3<float> & result);
     ////////////////////
@@ -197,7 +192,7 @@ namespace Phoenix
    PHOENIX_API  void RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector);
     ////////////////////
     /// Returns a random value between min and max (included).
-    template <typename Type> 
+    template <typename Type>
     Type GetRandom( Type min, Type max )
     {
       Type val = max - min ;
@@ -205,11 +200,11 @@ namespace Phoenix
 	return min;
       return  min + (Type)( val *(rand() / (RAND_MAX+1.0f)));
     }
-    
+
     ////////////////////
     /// Converts Quaternion qQuat into rotation axis vAxis and
     /// and angle fAngle. vAxis is not normalized, ie. ||vAxis|| != 1.0f
-    PHOENIX_API void QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat, 
+    PHOENIX_API void QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
 					   CVector3<float> &vAxis,
 					   float &fAngle );
     ////////////////////
@@ -235,7 +230,7 @@ namespace Phoenix
     /// \param fInterpolation between 0.0f (qFrom) and 1.0f (qTo).
     /// \param result Resulting quaternion.
     PHOENIX_API void Slerp(CQuaternion qFrom, CQuaternion qTo, float fInterpolation, CQuaternion & result) ;
-    
+
     ////////////////////
     /// Inverses matrix.
     /// 2x2 matrix inverse using Gauss-Jordan algorithm with row pivoting.
@@ -251,7 +246,7 @@ namespace Phoenix
     /// \param mInverse Matrix where inverted matrix will be stored.
     /// \returns zero, if matrix is invertible and assigns mInverse as the inverted matrix
     ///		 non-zero if matrix is not invertible. mInverse in this case is undefined.
-    PHOENIX_API int InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInverse);    
+    PHOENIX_API int InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInverse);
     ////////////////////
     /// Inverses matrix.
     /// 4x4 matrix inverse using Gauss-Jordan algorithm with row pivoting.
@@ -276,7 +271,7 @@ namespace Phoenix
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 template <class TRIANGLE_TYPE>
-void 
+void
 Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
 {
 
@@ -307,11 +302,11 @@ Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
   // for each triangle do
   for( size_t nTri=0; nTri < vecTriangles.size(); nTri++)
   {
-    
+
     v1 = vecTriangles[nTri].GetVertex(0).GetPosition();
     v2 = vecTriangles[nTri].GetVertex(1).GetPosition();
     v3 = vecTriangles[nTri].GetVertex(2).GetPosition();
-    
+
     w1 = vecTriangles[nTri].GetVertex(0).GetTextureCoordinates();
     w2 = vecTriangles[nTri].GetVertex(1).GetTextureCoordinates();
     w3 = vecTriangles[nTri].GetVertex(2).GetTextureCoordinates();
@@ -322,21 +317,21 @@ Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
     float y2 = v3[1] - v1[1];
     float z1 = v2[2] - v1[2];
     float z2 = v3[2] - v1[2];
-        
+
     float s1 = w2[0] - w1[0];
     float s2 = w3[0] - w1[0];
     float t1 = w2[1] - w1[1];
     float t2 = w3[1] - w1[1];
-        
+
     float r = 1.0f / (s1 * t2 - s2 * t1);
     vSdir[0] = (t2 * x1 - t1 * x2) * r;
     vSdir[1] = (t2 * y1 - t1 * y2) * r;
     vSdir[2] = (t2 * z1 - t1 * z2) * r;
-    
+
     vTdir[0] = (s1 * x2 - s2 * x1) * r;
     vTdir[1] = (s1 * y2 - s2 * y1) * r;
     vTdir[2] = (s1 * z2 - s2 * z1) * r;
-    
+
     aTangents[nTri*3]   += vSdir;
     aTangents[nTri*3+1] += vSdir;
     aTangents[nTri*3+2] += vSdir;
@@ -352,10 +347,10 @@ Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
   {
     for( size_t nVert = 0; nVert < 3; nVert++ )
     {
-      
+
       v1 = vecTriangles[nTri].GetVertex(nVert).GetNormal();
       v2 = aTangents[(nTri*3)+nVert];
-      
+
       // Gram-Schmidt orthogonalize
       vTmp2 = v2 - (v1 * (v1.Dot(v2)));
       vTmp2.Normalize();
@@ -363,7 +358,7 @@ Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
       vTangent[0] = vTmp2[0];
       vTangent[1] = vTmp2[1];
       vTangent[2] = vTmp2[2];
-      
+
       // Calculate handedness
       vTmp = aTangents2[nTri*3+nVert];
       vTangent[3] = v1.Cross(v2).Dot(vTmp) < 0.0f ? -1.0f : 1.0f;

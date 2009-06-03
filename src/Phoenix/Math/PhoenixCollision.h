@@ -3,11 +3,13 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVolume.h"
 #include "PhoenixAPI.h"
+#include "PhoenixMathGeometry.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Collision
   {
+
     ////////////////////
     /// Return values for line segment and plane intersections.
     enum LINESEGM_PLANE_INTERSECTION
@@ -17,10 +19,10 @@ namespace Phoenix
 	LINE_IN_PLANE,
 	POINT_IN_PLANE
       };
-    
+
     ////////////////////
     /// Returns values for SphereIntersectsSphere( ... ) with velocities.
-    enum S2S_COLLISION_TYPE 
+    enum S2S_COLLISION_TYPE
       {
 	S2S_NEVER = 0,
 	S2S_SOON = 1,
@@ -72,13 +74,13 @@ namespace Phoenix
 					 Phoenix::Math::CVector3<float> *pvIntersection0,
 					 Phoenix::Math::CVector3<float> *pvIntersection1,
 					 const Phoenix::Volume::CSphere &Sphere);
-    
+
     ////////////////////
     /// Is given point inside triangle.
     /// \param vPoint Point to be checked.
     /// \param aVertices Corner vertices of triangle.
     /// \return true if is, false otherwise.
-    PHOENIX_API bool PointInsideTriangle( const Phoenix::Math::CVector3<float> &vPoint, 
+    PHOENIX_API bool PointInsideTriangle( const Phoenix::Math::CVector3<float> &vPoint,
 					  const Phoenix::Math::CVector3<float> & vVertex0,
 					  const Phoenix::Math::CVector3<float> & vVertex1,
 					  const Phoenix::Math::CVector3<float> & vVertex2 );
@@ -111,16 +113,16 @@ namespace Phoenix
 					    Phoenix::Math::CVector3<float> &vPointOfIntersection );
 
     PHOENIX_API  float LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1 );
-    
+
 
     ////////////////////
     /// Returns the floating-point distance from point to a plane.
     /// \param vPoint Point of origin.
     /// \param plane Plane object.
     /// \returns Distance to plane - value 0.0f is in plane.
-    PHOENIX_API float PointDistanceFromPlane( const Phoenix::Math::CVector3<float> &vPoint, 
+    PHOENIX_API float PointDistanceFromPlane( const Phoenix::Math::CVector3<float> &vPoint,
 					      const Phoenix::Math::CPlane &plane );
-    
+
     ////////////////////
     /// Find closest point on ray to given point.
     /// \param vPoint Point in space.
@@ -139,7 +141,7 @@ namespace Phoenix
 					 const Phoenix::Math::CLine &line,
 					 Phoenix::Math::CVector3<float> & vClosestPoint);
 
-    
+
     ////////////////////
     /// Find closest point on line to given point.
     /// \param vPoint Point in space.
@@ -206,25 +208,25 @@ namespace Phoenix
     /// \returns <0 If sphere is completely on negative half-side of plane.
     /// \returns 0 If sphere intersects plane
     /// \returns >1 If sphere is completely on positive half-side of plane.
-    PHOENIX_API int SphereIntersectsPlane( const Phoenix::Math::CPlane &plane, 
-					   const Phoenix::Volume::CSphere &sphere, 
-					   float &fCenterDistance); 
+    PHOENIX_API int SphereIntersectsPlane( const Phoenix::Math::CPlane &plane,
+					   const Phoenix::Volume::CSphere &sphere,
+					   float &fCenterDistance);
     ////////////////////
     /// Checks does sphere intersect axis-aligned cube.
     /// \param sphere A sphere
     /// \param aaCube A cube
     /// \returns Zero if sphere and cube do not intersect.
     /// \returns Non-zero if sphere and cube intersect.
-    PHOENIX_API int SphereIntersectsAACube( const Phoenix::Volume::CSphere &sphere,  
+    PHOENIX_API int SphereIntersectsAACube( const Phoenix::Volume::CSphere &sphere,
 					    const Phoenix::Volume::CAxisAlignedCube &aaCube);
-    
+
     ////////////////////
     /// Checks do two spheres intersect.
     /// \param sphereOne First sphere
     /// \param sphereTwo Second sphere
     /// \returns Zero if spheres do not intersect.
     /// \returns Non-zero if spheres intersect.
-    PHOENIX_API int SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne, 
+    PHOENIX_API int SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphereOne,
 					    const Phoenix::Volume::CSphere &sphereTwo );
 
     ////////////////////
@@ -241,7 +243,7 @@ namespace Phoenix
     /// \param capsule Capsule object.
     /// \returns false on non-intersection.
     /// \returns true on intersection.
-    PHOENIX_API bool OBBIntersectsCapsule( const Phoenix::Volume::COrientedBox & box, 
+    PHOENIX_API bool OBBIntersectsCapsule( const Phoenix::Volume::COrientedBox & box,
 					   const Phoenix::Volume::CCapsule & capsule );
     ////////////////////
     /// Checks do two moving spheres intersect.
@@ -260,25 +262,25 @@ namespace Phoenix
 							     const Phoenix::Math::CVector3<float> &vVelocityTwo,
 							     Phoenix::Math::CVector3<float> & vIntersectionPoint,
 							     float &fRelativeTime );
-    
+
     ////////////////////
     /// Checks is point within sphere.
     /// \param sphere sphere to be checked.
     /// \param vPoint 3-Vector representing position in space.
     /// \returns non-zero on intersectsion.
     /// \returns zero on non-intersection.
-    PHOENIX_API int PointInsideSphere( const Phoenix::Volume::CSphere & sphere,  
+    PHOENIX_API int PointInsideSphere( const Phoenix::Volume::CSphere & sphere,
 				       const CVector3<float> & vPoint );
 
-    
+
     ////////////////////
     /// Calculates which triangles are completely or partially inside decal volume.
     /// \param decalVolume Volume used in evaluation
     /// \param vertices VertexDescriptor of vertex data.
     /// \param indices Triangle indices
     /// \param lstTriangleFans List, where lists of vertex coordinates are stored for final mesh.
-    PHOENIX_API void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume, 
-					 const Phoenix::Graphics::CVertexDescriptor & vertices, 
+    PHOENIX_API void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume,
+					 const Phoenix::Graphics::CVertexDescriptor & vertices,
 					 const Phoenix::Graphics::CIndexArray & indices,
 					 std::list< std::list< Phoenix::Math::CVector3<float> > > & lstTriangleFans );
     ////////////////////
@@ -288,9 +290,9 @@ namespace Phoenix
     /// \param normals VertexDescriptor of vertex normal data.
     /// \param indices Triangle indices
     /// \param lstTriangleFans List, where lists of vertices are stored for final mesh.
-    PHOENIX_API void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume, 
-					 const Phoenix::Graphics::CVertexDescriptor & vertices, 
-					 const Phoenix::Graphics::CVertexDescriptor & normals, 
+    PHOENIX_API void CalculateDecalMesh( const Phoenix::Volume::CDecalVolume & decalVolume,
+					 const Phoenix::Graphics::CVertexDescriptor & vertices,
+					 const Phoenix::Graphics::CVertexDescriptor & normals,
 					 const Phoenix::Graphics::CIndexArray & indices,
 					 std::list< std::list< Phoenix::Spatial::CVertex > > & lstTriangleFans );
 
@@ -299,7 +301,7 @@ namespace Phoenix
     /// \param plane Clipping plane.
     /// \param lstVertices List of vertices (vector3s).
     PHOENIX_API void ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Math::CVector3<float> > & lstVertices );
-    
+
     ////////////////////
     /// Clips given polygon with plane. New vertices replace previous ones.
     /// \param plane Clipping plane.
@@ -337,28 +339,33 @@ namespace Phoenix
     ////////////////////
     /// Checks intersection with ray and OBB.
     /// \param ray Ray object.
-    /// \param obBox The oriented box which is checked 
-    /// \param pfValue optional pointer to float variable that receives distance from  
+    /// \param obBox The oriented box which is checked
+    /// \param pfValue optional pointer to float variable that receives distance from
     ///                ray origin to closest intersection point. By default, value is NULL.
-    /// \returns false if ray does not intersect OBB. pfValue is undetermined. 
-    ///          true if ray intersects OBB. pfValue is set to closest distance. 
+    /// \returns false if ray does not intersect OBB. pfValue is undetermined.
+    ///          true if ray intersects OBB. pfValue is set to closest distance.
     PHOENIX_API bool RayIntersectsOBB( const Phoenix::Math::CRay &ray, const Phoenix::Volume::COrientedBox &obBox,  float *pfValue = NULL );
 
     ////////////////////
     /// Checks intersection with ray and AABB.
     /// \param ray Ray object.
-    /// \param aaBox The oriented box which is checked 
-    /// \param pfValue optional pointer to float variable that receives distance from  
+    /// \param aaBox The oriented box which is checked
+    /// \param pfValue optional pointer to float variable that receives distance from
     ///                ray origin to closest intersection point. By default, value is NULL.
-    /// \returns false if ray does not intersect AABB. pfValue is undetermined. 
-    ///          true if ray intersects AABB. pfValue is set to closest distance. 
+    /// \returns false if ray does not intersect AABB. pfValue is undetermined.
+    ///          true if ray intersects AABB. pfValue is set to closest distance.
     PHOENIX_API bool RayIntersectsAABB( const Phoenix::Math::CRay &ray, const Phoenix::Volume::CAxisAlignedBox &aaBox,  float *pfValue = NULL );
-      
-    /* char SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone ); */
+    ////////////////////
+    /// Checks intersection between sphere and cone.
+    /// \param sphere Sphere object
+    /// \param cone Cone object.
+    /// \returns true if two objects intersect
+    ///          fals otherwise.
+    PHOENIX_API bool SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone );
 
     /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
     /*     //char SphereIntersectsOrientedBox( const CSphere &sphere, const COrientedBox &obBox); */
-    
+
     /*     //////////////////// */
     /*     /// The principal method for determining the sphere-polygon intersection. */
     /*     /// \param sphere Sphere which is tested. */
@@ -370,17 +377,17 @@ namespace Phoenix
     /* 				  float *pVertices,   */
     /* 				  unsigned int nNumVertices,  */
     /* 				  CVector3<float> &vOffsetMovement);   */
-    
+
     /*     int  SphereIntersectsPolygonEdges( Phoenix::Volume::CSphere &sphere,  */
     /* 				       float * pVertices,  */
     /* 				       unsigned int nNumVertices);   */
-    
+
 
     /*     int RayIntersectsOBB( const CVector3<float> &vRayStart,  */
     /* 			  const CVector3<float> &vRayDir, */
     /* 			  const Phoenix::Volume::COrientedBox &obBox, */
     /* 			  float *pfValue); */
-    
+
     /*     // Generic intersection enum */
     /*     /\* enum INTERSECTION_TYPE *\/ */
     /*     /\*     { *\/ */
@@ -388,30 +395,30 @@ namespace Phoenix
     /* /\*       INSIDE = 1, *\/ */
     /* /\*       OUTSIDE = 2 *\/ */
     /* /\*     }; *\/ */
-    
+
 
     /*     /\*CVector3<float> LinePlaneIntersectionPoint( const CPlane &plane,  */
     /*       const CVector3<float> &vPoint1,  */
     /*       const CVector3<float> &vPoint2);*\/ */
-    
+
     /*     //INTERSECTION_TYPE  SphereIntersectsPolytone( const Phoenix::Volume::CSphere &Sphere, const Phoenix::Volume::CPolytope &kDop ); */
     /*     //INTERSECTION_TYPE  OrientedBoxIntersectsPolytope( const Phoenix::Volume::COrientedBox &obBox, const Phoenix::Volume::CPolytope &kDop ); */
 
-    
-    
+
+
     /*     //CVector3<float> ClosestPointOnLine( const CVector3<float> &vPoint, */
     /*     //const CVector3<float> &vLinePoint1, */
     /*     //const CVector3<float> &vLinePoint2 ); */
 
-    
 
-    
-    
+
+
+
 
     /*     // Returns true if point is inside the volume limited by the planes in kDop. */
     /*     //  char	PointWithinKDOP( CVector3<float> &vPoint, Phoenix::Volume::CPolytope &kDop); */
-    
-    
+
+
 
     /*     enum PLANE_INTERSECTION_TYPE */
     /*     { */
@@ -450,7 +457,7 @@ namespace Phoenix
     /* /\*     class CCamera; *\/ */
     /* /\*     namespace Billboard *\/ */
     /* /\*     { *\/ */
-    
+
     /* /\*       void AlignToCameraPlane( CVector3<float> *vX,  *\/ */
     /* /\* 			       CVector3<float> *vY,  *\/ */
     /* /\* 			       CCamera *pCamera, *\/ */
@@ -462,8 +469,8 @@ namespace Phoenix
   } // namespace Collision
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline int 
-Phoenix::Collision::PointInsideSphere( const Phoenix::Volume::CSphere & sphere, 
+inline int
+Phoenix::Collision::PointInsideSphere( const Phoenix::Volume::CSphere & sphere,
 				       const Phoenix::Math::CVector3<float> & vPoint )
 {
   return ( (sphere.GetPosition() - vPoint).LengthSqr() < sphere.GetRadiusSqr());
