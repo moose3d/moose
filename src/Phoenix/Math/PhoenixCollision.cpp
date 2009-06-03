@@ -21,20 +21,20 @@ Phoenix::Collision::LineSegmentIntersectsPlane( const CPlane &plane,
 						const CLineSegment &line,
 						CVector3<float> &vCollisionPoint )
 {
-  
-  float fDistanceOne = 0.0f, fDistanceTwo = 0.0f;
+
+	float fDistanceOne = 0.0f, fDistanceTwo = 0.0f;
   CVector3<float> vNormal;
   vNormal.Set( const_cast<CPlane &>(plane).GetArray());
-  
+
   fDistanceOne = vNormal.Dot( line.GetStart() ) + plane[3];
   fDistanceTwo = vNormal.Dot( line.GetEnd() ) + plane[3];
-  
+
   ////////////////////
   // if other distance is positive and other negative, we have collision.
   // (which means that the endpoints are located in both sides of the plane)
   // Or other line point is in the plane. (distance == 0.0 )
   float fDistanceSqr = fDistanceOne * fDistanceTwo;
-  
+
   if ( fDistanceSqr <= 0.0f )
   {
     CVector3<float> vDir = line.GetEnd()-line.GetStart();
@@ -51,7 +51,7 @@ Phoenix::Collision::LineSegmentIntersectsPlane( const CPlane &plane,
     }
     else
     {
-      float fDist = fNumerator / fDenominator;    
+      float fDist = fNumerator / fDenominator;
       vCollisionPoint = line.GetStart() + (fDist * vDir);
     }
     return POINT_IN_PLANE;
@@ -73,12 +73,12 @@ Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
 {
   CVector3<float> vNormal;
   vNormal.Set( const_cast<CPlane &>(plane).GetArray() );
-  // The negated distance of the vPoint1 from the plane 
+  // The negated distance of the vPoint1 from the plane
   float fNumerator = -(vNormal.Dot(ray.GetPosition()) + plane[3]);
   // The vNormal · vDir = cos( angle( vNormal, vDir ))
   float fDenominator = vNormal.Dot(ray.GetDirection());
-  
-  // Rounding errors are nasty, so let's take them into account 
+
+  // Rounding errors are nasty, so let's take them into account
   // while we make sure we don't divide by zero.
   if ( fabs(fDenominator) <= 0.0001f )
   {
@@ -87,17 +87,17 @@ Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
   }
   // The distance along vDir towards vPoint2.
   float fDist = fNumerator / fDenominator;
-  
+
   // return the point of intersection
   vCollisionPoint =  ray.GetPosition() + (fDist * ray.GetDirection());
-  
+
   return 1;
 }
 /////////////////////////////////////////////////////////////////
-int 
+int
 Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
-					 CVector3<float> *pvIntersection0, 
-					 CVector3<float> *pvIntersection1, 
+					 CVector3<float> *pvIntersection0,
+					 CVector3<float> *pvIntersection1,
 					 const CSphere &Sphere)
 {
 
@@ -111,11 +111,11 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
   {
     return 0;
   }
-  
+
   float fMsqr = fLsqr - fS*fS;
-  
+
   if ( fMsqr > fRsqr ) return 0;
-  
+
   // are there one or two intersection points
   float fQ = sqrtf( fRsqr - fMsqr);
   iIntersects =  TOO_CLOSE_TO_ZERO(fQ) ? 1 : 2;
@@ -125,7 +125,7 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
   {
     float fQ = sqrtf( fRsqr - fMsqr);
 
-    if ( fLsqr > fRsqr && iIntersects == 2 ) 
+    if ( fLsqr > fRsqr && iIntersects == 2 )
     {
       float fTfirst = fS - fQ;
       float fTsecond = fS + fQ;
@@ -153,25 +153,25 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
 	*pvIntersection1 = vPoint;
       }
     }
-    
+
   }
   return iIntersects;
   //   int iIntersects = 0;
 //   CVector3<float> vSphereToRayStart = ray.GetPosition() - Sphere.GetPosition();
-  
+
 //   // Check does it intersect
 //   float fA = ray.GetDirection().Dot(ray.GetDirection());
 //   float fB = 2.0f * ( ray.GetDirection().Dot(vSphereToRayStart));
-//   float fC = Sphere.GetPosition().Dot(Sphere.GetPosition()) + 
-//              line.GetStart().Dot(line.GetStart()) - 
-//              (2.0f *(Sphere.GetPosition().Dot(line.GetStart()))) - 
+//   float fC = Sphere.GetPosition().Dot(Sphere.GetPosition()) +
+//              line.GetStart().Dot(line.GetStart()) -
+//              (2.0f *(Sphere.GetPosition().Dot(line.GetStart()))) -
 //              Sphere.GetRadiusSqr();
 
 
 //   float fIntersection = fB * fB - 4.0f * fA * fC;
 //   float fMu = 0.0f;
 //   // No intersection
-//   if ( fIntersection < -0.001f ) 
+//   if ( fIntersection < -0.001f )
 //   {
 //     iIntersects = 0;
 //   } // Intersects in one point
@@ -181,22 +181,22 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
 //     if ( pvIntersection0 != NULL ) *pvIntersection0 = line.GetStart() + fMu * ray.GetDirection();
 //     if ( pvIntersection1 != NULL ) *pvIntersection1 = line.GetStart() + fMu * ray.GetDirection();
 //     iIntersects = 1;
-//   } 
+//   }
 //   else  // Intersects in two points
 //   {
 //     CVector3<float> vInt0, vInt1;
 
 //     fMu = (-fB - sqrt(fIntersection)) / (2.0f * fA );
 //     vInt0 = line.GetStart() + fMu * ray.GetDirection();
-    
-//     fMu = (-fB + sqrt(fIntersection)) / (2.0f * fA );
-//     vInt1 = line.GetStart() + fMu * ray.GetDirection(); 
 
-//     if ( pvIntersection0 != NULL ) 
+//     fMu = (-fB + sqrt(fIntersection)) / (2.0f * fA );
+//     vInt1 = line.GetStart() + fMu * ray.GetDirection();
+
+//     if ( pvIntersection0 != NULL )
 //     {
 //       *pvIntersection0 = vInt0;
 //     }
-//     if ( pvIntersection1 != NULL ) 
+//     if ( pvIntersection1 != NULL )
 //     {
 //       *pvIntersection1 = vInt1;
 //     }
@@ -207,8 +207,7 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
 }
 /////////////////////////////////////////////////////////////////
 bool
-Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint, 
-					 const CVector3<float> & vVertex0,
+Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint, const CVector3<float> & vVertex0,
 					 const CVector3<float> & vVertex1,
 					 const CVector3<float> & vVertex2 )
 {
@@ -224,22 +223,22 @@ Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint,
   vVect1 = vVertex1 - vPoint;
   vVect2 = vVertex2 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
-  
+
   vVect1 = vVertex2 - vPoint;
   vVect2 = vVertex0 - vPoint;
   fAngle += AngleBetweenVectors( vVect1, vVect2);
-  
+
   return (fabs(fAngle) >= (0.99f * Math::PImul2));
 }
 /////////////////////////////////////////////////////////////////
-int 
+int
 Phoenix::Collision::LineSegmentIntersectsTriangle( const Phoenix::Math::CLineSegment & line,
 						   const Phoenix::Math::CVector3<float> & vVertex0,
 						   const Phoenix::Math::CVector3<float> & vVertex1,
 						   const Phoenix::Math::CVector3<float> & vVertex2,
 						   Phoenix::Math::CVector3<float> &vPointOfIntersection )
 {
-  
+
   CPlane triPlane;
   //CVector3<float> vPoint;
   // Calculate triangle plane and check does it intersect the plane.
@@ -263,8 +262,8 @@ Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
   CPlane triPlane;
   // Calculate triangle plane and check does it intersect the plane.
   triPlane.Calculate( (vVertex1-vVertex0).Cross( vVertex2-vVertex0), vVertex0);
-  
-  
+
+
   if ( RayIntersectsPlane( triPlane, ray, vPointOfIntersection) )
   {
     return PointInsideTriangle( vPointOfIntersection, vVertex0, vVertex1, vVertex2 );
@@ -272,17 +271,17 @@ Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
   return false;
 }
 /////////////////////////////////////////////////////////////////
-float 
+float
 Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1 )
 {
   // Direction is calculated from end points.
   CVector3<float> vDir0 = line0.GetDirection();
   CVector3<float> vDir1 = line1.GetDirection();
-    
+
   float fV0DotV1      = vDir0.Dot( vDir1 );
   float fV0DotV0      = vDir0.Dot( vDir0 );
   float fV1DotV1      = vDir1.Dot( vDir1 );
-  
+
   float fDenominator = (fV0DotV1*fV0DotV1) - (fV0DotV0*fV1DotV1);
 
   // if lines are parallel (enough)
@@ -295,16 +294,16 @@ Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math
     CVector3<float> v01 = line1.GetEnd() - line0.GetStart();
     CVector3<float> v11 = line1.GetEnd() - line0.GetEnd();
 
-    
+
     float f00sign = v00.Dot(vDir0);
     float f10sign = v10.Dot(vDir0);
     float f01sign = v01.Dot(vDir0);
     float f11sign = v11.Dot(vDir0);
-    
+
     if ( (f00sign < 0.0f && f10sign < 0.0f && f01sign < 0.0f && f11sign < 0.0f) ||
 	 (f00sign > 0.0f && f10sign > 0.0f && f01sign > 0.0f && f11sign > 0.0f) )
     {
-      // lines do not overlap on direction vector, minimal distance is 
+      // lines do not overlap on direction vector, minimal distance is
       // mnin distance between start and end point combinations.
       fDistSqr = v00.LengthSqr();
       float fTmp = v10.LengthSqr();
@@ -315,14 +314,14 @@ Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math
 
       fTmp = v11.LengthSqr();
       if ( fTmp < fDistSqr ) fDistSqr = fTmp;
-    } 
+    }
     else
     {
       vDir0.Normalize();
       f00sign = v00.Dot(vDir0);
 
       // lines overlap on direction vector, closest point on ray will do
-      // vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );      
+      // vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );
       fDistSqr = (line1.GetStart() - (line0.GetStart()+(vDir0*f00sign))).LengthSqr();
     }
     return fDistSqr;
@@ -334,16 +333,16 @@ Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math
     CVector3<float> startDiff = line1.GetStart() - line0.GetStart();
     float fStartDiffDotV0 = startDiff.Dot( vDir0 );
     float fStartDiffDotV1 = startDiff.Dot( vDir1 );
-    
+
     float fT0 = fMult * (-fV1DotV1 * fStartDiffDotV0 + fV0DotV1*fStartDiffDotV1);
     float fT1 = fMult * (-fV0DotV1 * fStartDiffDotV0 + fV0DotV0*fStartDiffDotV1);
-    
-    return ( (line0.GetStart() + fT0*vDir0) - 
+
+    return ( (line0.GetStart() + fT0*vDir0) -
 	     (line1.GetStart() + fT1*vDir1)   ).LengthSqr();
   }
 }
 /////////////////////////////////////////////////////////////////
-float 
+float
 Phoenix::Collision::PointDistanceFromPlane( const CVector3<float> &vPoint, const CPlane & plane )
 {
   CVector3<float> vNormal;
@@ -380,7 +379,7 @@ Phoenix::Collision::ClosestPointOnLineSegment( const CVector3<float> &vPoint, co
 
   if      ( fDot <= 0.0f    ) { vClosestPoint = line.GetStart();  }               // return the starting point
   else if ( fDot >= fLength ) { vClosestPoint = line.GetEnd();    }               // return the end point
-  else                        { vClosestPoint = line.GetStart() + (line.GetDirection()*fDot); } // return the point in the middle 
+  else                        { vClosestPoint = line.GetStart() + (line.GetDirection()*fDot); } // return the point in the middle
 }
 
 /////////////////////////////////////////////////////////////////
@@ -388,7 +387,7 @@ inline int AxisTestX( const COrientedBox &box,
 		      const CVector3<float> &vEdge,
 		      float fAbsY,
 		      float fAbsZ,
-		      const CVector3<float> &vOne, 
+		      const CVector3<float> &vOne,
 		      const CVector3<float> &vThree )
 {
   float p0 =  vEdge[1]*vOne[2]   -  vEdge[2]*vOne[1];
@@ -414,7 +413,7 @@ inline int AxisTestY( const COrientedBox &box,
 		      const CVector3<float> &vEdge,
 		      float fAbsX,
 		      float fAbsZ,
-		      const CVector3<float> &vOne, 
+		      const CVector3<float> &vOne,
 		      const CVector3<float> &vThree )
 {
   float p0 = vEdge[2]*vOne[0]   -  vEdge[0]*vOne[2];
@@ -432,7 +431,7 @@ inline int AxisTestY( const COrientedBox &box,
     fMin = p2;
     fMax = p0;
   }
-  
+
   if ( fMin > fR || fMax < -fR) return 0;
   return 1;
 
@@ -442,15 +441,15 @@ inline int AxisTestZ( const COrientedBox &box,
 		      const CVector3<float> &vEdge,
 		      float fAbsX,
 		      float fAbsY,
-		      const CVector3<float> &vOne, 
+		      const CVector3<float> &vOne,
 		      const CVector3<float> &vThree )
 {
 
   float p0 = vEdge[0]*vOne[1] - vEdge[1]*vOne[0];
-  float p2 = vEdge[0]*vThree[1] - vEdge[1]*vThree[0]; 
+  float p2 = vEdge[0]*vThree[1] - vEdge[1]*vThree[0];
   float fR = fAbsX * box.GetHalfWidth() + fAbsY * box.GetHalfHeight();
   float fMin, fMax;
-  
+
   if ( p0 < p2 )
   {
     fMin = p0;
@@ -461,7 +460,7 @@ inline int AxisTestZ( const COrientedBox &box,
     fMin = p2;
     fMax = p0;
   }
-  
+
   if ( fMin > fR || fMax < -fR) return 0;
   return 1;
 
@@ -517,7 +516,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
 					   CVector3<float> vVertex2,
 					   const COrientedBox &box )
 {
-  
+
   CVector3<float> vVertex0_Orig = vVertex0;
   CVector3<float> vVertex1_Orig = vVertex1;
   CVector3<float> vVertex2_Orig = vVertex2;
@@ -531,16 +530,16 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   using std::endl;
   // Create rotation for oriented box.
   CMatrix4x4<float> mRotation( box.GetRightVector()[0],   box.GetUpVector()[0],  box.GetForwardVector()[0],  0,
-			       box.GetRightVector()[1],   box.GetUpVector()[1],  box.GetForwardVector()[1],  0,         
+			       box.GetRightVector()[1],   box.GetUpVector()[1],  box.GetForwardVector()[1],  0,
 			       box.GetRightVector()[2],   box.GetUpVector()[2],  box.GetForwardVector()[2],  0,
 			       0,                         0,                     0,                          1 );
   // Inverse rotation; transpose is sufficient for rotation matrices.
   mRotation.Transpose();
-  
+
   Rotate( CVector3<float>(vVertex0), mRotation, vVertex0 );
   Rotate( CVector3<float>(vVertex1), mRotation, vVertex1 );
   Rotate( CVector3<float>(vVertex2), mRotation, vVertex2 );
-  
+
   // Calculate triangle edges.
   CVector3<float> vEdge0 = vVertex1 - vVertex0;
   CVector3<float> vEdge1 = vVertex2 - vVertex1;
@@ -551,7 +550,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   float fAx = fabsf( vEdge0[0] );
   float fAy = fabsf( vEdge0[2] );
   float fAz = fabsf( vEdge0[1] );
-  
+
   if ( !AxisTestX( box, vEdge0, fAy, fAz, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestY( box, vEdge0, fAy, fAx, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge0, fAz, fAx, vVertex0, vVertex2) )  return 0;
@@ -560,7 +559,7 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAy = fabsf( vEdge1[2] );
   fAz = fabsf( vEdge1[1] );
 
-  if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) )  return 0;  
+  if ( !AxisTestX( box, vEdge1, fAy, fAz, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestY( box, vEdge1, fAy, fAx, vVertex0, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge1, fAz, fAx, vVertex0, vVertex2) )  return 0;
 
@@ -568,10 +567,10 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   fAy = fabsf( vEdge2[2] );
   fAz = fabsf( vEdge2[1] );
 
-  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) )  return 0; 
+  if ( !AxisTestX( box, vEdge2, fAy, fAz, vVertex1, vVertex2) )  return 0;
   if ( !AxisTestY( box, vEdge2, fAy, fAx, vVertex1, vVertex2) )  return 0;
   if ( !AxisTestZ( box, vEdge2, fAz, fAx, vVertex1, vVertex2) )  return 0;
-  
+
   float fMin, fMax;
   // Test X-direction triangle AABB bs box
   FindMinMax( vVertex0[0], vVertex1[0], vVertex2[0], fMin, fMax);
@@ -600,11 +599,11 @@ Phoenix::Collision::TriangleIntersectsOBB( CVector3<float> vVertex0,
   CPlane plane;
   vVertex1 = (vVertex1_Orig - vVertex0_Orig).Cross(vVertex2_Orig-vVertex1_Orig);
   plane.Calculate( vVertex1, vVertex0_Orig);
-  if ( !PlaneIntersectsBox( plane, box )) 
+  if ( !PlaneIntersectsBox( plane, box ))
   {
     return 0;
   }
-  
+
   return 1;
 }
 /////////////////////////////////////////////////////////////////
@@ -656,12 +655,12 @@ Phoenix::Collision::PlaneIntersectsBox( const CPlane &plane,
   return ( fDistance <= fValue);
 }
 /////////////////////////////////////////////////////////////////
-int   
+int
 Phoenix::Collision::PointIntersectsOBB( const CVector3<float> &vPoint,
 					const Phoenix::Volume::COrientedBox &obBox )
 {
   // calculate vector from box center to point, and take scalar projection
-  // for every box axis. If absolute value of all projections are smaller than 
+  // for every box axis. If absolute value of all projections are smaller than
   // respective box dimensions, point is inside.
   CVector3<float> vPos = vPoint - obBox.GetPosition();
   if ( fabs(vPos.Dot(obBox.GetForwardVector())) > obBox.GetHalfLength()) return 0;
@@ -670,32 +669,32 @@ Phoenix::Collision::PointIntersectsOBB( const CVector3<float> &vPoint,
   return 1;
 }
 /////////////////////////////////////////////////////////////////
-int  
+int
 Phoenix::Collision::CollisionPoint3Planes( const Phoenix::Math::CPlane & plane1,
 					   const Phoenix::Math::CPlane & plane2,
 					   const Phoenix::Math::CPlane & plane3,
 					   Phoenix::Math::CVector3<float> &vCollisionPoint)
 {
-  CMatrix3x3<float> mMatrix( plane1[0], plane1[1], plane1[2], 
-			     plane2[0], plane2[1], plane2[2], 
+  CMatrix3x3<float> mMatrix( plane1[0], plane1[1], plane1[2],
+			     plane2[0], plane2[1], plane2[2],
 			     plane3[0], plane3[1], plane3[2] );
-  
+
   CMatrix3x3<float> mInverse;
   CVector3<float> vVect(-plane1[3], -plane2[3], -plane3[3]);
-  
+
   if ( InverseMatrix( mMatrix, mInverse ) )
   {
     return 1;
   }
-  
+
   vCollisionPoint = mInverse * vVect;
 
   return 0;
 }
 /////////////////////////////////////////////////////////////////
-int 
-Phoenix::Collision::SphereIntersectsPlane( const Phoenix::Math::CPlane &plane, 
-					   const Phoenix::Volume::CSphere &sphere, 
+int
+Phoenix::Collision::SphereIntersectsPlane( const Phoenix::Math::CPlane &plane,
+					   const Phoenix::Volume::CSphere &sphere,
 					   float &fCenterDistance)
 {
 
@@ -707,7 +706,7 @@ Phoenix::Collision::SphereIntersectsPlane( const Phoenix::Math::CPlane &plane,
   if ( fabs(fDistance) <= sphere.GetRadius())
   {
     return 0;
-  } // if not, check is it on positive half-side 
+  } // if not, check is it on positive half-side
   else if ( fDistance > sphere.GetRadius())
   {
     return 1;
@@ -717,7 +716,7 @@ Phoenix::Collision::SphereIntersectsPlane( const Phoenix::Math::CPlane &plane,
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere, 
+Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere,
 					    const CAxisAlignedCube &aaBox)
 {
   float fDistance = 0.0f;
@@ -732,7 +731,7 @@ Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere,
   {
     fTmp = fAxisCenter - fAxisMin;
     fDistance += ( fTmp * fTmp );
-  } 
+  }
   else if ( fAxisCenter > fAxisMax )
   {
     fTmp =  fAxisCenter - fAxisMax;
@@ -747,7 +746,7 @@ Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere,
   {
     fTmp = fAxisCenter - fAxisMin;
     fDistance += ( fTmp * fTmp );
-  } 
+  }
   else if ( fAxisCenter > fAxisMax )
   {
     fTmp =  fAxisCenter - fAxisMax;
@@ -762,7 +761,7 @@ Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere,
   {
     fTmp = fAxisCenter - fAxisMin;
     fDistance += ( fTmp * fTmp );
-  } 
+  }
   else if ( fAxisCenter > fAxisMax )
   {
     fTmp =  fAxisCenter - fAxisMax;
@@ -771,11 +770,11 @@ Phoenix::Collision::SphereIntersectsAACube( const CSphere &sphere,
   /////////////////////////////////////////////////////////////////
   // Actual test, if the sum of squared distances is less than the squared
   // radius, we have overlapping.
-  if ( fDistance > sphere.GetRadiusSqr()) 
+  if ( fDistance > sphere.GetRadiusSqr())
   {
     return 0;
   }
-  else 
+  else
   {
     return 1;
   }
@@ -796,13 +795,13 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
   return (vSepAxis.LengthSqr() < fSumOfRadii);
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Collision::SphereIntersectsCapsule( const Phoenix::Volume::CSphere & sphere, const Phoenix::Volume::CCapsule & capsule )
 {
   // Calculate closest point to sphere center on line segment of capsule
   CVector3<float> vPointOnSegment;
   ClosestPointOnLineSegment( sphere.GetPosition(), capsule, vPointOnSegment);
-  // get sum from squared radius of capsule and sphere 
+  // get sum from squared radius of capsule and sphere
   float fSumOfRadiiSqr = sphere.GetRadius() + capsule.GetRadius();
   fSumOfRadiiSqr = fSumOfRadiiSqr * fSumOfRadiiSqr;
   // compare it to squared distance from line segment point. if under sum of radii, we're intersecting.
@@ -820,7 +819,7 @@ Phoenix::Collision::OBBIntersectsCapsule( const Phoenix::Volume::COrientedBox & 
   float fEffRadius = 0.5f * ( fabsf((box.GetForwardVector()*box.GetLength()).Dot(vSegmentToBox)) +
 			      fabsf((box.GetRightVector()*box.GetWidth()).Dot(vSegmentToBox)) +
 			      fabsf((box.GetUpVector()*box.GetHeight()).Dot(vSegmentToBox)) );
-  
+
   return ( fDistanceSqr < (capsule.GetRadiusSqr() + (fEffRadius*fEffRadius)) );
 }
 /////////////////////////////////////////////////////////////////
@@ -834,11 +833,11 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
 {
   CVector3<float> vA = sphereOne.GetPosition() - sphereTwo.GetPosition();
   CVector3<float> vB = vVelocityOne - vVelocityTwo;
-  
+
   float fASqr = vA.Dot(vA);
   float fBSqr = vB.Dot(vB);
 
-  float fRadiusSumSqr = sphereOne.GetRadius() + sphereTwo.GetRadius(); 
+  float fRadiusSumSqr = sphereOne.GetRadius() + sphereTwo.GetRadius();
   fRadiusSumSqr *= fRadiusSumSqr;
 
   // Check are sphers colliding already
@@ -854,14 +853,14 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
 
   float fAdotB = vA.Dot(vB);
   float fAdotBSqr = fAdotB * fAdotB;
-  
+
   float fDSqr = fASqr - fAdotBSqr / fBSqr;
   // Check will they ever intersect?
-  if ( fDSqr > fRadiusSumSqr ) 
+  if ( fDSqr > fRadiusSumSqr )
   {
     return S2S_NEVER;
   }
-  
+
   // Calculate intersection point and relative time.
   fRelativeTime = (-fAdotB - sqrtf(fAdotBSqr - fBSqr *(fASqr - fRadiusSumSqr))) / fBSqr;
 
@@ -877,74 +876,74 @@ Phoenix::Collision::SphereIntersectsSphere( const Phoenix::Volume::CSphere &sphe
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume, 
-					const Phoenix::Graphics::CVertexDescriptor & vertices, 
+Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
+					const Phoenix::Graphics::CVertexDescriptor & vertices,
 					const Phoenix::Graphics::CIndexArray & indices,
 					std::list< std::list< Phoenix::Math::CVector3<float> > > & lstTriangleFans )
 {
   assert( indices.GetPrimitiveType() == PRIMITIVE_TRI_LIST );
   CVector3<float> vPoint0, vPoint1, vPoint2, vTriNormal;
-  
-  
+
+
   if ( indices.IsShortIndices())
   {
     unsigned short int index0,index1,index2;
-    // for each triangle 
+    // for each triangle
     for( size_t i=0;i<indices.GetNumIndices();i+=3)
     {
       // retrieve actual vertex coordinates
       index0 = indices.GetPointer<unsigned short int>()[i];
       index1 = indices.GetPointer<unsigned short int>()[i+1];
       index2 = indices.GetPointer<unsigned short int>()[i+2];
-      
+
       vPoint0.Set( &(vertices.GetPointer<float>()[index0*3]) );
       vPoint1.Set( &(vertices.GetPointer<float>()[index1*3]) );
       vPoint2.Set( &(vertices.GetPointer<float>()[index2*3]) );
-      
+
       std::list<Phoenix::Math::CPlane>::iterator it;
       // Check that triangle normal points same direction as decal volume's.
       if ( ((vPoint1-vPoint0).Cross(vPoint2-vPoint0)).Dot(decalVolume.GetNormalVector()) > 0.0f )
       {
 	std::list< CVector3<float> > lstVertices;
-	
+
 	lstVertices.push_back( vPoint0 );
 	lstVertices.push_back( vPoint1 );
 	lstVertices.push_back( vPoint2 );
-	
+
 	lstTriangleFans.push_back( lstVertices );
-	
+
       }
 
     } // for( size_t ...
-    
+
     // Do actual clipping against planes.
     std::list< std::list< Phoenix::Math::CVector3<float> > >::iterator fan_iterator;
 
 
-    for( fan_iterator  = lstTriangleFans.begin(); 
+    for( fan_iterator  = lstTriangleFans.begin();
 	 fan_iterator != lstTriangleFans.end();
 	 fan_iterator++)
     {
       std::vector<Phoenix::Math::CPlane>::const_iterator plane_it;
-      for( plane_it = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin(); 
-	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end(); 
+      for( plane_it = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin();
+	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end();
 	   plane_it++)
       {
 	ClipPolygon( *plane_it, *fan_iterator );
       }
     }
-    
+
   }
-  else 
+  else
   {
     assert( 0 && "NOt short indices." );
   }
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume, 
-					const Phoenix::Graphics::CVertexDescriptor & vertices, 
-					const Phoenix::Graphics::CVertexDescriptor & normals, 
+Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
+					const Phoenix::Graphics::CVertexDescriptor & vertices,
+					const Phoenix::Graphics::CVertexDescriptor & normals,
 					const Phoenix::Graphics::CIndexArray & indices,
 					std::list< std::list< Phoenix::Spatial::CVertex > > & lstTriangleFans )
 {
@@ -956,7 +955,7 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
   if ( indices.IsShortIndices())
   {
     unsigned short int index0,index1,index2;
-    // for each triangle 
+    // for each triangle
     for( size_t i=0;i<indices.GetNumIndices();i+=3)
     {
       // retrieve actual vertex coordinates
@@ -982,34 +981,34 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	   Dot(decalVolume.GetNormalVector()) > 0.0f )
       {
 	std::list< CVertex > lstVertices;
-	
+
 	lstVertices.push_back( vPoint0 );
 	lstVertices.push_back( vPoint1 );
 	lstVertices.push_back( vPoint2 );
-	
+
 	lstTriangleFans.push_back( lstVertices );
       }
 
     } // for( size_t ...
-    
+
     // Do actual clipping against planes.
     std::list< std::list< Phoenix::Spatial::CVertex > >::iterator fan_iterator;
     std::list< Phoenix::Spatial::CVertex >::iterator v_iterator;
-    
 
-    for( fan_iterator  = lstTriangleFans.begin(); 
+
+    for( fan_iterator  = lstTriangleFans.begin();
 	 fan_iterator != lstTriangleFans.end();
 	 fan_iterator++ )
     {
-      
+
       std::vector<Phoenix::Math::CPlane>::const_iterator plane_it;
-      for( plane_it  = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin(); 
-	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end(); 
+      for( plane_it  = const_cast<CDecalVolume &>(decalVolume).GetPlanes().begin();
+	   plane_it != const_cast<CDecalVolume &>(decalVolume).GetPlanes().end();
 	   plane_it++)
       {
 	ClipPolygon( *plane_it, *fan_iterator );
 	v_iterator = (*fan_iterator).begin();
-	
+
 	for( ; v_iterator != (*fan_iterator).end(); v_iterator++ )
 	{
 
@@ -1019,30 +1018,30 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
 	  float fS = (decalVolume.GetTangentVector().Dot( vDecalToVertex  ) / decalVolume.GetWidth()) + 0.5f;
 	  float fT = (decalVolume.GetBitangentVector().Dot( vDecalToVertex ) / decalVolume.GetHeight()) + 0.5f;
 	  (*v_iterator).SetTextureCoordinates( fS, fT );
-	  
+
 	} /// ...v_iterator
       } /// ...plane_iteartor
 
 
     } /// fan_iterator...
-    
+
     /// Remove empty fan lists from vector
-    fan_iterator = lstTriangleFans.begin(); 
+    fan_iterator = lstTriangleFans.begin();
     while( fan_iterator != lstTriangleFans.end() )
     {
-      if ( (*fan_iterator).empty() ) 
+      if ( (*fan_iterator).empty() )
 	fan_iterator = lstTriangleFans.erase(fan_iterator);
       else
 	++fan_iterator;
     }
   }
-  else 
+  else
   {
     assert( 0 && "NOt short indices." );
   }
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Math::CVector3<float> > & lstVertices )
 {
 
@@ -1050,24 +1049,24 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   const int NEG_SIDE =  -1;
 
   std::list< Phoenix::Math::CVector3<float> > lstVerticesNew;
-  
+
 
   if ( lstVertices.size() < 3 ) return;
-  
+
   // Determine side of first vertex in respect to plane
-  std::list< Phoenix::Math::CVector3<float> >::iterator it; 
+  std::list< Phoenix::Math::CVector3<float> >::iterator it;
   it = lstVertices.begin();
 
-  CVector3<float> vCurrPoint = *it;    
+  CVector3<float> vCurrPoint = *it;
   int iCurrSide = 0;
   int iNextSide = 0;
   float fNextDot = 0.0f;
-  float fCurrDot = plane[0] * (*it)[0] + 
-                   plane[1] * (*it)[1] + 
+  float fCurrDot = plane[0] * (*it)[0] +
+                   plane[1] * (*it)[1] +
                    plane[2] * (*it)[2] + plane[3];
 
   iCurrSide      = fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
-  
+
   // if first vertex is on positive side, then push it to list
   if ( iCurrSide == POS_SIDE ) { lstVerticesNew.push_back( *it );  }
 
@@ -1078,25 +1077,25 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   for( ; it != lstVertices.end(); it++)
   {
     CVector3<float> & vNextPoint = *it;
-    
-    fNextDot = plane[0] * vNextPoint[0] + 
-               plane[1] * vNextPoint[1] + 
+
+    fNextDot = plane[0] * vNextPoint[0] +
+               plane[1] * vNextPoint[1] +
 	       plane[2] * vNextPoint[2] + plane[3];
-    
+
     iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
 
-    // If vertices are on different sides of plane, 
+    // If vertices are on different sides of plane,
     if ( iNextSide != iCurrSide )
     {
       CVector3<float> vTmp = (vCurrPoint-vNextPoint);
-      float fT             = fCurrDot / (plane[0] * vTmp[0] + 
-					 plane[1] * vTmp[1] + 
+      float fT             = fCurrDot / (plane[0] * vTmp[0] +
+					 plane[1] * vTmp[1] +
 					 plane[2] * vTmp[2]);
 
       CVector3<float> vClipPoint = vCurrPoint + fT * (vNextPoint - vCurrPoint);
       lstVerticesNew.push_back(vClipPoint);
     }
-    
+
     if ( iNextSide == POS_SIDE )
     {
       // If vertices are on positive side of plane
@@ -1110,17 +1109,17 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   /////////////////////////////////////////////////////////////////
   // check situation from last vertex to first
   CVector3<float> & vNextPoint = lstVertices.front();
-  fNextDot = plane[0] * vNextPoint[0] + 
-             plane[1] * vNextPoint[1] + 
+  fNextDot = plane[0] * vNextPoint[0] +
+             plane[1] * vNextPoint[1] +
 	     plane[2] * vNextPoint[2] + plane[3];
   iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
 
-  // If vertices are on different sides of plane, 
+  // If vertices are on different sides of plane,
   if ( iNextSide != iCurrSide )
   {
     CVector3<float> vTmp = (vCurrPoint-vNextPoint);
-    float fT             = fCurrDot / ( plane[0] * vTmp[0] + 
-				        plane[1] * vTmp[1] + 
+    float fT             = fCurrDot / ( plane[0] * vTmp[0] +
+				        plane[1] * vTmp[1] +
 				        plane[2] * vTmp[2] );
 
     CVector3<float> vClipPoint = vCurrPoint + fT * (vNextPoint - vCurrPoint);
@@ -1128,10 +1127,10 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   }
   // swap vertex lists
   lstVerticesNew.swap( lstVertices );
-  
+
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list< Phoenix::Spatial::CVertex > & lstVertices )
 {
 
@@ -1139,24 +1138,24 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   const int NEG_SIDE =  -1;
 
   std::list< Phoenix::Spatial::CVertex > lstVerticesNew;
-  
+
 
   if ( lstVertices.size() < 3 ) return;
-  
+
   // Determine side of first vertex in respect to plane
-  std::list< Phoenix::Spatial::CVertex >::iterator it; 
+  std::list< Phoenix::Spatial::CVertex >::iterator it;
   it = lstVertices.begin();
 
   CVertex vCurrPoint = *it;
   int iCurrSide = 0;
   int iNextSide = 0;
   float fNextDot = 0.0f;
-  float fCurrDot = plane[0] * (*it).GetPosition()[0] + 
-                   plane[1] * (*it).GetPosition()[1] + 
+  float fCurrDot = plane[0] * (*it).GetPosition()[0] +
+                   plane[1] * (*it).GetPosition()[1] +
                    plane[2] * (*it).GetPosition()[2] + plane[3];
 
   iCurrSide      = fCurrDot > -EPSILON ? POS_SIDE : NEG_SIDE;
-  
+
   // if first vertex is on positive side, then push it to list
   if ( iCurrSide == POS_SIDE ) { lstVerticesNew.push_back( *it );  }
 
@@ -1167,19 +1166,19 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   for( ; it != lstVertices.end(); it++)
   {
     CVertex & vNextPoint = *it;
-    
-    fNextDot = plane[0] * vNextPoint.GetPosition()[0] + 
-               plane[1] * vNextPoint.GetPosition()[1] + 
+
+    fNextDot = plane[0] * vNextPoint.GetPosition()[0] +
+               plane[1] * vNextPoint.GetPosition()[1] +
 	       plane[2] * vNextPoint.GetPosition()[2] + plane[3];
-    
+
     iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
 
-    // If vertices are on different sides of plane, 
+    // If vertices are on different sides of plane,
     if ( iNextSide != iCurrSide )
     {
       CVector3<float> vTmp = (vCurrPoint.GetPosition()-vNextPoint.GetPosition());
-      float fT             = fCurrDot / (plane[0] * vTmp[0] + 
-					 plane[1] * vTmp[1] + 
+      float fT             = fCurrDot / (plane[0] * vTmp[0] +
+					 plane[1] * vTmp[1] +
 					 plane[2] * vTmp[2]);
 
       CVector3<float> vClipPoint = vCurrPoint.GetPosition() + fT * (vNextPoint.GetPosition() - vCurrPoint.GetPosition());
@@ -1188,7 +1187,7 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
       vertex.SetNormal( (vCurrPoint.GetPosition() + fT * ( vNextPoint.GetNormal() - vCurrPoint.GetNormal())).GetNormalized() );
       lstVerticesNew.push_back(vertex);
     }
-    
+
     if ( iNextSide == POS_SIDE )
     {
       // If vertices are on positive side of plane
@@ -1202,17 +1201,17 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   /////////////////////////////////////////////////////////////////
   // check situation from last vertex to first
   CVertex & vNextPoint = lstVertices.front();
-  fNextDot = plane[0] * vNextPoint.GetPosition()[0] + 
-             plane[1] * vNextPoint.GetPosition()[1] + 
+  fNextDot = plane[0] * vNextPoint.GetPosition()[0] +
+             plane[1] * vNextPoint.GetPosition()[1] +
              plane[2] * vNextPoint.GetPosition()[2] + plane[3];
   iNextSide =  fNextDot > -EPSILON ? POS_SIDE : NEG_SIDE;
 
-  // If vertices are on different sides of plane, 
+  // If vertices are on different sides of plane,
   if ( iNextSide != iCurrSide )
   {
     CVector3<float> vTmp = (vCurrPoint.GetPosition()-vNextPoint.GetPosition());
-    float fT             = fCurrDot / ( plane[0] * vTmp[0] + 
-				        plane[1] * vTmp[1] + 
+    float fT             = fCurrDot / ( plane[0] * vTmp[0] +
+				        plane[1] * vTmp[1] +
 				        plane[2] * vTmp[2] );
 
     CVector3<float> vClipPoint = vCurrPoint.GetPosition() + fT * (vNextPoint.GetPosition() - vCurrPoint.GetPosition());
@@ -1223,28 +1222,28 @@ Phoenix::Collision::ClipPolygon( const Phoenix::Math::CPlane & plane, std::list<
   }
   // swap vertex lists
   lstVerticesNew.swap( lstVertices );
-  
+
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Collision::VOLUME_INTERSECTION
 Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Phoenix::Volume::CPolytope & poly )
 {
 
-  
+
   // The effective radius of the box respect to a plane
   float fEffRadius;
-  float fDot;	
-  
+  float fDot;
+
   CVector3<float> vNormal;
   /////////////////////////////////////////////////////////////////
   // When box length (principal axis) is much greater than the two others,
   // it is better to use line segment test for better accuracy.
   /////////////////////////////////////////////////////////////////
-  bool bUseLineSegmentTest = (( obBox.GetLength()-obBox.GetWidth() ) > (obBox.GetHalfWidth())) || 
+  bool bUseLineSegmentTest = (( obBox.GetLength()-obBox.GetWidth() ) > (obBox.GetHalfWidth())) ||
                              (( obBox.GetLength()-obBox.GetHeight()) > (obBox.GetHalfHeight()));
-  
-  
-  if ( bUseLineSegmentTest ) 
+
+
+  if ( bUseLineSegmentTest )
   {
     float fDot2;
     // The line seqment
@@ -1254,14 +1253,14 @@ Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Pho
 
     // for each plane do
     for( planeIt = poly.GetPlanes().begin(); planeIt != poly.GetPlanes().end(); planeIt++ ){
-      
+
       vNormal.Set( planeIt->GetArray() );
 
       // Since axes from COrientable are always Unit length,
       // we include proper dimensions in the equation.
       fEffRadius = 0.5f * ( fabsf( (obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal) ) +
 			    fabsf( (obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal) ) );
-      
+
       // Calculate 4D dot product between a plane and the line endpoints
       fDot  = vNormal.Dot( vQ1) + (*planeIt)[3];
       fDot2 = vNormal.Dot( vQ2) + (*planeIt)[3];
@@ -1271,52 +1270,52 @@ Phoenix::Collision::OBBIntersectsPolytope( const COrientedBox & obBox, const Pho
 	return OUTSIDE;
 
       } else if ( (fDot < -fEffRadius && fDot2 > -fEffRadius)){
-	
+
 	// Cut off the part from the cylinder which lies outside the frustum
 	float fT = (fEffRadius + fDot2) / vNormal.Dot(vQ2-vQ1) ;
-	
+
 	vQ1 = vQ2 + (fT*(vQ1-vQ2));
 
       } else if ( fDot2 < -fEffRadius && fDot > -fEffRadius ){
-	
+
 	// Cut off the part from the cylinder which lies outside the frustum
 	float fT = (fEffRadius + fDot) / vNormal.Dot(vQ1-vQ2) ;
 	vQ2 = vQ1 + (fT*(vQ2-vQ1));
       }
-      
-    }  
-    
+
+    }
+
   } else {
 
     std::vector<Phoenix::Math::CPlane>::const_iterator planeIt;
     // for each plane do
     for( planeIt = poly.GetPlanes().begin(); planeIt != poly.GetPlanes().end(); planeIt++ ){
-      
+
       vNormal.Set( planeIt->GetArray());
 
       // Since axes from COrientable are always Unit length,
       // we include proper dimensions in the equation.
-      
+
       fEffRadius = 0.5f * ( fabsf((obBox.GetForwardVector()*obBox.GetLength()).Dot(vNormal)) +
 			    fabsf((obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal)) +
 			    fabsf((obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal)) );
-      
+
       // Calculate 4D dot product between plane and box center
       fDot  = vNormal.Dot( obBox.GetPosition()) + (*planeIt)[3];
-      
+
       if ( fDot <= -fEffRadius )
       {
 	return OUTSIDE;
       }
-      
-    }  
+
+    }
   }
   // Ok, volumes intersect.
   return INTERSECTION;
 }
 /////////////////////////////////////////////////////////////////
 VOLUME_INTERSECTION
-Phoenix::Collision::SphereIntersectsPolytope( const CSphere &sphere, const Phoenix::Volume::CPolytope & poly ) 
+Phoenix::Collision::SphereIntersectsPolytope( const CSphere &sphere, const Phoenix::Volume::CPolytope & poly )
 {
   float fDistance = 0.0f;
   int iType;
@@ -1325,31 +1324,31 @@ Phoenix::Collision::SphereIntersectsPolytope( const CSphere &sphere, const Phoen
   for( planeIt = poly.GetPlanes().begin();planeIt != poly.GetPlanes().end(); planeIt++ )
   {
     iType = Phoenix::Collision::SphereIntersectsPlane( *planeIt, sphere, fDistance);
-    
-    // If the object is behind of any of the planes (on negative half-side), 
+
+    // If the object is behind of any of the planes (on negative half-side),
     // then it is outside the frustum
     if (iType < 0)
     {
       return OUTSIDE;
     }
 
-    // If the object intersects any of the planes, 
+    // If the object intersects any of the planes,
     // then might be intersecting the frustum
-    if (iType == 0) 
+    if (iType == 0)
     {
       bIntersection = 1;
     }
-  }  
+  }
   // If sphere intersected one or more planes, it is partially in frustum.
   if ( bIntersection )
     return INTERSECTION;
-  
-  // if we end up here, the object is neither behind or intersecting of any of the 
+
+  // if we end up here, the object is neither behind or intersecting of any of the
   // planes. Hence, it is inside.
   return INSIDE;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Collision::VOLUME_INTERSECTION  
+Phoenix::Collision::VOLUME_INTERSECTION
 Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedBox &aabb, const Phoenix::Volume::CPolytope & poly )
 {
   CVector3<float> vNormal;
@@ -1358,47 +1357,47 @@ Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedB
 
   std::vector<Phoenix::Math::CPlane>::const_iterator it;
   for( it = poly.GetPlanes().begin(); it != poly.GetPlanes().end(); it++)
-  {  
+  {
     const CPlane &plane = *it;
     vNormal.Set( const_cast<float *>(plane.GetArray()));
-    fEffectiveRadius = fabsf((aabb.GetHalfWidth() *vX).Dot(vNormal)) + 
-                       fabsf((aabb.GetHalfHeight()*vY).Dot(vNormal)) + 
+    fEffectiveRadius = fabsf((aabb.GetHalfWidth() *vX).Dot(vNormal)) +
+                       fabsf((aabb.GetHalfHeight()*vY).Dot(vNormal)) +
                        fabsf((aabb.GetHalfLength()*vZ).Dot(vNormal));
-    if( PLANE_DOT_POS(plane, aabb.GetPosition()) <= -fEffectiveRadius) return OUTSIDE;    
+    if( PLANE_DOT_POS(plane, aabb.GetPosition()) <= -fEffectiveRadius) return OUTSIDE;
   }
-  
+
   // Frustum intersects box.
   return INTERSECTION;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Collision::VOLUME_INTERSECTION  
+Phoenix::Collision::VOLUME_INTERSECTION
 Phoenix::Collision::AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedCube &aabb, const Phoenix::Volume::CPolytope & poly )
 {
-  
+
   CVector3<float> vNormal;
   float fEffectiveRadius;
-  
+
   CVector3<float> vHalfWidthX(aabb.GetHalfWidth(),0.0f,0.0f);
   CVector3<float> vHalfWidthY(0.0f, aabb.GetHalfWidth(), 0.0f);
   CVector3<float> vHalfWidthZ(0.0f, 0.0f, aabb.GetHalfWidth());
-  
+
   std::vector<Phoenix::Math::CPlane>::const_iterator it;
   for( it = poly.GetPlanes().begin(); it != poly.GetPlanes().end(); it++)
-  {  
-    const CPlane &plane = *it; 
+  {
+    const CPlane &plane = *it;
     vNormal.Set( const_cast<float *>(plane.GetArray()));
-    fEffectiveRadius = fabsf(vHalfWidthX.Dot(vNormal)) + 
-                       fabsf(vHalfWidthY.Dot(vNormal)) + 
+    fEffectiveRadius = fabsf(vHalfWidthX.Dot(vNormal)) +
+                       fabsf(vHalfWidthY.Dot(vNormal)) +
                        fabsf(vHalfWidthZ.Dot(vNormal));
-    
-    if( PLANE_DOT_POS(plane, aabb.GetPosition()) <= -fEffectiveRadius) return OUTSIDE;    
+
+    if( PLANE_DOT_POS(plane, aabb.GetPosition()) <= -fEffectiveRadius) return OUTSIDE;
   }
 
   // Frustum intersects cube.
   return INTERSECTION;
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox,  float *pfValue )
 {
   float fT_min,fT_max;
@@ -1413,13 +1412,13 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
   if ( fabs(vPoint.Dot(obBox.GetRightVector())  ) > obBox.GetHalfWidth())  bStartInsideBox = 0;
   if ( fabs(vPoint.Dot(obBox.GetUpVector())     ) > obBox.GetHalfHeight()) bStartInsideBox = 0;
 
-  if ( bStartInsideBox ) 
+  if ( bStartInsideBox )
   {
     if ( pfValue != NULL ) *pfValue = 0.0f;
     return true;
   }
-  
-  // for each dimension in OBB do 
+
+  // for each dimension in OBB do
   for ( int i=0;i<3;i++)
   {
     // Get correct values for each loop
@@ -1440,7 +1439,7 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
       fF = obBox.GetUpVector().Dot( ray.GetDirection() );
       fHalfValue = obBox.GetHalfHeight();
     }
-    
+
     if ( TOO_CLOSE_TO_ZERO(fF) )
     {
       if (-fE - fHalfValue > 0.0f || -fE + fHalfValue < 0.0f )
@@ -1448,14 +1447,14 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
 	return false;
       }
     }
-    else 
-    { 
+    else
+    {
       f1DivF = 1.0f / fF;
       fT_1  = (fE + fHalfValue)*f1DivF;
       fT_2  = (fE - fHalfValue)*f1DivF;
 
       // Put values in correct order
-      if ( fT_1 > fT_2 ) 
+      if ( fT_1 > fT_2 )
       {
 	float fTmp = fT_1;
 	fT_1 = fT_2;
@@ -1468,7 +1467,7 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
 	fT_min = fT_1;
 	fT_max = fT_2;
 	bFirstTime = false;
-      } 
+      }
       else
       {
 	if ( fT_1 > fT_min) fT_min = fT_1;
@@ -1477,23 +1476,23 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
       // Perform tests, and exit on non-intersection.
       if ( fT_min > fT_max ) return false;
       if ( fT_max < 0.0f   ) return false;
-    
-    } // close to zero 
+
+    } // close to zero
   } // for
 
   ////////////////////
-  /// Set distance from origin to closest intersection point 
-  if ( pfValue != NULL ) 
+  /// Set distance from origin to closest intersection point
+  if ( pfValue != NULL )
   {
     if ( fT_min > 0.0f) *pfValue = fT_min;
     else                *pfValue = fT_max;
-  }    
+  }
   // return intersection
   return true;
 
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &aaBox,  float *pfValue )
 {
   float fT_min,fT_max;
@@ -1508,13 +1507,13 @@ Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &a
   if ( fabs(vPoint[0]) > aaBox.GetHalfWidth())  bStartInsideBox = 0;
   if ( fabs(vPoint[1]) > aaBox.GetHalfHeight()) bStartInsideBox = 0;
 
-  if ( bStartInsideBox ) 
+  if ( bStartInsideBox )
   {
     if ( pfValue != NULL ) *pfValue = 0.0f;
     return true;
   }
-  
-  // for each dimension in OBB do 
+
+  // for each dimension in OBB do
   for ( int i=0;i<3;i++)
   {
     // Get correct values for each loop
@@ -1533,9 +1532,9 @@ Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &a
     default:
       fE = vPoint[2];
       fF = ray.GetDirection()[2];
-      fHalfValue = aaBox.GetHalfLength();      
+      fHalfValue = aaBox.GetHalfLength();
     }
-    
+
     if ( TOO_CLOSE_TO_ZERO(fF) )
     {
       if (-fE - fHalfValue > 0.0f || -fE + fHalfValue < 0.0f )
@@ -1543,14 +1542,14 @@ Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &a
 	return false;
       }
     }
-    else 
-    { 
+    else
+    {
       f1DivF = 1.0f / fF;
       fT_1  = (fE + fHalfValue)*f1DivF;
       fT_2  = (fE - fHalfValue)*f1DivF;
 
       // Put values in correct order
-      if ( fT_1 > fT_2 ) 
+      if ( fT_1 > fT_2 )
       {
 	float fTmp = fT_1;
 	fT_1 = fT_2;
@@ -1563,7 +1562,7 @@ Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &a
 	fT_min = fT_1;
 	fT_max = fT_2;
 	bFirstTime = false;
-      } 
+      }
       else
       {
 	if ( fT_1 > fT_min) fT_min = fT_1;
@@ -1572,19 +1571,79 @@ Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &a
       // Perform tests, and exit on non-intersection.
       if ( fT_min > fT_max ) return false;
       if ( fT_max < 0.0f   ) return false;
-    
-    } // close to zero 
+
+    } // close to zero
   } // for
 
   ////////////////////
-  /// Set distance from origin to closest intersection point 
-  if ( pfValue != NULL ) 
+  /// Set distance from origin to closest intersection point
+  if ( pfValue != NULL )
   {
     if ( fT_min > 0.0f) *pfValue = fT_min;
     else                *pfValue = fT_max;
-  }    
+  }
   // return intersection
   return true;
 
 }
+
 /////////////////////////////////////////////////////////////////
+//
+// As described in document:
+// http://www.geometrictools.com/Documentation/IntersectionSphereCone.pdf
+//
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::Collision::SphereIntersectsCone( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone )
+{
+  bool bRetval = 0;
+
+   CVector3<float> vU = cone.GetPosition() - (sphere.GetRadius()*cone.SinReciprocal())*cone.GetDirection();
+
+   CVector3<float> vD = sphere.GetPosition() - vU;
+
+   float fDsqr = vD.Dot(vD);
+
+   float fE = cone.GetDirection().Dot(vD);
+
+   if ( fE > 0.0f && fE*fE >= fDsqr*cone.CosSqr() )
+   {
+     vD = sphere.GetPosition() - cone.GetPosition();
+     fDsqr = vD.Dot(vD);
+     fE = -(cone.GetDirection().Dot(vD));
+     if ( fE > 0.0f && fE*fE >= fDsqr*cone.SinSqr() )
+       bRetval = (fDsqr <= sphere.GetRadiusSqr());
+     else
+       bRetval = 1;
+   }
+   else
+   {
+     bRetval = 0;
+   }
+   // #ifndef DEBUG
+   //#else
+   //   CVector3<float> vU = cone.GetPosition() - (sphere.GetRadius()/cone.SinAngle())*cone.GetDirection();
+   //   CVector3<float> vD = sphere.GetPosition() - vU;
+
+   //   if ( cone.GetDirection().Dot( vD ) >= vD.Length()*cone.CosAngle()){
+
+   //     vD = sphere.Position() - cone.Position();
+   //     if ( -cone.GetDirection().Dot( vD ) >= vD.Length()*cone.SinAngle()){
+
+   //       bRetval = vD.Length() <= sphere.GetRadius();
+   //       CLogger::Error() << "first true, second " << (bRetval ? "true" : "false" ) << std::endl;
+   //     }
+   //     else {
+   //       bRetval = 1;
+   //       CLogger::Error() << "first true, second true" << std::endl;
+   //     }
+   //   }
+   //   else
+   //   {
+   //     CLogger::Error() << "first false" << std::endl;
+   //     bRetval = 0;
+   //   }
+   //#endif
+
+   return bRetval;
+}

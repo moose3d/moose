@@ -15,7 +15,7 @@ Phoenix::Math::CPlane::CPlane()
 /////////////////////////////////////////////////////////////////
 Phoenix::Math::CPlane::CPlane( const CVector3<float> &vNormal, float fD ) : CVector4<float>(vNormal[0], vNormal[1], vNormal[2], fD)
 {
-  
+
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Math::CPlane::CPlane( float fX, float fY, float fZ, float fD ) : CVector4<float>(fX,fY,fZ,fD)
@@ -35,11 +35,11 @@ Phoenix::Math::CPlane::SetNormal( CVector3<float> vNormal )
   m_aValues[2] = vNormal[2];
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Math::CPlane::Normalize()
 {
-  float fLength = sqrtf( m_aValues[0] * m_aValues[0] + 
-			 m_aValues[1] * m_aValues[1] + 
+  float fLength = sqrtf( m_aValues[0] * m_aValues[0] +
+			 m_aValues[1] * m_aValues[1] +
 			 m_aValues[2] * m_aValues[2] );
   if ( fLength > 0.0f )
   {
@@ -48,7 +48,7 @@ Phoenix::Math::CPlane::Normalize()
     m_aValues[1] *= fLength;
     m_aValues[2] *= fLength;
     m_aValues[3] *= fLength;
-  } 
+  }
   else
   {
     m_aValues[0] = m_aValues[1] = m_aValues[2] = 0.0f;
@@ -61,7 +61,7 @@ Phoenix::Math::CPlane::SetDistance( float fDistance )
   m_aValues[3] = fDistance;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Math::CPlane::Calculate( CVector3<float> vNormal, const CVector3<float> & vPoint )
 {
   vNormal.Normalize();
@@ -71,41 +71,41 @@ Phoenix::Math::CPlane::Calculate( CVector3<float> vNormal, const CVector3<float>
   m_aValues[3] = -(vNormal.Dot(vPoint));
 }
 /////////////////////////////////////////////////////////////////
-std::ostream& 
+std::ostream&
 Phoenix::Math::operator<<( std::ostream &stream, const CPlane &plane )
 {
   stream << "(" << plane[0] << "," << plane[1] << "," << plane[2] << "," << plane[3] ;
   return stream;
 }
 /////////////////////////////////////////////////////////////////
-std::ostream& 
+std::ostream&
 Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 {
   stream << quad.GetPosition() << "," << quad.GetWidth() << "x" << quad.GetHeight() << endl;
   return stream;
 }
 // /////////////////////////////////////////////////////////////////
-// Phoenix::Math::CSphere 
+// Phoenix::Math::CSphere
 // Phoenix::Math::CalculateBoundingSphereTight( VertexDescriptor pVertices, const CIndexBuffer &indexBuffer )
 // {
 //   // The returned sphere
 //   CSphere sphere;
 
-//   float fLambda1,fLambda2,fLambda3;  
+//   float fLambda1,fLambda2,fLambda3;
 
 //   // Calculate the principal axis R by component analysis
 //   CMatrix3x3f mCovar = Math::CovarianceMatrix( pVertices, indexBuffer  );
 //   CMatrix3x3f mEigenVectorMatrix = CMatrix3x3f::Identity();
 
-//   Math::CalculateEigensystem( mCovar, 
+//   Math::CalculateEigensystem( mCovar,
 // 			      fLambda1, fLambda2,fLambda3,
 // 			      mEigenVectorMatrix);
-  
+
 //   CVector3<float> vR = GetColumnVector(mEigenVectorMatrix, 0);
 //   vR.Normalize;
 //   // Get min and max values of each point in direction R
 //   CVector3<float> vTemp;
-  
+
 //   float fMinExtent, fMaxExtent, fTempDotR;
 //   unsigned int nMaxIndex = 0, nMinIndex = 0;
 
@@ -114,11 +114,11 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   fMinExtent = fMaxExtent = vTemp.Dot(vR);
 //   CVector3<float> vMin = vTemp;
 //   CVector3<float> vMax = vTemp;
-  
+
 //   // for each vertex
 //   for ( unsigned int i = 1;i<indexBuffer.m_nNumIndices; i++)
 //   {
-    
+
 //     vTemp.UseExternalData( &(pVertices[indexBuffer.m_pIndices[i]*3]));
 //     fTempDotR = vTemp.Dot( vR );
 
@@ -137,16 +137,16 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   // Assign initial center and radius
 //   vMin.UseExternalData(&pVertices[nMinIndex*3]);
 //   vMax.UseExternalData(&pVertices[nMaxIndex*3]);
-  
+
 //   //sphere.SetPosition( (vMin + vMax ) * 0.5f );
-  
+
 //   CVector3<float> vPos = vMin + ((vMax-vMin) * 0.5f);
 //   sphere.SetPosition( vPos );
-//   sphere.SetRadius((vMax - sphere.GetPosition()).Length());  
-  
+//   sphere.SetRadius((vMax - sphere.GetPosition()).Length());
+
 //   // Check each vertex that they actually are stored inside the sphere
 //   float fRadiusSquared = sphere.GetRadius() * sphere.GetRadius();
-  
+
 //   // Temporary point when determining new center and radius
 //   CVector3<float> vGPoint;
 
@@ -156,7 +156,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   // For each vertex
 //   for ( unsigned int i = 0;i<indexBuffer.m_nNumIndices; i++)
 //   {
-    
+
 //     vTemp.UseExternalData( &(pVertices[indexBuffer.m_pIndices[i]*3]));
 
 //     float fDist = ((vTemp - sphere.GetPosition()).Length());
@@ -171,12 +171,12 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //       //sphere.SetPosition( vGPoint + (( vTemp-vGPoint) * 0.5));
 //       sphere.SetPosition( (vGPoint + vTemp) * 0.5f);
 //       sphere.SetRadius( (vTemp - sphere.GetPosition() ).Length());
-      
+
 //       fRadiusSquared = sphere.GetRadius() * sphere.GetRadius();
-//     } 
-//     else 
+//     }
+//     else
 //     {
-//       // Point within sphere, everything is good in 
+//       // Point within sphere, everything is good in
 //       // the hood tonite.
 //     }
 //   } // for each vertex
@@ -184,22 +184,22 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   return sphere;
 // }
 // /////////////////////////////////////////////////////////////////
-// Phoenix::BoundingVolume::CAxisAlignedBox 
-// Geometry::CalculateAlignedBox( VertexDescriptor pVertices, int nNumVertices ) 
+// Phoenix::BoundingVolume::CAxisAlignedBox
+// Geometry::CalculateAlignedBox( VertexDescriptor pVertices, int nNumVertices )
 // {
 //   if ( nNumVertices > 1)
 //   {
 //     CVector3<float> vMin(pVertices[0],pVertices[1],pVertices[2]);
 //     CVector3<float> vMax(pVertices[0],pVertices[1],pVertices[2]);
-    
+
 //     unsigned int nIndex = 0;
-    
+
 //     for(int v=1;v<nNumVertices;v++)
 //     {
 //       nIndex = (v*3);
 //       STORE_MAX_MIN(pVertices[nIndex],   vMax[0], vMin[0]);
 //       STORE_MAX_MIN(pVertices[nIndex+1], vMax[1], vMin[1]);
-//       STORE_MAX_MIN(pVertices[nIndex+2], vMax[2], vMin[2]); 
+//       STORE_MAX_MIN(pVertices[nIndex+2], vMax[2], vMin[2]);
 //     }
 //     CVector3<float> vDimension = (vMax - vMin);
 //     CVector3<float> vCenter = vMin + vDimension*0.5f;
@@ -234,7 +234,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   return BEHIND;
 // }
 // /////////////////////////////////////////////////////////////////
-// CVector3<float> 
+// CVector3<float>
 // Geometry::ClosestPointOnLine( const CVector3<float> &vPoint,
 // 			      const CVector3<float> &vLinePoint1,
 // 			      const CVector3<float> &vLinePoint2 )
@@ -243,11 +243,11 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   CVector3<float> vOneToPoint = vPoint - vLinePoint1;
 
 //   CVector3<float> vLine = vLinePoint2 - vLinePoint1;
-  
+
 //   float fLength = vLine.Length();
-  
+
 //   vLine.Normalize;
-  
+
 //   float fDot = vLine.Dot(vOneToPoint);
 
 //   if ( fDot <= 0.0f ){
@@ -257,11 +257,11 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   } else if ( fDot >= fLength ){
 //     return vLinePoint2;
 //   }
-//   // return the point in the middle 
+//   // return the point in the middle
 //   return vLinePoint1 + (vLine * fDot );
 // }
 // /////////////////////////////////////////////////////////////////
-// CVector3<float> 
+// CVector3<float>
 // Geometry::ClosestPointOnRay( const CVector3<float> &vPoint,
 // 			     const CVector3<float> &vStartPoint,
 // 			     const CVector3<float> &vDirection )
@@ -272,71 +272,10 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 // }
 // /////////////////////////////////////////////////////////////////
 
-// /////////////////////////////////////////////////////////////////
-// //
-// // As described in document:
-// // http://www.geometrictools.com/Documentation/IntersectionSphereCone.pdf
-// //
+
 // /////////////////////////////////////////////////////////////////
 // char
-// Geometry::SphereIntersectsCone( const CSphere &sphere, const CCone &cone )
-// {
-//   char bRetval = 0;
-// #ifndef DEBUG
-//   CVector3<float> vU = cone.GetPosition() - 
-//   (sphere.GetRadius()*cone.SinReciprocal())*cone.GetDirection();
-  
-//   CVector3<float> vD = sphere.GetPosition() - vU;
-  
-//   float fDsqr = vD.Dot(vD);
-
-//   float fE = cone.GetDirection().Dot(vD);
-  
-//   if ( fE > 0.0f && fE*fE >= fDsqr*cone.CosSqr() )
-//   {
-//     vD = sphere.GetPosition() - cone.GetPosition();
-//     fDsqr = vD.Dot(vD);
-//     fE = -(cone.GetDirection().Dot(vD));
-//     if ( fE > 0.0f && fE*fE >= fDsqr*cone.SinSqr() )
-//       bRetval = (fDsqr <= sphere.GetRadiusSqr());
-//     else
-//       bRetval = 1;
-//   } 
-//   else 
-//   {
-//     bRetval = 0;
-//   }
-
-// #else
-//   CVector3<float> vU = cone.GetPosition() - (sphere.GetRadius()/cone.SinAngle())*cone.GetDirection();
-//   CVector3<float> vD = sphere.GetPosition() - vU;
-    
-//   if ( cone.GetDirection().Dot( vD ) >= vD.Length()*cone.CosAngle()){
-      
-//     vD = sphere.Position() - cone.Position();
-//     if ( -cone.GetDirection().Dot( vD ) >= vD.Length()*cone.SinAngle()){
-
-//       bRetval = vD.Length() <= sphere.GetRadius();
-//       CLogger::Error() << "first true, second " << (bRetval ? "true" : "false" ) << std::endl;
-//     }
-//     else {
-//       bRetval = 1;
-//       CLogger::Error() << "first true, second true" << std::endl;
-//     }
-//   } 
-//   else
-//   {
-//     CLogger::Error() << "first false" << std::endl;
-//     bRetval = 0;
-//   }
-  
-
-// #endif
-//   return bRetval;
-// }
-// /////////////////////////////////////////////////////////////////
-// char 
-// Geometry::SphereIntersectsPolygon( CSphere &sphere, 
+// Geometry::SphereIntersectsPolygon( CSphere &sphere,
 // 				   VertexDescriptor pVertices,
 // 				   unsigned int nNumVertices,
 // 				   CVector3<float> &vOffsetMovement )
@@ -350,29 +289,29 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   vOne.UseExternalData( &(pVertices[0]));
 //   vTwo.UseExternalData( &(pVertices[3]));
 //   vThree.UseExternalData( &(pVertices[6]));
-  
+
 //   CVector3<float> vNormal = (vTwo - vOne ).Cross(vThree - vOne);
 //   vNormal.Normalize;
 //   vPlane.Calculate( vNormal, vOne);
 
 //   float fDistance = 0.0f;
-  
+
 //   if ( SphereIntersectsPlane(vPlane, sphere, fDistance ) == INTERSECTS){
 
 //     CVector3<float> vOffset   = vNormal * fDistance;
-    
+
 //     CVector3<float> vPosition = sphere.GetPosition() - vOffset;
-    
+
 //     if ( InsidePolygon( vPosition, pVertices, nNumVertices) ) {
-    
+
 //       bIntersection = 1;
 
 //     } else {
-    
+
 //       bIntersection = SphereIntersectsPolygonEdges( sphere, pVertices, nNumVertices );
 //     }
 //   }
-  
+
 //   if ( bIntersection )
 //   {
 //     if ( fDistance > 0.0f )
@@ -385,14 +324,14 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 
 //       float fDistanceDiff = sphere.GetRadius() + fDistance;
 //       vOffsetMovement = vNormal * -fDistanceDiff;
-      
+
 //     }
 //   }
 //   return bIntersection;
 // }
 // /////////////////////////////////////////////////////////////////
-// char 
-// Geometry::InsidePolygon( CVector3<float> &vPoint, 
+// char
+// Geometry::InsidePolygon( CVector3<float> &vPoint,
 // 			 VertexDescriptor pVertices,
 // 			 unsigned int nNumVertices)
 // {
@@ -410,7 +349,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //     vVect2 = vT - vPoint;
 //     fAngle += AngleBetweenVectors( vVect1, vVect2);
 //   }
-  
+
 //   if ( fabs(fAngle) >= (0.99f * Math::PI * 2.0f)){
 //     bRetval = 1;
 //   }
@@ -418,22 +357,22 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   return bRetval;
 // }
 // /////////////////////////////////////////////////////////////////
-// char      
-// Geometry::SphereIntersectsPolygonEdges( CSphere &sphere, 
+// char
+// Geometry::SphereIntersectsPolygonEdges( CSphere &sphere,
 // 					VertexDescriptor pVertices,
 // 					unsigned int nNumVertices)
 // {
 
 //   CVector3<float> vVect1, vVect2, vPoint;
-//   CVector3<float> vPos = sphere.GetPosition();    
+//   CVector3<float> vPos = sphere.GetPosition();
 
 //   for( unsigned int v=0;v<nNumVertices;v++){
 
 //     vVect1.UseExternalData( &(pVertices[v*3]));
 //     vVect2.UseExternalData( &(pVertices[((v+1)%nNumVertices)*3]));
-    
+
 //     vPoint = ClosestPointOnLine(vPos, vVect1, vVect2 );
-    
+
 //     // If closest point is within the sphere radius, we have a match
 //     if ( (vPoint - sphere.GetPosition()).Length() < sphere.GetRadius()){
 //       return 1;
@@ -461,7 +400,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //     vCornerMin[0] = rAABB.GetPosition().m_aValues[0] - fHalfWidth;
 //     vCornerMax[0] = rAABB.GetPosition().m_aValues[0] + fHalfWidth;
 //   }
-//   else 
+//   else
 //   {
 //     vCornerMax[0] = rAABB.GetPosition().m_aValues[0] - fHalfWidth;
 //     vCornerMin[0] = rAABB.GetPosition().m_aValues[0] + fHalfWidth;
@@ -473,7 +412,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //     vCornerMin[1] = rAABB.GetPosition().m_aValues[1] - fHalfHeight;
 //     vCornerMax[1] = rAABB.GetPosition().m_aValues[1] + fHalfHeight;
 //   }
-//   else 
+//   else
 //   {
 //     vCornerMax[1] = rAABB.GetPosition().m_aValues[1] - fHalfHeight;
 //     vCornerMin[1] = rAABB.GetPosition().m_aValues[1] + fHalfHeight;
@@ -485,17 +424,17 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //     vCornerMin[2] = rAABB.GetPosition().m_aValues[2] - fHalfLength;
 //     vCornerMax[2] = rAABB.GetPosition().m_aValues[2] + fHalfLength;
 //   }
-//   else 
+//   else
 //   {
 //     vCornerMax[2] = rAABB.GetPosition().m_aValues[2] - fHalfLength;
 //     vCornerMin[2] = rAABB.GetPosition().m_aValues[2] + fHalfLength;
-//   }   
+//   }
 //   /// Check the intersection of the diagonal line
 //   return LineIntersectsPlane( rPlane, vCornerMin, vCornerMax);
 // }
 // /////////////////////////////////////////////////////////////////
-// CPlaneIntersectionType 
-// Geometry::PlaneIntersectionPoint( CPlane &Plane1, 
+// CPlaneIntersectionType
+// Geometry::PlaneIntersectionPoint( CPlane &Plane1,
 // 				  CPlane &Plane2,
 // 				  CPlane &Plane3,
 // 				  CVector3<float> &vPoint )
@@ -507,7 +446,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 
 //   vNormal.UseExternalData(Plane1.m_aValues);
 //   Math::SetRowVector(mMatrix, 0, vNormal);
-  
+
 //   vNormal.UseExternalData(Plane2.m_aValues);
 //   Math::SetRowVector(mMatrix, 1, vNormal);
 
@@ -517,7 +456,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   CVector3<float> vDs(-Plane1[CPlane::D],
 // 		  -Plane2[CPlane::D],
 // 		  -Plane3[CPlane::D] );
-  
+
 //   //CLogger::Error() << "----" << endl;
 //   //CLogger::Error() << mMatrix ;
 //   //CLogger::Error() << "D " << vDs << endl;
@@ -534,7 +473,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   }
 //   //CLogger::Error() << "----" << endl;
 //   return iRetval;
-  
+
 // }
 
 // /////////////////////////////////////////////////////////////////
@@ -542,7 +481,7 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 
 
 // /////////////////////////////////////////////////////////////////
-// char	
+// char
 // Geometry::PointWithinKDOP( CVector3<float> &vPoint, CKDOP &kDop )
 // {
 
@@ -551,9 +490,9 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   // Check the distance to each plane
 //   for(;it!= kDop.Planes().end();it++)
 //   {
-//     // In case the point is behind some plane, it cannot be within the area 
+//     // In case the point is behind some plane, it cannot be within the area
 //     // limited by kDop.
-    
+
 //     if ( PointDistanceFromPlane( vPoint, *it ) < 0.0f){
 //       return 0;
 //     }
@@ -580,11 +519,11 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   mMatrix(0,2) = ob.GetUpVector().m_aValues[0];
 //   mMatrix(1,2) = ob.GetUpVector().m_aValues[1];
 //   mMatrix(2,2) = ob.GetUpVector().m_aValues[2];
-  
+
 //   return mMatrix;
 // }
 // /////////////////////////////////////////////////////////////////
-// Geometry::CIntersectionType  
+// Geometry::CIntersectionType
 // Geometry::SphereIntersectsKDOP( CSphere &Sphere, CKDOP &kDop )
 // {
 //   /////////////////////////////////////////////////////////////////
@@ -595,60 +534,60 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //   for( ;planeIt!=kDop.Planes().end(); planeIt++)
 //   {
 //     iRel = Geometry::SphereIntersectsPlane( *planeIt, Sphere, fTmp);
-//     // If the object is behind of any of the planes, 
+//     // If the object is behind of any of the planes,
 //     // then it is outside the KDOP
 //     if (iRel == Geometry::BEHIND)
 //     {
 //       return Geometry::OUTSIDE;
 //     }
-//     // If the object intersects any of the planes, 
+//     // If the object intersects any of the planes,
 //     // then it is intersecting the frustum
-//     if (iRel == Geometry::INTERSECTS) 
+//     if (iRel == Geometry::INTERSECTS)
 //     {
 //       return Geometry::INTERSECTION;
 //     }
-//   }  
+//   }
 //   /////////////////////////////////////////////////////////////////
-//   // if we end up here, the object is neither behind or intersecting of any of the 
+//   // if we end up here, the object is neither behind or intersecting of any of the
 //   // planes. Hence, it is inside.
 //   return INSIDE;
 // }
 // /////////////////////////////////////////////////////////////////
-// Geometry::CIntersectionType  
+// Geometry::CIntersectionType
 // Geometry::OrientedBoxIntersectsKDOP( COrientedBox &obBox, CKDOP &kDop )
 // {
- 
+
 //   char bUseLineSegmentTest = 0;
-  
+
 //   // The effective radius of the box respect to a plane
 //   float fEffRadius	= 0.0f;
 //   float fDot		= 0.0f;
 //   float fDot2		= 0.0f;
 
 //   CVector3<float> vNormal;
-  
+
 //   // When box length (principal axis) is much greater than the two others,
 //   // it is better to use line segment test for better accuracy.
-//   bUseLineSegmentTest = (( obBox.GetLength()-obBox.GetWidth() ) > (0.5f * obBox.GetWidth())) || 
+//   bUseLineSegmentTest = (( obBox.GetLength()-obBox.GetWidth() ) > (0.5f * obBox.GetWidth())) ||
 //   ( (obBox.GetLength()-obBox.GetHeight()) > (0.5f * obBox.GetHeight()));
-  
-//   if ( bUseLineSegmentTest ) 
+
+//   if ( bUseLineSegmentTest )
 //   {
-    
+
 //     // The line seqment
 //     CVector3<float> vQ1 = obBox.GetPosition() + (obBox.GetForwardVector()*(obBox.GetLength() * 0.5f)) ;
 //     CVector3<float> vQ2 = vQ1 - (obBox.GetForwardVector()*obBox.GetLength()) ;
 //     list<CPlane>::iterator planeIt = kDop.Planes().begin();
-    
+
 //     for( ; planeIt!=kDop.Planes().end(); planeIt++)
 //     {
-      
+
 //       vNormal.UseExternalData( (*planeIt).m_aValues);
 //       // Since axes from COrientable are always Unit length,
 //       // we include proper dimensions in the equation.
 //       fEffRadius = 0.5f * ( fabsf( (obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal) ) +
 // 			    fabsf( (obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal) ) );
-      
+
 //       // Calculate 4D dot product between a plane and the line endpoints
 //       fDot  = vNormal.Dot( vQ1) + (*planeIt)[CPlane::D];
 //       fDot2 = vNormal.Dot( vQ2) + (*planeIt)[CPlane::D];
@@ -660,35 +599,35 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //       } else if ( (fDot < -fEffRadius && fDot2 > -fEffRadius)){
 // 	// Cut off the part from the cylinder which lies outside the frustum
 // 	float fT = (fEffRadius + fDot2) / vNormal.Dot(vQ2-vQ1) ;
-	
+
 // 	vQ1 = vQ2 + (fT*(vQ1-vQ2));
 
 //       } else if ( fDot2 < -fEffRadius && fDot > -fEffRadius ){
-	
+
 // 	// Cut off the part from the cylinder which lies outside the frustum
 // 	float fT = (fEffRadius + fDot) / vNormal.Dot(vQ1-vQ2) ;
 // 	vQ2 = vQ1 + (fT*(vQ2-vQ1));
 //       }
-      
-//     }  
-    
-//   } 
-//   else 
+
+//     }
+
+//   }
+//   else
 //   {
 
 //     list<CPlane>::iterator planeIt = kDop.Planes().begin();
 //     for( ;planeIt!=kDop.Planes().end(); planeIt++)
 //     {
-      
+
 //       vNormal.UseExternalData( (*planeIt).m_aValues);
 
 //       // Since axes from COrientable are always Unit length,
 //       // we include proper dimensions in the equation.
-      
+
 //       fEffRadius = 0.5 * ( fabsf((obBox.GetForwardVector()*obBox.GetLength()).Dot(vNormal)) +
 // 			   fabsf((obBox.GetRightVector()*obBox.GetWidth()).Dot(vNormal)) +
 // 			   fabsf((obBox.GetUpVector()*obBox.GetHeight()).Dot(vNormal)) );
-      
+
 //       // Calculate 4D dot product between plane and box center
 //       fDot  = vNormal.Dot( obBox.GetPosition()) + (*planeIt)[CPlane::D];
 
@@ -696,10 +635,10 @@ Phoenix::Math::operator<<( std::ostream &stream, const CQuad & quad )
 //       {
 // 	return OUTSIDE;
 //       }
-      
-//     }  
+
+//     }
 //   }
-  
+
 //   return INTERSECTION;
 // }
 // /////////////////////////////////////////////////////////////////
