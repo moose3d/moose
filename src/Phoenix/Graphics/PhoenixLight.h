@@ -101,6 +101,10 @@ namespace Phoenix
       /// Assigns specular color.
       /// \param vColor Color vector.
       void SetSpecularColor(const Phoenix::Math::CVector4<unsigned char> & vColor);
+      ///////////////////
+      /// Computes distance where light is yet affecting the visual output (attenuation less than 0.001f)
+      /// Useful for computing bounding volumes for lights.
+      float ComputeAttenuationDistance();
     };
   }; // namespace Graphics
 }; // namespace Phoenix
@@ -187,6 +191,39 @@ inline void
 Phoenix::Graphics::CLightBase::SetSpecularColor(const Phoenix::Math::CVector4<unsigned char> & vColor)
 {
   m_vSpecular = vColor;
+}
+/////////////////////////////////////////////////////////////////
+inline float
+Phoenix::Graphics::CLightBase::ComputeAttenuationDistance()
+{
+	if ( GetQuadraticAttenuation() >= 0.001f )
+	{
+		if ( GetLinearAttenuation() >= 0.001f )
+		{
+			// use 2nd order formula
+			float fD = GetLinearAttenuation() * GetLinearAttenuation() - 4.0f * GetQuadraticAttenuation() * (GetConstantAttenuation()-1000.0f);
+
+			if ( fD >= 0.0f )
+			{
+				return (-GetLinearAttenuation() + sqrtf(fD)) / (GetQuadraticAttenuation()*2.0f);
+			} else return -1.0;
+		}
+		else return sqrtf( (1000.0f- GetConstantAttenuation()) / GetQuadraticAttenuation() );
+	}
+	else
+	{
+		if ( GetLinearAttenuation() >= 0.001f )
+		{
+			// use linear formula
+			return (1000.0f - GetConstantAttenuation() ) / GetLinearAttenuation();
+		}
+		else
+		{
+			if ( GetConstantAttenuation() < 1000.0f )
+				return -1.0f;
+			else return 0.0f;
+		}
+	}
 }
 /////////////////////////////////////////////////////////////////
 #endif

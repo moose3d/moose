@@ -1,7 +1,7 @@
 #ifndef __PhoenixModelHelper_h__
 #define __PhoenixModelHelper_h__
 /////////////////////////////////////////////////////////////////
-#include <PhoenixRenderable.h>
+#include <PhoenixRenderableModel.h>
 #include <PhoenixMilkshapeLoader.h>
 #include <PhoenixCore.h>
 #include "PhoenixAPI.h"
@@ -17,7 +17,7 @@ namespace Phoenix
       OPT_VERTEX_INDICES   = 1 << 3
     };
     ////////////////////
-    /// 
+    ///
     class PHOENIX_API CModelHelper : public Phoenix::Core::CSingleton<CModelHelper>
     {
       friend class Phoenix::Core::CSingleton<CModelHelper>;
@@ -30,7 +30,7 @@ namespace Phoenix
       ////////////////////
       /// Loads milkshape file.
       /// \param szFilename Path to milkshape model file.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
+      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
       /// \param aszGroupNames Array of group names, last item must be NULL.
       /// \param bInterleaved Should arrays be concatenated to form interleaved array. By default, no.
@@ -40,7 +40,7 @@ namespace Phoenix
       ////////////////////
       /// Loads OBJ file.
       /// \param szFilename Path to OBJ model file.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
+      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
       /// \param aszGroupNames Array of group names, last item must be NULL.
       /// \param bInterleaved Should arrays be concatenated to form interleaved array. By default, no.
@@ -52,12 +52,12 @@ namespace Phoenix
       /// \attention This function does not add Renderable itself into RenderableManager.
       /// \warning Color loading is disabled, see constructor. It is not implemented in CRenderable.
       /// \param rModel CRenderable where data handles are attached to.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors. 
+      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
       /// \param bInterleaved Use interleaved data.
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, const char *szGroupName = NULL, bool bInterleaved = false );
+      int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderableModel & rModel, const char *szGroupName = NULL, bool bInterleaved = false );
       ////////////////////
       /// Initializes CRenderable object from currently loaded data.
       /// \attention This function does not add Model itself into ModelManager.
@@ -67,13 +67,13 @@ namespace Phoenix
       /// \param lstGroupNames List of group names that are attached to renderable index handles in that order.
             /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      //int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, std::list<std::string> & lstGroupNames);  
+      //int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, std::list<std::string> & lstGroupNames);
 
       ////////////////////
       /// Clears currently loaded models.
       void Clear();
     };
-  } // namespace Graphics 
+  } // namespace Graphics
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 #define g_ModelHelper (Phoenix::Data::CModelHelper::GetInstance())

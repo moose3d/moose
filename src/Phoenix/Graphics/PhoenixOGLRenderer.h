@@ -13,11 +13,6 @@
 #include "PhoenixTexture.h"
 #include "PhoenixRenderable.h"
 #include "PhoenixShader.h"
-#include "PhoenixLight.h"
-#include "PhoenixAmbientLight.h"
-#include "PhoenixSpotLight.h"
-#include "PhoenixDirectionalLight.h"
-#include "PhoenixPointLight.h"
 #include "PhoenixMaterial.h"
 #include "PhoenixSkybox.h"
 #include "PhoenixTransform.h"
@@ -34,6 +29,11 @@ namespace Phoenix
 {
   namespace Graphics
   {
+	class CDirectionalLight;
+  	class CAmbientLight;
+  	class CPointLight;
+  	class CSpotLight;
+
     /////////////////////////////////////////////////////////////////
     /// Holds information about current renderstates.
     class PHOENIX_API CInternalRenderState
@@ -731,6 +731,9 @@ namespace Phoenix
       /// Returns current renderstate.
       /// \returns Reference to current renderstate.
       Phoenix::Graphics::CInternalRenderState & GetRenderState();
+      ////////////////////
+      /// Commits given renderstate.
+      void CommitRenderState( const Phoenix::Graphics::CRenderState & state );
     };
     /////////////////////////////////////////////////////////////////
   }; // namespace Graphics

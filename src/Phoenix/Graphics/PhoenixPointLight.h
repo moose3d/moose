@@ -5,6 +5,7 @@
 #include "PhoenixSpatial.h"
 #include "PhoenixLight.h"
 #include "PhoenixAPI.h"
+#include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -13,7 +14,8 @@ namespace Phoenix
     ////////////////////
     /// Class for lights.
     class PHOENIX_API CPointLight : public Phoenix::Graphics::CLightBase,
-											  public Phoenix::Spatial::CPositional
+									public Phoenix::Spatial::CPositional,
+									public Phoenix::Graphics::CRenderable
     {
     public:
       ////////////////////
@@ -22,6 +24,7 @@ namespace Phoenix
       {
     	  SetPosition(0.0f,0.0f,0.0f);
 	  }
+      void Render( Phoenix::Graphics::COglRenderer & renderer );
     };
   }; // namespace Graphics
 }; // namespace Phoenix

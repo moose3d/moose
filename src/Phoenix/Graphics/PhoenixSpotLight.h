@@ -5,6 +5,7 @@
 #include "PhoenixSpatial.h"
 #include "PhoenixLight.h"
 #include "PhoenixAPI.h"
+#include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -14,7 +15,8 @@ namespace Phoenix
     /// Class for spotlights.
     class PHOENIX_API CSpotLight : public Phoenix::Graphics::CLightBase,
 											 public Phoenix::Spatial::CPositional,
-											 public Phoenix::Spatial::COneDirectional
+											 public Phoenix::Spatial::COneDirectional,
+											 public Phoenix::Graphics::CRenderable
     {
     protected:
       /// Spot angle; accepted values [0.0 .. 90.0],180
@@ -47,6 +49,10 @@ namespace Phoenix
       /// Returns spot exponent.
       /// \returns  Exponent value.
       float GetSpotExponent() const;
+      ////////////////////
+      /// Renders this object using renderer.
+      /// \param renderer Renderer to be used in rendering.
+      void Render( COglRenderer & renderer );
     };
   }; // namespace Graphics
 }; // namespace Phoenix

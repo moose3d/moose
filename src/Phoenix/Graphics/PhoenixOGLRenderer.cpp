@@ -7,6 +7,10 @@
 #include <iostream>
 #include "PhoenixGlobals.h"
 #include "PhoenixOGLRenderer.h"
+#include "PhoenixAmbientLight.h"
+#include "PhoenixSpotLight.h"
+#include "PhoenixDirectionalLight.h"
+#include "PhoenixPointLight.h"
 #include "PhoenixTGAImage.h"
 #include "PhoenixDDSImage.h"
 #include "PhoenixDefaultEntities.h"
@@ -2801,5 +2805,28 @@ Phoenix::Graphics::COglRenderer::GetFeatures()
     assert( m_pFeatures != NULL && "Cannot create renderer features object!" );
   }
   return *m_pFeatures;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitRenderState( const Phoenix::Graphics::CRenderState & state )
+{
+	CRenderState & s = const_cast< Phoenix::Graphics::CRenderState & >(state);
+	CommitBlending( s.GetBlendingOperation());
+	////////////////////
+	// Check depth mask write flag.
+	if ( s.GetDepthWrite()) {  CommitState( STATE_DEPTH_WRITE );  }
+	else DisableState( STATE_DEPTH_WRITE );
+	////////////////////
+	// Check depth test flag.
+	if ( s.GetDepthTest()) CommitState( STATE_DEPTH_TEST );
+	else DisableState( STATE_DEPTH_TEST );
+	////////////////////
+	// Check face culling flag.
+	if ( s.GetFaceCulling()) CommitState( STATE_FACECULLING );
+	else DisableState( STATE_FACECULLING );
+	////////////////////
+	// Check lighting flag
+	if ( s.GetLighting()) CommitState( STATE_LIGHTING );
+	else DisableState( STATE_LIGHTING );
 }
 /////////////////////////////////////////////////////////////////
