@@ -38,7 +38,7 @@ namespace Phoenix
 	BOTTOM_RIGHT_FRONT = 7
       };
     /////////////////////////////////////////////////////////////////
-    // A class for discrete oriented polytope, defines a convex bounding 
+    // A class for discrete oriented polytope, defines a convex bounding
     // volume by set of planes.
     class PHOENIX_API CPolytope
     {
@@ -55,7 +55,7 @@ namespace Phoenix
 	m_Planes.push_back(Plane);
       }
       ////////////////////
-      std::vector<Phoenix::Math::CPlane> &GetPlanes() 
+      std::vector<Phoenix::Math::CPlane> &GetPlanes()
       {
 	return m_Planes;
       }
@@ -83,7 +83,7 @@ namespace Phoenix
     }; // CPolytope
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) box.
-    class PHOENIX_API CAxisAlignedBox : public Phoenix::Spatial::CPositional, 
+    class PHOENIX_API CAxisAlignedBox : public Phoenix::Spatial::CPositional,
 					public Phoenix::Spatial::CDimensional3D
     {
     private:
@@ -95,14 +95,14 @@ namespace Phoenix
       CAxisAlignedBox();
       ////////////////////x
       /// The parametrized constructor.
-      CAxisAlignedBox( const CVector3<float> &vCenter, 
+      CAxisAlignedBox( const CVector3<float> &vCenter,
 		       float fWidth, float fHeight,  float fLength );
       const CVector3<float> & GetMin() const;
       const CVector3<float> & GetMax() const;
     };
     /////////////////////////////////////////////////////////////////
     /// Class for axis-aligned (x,y,z) cube.
-    class PHOENIX_API CAxisAlignedCube : public Phoenix::Spatial::CPositional, 
+    class PHOENIX_API CAxisAlignedCube : public Phoenix::Spatial::CPositional,
 					 public Phoenix::Spatial::CDimensional1D
     {
     public:
@@ -111,26 +111,26 @@ namespace Phoenix
       CAxisAlignedCube()    {}
       ////////////////////x
       /// The parametrized constructor.
-      CAxisAlignedCube( const CVector3<float> &vCenter, float fEdgeLength ) : 
+      CAxisAlignedCube( const CVector3<float> &vCenter, float fEdgeLength ) :
       CPositional( vCenter ), CDimensional1D( fEdgeLength ) {  }
     };
     /////////////////////////////////////////////////////////////////
     /// The class for Oriented Box. Forward vector will be the principal axis,
     /// right vector the second and up the third. Dimensions: length = forward,
     /// width = right, height = up.
-    class PHOENIX_API COrientedBox : public Phoenix::Spatial::CPositional, 
-				     public Phoenix::Spatial::CDimensional3D, 
+    class PHOENIX_API COrientedBox : public Phoenix::Spatial::CPositional,
+				     public Phoenix::Spatial::CDimensional3D,
 				     public Phoenix::Spatial::COrientable
     {
     protected:
       /// Planes oriented along the box walls.
-      Phoenix::Math::CPlane    m_Planes[6];    
+      Phoenix::Math::CPlane    m_Planes[6];
       /// Corners of box, 3 floats, 8 corners
-      Phoenix::Math::CVector3<float>     m_vecCorners[8]; 
+      Phoenix::Math::CVector3<float>     m_vecCorners[8];
     public:
       ////////////////////
       /// Constructor.
-      COrientedBox() 
+      COrientedBox()
       {
 	//memset(m_aCorners,0,sizeof(float)*24);
 	// reset coords. (Is it really necessary?)
@@ -191,7 +191,7 @@ namespace Phoenix
       /// \param vUp Up vector.
       /// \param vForward Forward vector.
       /// \param vRight Right vector.
-      void SetOrientation(const Phoenix::Math::CVector3<float> &vUp, 
+      void SetOrientation(const Phoenix::Math::CVector3<float> &vUp,
 			  const Phoenix::Math::CVector3<float> &vForward,
 			  const Phoenix::Math::CVector3<float> &vRight);
       ////////////////////
@@ -292,13 +292,13 @@ namespace Phoenix
       /// For debugging.
       friend std::ostream& operator<<( std::ostream &stream, CSphere sphere )
       {
-	stream << "C = " << sphere.GetPosition() << ", radius " << sphere.GetRadius(); 
-      
+	stream << "C = " << sphere.GetPosition() << ", radius " << sphere.GetRadius();
+
 	return stream;
       }
-      
+
       friend void operator*=( Phoenix::Volume::CSphere & sphere, const Phoenix::Math::CTransform & transf );
-      
+
     }; // class CSphere
     /////////////////////////////////////////////////////////////////
     /// Capsule class (sphere swept line)
@@ -313,7 +313,7 @@ namespace Phoenix
       /// \param fRadius Radius of the capsule sphere.
       CCapsule( const Phoenix::Math::CVector3<float> & vStart,
 		const Phoenix::Math::CVector3<float> & vEnd,
-		float fRadius ) 
+		float fRadius )
       {
 	SetRadius( fRadius );
 	Set( vStart, vEnd );
@@ -321,7 +321,7 @@ namespace Phoenix
     }; // class CCapsule
     /////////////////////////////////////////////////////////////////
     // Class for a Cone
-    class PHOENIX_API CCone : public Phoenix::Spatial::CPositional 
+    class PHOENIX_API CCone : public Phoenix::Spatial::CPositional
     {
     protected:
 
@@ -344,8 +344,8 @@ namespace Phoenix
       float m_fSinReciprocal;
       float m_fSinAngle; // sin (angle)
       float m_fCosAngle; // cos ( angle )
-      float m_fCosAngleSqr; // (cos(angle))²
-      float m_fSinAngleSqr; // (sin(angle))²
+      float m_fCosAngleSqr; // (cos(angle))
+      float m_fSinAngleSqr; // (sin(angle))
 
     public:
       ////////////////////
@@ -402,7 +402,7 @@ namespace Phoenix
       /// Get length.
       /// \param Length of cone.
       float GetLength() const;
-      
+
     }; // class CCone
     /////////////////////////////////////////////////////////////////
     /// Decal volume class. Used for creating scorch marks, for instance.
@@ -415,20 +415,20 @@ namespace Phoenix
       ////////////////////
       /// Constructor. Creates a volume with plane normals pointing towards center.
       /// \param vPosition	Decal center.
-      /// \param vNormal	Decal unit normal vector. 
+      /// \param vNormal	Decal unit normal vector.
       /// \param vNormal	Decal unit tangent vector.
       /// \param fWidth		Width of decal.
       /// \param fHeight	Height of decal.
       /// \param fLength	Length of decal - used for front and back plane clipping.
-      CDecalVolume( const Phoenix::Math::CVector3<float> & vPosition, 
+      CDecalVolume( const Phoenix::Math::CVector3<float> & vPosition,
 		    const Phoenix::Math::CVector3<float> & vNormal,
 		    const Phoenix::Math::CVector3<float> & vTangent,
-		    float fWidth, float fHeight, float fLength) : Phoenix::Spatial::CPositional(vPosition), 
+		    float fWidth, float fHeight, float fLength) : Phoenix::Spatial::CPositional(vPosition),
       Phoenix::Spatial::CDimensional3D( fWidth, fHeight, fLength )
       {
 	SetDirectionForwardUp( vNormal, vTangent );
 
-	// T · P
+	// T  P
 	// left
 
 	Phoenix::Math::CPlane plane;
@@ -437,8 +437,8 @@ namespace Phoenix
 	// right
 	plane.Calculate( GetTangentVector(), GetPosition() - GetTangentVector()*GetHalfWidth());
 	AddPlane( plane );
-	
-	// B · P
+
+	// B  P
 	// Bottom
 	plane.Calculate( -GetBitangentVector(), GetPosition() + GetBitangentVector()*GetHalfHeight() );
 	AddPlane( plane );
@@ -446,7 +446,7 @@ namespace Phoenix
 	plane.Calculate( GetBitangentVector(), GetPosition() - GetBitangentVector()*GetHalfHeight()  );
 	AddPlane( plane );
 
-	// N · P
+	// N P
 	// front
 	plane.Calculate( -GetNormalVector(), GetPosition() + GetNormalVector() * GetHalfLength() );
 	AddPlane( plane );
@@ -455,17 +455,17 @@ namespace Phoenix
 	AddPlane( plane );
       }
 
-      const CVector3<float> & GetNormalVector() const 
+      const CVector3<float> & GetNormalVector() const
       {
 	return GetForwardVector();
       }
 
-      const CVector3<float> & GetTangentVector() const 
+      const CVector3<float> & GetTangentVector() const
       {
 	return GetUpVector();
       }
-      
-      const CVector3<float> & GetBitangentVector() const 
+
+      const CVector3<float> & GetBitangentVector() const
       {
 	return GetRightVector();
       }
@@ -495,7 +495,7 @@ namespace Phoenix
     /// \param vertexDescriptor Vertices.
     /// \param indices Which vertices are used.
     /// \returns Bounding sphere.
-    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor, 
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
 								       const Phoenix::Graphics::CIndexArray &indices );
     ////////////////////
     /// Calculates the oriented bounding box for vertices in vertexarray using the given set of indices.
@@ -516,9 +516,9 @@ namespace Phoenix
     /// \param obTwo Another oriented box.
     /// \returns Bounding box enclosing both boxes.
     PHOENIX_API Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
-    
+
     /////////////////////////////////////////////////////////////////
-    // Constructs a 4x4 rotation matrix by inserting the Oriented Box axis 
+    // Constructs a 4x4 rotation matrix by inserting the Oriented Box axis
     // as column vectors of the it.
     //
     //     Fx Rx Ux 0
@@ -527,65 +527,65 @@ namespace Phoenix
     //     0  0  0  1    U = Up Vector
     /////////////////////////////////////////////////////////////////
     PHOENIX_API Phoenix::Math::CMatrix4x4<float> OrientedBoxAxisToRotationMatrix(  const Phoenix::Volume::COrientedBox &ob  );
-    
+
   };// namespace Volume
 };// namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline void 
+inline void
 Phoenix::Volume::CCone::SetDirection( const CVector3<float> &  vDir )
 {
   m_vDirection = vDir.GetNormalized();
 }
 /////////////////////////////////////////////////////////////////
-inline CVector3<float> 
+inline CVector3<float>
 Phoenix::Volume::CCone::GetDirection()  const
 {
   return m_vDirection;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::GetAngle() const
 {
   return m_fAngle;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::SinReciprocal() const
 {
   return m_fSinReciprocal;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::SinSqr() const
 {
   return m_fSinAngleSqr;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::CosSqr() const
 {
   return m_fCosAngleSqr;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::CosAngle() const
 {
   return m_fCosAngle;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::SinAngle() const
 {
   return m_fSinAngle;
 }
 /////////////////////////////////////////////////////////////////
-inline void 
+inline void
 Phoenix::Volume::CCone::SetLength(float fLength)
 {
   m_fLength = fLength;
 }
 /////////////////////////////////////////////////////////////////
-inline float 
+inline float
 Phoenix::Volume::CCone::GetLength() const
 {
   return m_fLength;
