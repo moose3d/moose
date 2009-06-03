@@ -2,12 +2,14 @@
 #define __PhoenixOctree_h__
 /////////////////////////////////////////////////////////////////
 #include <list>
+#include <iostream>
 #include "PhoenixSpatial.h"
 #include "PhoenixVolume.h"
 #include "PhoenixCamera.h"
 #include "PhoenixCollision.h"
-#include <iostream>
-#include  "PhoenixAPI.h"
+#include "PhoenixGlobals.h"
+#include "PhoenixAPI.h"
+#include "PhoenixTagged.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -92,11 +94,11 @@ namespace Phoenix
       /// \returns Pointer to the node array.
       COctreeNode ** GetNodes();
       ////////////////////
-      /// Returns a list of objects in this node.      
+      /// Returns a list of objects in this node.
       /// \returns Reference to a list of objects.
       std::list< TYPE > & GetObjects();
       ////////////////////
-      /// Returns a list of objects in this node.      
+      /// Returns a list of objects in this node.
       /// \returns Reference to a list of objects.
       const std::list< TYPE > & GetObjects() const;
       ////////////////////
@@ -120,7 +122,7 @@ namespace Phoenix
       ////////////////////
       /// Do child nodes have objects in them.
       /// \returns Boolean true if children contain objects
-      /// \returns Boolean false if children do not contain objects. 
+      /// \returns Boolean false if children do not contain objects.
       int ChildrenContainObjects() const;
       ////////////////////
       /// Checks do child nodes contain nodes.
@@ -130,7 +132,7 @@ namespace Phoenix
       /// \returns non-zero, if it does.
       /// \returns zero otherwise.
       int HasObjects() const;
-      
+
     };/// class COctreeNode
     /////////////////////////////////////////////////////////////////
     /// Octree class template.
@@ -211,7 +213,7 @@ namespace Phoenix
       /// \param object Reference to object to be inserted.
       /// \param boundingSphere Bounding sphere of object.
       /// \returns Index where object was inserted.
-      unsigned int InsertObject( const TYPE & object, 
+      unsigned int InsertObject( const TYPE & object,
 				 const Phoenix::Volume::CSphere & boundingSphere);
 
       ////////////////////
@@ -220,7 +222,7 @@ namespace Phoenix
       /// \param vPosition Position of bounding sphere of the object.
       /// \param fRadius Radius of bounding sphere.
       /// \returns Index where object was inserted.
-      unsigned int InsertObject( const TYPE & object, 
+      unsigned int InsertObject( const TYPE & object,
 				 const Phoenix::Math::CVector3<float> & vPosition,
 				 float fRadius);
       ////////////////////
@@ -232,8 +234,8 @@ namespace Phoenix
       int  DeleteObject( const TYPE & object, const Phoenix::Volume::CSphere & boundingSphere);
       ////////////////////
       /// Returns node at index.
-      /// \param nIndex From which index node is returned. 
-      /// \warn This must be between 0 and size of m_pAllNodes, otherwise 
+      /// \param nIndex From which index node is returned.
+      /// \warn This must be between 0 and size of m_pAllNodes, otherwise
       /// \warn segfaults are weird bugs shall cross your path!!
       /// \returns Pointer to OctreeNode.
       COctreeNode<TYPE> * GetNodeAt(unsigned int nIndex);
@@ -242,19 +244,23 @@ namespace Phoenix
       /// \param pNode Recently added child node.
       void PropagateChildrenStatus( COctreeNode<TYPE> *pNode );
       ////////////////////
-      /// Collects objects from octree into list of objects.
+      /// Collects objects from Octree into list of objects.
       /// \param camera Camera used in culling.
       /// \param list List where objects are inserted.
+      /// \param tag What TAG is used in comparison.
+      /// \param compare How TAG value is used in comparison. By default, it is not used.
       /// \returns Number of collected objects.
-      size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list) const;
+      size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
       ////////////////////
-      /// Collects objects from octree into list of objects.
-      /// All objects must should be inheritced from CGameObject or provide similar interface
+      /// Collects objects from Octree into list of objects.
+      /// All objects must should be inherited from CGameObject or provide similar interface
       /// ( GetBoundingSphere, GetWorldTransform() ).
       /// \param sphere Objects must intersect this in order to be included.
       /// \param list List where objects are inserted.
+      /// \param tag What TAG is used in comparison.
+      /// \param compare How TAG value is used in comparison. By default, it is not used.
       /// \returns Number of collected objects.
-      size_t CollectObjects( const Phoenix::Volume::CSphere &sphere, std::list<TYPE> & list) const;
+      size_t CollectObjects( const Phoenix::Volume::CSphere &sphere, std::list<TYPE> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
     protected:
       ////////////////////
       /// Sets world size.
@@ -273,8 +279,8 @@ namespace Phoenix
       /// \param nLevel Which level is used.
       /// \param vPosition Center position for node.
       /// \param pNode Which node is initialized.
-      void Initialize( unsigned int nLevel, 
-		       const Phoenix::Math::CVector3<float> & vPosition, 
+      void Initialize( unsigned int nLevel,
+		       const Phoenix::Math::CVector3<float> & vPosition,
 		       COctreeNode<TYPE> *pNode);
     };
   } // namespace Spatial
@@ -287,7 +293,7 @@ template<typename TYPE>
 Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode() : CAxisAlignedCube()
 {
   m_bChildrenContainObjects = 0;
-  // initialize nodes 
+  // initialize nodes
   m_pChildren[TOP_LEFT_FRONT] = NULL;
   m_pChildren[TOP_LEFT_BACK] = NULL;
   m_pChildren[TOP_RIGHT_FRONT] = NULL;
@@ -352,7 +358,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::ChildrenContainObjects() const
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 void
-Phoenix::Spatial::COctreeNode<TYPE>::CheckDoChildrenContainObjects() 
+Phoenix::Spatial::COctreeNode<TYPE>::CheckDoChildrenContainObjects()
 {
   // if one of child nodes is NULL, others are too.
   if ( m_pChildren[TOP_LEFT_FRONT] == NULL)
@@ -370,7 +376,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::CheckDoChildrenContainObjects()
 				 m_pChildren[BOTTOM_RIGHT_FRONT]->HasObjects() || m_pChildren[BOTTOM_RIGHT_FRONT]->ChildrenContainObjects() ||
 				 m_pChildren[BOTTOM_RIGHT_BACK]->HasObjects()  || m_pChildren[BOTTOM_RIGHT_BACK]->ChildrenContainObjects() );
   }
-  
+
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -392,17 +398,17 @@ inline Phoenix::Spatial::COctreeNode<TYPE> **
 Phoenix::Spatial::COctreeNode<TYPE>::GetNodes(){
 
   return m_pChildren;
-} 
+}
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline std::list< TYPE > & 
+inline std::list< TYPE > &
 Phoenix::Spatial::COctreeNode<TYPE>::GetObjects()
 {
   return m_lstObjects;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline const std::list< TYPE > & 
+inline const std::list< TYPE > &
 Phoenix::Spatial::COctreeNode<TYPE>::GetObjects() const
 {
   return m_lstObjects;
@@ -442,7 +448,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::SetNeighbor( Phoenix::Spatial::OCTREE_NEIGH
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline Phoenix::Spatial::COctreeNode<TYPE> * 
+inline Phoenix::Spatial::COctreeNode<TYPE> *
 Phoenix::Spatial::COctreeNode<TYPE>::GetNeighbor( Phoenix::Spatial::OCTREE_NEIGHBOR iNeighbor )
 {
   return m_pNeighbors[iNeighbor];
@@ -471,7 +477,7 @@ Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nNumLevels, float fWorldS
   SetWorldSize(fWorldSize);
   // Allocate array for all nodes
   m_pAllNodes = new COctreeNode<TYPE>[m_nNodeCount];
-  Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);  
+  Initialize( 0, Phoenix::Math::CVector3<float>(0,0,0), &m_pAllNodes[0]);
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -481,14 +487,14 @@ Phoenix::Spatial::COctree<TYPE>::~COctree()
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline size_t 
+inline size_t
 Phoenix::Spatial::COctree<TYPE>::GetNodeCount() const
 {
   return m_nNodeCount;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline unsigned int 
+inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetObjectDepth( float fRadius )
 {
   unsigned int nDepth = static_cast<unsigned int>(floorf( Phoenix::Math::Log2( GetWorldSize()/fRadius)));
@@ -496,34 +502,34 @@ Phoenix::Spatial::COctree<TYPE>::GetObjectDepth( float fRadius )
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline float 
+inline float
 Phoenix::Spatial::COctree<TYPE>::GetWorldSize() const
 {
   return GetWidth();
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline float 
+inline float
 Phoenix::Spatial::COctree<TYPE>::GetWorldHalfSize() const
 {
   return GetHalfWidth();
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline float 
+inline float
 Phoenix::Spatial::COctree<TYPE>::GetEdgeLength( unsigned int nDepth )
 {
   return GetWorldSize() / powf(2, nDepth);
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline unsigned int 
+inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetIndex( float fValue, unsigned nDepth )
 {
   unsigned int nDimensions = (unsigned int)powf(8.0f, floorf(((float)nDepth) *0.333333333333333f));
   if (      fValue >= GetWorldHalfSize()-0.001f) return nDimensions-1;
   else if ( fValue <= -GetWorldHalfSize()) return 0;
-  return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* nDimensions));  
+  return static_cast<unsigned int>(floorf( ((fValue * m_fOneDivWorldSize) + 0.5f)* nDimensions));
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
@@ -541,7 +547,7 @@ Phoenix::Spatial::COctree<TYPE>::GetRoot() const
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline unsigned int 
+inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, float fY, float fZ )
 {
   //if ( nLevel == 0 ) return 0;
@@ -550,7 +556,7 @@ Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, floa
   // How many cubes there are per axis, ie. level 0 = 1, level 1 = 2, level 2 = 4, ...
   float fDimensions = powf(8.0f, ((float)nLevel) *0.333333333333333f);
   unsigned int nDimensions = (unsigned int)fDimensions;
-  
+
   unsigned int nX;
   unsigned int nY;
   unsigned int nZ;
@@ -559,20 +565,20 @@ Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, float fX, floa
   if (      fX >=  GetWorldHalfSize()-0.001f) nX = nDimensions - 1;
   else if ( fX <= -GetWorldHalfSize()) nX = 0;
   else      nX = (unsigned int)floorf( ((fX * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-  
+
   if (      fY >=  GetWorldHalfSize()-0.001f) nY = nDimensions - 1;
   else if ( fY <= -GetWorldHalfSize()) nY = 0;
   else	    nY = (unsigned int)floorf( ((fY * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-  
+
   if (      fZ >=  GetWorldHalfSize()-0.001f) nZ = nDimensions - 1;
   else if ( fZ <= -GetWorldHalfSize()) nZ = 0;
   else      nZ = (unsigned int)floorf( ((fZ * m_fOneDivWorldSize) + 0.5f) * fDimensions );
-  
+
   return nNodeCountPrevLevels + nX * nDimensions * nDimensions + nY * nDimensions + nZ;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline unsigned int 
+inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetIndex1D( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition )
 {
   return GetIndex1D(nLevel, vPosition[0], vPosition[1], vPosition[2]);
@@ -604,21 +610,21 @@ Phoenix::Spatial::COctree<TYPE>::SetMaxDepth( unsigned int nDepth )
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline unsigned int 
+inline unsigned int
 Phoenix::Spatial::COctree<TYPE>::GetMaxDepth()
 {
   return m_nDepth;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-void 
+void
 Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix::Math::CVector3<float> & vPosition, COctreeNode<TYPE> *pNode)
 {
   //std::cerr << "Starting init of : " << pNode << " at level " << nLevel << std::endl;
   float fEdgeLength = GetEdgeLength( nLevel );
   pNode->SetPosition( vPosition );
   pNode->SetWidth( 2.0f*fEdgeLength);
-  
+
   float fChildCenterPosDiff = fEdgeLength * 0.25f;
 
   COctreeNode<TYPE> *pChild = NULL;
@@ -626,26 +632,26 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   if ( nLevel == GetMaxDepth() ) return;
 
   Phoenix::Math::CVector3<float> vNewPos;
-  
+
   ////////////////////
-  // 1st	
-  // calculate center positions for each child node 
+  // 1st
+  // calculate center positions for each child node
   vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
-  
-  
+
+
   // Get correct node from next level
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
 
-  //std::cerr << "node at " << nLevel+1 << " at " << vNewPos << " is " << pChild << std::endl;  
+  //std::cerr << "node at " << nLevel+1 << " at " << vNewPos << " is " << pChild << std::endl;
   // Set child/parent pointers
   pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_BACK, pChild);
   pChild->SetParent( pNode );
   // Initialize child recursively.
   Initialize( nLevel + 1, vNewPos, pChild);
 
-  // 2nd	
+  // 2nd
   vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
@@ -654,7 +660,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
 
-  // 3rd	
+  // 3rd
   vNewPos[0] = vPosition[0] - fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
@@ -670,7 +676,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_FRONT, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
-  // 5th	
+  // 5th
   vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
@@ -678,7 +684,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   pNode->SetChild( Phoenix::Spatial::TOP_LEFT_BACK, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
-  // 6th	
+  // 6th
   vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
@@ -686,7 +692,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   pNode->SetChild( Phoenix::Spatial::TOP_LEFT_FRONT, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
-  // 7th	
+  // 7th
   vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
@@ -694,7 +700,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_BACK, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
-  // 8th	
+  // 8th
   vNewPos[0] = vPosition[0] + fChildCenterPosDiff;
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
@@ -713,16 +719,16 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, const Phoeni
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 unsigned int
-Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object, 
+Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
 					       const Phoenix::Math::CVector3<float> & vPosition,
 					       float fRadius)
 {
   unsigned int nLevel = GetObjectDepth( fRadius);
   //if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
-  
-  unsigned int nIndex  = GetIndex1D( nLevel, 
-				     vPosition[0], 
-				     vPosition[1], 
+
+  unsigned int nIndex  = GetIndex1D( nLevel,
+				     vPosition[0],
+				     vPosition[1],
 				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
   //std::cerr << "pushing object into " << pNode  << " at index:" << nIndex << std::endl;
@@ -735,9 +741,9 @@ Phoenix::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
   {
     //std::cerr << "already objects"  << std::endl;
     pNode->GetObjects().push_back( object );
-    
+
   }
-  
+
   return nIndex;
 }
 /////////////////////////////////////////////////////////////////
@@ -749,19 +755,19 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
   unsigned int nLevel = GetObjectDepth( boundingSphere.GetRadius());
 
   //if ( nLevel >= GetMaxDepth() ) nLevel = GetMaxDepth()-1;
-  
-  COctreeNode<TYPE> *pNode = GetNode( nLevel, 
-				      boundingSphere.GetPosition()[0], 
-				      boundingSphere.GetPosition()[1], 
+
+  COctreeNode<TYPE> *pNode = GetNode( nLevel,
+				      boundingSphere.GetPosition()[0],
+				      boundingSphere.GetPosition()[1],
 				      boundingSphere.GetPosition()[2]);
   // No objects, no deleting.
-  if ( pNode->GetObjects().empty() ) 
+  if ( pNode->GetObjects().empty() )
   {
     return iRetval;
   }
   // Delete it
   iRetval = pNode->DeleteObject( object );
-  
+
   if ( pNode->GetObjects().empty() )
   {
     pNode->CheckDoChildrenContainObjects();
@@ -772,7 +778,7 @@ Phoenix::Spatial::COctree<TYPE>::DeleteObject( const TYPE & object, const Phoeni
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline Phoenix::Spatial::COctreeNode<TYPE> * 
+inline Phoenix::Spatial::COctreeNode<TYPE> *
 Phoenix::Spatial::COctree<TYPE>::GetNodeAt(unsigned int nIndex)
 {
   return &m_pAllNodes[nIndex];
@@ -792,7 +798,7 @@ Phoenix::Spatial::COctree<TYPE>::PropagateChildrenStatus( Phoenix::Spatial::COct
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-inline int 
+inline int
 Phoenix::Spatial::COctreeNode<TYPE>::HasObjects() const
 {
   return !GetObjects().empty();
@@ -803,61 +809,89 @@ Phoenix::Spatial::COctreeNode<TYPE>::HasObjects() const
     lstNodePtrs.push_back(pNode->GetChild( OBJ ));\
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-size_t
-Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list) const
+inline bool CheckTagMatch( Phoenix::Core::TAG tagObj, Phoenix::Core::TAG tag, Phoenix::Core::CTagged::TagCompare compare )
 {
-  std::list< const Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
-  lstNodePtrs.push_back(GetRoot());
-
-  const Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
-  Phoenix::Volume::CSphere sphere;
-  typename std::list<TYPE>::const_iterator it;
-
-  while(!lstNodePtrs.empty())
-  {
-    // Pop first node from list
-    pNode = lstNodePtrs.front();
-    lstNodePtrs.pop_front();
-    
-    // Check does cube intersect frustum
-    if ( Phoenix::Collision::AABBIntersectsPolytope( *pNode, camera.Frustum()) )
-    {
-      // Check do objects intersect frustum and if so, 
-      // insert them into list
-      it = pNode->GetObjects().begin();
-      for( ; it!=pNode->GetObjects().end();it++)
-      {
-	sphere = (*it)->GetBoundingSphere();
-	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
-
-	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
-	     Phoenix::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ))
+	using namespace Phoenix::Core;
+	switch ( compare )
 	{
-	  list.push_back( *it );
+	case CTagged::NOT_USED:
+		break;
+	case CTagged::EQUAL:
+		if ( tagObj != tag ) return false;
+		break;
+	case CTagged::NOT_EQUAL:
+		if ( tagObj == tag ) return false;
+		break;
+	case CTagged::AND:
+		if ( !(tagObj & tag) ) return false;
+		break;
+	case CTagged::NOT_AND:
+		if ( (tagObj & tag) ) return false;
+		break;
 	}
-      }
-      // If there's objects left in children, push them into nodeptr list
-      if ( pNode->ChildrenContainObjects())
-      {
-	INSERT( TOP_LEFT_FRONT );
-	INSERT( TOP_LEFT_BACK );
-	INSERT( TOP_RIGHT_FRONT );
-	INSERT( TOP_RIGHT_BACK );
-	INSERT( BOTTOM_LEFT_FRONT );
-	INSERT( BOTTOM_LEFT_BACK );
-	INSERT( BOTTOM_RIGHT_FRONT );
-	INSERT( BOTTOM_RIGHT_BACK );
-      }
-    }
-  }
-  // return number of currently visible objects.
-  return list.size();  
+	// if we get here, tag is matching.
+	return true;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 size_t
-Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Volume::CSphere &cullSphere, std::list<TYPE> & list) const
+Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<TYPE> & list, Phoenix::Core::TAG tag, Phoenix::Core::CTagged::TagCompare compare ) const
+{
+	// TODO place for optimization; create cache for octree nodes ie. Prefetch( camera ) etc. Then use prefetch values in consequent queries.
+  std::list< const Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
+  lstNodePtrs.push_back(GetRoot());
+
+  const Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
+  Phoenix::Volume::CSphere sphere;
+  typename std::list<TYPE>::const_iterator it;
+
+  while(!lstNodePtrs.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrs.front();
+    lstNodePtrs.pop_front();
+
+    // Check does cube intersect frustum
+    if ( Phoenix::Collision::AABBIntersectsPolytope( *pNode, camera.Frustum()) )
+    {
+      // Check do objects intersect frustum and if so,
+      // insert them into list
+      it = pNode->GetObjects().begin();
+      for( ; it!=pNode->GetObjects().end();it++)
+      {
+    	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+
+    	  // Then compare bounding volumes
+    	  sphere = (*it)->GetBoundingSphere();
+    	  sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+
+    	  if ( Phoenix::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
+    		   Phoenix::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ))
+    	  {
+    		  list.push_back( *it );
+    	  }
+      }
+      // If there's objects left in children, push them into nodeptr list
+      if ( pNode->ChildrenContainObjects())
+      {
+		INSERT( TOP_LEFT_FRONT );
+		INSERT( TOP_LEFT_BACK );
+		INSERT( TOP_RIGHT_FRONT );
+		INSERT( TOP_RIGHT_BACK );
+		INSERT( BOTTOM_LEFT_FRONT );
+		INSERT( BOTTOM_LEFT_BACK );
+		INSERT( BOTTOM_RIGHT_FRONT );
+		INSERT( BOTTOM_RIGHT_BACK );
+      }
+    }
+  }
+  // return number of currently visible objects.
+  return list.size();
+}
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+size_t
+Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Volume::CSphere &cullSphere, std::list<TYPE> & list, Phoenix::Core::TAG tag, Phoenix::Core::CTagged::TagCompare compare ) const
 {
   std::list< const Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
   lstNodePtrs.push_back(GetRoot());
@@ -871,22 +905,25 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Volume::CSphere 
     // Pop first node from list
     pNode = lstNodePtrs.front();
     lstNodePtrs.pop_front();
-    
+
     // Check does cube intersect sphere
-    if ( SphereIntersectsAACube(cullSphere, *pNode))
+    if ( Phoenix::Collision::SphereIntersectsAACube(cullSphere, *pNode))
     {
-      // Check do objects intersect sphere and if so, 
+      // Check do objects intersect sphere and if so,
       // insert them into list
       it = pNode->GetObjects().begin();
       for( ; it!=pNode->GetObjects().end();it++)
       {
-	sphere = (*it)->GetBoundingSphere();
-	sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
 
-	if ( Phoenix::Collision::SphereIntersectsSphere( sphere, cullSphere) )
-	{
-	  list.push_back( *it );
-	}
+    	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+
+    	  sphere = (*it)->GetBoundingSphere();
+    	  sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+
+    	  if ( Phoenix::Collision::SphereIntersectsSphere( sphere, cullSphere) )
+    	  {
+    		  list.push_back( *it );
+    	  }
       }
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
@@ -903,7 +940,7 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Volume::CSphere 
     }
   }
   // return number of currently visible objects.
-  return list.size();  
+  return list.size();
 }
 #undef INSERT
 /////////////////////////////////////////////////////////////////
