@@ -9,18 +9,20 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
-  namespace Core 
+  namespace Core
   {
-    template < class TYPE, size_t KEY_BITS = 4, size_t KEY_BUCKETS = 16>
+	 ////////////////////////
+    /// Class for sorting stuff using radix sort.
+	template < class TYPE, size_t KEY_BITS = 4, size_t KEY_BUCKETS = 16>
     class CRadixSorter
     {
     public:
-      size_t m_nInstances[KEY_BUCKETS]; 
+      size_t m_nInstances[KEY_BUCKETS];
       int mask;
 
       CRadixSorter() : mask( (1 << KEY_BITS)-1 )
       {
-	
+
       }
       void Sort( TYPE *pData, TYPE *pTmpArray, const size_t SIZE )
       {
@@ -31,7 +33,7 @@ namespace Phoenix
 	  for( size_t t=0;t<KEY_BUCKETS;++t)   m_nInstances[t] = 0;
 
 	  // count instances
-	  for( size_t i=0;i<SIZE;i++)  
+	  for( size_t i=0;i<SIZE;i++)
 	    ++m_nInstances[GetKey( pData[i],b)];
 
 	  // zero-start sum
@@ -45,8 +47,8 @@ namespace Phoenix
 	    m_nInstances[i] = sum;
 	    sum += tmp;
 	  }
-	  
-	  
+
+
 	  for( size_t i=0;i<SIZE;i++)
 	  {
 	    pTmpArray[m_nInstances[GetKey( pData[i],b)]] = pData[i];
@@ -56,9 +58,9 @@ namespace Phoenix
 	  std::swap( pData, pTmpArray );
 	}
 	// if there were odd number of key buckets, swap arrays for final time.
-	if ( (KEY_BUCKETS % 2) != 0) 
+	if ( (KEY_BUCKETS % 2) != 0)
 	{
-	  // set elements into proper locations 
+	  // set elements into proper locations
 	  for( size_t i=0;i<SIZE;i++)
 	  {
 	    pData[i] = pTmpArray[i];
@@ -72,7 +74,7 @@ namespace Phoenix
 	return ((iValue & (mask << shift )) >> shift);
       }
     };
-    
+
   } // namespace Core
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
