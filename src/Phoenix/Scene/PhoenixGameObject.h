@@ -5,13 +5,14 @@
 #include "PhoenixTransform.h"
 #include "PhoenixVolume.h"
 #include "PhoenixRenderable.h"
+#include "PhoenixRenderableProperty.h"
 #include "PhoenixAPI.h"
+#include "PhoenixTagged.h"
 /////////////////////////////////////////////////////////////////
 #include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
-
   namespace Scene
   {
     /////////////////////////////////////////////////////////////////
@@ -25,7 +26,7 @@ namespace Phoenix
       virtual ~CSphereBound();
       ////////////////////
       /// Returns bounding sphere.
-      /// \returns Reference to bounding sphere. 
+      /// \returns Reference to bounding sphere.
       Phoenix::Volume::CSphere & GetBoundingSphere();
       ////////////////////
       /// Returns bounding sphere.
@@ -43,22 +44,26 @@ namespace Phoenix
       virtual ~CBoxBound();
       ////////////////////
       /// Returns bounding box.
-      /// \returns Reference to bounding box. 
+      /// \returns Reference to bounding box.
       Phoenix::Volume::COrientedBox & GetBoundingBox();
       ////////////////////
       /// Returns bounding sphere.
       /// \returns Reference to bounding box.
       const Phoenix::Volume::COrientedBox & GetBoundingBox() const;
     };
+
     /////////////////////////////////////////////////////////////////
-    /// GameObject class; base for every object in a game. 
-    class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable
+    /// GameObject class; base for every object in a game.
+    class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable,
+									public Phoenix::Graphics::CRenderableProperty,
+									public Phoenix::Core::CTagged,
+									public Phoenix::Scene::CSphereBound
     {
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
     public:
       ////////////////////
-      /// Constructor. 
+      /// Constructor.
       /// \param nLodLevels Number lod levels in this gameobjects.
       CGameObject();
       ////////////////////
