@@ -25,6 +25,7 @@
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixCollision.h"
+#include <PhoenixSphereCollider.h>
 #include "PhoenixMilkshapeLoader.h"
 #include "PhoenixAmbientLight.h"
 #include "PhoenixDirectionalLight.h"
@@ -32,10 +33,11 @@
 #include "PhoenixSpotLight.h"
 #include "PhoenixGraph.h"
 #include "PhoenixOctree.h"
+#include "PhoenixSpatialGraph.h"
 #include "PhoenixSkybox.h"
 #include "PhoenixRenderQueue.h"
 #include "PhoenixGameObject.h"
-#include <PhoenixGameRenderable.h>
+#include <PhoenixRenderableProperty.h>
 #include "PhoenixTransform.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixParticleSystem.h"
