@@ -1,10 +1,12 @@
 #include <UnitTest++/UnitTest++.h>
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>
+#include <PhoenixDefaultEntities.h>
 #include <string>
 #include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
+using namespace Phoenix::Default;
 /////////////////////////////////////////////////////////////////
 typedef CResourceManager<int, CHandle<int> > CIntResourceMgr;
 #define UINT unsigned int
@@ -49,7 +51,7 @@ TEST( PhoenixResourceManager_Create )
   CHECK( pMgr->GetResource( strSearchNotFound) ==  NULL );
   CHECK( pMgr->GetResource( handleNotFound ) == NULL );
   CHECK( pMgr->GetResource( handleNotFound2 ) == NULL );
-   
+
   CIntResourceMgr::DestroyInstance();
   handleNotFound2.Nullify();
 }
@@ -71,13 +73,13 @@ TEST( PhoenixResourceManager_Create_NoHandle )
   ////////////////////
   CHECK_EQUAL( 0, pMgr->Create( pResource, strResName ));
   CHECK_EQUAL( 0, pMgr->AttachHandle( "resourcetest", handle) );
-  
+
   CHECK( pMgr->GetResource( handle ) == pResource );
   CHECK( pMgr->GetResource( strSearch) ==  pResource );
   CHECK( pMgr->GetResource( strSearchNotFound) ==  NULL );
   CHECK( pMgr->GetResource( handleNotFound ) == NULL );
   CHECK( pMgr->GetResource( handleNotFound2 ) == NULL );
-  
+
   CIntResourceMgr::DestroyInstance();
   handleNotFound2.Nullify();
 }
@@ -92,9 +94,9 @@ TEST( PhoenixResourceManager_Delete )
   CHandle<int> handle4;
   CHandle<int> handle5;
   CHandle<int> handleNull;
-  
+
   handle5.Initialize(5);
-  
+
   int *pIntRes1 = new int;
   int *pIntRes2 = new int;
   int *pIntRes3 = new int;
@@ -104,7 +106,7 @@ TEST( PhoenixResourceManager_Delete )
   *pIntRes2 = 2;
   *pIntRes3 = 3;
   *pIntRes4 = 4;
-  
+
   ////////////////////
   std::string strResName;
   ////////////////////
@@ -147,8 +149,55 @@ TEST( PhoenixResourceManager_Delete )
   CHECK_EQUAL( (UINT)1, handle2.GetIndex());
   CHECK_EQUAL( (UINT)2, handle3.GetIndex());
   CHECK_EQUAL( (UINT)0, handle4.GetIndex());
-  
+
   CIntResourceMgr::DestroyInstance();
   handle5.Nullify();
+}
+/////////////////////////////////////////////////////////////////
+class CBaseObject : public CHandled<CBaseObject>
+{
+public:
+	virtual ~CBaseObject(){}
+};
+/////////////////////////////////////////////////////////////////
+typedef CResourceManager<CBaseObject, CHandle<CBaseObject> > CBaseObjectMgr;
+/////////////////////////////////////////////////////////////////
+class CInternal : public CBaseObject
+{
+public:
+	CInternal()
+	{
+
+	}
+	~CInternal()
+	{
+
+	}
+};
+/////////////////////////////////////////////////////////////////
+class CExternal : public CBaseObject
+{
+private:
+	CInternal *m_pInt;
+public:
+	CExternal()
+	{
+		CInternal *pInt = new CInternal();
+		CBaseObjectMgr::GetInstance()->Create(pInt, g_UniqueName, pInt->GetObjectHandle());
+		m_pInt = pInt;
+	}
+	~CExternal()
+	{
+		CBaseObjectMgr::GetInstance()->Destroy(m_pInt->GetObjectHandle());
+	}
+};
+/////////////////////////////////////////////////////////////////
+TEST( Internal_Object_Release )
+{
+	CExternal *pExternal = new CExternal();
+	CBaseObjectMgr::GetInstance()->Create(pExternal, g_UniqueName, pExternal->GetObjectHandle());
+	CHECK_EQUAL(2, CBaseObjectMgr::GetInstance()->GetSize() );
+	CBaseObjectMgr::GetInstance()->Destroy( pExternal->GetObjectHandle());
+	CHECK_EQUAL(0, CBaseObjectMgr::GetInstance()->GetSize() );
 }
 /////////////////////////////////////////////////////////////////

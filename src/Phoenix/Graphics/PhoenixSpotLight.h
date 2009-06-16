@@ -14,9 +14,8 @@ namespace Phoenix
     ////////////////////
     /// Class for spotlights.
     class PHOENIX_API CSpotLight : public Phoenix::Graphics::CLightBase,
-											 public Phoenix::Spatial::CPositional,
-											 public Phoenix::Spatial::COneDirectional,
-											 public Phoenix::Graphics::CRenderable
+								   public Phoenix::Spatial::CPositional,
+								   public Phoenix::Spatial::COneDirectional
     {
     protected:
       /// Spot angle; accepted values [0.0 .. 90.0],180
@@ -26,13 +25,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Initialize default params, positioned at origo, points towards negative z axis, spot angle and exponent are zero.
-      CSpotLight()
-      {
-    	  SetPosition(0.0f,0.0f,0.0f);
-    	  SetDirection(0.0f,0.0f,-1.0f);
-    	  SetSpotAngle(0.0f);
-    	  SetSpotExponent(0.0f);
-      }
+      CSpotLight();
       ////////////////////
       /// Sets spot angle.
       /// \param fAngle Angle in degrees.

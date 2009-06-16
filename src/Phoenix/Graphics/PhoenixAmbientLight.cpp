@@ -4,6 +4,6 @@
 void
 Phoenix::Graphics::CAmbientLight::Render( Phoenix::Graphics::COglRenderer & renderer )
 {
-	renderer.CommitLight(*this);
+	if ( IsEnabled() ) 	renderer.CommitLight(*this);
 }
 ///////////////////////////////////////////////////////////////////////////////

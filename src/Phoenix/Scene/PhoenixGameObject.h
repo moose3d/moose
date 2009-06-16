@@ -8,6 +8,7 @@
 #include "PhoenixRenderableProperty.h"
 #include "PhoenixAPI.h"
 #include "PhoenixTagged.h"
+#include "PhoenixCollider.h"
 /////////////////////////////////////////////////////////////////
 #include <vector>
 /////////////////////////////////////////////////////////////////
@@ -57,7 +58,8 @@ namespace Phoenix
     class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable,
 									public Phoenix::Graphics::CRenderableProperty,
 									public Phoenix::Core::CTagged,
-									public Phoenix::Scene::CSphereBound
+									public Phoenix::Scene::CSphereBound,
+									public Phoenix::Collision::ICollider
     {
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
@@ -78,6 +80,8 @@ namespace Phoenix
       /// \param nIndex New index.
       void SetSpatialIndex( unsigned int nIndex );
 
+      bool Intersects( const Phoenix::Volume::CSphere & sphere ) const;
+      bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const;
     };
   }; // namespace Scene
 }; // namespace Phoenix

@@ -172,14 +172,15 @@ Phoenix::Graphics::CRenderableModel::GetShaderFloatParameters()
 void
 Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
 {
+	// set renderstate first, because of lights, for example.
+	renderer.CommitRenderState(GetRenderState());
   if ( m_pTransform != NULL )
     renderer.CommitTransform( *m_pTransform );
   ////////////////////
   // Retrieve resources
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
-  // set renderstate
-  renderer.CommitRenderState(GetRenderState());
+
 
   ////////////////////
   // Commit textures

@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
 #include "PhoenixAPI.h"
-#include "PhoenixRenderable.h"
+#include "PhoenixLight.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -11,9 +11,7 @@ namespace Phoenix
   {
 	////////////////////
     /// Class for global ambient light.
-	/// Differs from other lights per se, since this is only global ambient value. Nothing more.
-    class PHOENIX_API CAmbientLight : public Phoenix::Core::CEnableable,
-									  public Phoenix::Graphics::CRenderable
+	class PHOENIX_API CAmbientLight : public Phoenix::Graphics::CLightBase
     {
     protected:
       /// Global ambient color
@@ -21,7 +19,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Sets default ambient value (0.2,0.2,0.2,1.0)
-      CAmbientLight() : m_vColor(51,51,51,255 ) { }
+      CAmbientLight() : m_vColor(51,51,51,255 ) {  }
       ////////////////////
       /// Sets ambient value according to parameters.
       /// \param r ambient red component 0-255

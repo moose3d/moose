@@ -1,9 +1,14 @@
 #include "PhoenixDirectionalLight.h"
 #include "PhoenixOGLRenderer.h"
 ///////////////////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CDirectionalLight::CDirectionalLight()
+{
+	SetDirection(0.0f,0.0f,-1.0f);
+}
+///////////////////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::CDirectionalLight::Render( Phoenix::Graphics::COglRenderer & renderer )
 {
-	renderer.CommitLight(*this);
+	if ( IsEnabled() ) renderer.CommitLight(*this, GetRenderState().GetLightId());
 }
 ///////////////////////////////////////////////////////////////////////////////

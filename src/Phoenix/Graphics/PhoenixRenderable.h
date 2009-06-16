@@ -16,7 +16,7 @@ namespace Phoenix
   namespace Graphics
   {
     class COglRenderer;
-    /// Renderable class for 3D models with texture and vertex data.
+    /// Renderable interface.
     class PHOENIX_API CRenderable
     {
     protected:

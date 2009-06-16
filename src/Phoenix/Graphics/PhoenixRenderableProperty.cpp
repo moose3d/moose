@@ -102,3 +102,15 @@ Phoenix::Graphics::CRenderableProperty::GetRenderableObjects( size_t nLodLevel )
   return m_LodLevels[m_LodLevels.size()-1];
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Graphics::LightRenderableList &
+Phoenix::Graphics::CRenderableProperty::GetLights()
+{
+	return m_lstLights;
+}
+/////////////////////////////////////////////////////////////////
+const Phoenix::Graphics::LightRenderableList &
+Phoenix::Graphics::CRenderableProperty::GetLights() const
+{
+	return m_lstLights;
+}
+/////////////////////////////////////////////////////////////////

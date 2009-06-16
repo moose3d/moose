@@ -5,6 +5,7 @@
 #include "PhoenixSpatial.h"
 #include "PhoenixMathGeometry.h"
 #include "PhoenixAPI.h"
+#include "PhoenixRenderable.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -12,7 +13,8 @@ namespace Phoenix
   {
     ////////////////////
     /// Class for lights.
-    class PHOENIX_API CLightBase : public Phoenix::Core::CEnableable
+    class PHOENIX_API CLightBase : public Phoenix::Core::CEnableable,
+								   public Phoenix::Graphics::CRenderable
     {
     protected:
       /// Diffuse color for this light
@@ -39,7 +41,7 @@ namespace Phoenix
       /// Returns brightness value.
       /// \returns Brightness value.
       float GetBrightness() const;
-    public:
+
       ////////////////////
       /// Enables light, sets attenuations off, and default colors.
       CLightBase()
@@ -52,7 +54,9 @@ namespace Phoenix
 			SetAmbientColor( CVector4<unsigned char>(25,25,25,255));
 			SetSpecularColor( CVector4<unsigned char>(225,225,225,255));
 			SetBrightness(0.0f);
+			GetRenderState().IsLightSource() = true;
       }
+    public:
       ////////////////////
       /// Sets constant attenuation.
       /// \param fValue Constant attenuation value.
@@ -219,7 +223,7 @@ Phoenix::Graphics::CLightBase::ComputeAttenuationDistance()
 		}
 		else
 		{
-			if ( GetConstantAttenuation() < 1000.0f )
+			if ( GetConstantAttenuation() < 100.0f )
 				return -1.0f;
 			else return 0.0f;
 		}

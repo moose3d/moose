@@ -22,14 +22,14 @@ namespace Phoenix
     typedef std::vector< std::pair<float,size_t> >									LodDistanceLevel;
     typedef std::list< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> *> 	RenderableHandleList;
     typedef std::vector< RenderableHandleList >				        				LodLevelObjects;
+    typedef std::list< Phoenix::Graphics::CRenderable * >                           LightRenderableList;
     /////////////////////////////////////////////////////////////////
     /// Class for game objects that can be rendered in a game.
     class PHOENIX_API CRenderableProperty : public Phoenix::Core::CEnableable
     {
     private:
-      /// Renderable objects
-      LodLevelObjects			m_LodLevels;
-
+      LodLevelObjects			m_LodLevels; ///< Renderable objects.
+      LightRenderableList		m_lstLights; ///< Lights that have effect on this Object.
     public:
       ////////////////////
       /// Constructor.
@@ -77,6 +77,14 @@ namespace Phoenix
       /// \param nLodLevel To which level renderable is added.
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
       void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL);
+      ////////////////////
+      /// Returns list of pointers to Renderables (lights).
+      /// \returns List containing pointers to Renderables.
+      LightRenderableList & GetLights();
+      ////////////////////
+      /// Returns list of pointers to Renderables (lights).
+      /// \returns List containing pointers to Renderables.
+      const LightRenderableList & GetLights() const;
     };
   }
 }

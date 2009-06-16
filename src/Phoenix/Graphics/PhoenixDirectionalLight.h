@@ -14,17 +14,13 @@ namespace Phoenix
     ////////////////////
     /// Class for lights.
     class PHOENIX_API CDirectionalLight : public Phoenix::Graphics::CLightBase,
-										  public Phoenix::Spatial::COneDirectional,
-										  public Phoenix::Graphics::CRenderable
+										  public Phoenix::Spatial::COneDirectional
 
     {
     public:
       ////////////////////
       /// Default constructor.
-      CDirectionalLight()
-      {
-    	  SetDirection(0.0f,0.0f,-1.0f);
-      }
+      CDirectionalLight();
       ///////////////////
       /// Renders this light using renderer.
       /// \param renderer Renderer to be used.

@@ -14,16 +14,13 @@ namespace Phoenix
     ////////////////////
     /// Class for lights.
     class PHOENIX_API CPointLight : public Phoenix::Graphics::CLightBase,
-									public Phoenix::Spatial::CPositional,
-									public Phoenix::Graphics::CRenderable
+									public Phoenix::Spatial::CPositional
     {
     public:
       ////////////////////
       /// Positions light to origo.
-      CPointLight()
-      {
-    	  SetPosition(0.0f,0.0f,0.0f);
-	  }
+      CPointLight();
+
       void Render( Phoenix::Graphics::COglRenderer & renderer );
     };
   }; // namespace Graphics

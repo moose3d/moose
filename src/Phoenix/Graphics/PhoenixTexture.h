@@ -10,7 +10,7 @@ namespace Phoenix
 {
   namespace Graphics
   {
-    enum TEXTURE_TYPE 
+    enum TEXTURE_TYPE
     {
       TEXTURE_2D,      /* Normal 2D texture */
       TEXTURE_RECT,    /* Rectangular 2D texture */
@@ -34,10 +34,13 @@ namespace Phoenix
 	MAG_NEAREST,
 	T_WRAP_REPEAT,
 	S_WRAP_REPEAT,
+	R_WRAP_REPEAT,
 	T_WRAP_CLAMP,
 	S_WRAP_CLAMP,
+	R_WRAP_CLAMP,
 	T_WRAP_CLAMP_TO_EDGE,
-	S_WRAP_CLAMP_TO_EDGE
+	S_WRAP_CLAMP_TO_EDGE,
+	R_WRAP_CLAMP_TO_EDGE
       };
     /////////////////////////////////////////////////////////////////
     /// OpenGL base class.
@@ -57,7 +60,7 @@ namespace Phoenix
       ////////////////////
       /// Returns OpenGL texture id.
       /// \returns Texture id.
-      inline GLuint & GetID() 
+      inline GLuint & GetID()
       {
 	return m_nOglId;
       }

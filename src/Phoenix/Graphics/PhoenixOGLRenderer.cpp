@@ -1100,9 +1100,9 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     glBindTexture( iGLType, pTexture->GetID());
     ////////////////////
     // Set default texture parameters
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     ////////////////////
@@ -1224,8 +1224,8 @@ void
 Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
   glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
-
-  if ( true || ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
+  glEnable( GetGLTextureType( pTexture->GetType() ) );
+  if ( ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
   {
     // Bind texture
     glBindTexture( GetGLTextureType( pTexture->GetType() ), pTexture->GetID() );
@@ -1233,7 +1233,7 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
     GetRenderState().SetCurrentTexture( nTexUnit, pTexture);
   }
 
-  glEnable( GetGLTextureType( pTexture->GetType() ) );
+
 
 }
 /////////////////////////////////////////////////////////////////
@@ -1337,17 +1337,26 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
   case S_WRAP_REPEAT:
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
     break;
+  case R_WRAP_REPEAT:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    break;
   case T_WRAP_CLAMP:
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP);
     break;
   case S_WRAP_CLAMP:
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP);
     break;
+  case R_WRAP_CLAMP:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_R, GL_CLAMP);
+    break;
   case T_WRAP_CLAMP_TO_EDGE:
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     break;
   case S_WRAP_CLAMP_TO_EDGE:
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    break;
+  case R_WRAP_CLAMP_TO_EDGE:
+    glTexParameteri( glTarget, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     break;
   }
   //  case ENV_COLOR:
@@ -2098,7 +2107,11 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 
   if ( pVertices )  CommitVertexDescriptor( pVertices );
   if ( pTexCoords ) CommitVertexDescriptor( pTexCoords );
-  if ( pTexture )   CommitTexture( 0, pTexture );
+  if ( pTexture )
+  {
+	  CommitTexture( 0, pTexture );
+	  CommitFilters( skybox.GetTextureFilters(0), pTexture->GetType());
+  }
   if ( pIndices )   CommitPrimitive( pIndices );
   /////////////////////////////////////////////////////////////////
 
@@ -2826,7 +2839,18 @@ Phoenix::Graphics::COglRenderer::CommitRenderState( const Phoenix::Graphics::CRe
 	else DisableState( STATE_FACECULLING );
 	////////////////////
 	// Check lighting flag
-	if ( s.GetLighting()) CommitState( STATE_LIGHTING );
+	if ( s.GetLighting())
+	{
+		CommitState( STATE_LIGHTING );
+		LightRenderableList::iterator it = s.GetLights().begin();
+		for( unsigned int i = 0; i < this->GetFeatures().GetMaxLights() && it != s.GetLights().end(); it++, i++)
+		{
+			CRenderable *pTmp = *it;
+			// Hint light for an id.
+			pTmp->GetRenderState().GetLightId() = i;
+			CommitRenderable( *pTmp );
+		}
+	}
 	else DisableState( STATE_LIGHTING );
 }
 /////////////////////////////////////////////////////////////////

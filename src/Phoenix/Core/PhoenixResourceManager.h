@@ -163,6 +163,8 @@ namespace Phoenix
       OBJECTTYPE *	  m_pObject;
       /// Name for this resource. Must be same as in CResourceName.m_strName.
       std::string	  m_strResourceName;
+      /// Which slot this resource is in.
+      size_t		  m_nIndex;
     public:
       ////////////////////
       /// Constructor.
@@ -758,26 +760,45 @@ void
 Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::Destroy( size_t nIndex )
 {
 
+
   if ( nIndex < m_vecObjects.size() - 1 )
   {
+
     std::string strName = m_vecObjects[nIndex]->GetName();
+    CHashItem<std::string, CResourceName>  *pTmp = m_pResourceHash->Find(strName);
     // Remove resource (invalidates also handles)
     delete m_vecObjects[nIndex];
-    // Assign last resource into place of deleted resource.
-    m_vecObjects[nIndex] = m_vecObjects.back();
+    ///////////////////////
+    // index might have become invalid at this stage, so we must retrieve it again.
+    // This is because you could call CResourceManager::Destroy() inside a Destructor, which would shuffle indices
+    // in m_vecObjects, and even move Resource pointer (while being deleted) into another location in the array.
+    nIndex = pTmp->GetObject().GetIndex();
 
-    // Remove extra pointer.
-    m_vecObjects.pop_back();
+    if ( nIndex < m_vecObjects.size() - 1) // not the last object in array
+    {
+    	// Assign last resource into place of deleted resource.
+    	m_vecObjects[nIndex] = m_vecObjects.back();
 
-    // Update handle indices.
-    m_vecObjects[nIndex]->UpdateAllHandles(nIndex);
+    	// Remove extra pointer.
+    	m_vecObjects.pop_back();
 
-    // Remove key from hash table.
-    m_pResourceHash->Delete( strName );
+    	// Update handle indices.
+    	m_vecObjects[nIndex]->UpdateAllHandles(nIndex);
 
-    // Update hashtable's resourcename.index for moved resource
-    CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(m_vecObjects[nIndex]->GetName());
-    pHashItem->GetObject().SetIndex( nIndex );
+    	// Remove key from hash table.
+    	m_pResourceHash->Delete( strName );
+
+    	// Update hashtable's resourcename.index for moved resource
+    	CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(m_vecObjects[nIndex]->GetName());
+    	pHashItem->GetObject().SetIndex( nIndex );
+    }
+    else
+    {
+    	// We're last element in the array, so remove us without any hesitation.
+    	m_vecObjects.pop_back();
+    	// Remove key from hash table.
+    	m_pResourceHash->Delete( strName );
+    }
 
   }
   else if ( nIndex == m_vecObjects.size() - 1 )
