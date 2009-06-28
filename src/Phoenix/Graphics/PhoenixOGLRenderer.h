@@ -140,35 +140,22 @@ namespace Phoenix
     class PHOENIX_API COglRendererFeatures
     {
     protected:
-      /// vertex_program support flag.
-      bool m_bARB_vertex_program;
-      /// vertex_shader support flag.
-      bool m_bARB_vertex_shader;
-      /// fragment_shader support flag.
-      bool m_bARB_fragment_shader;
-      /// vertex_array support flag.
-      bool m_bEXT_vertex_array;
-      /// vertex_buffer_object support flag.
-      bool m_bARB_vertex_buffer_object;
-      /// multitexture support flag.
-      bool m_bARB_multitexture;
-      /// shader_objects support flag.
-      bool m_bARB_shader_objects;
-      /// framebuffer object support flag.
-      bool m_bEXT_framebuffer_object;
-      /// GL_EXT_texture_compression_s3tc, used for compressed DDS textures
-      bool m_bEXT_texture_compression_s3tc;
-      /// Max number of supported lights.
-      int m_iMaxLights;
-      /// GL_MAX_ELEMENTS_VERTICES, used to create optimal render batches.
-      int m_iMaxElementsVertices;
-      /// GL_MAX_ELEMENTS_INDICES, used to create optimal render batches.
-      int m_iMaxElementsIndices;
-      /// GL_MAX_COLOR_ATTACHMENTS, used in frame buffers.
-      int m_iMaxColorAttachments;
-      /// GL_MAX_DRAW_BUFFERS, used in frame buffers.
-      int m_iMaxDrawBuffers;
-
+      bool m_bARB_vertex_program;      /// vertex_program support flag.
+      bool m_bARB_vertex_shader;      ///< vertex_shader support flag.
+      bool m_bARB_fragment_shader;     ///< fragment_shader support flag.
+      bool m_bEXT_vertex_array;       ///< vertex_array support flag.
+      bool m_bARB_vertex_buffer_object;     ///< vertex_buffer_object support flag.
+      bool m_bARB_multitexture;       ///< multitexture support flag.
+      bool m_bARB_shader_objects;      ///< shader_objects support flag.
+      bool m_bEXT_framebuffer_object;     ///< framebuffer object support flag.
+      bool m_bEXT_texture_compression_s3tc;       ///< GL_EXT_texture_compression_s3tc, used for compressed DDS textures
+      int m_iMaxLights;      ///< Max number of supported lights.
+      int m_iMaxElementsVertices;      ///< GL_MAX_ELEMENTS_VERTICES, used to create optimal render batches.
+      int m_iMaxElementsIndices; ///< GL_MAX_ELEMENTS_INDICES, used to create optimal render batches.
+      int m_iMaxColorAttachments;     ///< GL_MAX_COLOR_ATTACHMENTS, used in frame buffers.
+      int m_iMaxDrawBuffers;///< GL_MAX_DRAW_BUFFERS, used in frame buffers.
+      int m_iMultiSampleBuffers; ///< GL_SAMPLE_BUFFERS, number of multisample buffers
+      int m_iMultiSamples;  ///< GL_SAMPLES, multisample coverage max size
     public:
       ////////////////////
       /// Default constructor.
@@ -229,6 +216,14 @@ namespace Phoenix
       /// Get max draw buffers.
       /// \returns Maximum number of draw buffers for current hardware.
       int  GetMaxDrawBuffers() const;
+      ////////////////////
+      /// Return number of multisample buffers.
+      /// \returns Maximum number of sample buffers.
+	  int GetMultiSampleBuffers() const;
+      ////////////////////
+	  /// Returns multisample coverage mask size.
+	  /// \returns coverage mask size.
+	  int GetMultiSampleSamples() const;
       ////////////////////
       /// for printing out supported features.
       friend std::ostream &operator<<(std::ostream &stream,
@@ -334,6 +329,12 @@ namespace Phoenix
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
       void CommitPrimitive( Phoenix::Graphics::CIndexArray *pIndexBuffer );
+      ////////////////////
+      /// Draws the primitives from previously set arrays using all data.
+      /// \param nPrimitive Which primitives should be formed from current data.
+      /// \param nStart Starting from which array index primitives should be drawn.
+      /// \param nCount How many indices are drawn. Not prmitives, ie. one quad has four indices in quad list.
+      void CommitPrimitive( Phoenix::Graphics::PRIMITIVE_TYPE nPrimitive, size_t nStart, size_t nCount);
       ////////////////////
       /// Sets color for drawing.
       /// \param vColor RGBA Color vector.

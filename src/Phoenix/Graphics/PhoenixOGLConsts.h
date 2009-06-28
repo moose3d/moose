@@ -9,14 +9,14 @@ namespace Phoenix
   namespace Graphics
   {
     /// Which model data is left unrendered.
-    enum MODEL_EXCLUDE_DATA 
+    enum MODEL_EXCLUDE_DATA
     {
       M_TEXTURE_DATA = 1,
       M_SHADER_DATA = 1 << 1,
       M_NORMAL_DATA = 1 << 2,
       M_INDEX_DATA = 1 << 3
     };
-    enum CLIENT_STATE_TYPE 
+    enum CLIENT_STATE_TYPE
     {
       CLIENT_STATE_VERTEX_ARRAY = 0,
       CLIENT_STATE_COLOR_ARRAY = 1,
@@ -37,7 +37,8 @@ namespace Phoenix
       STATE_ALPHA_TEST = GL_ALPHA_TEST,
       STATE_BLENDING   = GL_BLEND,
       STATE_DEPTH_WRITE = GL_TRUE,
-      STATE_FACECULLING = GL_CULL_FACE
+      STATE_FACECULLING = GL_CULL_FACE,
+      STATE_MULTISAMPLE = GL_MULTISAMPLE
     };
     enum ALPHA_TEST_TYPE
     {
@@ -52,7 +53,7 @@ namespace Phoenix
     };
     enum BLEND_SRC_TYPE
     {
-      BLEND_SRC_ZERO                = GL_ZERO,     
+      BLEND_SRC_ZERO                = GL_ZERO,
       BLEND_SRC_ONE                 = GL_ONE,
       BLEND_SRC_DST_COLOR           = GL_DST_COLOR,
       BLEND_SRC_ONE_MINUS_DST_COLOR = GL_ONE_MINUS_DST_COLOR,
@@ -69,7 +70,7 @@ namespace Phoenix
       BLEND_DST_SRC_COLOR	    = GL_SRC_COLOR,
       BLEND_DST_ONE_MINUS_SRC_COLOR = GL_ONE_MINUS_SRC_COLOR,
       BLEND_DST_SRC_ALPHA	    = GL_SRC_ALPHA,
-      BLEND_DST_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,    
+      BLEND_DST_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,
       BLEND_DST_DST_ALPHA	    = GL_DST_ALPHA,
       BLEND_DST_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA
     };
@@ -80,9 +81,9 @@ namespace Phoenix
     /// Stream  ( define and use once per frame).
     enum CACHE_ACCESS_TYPE
     {
-      CACHE_STATIC_DRAW  = GL_STATIC_DRAW_ARB,   
-      CACHE_STATIC_READ  = GL_STATIC_READ_ARB,   
-      CACHE_STATIC_COPY  = GL_STATIC_COPY_ARB,   
+      CACHE_STATIC_DRAW  = GL_STATIC_DRAW_ARB,
+      CACHE_STATIC_READ  = GL_STATIC_READ_ARB,
+      CACHE_STATIC_COPY  = GL_STATIC_COPY_ARB,
       CACHE_DYNAMIC_DRAW = GL_DYNAMIC_DRAW_ARB,
       CACHE_DYNAMIC_READ = GL_DYNAMIC_READ_ARB,
       CACHE_DYNAMIC_COPY = GL_DYNAMIC_COPY_ARB,
@@ -92,8 +93,8 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// BufferType
-    enum BUFFER_TYPE 
-    { 
+    enum BUFFER_TYPE
+    {
       COLOR_BUFFER = 0,
       DEPTH_BUFFER = 1
     };
@@ -112,7 +113,7 @@ namespace Phoenix
       TEX_FORMAT_RGB  = GL_RGB,
       TEX_FORMAT_DEPTH_COMPONENT = GL_DEPTH_COMPONENT
     };
-    
+
   } // namespace Graphics
 } // namespace Phoenix
 #endif

@@ -126,6 +126,9 @@ Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
   glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);
   glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &m_iMaxColorAttachments );
   glGetIntegerv( GL_MAX_DRAW_BUFFERS,      &m_iMaxDrawBuffers );
+  glGetIntegerv( GL_SAMPLE_BUFFERS, 	   &m_iMultiSampleBuffers);
+  glGetIntegerv( GL_SAMPLES, 			   &m_iMultiSamples);
+
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -145,6 +148,7 @@ Phoenix::Graphics::COglRendererFeatures::Init()
   m_iMaxElementsIndices = 0;
   m_iMaxColorAttachments = 0;
   m_iMaxDrawBuffers = 0;
+
 }
 /////////////////////////////////////////////////////////////////
 bool
@@ -231,6 +235,18 @@ Phoenix::Graphics::COglRendererFeatures::GetMaxDrawBuffers() const
   return m_iMaxDrawBuffers;
 }
 /////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRendererFeatures::GetMultiSampleBuffers() const
+{
+	return m_iMultiSampleBuffers;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRendererFeatures::GetMultiSampleSamples() const
+{
+	return m_iMultiSamples;
+}
+/////////////////////////////////////////////////////////////////
 const char *
 Phoenix::Graphics::COglRendererFeatures::GetVendor() const
 {
@@ -267,6 +283,8 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
   stream << "GL_MAX_ELEMENTS_INDICES  = " << obj.GetMaxElementsIndices() << std::endl;
   stream << "GL_MAX_COLOR_ATTACHMENTS = " << obj.GetMaxColorAttachments() << std::endl;
   stream << "GL_MAX_DRAW_BUFFERS  = " << obj.GetMaxDrawBuffers() << std::endl;
+  stream << "GL_SAMPLE_BUFFERS = " << obj.GetMultiSampleBuffers() << std::endl;
+  stream << "GL_SAMPLES = " << obj.GetMultiSampleSamples() << std::endl;
   // GLenum err;
 //   int iNumFormats = -1;
 //   glGetIntegerv( GL_NUM_COMPRESSED_TEXTURE_FORMATS, &iNumFormats );
@@ -738,6 +756,38 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 //     }
 //   }
 
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitPrimitive( Phoenix::Graphics::PRIMITIVE_TYPE nPrimitive, size_t nStart, size_t nCount )
+{
+  GLenum glPrimitive = GL_POINTS;
+  ////////////////////
+  switch ( nPrimitive )
+  {
+  case PRIMITIVE_POINT_LIST:
+    glPrimitive = GL_POINTS;
+    break;
+  case PRIMITIVE_TRI_LIST:
+    glPrimitive = GL_TRIANGLES;
+    break;
+  case PRIMITIVE_TRI_STRIP:
+    glPrimitive = GL_TRIANGLE_STRIP;
+    break;
+  case PRIMITIVE_LINE_LIST:
+    glPrimitive = GL_LINES;
+    break;
+  case PRIMITIVE_LINE_STRIP:
+    glPrimitive = GL_LINE_STRIP;
+    break;
+  case PRIMITIVE_QUAD_LIST:
+    glPrimitive = GL_QUADS;
+    break;
+  case PRIMITIVE_QUAD_STRIP:
+    glPrimitive = GL_QUAD_STRIP;
+    break;
+  }
+  glDrawArrays( glPrimitive, nStart, nCount);
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -1662,7 +1712,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
     int iLoc = glGetAttribLocation(shader.GetProgram(), strParamName);
     if ( iLoc == -1 )
     {
-      cerr << "No such parameter '" << strParamName << "' in this shader!" << endl;
+      cerr << "No such parameter '" << strParamName << "' in this shader! Are you sure it's vertex attribute param and not uniform parameter?" << endl;
     }
     else
     {
@@ -1719,7 +1769,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
     int iLoc = glGetUniformLocation( shader.GetProgram(), strParamName);
     if ( iLoc == -1 )
     {
-      cerr << "No such parameter '" << strParamName << "' in this shader!" << endl;
+      cerr << "No such parameter '" << strParamName << "' in this shader! Are you sure that is uniform parameter and not vertex attribute?" << endl;
     }
     else
     {

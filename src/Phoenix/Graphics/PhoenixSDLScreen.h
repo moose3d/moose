@@ -14,27 +14,22 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// The Screen Singleton. Each application can have only one screen where
     /// drawing occurs. Hence, the Singleton nature.
-    class PHOENIX_API CSDLScreenParams 
+    class PHOENIX_API CSDLScreenParams
     {
     public:
-      /// The number of red bits  
-      int m_iRedSize;
-      /// The number of green bits
-      int m_iGreenSize;
-      /// The number of blue bits
-      int m_iBlueSize;
-      /// The double buffer flag
-      int m_bDoubleBuffer;
-      /// The bits for the depth buffer
-      int m_iDepthBufferSize;
-      /// The width of the screen
-      int m_iWidth;
-      //7 The height of the screen
-      int m_iHeight;
-      /// The depth of the screen
-      int m_iScreenDepth;
-      /// The video mode flags for SDL Screen
-      int m_iVideoModeFlags;
+
+      int m_iRedSize;///< The number of red bits
+      int m_iGreenSize;///< The number of green bits
+      int m_iBlueSize;///< The number of blue bits
+      int m_bDoubleBuffer;///< The double buffer flag
+      int m_iDepthBufferSize;///< The bits for the depth buffer
+      int m_iWidth;///< The width of the screen
+      int m_iHeight;///< The height of the screen
+      int m_iScreenDepth;///< The depth of the screen
+      int m_iVideoModeFlags; ///< The video mode flags for SDL Screen
+      int m_iMultiSampleBuffers; ///< Number of multisample buffers
+      int m_iMultiSampleSamples;  ///< Number of samples.
+
       ////////////////////
       /// The default constructor, sets default values for members.
       CSDLScreenParams();
@@ -43,7 +38,7 @@ namespace Phoenix
       /// \param stream output stream
       /// \param oglSP SDL screne object.
       /// \retruns reference to output stream.
-      friend std::ostream& operator<<( std::ostream &stream, 
+      friend std::ostream& operator<<( std::ostream &stream,
 				       const CSDLScreenParams & oglSP);
     };
     /////////////////////////////////////////////////////////////////
@@ -52,12 +47,12 @@ namespace Phoenix
       friend class CSingleton<CSDLScreen>;
     private:
       ////////////////////
-      /// The constructor 
+      /// The constructor
       CSDLScreen();
       ////////////////////
       /// The deconstructor
       ~CSDLScreen();
-    public:  
+    public:
       static CSDLScreenParams m_SDLScreenParams;
       ////////////////////
       /// Swaps buffers if double buffering is used.
