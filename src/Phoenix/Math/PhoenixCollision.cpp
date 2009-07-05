@@ -1647,3 +1647,163 @@ Phoenix::Collision::SphereIntersectsCone( const Phoenix::Volume::CSphere &sphere
 
    return bRetval;
 }
+///////////////////////////////////////////////////////////////////////////////
+bool
+Phoenix::Collision::OBBIntersectsOBB( const Phoenix::Volume::COrientedBox & box1, const Phoenix::Volume::COrientedBox & box2 )
+{
+
+  // u = length
+  // v = height
+  // w = width
+
+  CVector3<float> vFwd( box2.GetForwardVector().Dot(box1.GetForwardVector()),
+			box2.GetUpVector().Dot(box1.GetForwardVector()),
+			box2.GetRightVector().Dot(box1.GetForwardVector()) );
+
+  CVector3<float> vUp( box2.GetForwardVector().Dot(box1.GetUpVector()),
+		       box2.GetUpVector().Dot(box1.GetUpVector()),
+		       box2.GetRightVector().Dot(box1.GetUpVector()) );
+
+  CVector3<float> vRight( box2.GetForwardVector().Dot(box1.GetRightVector()),
+			  box2.GetUpVector().Dot(box1.GetRightVector()),
+			  box2.GetRightVector().Dot(box1.GetRightVector()) );
+	
+  CMatrix3x3<float> mR (  vFwd[0], vUp[0], vRight[0],
+			  vFwd[1], vUp[1], vRight[1],
+			  vFwd[2], vUp[2], vRight[2] );
+	
+  CVector3<float> tmp = box2.GetPosition()-box1.GetPosition();
+  CVector3<float> vT( tmp.Dot(box1.GetForwardVector()),
+		      tmp.Dot(box1.GetUpVector()),
+		      tmp.Dot(box1.GetRightVector()));
+  // Tests for a_u, a_v, a_w:
+	
+  if ( fabs(vT[0]) > box1.GetHalfLength() +
+       box2.GetHalfLength() * fabsf(mR(0,0)) +
+       box2.GetHalfHeight() * fabsf(mR(0,1)) +
+       box2.GetHalfWidth()  * fabsf(mR(0,2)) )
+  {
+    return false;
+  }
+  if ( fabs(vT[1]) > box1.GetHalfHeight() +
+       box2.GetHalfLength() * fabsf(mR(1,0)) +
+       box2.GetHalfHeight() * fabsf(mR(1,1)) +
+       box2.GetHalfWidth()  * fabsf(mR(1,2)) )
+  {
+    return false;
+  }
+
+  if ( fabs(vT[2]) > box1.GetHalfWidth() +
+       box2.GetHalfLength() * fabsf(mR(2,0)) +
+       box2.GetHalfHeight() * fabsf(mR(2,1)) +
+       box2.GetHalfWidth()  * fabsf(mR(2,2)) )
+  {
+    return false;
+  }
+  // tests for b_u, b_v, b_w:
+
+  if ( fabsf(vT[0] * mR(0,0) + vT[1] * mR(1,0) + vT[2] * mR(2,0)) > box2.GetHalfLength() +
+       box1.GetHalfLength()*fabsf(mR(0,0)) +
+       box1.GetHalfHeight()*fabsf(mR(1,0)) +
+       box1.GetHalfWidth()*fabsf(mR(2,0)) )
+  {
+    return false;
+  }
+  if ( fabsf(vT[0] * mR(0,1) + vT[1] * mR(1,1) + vT[2] * mR(2,1)) > box2.GetHalfHeight() +
+       box1.GetHalfLength()*fabsf(mR(0,1)) +
+       box1.GetHalfHeight()*fabsf(mR(1,1)) +
+       box1.GetHalfWidth()*fabsf(mR(2,1)) )
+  {
+    return false;
+  }
+
+  if ( fabsf(vT[0] * mR(0,2) + vT[1] * mR(1,2) + vT[2] * mR(2,2)) > box2.GetHalfWidth() +
+       box1.GetHalfLength()*fabsf(mR(0,2)) +
+       box1.GetHalfHeight()*fabsf(mR(1,2)) +
+       box1.GetHalfWidth()*fabsf(mR(2,2)) )
+  {
+    return false;
+  }
+  // tests for combination of each edge from OBBs.
+  if ( fabsf( vT[2]*mR(1,0) - vT[1]*mR(2,0) ) > 
+       
+       box1.GetHalfHeight()*fabsf(mR(2,0)) + 
+       box1.GetHalfWidth() *fabsf(mR(1,0)) +
+       box2.GetHalfHeight()*fabsf(mR(0,2)) +
+       box2.GetHalfWidth() *fabsf(mR(0,1)) )
+  {
+    return false;
+  }
+  
+  if ( fabsf( vT[2]*mR(1,1) - vT[1]*mR(2,1)) >
+       box1.GetHalfHeight()*fabsf(mR(2,1)) + 
+       box1.GetHalfWidth()*fabsf(mR(1,1)) +
+       box2.GetHalfLength()*fabsf( mR(0,2)) +
+       box2.GetHalfWidth()*fabsf( mR(0,0))       )
+  {
+    return false;
+  }
+
+  if ( fabsf( vT[2]*mR(1,2) - vT[1]*mR(2,2)) > 
+       box1.GetHalfHeight() * fabsf(mR(2,2)) +
+       box1.GetHalfWidth()  * fabsf(mR(1,2)) +
+       box2.GetHalfLength() * fabsf(mR(0,1)) +
+       box2.GetHalfHeight() * fabsf(mR(0,0)) )
+  {
+    return false;
+  }
+  
+  if ( fabsf( vT[0] * mR(2,0) - vT[2]*mR(0,0)) > 
+       box1.GetHalfLength() * fabsf(mR(2,0)) + 
+       box1.GetHalfWidth()  * fabsf(mR(0,0)) + 
+       box2.GetHalfHeight() * fabsf(mR(1,2)) + 
+       box2.GetHalfWidth()  * fabsf(mR(1,1)))
+  {
+    return false;
+  }
+  
+  if ( fabsf( vT[0] * mR(2,1) - vT[2]*mR(0,1)) > 
+       box1.GetHalfLength() * fabsf(mR(2,1)) + 
+       box1.GetHalfWidth()  * fabsf(mR(0,1)) + 
+       box2.GetHalfLength() * fabsf(mR(1,2)) + 
+       box2.GetHalfWidth()  * fabsf(mR(1,0)))
+  {
+    return false;
+  }
+
+  if ( fabsf( vT[0] * mR(2,2) - vT[2]*mR(0,2)) > 
+       box1.GetHalfLength() * fabsf(mR(2,2)) + 
+       box1.GetHalfWidth()  * fabsf(mR(0,2)) + 
+       box2.GetHalfLength() * fabsf(mR(1,1)) + 
+       box2.GetHalfHeight() * fabsf(mR(1,0)))
+  {
+    return false;
+  }
+  // aw x bu
+  if ( fabsf( vT[1]*mR(0,0) - vT[0]*mR(1,0)) > 
+       box1.GetHalfLength()*fabsf(mR(1,0))+
+       box1.GetHalfHeight()*fabsf(mR(0,0))+
+       box2.GetHalfHeight()*fabsf(mR(2,2))+
+       box2.GetHalfWidth() *fabsf(mR(2,1)))
+  {
+    return false;
+  }
+  if ( fabsf( vT[1]*mR(0,1) - vT[0]*mR(1,1)) > 
+       box1.GetHalfLength()*fabsf(mR(1,1))+
+       box1.GetHalfHeight()*fabsf(mR(0,1))+
+       box2.GetHalfLength()*fabsf(mR(2,2))+
+       box2.GetHalfWidth() *fabsf(mR(2,0)))
+  {
+    return false;
+  }
+  if ( fabsf( vT[1]*mR(0,2) - vT[0]*mR(1,2)) > 
+       box1.GetHalfLength()*fabsf(mR(1,2))+
+       box1.GetHalfHeight()*fabsf(mR(0,2))+
+       box2.GetHalfLength()*fabsf(mR(2,1))+
+       box2.GetHalfHeight() *fabsf(mR(2,0)))
+  {
+    return false;
+  }
+  return true;
+}
+///////////////////////////////////////////////////////////////////////////////
