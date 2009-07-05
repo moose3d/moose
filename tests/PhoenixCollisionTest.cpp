@@ -2119,3 +2119,202 @@ TEST( SphereIntersectsCapsule )
 
 // }
 /////////////////////////////////////////////////////////////////
+struct OBBFixture
+{
+  COrientedBox a;
+  COrientedBox b;
+  OBBFixture()
+  {
+      a.SetWidth(1);
+      a.SetHeight(2);
+      a.SetLength(4);
+      
+      a.SetPosition(0,0,0);
+      b = a;
+  }
+};
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( OBBFixture, OBBintersectsOBB_Xaxis)
+{
+//   COrientedBox a,b;
+
+//   a.SetWidth(1);
+//   a.SetHeight(2);
+//   a.SetLength(4);
+
+//   a.SetPosition(0,0,0);
+//   b = a;
+   b.SetPosition( 15,0,0);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 2,0,0);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+  
+  b.SetPosition( 1.999f,0,0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 1.5f,0,0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 1.001,0,0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 1.000,0,0);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0.999,0,0);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition(0,0,0);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( -0.999,0,0);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( -1.0,0,0);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( -1.001,0,0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( -1.5,0,0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( -15,0,0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( OBBFixture, OBBintersectsOBB_Zaxis)
+{
+ 
+  b.SetPosition( 0,0,5);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,4.001);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,4);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+  
+  b.SetPosition( 0,0,3.999);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,1);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,0);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,-1);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,-3.999);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,-4.0);
+  
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,-4.001);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0,-5.0);
+  
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( OBBFixture, OBBintersectsOBB_Yaxis)
+{
+ 
+  b.SetPosition( 0,3,0);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,2.001,0);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,2.00,0);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,1.999,0);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,0.0,0);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,-1.999,0);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,-2.0,0);
+
+  CHECK_EQUAL( true, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( true, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,-2.001,0);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+
+  b.SetPosition( 0,-3.0,0);
+
+  CHECK_EQUAL( false, OBBIntersectsOBB( a,b) );
+  CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
+}
+////////////////////////////////////////////////////////////////////////////////
