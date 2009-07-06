@@ -221,6 +221,22 @@ namespace Phoenix
 					    const Phoenix::Volume::CAxisAlignedCube &aaCube);
 
     ////////////////////
+    /// Checks does sphere intersect axis-aligned bounding box.
+    /// \param sphere A sphere
+    /// \param aabb Axis-aligned bounding box
+    /// \returns false if sphere and box do not intersect.
+    /// \returns true if sphere and box intersect.
+    PHOENIX_API bool SphereIntersectsAABB( const Phoenix::Volume::CSphere &sphere,
+					   const Phoenix::Volume::CAxisAlignedBox &aabb);
+
+    ///////////////////
+    /// Checks intersection between oriented box and sphere.
+    /// \param sphere Sphere
+    /// \param box OBB
+    /// \return true if two objects intersect,
+    ///	\return	false otherwise.
+    PHOENIX_API bool SphereIntersectsOBB( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::COrientedBox & box );
+    ////////////////////
     /// Checks do two spheres intersect.
     /// \param sphereOne First sphere
     /// \param sphereTwo Second sphere
@@ -360,9 +376,20 @@ namespace Phoenix
     /// \param sphere Sphere object
     /// \param cone Cone object.
     /// \returns true if two objects intersect
-    ///          fals otherwise.
+    ///          false otherwise.
     PHOENIX_API bool SphereIntersectsCone ( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CCone &cone );
+    ///////////////////
+    /// Checks intersection between oriented boxes.
+    /// \param box1 First OBB
+    /// \param box2 Second OBB
+    /// \return true if two objects intersect,
+    ///	\return	false otherwise.
+    PHOENIX_API bool OBBIntersectsOBB( const Phoenix::Volume::COrientedBox & box1, const Phoenix::Volume::COrientedBox & box2 );
 
+    
+
+
+    
     /*     int  SphereIntersectsAxisAlignedBox( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aaBox); */
     /*     //char SphereIntersectsOrientedBox( const CSphere &sphere, const COrientedBox &obBox); */
 
