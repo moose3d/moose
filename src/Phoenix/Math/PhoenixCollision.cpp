@@ -1807,3 +1807,83 @@ Phoenix::Collision::OBBIntersectsOBB( const Phoenix::Volume::COrientedBox & box1
   return true;
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool 
+Phoenix::Collision::SphereIntersectsAABB( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::CAxisAlignedBox &aabb)
+{
+    float fDistance = 0.0f;
+  float fTmp = 0.0f;
+  /////////////////////////////////////////////////////////////////
+  // Test for X axis
+  float fAxisMax = aabb.GetMax()[0];
+  float fAxisMin = aabb.GetMin()[0];
+  float fAxisCenter = sphere.GetPosition()[0];
+
+  if ( fAxisCenter < fAxisMin )
+  {
+    fTmp = fAxisCenter - fAxisMin;
+    fDistance += ( fTmp * fTmp );
+  }
+  else if ( fAxisCenter > fAxisMax )
+  {
+    fTmp =  fAxisCenter - fAxisMax;
+    fDistance += ( fTmp * fTmp );
+  }
+  /////////////////////////////////////////////////////////////////
+  // Test for Y axis
+  fAxisMax = aabb.GetMax()[1];
+  fAxisMin = aabb.GetMin()[1];
+  fAxisCenter = sphere.GetPosition()[1];
+  if ( fAxisCenter < fAxisMin )
+  {
+    fTmp = fAxisCenter - fAxisMin;
+    fDistance += ( fTmp * fTmp );
+  }
+  else if ( fAxisCenter > fAxisMax )
+  {
+    fTmp =  fAxisCenter - fAxisMax;
+    fDistance += ( fTmp * fTmp );
+  }
+  /////////////////////////////////////////////////////////////////
+  // Test for Z axis
+  fAxisMax = aabb.GetMax()[2];
+  fAxisMin = aabb.GetMin()[2];
+  fAxisCenter = sphere.GetPosition()[2];
+  if ( fAxisCenter < fAxisMin )
+  {
+    fTmp = fAxisCenter - fAxisMin;
+    fDistance += ( fTmp * fTmp );
+  }
+  else if ( fAxisCenter > fAxisMax )
+  {
+    fTmp =  fAxisCenter - fAxisMax;
+    fDistance += ( fTmp * fTmp );
+  }
+  /////////////////////////////////////////////////////////////////
+  // Actual test, if the sum of squared distances is less than the squared
+  // radius, we have overlapping.
+  if ( fDistance > sphere.GetRadiusSqr())
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+
+}
+////////////////////////////////////////////////////////////////////////////////
+bool 
+Phoenix::Collision::SphereIntersectsOBB( const Phoenix::Volume::CSphere &sphere, const Phoenix::Volume::COrientedBox & box )
+{
+  // convert sphere into OBB's space, and use origo-centered aabb test against sphere.
+  CVector3<float> vCenter = sphere.GetPosition() - box.GetPosition();
+  
+  return SphereIntersectsAABB( CSphere(CVector3<float>( vCenter.Dot( box.GetForwardVector()), 
+							vCenter.Dot(box.GetUpVector()), 
+							vCenter.Dot( box.GetRightVector())), sphere.GetRadius()),
+			       CAxisAlignedBox( CVector3<float>(0,0,0), 
+						box.GetLength(), 
+						box.GetHeight(), 
+						box.GetWidth()));
+}
+////////////////////////////////////////////////////////////////////////////////
