@@ -485,7 +485,7 @@ namespace Phoenix
       /// The quaternion holding rotations.
       Phoenix::Math::CQuaternion m_qRotation;
       /////////////////////////////////////////////////////////////////
-      /// A boolean flag indicating the change of rotation.
+      /// A boolean flag indicating a change in rotation.
       char	m_bRotationChanged;
     public:
       /////////////////////////////////////////////////////////////////
