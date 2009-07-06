@@ -156,6 +156,7 @@ namespace Phoenix
       int m_iMaxDrawBuffers;///< GL_MAX_DRAW_BUFFERS, used in frame buffers.
       int m_iMultiSampleBuffers; ///< GL_SAMPLE_BUFFERS, number of multisample buffers
       int m_iMultiSamples;  ///< GL_SAMPLES, multisample coverage max size
+      int m_iMaxVertexAttribs; ///< GL_MAX_VERTEX_ATTRIBS, maximum number of user-defined vertex attributes for shaders.
     public:
       ////////////////////
       /// Default constructor.
@@ -219,15 +220,21 @@ namespace Phoenix
       ////////////////////
       /// Return number of multisample buffers.
       /// \returns Maximum number of sample buffers.
-	  int GetMultiSampleBuffers() const;
+      int GetMultiSampleBuffers() const;
       ////////////////////
-	  /// Returns multisample coverage mask size.
-	  /// \returns coverage mask size.
-	  int GetMultiSampleSamples() const;
+      /// Returns multisample coverage mask size.
+      /// \returns coverage mask size.
+      int GetMultiSampleSamples() const;
+      ////////////////////
+      /// Returns maximum number of vertex attributes per shader.
+      /// \returns max vertex attribs.
+      int GetMaxVertexAttribs() const;
       ////////////////////
       /// for printing out supported features.
       friend std::ostream &operator<<(std::ostream &stream,
 				      const COglRendererFeatures &obj);
+
+
       ////////////////////
       /// \returns vendor string.
       const char *GetVendor() const;
@@ -627,7 +634,7 @@ namespace Phoenix
       ////////////////////
       /// Renders a box.
       /// \param box OBB to be rendered.
-      /// \param bWireframe Is sphere rendered as wireframe. Default true.
+      /// \param bWireframe Is box rendered as wireframe. Default true.
       void CommitBox( const Phoenix::Volume::COrientedBox &box, bool bWireframe = true );
       ////////////////////
       /// Renders a quad with texcoords, color and normal. Vertices must be given in counter-clockwise order.
