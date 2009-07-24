@@ -223,7 +223,7 @@ Phoenix::Graphics::CLightBase::ComputeAttenuationDistance()
 		}
 		else
 		{
-			if ( GetConstantAttenuation() < 100.0f )
+			if ( GetConstantAttenuation() < 1000.0f )
 				return -1.0f;
 			else return 0.0f;
 		}

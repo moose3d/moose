@@ -16,8 +16,8 @@ using namespace Phoenix::Graphics;
 void
 Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix )
 {
-  
-// The values in Row-Major mode matrix which represents the 
+
+// The values in Row-Major mode matrix which represents the
 // rotation matrix from the Quaternion:
 // (From http://skal.planet-d.net/demo/matrixfaq.htm#Q2)
 //
@@ -35,30 +35,30 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
   float xx = qQuat[0] * qQuat[0];
   float yy = qQuat[1] * qQuat[1];
   float zz = qQuat[2] * qQuat[2];
-  
+
   float xy = qQuat[0] * qQuat[1];
   float xz = qQuat[0] * qQuat[2];
   float yz = qQuat[1] * qQuat[2];
-  
+
   float wz = qQuat[3] * qQuat[2];
   float wy = qQuat[3] * qQuat[1];
   float wx = qQuat[3] * qQuat[0];
-  
+
   mMatrix(0,0) = 1.0f - yy - yy - zz - zz;
   mMatrix(0,1) = xy + xy - wz - wz;
   mMatrix(0,2) = xz + xz + wy + wy;
   mMatrix(0,3) = 0.0f;
-  
+
   mMatrix(1,0) = xy + xy + wz + wz;
   mMatrix(1,1) = 1.0f - xx - xx - zz - zz;
   mMatrix(1,2) = yz + yz - wx - wx;
   mMatrix(1,3) = 0.0f;
-  
+
   mMatrix(2,0) = xz + xz - wy - wy;
   mMatrix(2,1) = yz + yz + wx + wx;
   mMatrix(2,2) = 1.0f - xx - xx - yy - yy;
   mMatrix(2,3) = 0.0f;
-  
+
   mMatrix(3,0) = 0.0f;
   mMatrix(3,1) = 0.0f;
   mMatrix(3,2) = 0.0f;
@@ -66,17 +66,17 @@ Phoenix::Math::QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &
 
 }
 /////////////////////////////////////////////////////////////////
-// std::ostream & 
+// std::ostream &
 // operator<<(std::ostream &stream, const CQuaternion & qQuat)
 // {
 //   stream << qQuat(0) << "," <<qQuat(1) << "," <<qQuat(2) << "," << qQuat(3);
 //   return stream;
 // }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation, CQuaternion &result )
 {
-  
+
   float fCos = qFrom.Dot(qTo);
   float fScaleFrom, fScaleTo;
 
@@ -85,7 +85,7 @@ Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation, 
     fCos = -fCos;
     qTo = -qTo;
   }
-  
+
   if ( 1.0f - fCos > 0.00001f )
   {
     float fOmega = acosf(fCos);
@@ -93,13 +93,13 @@ Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation, 
     fScaleFrom = sinf((1.0f - fInterpolation )*fOmega) * f1DivSinOmega;
     fScaleTo   = sinf( fInterpolation * fOmega )  * f1DivSinOmega;
 
-  } 
-  else 
+  }
+  else
   {
     fScaleFrom = 1.0f - fInterpolation;
     fScaleTo = fInterpolation;
   }
-  
+
   qFrom *= fScaleFrom;
   qTo *= fScaleTo;
   result = qFrom + qTo;
@@ -116,7 +116,7 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians, CMat
 {
   // does not need to be initialized, values will be set later.
   CMatrix4x4<float> mS;
-  
+
   CMatrix4x4<float> uuT(0.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 0.0f, 0.0f,
@@ -128,7 +128,7 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians, CMat
   // An unit vector is required
   CVector3<float> vAxisUnit(fX,fY,fZ);
   vAxisUnit.Normalize();
-  // For readability 
+  // For readability
   fZ = vAxisUnit[2];
   fX = vAxisUnit[0];
   fY = vAxisUnit[1];
@@ -144,7 +144,7 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians, CMat
   float fYZ = fY * fZ;
   float fZZ = fZ * fZ;
   // At first, we construct matrix S:
-  // 
+  //
   //     ( 0 -z -y )
   // S = ( z  0 -x )
   //     (-y  x  0 )
@@ -156,9 +156,9 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians, CMat
   // then sin (fRadians) * S
   mS = mS * fSinAlpha;
   // uuT = uT * u;
-  uuT(0,0) = fXX; uuT(0,1)= fXY; uuT(0,2) = fXZ; 
-  uuT(1,0) = fXY; uuT(1,1)= fYY; uuT(1,2) = fYZ; 
-  uuT(2,0) = fXZ; uuT(2,1)= fYZ; uuT(2,2) = fZZ; 
+  uuT(0,0) = fXX; uuT(0,1)= fXY; uuT(0,2) = fXZ;
+  uuT(1,0) = fXY; uuT(1,1)= fYY; uuT(1,2) = fYZ;
+  uuT(2,0) = fXZ; uuT(2,1)= fYZ; uuT(2,2) = fZZ;
   CMatrix4x4<float> mTemp;
   mTemp.IdentityMatrix();
   mResult = uuT + (mTemp - uuT)*fCosAlpha + mS;
@@ -170,7 +170,7 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians, CMat
 void
 Phoenix::Math::RotationMatrix( const CVector3<float> &vRadians, CMatrix4x4<float> & result)
 {
-  RotationMatrix( vRadians[0], 
+  RotationMatrix( vRadians[0],
 		  vRadians[1],
 		  vRadians[2], result);
 }
@@ -204,19 +204,19 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
 	      CMatrix3x3<float> & mResult)
 {
   //CMatrix3x3<float> mResult;
-    
+
   CVector3<float> vQ1 = vPoint1 - vPoint0;
   CVector3<float> vQ2 = vPoint2 - vPoint0;
   CVector2<float> vQTex1 = vTexCoord1 - vTexCoord0;
   CVector2<float> vQTex2 = vTexCoord2 - vTexCoord0;
   //  ----------------------------------------------------------
-  // The formula for retrieving the tangent space matrix 
+  // The formula for retrieving the tangent space matrix
   //
   //   Q1.xyz = V1.xyz - V0.xyz
   //   Q2.xyz = V2.xyz - V0.xyz
   //   Q1.s   = V1.s - V0.s
   //   Q2.s   = V2.s - V0.s
-  //   
+  //
   //
   //  | Tx Ty Tz |              1               |  Q2.t -Q1.t | | Q1.x Q1.y Q1.z |
   //  |          | =    ------------------    * |             |*|                |
@@ -231,8 +231,8 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
     // Handle error
     mResult.IdentityMatrix();
     //return mResult;
-  } 
-  else 
+  }
+  else
   {
 
     CVector3<float> vNormal(0.0f, 0.0f, 1.0f);
@@ -255,8 +255,8 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
     vTangent   *= fCoefficient;
     vBitangent *= fCoefficient;
     // Ensure that the vectors are orthogonal
-    vTangent = vTangent - ( vNormal.Dot(vTangent) * vNormal);    
-    vBitangent = vBitangent - ( vNormal.Dot(vBitangent) * vNormal ) - 
+    vTangent = vTangent - ( vNormal.Dot(vTangent) * vNormal);
+    vBitangent = vBitangent - ( vNormal.Dot(vBitangent) * vNormal ) -
     ( vTangent.Dot(vBitangent)*vTangent );
     // construct the matrix
     mResult(0,0) = vTangent[0];
@@ -268,12 +268,12 @@ GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> 
     mResult(2,0) = vNormal[0];
     mResult(2,1) = vNormal[1];
     mResult(2,2) = vNormal[2];
-    
+
   }
-  
+
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
 				      const CVertexDescriptor &normals,
 				      const CVertexDescriptor &texCoords,
@@ -292,7 +292,7 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
   float *pTangents = new float[vertices.GetSize()*6];
   float *pTangents2 = pTangents + (vertices.GetSize()*3);
   memset( pTangents, 0, sizeof(float)*vertices.GetSize()*6);
-  
+
   unsigned int nTriCount = indices.GetNumIndices() / 3;
 
   int bUseShort = indices.IsShortIndices();
@@ -322,32 +322,32 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
     v1.Set(&vertices.GetPointer<float>()[i1*3]);
     v2.Set(&vertices.GetPointer<float>()[i2*3]);
     v3.Set(&vertices.GetPointer<float>()[i3*3]);
-    
+
     w1.Set(&texCoords.GetPointer<float>()[i1*2]);
     w2.Set(&texCoords.GetPointer<float>()[i2*2]);
     w3.Set(&texCoords.GetPointer<float>()[i3*2]);
-    
+
     float x1 = v2[0] - v1[0];
     float x2 = v3[0] - v1[0];
     float y1 = v2[1] - v1[1];
     float y2 = v3[1] - v1[1];
     float z1 = v2[2] - v1[2];
     float z2 = v3[2] - v1[2];
-        
+
     float s1 = w2[0] - w1[0];
     float s2 = w3[0] - w1[0];
     float t1 = w2[1] - w1[1];
     float t2 = w3[1] - w1[1];
-        
+
     float r = 1.0f / (s1 * t2 - s2 * t1);
     vSdir[0] = (t2 * x1 - t1 * x2) * r;
     vSdir[1] = (t2 * y1 - t1 * y2) * r;
     vSdir[2] = (t2 * z1 - t1 * z2) * r;
-    
+
     vTdir[0] = (s1 * x2 - s2 * x1) * r;
     vTdir[1] = (s1 * y2 - s2 * y1) * r;
     vTdir[2] = (s1 * z2 - s2 * z1) * r;
-    
+
     //vTmp.UseExternalData( &pTangents[i1*3] );    vTmp += vSdir;
     //vTmp.UseExternalData( &pTangents[i2*3] );    vTmp += vSdir;
     //vTmp.UseExternalData( &pTangents[i3*3] );    vTmp += vSdir;
@@ -364,7 +364,7 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
     pTangents[i3*3]   += vSdir[0];
     pTangents[i3*3+1] += vSdir[1];
     pTangents[i3*3+2] += vSdir[2];
-    
+
     //vTmp.UseExternalData( &pTangents2[i1*3] );    vTmp += vTdir;
     //vTmp.UseExternalData( &pTangents2[i2*3] );    vTmp += vTdir;
     //vTmp.UseExternalData( &pTangents2[i3*3] );    vTmp += vTdir;
@@ -388,9 +388,9 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
 
     v1.Set( &normals.GetPointer<float>()[a*3]);
     v2.Set( &pTangents[a*3] );
-    
-    //vTangent.UseExternalData( &tangents.GetPointer<float>()[a*4]); 
-    
+
+    //vTangent.UseExternalData( &tangents.GetPointer<float>()[a*4]);
+
     // Gram-Schmidt orthogonalize
     vTmp2 = v2 - (v1 * (v1.Dot(v2)));
     vTmp2.Normalize();
@@ -412,7 +412,7 @@ Phoenix::Math::CalculateTangentArray( const CVertexDescriptor &vertices,
   pTangents = pTangents2 = NULL;
 }
 /////////////////////////////////////////////////////////////////
-float 
+float
 Phoenix::Math::Det(const CMatrix4x4<float> & mMatrix)
 {
   float fDet = 0.0;
@@ -425,7 +425,7 @@ Phoenix::Math::Det(const CMatrix4x4<float> & mMatrix)
 }
 ////////////////////
 /// Returns the determinant of the 3x3 float matrix.
-float 
+float
 Phoenix::Math::Det(const CMatrix3x3<float> & mMatrix)
 {
   float fDet = 0.0;
@@ -437,7 +437,7 @@ Phoenix::Math::Det(const CMatrix3x3<float> & mMatrix)
 }
 ////////////////////
 /// Returns the determinant of the 2x2 float matrix.
-float 
+float
 Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 {
   return mMatrix.At(0,0) * mMatrix.At(1,1) - mMatrix.At(0,1) * mMatrix.At(1,0);
@@ -446,11 +446,11 @@ Phoenix::Math::Det(const CMatrix2x2<float> & mMatrix)
 void
 Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMatrix3x3<float> & mCovariance)
 {
-  
+
 
   /// Covariance matrix is valid only for 3d coordinates
-  if ( (vertexDescriptor.GetType() != ELEMENT_TYPE_VERTEX_3F) && 
-       (vertexDescriptor.GetType() != ELEMENT_TYPE_V3F_N3F_T2F) ) 
+  if ( (vertexDescriptor.GetType() != ELEMENT_TYPE_VERTEX_3F) &&
+       (vertexDescriptor.GetType() != ELEMENT_TYPE_V3F_N3F_T2F) )
   {
     mCovariance.IdentityMatrix();
     return;
@@ -470,7 +470,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
     vAveragePos[1] += vertexDescriptor.GetPointer<float>(iVertComponent)[1];
     vAveragePos[2] += vertexDescriptor.GetPointer<float>(iVertComponent)[2];
   }
-  
+
   vAveragePos /= static_cast<float>(vertexDescriptor.GetSize());
 
   // Calculate Covariance matrix
@@ -479,7 +479,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
     float fTmpX = vertexDescriptor.GetPointer<float>(iVertComponent)[0] - vAveragePos[0];
     float fTmpY = vertexDescriptor.GetPointer<float>(iVertComponent)[1] - vAveragePos[1];
     float fTmpZ = vertexDescriptor.GetPointer<float>(iVertComponent)[2] - vAveragePos[2];
-    
+
     mCovariance(0,0) += fTmpX * fTmpX;
     mCovariance(1,1) += fTmpY * fTmpY;
     mCovariance(2,2) += fTmpZ * fTmpZ;
@@ -487,7 +487,7 @@ Phoenix::Math::CovarianceMatrix( const CVertexDescriptor &vertexDescriptor, CMat
     mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
 
-  }    
+  }
   mCovariance /= static_cast<float>(vertexDescriptor.GetSize());
   //return mCovariance;
 }
@@ -498,7 +498,7 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
 
   /// Covariance matrix is valid only for 3d coordinates
   if ( (vertexDescriptor.GetType()  != ELEMENT_TYPE_VERTEX_3F) &&
-       (vertexDescriptor.GetType()  != ELEMENT_TYPE_V3F_N3F_T2F) ) 
+       (vertexDescriptor.GetType()  != ELEMENT_TYPE_V3F_N3F_T2F) )
   {
     mCovariance.IdentityMatrix();
     return;
@@ -520,7 +520,7 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
   // Calculate average position
   for(unsigned int nIndex = 0;nIndex < indices.GetNumIndices(); nIndex++)
   {
-    // The index points to and triplet of three floats, which are 
+    // The index points to and triplet of three floats, which are
     // stored continuously into vertexdescriptor.
     if ( indices.IsShortIndices() )
       nVertexIndex = m_pIndexShortArray[nIndex] * 3;
@@ -531,7 +531,7 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     vAveragePos[1] += vertexDescriptor.GetPointer<float>(nVertexIndex)[1];
     vAveragePos[2] += vertexDescriptor.GetPointer<float>(nVertexIndex)[2];
   }
-  
+
   vAveragePos /= static_cast<float>(indices.GetNumIndices());
 
   float fTmpX;
@@ -550,7 +550,7 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     fTmpX = vertexDescriptor.GetPointer<float>(nVertexIndex)[0] - vAveragePos[0];
     fTmpY = vertexDescriptor.GetPointer<float>(nVertexIndex)[1] - vAveragePos[1];
     fTmpZ = vertexDescriptor.GetPointer<float>(nVertexIndex)[2] - vAveragePos[2];
-    
+
     mCovariance(0,0) += fTmpX * fTmpX;
     mCovariance(1,1) += fTmpY * fTmpY;
     mCovariance(2,2) += fTmpZ * fTmpZ;
@@ -558,14 +558,14 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     mCovariance(0,2) = mCovariance(2,0) += fTmpX * fTmpZ;
     mCovariance(1,2) = mCovariance(2,1) += fTmpY * fTmpZ;
 
-  }    
+  }
   mCovariance /= static_cast<float>(indices.GetNumIndices());
 
   //return mCovariance;
 }
 /////////////////////////////////////////////////////////////////
 #define SIGN(VAL) (VAL < 0.0F ? -1.0F : 1.0F)
-void 
+void
 Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1, float &fLambda2, float &fLambda3, CMatrix3x3<float> &mRes)
 {
   const float fEpsilon = 1.0e-10F;
@@ -584,10 +584,10 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
   {
     //Core::CLogger::Log() << "loop" << a << std::endl;
     // Exit if off-diagonal entries are small enough
-    if ( (fabs(m12) < fEpsilon) && 
+    if ( (fabs(m12) < fEpsilon) &&
 	 (fabs(m13) < fEpsilon) &&
 	 (fabs(m23) < fEpsilon)) break;
-    
+
     if ( m12 != 0.0F)
     {
 
@@ -595,7 +595,7 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
       float u2 = u * u;
       float u2p1 = u2 + 1.0F;
       float t = (u2p1 != u2 ) ? SIGN(u) * (sqrt(u2p1) - fabs(u)) : 0.5F / u;
-					   
+
       float c = 1.0F / sqrt(t * t + 1.0F);
       float s = c * t;
 
@@ -605,7 +605,7 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
 
       float temp = (c * m13) - (s * m23);
       m23 = (s * m13) + (c * m23);
-      m13 = temp;      
+      m13 = temp;
 
       for(int i=0;i<3;i++)
       {
@@ -613,9 +613,9 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
 	mRes(i,1) = (s * mRes(i,0)) + (c * mRes(i,1));
 	mRes(i,0) = tmp;
       }
-      
+
     }
-    
+
     if ( m13 != 0.0F )
     {
 
@@ -623,7 +623,7 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
       float u2 = u * u;
       float u2p1 = u2 + 1.0F;
       float t = (u2p1 != u2 ) ? SIGN(u) * (sqrt(u2p1) - fabs(u)) : 0.5F / u;
-      
+
       float c = 1.0F / sqrt((t * t) + 1.0F);
       float s = c * t;
 
@@ -650,15 +650,15 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
       float u2 = u * u;
       float u2p1 = u2 + 1.0F;
       float t = ( u2p1 != u2 ) ? SIGN(u) * (sqrt(u2p1) - fabs(u)) : 0.5F / u;
-      
+
       float c = 1.0F / sqrt(t * t + 1.0F);
       float s = c * t;
-      
+
 
       m22 -= t * m23;
       m33 += t * m23;
       m23  = 0.0;
-      
+
       float temp = (c * m12) - (s * m13);
       m13 = (s * m12) + (c * m13);
       m12 = temp;
@@ -671,11 +671,11 @@ Phoenix::Math::CalculateEigensystem( CMatrix3x3<float> &mMatrix, float &fLambda1
       }
     }
   } //  for(int a=0;a<nMaxSweeps;a++)
-  
+
   fLambda1 = m11;
   fLambda2 = m22;
   fLambda3 = m33;
-  
+
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -684,14 +684,14 @@ Phoenix::Math::SetRowVector(CMatrix3x3<float> &mMatrix, unsigned int iRow, const
 
   float *pArray = mMatrix.GetArray();
   unsigned int nIndex = (iRow % 3) * 3;
-  
+
   pArray[nIndex]   = vVector[0];
   pArray[nIndex+1] = vVector[1];
   pArray[nIndex+2] = vVector[2];
 
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Math::SetColumnVector( CMatrix3x3<float> &mMatrix, unsigned int iCol, const CVector3<float> & vVector)
 {
 
@@ -700,7 +700,7 @@ Phoenix::Math::SetColumnVector( CMatrix3x3<float> &mMatrix, unsigned int iCol, c
   pArray[nIndex]   = vVector[0];
   pArray[nIndex+3] = vVector[1];
   pArray[nIndex+6] = vVector[2];
-  
+
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -790,13 +790,13 @@ Phoenix::Math::MultiplyFromRight( const CMatrix3x3<float> & mMatrix, const CVect
   result[0] = mMatrix(0,0) * vVector[0] +  mMatrix(0,1) * vVector[1] + mMatrix(0,2) * vVector[2];
   result[1] = mMatrix(1,0) * vVector[0] +  mMatrix(1,1) * vVector[1] + mMatrix(1,2) * vVector[2];
   result[2] = mMatrix(2,0) * vVector[0] +  mMatrix(2,1) * vVector[1] + mMatrix(2,2) * vVector[2];
-  
+
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix, CQuaternion & qRetval )
 {
-    
+
   //CQuaternion qRetval;
   float fTrace = mMatrix.Trace();
   float fS = 0.0f;
@@ -805,20 +805,20 @@ Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix, CQu
 
   if ( fTrace > 0.000001f )  // Greater than zero
   {
-    
+
     fS = 2.0f * sqrt(fTrace);
     f1DivS = 1.0f / fS;
     qRetval[3] = 0.25f * fS;
-   
+
     qRetval[0] = ( m.At(2,1) - m.At(1,2) ) * f1DivS;
     qRetval[1] = ( m.At(0,2) - m.At(2,0) ) * f1DivS;
     qRetval[2] = ( m.At(1,0) - m.At(0,1) ) * f1DivS;
-    
+
   } else {
-    
+
     // determine column where diagonal element has the greatest value
     unsigned int nColumnWithGreatestValue = 0;
-    
+
     if ( m.At(0,0) > m.At(1,1)) {
       if ( m.At(0,0) > m.At(2,2) ) {
 	nColumnWithGreatestValue = 0;
@@ -864,7 +864,7 @@ Phoenix::Math::RotationMatrixToQuaternion( const CMatrix4x4<float> &mMatrix, CQu
   //return qRetval;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 Phoenix::Math::RotateVector( const CQuaternion &qRotation, CVector3<float> &vVector)
 {
   CQuaternion qVect(vVector[0],vVector[1],vVector[2],0.0f);
@@ -875,8 +875,8 @@ Phoenix::Math::RotateVector( const CQuaternion &qRotation, CVector3<float> &vVec
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Math::RotateAroundPoint( const CVector3<float> & vVector, 
-				  const CVector3<float> & vPoint, 
+Phoenix::Math::RotateAroundPoint( const CVector3<float> & vVector,
+				  const CVector3<float> & vPoint,
 				  const CQuaternion & ref,
 				  CVector3<float> &result )
 {
@@ -889,7 +889,7 @@ Phoenix::Math::RotateAroundPoint( const CVector3<float> & vVector,
 }
 /////////////////////////////////////////////////////////////////
 // As described in MatrixFAQ:
-// 
+//
 //     cos_angle  = qr -> qw;
 //     angle      = acos( cos_angle ) * 2 * RADIANS;
 //     sin_angle  = sqrt( 1.0 - cos_angle * cos_angle );
@@ -900,13 +900,13 @@ Phoenix::Math::RotateAroundPoint( const CVector3<float> & vVector,
 //     axis -> vz = qr -> qz / sin_angle;
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat, 
+Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
 						 CVector3<float> &vAxis,
 						 float &fAngleInDegrees )
 {
   float fCosAngle = qQuat[4];
   float fSinAngle = sqrt( 1.0f - fCosAngle * fCosAngle );
-  
+
   /// If denominator is too close to zero.
   if ( fabsf(fSinAngle < EPSILON)) fSinAngle = 1;
   /// The axis.
@@ -920,8 +920,8 @@ Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Math::RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix, 
-				  unsigned int iRowSkip, 
+Phoenix::Math::RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix,
+				  unsigned int iRowSkip,
 				  unsigned int iColSkip,
 				  CMatrix3x3<float> & mResult)
 {
@@ -932,54 +932,54 @@ Phoenix::Math::RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix,
 
   for( unsigned int iRow = 1;iRow <= 4;iRow++)
   {
-    if ( iRow == iRowSkip ){} 
+    if ( iRow == iRowSkip ){}
     else
     {
       iResultCol = 1;
       for( unsigned int iCol = 1;iCol <= 4;iCol++)
       {
 
-	if ( iCol == iColSkip ){} 
-	else 
+	if ( iCol == iColSkip ){}
+	else
 	{
 	  mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
 	  iResultCol++;
 	}
-	    
+
       }
       iResultRow++;
     }
   }
   //return mResult;
 }
-/////////////////////////////////////////////////////////////////    
+/////////////////////////////////////////////////////////////////
 void
-Phoenix::Math::RemoveRowAndColumn( const CMatrix3x3<float> & mMatrix, 
-				   unsigned int iRowSkip, 
+Phoenix::Math::RemoveRowAndColumn( const CMatrix3x3<float> & mMatrix,
+				   unsigned int iRowSkip,
 				   unsigned int iColSkip,
 				   CMatrix2x2<float> & mResult)
 {
-  
+
   //CMatrix2x2<float> mResult;
   unsigned int iResultRow = 1;
   unsigned int iResultCol = 1;
 
   for( unsigned int iRow = 1;iRow <= 3;iRow++)
   {
-    if ( iRow == iRowSkip ){} 
-    else 
+    if ( iRow == iRowSkip ){}
+    else
     {
       iResultCol = 1;
       for( unsigned int iCol = 1;iCol <= 3;iCol++)
       {
 
-	if ( iCol == iColSkip ){} 
-	else 
+	if ( iCol == iColSkip ){}
+	else
 	{
 	  mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
 	  iResultCol++;
 	}
-	  
+
       }
       iResultRow++;
     }
@@ -1002,13 +1002,13 @@ Phoenix::Math::InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInver
   iPivot = 0;
   ////////////////////
   /// for each column
-  for( iCol=0;iCol<2;iCol++) 
+  for( iCol=0;iCol<2;iCol++)
   {
     // Find largest absolute value from current column.
     for( iPivot = iCol, iRow = iCol;iRow<2; iRow++ )
     {
       if ( fabs(mOrig(iRow,iCol)) > fabs(mOrig(iPivot, iCol))) { iPivot = iRow; }
-      
+
     } // For each row in iCol
     ////////////////////
     /// If current value is zero, matrix cannot be inverted.
@@ -1032,7 +1032,7 @@ Phoenix::Math::InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInver
       mOrig.MultiplyRowBy( iCol, fMultValue   );
       mInverse.MultiplyRowBy( iCol, fMultValue );
     }
-    
+
     ////////////////////
     /// subtract this row from others to make rest of column iCol zero
     for(unsigned int iR=0;iR<2;iR++)
@@ -1057,7 +1057,7 @@ Phoenix::Math::InverseMatrix( CMatrix2x2<float> mOrig, CMatrix2x2<float> &mInver
 int
 Phoenix::Math::InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInverse)
 {
-  
+
   mInverse.IdentityMatrix();
   unsigned int iRow, iCol, iPivot;
   float fScale, fMultValue;
@@ -1065,13 +1065,13 @@ Phoenix::Math::InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInver
   iPivot = 0;
   ////////////////////
   /// for each column
-  for( iCol=0;iCol<3;iCol++) 
+  for( iCol=0;iCol<3;iCol++)
   {
     // Find largest absolute value from current column.
     for( iPivot = iCol, iRow = iCol;iRow<3; iRow++ )
     {
       if ( fabs(mOrig(iRow,iCol)) > fabs(mOrig(iPivot, iCol))) { iPivot = iRow; }
-      
+
     } // For each row in iCol
     ////////////////////
     /// If current value is zero, matrix cannot be inverted.
@@ -1087,8 +1087,8 @@ Phoenix::Math::InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInver
       mOrig.SwapRows(    iPivot, iCol );
       mInverse.SwapRows( iPivot, iCol );
     }
-    
-    
+
+
     ////////////////////
     /// Set element (iCol,iCol) to 1
     if ( mOrig(iCol,iCol) != 1.0f)
@@ -1097,7 +1097,7 @@ Phoenix::Math::InverseMatrix( CMatrix3x3<float> mOrig, CMatrix3x3<float> &mInver
       mOrig.MultiplyRowBy( iCol, fMultValue   );
       mInverse.MultiplyRowBy( iCol, fMultValue );
     }
-    
+
     ////////////////////
     /// subtract this row from others to make rest of column iCol zero
     for(unsigned int iR=0;iR<3;iR++)
@@ -1130,13 +1130,13 @@ Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInver
   iPivot = 0;
   ////////////////////
   /// for each column
-  for( iCol=0;iCol<4;iCol++) 
+  for( iCol=0;iCol<4;iCol++)
   {
     // Find largest absolute value from current column.
     for( iPivot = iCol, iRow = iCol;iRow<4; iRow++ )
     {
       if ( fabs(mOrig(iRow,iCol)) > fabs(mOrig(iPivot, iCol))) { iPivot = iRow; }
-      
+
     } // For each row in iCol
     ////////////////////
     /// If current value is zero, matrix cannot be inverted.
@@ -1145,7 +1145,7 @@ Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInver
       //std::cerr << "Matrix is not invertible!" << std::endl;
       return MATRIX_NOT_INVERTIBLE;
     }
-    
+
     ////////////////////
     if ( iPivot != iCol )
     {
@@ -1153,8 +1153,8 @@ Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInver
       mOrig.SwapRows(    iPivot, iCol );
       mInverse.SwapRows( iPivot, iCol );
     }
-    
-    
+
+
     ////////////////////
     /// Set element (iCol,iCol) to 1
     if ( mOrig(iCol,iCol) != 1.0f)
@@ -1163,7 +1163,7 @@ Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInver
       mOrig.MultiplyRowBy( iCol, fMultValue   );
       mInverse.MultiplyRowBy( iCol, fMultValue );
     }
-    
+
     ////////////////////
     /// subtract this row from others to make rest of column iCol zero
     for(unsigned int iR=0;iR<4;iR++)
@@ -1183,7 +1183,7 @@ Phoenix::Math::InverseMatrix( CMatrix4x4<float> mOrig, CMatrix4x4<float> &mInver
   } // for each column
   // At this point, matrix has been completely inverted and all is good.
   return MATRIX_INVERTIBLE;
-}  
+}
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Math::RotationArc( CVector3<float> v0, CVector3<float> v1, Phoenix::Math::CQuaternion & result)
@@ -1191,19 +1191,19 @@ Phoenix::Math::RotationArc( CVector3<float> v0, CVector3<float> v1, Phoenix::Mat
   v0.Normalize();
   v1.Normalize();
   CVector3<float> vCross = v0.Cross(v1);
-  
+
   float  fDot = v0.Dot(v1);
   float  fS   = sqrtf((1.0f+fDot)*2.0f);
   float  f1DivS = 1.0f / fS;
-  
+
   result[0] = vCross[0] * f1DivS;
   result[1] = vCross[1] * f1DivS;
   result[2] = vCross[2] * f1DivS;
   result[3] = fS * 0.5f;
-  
+
 }
 /////////////////////////////////////////////////////////////////
-float 
+float
 Phoenix::Math::AngleBetweenVectors( const CVector3<float> &vVect1, const CVector3<float> &vVect2)
 {
   float fDot = vVect1.Dot(vVect2);
@@ -1213,7 +1213,7 @@ Phoenix::Math::AngleBetweenVectors( const CVector3<float> &vVect1, const CVector
   if ( fLengthMult != 0.0f )
   {
     fAngle = acosf( fDot / fLengthMult );
-    // sanity check 
+    // sanity check
     if ( isnan(fAngle) ) fAngle = 0.0f;
   }
   return fAngle;
@@ -1234,5 +1234,18 @@ Phoenix::Math::operator*( const CMatrix3x3<float> &mMatrix, const CVector3<float
   return CVector3<float>( mMatrix.At(0,0) * vVector[0] + mMatrix.At(0,1) * vVector[1] + mMatrix.At(0,2) * vVector[2],
 			  mMatrix.At(1,0) * vVector[0] + mMatrix.At(1,1) * vVector[1] + mMatrix.At(1,2) * vVector[2],
 			  mMatrix.At(2,0) * vVector[0] + mMatrix.At(2,1) * vVector[1] + mMatrix.At(2,2) * vVector[2] );
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::OrientedBoxAxisToRotationMatrix ( const Phoenix::Volume::COrientedBox &ob, Phoenix::Math::CMatrix4x4<float> & matrix  )
+{
+   /*matrix.Set( ob.GetForwardVector()[0], ob.GetRightVector()[0], ob.GetUpVector()[0], 0.0,
+			   ob.GetForwardVector()[1], ob.GetRightVector()[1], ob.GetUpVector()[1], 0.0,
+			   ob.GetForwardVector()[2], ob.GetRightVector()[2], ob.GetUpVector()[2], 0.0,
+			   0.0,                      0.0,          			 0.0,                 1.0 );*/
+   matrix.Set( ob.GetForwardVector()[0], 	ob.GetForwardVector()[1], 	ob.GetForwardVector()[2], 	0.0,
+			   ob.GetUpVector()[0], 		ob.GetUpVector()[1], 		ob.GetUpVector()[2], 		0.0,
+			   ob.GetRightVector()[0], 		ob.GetRightVector()[1], 	ob.GetRightVector()[2], 	0.0,
+				0.0f, 0.0f, 0.0f, 1.0f );
 }
 /////////////////////////////////////////////////////////////////

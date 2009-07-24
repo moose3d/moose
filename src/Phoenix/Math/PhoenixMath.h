@@ -14,6 +14,7 @@
 #include "PhoenixIndexArray.h"
 #include "PhoenixMathGeometry.h"
 #include "PhoenixAPI.h"
+#include "PhoenixVolume.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -267,6 +268,11 @@ namespace Phoenix
     /// \param vVector Vector to be multiplied.
     /// \returns Resulting vector.
     PHOENIX_API CVector3<float> operator*( const CMatrix3x3<float> &mMatrix, const CVector3<float> &vVector);
+    ////////////////////
+    /// Forms a rotation matrix from oriented box's axis
+    /// \param ob Oriented box.
+    /// \param matrix Where to store rotation matrix.
+    PHOENIX_API void OrientedBoxAxisToRotationMatrix ( const Phoenix::Volume::COrientedBox &ob, Phoenix::Math::CMatrix4x4<float> & matrix  );
   }; // namespace Math
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
@@ -370,5 +376,5 @@ Phoenix::Math::CalculateTangents( std::vector<TRIANGLE_TYPE> & vecTriangles )
   aTangents = aTangents2 = NULL;
 
 }
-/////////////////////////////////////////////////////////////////
+
 #endif

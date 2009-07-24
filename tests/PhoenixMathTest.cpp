@@ -3,6 +3,7 @@
 using namespace Phoenix::Math;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Spatial;
+using namespace Phoenix::Volume;
 using std::cerr;
 using std::endl;
 #include <vector>
@@ -63,7 +64,7 @@ TEST(CMatrix4x4_Inverse)
   
   CMatrix4x4<float> mId;
   mId.IdentityMatrix();
-
+  
   CHECK( InverseMatrix( mId, mInv ) == 0 );
   CHECK_ARRAY_CLOSE( aIdentity, mInv.GetArray(), 16, 0.001f);
 }
@@ -215,5 +216,38 @@ TEST(CalculateTangentArray_CalculateTangents)
   delete pTexCoords; pTexCoords = NULL;
   delete pTangents; pTangents = NULL;
   delete pIndices; pIndices = NULL;
+}
+/////////////////////////////////////////////////////////////////
+TEST(OrientedBoxAxisToRotationMatrix)
+{
+  COrientedBox box;
+  box.SetWidth(1.0);
+  box.SetHeight(1.0);
+  box.SetLength(1.0);
+  box.SetOrientation( CVector3<float>(0,1,0),  // up
+		      CVector3<float>(1,0,0), // fwd
+		      CVector3<float>(0,0,1)   // right
+		      );
+  CMatrix4x4<float> mRotation;
+  
+  CMatrix4x4<float> mIdentity;
+  mIdentity.IdentityMatrix();
+  OrientedBoxAxisToRotationMatrix( box, mRotation);
+  
+  CHECK_ARRAY_CLOSE( mIdentity.GetArray(), mRotation.GetArray(), 16, 0.001f);
+
+  box.SetOrientation( CVector3<float>(0,1,0), 
+		      CVector3<float>(0,0,-1), 
+		      CVector3<float>(1,0,0) );
+  
+  OrientedBoxAxisToRotationMatrix(box, mRotation);
+  CVector3<float> vZ(0,0,-1);
+  CVector3<float> vResult;
+  CVector3<float> vZReal(1,0,0); // forward, up, right
+  Rotate( vZ, mRotation, vResult);
+
+  cerr << vResult << endl;
+  CHECK_ARRAY_CLOSE( vZReal.GetArray(), vResult, 3, 0.001f);
+
 }
 /////////////////////////////////////////////////////////////////

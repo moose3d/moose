@@ -127,7 +127,8 @@ Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
   glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &m_iMaxColorAttachments );
   glGetIntegerv( GL_MAX_DRAW_BUFFERS,      &m_iMaxDrawBuffers );
   glGetIntegerv( GL_SAMPLE_BUFFERS, 	   &m_iMultiSampleBuffers);
-  glGetIntegerv( GL_SAMPLES, 			   &m_iMultiSamples);
+  glGetIntegerv( GL_SAMPLES, 		   &m_iMultiSamples);
+  glGetIntegerv( GL_MAX_VERTEX_ATTRIBS,    &m_iMaxVertexAttribs);
 
 }
 /////////////////////////////////////////////////////////////////
@@ -148,7 +149,7 @@ Phoenix::Graphics::COglRendererFeatures::Init()
   m_iMaxElementsIndices = 0;
   m_iMaxColorAttachments = 0;
   m_iMaxDrawBuffers = 0;
-
+  m_iMaxVertexAttribs = 0;
 }
 /////////////////////////////////////////////////////////////////
 bool
@@ -245,6 +246,12 @@ int
 Phoenix::Graphics::COglRendererFeatures::GetMultiSampleSamples() const
 {
 	return m_iMultiSamples;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::COglRendererFeatures::GetMaxVertexAttribs() const
+{
+  return m_iMaxVertexAttribs;
 }
 /////////////////////////////////////////////////////////////////
 const char *
@@ -1650,19 +1657,19 @@ Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexSh
 void
 Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
 {
-  //if ( true || !GetRenderState().IsCurrentShader(pShader) )
-  //{
-    if ( pShader )
+  if ( pShader != NULL )
+  {
+    if ( true || !GetRenderState().IsCurrentShader(pShader) )
     {
       glUseProgram( pShader->GetProgram() );
-    }
-    else
-    {
-      glUseProgram( 0 );
-    }
-
-    GetRenderState().SetCurrentShader(pShader);
-    //}
+      GetRenderState().SetCurrentShader(pShader);
+    } 
+  }
+  else 
+  {
+    glUseProgram( 0 );
+    GetRenderState().SetCurrentShader(NULL);
+  }
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2237,17 +2244,35 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
   glBegin( GL_QUAD_STRIP );
 
   using namespace Phoenix::Volume;
+  glNormal3fv( box.GetUpVector().GetArray() );
   glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
   glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
+  glNormal3fv( box.GetRightVector().GetArray() );
   glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
+  glNormal3fv( (-box.GetUpVector()).GetArray() );
   glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
+  glNormal3fv( (-box.GetRightVector()).GetArray());
   glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
   glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
-
+  
+  glEnd();
+  
+  glBegin(GL_QUADS);
+  glNormal3fv( box.GetForwardVector().GetArray());
+  glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
+  
+  glNormal3fv( (-box.GetForwardVector()).GetArray());
+  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
+  glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
   glEnd();
 
 

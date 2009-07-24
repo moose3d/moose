@@ -30,6 +30,10 @@ namespace Phoenix
       /// Constructor.
       CHandle() : CNullable(), m_nIndex(0) {  }
       ////////////////////
+      /// Attempts to retrieve handle to given resource.
+      /// \param szResourceName Resource name where this handle should point. If resource under such name is not available, then the handle will be null.
+      CHandle( const char *szResourceName );
+      ////////////////////
       /// Destructor.
       ~CHandle();
       ////////////////////
@@ -893,6 +897,13 @@ Phoenix::Core::CHandle<TAG>::~CHandle()
 {
   // this has to be released, otherwise we'll go see the boogie man. :)
   Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->Release(*this);
+}
+////////////////////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline
+Phoenix::Core::CHandle<TAG>::CHandle(const char *szResourceName )
+{
+  Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->AttachHandle( szResourceName, *this );
 }
 /////////////////////////////////////////////////////////////////
 template<typename TAG>

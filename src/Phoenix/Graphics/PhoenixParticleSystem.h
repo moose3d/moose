@@ -18,6 +18,7 @@ namespace Phoenix
     /// The Particle base class, contains properties of a single particle.
     struct PHOENIX_API CParticle 
     {
+      virtual ~CParticle(){}
       ///  Current position in the world. 
       ///  \par previous position in the world is a special case, 
       ///  \par must be implemented in inherited class.
@@ -62,7 +63,7 @@ namespace Phoenix
       CParticleSystem();
       ////////////////////
       /// Destructor.
-      ~CParticleSystem();
+      virtual ~CParticleSystem() {}
       ////////////////////
       /// Returns bounding sphere for this particle system.
       /// \returns Bounding sphere.
@@ -368,12 +369,6 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
   m_BBox.SetWidth(0.0f);
   m_BBox.SetHeight(0.0f);
   m_BBox.SetLength(0.0f);
-}
-/////////////////////////////////////////////////////////////////
-template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
-Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::~CParticleSystem()
-{
-
 }
 /////////////////////////////////////////////////////////////////
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
