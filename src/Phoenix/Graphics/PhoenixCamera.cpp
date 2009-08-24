@@ -217,7 +217,7 @@ Phoenix::Graphics::CCamera::FrustumSphere() const
 /////////////////////////////////////////////////////////////////
 // Handy operator override  for debug printing
 std::ostream &
-Phoenix::Graphics::operator<<(std::ostream &stream, const CCamera &obj)
+operator<<(std::ostream &stream, const CCamera &obj)
 {
   stream << "position: " << obj.GetPosition() << endl
 	 << "forward: " << obj.GetForwardVector() << endl

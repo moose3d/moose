@@ -1,6 +1,7 @@
 #include "PhoenixGlobals.h"
 #include "PhoenixDDSImage.h"
 #include <iostream>
+#include <cstring>
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CDDSImage::CDDSImage() : 
   m_nWidth(0), m_nHeight(0), m_iComponents(0), m_Format(DDS_FORMAT_DXT1), 
