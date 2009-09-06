@@ -16,23 +16,21 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////    
     template <typename STATE_TYPE>
-    class PHOENIX_API CState : public Phoenix::Core::CGraphNode,
+    class PHOENIX_API CState : public Phoenix::Core::TGraphNode< CState<STATE_TYPE> >,
 		   public Phoenix::Core::CTypeBase<STATE_TYPE>
     {
     };
 
-    template <typename INPUT_TYPE>
-    class PHOENIX_API CStateEdge : public Phoenix::Core::CGraphEdge,
+    template <class N, typename INPUT_TYPE>
+    class PHOENIX_API CStateEdge : public Phoenix::Core::TGraphEdge< N >,
 		       public Phoenix::Core::CTypeBase<INPUT_TYPE>
     {
-    public:
-      CStateEdge( Phoenix::Core::CGraphNode *pFrom, Phoenix::Core::CGraphNode *pTo ) : Phoenix::Core::CGraphEdge( pFrom, pTo ) 
-      {}
+      
     };
     ////////////////////
     /// Finite State Machine. 
     template <typename STATE_TYPE, typename INPUT_TYPE>
-    class PHOENIX_API CStateMachine : public Phoenix::Core::CGraph
+    class PHOENIX_API CStateMachine : public Phoenix::Core::TGraph< CState<STATE_TYPE> >
     {
     protected:
       typedef std::vector< CState< STATE_TYPE> *> StateVector;
@@ -57,7 +55,9 @@ namespace Phoenix
 	
 	for(size_t n=0;n<nNumStates;n++)
 	{
-	  Phoenix::AI::CState<STATE_TYPE> *pState = this->CreateNode< Phoenix::AI::CState<STATE_TYPE> >();
+	  //Phoenix::AI::CState<STATE_TYPE> *pState = this->CreateNode< Phoenix::AI::CState<STATE_TYPE> >();
+	  Phoenix::AI::CState<STATE_TYPE> *pState = new Phoenix::AI::CState<STATE_TYPE>();
+	  RegisterNode(pState);
 	  pState->SetType( (STATE_TYPE)n );
 	  m_vecStates.push_back( pState );
 	}
@@ -69,7 +69,7 @@ namespace Phoenix
       /// \param nInput Name of input that ignites transition.
       void AddTransition( const STATE_TYPE & nFromState, const STATE_TYPE &nToState, const INPUT_TYPE &nInput )
       {
-	Phoenix::AI::CStateEdge<INPUT_TYPE> *pEdge = Phoenix::Core::CGraph::AddEdge<Phoenix::AI::CStateEdge<INPUT_TYPE> >( m_vecStates[nFromState], m_vecStates[nToState] );
+	Phoenix::AI::CStateEdge<STATE_TYPE,INPUT_TYPE> *pEdge = this->AddEdge( m_vecStates[nFromState], m_vecStates[nToState] );
 	pEdge->SetType(nInput);
       }
       ////////////////////
@@ -79,13 +79,13 @@ namespace Phoenix
       /// \returns Name of state following the input.
       const STATE_TYPE & StateTransition( const STATE_TYPE & nState, const INPUT_TYPE &nInput )
       {
-	std::list< Phoenix::Core::CGraphEdge *>::iterator it;
+	typename std::list< Phoenix::AI::CStateEdge<STATE_TYPE, INPUT_TYPE> *>::iterator it;
 	it = GetStates()[nState]->GetLeavingEdges().begin();
 
 	for( ; it != GetStates()[nState]->GetLeavingEdges().end(); it++)
 	{
 
-	  if ( static_cast< Phoenix::AI::CStateEdge<INPUT_TYPE> *>(*it)->GetType() == nInput )
+	  if ( static_cast< Phoenix::AI::CStateEdge<STATE_TYPE, INPUT_TYPE> *>(*it)->GetType() == nInput )
 	  {
 	    return static_cast< Phoenix::AI::CState<STATE_TYPE> *>((*it)->GetToNode())->GetType();
 	  }
