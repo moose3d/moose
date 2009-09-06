@@ -311,7 +311,7 @@ namespace Phoenix
     ////////////////////
     /// Travels nodes starting from given node using depth-first algorithm.
     template<class NODE_TYPE>
-    void TravelDF( TGraphNode<NODE_TYPE> *pStartNode );
+    void TravelDF( NODE_TYPE *pStartNode );
   } // namespace Core
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////

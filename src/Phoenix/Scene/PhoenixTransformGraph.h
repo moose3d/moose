@@ -4,6 +4,7 @@
 #include <PhoenixTransform.h>
 #include <PhoenixGraph.h>
 #include "PhoenixAPI.h"
+#include <iostream>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -22,18 +23,18 @@ namespace Phoenix
       ////////////////////
       bool Enter()
       {
-    	  CTransformable *pThis   = GetTransformable();
-		  CTransformable *pParent = NULL;
+	Phoenix::Math::CTransformable *pThis   = GetTransformable();
+	Phoenix::Math::CTransformable *pParent = NULL;
 
 		  if ( pThis == NULL)
 		  {
-			cout << "Transformable == NULL" << endl;
+		    std::cerr << "Transformable == NULL" << std::endl;
 			return 0;
 		  }
 
-		  if ( pNode->HasArrivingEdges() )
+		  if ( HasArrivingEdges() )
 		  {
-			pParent = dynamic_cast<CTransformNode *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetTransformable();
+			pParent = GetArrivingEdges().front()->GetFromNode()->GetTransformable();
 
 			// If there is no ship, skip handling and use local transform.
 			if ( pParent == NULL )
@@ -60,8 +61,8 @@ namespace Phoenix
       ////////////////////
       void Leave()
       {
-    	  CTransformable *pTmp = GetTransformable();
-    	  if( pTmp != NULL ) pTmp->SetChanged(false);
+	  Phoenix::Math::CTransformable *pTmp = GetTransformable();
+	  if( pTmp != NULL ) pTmp->SetChanged(false);
       }
     };
   } // namespace Scene
