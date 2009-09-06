@@ -20,19 +20,21 @@ namespace Phoenix
     template<class NODE_TYPE> class TGraph;
     template<class NODE_TYPE> class TGraphNode;
     /////////////////////////////////////////////////////////////////
-    /// \brief A class for an directed edge between two nodes in a graph.
+    /// A class for an directed edge between two nodes in a graph.
+    /// This is a template, because we wish to prevent dynamic_casting during
+    /// traversal of nodes. Each node is accessed via an edge, and an edge must return a 
+    /// specific type for allowing access to members of a subclass without casting (return subclass type).
+    /// 
     template<class NODE_TYPE>
     class PHOENIX_API TGraphEdge
     {
       friend class TGraphNode<NODE_TYPE>;
       friend class TGraph<NODE_TYPE>;
     protected:
-      /// \brief A pointer to the node where this edge is leaving from.
-      NODE_TYPE *m_pFrom;
-      /// \brief A pointer to the node where this edge is arriving.
-      NODE_TYPE *m_pTo;
-      /// cost/weight of this edge
-      int		       m_iCost;
+
+      NODE_TYPE *m_pFrom;       /// !< A pointer to the node where this edge is leaving from.
+      NODE_TYPE *m_pTo;         /// !< A pointer to the node where this edge is arriving.
+      int        m_iCost; ///!< cost/weight of this edge
       ////////////////////
       /// The default constructor.
       TGraphEdge( )
@@ -59,9 +61,9 @@ namespace Phoenix
       ////////////////////
       /// \brief Returns the from node.
       /// \return A pointer to CGraphNode
-      NODE_TYPE * GetFromNode()
-      {
-	return m_pFrom;
+      NODE_TYPE * GetFromNode()      
+      {	
+	return m_pFrom;      
       }
       ////////////////////
       /// \brief Returns the to node.
@@ -142,28 +144,18 @@ namespace Phoenix
     {
       friend class TGraphEdge<NODE_TYPE>;
     protected:
-      /// A list of pointers to CGraphEdge objects leaving from this node.
-      EdgeListType m_lstLeaving;
-      /// A list of pointers to CGraphEdge objects arriving to this node.
-      EdgeListType m_lstArriving;
+      EdgeListType m_lstLeaving;     ///!< A list of pointers to CGraphEdge objects leaving from this node.
+      EdgeListType m_lstArriving;    ///!< A list of pointers to CGraphEdge objects arriving to this node.
+      int	   m_iColor;         ///!< Symbolic color value. 
 
 
-      /// Symbolic color value. 
-      int			      m_iColor;
-
-
-
-      // A reference to the graph object which contains this baby.
-      TGraph<NODE_TYPE> *      m_pGraph;
+      TGraph<NODE_TYPE> *      m_pGraph;   ///!< A reference to the graph object which contains this baby.
       ////////////////////
       /// Default constructor.
       TGraphNode()
       {
-
-
 		m_pGraph = NULL;
 		m_iColor = 0;
-    
       }
       ////////////////////
       /// Destructor. Should be invoked with extreme care since it only removes this node
@@ -176,8 +168,6 @@ namespace Phoenix
       ////////////////////
       /// Returns the graph where node is in.
       TGraph<NODE_TYPE> * GetGraph();
-      
-      
       ////////////////////
       /// Returns the list of edges leaving from this node
       EdgeListType &GetLeavingEdges();
@@ -201,8 +191,10 @@ namespace Phoenix
       ////////////////////
       ///  Adds an edge from this to given node
       /// \param pTo A pointer to CGraphNode.
-      template< class GRAPH_EDGE >
-      GRAPH_EDGE * AddEdge( NODE_TYPE *pTo );
+      Phoenix::Core::TGraphEdge<NODE_TYPE> * AddEdge( NODE_TYPE *pTo )
+      {
+	return m_pGraph->AddEdge( this, pTo );
+      }
       ////////////////////
       ///  Removes and edge leading from this node to giben node.
       /// \param pTo A pointer to CGraphNode.
@@ -238,13 +230,9 @@ namespace Phoenix
     class  TGraph
     {
     protected:
-      /// List of nodes.
-      NodeListType m_lstNodes;
-      /// List of edges
-      EdgeListType m_lstEdges;
-
+      NodeListType m_lstNodes;       ///!< List of nodes.
+      EdgeListType m_lstEdges;       ///!< List of edges
     public:  
-      
       ////////////////////
       /// Destructor.
       virtual ~TGraph()
@@ -260,8 +248,29 @@ namespace Phoenix
       ////////////////////
       /// Adds an edge between pNodeFrom and pNodeTo.
       /// Returns Pointer to edge if ok, NULL on error
-      template< class GRAPH_EDGE>
-      GRAPH_EDGE * AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo);
+      TGraphEdge<NODE_TYPE> * AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo)
+      {
+	if ( pNodeFrom == NULL )
+	{
+	  std::cerr << "FromNode is NULL" << std::endl;
+	  return NULL;
+	}
+	
+	if ( pNodeTo == NULL )
+	{
+	  std::cerr << "ToNode is NULL" << std::endl;
+	  return NULL;
+	}
+	
+	assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!");
+	
+	TGraphEdge<NODE_TYPE> *pEdge = new TGraphEdge<NODE_TYPE>( pNodeFrom, pNodeTo);
+	pNodeFrom->GetLeavingEdges().push_back( pEdge );
+	pNodeTo->GetArrivingEdges().push_back( pEdge );
+	m_lstEdges.push_back(pEdge);
+
+	return pEdge;
+      }
       ////////////////////
       /// Removes an edge,
       void DeleteEdge( TGraphEdge<NODE_TYPE> *pEdge );
@@ -318,7 +327,6 @@ namespace Phoenix
 #define HAS_UNTRAVERSED_EDGES( N ) ( (unsigned int)(N->GetColor()) < N->GetOutDegree())
 #define IS_VISITED( N ) ( N->GetColor() > 0 )
 /////////////////////////////////////////////////////////////////
-
 template <class NODE_TYPE, class TRAVELLER_TYPE>
 void  
 Phoenix::Core::TravelDF( NODE_TYPE *pStartNode, TRAVELLER_TYPE * pTraveller )
@@ -442,40 +450,32 @@ Phoenix::Core::TravelDF( NODE_TYPE *pStartNode )
   lstEdges.clear();
 }
 /////////////////////////////////////////////////////////////////
-template<class NODE_TYPE>
-template< class GRAPH_EDGE>
-GRAPH_EDGE *
-Phoenix::Core::TGraph<NODE_TYPE>::AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo )
-{
-  if ( pNodeFrom == NULL )
-  {
-    std::cerr << "FromNode is NULL" << std::endl;
-    return NULL;
-  }
+/* template<class NODE_TYPE> */
+/* template<class GRAPH_EDGE> */
+/* GRAPH_EDGE * */
+/* Phoenix::Core::TGraph<NODE_TYPE>::AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo ) */
+/* { */
+/*   if ( pNodeFrom == NULL ) */
+/*   { */
+/*     std::cerr << "FromNode is NULL" << std::endl; */
+/*     return NULL; */
+/*   } */
   
-  if ( pNodeTo == NULL )
-  {
-    std::cerr << "ToNode is NULL" << std::endl;
-    return NULL;
-  }
+/*   if ( pNodeTo == NULL ) */
+/*   { */
+/*     std::cerr << "ToNode is NULL" << std::endl; */
+/*     return NULL; */
+/*   } */
   
-  assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!");
-
+/*   assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!"); */
   
-  GRAPH_EDGE *pEdge = new GRAPH_EDGE( pNodeFrom, pNodeTo);
-  pNodeFrom->GetLeavingEdges().push_back( pEdge );
-  pNodeTo->GetArrivingEdges().push_back( pEdge );
-  m_lstEdges.push_back(pEdge);
-  return pEdge;
-}
+/*   GRAPH_EDGE *pEdge = new GRAPH_EDGE( pNodeFrom, pNodeTo); */
+/*   pNodeFrom->GetLeavingEdges().push_back( pEdge ); */
+/*   pNodeTo->GetArrivingEdges().push_back( pEdge ); */
+/*   m_lstEdges.push_back(pEdge); */
+/*   return pEdge; */
+/* } */
 /////////////////////////////////////////////////////////////////
-template<class NODE_TYPE>
-template< class GRAPH_EDGE >
-GRAPH_EDGE *
-Phoenix::Core::TGraphNode<NODE_TYPE>::AddEdge( NODE_TYPE *pTo )
-{
-  return m_pGraph->AddEdge<GRAPH_EDGE>( this, pTo );
-}
 /////////////////////////////////////////////////////////////////
 
 #include "PhoenixGraph.cpp"

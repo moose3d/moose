@@ -17,6 +17,11 @@ namespace Phoenix
     {
       friend class Phoenix::Core::TGraph<CTransformNode>;
     public:
+      /// For adding new edges without compiler errors.
+      Phoenix::Core::TGraphEdge<CTransformNode> * AddEdge( CTransformNode *pTo )
+      {
+	return m_pGraph->AddEdge( this, pTo );
+      }
       ////////////////////
       /// Returns pointer to a transformable object that is affected by this transformnode.
       virtual Phoenix::Math::CTransformable * GetTransformable() = 0;
@@ -25,44 +30,44 @@ namespace Phoenix
       {
 	Phoenix::Math::CTransformable *pThis   = GetTransformable();
 	Phoenix::Math::CTransformable *pParent = NULL;
+	
+	if ( pThis == NULL)
+	  {
+	    std::cerr << "Transformable == NULL" << std::endl;
+	    return 0;
+	  }
 
-		  if ( pThis == NULL)
-		  {
-		    std::cerr << "Transformable == NULL" << std::endl;
-			return 0;
-		  }
+	if ( HasArrivingEdges() )
+	  {
+	    pParent = GetArrivingEdges().front()->GetFromNode()->GetTransformable();
 
-		  if ( HasArrivingEdges() )
-		  {
-			pParent = GetArrivingEdges().front()->GetFromNode()->GetTransformable();
+	    // If there is no ship, skip handling and use local transform.
+	    if ( pParent == NULL )
+	      {
+		if ( pThis->IsChanged() )
+		  pThis->SetWorldTransform( pThis->GetLocalTransform());
+		return 0;
+	      }
 
-			// If there is no ship, skip handling and use local transform.
-			if ( pParent == NULL )
-			{
-			if ( pThis->IsChanged() )
-			  pThis->SetWorldTransform( pThis->GetLocalTransform());
-			return 0;
-			}
+	    if ( pParent->IsChanged() || pThis->IsChanged() )
+	      {
+		pThis->SetChanged(true);
+		Multiply( pParent->GetWorldTransform(), pThis->GetLocalTransform(), pThis->GetWorldTransform() );
+	      }
 
-			if ( pParent->IsChanged() || pThis->IsChanged() )
-			{
-			pThis->SetChanged(true);
-			Multiply( pParent->GetWorldTransform(), pThis->GetLocalTransform(), pThis->GetWorldTransform() );
-			}
-
-		  }
-		  else
-		  {
-			if ( pThis->IsChanged() ) pThis->SetWorldTransform( pThis->GetLocalTransform());
-		  }
-		  return 0;
+	  }
+	else
+	  {
+	    if ( pThis->IsChanged() ) pThis->SetWorldTransform( pThis->GetLocalTransform());
+	  }
+	return 0;
 
       }
       ////////////////////
       void Leave()
       {
-	  Phoenix::Math::CTransformable *pTmp = GetTransformable();
-	  if( pTmp != NULL ) pTmp->SetChanged(false);
+	Phoenix::Math::CTransformable *pTmp = GetTransformable();
+	if( pTmp != NULL ) pTmp->SetChanged(false);
       }
     };
   } // namespace Scene
