@@ -13,28 +13,54 @@ namespace Phoenix
 {
   namespace AI
   {
-    
-    /////////////////////////////////////////////////////////////////    
-    template <typename STATE_TYPE>
-    class PHOENIX_API CState : public Phoenix::Core::TGraphNode< CState<STATE_TYPE> >,
-		   public Phoenix::Core::CTypeBase<STATE_TYPE>
-    {
-    };
-
-    template <class N, typename INPUT_TYPE>
-    class PHOENIX_API CStateEdge : public Phoenix::Core::TGraphEdge< N >,
-		       public Phoenix::Core::CTypeBase<INPUT_TYPE>
-    {
-      
-    };
-    ////////////////////
-    /// Finite State Machine. 
-    template <typename STATE_TYPE, typename INPUT_TYPE>
-    class PHOENIX_API CStateMachine : public Phoenix::Core::TGraph< CState<STATE_TYPE> >
+    /////////////////////////////////////////////////////////////////
+    /// Wrapper for state concept. Basically it is an integer, which reacts to 
+    /// different inputs (integers) and changes state.
+    class PHOENIX_API CState : public Phoenix::Core::CTypeBase<int> 
     {
     protected:
-      typedef std::vector< CState< STATE_TYPE> *> StateVector;
+      typedef std::map< int, int> InputToStateMap;       
+      InputToStateMap m_mapTransitions;
+    public:
+
+      ////////////////////
+      /// Registers input to specific state, overriding previous setting if it existed.
+      /// \param iInput Input value
+      /// \param iState State type index
+      void AddTransition( int iInput, int iState )
+      {
+	m_mapTransitions[iInput] = iState;
+      }
+      ////////////////////
+      /// Returns next state type index if it has been registered to given input.
+      /// \param iInput Input to react with.
+      /// \returns State type index. If transition is not available, then current one.
+      int GetTransition( int iInput )
+      {
+	InputToStateMap::iterator it = m_mapTransitions.find( iInput);
+	if ( it == m_mapTransitions.end())	return GetType();
+	else					return it->second;
+      }
+      ////////////////////
+      /// Checks whether input has been registered.
+      /// \returns true if has been registered.
+      /// \returns false if has not been registered.
+      bool HasTransition( int iInput )
+      {
+	InputToStateMap::iterator it = m_mapTransitions.find( iInput);
+	return ( it != m_mapTransitions.end() );
+      }
+      
+    };
+    ////////////////////////////////////////////////////////////////////////////
+    /// Finite State Machine. 
+    template<class STATE, class INPUT>
+    class PHOENIX_API CStateMachine
+    {
+    protected:
+      typedef std::vector< Phoenix::AI::CState *> StateVector;
       StateVector m_vecStates;
+      
       ////////////////////
       /// Returns reference to vector of states.
       inline StateVector & GetStates()
@@ -43,22 +69,20 @@ namespace Phoenix
       }
       ////////////////////
       /// Current machine state .
-      STATE_TYPE m_CurrentState;
+      STATE m_CurrentState;
     public:
       ////////////////////
       /// Constructor. Creates given number of states for this FSM.
-      /// All states are order by STATE_NAME_TYPE
+      /// All states are order by STATE
       CStateMachine( size_t nNumStates ) 
       {
 	m_vecStates.reserve( nNumStates );
-	SetCurrentState( (STATE_TYPE)0 );
+	SetCurrentState( static_cast<STATE>(0) );
 	
 	for(size_t n=0;n<nNumStates;n++)
 	{
-	  //Phoenix::AI::CState<STATE_TYPE> *pState = this->CreateNode< Phoenix::AI::CState<STATE_TYPE> >();
-	  Phoenix::AI::CState<STATE_TYPE> *pState = new Phoenix::AI::CState<STATE_TYPE>();
-	  RegisterNode(pState);
-	  pState->SetType( (STATE_TYPE)n );
+	  Phoenix::AI::CState *pState = new Phoenix::AI::CState;
+	  pState->SetType( n );
 	  m_vecStates.push_back( pState );
 	}
       }
@@ -67,49 +91,37 @@ namespace Phoenix
       /// \param nFromState Name of state where transition begins.
       /// \param nToState Name of state where transition leads to.
       /// \param nInput Name of input that ignites transition.
-      void AddTransition( const STATE_TYPE & nFromState, const STATE_TYPE &nToState, const INPUT_TYPE &nInput )
+      void AddTransition( const STATE nFromState, const STATE nToState, const INPUT nInput )
       {
-	Phoenix::AI::CStateEdge<STATE_TYPE,INPUT_TYPE> *pEdge = this->AddEdge( m_vecStates[nFromState], m_vecStates[nToState] );
-	pEdge->SetType(nInput);
+	m_vecStates[nFromState]->AddTransition( nInput, nToState );
       }
       ////////////////////
       /// Returns name of next state on given input.
       /// \param nState Current state.
       /// \param nInput Input signal.
       /// \returns Name of state following the input.
-      const STATE_TYPE & StateTransition( const STATE_TYPE & nState, const INPUT_TYPE &nInput )
+      const STATE StateTransition( const STATE nState, const INPUT nInput )
       {
-	typename std::list< Phoenix::AI::CStateEdge<STATE_TYPE, INPUT_TYPE> *>::iterator it;
-	it = GetStates()[nState]->GetLeavingEdges().begin();
-
-	for( ; it != GetStates()[nState]->GetLeavingEdges().end(); it++)
-	{
-
-	  if ( static_cast< Phoenix::AI::CStateEdge<STATE_TYPE, INPUT_TYPE> *>(*it)->GetType() == nInput )
-	  {
-	    return static_cast< Phoenix::AI::CState<STATE_TYPE> *>((*it)->GetToNode())->GetType();
-	  }
-	}
-	return nState;
+	return static_cast<STATE>(GetStates()[nState]->GetTransition( nInput ));
       }
       ///////////////////
       /// Processes given input and sets state accordingly.
       /// \param nInput Input where state machine reacts.
-      void Process( const INPUT_TYPE & nInput )
+      void Process( const INPUT nInput )
       {
 	SetCurrentState( StateTransition( GetCurrentState(), nInput));
       }
       ////////////////////
       /// Sets current state.
       /// \param state Next state.
-      void SetCurrentState( const STATE_TYPE & state )
+      void SetCurrentState( const STATE state )
       {
 	m_CurrentState = state;
       }
       ////////////////////
       /// Returns current state.
       /// \returns Current state.
-      const STATE_TYPE & GetCurrentState()
+      const STATE GetCurrentState()
       {
 	return m_CurrentState;
       }
@@ -117,7 +129,7 @@ namespace Phoenix
       /// Comparison operator for states directly.
       /// \param state State which current state is compared against.
       /// \returns Non-zero, if states are equal - zero otherwise.
-      bool operator==( const STATE_TYPE & state )
+      bool operator==( const STATE state )
       {
 	return ( GetCurrentState() == state );
       }
