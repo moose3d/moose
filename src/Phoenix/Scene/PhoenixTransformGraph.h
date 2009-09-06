@@ -12,13 +12,57 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// Transform node template, allows several different objects to be 
     /// attached to each other via typing mechanism.
-    class PHOENIX_API CTransformNode : public Phoenix::Core::CGraphNode
+    class PHOENIX_API CTransformNode : public Phoenix::Core::TGraphNode<Phoenix::Scene::CTransformNode>
     {
-      friend class Phoenix::Core::CGraph;
+      friend class Phoenix::Core::TGraph<CTransformNode>;
     public:
       ////////////////////
       /// Returns pointer to a transformable object that is affected by this transformnode.
       virtual Phoenix::Math::CTransformable * GetTransformable() = 0;
+      ////////////////////
+      bool Enter()
+      {
+    	  CTransformable *pThis   = GetTransformable();
+		  CTransformable *pParent = NULL;
+
+		  if ( pThis == NULL)
+		  {
+			cout << "Transformable == NULL" << endl;
+			return 0;
+		  }
+
+		  if ( pNode->HasArrivingEdges() )
+		  {
+			pParent = dynamic_cast<CTransformNode *>( pNode->GetArrivingEdges().front()->GetFromNode() )->GetTransformable();
+
+			// If there is no ship, skip handling and use local transform.
+			if ( pParent == NULL )
+			{
+			if ( pThis->IsChanged() )
+			  pThis->SetWorldTransform( pThis->GetLocalTransform());
+			return 0;
+			}
+
+			if ( pParent->IsChanged() || pThis->IsChanged() )
+			{
+			pThis->SetChanged(true);
+			Multiply( pParent->GetWorldTransform(), pThis->GetLocalTransform(), pThis->GetWorldTransform() );
+			}
+
+		  }
+		  else
+		  {
+			if ( pThis->IsChanged() ) pThis->SetWorldTransform( pThis->GetLocalTransform());
+		  }
+		  return 0;
+
+      }
+      ////////////////////
+      void Leave()
+      {
+    	  CTransformable *pTmp = GetTransformable();
+    	  if( pTmp != NULL ) pTmp->SetChanged(false);
+      }
     };
   } // namespace Scene
 } // namespace Phoenix
