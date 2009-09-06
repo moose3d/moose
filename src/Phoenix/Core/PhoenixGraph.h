@@ -16,90 +16,73 @@ namespace Phoenix
     
     /////////////////////////////////////////////////////////////////
     // Declaration so we can use graphnode in GraphEdge
-    class CGraphNode;
-    class CGraph;
+
+    template<class NODE_TYPE> class TGraph;
+    template<class NODE_TYPE> class TGraphNode;
     /////////////////////////////////////////////////////////////////
     /// \brief A class for an directed edge between two nodes in a graph.
-    class PHOENIX_API CGraphEdge
+    template<class NODE_TYPE>
+    class PHOENIX_API TGraphEdge
     {
-#define GRAPH_EDGE_IMPL(NAME)  NAME( CGraphNode *pFrom,  CGraphNode *pTo ) : CGraphEdge(pFrom, pTo)  {}
-      friend class CGraphNode;
-      friend class CGraph;
+      friend class TGraphNode<NODE_TYPE>;
+      friend class TGraph<NODE_TYPE>;
     protected:
       /// \brief A pointer to the node where this edge is leaving from.
-      CGraphNode *m_pFrom;
+      NODE_TYPE *m_pFrom;
       /// \brief A pointer to the node where this edge is arriving.
-      CGraphNode *m_pTo;
-      /// is this edge traversed
-      bool	       m_bTraversed;
+      NODE_TYPE *m_pTo;
       /// cost/weight of this edge
       int		       m_iCost;
       ////////////////////
       /// The default constructor.
-      CGraphEdge( )
+      TGraphEdge( )
       {
-	m_pFrom = NULL;
-	m_pTo   = NULL;
-	m_bTraversed = 0;
+		m_pFrom = NULL;
+		m_pTo   = NULL;
       }
       ////////////////////
       /// The parametrized constructor.
       /// \param pFrom CGraphNode where edge starts
       /// \param pTo CGraphNode where edge leads to.
-      CGraphEdge( CGraphNode *pFrom,  CGraphNode *pTo );
+      TGraphEdge( NODE_TYPE *pFrom, NODE_TYPE *pTo );
 
       ////////////////////
       /// \brief The destructor. 
       /// It is protected and should only be invoked by CGraph.
-      virtual ~CGraphEdge()
+      virtual ~TGraphEdge()
       {
-	m_pFrom = NULL;
-	m_pTo = NULL;
-	m_bTraversed = 0;
+		m_pFrom = NULL;
+		m_pTo = NULL;
       }
 
     public:
       ////////////////////
       /// \brief Returns the from node.
       /// \return A pointer to CGraphNode
-      CGraphNode * GetFromNode()
+      NODE_TYPE * GetFromNode()
       {
 	return m_pFrom;
       }
       ////////////////////
       /// \brief Returns the to node.
       /// \return A pointer to CGraphNode
-      CGraphNode * GetToNode()
+      NODE_TYPE * GetToNode()
       {
 	return m_pTo;
-      }
-      ////////////////////
-      /// \brief Sets the node traveral state.
-      /// \param bFlag boolean 1 for traversed, 0 for not.
-      inline void SetTraversed( bool bFlag )
-      {
-	m_bTraversed = bFlag;
-      }
-      ////////////////////
-      /// \brief Returns the boolean for traversal state.
-      /// \return boolean 1 for traversed, 0 otherwise.
-      inline bool IsTraversed()
-      {
-	return m_bTraversed;
       }
       ////////////////////
       /// \brief Returns the cost of this edge.
       /// \return  the cost of this edge as int
       inline int GetCost()
       {
-	return m_iCost;
+    	  return m_iCost;
       }
       ////////////////////
       /// \brief Assigns the cost for this edge.
       /// \param iCost integer value for the cost.
       void SetCost( int iCost )
       {
-	m_iCost = iCost;
+    	  m_iCost = iCost;
       }
 
     };
@@ -151,78 +134,50 @@ namespace Phoenix
     /// Where Cameras 1 and 2 have can have the same objects (Obj1 & Obj2) drawn, 
     /// whereas Objects Obj3 and Obj4 are visible only using Camera 3.
 
-    typedef std::list< CGraphEdge * > EdgeListType;
-    typedef std::list< CGraphNode * > NodeListType;
+#define EdgeListType   std::list< TGraphEdge<NODE_TYPE> * >
+#define NodeListType   std::list< NODE_TYPE * >
 
-    class PHOENIX_API CGraphNode 
+    template< class NODE_TYPE>
+    class TGraphNode
     {
-      friend class CGraph;
-      friend class CGraphEdge;
+      friend class TGraphEdge<NODE_TYPE>;
     protected:
       /// A list of pointers to CGraphEdge objects leaving from this node.
       EdgeListType m_lstLeaving;
       /// A list of pointers to CGraphEdge objects arriving to this node.
       EdgeListType m_lstArriving;
-      /// A pointer to Cgraph where this node belongs to.
+
 
       /// Symbolic color value. 
       int			      m_iColor;
-      /// Boolean flag indicating has this node been visited.
-      int m_bVisited;
-      /// Boolean flag indicating has this node been culled.
-      int m_bCulled;
-      /// Boolean flag indicating has this node been changed.
-      int m_bChanged;
+
+
 
       // A reference to the graph object which contains this baby.
-      CGraph *      m_pGraph;  
+      TGraph<NODE_TYPE> *      m_pGraph;
       ////////////////////
       /// Default constructor.
-      CGraphNode() 
+      TGraphNode()
       {
 
-	SetVisited(0);
-	m_bCulled = 0;
-	m_bChanged = 0;
-	m_pGraph = NULL;
-	m_iColor = 0;
+
+		m_pGraph = NULL;
+		m_iColor = 0;
     
       }
       ////////////////////
       /// Destructor. Should be invoked with extreme care since it only removes this node
       /// not the children nor does it fix the parent pointers of the children.
-      virtual ~CGraphNode() {}
+      virtual ~TGraphNode() {}
     public:
       ////////////////////
       /// Copy constructor
-      CGraphNode( const CGraphNode &Node );
+      TGraphNode( const TGraphNode &Node );
       ////////////////////
       /// Returns the graph where node is in.
-      CGraph * GetGraph();
-      ////////////////////
-      /// Sets the status of visited flag.
-      /// \param bFlag boolean value for visited (1 = visited, 0 = unvisited )
-      void SetVisited(int bFlag );
-      ////////////////////
-      /// Returns boolean value indicating has this node been visited.
-      /// \return boolean 1 if this node has been visited, 0 if not.
-      int IsVisited();
-      ////////////////////
-      /// Sets this node culling status.
-      /// \param bState boolean value 1 if culled, 0 if not culled.
-      void SetCulled( int bState );
-      ////////////////////
-      /// Returns boolean value indicated is this node culled.
-      /// \return boolean 1 if culled, 0 otherwise
-      int IsCulled();
-      ////////////////////
-      /// Sets the changed flag value to bFlag.
-      /// \param bFlag boolean value indicating the new state.
-      void SetChanged( int bFlag );
-      ////////////////////
-      /// Returns value of the m_bChanged flag.
-      /// \returns boolean value if state is 'changed'.
-      int IsChanged();
+      TGraph<NODE_TYPE> * GetGraph();
+      
+      
       ////////////////////
       /// Returns the list of edges leaving from this node
       EdgeListType &GetLeavingEdges();
@@ -247,11 +202,11 @@ namespace Phoenix
       ///  Adds an edge from this to given node
       /// \param pTo A pointer to CGraphNode.
       template< class GRAPH_EDGE >
-      GRAPH_EDGE * AddEdge( CGraphNode *pTo );
+      GRAPH_EDGE * AddEdge( NODE_TYPE *pTo );
       ////////////////////
       ///  Removes and edge leading from this node to giben node.
       /// \param pTo A pointer to CGraphNode.
-      int DeleteEdgeTo( CGraphNode *pTo );
+      int DeleteEdgeTo( NODE_TYPE *pTo );
       ////////////////////
       ///  Sets the color of this edge.
       /// \param iColor integer color
@@ -268,20 +223,20 @@ namespace Phoenix
       ///  Returns the Out-degree of this node
       /// \returns the number of leaving edges.
       size_t GetOutDegree();
+      ////////////////////
+      /// Executed when node is entered the first time during current pass.
+      /// \returns true if children should not be processed.
+      /// \returns false if children should be processed.
+      virtual bool Enter() = 0;
+      ////////////////////
+      /// Executed when node (and possibly its children) have been processed.
+      virtual void Leave() = 0;
+
     };
     /////////////////////////////////////////////////////////////////
-    class PHOENIX_API CGraph
+    template<class NODE_TYPE>
+    class  TGraph
     {
-    public:  
-
-      typedef enum 
-	{
-	  BREADTH_FIRST      = 0,   // breadth-first traversal 
-	  DEPTH_FIRST        = 1,   // depth-first traversal
-	  DEPTH_FIRST_BY_EDGES,     // depth-first, but with every 
-	  // edge is considered as a new branch of a tree.
-	} GraphTraversalMode;
-
     protected:
       /// List of nodes.
       NodeListType m_lstNodes;
@@ -292,37 +247,34 @@ namespace Phoenix
       
       ////////////////////
       /// Destructor.
-      virtual ~CGraph()
+      virtual ~TGraph()
       {    
-	RemoveEdges();
-	RemoveNodes();
+		RemoveEdges();
+		RemoveNodes();
       }
+      void RegisterNode( NODE_TYPE *pNode );
       ////////////////////
       /// Deletes a node.
       /// \param pNode Node to be deleted.
-      void DeleteNode( CGraphNode *pNode );
+      void DeleteNode( NODE_TYPE *pNode );
       ////////////////////
       /// Adds an edge between pNodeFrom and pNodeTo.
       /// Returns Pointer to edge if ok, NULL on error
       template< class GRAPH_EDGE>
-      GRAPH_EDGE * AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo);
+      GRAPH_EDGE * AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo);
       ////////////////////
       /// Removes an edge,
-      void DeleteEdge( CGraphEdge *pEdge );
+      void DeleteEdge( TGraphEdge<NODE_TYPE> *pEdge );
       ////////////////////
-      void RemoveLeavingEdgesFrom( CGraphNode *pNode );
+      void RemoveLeavingEdgesFrom( NODE_TYPE *pNode );
       ////////////////////
-      void RemoveArrivingEdgesFrom( CGraphNode *pNode );
-      ////////////////////
-      //CGraphNode * SeekNodeByNameAndType( const char *szName, 
-      //							   const R iType );
-
+      void RemoveArrivingEdgesFrom( NODE_TYPE *pNode );
       ////////////////////
       /// Sets each node as unvisited
-      void  SetNodesUnvisited();
+      //void  SetNodesUnvisited();
       ////////////////////
       /// Sets each edge untraversed.
-      void  SetEdgesUntraversed();
+      //void  SetEdgesUntraversed();
       ////////////////////
       /// Sets the color of all nodes.
       /// \param nColor The color which all nodes will be colored.
@@ -354,22 +306,26 @@ namespace Phoenix
 
     };
     
-    template <class TRAVELLER_TYPE > 
-    void TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller );
-    
+    template <class NODE_TYPE, class TRAVELLER_TYPE > 
+    void TravelDF( NODE_TYPE, TRAVELLER_TYPE * pTraveller );
+    ////////////////////
+    /// Travels nodes starting from given node using depth-first algorithm.
+    template<class NODE_TYPE>
+    void TravelDF( TGraphNode<NODE_TYPE> *pStartNode );
   } // namespace Core
 } // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 #define HAS_UNTRAVERSED_EDGES( N ) ( (unsigned int)(N->GetColor()) < N->GetOutDegree())
 #define IS_VISITED( N ) ( N->GetColor() > 0 )
 /////////////////////////////////////////////////////////////////
-template <class TRAVELLER_TYPE>
+
+template <class NODE_TYPE, class TRAVELLER_TYPE>
 void  
-Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
+Phoenix::Core::TravelDF( NODE_TYPE *pStartNode, TRAVELLER_TYPE * pTraveller )
 {
-  std::stack< CGraphNode *> stckNodes;
+  std::stack< NODE_TYPE *> stckNodes;
   EdgeListType  lstEdges;
-  CGraphEdge *pEdge = NULL;
+  TGraphEdge<NODE_TYPE> *pEdge = NULL;
   if ( pStartNode ==NULL ) 
   {
     std::cerr << "pStartNode is NULL" << std::endl;
@@ -381,43 +337,104 @@ Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
 
   while ( !stckNodes.empty())
   {
-    CGraphNode *pNode = stckNodes.top();
+    NODE_TYPE *pNode = stckNodes.top();
     if ( IS_VISITED(pNode) )
     {
       if ( HAS_UNTRAVERSED_EDGES(pNode))
       {
-	pEdge = lstEdges.front();
-	lstEdges.pop_front();
-	pEdge->GetFromNode()->SetColor(pEdge->GetFromNode()->GetColor()+1);
-	stckNodes.push(pEdge->GetToNode());
+		pEdge = lstEdges.front();
+		lstEdges.pop_front();
+		pEdge->GetFromNode()->SetColor(pEdge->GetFromNode()->GetColor()+1);
+		stckNodes.push(pEdge->GetToNode());
       }
       else
       {
-	pTraveller->Leave(pNode );
-	//pNode->SetVisited(0);
-	pNode->SetColor(0);
-	stckNodes.pop();
+		pTraveller->Leave(pNode );
+		//pNode->SetVisited(0);
+		pNode->SetColor(0);
+		stckNodes.pop();
       }
     }
     else
     {
       int bCulled = pTraveller->Enter(pNode);
-      //pNode->SetVisited(1);
+
       if ( pNode->HasLeavingEdges() && !bCulled)
       {
-	lstEdges.insert( lstEdges.begin(), pNode->GetLeavingEdges().begin(), 
-			 pNode->GetLeavingEdges().end());
-	pEdge = lstEdges.front();
-	lstEdges.pop_front();
-	pEdge->GetFromNode()->SetColor( pEdge->GetFromNode()->GetColor() + 1 );
-	stckNodes.push( pEdge->GetToNode());
+		lstEdges.insert( lstEdges.begin(), pNode->GetLeavingEdges().begin(),
+				 pNode->GetLeavingEdges().end());
+		pEdge = lstEdges.front();
+		lstEdges.pop_front();
+		pEdge->GetFromNode()->SetColor( pEdge->GetFromNode()->GetColor() + 1 );
+		stckNodes.push( pEdge->GetToNode());
       }
       else 
       {
-	pTraveller->Leave(pNode);
-	//pNode->SetVisited(0);
-	pNode->SetColor(0);
-	stckNodes.pop();
+		pTraveller->Leave(pNode);
+		//pNode->SetVisited(0);
+		pNode->SetColor(0);
+		stckNodes.pop();
+      }
+    }
+  }
+  // Just to be safe, cleanup. stckNodes IS empty if we're here.
+  lstEdges.clear();
+}
+///////////////////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
+void
+Phoenix::Core::TravelDF( NODE_TYPE *pStartNode )
+{
+  typename std::stack< NODE_TYPE *> stckNodes;
+  EdgeListType  lstEdges;
+  TGraphEdge<NODE_TYPE> *pEdge = NULL;
+  if ( pStartNode == NULL )
+  {
+    std::cerr << "pStartNode is NULL" << std::endl;
+    return;
+  }
+
+  pStartNode->GetGraph()->SetColor(0);         // Clear number of processed nodes
+  stckNodes.push(pStartNode);
+
+  while ( !stckNodes.empty())
+  {
+    NODE_TYPE *pNode = stckNodes.top();
+    if ( IS_VISITED(pNode) )
+    {
+      if ( HAS_UNTRAVERSED_EDGES(pNode))
+      {
+		pEdge = lstEdges.front();
+		lstEdges.pop_front();
+		// Mark unprocessed
+		pEdge->GetFromNode()->SetColor(pEdge->GetFromNode()->GetColor()+1);
+		stckNodes.push(pEdge->GetToNode());
+      }
+      else
+      {
+		pNode->Leave();
+		pNode->SetColor(0);
+		stckNodes.pop();
+      }
+    }
+    else
+    {
+      bool bCulled = pNode->Enter();
+
+      if ( pNode->HasLeavingEdges() && !bCulled)
+      {
+    	  lstEdges.insert( lstEdges.begin(), pNode->GetLeavingEdges().begin(),
+					  pNode->GetLeavingEdges().end());
+			pEdge = lstEdges.front();
+			lstEdges.pop_front();
+			pEdge->GetFromNode()->SetColor( pEdge->GetFromNode()->GetColor() + 1 );
+			stckNodes.push( pEdge->GetToNode());
+      }
+      else
+      {
+		pNode->Leave();
+		pNode->SetColor(0);
+		stckNodes.pop();
       }
     }
   }
@@ -425,9 +442,10 @@ Phoenix::Core::TravelDF( CGraphNode *pStartNode, TRAVELLER_TYPE * pTraveller )
   lstEdges.clear();
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 template< class GRAPH_EDGE>
 GRAPH_EDGE *
-Phoenix::Core::CGraph::AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo )
+Phoenix::Core::TGraph<NODE_TYPE>::AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo )
 {
   if ( pNodeFrom == NULL )
   {
@@ -451,11 +469,16 @@ Phoenix::Core::CGraph::AddEdge( CGraphNode *pNodeFrom, CGraphNode *pNodeTo )
   return pEdge;
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 template< class GRAPH_EDGE >
 GRAPH_EDGE *
-Phoenix::Core::CGraphNode::AddEdge( CGraphNode *pTo )
+Phoenix::Core::TGraphNode<NODE_TYPE>::AddEdge( NODE_TYPE *pTo )
 {
   return m_pGraph->AddEdge<GRAPH_EDGE>( this, pTo );
 }
 /////////////////////////////////////////////////////////////////
+
+#include "PhoenixGraph.cpp"
+
 #endif
+      

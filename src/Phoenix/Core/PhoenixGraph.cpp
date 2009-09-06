@@ -1,9 +1,10 @@
-#include "PhoenixGraph.h"
-#include <iostream>
+//#include "PhoenixGraph.h"
+//#include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
 /////////////////////////////////////////////////////////////////
-Phoenix::Core::CGraphEdge::CGraphEdge( CGraphNode *pFrom,  CGraphNode *pTo )
+template<class NODE_TYPE>
+Phoenix::Core::TGraphEdge<NODE_TYPE>::TGraphEdge( NODE_TYPE *pFrom, NODE_TYPE *pTo )
 {
   m_pFrom = pFrom;
   m_pTo   = pTo;
@@ -12,17 +13,17 @@ Phoenix::Core::CGraphEdge::CGraphEdge( CGraphNode *pFrom,  CGraphNode *pTo )
   // Both nodes must be non-NULL
   assert( pFrom != NULL );
   assert( pTo != NULL );
-  m_bTraversed = 0;
     
   // Both nodes must belong to same graph
   assert( pFrom->m_pGraph == pTo->m_pGraph );
     
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void 
-Phoenix::Core::CGraph::DeleteNode( CGraphNode *pNode )
+Phoenix::Core::TGraph<NODE_TYPE>::DeleteNode( NODE_TYPE *pNode )
 {
-  NodeListType::iterator it;
+  typename NodeListType::iterator it;
   it = find(m_lstNodes.begin(), m_lstNodes.end(), pNode );
   
   if ( it != m_lstNodes.end())
@@ -42,10 +43,11 @@ Phoenix::Core::CGraph::DeleteNode( CGraphNode *pNode )
   
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void
-Phoenix::Core::CGraph::DeleteEdge( Phoenix::Core::CGraphEdge *pEdge)
+Phoenix::Core::TGraph<NODE_TYPE>::DeleteEdge( Phoenix::Core::TGraphEdge<NODE_TYPE> *pEdge)
 {
-  EdgeListType::iterator it;
+  typename EdgeListType::iterator it;
   it = find(m_lstEdges.begin(), m_lstEdges.end(), pEdge );
 
   if ( it != m_lstEdges.end())
@@ -70,32 +72,35 @@ Phoenix::Core::CGraph::DeleteEdge( Phoenix::Core::CGraphEdge *pEdge)
   delete pEdge;
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void
-Phoenix::Core::CGraph::RemoveNodes()
+Phoenix::Core::TGraph<NODE_TYPE>::RemoveNodes()
 {
   while( !m_lstNodes.empty())
   {
-    CGraphNode *pTmpNode = m_lstNodes.front();
+    NODE_TYPE *pTmpNode = m_lstNodes.front();
     m_lstNodes.pop_front();
     delete pTmpNode;
   }
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void
-Phoenix::Core::CGraph::RemoveEdges()
+Phoenix::Core::TGraph<NODE_TYPE>::RemoveEdges()
 {
   while( !m_lstEdges.empty() )
   {
-    CGraphEdge *pTmpEdge = m_lstEdges.front();
+    TGraphEdge<NODE_TYPE> *pTmpEdge = m_lstEdges.front();
     m_lstEdges.pop_front();
     delete pTmpEdge;
   }
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void 
-Phoenix::Core::CGraph::RemoveLeavingEdgesFrom( CGraphNode *pNode )
+Phoenix::Core::TGraph<NODE_TYPE>::RemoveLeavingEdgesFrom( NODE_TYPE *pNode )
 {
-  EdgeListType::iterator it;
+  typename EdgeListType::iterator it;
   while( !pNode->GetLeavingEdges().empty())
   {
     it = pNode->GetLeavingEdges().begin();
@@ -103,10 +108,11 @@ Phoenix::Core::CGraph::RemoveLeavingEdgesFrom( CGraphNode *pNode )
   }
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void 
-Phoenix::Core::CGraph::RemoveArrivingEdgesFrom( CGraphNode *pNode )
+Phoenix::Core::TGraph<NODE_TYPE>::RemoveArrivingEdgesFrom( NODE_TYPE *pNode )
 {
-  EdgeListType::iterator it;
+  typename EdgeListType::iterator it;
   while( !pNode->GetArrivingEdges().empty())
   {
     it = pNode->GetArrivingEdges().begin();
@@ -114,57 +120,36 @@ Phoenix::Core::CGraph::RemoveArrivingEdgesFrom( CGraphNode *pNode )
   }
 }
 /////////////////////////////////////////////////////////////////
-/* #define STR_EQUALS( STR1, STR2 ) ( strncmp(STR1, STR2, Phoenix::Globals::NODE_NAME_MAX_SIZE) == 0 ) */
-/* ///////////////////////////////////////////////////////////////// */
-
-/* Phoenix::Core::CGraphNode *  */
-/* Phoenix::Core::CGraph::SeekNodeByNameAndType( const char *szName,  */
-/* 				     const R iType ) */
-/* { */
-/*   typename std::list< CGraphNode *>::iterator it; */
-/*   it = m_lstNodes.begin(); */
-
-/*   for( ; it != m_lstNodes.end(); it++) */
-/*   { */
-/*     CGraphNode *pNode = *it; */
-/*     if ( pNode->GetType() == iType && STR_EQUALS( pNode->GetName(), szName ))  */
-/*     { */
-/*       return pNode; */
-/*     } */
-/*   } */
+// template<class NODE_TYPE>
+// void
+// Phoenix::Core::TGraph<NODE_TYPE>::SetNodesUnvisited( )
+// {
   
-/*   return NULL; */
-/* } */
+//   typename NodeListType::iterator it = m_lstNodes.begin();
 
-/* #undef STR_EQUALS */
-/////////////////////////////////////////////////////////////////
-void
-Phoenix::Core::CGraph::SetNodesUnvisited( )
-{
-  
-  NodeListType::iterator it = m_lstNodes.begin();
+//   for( ; it != m_lstNodes.end(); it++)
+//   {
+//     (*it)->SetVisited(0);
+//   }
+// }
+// /////////////////////////////////////////////////////////////////
+// template<class NODE_TYPE>
+// void
+// Phoenix::Core::TGraph<NODE_TYPE>::SetEdgesUntraversed( )
+// {
+//   typename EdgeListType::iterator it = m_lstEdges.begin();
 
-  for( ; it != m_lstNodes.end(); it++)
-  {
-    (*it)->SetVisited(0);
-  }
-}
+//   for( ; it != m_lstEdges.end(); it++)
+//   {
+//     (*it)->SetTraversed(0);
+//   }
+// }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Core::CGraph::SetEdgesUntraversed( )
-{
-  EdgeListType::iterator it = m_lstEdges.begin();
-
-  for( ; it != m_lstEdges.end(); it++)
-  {
-    (*it)->SetTraversed(0);
-  }
-}
-/////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void  
-Phoenix::Core::CGraph::SetColor( unsigned int nColor )
+Phoenix::Core::TGraph<NODE_TYPE>::SetColor( unsigned int nColor )
 {
-  NodeListType::iterator it = m_lstNodes.begin();
+  typename NodeListType::iterator it = m_lstNodes.begin();
 
   for( ; it != m_lstNodes.end(); it++) 
   {
@@ -172,135 +157,70 @@ Phoenix::Core::CGraph::SetColor( unsigned int nColor )
   }
 }
 /////////////////////////////////////////////////////////////////
-#define HAS_UNTRAVERSED_EDGES( N ) ( (unsigned int)(N->GetColor()) < N->GetOutDegree())
-#define IS_VISITED( N ) ( N->GetColor() > 0 )
+template<class NODE_TYPE>
+void
+Phoenix::Core::TGraph<NODE_TYPE>::RegisterNode( NODE_TYPE *pNode )
+{
+  if ( pNode == NULL ) return;
+  typename NodeListType::iterator it = find( m_lstNodes.begin(), m_lstNodes.end(), pNode );
+  if ( it == m_lstNodes.end() ) 
+  {
+    m_lstNodes.push_back( pNode );
+    pNode->m_pGraph = this;
+  }
+  else
+  {
+    std::cerr << "Attempt to Re-register existing node! (" << pNode << ")" << std::endl;
+  }
+}
 /////////////////////////////////////////////////////////////////
-/* template <R, NODE_NAME, EDGE_NAME> */
-/* Phoenix::Core::CGraphNode * SeekNextWithType( CGraphNode *pStartNode, R type ) */
-/* { */
-/*   CGraphNode *pCandidate = NULL; */
-/*   std::queue< CGraphNode *>  queueNodes; */
-/*   EdgeListType listEdges; */
-/*   typename EdgeListType::iterator it; */
-
-/*   // Sanity check */
-/*   if ( pStartNode == NULL ) return NULL; */
-      
-/*   // Set all nodes unvisited */
-/*   pStartNode->GetGraph()->SetColor(0); */
-/*   queueNodes.push(pStartNode); */
-/*   while( !queueNodes.empty() ) */
-/*   { */
-/*     pCandidate = queueNodes.front(); queueNodes.pop(); */
-/*     pCandidate->SetColor(1); */
-      
-/*     if ( pCandidate->GetType() == type ) return pCandidate; */
-/*     listEdges = pCandidate->GetLeavingEdges(); */
-/*     // for each neighbor do */
-/*     for( it = listEdges.begin(); it != listEdges.end(); it++) */
-/*     { */
-/*       // if neighbor is not yet visited, put it in the queue */
-/*       if ( (*it)->GetToNode()->GetColor() == 0 ) queueNodes.push( (*it)->GetToNode() ); */
-/*     } */
-/*   } */
-/*   // No such node was found */
-/*   return NULL; */
-/* }; */
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-/* Phoenix::Core::CGraphNode::CGraphNode( const CGraphNode &Node)  */
-/* { */
-/*   m_bVisited = Node.m_bVisited; */
-/*   m_bCulled = Node.m_bCulled; */
-/*   m_bChanged = Node.m_bChanged; */
-/*   m_iType = Node.m_iType;  */
-/*   m_pGraph = m_pGraph; */
-/*   m_Name = Node.m_Name; */
-  
-/*   m_lstLeaving = Node.m_lstLeaving; */
-/*   m_lstArriving = Node.m_lstArriving; */
-
-/* } */
-/////////////////////////////////////////////////////////////////
-Phoenix::Core::CGraph *
-Phoenix::Core::CGraphNode::GetGraph()
+template<class NODE_TYPE>
+Phoenix::Core::TGraph<NODE_TYPE> *
+Phoenix::Core::TGraphNode<NODE_TYPE>::GetGraph()
 {
   return m_pGraph;
 }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Core::CGraphNode::SetVisited(int bFlag )
-{
-  m_bVisited = bFlag;
-}
-/////////////////////////////////////////////////////////////////
-int
-Phoenix::Core::CGraphNode::IsVisited()
-{
-  return m_bVisited;
-}
-/////////////////////////////////////////////////////////////////
-void
-Phoenix::Core::CGraphNode::SetCulled( int bState )
-{
-  m_bCulled = bState;
-}
-/////////////////////////////////////////////////////////////////
-int
-Phoenix::Core::CGraphNode::IsCulled()
-{
-  return m_bCulled;
-}
-/////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 EdgeListType &
-Phoenix::Core::CGraphNode::GetLeavingEdges()
+Phoenix::Core::TGraphNode<NODE_TYPE>::GetLeavingEdges()
 {
   return m_lstLeaving;
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 EdgeListType &
-Phoenix::Core::CGraphNode::GetArrivingEdges()
+Phoenix::Core::TGraphNode<NODE_TYPE>::GetArrivingEdges()
 {
   return m_lstArriving;
 }
 /////////////////////////////////////////////////////////////////
-
+template<class NODE_TYPE>
 int
-Phoenix::Core::CGraphNode::HasLeavingEdges()
+Phoenix::Core::TGraphNode<NODE_TYPE>::HasLeavingEdges()
 {
   return (m_lstLeaving.size() > 0 );
 }
 /////////////////////////////////////////////////////////////////
-
+template<class NODE_TYPE>
 int
-Phoenix::Core::CGraphNode::HasArrivingEdges()
+Phoenix::Core::TGraphNode<NODE_TYPE>::HasArrivingEdges()
 {
   return (m_lstArriving.size() > 0 );
 }
 /////////////////////////////////////////////////////////////////
-void 
-Phoenix::Core::CGraphNode::SetChanged( int bFlag )
-{
-  m_bChanged = bFlag;
-}
-/////////////////////////////////////////////////////////////////
-int
-Phoenix::Core::CGraphNode::IsChanged()
-{
-  return m_bChanged;
-}
-/////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 int 
-Phoenix::Core::CGraphNode::DeleteEdgeTo( CGraphNode *pTo )
+Phoenix::Core::TGraphNode<NODE_TYPE>::DeleteEdgeTo( NODE_TYPE *pTo )
 {
-  EdgeListType::iterator it = this->GetLeavingEdges().begin();
+  typename EdgeListType::iterator it = this->GetLeavingEdges().begin();
   // For each leaving edge in this 
   for(;it!=this->GetLeavingEdges().end();it++)
   {
     // if edge points to pTo, we delete it.
     if ( (*it)->GetToNode() == pTo )
     {
-      CGraphEdge *pEdge = *it;
+      TGraphEdge<NODE_TYPE> *pEdge = *it;
       m_pGraph->DeleteEdge( pEdge );
       break;
     }
@@ -308,38 +228,44 @@ Phoenix::Core::CGraphNode::DeleteEdgeTo( CGraphNode *pTo )
   return 0;
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void 
-Phoenix::Core::CGraphNode::RemoveLeavingEdges()
+Phoenix::Core::TGraphNode<NODE_TYPE>::RemoveLeavingEdges()
 {
   m_pGraph->RemoveLeavingEdgesFrom( this );
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void 
-Phoenix::Core::CGraphNode::RemoveArrivingEdges()
+Phoenix::Core::TGraphNode<NODE_TYPE>::RemoveArrivingEdges()
 {
   m_pGraph->RemoveArrivingEdgesFrom( this );
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 void
-Phoenix::Core::CGraphNode::SetColor( int iColor )
+Phoenix::Core::TGraphNode<NODE_TYPE>::SetColor( int iColor )
 {
   m_iColor = iColor;
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 int 
-Phoenix::Core::CGraphNode::GetColor()
+Phoenix::Core::TGraphNode<NODE_TYPE>::GetColor()
 {
   return m_iColor;
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 size_t
-Phoenix::Core::CGraphNode::GetInDegree()
+Phoenix::Core::TGraphNode<NODE_TYPE>::GetInDegree()
 {
   return m_lstArriving.size();
 }
 /////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
 size_t
-Phoenix::Core::CGraphNode::GetOutDegree()
+Phoenix::Core::TGraphNode<NODE_TYPE>::GetOutDegree()
 {
   return m_lstLeaving.size();
 }
