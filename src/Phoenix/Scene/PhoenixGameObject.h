@@ -19,10 +19,10 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
     class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable,
-									public Phoenix::Graphics::CRenderableProperty,
-									public Phoenix::Core::CTagged,
-									public Phoenix::Volume::CSphereBound,
-									public Phoenix::Collision::ICollider
+				    public Phoenix::Graphics::CRenderableProperty,
+				    public Phoenix::Core::CTagged,
+				    public Phoenix::Volume::CSphereBound,
+				    public Phoenix::Collision::ICollider
     {
       /// In which spatial index this node is in.
       unsigned int			m_nSpatialIndex;
@@ -45,6 +45,9 @@ namespace Phoenix
 
       bool Intersects( const Phoenix::Volume::CSphere & sphere ) const;
       bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const;
+      bool Intersects( const Phoenix::Volume::COrientedBox & box ) const;
+      bool Intersects( const Phoenix::Collision::ICollider & collider ) const;
+      bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const;
     };
   }; // namespace Scene
 }; // namespace Phoenix

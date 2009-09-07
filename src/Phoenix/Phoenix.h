@@ -60,4 +60,6 @@
 #include <PhoenixFlock.h>
 #include <PhoenixLog.h>
 #include <PhoenixLogger.h>
+#include <PhoenixBoxBound.h>
+#include <PhoenixSphereBound.h>
 /////////////////////////////////////////////////////////////////
