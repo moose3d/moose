@@ -20,22 +20,34 @@ namespace Phoenix
       /// For adding new edges without compiler errors.
       Phoenix::Core::TGraphEdge<CTransformNode> * AddEdge( CTransformNode *pTo )
       {
-	return m_pGraph->AddEdge( this, pTo );
+    	  return m_pGraph->AddEdge( this, pTo );
       }
       ////////////////////
       /// Returns pointer to a transformable object that is affected by this transformnode.
       virtual Phoenix::Math::CTransformable * GetTransformable() = 0;
       ////////////////////
+      void Reparent( CTransformNode * pNewParent )
+      {
+    	  CTransformNode *pCurrentParent = GetArrivingEdges().front()->GetFromNode();
+    	  // This removes all edges between current parent and this
+    	  DeleteAllEdgesTo(pCurrentParent);
+    	  // Remove possibly existing edges between new parent and this
+    	  pNewParent->DeleteAllEdgesTo(this);
+    	  // Add edges between new parent and this
+    	  pNewParent->AddEdge( this );
+
+      }
+      ////////////////////
       bool Enter()
       {
-	Phoenix::Math::CTransformable *pThis   = GetTransformable();
-	Phoenix::Math::CTransformable *pParent = NULL;
+		Phoenix::Math::CTransformable *pThis   = GetTransformable();
+		Phoenix::Math::CTransformable *pParent = NULL;
 	
-	if ( pThis == NULL)
-	  {
-	    std::cerr << "Transformable == NULL" << std::endl;
-	    return 0;
-	  }
+		if ( pThis == NULL)
+		{
+			std::cerr << "Transformable == NULL" << std::endl;
+			return 0;
+		}
 
 	if ( HasArrivingEdges() )
 	  {
