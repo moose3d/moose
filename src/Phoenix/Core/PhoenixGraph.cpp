@@ -210,7 +210,7 @@ Phoenix::Core::TGraphNode<NODE_TYPE>::HasArrivingEdges()
 }
 /////////////////////////////////////////////////////////////////
 template<class NODE_TYPE>
-int 
+bool
 Phoenix::Core::TGraphNode<NODE_TYPE>::DeleteEdgeTo( NODE_TYPE *pTo )
 {
   typename EdgeListType::iterator it = this->GetLeavingEdges().begin();
@@ -222,10 +222,17 @@ Phoenix::Core::TGraphNode<NODE_TYPE>::DeleteEdgeTo( NODE_TYPE *pTo )
     {
       TGraphEdge<NODE_TYPE> *pEdge = *it;
       m_pGraph->DeleteEdge( pEdge );
-      break;
+      return true;
     }
   }
-  return 0;
+  return false;
+}
+/////////////////////////////////////////////////////////////////
+template<class NODE_TYPE>
+void
+Phoenix::Core::TGraphNode<NODE_TYPE>::DeleteAllEdgesTo( NODE_TYPE *pTo )
+{
+  while( DeleteEdgeTo(pTo) );
 }
 /////////////////////////////////////////////////////////////////
 template<class NODE_TYPE>

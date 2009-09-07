@@ -196,9 +196,14 @@ namespace Phoenix
 	return m_pGraph->AddEdge( this, pTo );
       }
       ////////////////////
-      ///  Removes and edge leading from this node to giben node.
+      ///  Removes and edge leading from this node to given node.
       /// \param pTo A pointer to CGraphNode.
-      int DeleteEdgeTo( NODE_TYPE *pTo );
+      /// \returns true if an edge was found and removed. False otherwise.
+      bool DeleteEdgeTo( NODE_TYPE *pTo );
+      ////////////////////
+      ///  Removes and edge leading from this node to given node.
+	  /// \param pTo A pointer to CGraphNode.
+	  void DeleteAllEdgesTo( NODE_TYPE *pTo );
       ////////////////////
       ///  Sets the color of this edge.
       /// \param iColor integer color
@@ -223,7 +228,6 @@ namespace Phoenix
       ////////////////////
       /// Executed when node (and possibly its children) have been processed.
       virtual void Leave() = 0;
-
     };
     /////////////////////////////////////////////////////////////////
     template<class NODE_TYPE>
