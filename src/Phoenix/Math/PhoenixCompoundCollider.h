@@ -4,9 +4,8 @@
  *  Created on: Jun 1, 2009
  *      Author: entity
  */
-
-#ifndef __PhoenixSphereCollider_h__
-#define __PhoenixSphereCollider_h__
+#ifndef __PhoenixCompoundCollider_h__
+#define __PhoenixCompoundCollider_h__
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixCollider.h"
 ///////////////////////////////////////////////////////////////////////////////
@@ -14,14 +13,16 @@ namespace Phoenix
 {
 	namespace Collision
 	{
+	        typedef std::list< ICollider *> ColliderList;
 		///////////////////
-		/// Sphere-based collider
-	        class CSphereCollider : public ICollider,
-					      public Phoenix::Volume::CSphere
+		/// Collider with several separate colliders.
+	        class PhoenixCompoundCollider : public ICollider
 		{
+		protected:
+		  std::list< ICollider *> m_lstColliders;
 		public:
-			CSphereCollider();
-			virtual ~CSphereCollider();
+			PhoenixCompoundCollider();
+			virtual ~PhoenixCompoundCollider();
 
 			bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const;
 			bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const;
@@ -34,8 +35,8 @@ namespace Phoenix
 			//bool Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const;
 			//bool Intersects( const Phoenix::Math::CLine & line ) const;
 			bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const;
-		}; // CSphereCollider
+		}; // PhoenixCompoundCollider
 	};// Collision
 }; // Phoenix
 ///////////////////////////////////////////////////////////////////////////////
-#endif /* PHOENIXSPHERECOLLIDER_H_ */
+#endif

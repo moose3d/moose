@@ -20,8 +20,10 @@ namespace Phoenix
 			virtual ~ICollider() {};
 			virtual bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const = 0;
 			virtual bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const = 0;
+			virtual bool Intersects( const Phoenix::Volume::COrientedBox & box ) const = 0;
+
 // TODO implement intersection tests
-//			virtual bool Intersects( const Phoenix::Volume::COrientedBox & box ) const = 0;
+
 //			virtual bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const = 0;
 //			virtual bool Intersects( const Phoenix::Volume::CAxisAlignedBox & aabb) const = 0;
 //			virtual bool Intersects( const Phoenix::Volume::CCone & cone ) const = 0;
@@ -29,7 +31,7 @@ namespace Phoenix
 //			virtual bool Intersects( const Phoenix::Math::CPlane & plane ) const = 0;
 //			virtual bool Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const = 0;
 //			virtual bool Intersects( const Phoenix::Math::CLine & line ) const = 0;
-//			virtual bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const = 0;
+			virtual bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const = 0;
 		};
 	}
 }

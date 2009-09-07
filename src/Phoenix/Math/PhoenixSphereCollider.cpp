@@ -1,74 +1,82 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixSphereCollider.h"
+#include "PhoenixCollision.h"
 namespace prefix = Phoenix::Collision;
+using namespace Phoenix::Collision;
 ///////////////////////////////////////////////////////////////////////////////
-prefix::PhoenixSphereCollider::PhoenixSphereCollider()
+prefix::CSphereCollider::CSphereCollider()
 {
 
 }
 ///////////////////////////////////////////////////////////////////////////////
-prefix::PhoenixSphereCollider::~PhoenixSphereCollider()
+prefix::CSphereCollider::~CSphereCollider()
 {
 
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Volume::CSphere & sphere ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Volume::CSphere & sphere ) const
+{
+  return SphereIntersectsSphere(*this, sphere);
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Phoenix::Graphics::CFrustum & frustum ) const
+{
+  return SphereIntersectsPolytope(*this, frustum);
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Phoenix::Volume::COrientedBox & box ) const
+{
+  return SphereIntersectsOBB( *this, box );
+}
+///////////////////////////////////////////////////////////////////////////////
+/*bool
+prefix::CSphereCollider::Intersects( const Phoenix::Volume::CCapsule & capsule ) const
+{
+  return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Phoenix::Volume::CAxisAlignedBox & aabb ) const
 {
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Volume::COrientedBox & box ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Volume::CCone & cone ) const
 {
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Volume::CCapsule & capsule ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Math::CRay & ray ) const
 {
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Volume::CAxisAlignedBox & aabb ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Math::CPlane & plane ) const
 {
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Volume::CCone & cone ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const
 {
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Math::CRay & ray ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Math::CLine & line ) const
 {
 	return false;
-}
+	}*/
 ///////////////////////////////////////////////////////////////////////////////
 bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Math::CPlane & plane ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const
 {
-	return false;
-}
-///////////////////////////////////////////////////////////////////////////////
-bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const
-{
-	return false;
-}
-///////////////////////////////////////////////////////////////////////////////
-bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Math::CLine & line ) const
-{
-	return false;
-}
-///////////////////////////////////////////////////////////////////////////////
-bool
-prefix::PhoenixSphereCollider::Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const
-{
-	return false;
+  return PointInsideSphere( *this, vPoint );
 }
 ///////////////////////////////////////////////////////////////////////////////
