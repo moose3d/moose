@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixMath.h"
 #include "PhoenixTransform.h"
-#include "PhoenixVolume.h"
+#include "PhoenixSphereBound.h"
 #include "PhoenixRenderable.h"
 #include "PhoenixRenderableProperty.h"
 #include "PhoenixAPI.h"
@@ -17,48 +17,11 @@ namespace Phoenix
   namespace Scene
   {
     /////////////////////////////////////////////////////////////////
-    class PHOENIX_API CSphereBound
-    {
-    private:
-      /// Model bounding sphere
-      Phoenix::Volume::CSphere		m_BoundingSphere;
-    public:
-      CSphereBound();
-      virtual ~CSphereBound();
-      ////////////////////
-      /// Returns bounding sphere.
-      /// \returns Reference to bounding sphere.
-      Phoenix::Volume::CSphere & GetBoundingSphere();
-      ////////////////////
-      /// Returns bounding sphere.
-      /// \returns Reference to bounding sphere.
-      const Phoenix::Volume::CSphere & GetBoundingSphere() const;
-    };
-    /////////////////////////////////////////////////////////////////
-    class PHOENIX_API CBoxBound
-    {
-    private:
-      /// Model bounding box.
-      Phoenix::Volume::COrientedBox	m_BoundingBox;
-    public:
-      CBoxBound();
-      virtual ~CBoxBound();
-      ////////////////////
-      /// Returns bounding box.
-      /// \returns Reference to bounding box.
-      Phoenix::Volume::COrientedBox & GetBoundingBox();
-      ////////////////////
-      /// Returns bounding sphere.
-      /// \returns Reference to bounding box.
-      const Phoenix::Volume::COrientedBox & GetBoundingBox() const;
-    };
-
-    /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
     class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable,
 									public Phoenix::Graphics::CRenderableProperty,
 									public Phoenix::Core::CTagged,
-									public Phoenix::Scene::CSphereBound,
+									public Phoenix::Volume::CSphereBound,
 									public Phoenix::Collision::ICollider
     {
       /// In which spatial index this node is in.

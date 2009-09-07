@@ -61,3 +61,14 @@ prefix::PhoenixCompoundCollider::Intersects( const Phoenix::Math::CVector3<float
   return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::PhoenixCompoundCollider::Intersects( const Phoenix::Collision::ICollider & collider ) const
+{
+  ColliderList::const_iterator it = m_lstColliders.begin();
+  for( ; it != m_lstColliders.end(); it++ )
+  {
+    if ( (*it)->Intersects(collider)) return true;
+  }
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////

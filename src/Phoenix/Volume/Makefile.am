@@ -1,7 +1,7 @@
 GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
-h_sources = PhoenixOctree.h PhoenixVolume.h
-cc_sources = PhoenixVolume.cpp
+h_sources = PhoenixOctree.h PhoenixVolume.h PhoenixSphereBound.h PhoenixBoxBound.h
+cc_sources = PhoenixVolume.cpp PhoenixSphereBound.cpp PhoenixBoxBound.cpp
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)

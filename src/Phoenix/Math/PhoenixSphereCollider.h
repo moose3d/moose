@@ -9,6 +9,7 @@
 #define __PhoenixSphereCollider_h__
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixCollider.h"
+#include "PhoenixSphereBound.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -17,7 +18,7 @@ namespace Phoenix
 		///////////////////
 		/// Sphere-based collider
 	        class CSphereCollider : public ICollider,
-					      public Phoenix::Volume::CSphere
+									 public Phoenix::Volume::CSphereBound
 		{
 		public:
 			CSphereCollider();
@@ -34,6 +35,7 @@ namespace Phoenix
 			//bool Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const;
 			//bool Intersects( const Phoenix::Math::CLine & line ) const;
 			bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const;
+			bool Intersects( const Phoenix::Collision::ICollider & collider ) const;
 		}; // CSphereCollider
 	};// Collision
 }; // Phoenix

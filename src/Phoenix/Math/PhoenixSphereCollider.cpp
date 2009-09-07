@@ -17,19 +17,19 @@ prefix::CSphereCollider::~CSphereCollider()
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Volume::CSphere & sphere ) const
 {
-  return SphereIntersectsSphere(*this, sphere);
+  return SphereIntersectsSphere(GetBoundingSphere(), sphere);
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Graphics::CFrustum & frustum ) const
 {
-  return SphereIntersectsPolytope(*this, frustum);
+  return SphereIntersectsPolytope(GetBoundingSphere(), frustum);
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Volume::COrientedBox & box ) const
 {
-  return SphereIntersectsOBB( *this, box );
+  return SphereIntersectsOBB( GetBoundingSphere(), box );
 }
 ///////////////////////////////////////////////////////////////////////////////
 /*bool
@@ -77,6 +77,12 @@ prefix::CSphereCollider::Intersects( const Phoenix::Math::CLine & line ) const
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const
 {
-  return PointInsideSphere( *this, vPoint );
+  return PointInsideSphere( GetBoundingSphere(), vPoint );
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Phoenix::Collision::ICollider & collider ) const
+{
+  return collider.Intersects(GetBoundingSphere());
 }
 ///////////////////////////////////////////////////////////////////////////////

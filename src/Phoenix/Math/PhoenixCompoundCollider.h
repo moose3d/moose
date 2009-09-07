@@ -35,6 +35,8 @@ namespace Phoenix
 			//bool Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const;
 			//bool Intersects( const Phoenix::Math::CLine & line ) const;
 			bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const;
+			bool Intersects( const Phoenix::Collision::ICollider & collider ) const;
+
 		}; // PhoenixCompoundCollider
 	};// Collision
 }; // Phoenix
