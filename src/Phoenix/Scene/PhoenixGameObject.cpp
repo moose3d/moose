@@ -10,9 +10,9 @@ Phoenix::Scene::CGameObject::~CGameObject()
 
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0)
+Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), m_pCollider(NULL)
 {
-
+	m_pCollider = this;
 }
 /////////////////////////////////////////////////////////////////
 unsigned int
@@ -30,40 +30,51 @@ Phoenix::Scene::CGameObject::SetSpatialIndex( unsigned int nIndex )
 bool
 Phoenix::Scene::CGameObject::Intersects( const Phoenix::Volume::CSphere & sphere ) const
 {
-	Phoenix::Volume::CSphere tmp = GetBoundingSphere();
-	tmp.Move( GetWorldTransform().GetTranslation() );
-	return Phoenix::Collision::SphereIntersectsSphere( sphere, tmp );
+	return Phoenix::Collision::SphereIntersectsSphere( sphere, GetWorldBoundingSphere() );
 }
 /////////////////////////////////////////////////////////////////
-bool 
+bool
 Phoenix::Scene::CGameObject::Intersects( const Phoenix::Graphics::CFrustum & frustum ) const
 {
-	Phoenix::Volume::CSphere tmp = GetBoundingSphere();
-	tmp.Move( GetWorldTransform().GetTranslation() );
-	return Phoenix::Collision::SphereIntersectsPolytope( tmp , frustum );
+	return Phoenix::Collision::SphereIntersectsPolytope( GetWorldBoundingSphere() , frustum );
 }
 /////////////////////////////////////////////////////////////////
 bool
 Phoenix::Scene::CGameObject::Intersects( const Phoenix::Volume::COrientedBox & box ) const
 {
-  Phoenix::Volume::CSphere tmp = GetBoundingSphere();
-  tmp.Move( GetWorldTransform().GetTranslation() );
-  return Phoenix::Collision::SphereIntersectsOBB( tmp, box );
-}
-////////////////////////////////////////////////////////////////////////////////
-bool
-Phoenix::Scene::CGameObject::Intersects( const Phoenix::Collision::ICollider & collider ) const
-{
-  Phoenix::Volume::CSphere tmp = GetBoundingSphere();
-  tmp.Move( GetWorldTransform().GetTranslation() );
-  collider.Intersects( tmp );
+  return Phoenix::Collision::SphereIntersectsOBB( GetWorldBoundingSphere(), box );
 }
 ////////////////////////////////////////////////////////////////////////////////
 bool
 Phoenix::Scene::CGameObject::Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const
 {
-  Phoenix::Volume::CSphere tmp = GetBoundingSphere();
-  tmp.Move( GetWorldTransform().GetTranslation() );
-  return Phoenix::Collision::PointInsideSphere( tmp, vPoint );
+
+  return Phoenix::Collision::PointInsideSphere( GetWorldBoundingSphere(), vPoint );
+}
+//////////////////////////////////////////////////////////////////////////////
+Phoenix::Volume::CSphere
+Phoenix::Scene::CGameObject::GetWorldBoundingSphere() const
+{
+	CVector3<float> vTmp;
+	Transform( GetBoundingSphere().GetPosition(),
+				const_cast<Phoenix::Math::CTransform &>(GetWorldTransform()).GetMatrix(),
+				vTmp );
+	return Phoenix::Volume::CSphere( vTmp, GetBoundingSphere().GetRadius() );
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CGameObject::SetCollider( Phoenix::Collision::ICollider *pCollider )
+{
+	m_pCollider = pCollider;
+	if ( m_pCollider == NULL )
+	{
+		m_pCollider = this;
+	}
+}
+////////////////////////////////////////////////////////////////////////////////
+Phoenix::Collision::ICollider *
+Phoenix::Scene::CGameObject::GetCollider()
+{
+	return m_pCollider;
 }
 ////////////////////////////////////////////////////////////////////////////////

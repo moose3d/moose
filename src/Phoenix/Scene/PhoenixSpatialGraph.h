@@ -24,13 +24,12 @@ namespace Phoenix
 		  /// \param pGameObject Object to be inserted.
 		  void InsertObject( TYPE *pGameObject )
 		  {
-			assert(pGameObject!=NULL);
-			unsigned int nSpatialIndex = Phoenix::Spatial::COctree<TYPE *>::InsertObject(
-						  pGameObject,
-						  pGameObject->GetBoundingSphere().GetPosition() + pGameObject->GetWorldTransform().GetTranslation(),
-						  pGameObject->GetBoundingSphere().GetRadius());
-			assert( nSpatialIndex < this->GetNodeCount());
-			pGameObject->SetSpatialIndex( nSpatialIndex );
+				assert(pGameObject!=NULL);
+
+				unsigned int nSpatialIndex = Phoenix::Spatial::COctree<TYPE *>::InsertObject(
+												pGameObject, pGameObject->GetWorldBoundingSphere());
+				assert( nSpatialIndex < this->GetNodeCount() );
+				pGameObject->SetSpatialIndex( nSpatialIndex );
 
 		  }
 		  ////////////////////
@@ -38,36 +37,36 @@ namespace Phoenix
 		  /// \param pGameObject Object to be removed.
 		  void DeleteObject( TYPE *pGameObject )
 		  {
-			Phoenix::Spatial::COctreeNode<TYPE *> *pNode = this->GetNodeAt( pGameObject->GetSpatialIndex());
-			if ( pNode != NULL )
-			{
-			  pNode->DeleteObject( pGameObject );
-			}
+				Phoenix::Spatial::COctreeNode<TYPE *> *pNode = this->GetNodeAt( pGameObject->GetSpatialIndex());
+				if ( pNode != NULL )
+				{
+					pNode->DeleteObject( pGameObject );
+				}
 		  }
 		  ////////////////////
 		  /// Updates spatial location of gameobject.
 		  /// \param pGameObject Object to be updated.
 		  void Update( TYPE *pGameObject )
 		  {
-			Phoenix::Math::CVector3<float> vTmp = pGameObject->GetWorldTransform().GetTranslation();
-			vTmp += pGameObject->GetBoundingSphere().GetPosition();
+				Phoenix::Math::CVector3<float> vTmp = pGameObject->GetWorldTransform().GetTranslation();
+				vTmp += pGameObject->GetBoundingSphere().GetPosition();
 
-			unsigned int nLevel = this->GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
-			unsigned int nIndex = this->GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
+				unsigned int nLevel = this->GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
+				unsigned int nIndex = this->GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
 
-			// If object has changed spatial location enough
-			if ( pGameObject->GetSpatialIndex() != nIndex)
-			{
-			  assert( pGameObject->GetSpatialIndex() < this->GetNodeCount());
-			  // Remove from  previous location
-			  this->GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
-			  // Insert into new
-			  this->GetNodeAt( nIndex )->AddObject( pGameObject );
-			  // Update child statuses up to root.
-			  this-> PropagateChildrenStatus( this->GetNodeAt( nIndex ));
-			  // Store new spatial index.
-			  pGameObject->SetSpatialIndex( nIndex );
-			}
+				// If object has changed spatial location enough
+				if ( pGameObject->GetSpatialIndex() != nIndex)
+				{
+					assert( pGameObject->GetSpatialIndex() < this->GetNodeCount());
+					// Remove from  previous location
+					this->GetNodeAt( pGameObject->GetSpatialIndex())->DeleteObject( pGameObject );
+					// Insert into new
+					this->GetNodeAt( nIndex )->AddObject( pGameObject );
+					// Update child statuses up to root.
+					this-> PropagateChildrenStatus( this->GetNodeAt( nIndex ));
+					// Store new spatial index.
+					pGameObject->SetSpatialIndex( nIndex );
+				}
 		  }
 		};
 	} // Scene

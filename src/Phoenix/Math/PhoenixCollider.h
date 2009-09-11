@@ -5,6 +5,7 @@
 #include "PhoenixMath.h"
 #include "PhoenixVolume.h"
 #include "PhoenixFrustum.h"
+#include "PhoenixTransform.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -15,7 +16,9 @@ namespace Phoenix
 		class ICollider
 		{
 		protected:
-			ICollider() {}
+			Phoenix::Math::CTransform * m_pTransform;
+		protected:
+			ICollider() : m_pTransform(NULL) { }
 		public:
 			virtual ~ICollider() {};
 			virtual bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const = 0;
@@ -33,6 +36,8 @@ namespace Phoenix
 //			virtual bool Intersects( const Phoenix::Math::CLine & line ) const = 0;
 			virtual bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const = 0;
 			virtual bool Intersects( const Phoenix::Collision::ICollider & collider ) const = 0;
+			void SetTransform( Phoenix::Math::CTransform *pTransform ) { m_pTransform = pTransform; }
+			Phoenix::Math::CTransform * GetTransform() { return m_pTransform; }
 		};
 	}
 }

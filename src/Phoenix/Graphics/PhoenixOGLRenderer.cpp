@@ -2240,7 +2240,9 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
 //     gluSphere(m_pQuadric, sphere.GetRadius(), 16, 16);
 //   glPopMatrix();
 
-
+	glPushAttrib( GL_POLYGON_BIT );
+	if ( bWireframe ) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else 							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glBegin( GL_QUAD_STRIP );
 
   using namespace Phoenix::Volume;
@@ -2274,7 +2276,7 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
   glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
   glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
   glEnd();
-
+  glPopAttrib();
 
 }
 /////////////////////////////////////////////////////////////////

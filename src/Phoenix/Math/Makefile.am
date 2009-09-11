@@ -1,8 +1,8 @@
 GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
-h_sources = 	PhoenixCollision.h     PhoenixMath.h       PhoenixMatrix2x2.h  PhoenixMatrix4x4.h   PhoenixTransform.h  PhoenixVector3.h PhoenixMathGeometry.h  PhoenixMathUtils.h  PhoenixMatrix3x3.h  PhoenixQuaternion.h  PhoenixVector2.h    PhoenixVector4.h PhoenixCollider.h PhoenixSphereCollider.h PhoenixCompoundCollider.h PhoenixCollidable.h
+h_sources = 	PhoenixCollision.h     PhoenixMath.h       PhoenixMatrix2x2.h  PhoenixMatrix4x4.h   PhoenixTransform.h  PhoenixVector3.h PhoenixMathGeometry.h  PhoenixMathUtils.h  PhoenixMatrix3x3.h  PhoenixQuaternion.h  PhoenixVector2.h    PhoenixVector4.h PhoenixCollider.h PhoenixSphereCollider.h 
 
-cc_sources = 	PhoenixCollision.cpp  PhoenixMath.cpp  PhoenixMathGeometry.cpp  PhoenixQuaternion.cpp  PhoenixTransform.cpp PhoenixSphereCollider.cpp PhoenixCompoundCollider.cpp PhoenixCollidable.cpp
+cc_sources = 	PhoenixCollision.cpp  PhoenixMath.cpp  PhoenixMathGeometry.cpp  PhoenixQuaternion.cpp  PhoenixTransform.cpp PhoenixSphereCollider.cpp 
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)

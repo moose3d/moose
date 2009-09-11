@@ -17,18 +17,36 @@ prefix::CSphereCollider::~CSphereCollider()
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Volume::CSphere & sphere ) const
 {
-  return SphereIntersectsSphere(GetBoundingSphere(), sphere);
+	if ( m_pTransform )
+	{
+		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+		return SphereIntersectsSphere( tmp, sphere );
+	}
+	return SphereIntersectsSphere(GetBoundingSphere(), sphere);
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Graphics::CFrustum & frustum ) const
 {
+	if ( m_pTransform )
+	{
+		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+		SphereIntersectsPolytope(tmp, frustum);
+	}
   return SphereIntersectsPolytope(GetBoundingSphere(), frustum);
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Volume::COrientedBox & box ) const
 {
+	if ( m_pTransform )
+	{
+		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+		SphereIntersectsOBB(tmp, box);
+	}
   return SphereIntersectsOBB( GetBoundingSphere(), box );
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,12 +95,24 @@ prefix::CSphereCollider::Intersects( const Phoenix::Math::CLine & line ) const
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const
 {
+	if ( m_pTransform )
+	{
+		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+		PointInsideSphere(tmp, vPoint);
+	}
   return PointInsideSphere( GetBoundingSphere(), vPoint );
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
 prefix::CSphereCollider::Intersects( const Phoenix::Collision::ICollider & collider ) const
 {
+	if ( m_pTransform )
+	{
+		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+		collider.Intersects(tmp);
+	}
   return collider.Intersects(GetBoundingSphere());
 }
 ///////////////////////////////////////////////////////////////////////////////

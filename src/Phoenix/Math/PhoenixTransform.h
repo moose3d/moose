@@ -8,8 +8,12 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
-  namespace Math
-  {
+	namespace Scene
+	{
+		class CTransformNode;
+	}
+	namespace Math
+	{
     /////////////////////////////////////////////////////////////////
     /// A class which stores scaling, rotation and translation into
     /// 4x4 matrix and provides methods for easily changing any of 
@@ -36,9 +40,9 @@ namespace Phoenix
       CTransform() : m_bChanged(0),
                      m_fScaling(1.0f),
                      m_mTransform(1,0,0,0,
-				  0,1,0,0,
-				  0,0,1,0,
-				  0,0,0,1 ),
+																	0,1,0,0,
+																	0,0,1,0,
+																	0,0,0,1 ),
                      m_qRotation(0.0f,0.0f,0.0f,1.0f),
                      m_vTranslation(0.0f,0.0f,0.0f) { }
       virtual ~CTransform()  {}
@@ -139,9 +143,11 @@ namespace Phoenix
     class PHOENIX_API CTransformable 
     {
     protected:
-      Phoenix::Math::CTransform m_LocalTransform;
-      Phoenix::Math::CTransform m_WorldTransform;
-      bool m_bChanged;
+      Phoenix::Math::CTransform m_LocalTransform; ///!< Local transform
+      Phoenix::Math::CTransform m_WorldTransform; ///!< Combined transform with parent's transform.
+      bool m_bChanged; ///!< Has this transform been changed (indicates whether world transform and children should be updated).
+      Phoenix::Scene::CTransformNode *m_pTransformNode;
+
     public:
       CTransformable();
       virtual ~CTransformable() {} 
@@ -177,6 +183,17 @@ namespace Phoenix
       /// Set change flag.
       /// \bFlag true for changed, false for unchanged.
       void SetChanged(bool bFlag );
+      ////////////////////
+      /// Gets called whenever change is reseted, ie. set to false.
+      virtual void PostTransformUpdate();
+      ////////////////////
+      /// Returns transform node for this transformable.
+      /// \returns Pointer to CTransformNode or NULL if not set.
+      Phoenix::Scene::CTransformNode * GetTransformNode();
+      ////////////////////
+      /// Sets transform node for this transformable. TransformNode will not be released upon object destruction.
+      /// \param pNode CTransformNode to be set.
+      void SetTransformNode( Phoenix::Scene::CTransformNode *pNode );
     };
   }; // namespace Math
 }; // namespace Phoenix

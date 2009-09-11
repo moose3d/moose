@@ -146,7 +146,7 @@ Phoenix::Math::CTransform::SetIdentity()
   m_vTranslation[0] = m_vTranslation[1] = m_vTranslation[2] = 0.0f;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Math::CTransformable::CTransformable()
+Phoenix::Math::CTransformable::CTransformable() : m_pTransformNode(NULL)
 {
   SetChanged(true);
 }
@@ -229,5 +229,24 @@ void
 Phoenix::Math::CTransformable::SetChanged(bool bFlag )
 {
   m_bChanged = bFlag;
+  if ( !m_bChanged ) PostTransformUpdate();
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::CTransformable::PostTransformUpdate()
+{
+	// NOP, override in appropriate classes. (mainly in CGameObject)
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::CTransformable::SetTransformNode( Phoenix::Scene::CTransformNode *pNode)
+{
+	m_pTransformNode = pNode;
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Scene::CTransformNode *
+Phoenix::Math::CTransformable::GetTransformNode()
+{
+	return m_pTransformNode;
+}
+///////////////////////////////////////////////////////////////////////////////

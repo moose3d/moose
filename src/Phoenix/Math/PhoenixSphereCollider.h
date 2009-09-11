@@ -17,8 +17,8 @@ namespace Phoenix
 	{
 		///////////////////
 		/// Sphere-based collider
-	        class CSphereCollider : public ICollider,
-									 public Phoenix::Volume::CSphereBound
+	    class CSphereCollider : public ICollider,
+								 public Phoenix::Volume::CSphereBound
 		{
 		public:
 			CSphereCollider();
