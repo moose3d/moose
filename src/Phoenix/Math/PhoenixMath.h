@@ -140,6 +140,9 @@ namespace Phoenix
     // Transforms vector v by matrix (scaling, rotation and translation is applied)
     PHOENIX_API void Transform( const Phoenix::Math::CVector3<float> &v, const Phoenix::Math::CMatrix4x4<float> &m, CVector3<float> & result);
     ////////////////////
+    // Transforms vector v by given Transform object (scaling, rotation and translation is applied)
+    PHOENIX_API void Transform( const Phoenix::Math::CVector3<float> &v, const Phoenix::Math::CTransform &t, CVector3<float> & result);
+    ////////////////////
     // Multiplies vector vVector from right by matrix mMatrix  ( mMatrix * vVector );
     PHOENIX_API void MultiplyFromRight( const Phoenix::Math::CMatrix3x3<float> & mMatrix, const Phoenix::Math::CVector3<float> &vVector, CVector3<float> & result);
     ////////////////////
@@ -269,10 +272,18 @@ namespace Phoenix
     /// \returns Resulting vector.
     PHOENIX_API CVector3<float> operator*( const CMatrix3x3<float> &mMatrix, const CVector3<float> &vVector);
     ////////////////////
-    /// Forms a rotation matrix from oriented box's axis
+    /// Constructs a 4x4 rotation matrix by inserting the Oriented Box axis
+		/// as column vectors of the it.
+		///
+		///     Fx Rx Ux 0
+		/// M = Fy Ry Uy 0 ,  F = Forward Vector
+		///     Fz Rz Uz 0    R = Right Vector
+		///     0  0  0  1    U = Up Vector
+    ///
     /// \param ob Oriented box.
     /// \param matrix Where to store rotation matrix.
     PHOENIX_API void OrientedBoxAxisToRotationMatrix ( const Phoenix::Volume::COrientedBox &ob, Phoenix::Math::CMatrix4x4<float> & matrix  );
+    /////////////////////////////////////////////////////////////////
   }; // namespace Math
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////

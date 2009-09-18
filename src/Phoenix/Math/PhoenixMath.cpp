@@ -523,9 +523,9 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
     // The index points to and triplet of three floats, which are
     // stored continuously into vertexdescriptor.
     if ( indices.IsShortIndices() )
-      nVertexIndex = m_pIndexShortArray[nIndex] * 3;
+      nVertexIndex = m_pIndexShortArray[nIndex]; //* 3;
     else
-      nVertexIndex = m_pIndexIntArray[nIndex] * 3;
+      nVertexIndex = m_pIndexIntArray[nIndex];// * 3;
 
     vAveragePos[0] += vertexDescriptor.GetPointer<float>(nVertexIndex)[0];
     vAveragePos[1] += vertexDescriptor.GetPointer<float>(nVertexIndex)[1];
@@ -543,9 +543,9 @@ Phoenix::Math::CovarianceMatrix(  const CVertexDescriptor &vertexDescriptor, con
   {
 
     if ( indices.IsShortIndices() )
-      nVertexIndex = m_pIndexShortArray[nIndex] * 3;
+      nVertexIndex = m_pIndexShortArray[nIndex];// * 3;
     else
-      nVertexIndex = m_pIndexIntArray[nIndex] * 3;
+      nVertexIndex = m_pIndexIntArray[nIndex];// * 3;
 
     fTmpX = vertexDescriptor.GetPointer<float>(nVertexIndex)[0] - vAveragePos[0];
     fTmpY = vertexDescriptor.GetPointer<float>(nVertexIndex)[1] - vAveragePos[1];
@@ -781,6 +781,15 @@ Phoenix::Math::Transform( const CVector3<float> &v, const CMatrix4x4<float> &m, 
 #undef m21
 #undef m22
 #undef m23
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::Transform( const CVector3<float> &v, const CTransform &t, CVector3<float> & result)
+{
+	result = v;
+	RotateVector(t.GetRotation(), result);
+	result+=t.GetTranslation();
+	result*=t.GetScaling();
 }
 /////////////////////////////////////////////////////////////////
 void
