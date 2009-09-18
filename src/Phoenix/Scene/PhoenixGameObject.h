@@ -2,7 +2,7 @@
 #define __PhoenixGameObject_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixMath.h"
-#include "PhoenixTransform.h"
+#include "PhoenixTransformGraph.h"
 #include "PhoenixSphereBound.h"
 #include "PhoenixRenderable.h"
 #include "PhoenixRenderableProperty.h"
@@ -18,7 +18,7 @@ namespace Phoenix
   {
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
-    class PHOENIX_API CGameObject : public Phoenix::Math::CTransformable,
+    class PHOENIX_API CGameObject : public Phoenix::Scene::CTransformable,
 									 public Phoenix::Graphics::CRenderableProperty,
 									 public Phoenix::Core::CTagged,
 									 public Phoenix::Collision::CSphereCollider
