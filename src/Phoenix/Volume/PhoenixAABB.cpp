@@ -35,7 +35,6 @@ Phoenix::Volume::CAxisAlignedBox::GetMax() const
   return m_vMax;
 }
 /////////////////////////////////////////////////////////////////
-
 Phoenix::Volume::CAxisAlignedBox
 Phoenix::Volume::CalculateAlignedBox( const Phoenix::Graphics::CVertexDescriptor &vertices )
 {
