@@ -154,13 +154,12 @@ namespace Phoenix
       /// Default constructor.
       TGraphNode()
       {
-		m_pGraph = NULL;
-		m_iColor = 0;
+      	m_pGraph = NULL;
+      	m_iColor = 0;
       }
       ////////////////////
-      /// Destructor. Should be invoked with extreme care since it only removes this node
-      /// not the children nor does it fix the parent pointers of the children.
-      virtual ~TGraphNode() {}
+      /// Destructor.
+      virtual ~TGraphNode();
     public:
       ////////////////////
       /// Copy constructor
@@ -193,7 +192,7 @@ namespace Phoenix
       /// \param pTo A pointer to CGraphNode.
       Phoenix::Core::TGraphEdge<NODE_TYPE> * AddEdge( NODE_TYPE *pTo )
       {
-	return m_pGraph->AddEdge( this, pTo );
+      	return m_pGraph->AddEdge( this, pTo );
       }
       ////////////////////
       ///  Removes and edge leading from this node to given node.
@@ -233,6 +232,7 @@ namespace Phoenix
     template<class NODE_TYPE>
     class  TGraph
     {
+			friend class TGraphNode<NODE_TYPE>;
     protected:
       NodeListType m_lstNodes;       ///!< List of nodes.
       EdgeListType m_lstEdges;       ///!< List of edges
@@ -241,9 +241,13 @@ namespace Phoenix
       /// Destructor.
       virtual ~TGraph()
       {    
-		RemoveEdges();
-		RemoveNodes();
+      	RemoveEdges();
+      	RemoveNodes();
       }
+      ////////////////////
+      /// \return Node list reference.
+      NodeListType & GetNodes() { return m_lstNodes; }
+
       void RegisterNode( NODE_TYPE *pNode );
       ////////////////////
       /// Deletes a node.
@@ -254,26 +258,26 @@ namespace Phoenix
       /// Returns Pointer to edge if ok, NULL on error
       TGraphEdge<NODE_TYPE> * AddEdge( NODE_TYPE *pNodeFrom, NODE_TYPE *pNodeTo)
       {
-	if ( pNodeFrom == NULL )
-	{
-	  std::cerr << "FromNode is NULL" << std::endl;
-	  return NULL;
-	}
-	
-	if ( pNodeTo == NULL )
-	{
-	  std::cerr << "ToNode is NULL" << std::endl;
-	  return NULL;
-	}
-	
-	assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!");
-	
-	TGraphEdge<NODE_TYPE> *pEdge = new TGraphEdge<NODE_TYPE>( pNodeFrom, pNodeTo);
-	pNodeFrom->GetLeavingEdges().push_back( pEdge );
-	pNodeTo->GetArrivingEdges().push_back( pEdge );
-	m_lstEdges.push_back(pEdge);
+					if ( pNodeFrom == NULL )
+					{
+						std::cerr << "FromNode is NULL" << std::endl;
+						return NULL;
+					}
 
-	return pEdge;
+					if ( pNodeTo == NULL )
+					{
+						std::cerr << "ToNode is NULL" << std::endl;
+						return NULL;
+					}
+
+					assert ( (pNodeTo->m_pGraph == pNodeFrom->m_pGraph) && "Nodes belong to different graphs!");
+
+					TGraphEdge<NODE_TYPE> *pEdge = new TGraphEdge<NODE_TYPE>( pNodeFrom, pNodeTo);
+					pNodeFrom->GetLeavingEdges().push_back( pEdge );
+					pNodeTo->GetArrivingEdges().push_back( pEdge );
+					m_lstEdges.push_back(pEdge);
+
+					return pEdge;
       }
       ////////////////////
       /// Removes an edge,
@@ -295,20 +299,20 @@ namespace Phoenix
       ////////////////////
       template <class Type>  inline Type * CreateNode()
       {
-	Type *t = new Type();
-	m_lstNodes.push_back(t);
-	t->m_pGraph = this;
-	return t;
+				Type *t = new Type();
+				m_lstNodes.push_back(t);
+				t->m_pGraph = this;
+				return t;
       }
       ////////////////////
       inline const size_t GetNodeCount() const
       {
-	return m_lstNodes.size();
+					return m_lstNodes.size();
       }
       ////////////////////
       inline const size_t GetEdgeCount() const
       {
-	return m_lstEdges.size();
+      	return m_lstEdges.size();
       }
     protected:
       ////////////////////

@@ -23,7 +23,8 @@ template<class NODE_TYPE>
 void 
 Phoenix::Core::TGraph<NODE_TYPE>::DeleteNode( NODE_TYPE *pNode )
 {
-  typename NodeListType::iterator it;
+	delete pNode;
+  /*typename NodeListType::iterator it;
   it = find(m_lstNodes.begin(), m_lstNodes.end(), pNode );
   
   if ( it != m_lstNodes.end())
@@ -39,7 +40,7 @@ Phoenix::Core::TGraph<NODE_TYPE>::DeleteNode( NODE_TYPE *pNode )
   {
     std::cerr << "Node " << pNode 
 	      << "is not part of this graph!" << std::endl;
-  }
+  }*/
   
 }
 /////////////////////////////////////////////////////////////////
@@ -175,6 +176,31 @@ Phoenix::Core::TGraph<NODE_TYPE>::RegisterNode( NODE_TYPE *pNode )
 }
 /////////////////////////////////////////////////////////////////
 template<class NODE_TYPE>
+Phoenix::Core::TGraphNode<NODE_TYPE>::~TGraphNode()
+{
+		// Because lists in graph are stored directly with subclass type,
+	  // we need some magic here. Causes slight overhead, but I am unsure if
+	  // that is relevant while destroying an object.
+		NODE_TYPE *pTmp = dynamic_cast<NODE_TYPE*>(this);
+
+		typename NodeListType::iterator it;
+    it = find(GetGraph()->GetNodes().begin(), GetGraph()->GetNodes().end(), this );
+
+    if ( it != GetGraph()->GetNodes().end() )
+    {
+				GetGraph()->RemoveLeavingEdgesFrom(pTmp);
+     	  GetGraph()->RemoveArrivingEdgesFrom(pTmp);
+     	  GetGraph()->GetNodes().erase(it);
+     }
+     else
+     {
+     	    //std::cerr << "Node " << pNode
+     		  //    << "is not part of this graph!" << std::endl;
+     }
+}
+/////////////////////////////////////////////////////////////////
+
+template<class NODE_TYPE>
 Phoenix::Core::TGraph<NODE_TYPE> *
 Phoenix::Core::TGraphNode<NODE_TYPE>::GetGraph()
 {
@@ -239,14 +265,14 @@ template<class NODE_TYPE>
 void 
 Phoenix::Core::TGraphNode<NODE_TYPE>::RemoveLeavingEdges()
 {
-  m_pGraph->RemoveLeavingEdgesFrom( this );
+  m_pGraph->RemoveLeavingEdgesFrom( dynamic_cast<NODE_TYPE*>(this) );
 }
 /////////////////////////////////////////////////////////////////
 template<class NODE_TYPE>
 void 
 Phoenix::Core::TGraphNode<NODE_TYPE>::RemoveArrivingEdges()
 {
-  m_pGraph->RemoveArrivingEdgesFrom( this );
+  m_pGraph->RemoveArrivingEdgesFrom( dynamic_cast<NODE_TYPE*>(this) );
 }
 /////////////////////////////////////////////////////////////////
 template<class NODE_TYPE>
