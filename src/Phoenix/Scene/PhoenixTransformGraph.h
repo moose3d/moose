@@ -11,7 +11,8 @@ namespace Phoenix
 {
   namespace Scene
   {
-    /////////////////////////////////////////////////////////////////
+  	class CTransformable;
+		/////////////////////////////////////////////////////////////////
     /// Transform node template, allows several different objects to be 
     /// attached to each other via typing mechanism.
     class PHOENIX_API CTransformNode : public Phoenix::Core::TGraphNode<Phoenix::Scene::CTransformNode>
@@ -19,87 +20,95 @@ namespace Phoenix
       friend class Phoenix::Core::TGraph<CTransformNode>;
     public:
       /// For adding new edges without compiler errors.
-      Phoenix::Core::TGraphEdge<CTransformNode> * AddEdge( CTransformNode *pTo )
-      {
-    	  return m_pGraph->AddEdge( this, pTo );
-      }
+      Phoenix::Core::TGraphEdge<CTransformNode> * AddEdge( CTransformNode *pTo );
       ////////////////////
       /// Returns pointer to a transformable object that is affected by this transform node.
-      virtual Phoenix::Math::CTransformable * GetTransformable() = 0;
+      virtual Phoenix::Scene::CTransformable * GetTransformable() = 0;
       ////////////////////
-      void Reparent( CTransformNode * pNewParent )
-      {
-    	  CTransformNode *pCurrentParent = GetArrivingEdges().front()->GetFromNode();
-    	  // This removes all edges between current parent and this
-    	  DeleteAllEdgesTo(pCurrentParent);
-    	  // Remove possibly existing edges between new parent and this
-    	  pNewParent->DeleteAllEdgesTo(this);
-    	  // Add edges between new parent and this
-    	  pNewParent->AddEdge( this );
-
-      }
+      void Reparent( CTransformNode * pNewParent );
       ////////////////////
-      bool Enter()
-      {
-					Phoenix::Math::CTransformable *pThis   = GetTransformable();
-					Phoenix::Math::CTransformable *pParent = NULL;
-
-					if ( pThis == NULL)
-					{
-						std::cerr << "Transformable == NULL" << std::endl;
-						return 0;
-					}
-
-					if ( HasArrivingEdges() )
-					{
-						pParent = GetArrivingEdges().front()->GetFromNode()->GetTransformable();
-
-						// If there is no ship, skip handling and use local transform.
-						if ( pParent == NULL )
-						{
-							if ( pThis->IsChanged() )
-								pThis->SetWorldTransform( pThis->GetLocalTransform());
-							return 0;
-						}
-
-						if ( pParent->IsChanged() || pThis->IsChanged() )
-						{
-							pThis->SetChanged(true);
-							Multiply( pParent->GetWorldTransform(), pThis->GetLocalTransform(), pThis->GetWorldTransform() );
-						}
-
-					}
-					else
-					{
-						if ( pThis->IsChanged() ) pThis->SetWorldTransform( pThis->GetLocalTransform());
-					}
-					return 0;
-      }
+      bool Enter();
       ////////////////////
-      void Leave()
-      {
-				Phoenix::Math::CTransformable *pTmp = GetTransformable();
-				if( pTmp != NULL ) pTmp->SetChanged(false);
-      }
+      void Leave();
     };
+    /////////////////////////////////////////////////////////////////
+		/// Transformable base class
+		class PHOENIX_API CTransformable
+		{
+		protected:
+			Phoenix::Math::CTransform m_LocalTransform; ///!< Local transform
+			Phoenix::Math::CTransform m_WorldTransform; ///!< Combined transform with parent's transform.
+			bool m_bChanged; ///!< Has this transform been changed (indicates whether world transform and children should be updated).
+			Phoenix::Scene::CTransformNode *m_pTransformNode;
+		public:
+			CTransformable();
+			virtual ~CTransformable() {}
+			////////////////////
+			/// Returns reference to local transform.
+			/// \returns Local transform
+			Phoenix::Math::CTransform & GetLocalTransform();
+			////////////////////
+			/// Returns reference to local transform.
+			/// \returns Local transform
+			const Phoenix::Math::CTransform & GetLocalTransform() const;
+			////////////////////
+			/// Returns reference to world transform.
+			/// \returns World transform
+			Phoenix::Math::CTransform & GetWorldTransform();
+			////////////////////
+			/// Returns reference to world transform.
+			/// \returns World transform
+			const Phoenix::Math::CTransform & GetWorldTransform() const;
+			////////////////////
+			/// Assigns world transform.
+			/// \param rTransform transform to be set as world
+			void SetWorldTransform( const Phoenix::Math::CTransform & rTransform );
+			////////////////////
+			/// Assigns local transform.
+			/// \param rTransform transform to be set as local
+			void SetLocalTransform( const Phoenix::Math::CTransform & rTransform );
+			////////////////////
+			/// Is this transformable been updated.
+			/// \returns true if changed, false otherwise.
+			bool IsChanged() const;
+			////////////////////
+			/// Set change flag.
+			/// \bFlag true for changed, false for unchanged.
+			void SetChanged(bool bFlag );
+			////////////////////
+			/// Gets called whenever change is reseted, ie. set to false.
+			virtual void PostTransformUpdate();
+			////////////////////
+			/// Returns transform node for this transformable.
+			/// \returns Pointer to CTransformNode or NULL if not set.
+			Phoenix::Scene::CTransformNode * GetTransformNode();
+			////////////////////
+			/// Sets transform node for this transformable. TransformNode will not be released upon object destruction.
+			/// \param pNode CTransformNode to be set.
+			void SetTransformNode( Phoenix::Scene::CTransformNode *pNode );
+			////////////////////
+			/// For easier usage, reparents transform node of this transformable.
+			/// \param pTransformable Transformable object that must have a transform node.
+			void Reparent( Phoenix::Scene::CTransformable *pTransformable );
+		};
     ///////////////////////////////////////////////////////////////////////////
     template<class TYPE>
     class CObjectTransform : public CTransformNode,
                               public Phoenix::Core::CHandled<TYPE>
     {
     public:
-      Phoenix::Math::CTransformable * GetTransformable()
+      Phoenix::Scene::CTransformable * GetTransformable()
       {
-        return static_cast<Phoenix::Math::CTransformable *>( *(this->GetObjectHandle()) );
+        return static_cast<Phoenix::Scene::CTransformable *>( *(this->GetObjectHandle()) );
       }
     };
     ///////////////////////////////////////////////////////////////////////////
     class CPlainTransform : public CTransformNode,
-                          public Phoenix::Math::CTransformable
+                          public Phoenix::Scene::CTransformable
 
     {
     public:
-      Phoenix::Math::CTransformable * GetTransformable()
+      Phoenix::Scene::CTransformable * GetTransformable()
       {
         return this;
       }
@@ -120,12 +129,17 @@ namespace Phoenix
       /// Updates nodes as necessary.
       void Update();
       ///////////////////
-      // Adds object into transform graph.
+      // Adds object into transform graph. It must be  inherited from
+      // CTransformable.
       template <class TYPE > CObjectTransform<TYPE> * Insert( TYPE * pObject )
       {
+      	// Makes compiler warn you about the type.
+      	CTransformable *pIsInheritedProperlyTest = NULL;
+      	pIsInheritedProperlyTest = pObject;
+
       	CObjectTransform<TYPE> *pTR = new CObjectTransform<TYPE>();
       	RegisterNode(pTR);
-
+      	pObject->SetTransformNode(pTR);
         assert ( !pObject->GetObjectHandle().IsNull() &&
 								"Object handle is null, this makes adding to transform graph"
 								"via HANDLE pretty difficult. Attach handle to object via "
@@ -134,7 +148,7 @@ namespace Phoenix
         pTR->GetObjectHandle() = pObject->GetObjectHandle();
         GetRoot()->AddEdge( pTR );
         return pTR;
-}
+      }
     };
     ///////////////////////////////////////////////////////////////////////////
   } // namespace Scene

@@ -146,65 +146,10 @@ Phoenix::Math::CTransform::SetIdentity()
   m_vTranslation[0] = m_vTranslation[1] = m_vTranslation[2] = 0.0f;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Math::CTransformable::CTransformable() : m_pTransformNode(NULL)
-{
-  SetChanged(true);
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Math::CTransform & 
-Phoenix::Math::CTransformable::GetLocalTransform()
-{
-  return m_LocalTransform;
-}
-/////////////////////////////////////////////////////////////////
-const Phoenix::Math::CTransform & 
-Phoenix::Math::CTransformable::GetLocalTransform() const
-{
-  return m_LocalTransform;
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Math::CTransform & 
-Phoenix::Math::CTransformable::GetWorldTransform()
-{
-  return m_WorldTransform;
-}
-/////////////////////////////////////////////////////////////////
-const Phoenix::Math::CTransform & 
-Phoenix::Math::CTransformable::GetWorldTransform() const
-{
-  return m_WorldTransform;
-}
-/////////////////////////////////////////////////////////////////
-void 
-Phoenix::Math::CTransformable::SetLocalTransform( const Phoenix::Math::CTransform & rTransform )
-{
-  m_LocalTransform = rTransform;
-  SetChanged(true);
-}
-/////////////////////////////////////////////////////////////////
-void 
-Phoenix::Math::CTransformable::SetWorldTransform( const Phoenix::Math::CTransform & rTransform )
-{
-  m_WorldTransform = rTransform;
-  SetChanged(true);
-}
-/////////////////////////////////////////////////////////////////
-bool 
-Phoenix::Math::CTransform::IsChanged() const
-{
-  return m_bChanged;
-}
-/////////////////////////////////////////////////////////////////
-void 
-Phoenix::Math::CTransform::SetChanged(bool bFlag )
-{
-  m_bChanged = bFlag;
-}
-/////////////////////////////////////////////////////////////////
-void 
-Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft, 
-			 const Phoenix::Math::CTransform & rTRight, 
-			 Phoenix::Math::CTransform & rTransformResult )
+void
+Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft,
+													  const Phoenix::Math::CTransform & rTRight,
+														Phoenix::Math::CTransform & rTransformResult )
 {
   CMatrix4x4<float> mResult;
   CVector3<float> vRightTransl  = rTRight.GetTranslation();
@@ -216,37 +161,5 @@ Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft,
   // Set translation
   RotateVector( rTLeft.GetRotation(), vRightTransl );
   rTransformResult.SetTranslation( vRightTransl + rTLeft.GetTranslation());
-  
 }
 /////////////////////////////////////////////////////////////////
-bool 
-Phoenix::Math::CTransformable::IsChanged() const
-{
-  return m_bChanged;
-}
-/////////////////////////////////////////////////////////////////
-void 
-Phoenix::Math::CTransformable::SetChanged(bool bFlag )
-{
-  m_bChanged = bFlag;
-  if ( !m_bChanged ) PostTransformUpdate();
-}
-/////////////////////////////////////////////////////////////////
-void
-Phoenix::Math::CTransformable::PostTransformUpdate()
-{
-	// NOP, override in appropriate classes. (mainly in CGameObject)
-}
-///////////////////////////////////////////////////////////////////////////////
-void
-Phoenix::Math::CTransformable::SetTransformNode( Phoenix::Scene::CTransformNode *pNode)
-{
-	m_pTransformNode = pNode;
-}
-///////////////////////////////////////////////////////////////////////////////
-Phoenix::Scene::CTransformNode *
-Phoenix::Math::CTransformable::GetTransformNode()
-{
-	return m_pTransformNode;
-}
-///////////////////////////////////////////////////////////////////////////////
