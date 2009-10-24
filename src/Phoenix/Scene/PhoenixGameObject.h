@@ -2,6 +2,7 @@
 #define __PhoenixGameObject_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixMath.h"
+#include "PhoenixAIScript.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixSphereBound.h"
 #include "PhoenixRenderable.h"
@@ -11,6 +12,7 @@
 #include "PhoenixSphereCollider.h"
 /////////////////////////////////////////////////////////////////
 #include <vector>
+#include <string>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -19,17 +21,21 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
     class PHOENIX_API CGameObject : public Phoenix::Scene::CTransformable,
-									 public Phoenix::Graphics::CRenderableProperty,
-									 public Phoenix::Core::CTagged,
-									 public Phoenix::Collision::CSphereCollider
+				    public Phoenix::Graphics::CRenderableProperty,
+				    public Phoenix::Core::CTagged,
+				    public Phoenix::Collision::CSphereCollider,
+				    public Phoenix::Core::CNamed,
+				    public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
+				    public Phoenix::AI::CAIObject
+      
     {
+    protected:
       /// In which spatial index this node is in.
-      unsigned int					  		m_nSpatialIndex;
-      Phoenix::Collision::ICollider * 		m_pCollider;
+      unsigned int                     m_nSpatialIndex;
+      Phoenix::Collision::ICollider *  m_pCollider;
     public:
       ////////////////////
       /// Constructor.
-      /// \param nLodLevels Number lod levels in this gameobjects.
       CGameObject();
       ////////////////////
       /// Destructor.
@@ -63,7 +69,6 @@ namespace Phoenix
       /// Returns collider object for more higher precision collision detection,
       /// \returns Pointer to collider, or this if alternative collider not set (NULL).
       Phoenix::Collision::ICollider * GetCollider();
-
     };
   }; // namespace Scene
 }; // namespace Phoenix

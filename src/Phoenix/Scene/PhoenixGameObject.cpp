@@ -10,9 +10,11 @@ Phoenix::Scene::CGameObject::~CGameObject()
 
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), m_pCollider(NULL)
+Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), 
+					      m_pCollider(NULL), 
+					      CAIObject( this )
 {
-	m_pCollider = this;
+        m_pCollider = this;
 }
 /////////////////////////////////////////////////////////////////
 unsigned int

@@ -46,6 +46,7 @@
 #include "PhoenixModelHelper.h"
 #include "PhoenixDDSImage.h"
 #include "PhoenixMessageSystem.h"
+#include "PhoenixAIScript.h"
 #include "PhoenixModelLoader.h"
 #include "PhoenixObjLoader.h"
 #include <PhoenixALObjectArray.h>

@@ -59,6 +59,9 @@ namespace Phoenix
 #define g_Error ( Phoenix::Core::CLogger::GetInstance()->Err())
 #define g_Log   ( Phoenix::Core::CLogger::GetInstance()->Msg())
 #define g_Warn  ( Phoenix::Core::CLogger::GetInstance()->Warn())
+////////////////////////////////////////////////////////////////////////////////
+/// Manager for gameobjects.
+#define g_ObjectMgr (Phoenix::Core::CResourceManager<Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<CGameObject> >::GetInstance()) 
 ////////////////////
 // Constants
 #define TEXTURE_HANDLE_COUNT 8

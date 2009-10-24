@@ -1,7 +1,7 @@
 #ifndef __PhoenixVolume_h__
 #define __PhoenixVolume_h__
 /////////////////////////////////////////////////////////////////
-#warning "This file contains several classes which should be split into separate files."
+//#warning "This file contains several classes which should be split into separate files."
 #include "PhoenixSpatial.h"
 #include "PhoenixMathGeometry.h"
 #include "PhoenixVertexDescriptor.h"
