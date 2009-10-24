@@ -357,6 +357,10 @@ namespace Phoenix
       /// \param fY y-coordinate.
       /// \param ray Ray where values are stored.
       void CreateRay( float fX, float fY, Phoenix::Math::CRay & ray);
+      ///////////////////
+      /// Returns aspect ratio of viewport.
+      /// \return Aspect ratio of width / height.
+      float GetAspectRatio() const;
     };
   }; // namespace Graphics
 }; // Phoenix

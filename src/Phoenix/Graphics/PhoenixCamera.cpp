@@ -729,6 +729,14 @@ Phoenix::Graphics::CCamera::CreateRay( float fX, float fY, CRay & ray)
   ray.SetDirection( UnProject( fX, fY, 1.0f) - ray.GetPosition() );
 }
 /////////////////////////////////////////////////////////////////
+float
+Phoenix::Graphics::CCamera::GetAspectRatio() const
+{
+	if ( m_aViewport[3] == 0 ) return 0.0f;
+	return static_cast<float>(m_aViewport[2]) /
+				 static_cast<float>(m_aViewport[3]);
+}
+/////////////////////////////////////////////////////////////////
 // Float clip[16];
 //   float modl[16], proj[16];
 //   glGetFloatv( GL_PROJECTION_MATRIX, proj );
