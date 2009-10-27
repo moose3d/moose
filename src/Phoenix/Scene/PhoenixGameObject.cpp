@@ -7,7 +7,10 @@
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::~CGameObject()
 {
-
+	if ( m_pCollider != this )
+	{
+		delete m_pCollider;
+	}
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), 
