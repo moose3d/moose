@@ -942,6 +942,56 @@ Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Volume::CSphere 
   // return number of currently visible objects.
   return list.size();
 }
+/////////////////////////////////////////////////////////////////
+template<typename TYPE>
+size_t
+Phoenix::Spatial::COctree<TYPE>::CollectObjects( const Phoenix::Math::CRay &ray, std::list<TYPE> & list, Phoenix::Core::TAG tag, Phoenix::Core::CTagged::TagCompare compare ) const
+{
+  std::list< const Phoenix::Spatial::COctreeNode<TYPE> *> lstNodePtrs;
+  lstNodePtrs.push_back(GetRoot());
+
+  const Phoenix::Spatial::COctreeNode<TYPE> *pNode = NULL;
+  typename std::list<TYPE>::const_iterator it;
+
+  while(!lstNodePtrs.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrs.front();
+    lstNodePtrs.pop_front();
+
+    // Check does cube intersect ray
+    // Write collision check in Engine using AABB stuff.
+    if ( Phoenix::Collision::RayIntersectsAACube( ray, *pNode, NULL ))
+    {
+      // Check do objects intersect ray and if so,
+      // insert them into list
+      it = pNode->GetObjects().begin();
+      for( ; it!=pNode->GetObjects().end();it++)
+      {
+    	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+
+    	  if ( (*it)->Intersects(ray) )
+    	  {
+    		  list.push_back( *it );
+    	  }
+      }
+      // If there's objects left in children, push them into nodeptr list
+      if ( pNode->ChildrenContainObjects())
+      {
+	INSERT( TOP_LEFT_FRONT );
+	INSERT( TOP_LEFT_BACK );
+	INSERT( TOP_RIGHT_FRONT );
+	INSERT( TOP_RIGHT_BACK );
+	INSERT( BOTTOM_LEFT_FRONT );
+	INSERT( BOTTOM_LEFT_BACK );
+	INSERT( BOTTOM_RIGHT_FRONT );
+	INSERT( BOTTOM_RIGHT_BACK );
+      }
+    }
+  }
+  // return number of currently visible objects.
+  return list.size();
+}
 #undef INSERT
 /////////////////////////////////////////////////////////////////
 #endif

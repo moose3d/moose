@@ -2,6 +2,7 @@
 #define __PhoenixSpatialGraph_h__
 /////////////////////////////////////////////////////////////////
 //#include "PhoenixGameObject.h"
+#include "PhoenixGameObject.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -10,23 +11,22 @@ namespace Phoenix
 		/////////////////////////////////////////////////////////////////
 		/// Structure for storing objects and retrieving them according
 		/// to intersection volume.
-		template< class TYPE >
-		class CSpatialGraph : public Phoenix::Spatial::COctree<TYPE *>
+		class CSpatialGraph : public Phoenix::Spatial::COctree<Phoenix::Scene::CGameObject *>
 		{
 		public:
 		  ////////////////////
 		  /// Constructs spatial structure using an octree.
 		  /// \param nNumLevels Depth of octree.
 		  /// \param fWorldSize Maximum size of world cube side.
-		  CSpatialGraph( unsigned int nNumLevels, float fWorldSize ) : Phoenix::Spatial::COctree<TYPE*>(nNumLevels,fWorldSize){}
+		  CSpatialGraph( unsigned int nNumLevels, float fWorldSize ) : Phoenix::Spatial::COctree<Phoenix::Scene::CGameObject *>(nNumLevels,fWorldSize){}
 		  ////////////////////
 		  /// Inserts object into spatial graph according to world position and bounding sphere size.
 		  /// \param pGameObject Object to be inserted.
-		  void InsertObject( TYPE *pGameObject )
+		  void InsertObject( Phoenix::Scene::CGameObject *pGameObject )
 		  {
 				assert(pGameObject!=NULL);
 
-				unsigned int nSpatialIndex = Phoenix::Spatial::COctree<TYPE *>::InsertObject(
+				unsigned int nSpatialIndex = Phoenix::Spatial::COctree<CGameObject *>::InsertObject(
 												pGameObject, pGameObject->GetWorldBoundingSphere());
 				assert( nSpatialIndex < this->GetNodeCount() );
 				pGameObject->SetSpatialIndex( nSpatialIndex );
@@ -35,9 +35,9 @@ namespace Phoenix
 		  ////////////////////
 		  /// Removes object from spatial graph.
 		  /// \param pGameObject Object to be removed.
-		  void DeleteObject( TYPE *pGameObject )
+		  void DeleteObject( CGameObject *pGameObject )
 		  {
-				Phoenix::Spatial::COctreeNode<TYPE *> *pNode = this->GetNodeAt( pGameObject->GetSpatialIndex());
+				Phoenix::Spatial::COctreeNode<CGameObject *> *pNode = this->GetNodeAt( pGameObject->GetSpatialIndex());
 				if ( pNode != NULL )
 				{
 					pNode->DeleteObject( pGameObject );
@@ -46,7 +46,7 @@ namespace Phoenix
 		  ////////////////////
 		  /// Updates spatial location of gameobject.
 		  /// \param pGameObject Object to be updated.
-		  void Update( TYPE *pGameObject )
+		  void Update( CGameObject *pGameObject )
 		  {
 				Phoenix::Math::CVector3<float> vTmp = pGameObject->GetWorldTransform().GetTranslation();
 				vTmp += pGameObject->GetBoundingSphere().GetPosition();
