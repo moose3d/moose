@@ -365,13 +365,22 @@ namespace Phoenix
     ////////////////////
     /// Checks intersection with ray and AABB.
     /// \param ray Ray object.
-    /// \param aaBox The oriented box which is checked
+    /// \param aaBox an axis-aligned box which is checked
     /// \param pfValue optional pointer to float variable that receives distance from
     ///                ray origin to closest intersection point. By default, value is NULL.
     /// \returns false if ray does not intersect AABB. pfValue is undetermined.
     ///          true if ray intersects AABB. pfValue is set to closest distance.
     PHOENIX_API bool RayIntersectsAABB( const Phoenix::Math::CRay &ray, const Phoenix::Volume::CAxisAlignedBox &aaBox,  float *pfValue = NULL );
     ////////////////////
+		/// Checks intersection with ray and AABB.
+		/// \param ray Ray object.
+ 	  /// \param aaBox Axis-aligned cube which is checked
+	  /// \param pfValue optional pointer to float variable that receives distance from
+		///                ray origin to closest intersection point. By default, value is NULL.
+		/// \returns false if ray does not intersect AABB. pfValue is undetermined.
+		///          true if ray intersects AABB. pfValue is set to closest distance.
+		PHOENIX_API bool RayIntersectsAACube( const Phoenix::Math::CRay &ray, const Phoenix::Volume::CAxisAlignedCube &aaBox,  float *pfValue = NULL );
+		////////////////////
     /// Checks intersection between sphere and cone.
     /// \param sphere Sphere object
     /// \param cone Cone object.

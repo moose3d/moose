@@ -1493,6 +1493,13 @@ Phoenix::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox
 }
 /////////////////////////////////////////////////////////////////
 bool
+Phoenix::Collision::RayIntersectsAACube( const CRay &ray, const CAxisAlignedCube &aaCube,  float *pfValue )
+{
+	CAxisAlignedBox box( aaCube.GetPosition(), aaCube.GetWidth(), aaCube.GetWidth(), aaCube.GetWidth());
+	return RayIntersectsAABB( ray, box, pfValue );
+}
+/////////////////////////////////////////////////////////////////
+bool
 Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &aaBox,  float *pfValue )
 {
   float fT_min,fT_max;
@@ -1513,7 +1520,7 @@ Phoenix::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &a
     return true;
   }
 
-  // for each dimension in OBB do
+  // for each dimension in AABB do
   for ( int i=0;i<3;i++)
   {
     // Get correct values for each loop
