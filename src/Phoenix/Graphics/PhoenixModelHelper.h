@@ -48,7 +48,7 @@ namespace Phoenix
       /// \returns On failure, non-zero.
       int LoadObjModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0, bool bInterleaved = false );
       ////////////////////
-      /// Initializes CRenderable object from currently loaded data.
+      /// Initializes CRenderable object from data prefixed by szName.
       /// \attention This function does not add Renderable itself into RenderableManager.
       /// \warning Color loading is disabled, see constructor. It is not implemented in CRenderable.
       /// \param rModel CRenderable where data handles are attached to.
