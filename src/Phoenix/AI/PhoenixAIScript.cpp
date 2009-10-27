@@ -231,6 +231,92 @@ Phoenix::AI::CAIObject::GetGameObject()
 {
   return m_pGameObject;
 }
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIObject::GetGlobalVar( const std::string & varName, bool & value )
+{
+	int val;
+	if ( m_pAIScript->GetGlobalVar( varName, val ) == false)
+	{
+		m_pAIScript->PrintResult();
+		return false;
+	}
+
+	value = val;
+	return true;
+
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIObject::GetGlobalVar( const std::string & varName, int & value )
+{
+	if ( m_pAIScript->GetGlobalVar( varName, value ) == false)
+	{
+		m_pAIScript->PrintResult();
+		return false;
+	}
+	return true;
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIObject::GetGlobalVar( const std::string & varName, float & value )
+{
+	if ( m_pAIScript->GetGlobalVar( varName, value ) == false)
+		{
+			m_pAIScript->PrintResult();
+			return false;
+		}
+	return true;
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIObject::GetGlobalVar( const std::string & varName, std::string & value )
+{
+	if ( m_pAIScript->GetGlobalVar( varName, value ) == false)
+		{
+			m_pAIScript->PrintResult();
+			return false;
+		}
+	return true;
+}
+////////////////////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIScript::GetGlobalVar( const std::string & varName, int & value )
+{
+	Tcl_Obj * pTmp = GetGlobalVar( varName );
+	if ( pTmp  == NULL ) return false;
+	return Tcl_GetIntFromObj( m_pInterp, pTmp, &value ) == TCL_OK ? true : false;
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIScript::GetGlobalVar( const std::string & varName, float & value )
+{
+	Tcl_Obj * pTmp = GetGlobalVar( varName );
+	if ( pTmp  == NULL ) return false;
+	double dVal;
+
+	if ( Tcl_GetDoubleFromObj( m_pInterp, pTmp, &dVal) == TCL_OK )
+	{
+		value = dVal;
+		return true;
+	}
+	else return false;
+
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIScript::GetGlobalVar( const std::string & varName, std::string & value )
+{
+	Tcl_Obj * pTmp = GetGlobalVar( varName );
+	if ( pTmp  == NULL ) return false;
+	int length;
+	const char *szString = Tcl_GetStringFromObj(pTmp, &length);
+
+	if ( szString == NULL ) return false;
+	else value = szString;
+
+	return true;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // static int
 // Phoenix::AI::CAIScript::Accelerate( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
@@ -327,6 +413,7 @@ SCRIPT_CMD_IMPL( GetPosition )
 
   return TCL_OK;
 }
+
 /////////////////////////////////////////////////////////////////
 // void
 // Phoenix::AI::CAIObject::AddProperty( IProperty * pProp )

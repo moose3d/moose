@@ -40,6 +40,11 @@ namespace Phoenix
 
       bool   SetGlobalVar( const std::string &varName, Tcl_Obj *pVar );
       Phoenix::Scene::CGameObject * GetGameObject();
+
+      bool   GetGlobalVar( const std::string & varName, bool & value );
+      bool   GetGlobalVar( const std::string & varName, int & value );
+      bool   GetGlobalVar( const std::string & varName, float & value );
+      bool   GetGlobalVar( const std::string & varName, std::string & value );
     };
     /////////////////////////////////////////////////////////////////
     typedef std::list<std::string> MessageList;
@@ -64,6 +69,10 @@ namespace Phoenix
       Tcl_Obj * GetGlobalVar( const std::string & name);
       bool SetGlobalVar( const std::string & name, Tcl_Obj *pValue );
       void PrintResult();
+
+      bool   GetGlobalVar( const std::string & varName, int & value );
+      bool   GetGlobalVar( const std::string & varName, float & value );
+      bool   GetGlobalVar( const std::string & varName, std::string & value );
     };
     /////////////////////////////////////////////////////////////////
   } // AI
