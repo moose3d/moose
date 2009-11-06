@@ -1,5 +1,5 @@
-#ifndef __PhoenixRenderableModel_h__
-#define __PhoenixRenderableModel_h__
+#ifndef __PhoenixRenderableModelShared_h__
+#define __PhoenixRenderableModelShared_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
 #include "PhoenixResourceManager.h"
@@ -31,23 +31,23 @@ namespace Phoenix
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
     // TODO Add concept of model between renderablemodel and 3D data, and manage it using handles.
-    class PHOENIX_API CRenderableModel: public Phoenix::Graphics::CRenderable
+    class PHOENIX_API CRenderableModelShared : public Phoenix::Graphics::CRenderable
     {
     protected:
-      CModel * m_pModel;
+      MODEL_HANDLE m_hModel;
     public:
       ////////////////////
       /// Constructor.
-      CRenderableModel();
+      CRenderableModelShared();
       ////////////////////
       /// Destructor.
-      virtual ~CRenderableModel();
+      virtual ~CRenderableModelShared();
       ////////////////////
       /// Debugging output.
       /// \param stream Output stream.
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
-      friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModel & renderable );
+      friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & renderable );
       ////////////////////
       /// Renders this renderable using renderer.
       /// Overwrite this method to specialize rendering.
@@ -55,10 +55,7 @@ namespace Phoenix
       virtual void Render( COglRenderer & renderer );
       ////////////////////
       /// \returns model handle.
-      Phoenix::Graphics::CModel * GetModel();
-      ////////////////////
-      /// Sets model.
-      void SetModel( Phoenix::Graphics::CModel *pModel );
+      MODEL_HANDLE & GetModelHandle();
     };
   }; // namespace Graphics
 }; // namespace Phoenix

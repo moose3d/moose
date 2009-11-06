@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 //#include "PhoenixGameObject.h"
 #include "PhoenixGameObject.h"
+#include "PhoenixOctree.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -68,6 +69,35 @@ namespace Phoenix
 					pGameObject->SetSpatialIndex( nIndex );
 				}
 		  }
+		  ////////////////////
+		  /// Collects objects from Octree into list of objects.
+		  /// \param camera Camera used in culling.
+		  /// \param list List where objects are inserted.
+		  /// \param tag What TAG is used in comparison.
+		  /// \param compare How TAG value is used in comparison. By default, it is not used.
+		  /// \returns Number of collected objects.
+		  size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<CGameObject *> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
+		  ////////////////////
+		  /// Collects objects from Octree into list of objects.
+		  /// All objects must should be inherited from CGameObject or provide similar interface
+		  /// ( GetBoundingSphere, GetWorldTransform() ).
+		  /// \param sphere Objects must intersect this in order to be included.
+		  /// \param list List where objects are inserted.
+		  /// \param tag What TAG is used in comparison.
+		  /// \param compare How TAG value is used in comparison. By default, it is not used.
+		  /// \returns Number of collected objects.
+		  size_t CollectObjects( const Phoenix::Volume::CSphere &sphere, std::list<CGameObject *> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
+		  ////////////////////
+		  /// Collects objects from Octree into list of objects.
+		  /// All objects must should be inherited from CGameObject or provide similar interface
+		  /// ( GetBoundingSphere, GetWorldTransform() ).
+		  /// \param sphere Objects must intersect this in order to be included.
+		  /// \param list List where objects are inserted.
+		  /// \param tag What TAG is used in comparison.
+		  /// \param compare How TAG value is used in comparison. By default, it is not used.
+		  /// \returns Number of collected objects.
+		  size_t CollectObjects( const Phoenix::Math::CRay &ray, std::list<CGameObject *> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
+
 		};
 	} // Scene
 }// Phoenix

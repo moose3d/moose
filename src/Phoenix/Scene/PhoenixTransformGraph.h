@@ -12,6 +12,7 @@ namespace Phoenix
   namespace Scene
   {
   	class CTransformable;
+  	class CGameObject;
 		/////////////////////////////////////////////////////////////////
     /// Transform node template, allows several different objects to be 
     /// attached to each other via typing mechanism.
@@ -92,15 +93,11 @@ namespace Phoenix
 			void Reparent( Phoenix::Scene::CTransformable *pTransformable );
 		};
     ///////////////////////////////////////////////////////////////////////////
-    template<class TYPE>
-    class CObjectTransform : public CTransformNode,
-                              public Phoenix::Core::CHandled<TYPE>
+		class CObjectTransform : public CTransformNode,
+                             public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>
     {
     public:
-      Phoenix::Scene::CTransformable * GetTransformable()
-      {
-        return static_cast<Phoenix::Scene::CTransformable *>( *(this->GetObjectHandle()) );
-      }
+      Phoenix::Scene::CTransformable * GetTransformable();
     };
     ///////////////////////////////////////////////////////////////////////////
     class CPlainTransform : public CTransformNode,
@@ -131,24 +128,8 @@ namespace Phoenix
       ///////////////////
       // Adds object into transform graph. It must be  inherited from
       // CTransformable.
-      template <class TYPE > CObjectTransform<TYPE> * Insert( TYPE * pObject )
-      {
-      	// Makes compiler warn you about the type.
-      	CTransformable *pIsInheritedProperlyTest = NULL;
-      	pIsInheritedProperlyTest = pObject;
+      CObjectTransform * Insert( CGameObject * pObject );
 
-      	CObjectTransform<TYPE> *pTR = new CObjectTransform<TYPE>();
-      	RegisterNode(pTR);
-      	pObject->SetTransformNode(pTR);
-        assert ( !pObject->GetObjectHandle().IsNull() &&
-								"Object handle is null, this makes adding to transform graph"
-								"via HANDLE pretty difficult. Attach handle to object via "
-								"ResourceManager after creation immediately "
-								"ResourceManager::Create( Object, name, HANDLE)");
-        pTR->GetObjectHandle() = pObject->GetObjectHandle();
-        GetRoot()->AddEdge( pTR );
-        return pTR;
-      }
     };
     ///////////////////////////////////////////////////////////////////////////
   } // namespace Scene

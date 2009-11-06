@@ -10,33 +10,33 @@ using std::vector;
 using std::string;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CRenderableModel::CRenderableModel() :m_pModel(NULL)
+Phoenix::Graphics::CRenderableModelShared::CRenderableModelShared()
 {
 
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CRenderableModel::~CRenderableModel()
+Phoenix::Graphics::CRenderableModelShared::~CRenderableModelShared()
 {
 }
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 std::ostream &
-Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModel & renderable)
+Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & renderable)
 {
-	if ( renderable.m_pModel )
+	CModel *pModel = *const_cast<Phoenix::Graphics::CRenderableModelShared &>(renderable).GetModelHandle();
+	if ( pModel )
 	{
-		stream << *renderable.m_pModel;
+		stream << *pModel;
 	}
-	else stream << "(no model)";
   return stream;
 }
 /////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
+Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
 {
-	if ( !GetModel() ) return;
+	if ( GetModelHandle().IsNull() ) return;
 
 	// set renderstate first, because of lights, for example.
 	renderer.CommitRenderState(GetRenderState());
@@ -47,7 +47,7 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
 
-  CModel & model = *GetModel();
+  CModel & model = **m_hModel;
   ////////////////////
   // Commit textures
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
@@ -135,15 +135,10 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     renderer.RollbackTransform();
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CModel *
-Phoenix::Graphics::CRenderableModel::GetModel()
+MODEL_HANDLE &
+Phoenix::Graphics::CRenderableModelShared::GetModelHandle()
 {
-	return m_pModel;
+	return m_hModel;
 }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Graphics::CRenderableModel::SetModel(Phoenix::Graphics::CModel *pModel)
-{
-	m_pModel = pModel;
-}
-/////////////////////////////////////////////////////////////////
+

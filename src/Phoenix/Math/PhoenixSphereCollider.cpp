@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixSphereCollider.h"
 #include "PhoenixCollision.h"
+#include "PhoenixOGLRenderer.h"
 namespace prefix = Phoenix::Collision;
 using namespace Phoenix::Collision;
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Graphics::CFrustum & frustum
 	{
 		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
 		tmp.Move( m_pTransform->GetTranslation());
-		SphereIntersectsPolytope(tmp, frustum);
+		return SphereIntersectsPolytope(tmp, frustum);
 	}
   return SphereIntersectsPolytope(GetBoundingSphere(), frustum);
 }
@@ -45,7 +46,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Volume::COrientedBox & box )
 	{
 		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
 		tmp.Move( m_pTransform->GetTranslation());
-		SphereIntersectsOBB(tmp, box);
+		return SphereIntersectsOBB(tmp, box);
 	}
   return SphereIntersectsOBB( GetBoundingSphere(), box );
 }
@@ -68,13 +69,21 @@ prefix::CSphereCollider::Intersects( const Phoenix::Volume::CCone & cone ) const
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
+*/
 bool
-prefix::CSphereCollider::Intersects( const Phoenix::Math::CRay & ray ) const
+prefix::CSphereCollider::Intersects( const Phoenix::Math::CRay & ray, float *pfValue ) const
 {
-	return false;
+
+	if ( m_pTransform )
+		{
+			Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+			tmp.Move( m_pTransform->GetTranslation());
+			return RayIntersectsSphere(ray, pfValue, NULL, tmp);
+		}
+	return RayIntersectsSphere(ray, pfValue, NULL, this->GetBoundingSphere());
 }
 ///////////////////////////////////////////////////////////////////////////////
-bool
+/*bool
 prefix::CSphereCollider::Intersects( const Phoenix::Math::CPlane & plane ) const
 {
 	return false;
@@ -99,7 +108,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Math::CVector3<float> & vPoi
 	{
 		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
 		tmp.Move( m_pTransform->GetTranslation());
-		PointInsideSphere(tmp, vPoint);
+		return PointInsideSphere(tmp, vPoint);
 	}
   return PointInsideSphere( GetBoundingSphere(), vPoint );
 }
@@ -111,8 +120,20 @@ prefix::CSphereCollider::Intersects( const Phoenix::Collision::ICollider & colli
 	{
 		Phoenix::Volume::CSphere tmp = GetBoundingSphere();
 		tmp.Move( m_pTransform->GetTranslation());
-		collider.Intersects(tmp);
+		return collider.Intersects(tmp);
 	}
   return collider.Intersects(GetBoundingSphere());
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+prefix::CSphereCollider::Render( Phoenix::Graphics::COglRenderer & renderer )
+{
+	if ( m_pTransform )
+	{
+			Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+			tmp.Move( m_pTransform->GetTranslation());
+			renderer.CommitSphere( tmp );
+	}
+	else renderer.CommitSphere( GetBoundingSphere() );
 }
 ///////////////////////////////////////////////////////////////////////////////

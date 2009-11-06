@@ -5,6 +5,7 @@
 #include "PhoenixResourceManager.h"
 #include "PhoenixRenderable.h"
 #include "PhoenixRenderableModel.h"
+#include "PhoenixRenderableModelShared.h"
 #include "PhoenixCore.h"
 #include <vector>
 #include <map>
@@ -20,16 +21,16 @@ namespace Phoenix
     /// One object can consist of several renderables that are drawn consequently.
     /// Each object may have several LOD levels.
     typedef std::vector< std::pair<float,size_t> >									LodDistanceLevel;
-    typedef std::list< Phoenix::Core::CHandle<Phoenix::Graphics::CRenderable> *> 	RenderableHandleList;
-    typedef std::vector< RenderableHandleList >				        				LodLevelObjects;
-    typedef std::list< Phoenix::Graphics::CRenderable * >                           LightRenderableList;
+    typedef std::list< Phoenix::Graphics::CRenderable *> 						RenderableList;
+    typedef std::vector< RenderableList >				        						LodLevelObjects;
+
     /////////////////////////////////////////////////////////////////
     /// Class for game objects that can be rendered in a game.
     class PHOENIX_API CRenderableProperty : public Phoenix::Core::CEnableable
     {
     private:
       LodLevelObjects			m_LodLevels; ///< Renderable objects.
-      LightRenderableList		m_lstLights; ///< Lights that have effect on this Object.
+      RenderableList		m_lstLights; ///< Lights that have effect on this Object.
     public:
       ////////////////////
       /// Constructor.
@@ -46,12 +47,12 @@ namespace Phoenix
       /// Returns renderable handles for given lod level.
       /// \param nLodLevel Lod level.
       /// \returns List of renderable handles.
-      Phoenix::Graphics::RenderableHandleList & GetRenderableObjects( size_t nLodLevel );
+      Phoenix::Graphics::RenderableList & GetRenderableObjects( size_t nLodLevel );
       ////////////////////
       /// Returns renderable handles for given lod level.
       /// \param nLodLevel Lod level.
       /// \returns List of renderable handles.
-      const Phoenix::Graphics::RenderableHandleList & GetRenderableObjects( size_t nLodLevel ) const;
+      const Phoenix::Graphics::RenderableList & GetRenderableObjects( size_t nLodLevel ) const;
       ////////////////////
       /// Returns number of lod levels in this object.
       /// \returns Number of lod levels.
@@ -64,27 +65,26 @@ namespace Phoenix
       ////////////////////
       /// Adds new renderable handle to given lod level and
       /// \par attaches resource by name to it. Use this if your model data is interleaved or grouped.
-      /// \param szResourceName Name of the Renderable resource.
-      /// \param nLodLevel To which lod level renderable is added.
-      /// \param szGroupName Group name for indices. By default NULL, meaning all indices.
+      /// \param szModelName Name of the Model resource.
+      /// \param nLodLevel To which lod level modelrenderable is added.
       /// \param bInterleaved Attempt to use interleaved data. By default, false.
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
       /// \returns Pointer to a RenderableModel
-      Phoenix::Graphics::CRenderableModel * AddRenderableModel( const char *szResourceName, size_t nLodLevel, const char *szGroupName = NULL, bool bInterleaved = false,  Phoenix::Math::CTransform *pWorldTransform = NULL);
+      Phoenix::Graphics::CRenderableModelShared * AddRenderableModel( const char *szModelName, size_t nLodLevel, bool bInterleaved = false, Phoenix::Math::CTransform *pWorldTransform = NULL );
       ////////////////////
       /// Adds existing renderable object to given lod level. Use this only for adding non-grouped renderables.
       /// \param pRenderable Renderable to be added.
       /// \param nLodLevel To which level renderable is added.
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
-      void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL);
+      void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL) __attribute__((deprecated));
       ////////////////////
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
-      LightRenderableList & GetLights();
+      RenderableList & GetLights();
       ////////////////////
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
-      const LightRenderableList & GetLights() const;
+      const RenderableList & GetLights() const;
     };
   }
 }

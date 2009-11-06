@@ -38,6 +38,8 @@
 #include "PhoenixRenderQueue.h"
 #include "PhoenixGameObject.h"
 #include <PhoenixRenderableProperty.h>
+#include "PhoenixRenderableModel.h"
+#include "PhoenixRenderableModelShared.h"
 #include "PhoenixTransform.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixParticleSystem.h"

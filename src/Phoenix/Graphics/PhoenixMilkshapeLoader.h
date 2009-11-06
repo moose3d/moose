@@ -328,6 +328,12 @@ namespace Phoenix
       Phoenix::Graphics::CVertexDescriptor * GetTexCoordArray( size_t nTexUnit = 0) const;
       Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const;
       Phoenix::Graphics::CIndexArray *       GetIndexArray( const char *szGroupName = NULL ) const;
+      ///////////////////
+      /// Checks whether file has proper header.
+      /// \param szFilename file to be checked.
+      /// \returns true if ok, false otherwise.
+      static bool IsMilkshapeFile( const char *szFilename );
+
     private:
       ////////////////////
       /// Creates vertexdescriptors for vertex positions, normals, colors, texcoord and indices.

@@ -936,3 +936,24 @@ Phoenix::Data::CMilkshapeLoader::GetInterleavedArray( Phoenix::Graphics::ELEMENT
   return pData;
 }
 /////////////////////////////////////////////////////////////////
+bool
+Phoenix::Data::CMilkshapeLoader::IsMilkshapeFile( const char *szFilename )
+{
+	CMilkshapeLoader loader;
+
+	fstream fFile;
+	fFile.open( szFilename, ios::binary | ios::in );
+
+  if ( !fFile )
+  {
+    cerr << "Couldn't open " << szFilename << std::endl;
+    return false;
+  }
+
+  if ( loader.Check_File(fFile) )
+  {
+    cerr << "Invalid file, loading cancelled." << std::endl;
+    return false;
+  }
+  return true;
+}

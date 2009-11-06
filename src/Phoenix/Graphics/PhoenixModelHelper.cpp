@@ -14,78 +14,14 @@ using std::ostringstream;
 using std::string;
 /////////////////////////////////////////////////////////////////
 void
-CreateModelUsingLoader( CModelLoader * pLoader, const char *szName, int iFlags, const char **aszGroupNames, bool bInterleaved, float fScaling )
+CreateModelUsingLoader( CModelLoader * pLoader, int iFlags, const char **aszGroupNames, bool bInterleaved, float fScaling )
 {
-  string name = szName;
-  /* determine which data is used in comparison */
-  // int iCompFlags = VERTEX_COMP_POSITION;
-//   if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL;
-//   if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;
-//   if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD;
-
-
-
-  /* Resource allocation is one-way, either everything succeeds or nothing goes.*/
-
-  if ( bInterleaved )
-  {
-    CVertexDescriptor *pInterleaved = pLoader->GetInterleavedArray();
-    // manage array
-    assert( g_DefaultVertexManager->Create( pInterleaved,  name + "_interleaved") == 0);
-  }
-  else
-  {
-    // Create vertex handle
-    assert( g_DefaultVertexManager->Create(pLoader->GetVertexArray(fScaling),  name + "_vertices") == 0);
-
-    /* load vertex normals */
-    if ( iFlags & OPT_VERTEX_NORMALS )
-    {
-      /* Create normal handle */
-      assert ( g_DefaultVertexManager->Create(pLoader->GetNormalArray(), name + "_normals") == 0);
-    }
-    /* load texture coordinates */
-    if ( iFlags & OPT_VERTEX_TEXCOORDS )
-    {
-      /* Create texcoord handle */
-      assert ( g_DefaultVertexManager->Create(pLoader->GetTexCoordArray(), name + "_texcoords0") == 0);
-    }
-    /* load colors */
-    if ( iFlags & OPT_VERTEX_COLORS )
-    {
-      /* Create texcoord handle */
-      /*assert ( g_DefaultVertexManager->Create(pLoader->GetVertexColors(),*/
-      /*name + "_colors",*/
-      /*  rModel.GetTextureCoordinateHandle()) == 0);		     */
-
-    }
-  }
-  if ( aszGroupNames == NULL || aszGroupNames[0] == NULL )
-  {
-    ostringstream stream;
-    stream << name << "_list_indices";
-    assert( g_DefaultIndexManager->Create( pLoader->GetIndexArray(), stream.str().c_str()) == 0 );
-  }
-  else
-  {
-    size_t nGroupIndex = 0;
-
-    for( ; aszGroupNames[nGroupIndex]; ++nGroupIndex)
-    {
-      CIndexArray *pIndices = pLoader->GetIndexArray( aszGroupNames[nGroupIndex] );
-      assert ( pIndices != NULL && "Group is NULL" );
-
-      ostringstream stream;
-      stream << name << "_" << aszGroupNames[nGroupIndex] << "_indices";
-      assert( g_DefaultIndexManager->Create( pIndices, stream.str().c_str()) == 0 );
-    }
-  }
 
 
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const char *szName, int iFlags, const char **aszGroupNames, bool bInterleaved )
+Phoenix::Data::CModelHelper::LoadMilkshapeData( const char *szFilename  )
 {
   // delete previous loader.
 
@@ -93,7 +29,6 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
   m_pLoader = NULL;
 
   if ( szFilename == NULL )	return 1;
-  if ( szName == NULL )		return 1;
 
   m_pLoader = new CMilkshapeLoader() ;
 
@@ -104,22 +39,17 @@ Phoenix::Data::CModelHelper::LoadMilkshapeModel( const char *szFilename, const c
     m_pLoader = NULL;
     return 1;
   }
-  CreateModelUsingLoader( m_pLoader, szName, iFlags, aszGroupNames, bInterleaved, m_fScale );
-  // all ok.
-  delete m_pLoader;
-  m_pLoader = NULL;
   return 0;
 }
 /////////////////////////////////////////////////////////////////
 int
-Phoenix::Data::CModelHelper::LoadObjModel( const char *szFilename, const char *szName, int iFlags, const char **aszGroupNames, bool bInterleaved )
+Phoenix::Data::CModelHelper::LoadObjData( const char *szFilename )
 {
   // delete previous loader.
   delete m_pLoader;
   m_pLoader = NULL;
 
   if ( szFilename == NULL )	return 1;
-  if ( szName == NULL )		return 1;
 
   m_pLoader = new CObjLoader();
 
@@ -130,42 +60,77 @@ Phoenix::Data::CModelHelper::LoadObjModel( const char *szFilename, const char *s
     m_pLoader = NULL;
     return 1;
   }
-  CreateModelUsingLoader( m_pLoader, szName, iFlags, aszGroupNames, bInterleaved, m_fScale );
-  delete m_pLoader;
-  m_pLoader = NULL;
   // all ok.
   return 0;
 }
 /////////////////////////////////////////////////////////////////
-int
-Phoenix::Data::CModelHelper::CreateRenderable( const char *szName, CRenderableModel & rModel, const char *szGroupName, bool bInterleaved )
+Phoenix::Graphics::CModel *
+Phoenix::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, bool bInterleaved )
 {
-  string name = szName;
 
-  if ( bInterleaved )
-  {
-    g_DefaultVertexManager->AttachHandle( name + "_interleaved", rModel.GetVertexHandle());
-  }
-  else
-  {
-    g_DefaultVertexManager->AttachHandle( name + "_vertices",	rModel.GetVertexHandle());
-    g_DefaultVertexManager->AttachHandle( name + "_normals",	rModel.GetNormalHandle());
-    g_DefaultVertexManager->AttachHandle( name + "_texcoords0",	rModel.GetTextureCoordinateHandle());
-  }
+	CModel *pModel = new CModel();
 
-  if ( szGroupName == NULL )
-  {
-    assert( g_DefaultIndexManager->AttachHandle( name + "_list_indices",  rModel.GetIndices()) == 0 );
-  }
-  else
-  {
-    ostringstream stream;
-    stream << name << "_" << szGroupName << "_indices";
-    assert( g_DefaultIndexManager->AttachHandle( stream.str().c_str(), rModel.GetIndices()) == 0 );
-  }
+	  /* determine which data is used in comparison */
+	  // int iCompFlags = VERTEX_COMP_POSITION;
+	//   if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL;
+	//   if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;
+	//   if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD;
 
-  return 0;
+
+
+	  /* Resource allocation is one-way, either everything succeeds or nothing goes.*/
+
+	  if ( bInterleaved )
+	  {
+	  	CVertexDescriptor *pInterleaved = m_pLoader->GetInterleavedArray();
+	    // manage array
+	  	assert( g_DefaultVertexManager->Create( pInterleaved,  g_UniqueName, pModel->GetVertexHandle() ) == 0);
+	  }
+	  else
+	  {
+	    // Create vertex handle
+	    assert( g_DefaultVertexManager->Create(m_pLoader->GetVertexArray(m_fScale),  g_UniqueName, pModel->GetVertexHandle() ) == 0);
+
+	    /* load vertex normals */
+	    if ( iFlags & OPT_VERTEX_NORMALS && m_pLoader->GetNormalArray() )
+	    {
+	      /* Create normal handle */
+	      assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormalArray(), g_UniqueName, pModel->GetNormalHandle()) == 0);
+	    }
+	    /* load texture coordinates */
+	    if ( iFlags & OPT_VERTEX_TEXCOORDS && m_pLoader->GetTexCoordArray())
+	    {
+	      /* Create texcoord handle */
+	      assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoordArray(), g_UniqueName, pModel->GetTextureCoordinateHandle(0)) == 0);
+	    }
+	    /* load colors */
+	    if ( iFlags & OPT_VERTEX_COLORS )
+	    {
+	      /* Create texcoord handle */
+	      /*assert ( g_DefaultVertexManager->Create(pLoader->GetVertexColors(),*/
+	      /*name + "_colors",*/
+	      /*  rModel.GetTextureCoordinateHandle()) == 0);		     */
+
+	    }
+	  }
+	  if ( szGroupName == NULL || szGroupName[0] == '\n')
+	  {
+	  	CIndexArray *pArray = m_pLoader->GetIndexArray();
+	  	assert( pArray->GetNumIndices() > 0 );
+	    assert( g_DefaultIndexManager->Create( pArray, g_UniqueName, pModel->GetIndices()) == 0 );
+	  }
+	  else
+	  {
+	      CIndexArray *pIndices = m_pLoader->GetIndexArray( szGroupName );
+	      assert ( pIndices != NULL && "Group is NULL" );
+	      assert (pIndices->GetNumIndices() > 0 && "Not enough indices ");
+	      assert( g_DefaultIndexManager->Create( pIndices, g_UniqueName, pModel->GetIndices() ) == 0 );
+
+	  }
+
+  return pModel;
 }
+
 /////////////////////////////////////////////////////////////////
 // int
 // Phoenix::Data::CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, std::list<std::string> & lstGroupNames )

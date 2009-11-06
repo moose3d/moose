@@ -20,6 +20,12 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0),
         m_pCollider = this;
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CGameObject::Init()
+{
+	LoadScript();
+}
+/////////////////////////////////////////////////////////////////
 unsigned int
 Phoenix::Scene::CGameObject::GetSpatialIndex() const
 {
@@ -53,8 +59,19 @@ Phoenix::Scene::CGameObject::Intersects( const Phoenix::Volume::COrientedBox & b
 bool
 Phoenix::Scene::CGameObject::Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const
 {
-
   return Phoenix::Collision::PointInsideSphere( GetWorldBoundingSphere(), vPoint );
+}
+////////////////////////////////////////////////////////////////////////////////
+bool
+Phoenix::Scene::CGameObject::Intersects( const Phoenix::Math::CRay & ray, float *pfDistance ) const
+{
+  return Phoenix::Collision::RayIntersectsSphere( ray, pfDistance, NULL, GetWorldBoundingSphere());
+}
+////////////////////////////////////////////////////////////////////////////////
+bool
+Phoenix::Scene::CGameObject::Intersects( const Phoenix::Collision::ICollider & collider ) const
+{
+  return collider.Intersects( GetWorldBoundingSphere() );
 }
 //////////////////////////////////////////////////////////////////////////////
 Phoenix::Volume::CSphere
@@ -81,5 +98,11 @@ Phoenix::Collision::ICollider *
 Phoenix::Scene::CGameObject::GetCollider()
 {
 	return m_pCollider;
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CGameObject::Update( float fSecondsPassed )
+{
+
 }
 ////////////////////////////////////////////////////////////////////////////////

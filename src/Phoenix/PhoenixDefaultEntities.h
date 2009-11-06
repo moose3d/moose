@@ -18,6 +18,7 @@ namespace Phoenix
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CVertexDescriptor> VERTEX_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CIndexArray>       INDEX_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CShader>           SHADER_HANDLE;
+#define MODEL_HANDLE Phoenix::Core::CHandle<Phoenix::Graphics::CModel>
     ////////////////////
     // Typedefs for default resource manager types.
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::COglTexture,		TEXTURE_HANDLE>  TextureManager;
@@ -61,7 +62,14 @@ namespace Phoenix
 #define g_Warn  ( Phoenix::Core::CLogger::GetInstance()->Warn())
 ////////////////////////////////////////////////////////////////////////////////
 /// Manager for gameobjects.
-#define g_ObjectMgr (Phoenix::Core::CResourceManager<Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<CGameObject> >::GetInstance()) 
+#define g_ObjectMgr            (Phoenix::Core::CResourceManager<Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<CGameObject> >::GetInstance())
+#define g_TextureMgr           (Phoenix::Default::TextureManager::GetInstance())
+#define g_VertexMgr            (Phoenix::Default::VertexManager::GetInstance())
+#define g_IndexMgr             (Phoenix::Default::IndexManager::GetInstance())
+#define g_ShaderMgr            (Phoenix::Default::ShaderManager::GetInstance())
+#define g_ModelMgr             (Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >::GetInstance())
+#define g_ObjectUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
+
 ////////////////////
 // Constants
 #define TEXTURE_HANDLE_COUNT 8

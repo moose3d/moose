@@ -1,4 +1,5 @@
 #include "PhoenixTransformGraph.h"
+#include "PhoenixGameObject.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace prefix = Phoenix::Scene;
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,5 +180,28 @@ prefix::CTransformNode::Leave()
 {
 	Phoenix::Scene::CTransformable *pTmp = GetTransformable();
 	if( pTmp != NULL ) pTmp->SetChanged(false);
+}
+///////////////////////////////////////////////////////////////////////////////
+prefix::CObjectTransform *
+prefix::CTransformGraph::Insert( CGameObject * pObject )
+{
+
+	CObjectTransform *pTR = new CObjectTransform();
+	RegisterNode(pTR);
+	pObject->SetTransformNode(pTR);
+	assert ( !pObject->GetObjectHandle().IsNull() &&
+			"Object handle is null, this makes adding to transform graph"
+			"via HANDLE pretty difficult. Attach handle to object via "
+			"ResourceManager after creation immediately "
+			"ResourceManager::Create( Object, name, HANDLE)");
+	pTR->GetObjectHandle() = pObject->GetObjectHandle();
+	GetRoot()->AddEdge( pTR );
+	return pTR;
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Scene::CTransformable *
+prefix::CObjectTransform::GetTransformable()
+{
+	return *(this->GetObjectHandle());
 }
 ///////////////////////////////////////////////////////////////////////////////

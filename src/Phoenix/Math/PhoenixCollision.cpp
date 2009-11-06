@@ -95,6 +95,35 @@ Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
 }
 /////////////////////////////////////////////////////////////////
 int
+Phoenix::Collision::RayIntersectsPlane( const CPlane &plane,
+					const CRay &ray,
+					float *pfDistance)
+{
+  CVector3<float> vNormal;
+  vNormal.Set( const_cast<CPlane &>(plane).GetArray() );
+  // The negated distance of the vPoint1 from the plane
+  float fNumerator = -(vNormal.Dot(ray.GetPosition()) + plane[3]);
+  // The vNormal · vDir = cos( angle( vNormal, vDir ))
+  float fDenominator = vNormal.Dot(ray.GetDirection());
+
+  // Rounding errors are nasty, so let's take them into account
+  // while we make sure we don't divide by zero.
+  if ( fabs(fDenominator) <= 0.0001f )
+  {
+    // line is parallel to the plane
+    return 0;
+  }
+  // return the point of intersection
+  if ( pfDistance )
+  {
+  	// The distance along vDir towards vPoint2.
+  	*pfDistance = fNumerator / fDenominator;
+	}
+
+  return 1;
+}
+/////////////////////////////////////////////////////////////////
+int
 Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
 					 CVector3<float> *pvIntersection0,
 					 CVector3<float> *pvIntersection1,
@@ -132,11 +161,11 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
       iIntersects = 2;
       if ( pvIntersection0 != NULL )
       {
-	*pvIntersection0 = ray.GetPosition()+fTfirst*ray.GetDirection();
+      	*pvIntersection0 = ray.GetPosition()+fTfirst*ray.GetDirection();
       }
       if ( pvIntersection1 != NULL )
       {
-	*pvIntersection1 = ray.GetPosition()+fTsecond*ray.GetDirection();
+      	*pvIntersection1 = ray.GetPosition()+fTsecond*ray.GetDirection();
       }
 
     }
@@ -206,6 +235,70 @@ Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
 //   return iIntersects;
 }
 /////////////////////////////////////////////////////////////////
+int
+Phoenix::Collision::RayIntersectsSphere( const CRay &ray,
+					 float *pfIntersection0,
+					 float *pfIntersection1,
+					 const CSphere &Sphere)
+{
+
+  int iIntersects = 0;
+  CVector3<float> vL = Sphere.GetPosition() - ray.GetPosition();
+  float fS = vL.Dot(ray.GetDirection());
+  float fLsqr = vL.Dot(vL);
+  float fRsqr = Sphere.GetRadiusSqr();
+
+  if ( fS < -EPSILON && fLsqr > fRsqr)
+  {
+    return 0;
+  }
+
+  float fMsqr = fLsqr - fS*fS;
+
+  if ( fMsqr > fRsqr ) return 0;
+
+  // are there one or two intersection points
+  float fQ = sqrtf( fRsqr - fMsqr);
+  iIntersects =  TOO_CLOSE_TO_ZERO(fQ) ? 1 : 2;
+
+  // calculate intersections only when needed.
+  if ( pfIntersection0 != NULL || pfIntersection1 != NULL )
+  {
+    float fQ = sqrtf( fRsqr - fMsqr);
+
+    if ( fLsqr > fRsqr && iIntersects == 2 )
+    {
+      float fTfirst = fS - fQ;
+      float fTsecond = fS + fQ;
+      iIntersects = 2;
+      if ( pfIntersection0 != NULL )
+      {
+      	*pfIntersection0 = fTfirst;
+      }
+      if ( pfIntersection1 != NULL )
+      {
+      	*pfIntersection1 = fTsecond;
+      }
+
+    }
+    else
+    {
+      float fT = fS + fQ;
+
+      if ( pfIntersection0 != NULL )
+      {
+      	*pfIntersection0 = fT;
+      }
+      if ( pfIntersection1 != NULL )
+      {
+      	*pfIntersection1 = fT;
+      }
+    }
+
+  }
+  return iIntersects;
+}
+/////////////////////////////////////////////////////////////////
 bool
 Phoenix::Collision::PointInsideTriangle( const CVector3<float> & vPoint, const CVector3<float> & vVertex0,
 					 const CVector3<float> & vVertex1,
@@ -250,6 +343,25 @@ Phoenix::Collision::LineSegmentIntersectsTriangle( const Phoenix::Math::CLineSeg
     return PointInsideTriangle( vPointOfIntersection, vVertex0, vVertex1, vVertex2 );
   }
   return 0;
+}
+/////////////////////////////////////////////////////////////////
+bool
+Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
+					   const Phoenix::Math::CVector3<float> & vVertex0,
+					   const Phoenix::Math::CVector3<float> & vVertex1,
+					   const Phoenix::Math::CVector3<float> & vVertex2,
+					   float *pfDistance )
+{
+  CPlane triPlane;
+  // Calculate triangle plane and check does it intersect the plane.
+  triPlane.Calculate( (vVertex1-vVertex0).Cross( vVertex2-vVertex0), vVertex0);
+
+  if ( RayIntersectsPlane( triPlane, ray, pfDistance) )
+  {
+  	CVector3<float> vPointOfIntersection = ray.GetPosition() + (*pfDistance * ray.GetDirection());
+  	return PointInsideTriangle( vPointOfIntersection, vVertex0, vVertex1, vVertex2 );
+  }
+  return false;
 }
 /////////////////////////////////////////////////////////////////
 bool

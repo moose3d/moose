@@ -9,6 +9,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+	namespace Graphics
+	{
+		class COglRenderer;
+
+	}
 	namespace Collision
 	{
 		////////////////////
@@ -24,13 +29,13 @@ namespace Phoenix
 			virtual bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const = 0;
 			virtual bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const = 0;
 			virtual bool Intersects( const Phoenix::Volume::COrientedBox & box ) const = 0;
-
+			virtual bool Intersects( const Phoenix::Math::CRay & ray, float *pfDistance = NULL ) const = 0;
 // TODO implement intersection tests
 
 //			virtual bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const = 0;
 //			virtual bool Intersects( const Phoenix::Volume::CAxisAlignedBox & aabb) const = 0;
 //			virtual bool Intersects( const Phoenix::Volume::CCone & cone ) const = 0;
-//			virtual bool Intersects( const Phoenix::Math::CRay & ray ) const = 0;
+
 //			virtual bool Intersects( const Phoenix::Math::CPlane & plane ) const = 0;
 //			virtual bool Intersects( const Phoenix::Math::CLineSegment & lineSegment ) const = 0;
 //			virtual bool Intersects( const Phoenix::Math::CLine & line ) const = 0;
@@ -38,6 +43,10 @@ namespace Phoenix
 			virtual bool Intersects( const Phoenix::Collision::ICollider & collider ) const = 0;
 			void SetTransform( Phoenix::Math::CTransform *pTransform ) { m_pTransform = pTransform; }
 			Phoenix::Math::CTransform * GetTransform() { return m_pTransform; }
+      ///////////////////
+			/// Makes it possible to generate visual representations of colliders.
+			virtual void Render( Phoenix::Graphics::COglRenderer & renderer ) = 0;
+
 		};
 	}
 }

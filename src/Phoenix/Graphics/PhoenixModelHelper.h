@@ -28,36 +28,24 @@ namespace Phoenix
     public:
       void SetScaling( float fScale );
       ////////////////////
-      /// Loads milkshape file.
+      /// Loads milkshape file and stores data into managers.
       /// \param szFilename Path to milkshape model file.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
-      /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
-      /// \param aszGroupNames Array of group names, last item must be NULL.
-      /// \param bInterleaved Should arrays be concatenated to form interleaved array. By default, no.
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      int LoadMilkshapeModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0, bool bInterleaved = false );
+      int LoadMilkshapeData( const char *szFilename );
       ////////////////////
-      /// Loads OBJ file.
+      /// Loads OBJ file and stores data into managers.
       /// \param szFilename Path to OBJ model file.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
-      /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
-      /// \param aszGroupNames Array of group names, last item must be NULL.
-      /// \param bInterleaved Should arrays be concatenated to form interleaved array. By default, no.
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
-      int LoadObjModel( const char *szFilename, const char * szName, int iFlags = 0, const char **aszGroupNames = 0, bool bInterleaved = false );
+      int LoadObjData( const char *szFilename );
       ////////////////////
-      /// Initializes CRenderable object from data prefixed by szName.
-      /// \attention This function does not add Renderable itself into RenderableManager.
-      /// \warning Color loading is disabled, see constructor. It is not implemented in CRenderable.
-      /// \param rModel CRenderable where data handles are attached to.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
+      /// Creates CModel object from data that is currently loaded.
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
-      /// \param bInterleaved Use interleaved data.
-      /// \returns On success, zero.
-      /// \returns On failure, non-zero.
-      int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderableModel & rModel, const char *szGroupName = NULL, bool bInterleaved = false );
+      /// \param szGroupName Which group of indices is used from model data.
+      /// \param bInterleaved Use interleaved data on model. By default, false.
+      /// \returns On success, pointer to CModel object, on failure NULL ptr.
+      Phoenix::Graphics::CModel * CreateModel( int iFlags, const char *szGroupName = NULL, bool bInterleaved = false );
       ////////////////////
       /// Initializes CRenderable object from currently loaded data.
       /// \attention This function does not add Model itself into ModelManager.
@@ -70,7 +58,7 @@ namespace Phoenix
       //int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, std::list<std::string> & lstGroupNames);
 
       ////////////////////
-      /// Clears currently loaded models.
+      /// Clears currently loaded data.
       void Clear();
     };
   } // namespace Graphics

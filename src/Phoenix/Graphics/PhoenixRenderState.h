@@ -5,6 +5,8 @@
 #include "PhoenixBlendingOperation.h"
 #include "PhoenixAlphaTestOperation.h"
 #include "PhoenixAPI.h"
+#include "PhoenixVector4.h"
+#include <map>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -12,6 +14,7 @@ namespace Phoenix
   {
 	  class CRenderable;
 	  typedef std::list< Phoenix::Graphics::CRenderable * > LightRenderableList;
+	  typedef std::map< std::string, std::string > 				  NameValueMap;
     /////////////////////////////////////////////////////////////////
     /// Renderstate object. Helps to sort things by transparency, for instance.
     class PHOENIX_API CRenderState
@@ -42,10 +45,11 @@ namespace Phoenix
       inline bool & GetDepthWrite() { return m_DepthWrite; }
       inline bool & GetFaceCulling() { return m_FaceCulling; }
       inline bool & IsLightSource() { return m_bLightSource; }
-      inline CVector4<unsigned char> & GetBaseColor() { return m_BaseColor; }
+      inline Phoenix::Math::CVector4<unsigned char> & GetBaseColor() { return m_BaseColor; }
       inline bool & GetLighting() { return m_bLighting; }
       inline LightRenderableList & GetLights() { return m_lstLights; }
       inline unsigned int & GetLightId() { return m_nLightId; }
+      void   ParseFrom( NameValueMap & map );
     };
   }
 }

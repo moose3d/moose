@@ -59,6 +59,15 @@ namespace Phoenix
 					const Phoenix::Math::CRay &ray,
 					Phoenix::Math::CVector3<float> &vCollisionPoint );
     ////////////////////
+    /// Checks does ray intersect a plane.
+    /// \param plane Plane operand.
+    /// \param ray Ray operand.
+    /// \param pfDistance In case of intersection, this contains the collision point distance from ray starting point - otherwise it's value is undetermined.
+    /// \returns Non-zero if there is an intersection, zero otherwise.
+    PHOENIX_API int RayIntersectsPlane( const Phoenix::Math::CPlane &plane,
+    		const Phoenix::Math::CRay &ray,
+    		float *pfDistance = NULL );
+    ////////////////////
     /// Checks whether a ray and a sphere will intersect.
     /// If the ray does not intersect the sphere, the vIntersection is set to
     /// closest point on the ray.
@@ -74,7 +83,48 @@ namespace Phoenix
 					 Phoenix::Math::CVector3<float> *pvIntersection0,
 					 Phoenix::Math::CVector3<float> *pvIntersection1,
 					 const Phoenix::Volume::CSphere &Sphere);
-
+    ////////////////////
+    /// Checks whether a ray and a sphere will intersect.
+    /// If the ray does not intersect the sphere, the vIntersection is set to
+    /// closest point on the ray.
+    ///
+    /// \param ray Ray reference.
+    /// \param pfIntersection0 distance to first point where ray intersects the sphere on starting side. If NULL, value is not set.
+    /// \param pfIntersection1 distance to second point where ray intersects the sphere on ending side. If NULL, value is not set.
+    /// \param Sphere The sphere which is tested.
+    /// \returns 0 if the ray and sphere do not intersect,
+    ///	         1 if the ray and sphere intersect on one point,
+    ///          2 if the ray and sphere intersect on two points.
+    PHOENIX_API int RayIntersectsSphere( const Phoenix::Math::CRay &ray,
+    		float *pfIntersection0,
+    		float *pfIntersection1,
+    		const Phoenix::Volume::CSphere &Sphere);
+    ////////////////////
+    /// Does given ray intersect static triangle.
+    /// \param ray			Ray to be checked.
+    /// \param vVertex0			First vertex of triangle.
+    /// \param vVertex1			Second vertex of triangle.
+    /// \param vVertex2			Third vertex of triangle.
+    /// \param vPointOfIntersection     If ray intersects, the point of intersection inside triangle. Otherwise undefined.
+    /// \returns true on intersection, false otherwise.
+    PHOENIX_API bool RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
+    		const Phoenix::Math::CVector3<float> & vVertex0,
+    		const Phoenix::Math::CVector3<float> & vVertex1,
+    		const Phoenix::Math::CVector3<float> & vVertex2,
+    		Phoenix::Math::CVector3<float> &vPointOfIntersection );
+    ////////////////////
+    /// Does given ray intersect static triangle.
+    /// \param ray			Ray to be checked.
+    /// \param vVertex0			First vertex of triangle.
+    /// \param vVertex1			Second vertex of triangle.
+    /// \param vVertex2			Third vertex of triangle.
+    /// \param pfPointOfIntersection     If ray intersects, distance to the point of intersection inside triangle. Otherwise undefined.
+    /// \returns true on intersection, false otherwise.
+    PHOENIX_API bool RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
+    		const Phoenix::Math::CVector3<float> & vVertex0,
+    		const Phoenix::Math::CVector3<float> & vVertex1,
+    		const Phoenix::Math::CVector3<float> & vVertex2,
+    		float *pfPointOfIntersection = NULL);
     ////////////////////
     /// Is given point inside triangle.
     /// \param vPoint Point to be checked.
@@ -98,19 +148,7 @@ namespace Phoenix
 						   const Phoenix::Math::CVector3<float> & vVertex1,
 						   const Phoenix::Math::CVector3<float> & vVertex2,
 						   Phoenix::Math::CVector3<float> &vPointOfIntersection );
-    ////////////////////
-    /// Does given ray intersect static triangle.
-    /// \param ray			Ray to be checked.
-    /// \param vVertex0			First vertex of triangle.
-    /// \param vVertex1			Second vertex of triangle.
-    /// \param vVertex2			Third vertex of triangle.
-    /// \param vPointOfIntersection     If ray intersects, the point of intersection inside triangle. Otherwise undefined.
-    /// \returns true on intersection, false otherwise.
-    PHOENIX_API bool RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
-					    const Phoenix::Math::CVector3<float> & vVertex0,
-					    const Phoenix::Math::CVector3<float> & vVertex1,
-					    const Phoenix::Math::CVector3<float> & vVertex2,
-					    Phoenix::Math::CVector3<float> &vPointOfIntersection );
+
 
     PHOENIX_API  float LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1 );
 

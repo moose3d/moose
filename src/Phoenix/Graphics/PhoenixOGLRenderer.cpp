@@ -2156,18 +2156,18 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
 
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
-
-  COglTexture *pTexture = *skybox.GetTextureHandle(0);
-  CIndexArray *pIndices = *skybox.GetIndices();
-  CVertexDescriptor *pTexCoords = *skybox.GetTextureCoordinateHandle(0);
-  CVertexDescriptor *pVertices  = *skybox.GetVertexHandle();
+  CModel & model = **skybox.GetModelHandle();
+  COglTexture *pTexture = *model.GetTextureHandle(0);
+  CIndexArray *pIndices = *model.GetIndices();
+  CVertexDescriptor *pTexCoords = *model.GetTextureCoordinateHandle(0);
+  CVertexDescriptor *pVertices  = *model.GetVertexHandle();
 
   if ( pVertices )  CommitVertexDescriptor( pVertices );
   if ( pTexCoords ) CommitVertexDescriptor( pTexCoords );
   if ( pTexture )
   {
 	  CommitTexture( 0, pTexture );
-	  CommitFilters( skybox.GetTextureFilters(0), pTexture->GetType());
+	  CommitFilters( model.GetTextureFilters(0), pTexture->GetType());
   }
   if ( pIndices )   CommitPrimitive( pIndices );
   /////////////////////////////////////////////////////////////////

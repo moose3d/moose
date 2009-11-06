@@ -5,6 +5,7 @@
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
+using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
 inline void CreateTexCoords( Phoenix::Graphics::CVertexDescriptor *pTexCoords )
 {
@@ -114,43 +115,27 @@ inline void CreateIndices( Phoenix::Graphics::CIndexArray *pIndices )
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::CSkybox( ) 
 {
-  
-  Phoenix::Graphics::CVertexDescriptor *pTexCoords = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_TEXCOORDS);
-  Phoenix::Graphics::CVertexDescriptor *pVertices  = g_DefaultVertexManager->GetResource(PHOENIX_SKYBOX_VERTICES);
-  Phoenix::Graphics::CIndexArray *pIndices         = g_DefaultIndexManager->GetResource(PHOENIX_SKYBOX_INDICES);
-  
-  if ( pTexCoords == NULL )
-  {
-    pTexCoords = new Phoenix::Graphics::CVertexDescriptor( Phoenix::Graphics::ELEMENT_TYPE_TEX_3F, 8);
-    CreateTexCoords(pTexCoords);
-    assert(g_DefaultVertexManager->Create( pTexCoords, PHOENIX_SKYBOX_TEXCOORDS, GetTextureCoordinateHandle(0)) == 0);
-  }
-  else
-    assert(g_DefaultVertexManager->AttachHandle( PHOENIX_SKYBOX_TEXCOORDS, GetTextureCoordinateHandle(0)) == 0);
-  
-  /////////////////////////////////////////////////////////////////
-  if ( pVertices == NULL )
-  {
-    pVertices = new Phoenix::Graphics::CVertexDescriptor( Phoenix::Graphics::ELEMENT_TYPE_VERTEX_3F, 8);    
-    CreateVertices( pVertices );
-    assert(g_DefaultVertexManager->Create( pVertices, PHOENIX_SKYBOX_VERTICES, GetVertexHandle()) == 0);
-  }
-  else
-    assert(g_DefaultVertexManager->AttachHandle( PHOENIX_SKYBOX_VERTICES, GetVertexHandle()) == 0);
+  m_hModel = PHOENIX_SKYBOX_MODEL;
 
-  /////////////////////////////////////////////////////////////////
-  pIndices = g_DefaultIndexManager->GetResource( PHOENIX_SKYBOX_INDICES);
-  /////////////////////////////////////////////////////////////////
-  if ( pIndices == NULL )
+  if ( m_hModel.IsNull() )
   {
-
-    pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 24);
+  	// create model
+  	CModel *pModel = new CModel();
+  	// create texcoords
+  	CVertexDescriptor *pTexCoords = new Phoenix::Graphics::CVertexDescriptor( Phoenix::Graphics::ELEMENT_TYPE_TEX_3F, 8);
+  	CreateTexCoords(pTexCoords);
+  	assert(g_VertexMgr->Create( pTexCoords, PHOENIX_SKYBOX_TEXCOORDS, pModel->GetTextureCoordinateHandle(0)) == 0);
+  	// vertices
+  	CVertexDescriptor *pVertices = new Phoenix::Graphics::CVertexDescriptor( Phoenix::Graphics::ELEMENT_TYPE_VERTEX_3F, 8);
+  	CreateVertices( pVertices );
+  	assert(g_VertexMgr->Create( pVertices, PHOENIX_SKYBOX_VERTICES, pModel->GetVertexHandle()) == 0);
+  	// indices
+  	CIndexArray *pIndices = new Phoenix::Graphics::CIndexArray( Phoenix::Graphics::PRIMITIVE_QUAD_LIST, 24);
     CreateIndices( pIndices );
-    assert(g_DefaultIndexManager->Create( pIndices, PHOENIX_SKYBOX_INDICES, GetIndices()) == 0);
-  } else
-    assert(g_DefaultIndexManager->AttachHandle( PHOENIX_SKYBOX_INDICES, GetIndices()) == 0);
-  
-
+    assert(g_IndexMgr->Create( pIndices, PHOENIX_SKYBOX_INDICES, pModel->GetIndices()) == 0);
+    // manage actual model
+		g_ModelMgr->Create( pModel, PHOENIX_SKYBOX_MODEL, m_hModel);
+  }
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::~CSkybox()
@@ -158,4 +143,3 @@ Phoenix::Graphics::CSkybox::~CSkybox()
   
 }
 /////////////////////////////////////////////////////////////////
-
