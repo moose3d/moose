@@ -34,14 +34,17 @@ namespace Phoenix
       /// \param szResourceName Resource name where this handle should point. If resource under such name is not available, then the handle will be null.
       CHandle( const char *szResourceName );
       ////////////////////
-      /// Destructor.
+      /// Releases handle.
       ~CHandle();
+      ////////////////////
+      /// Releases handle.
+      void Release();
       ////////////////////
       /// Returns index.
       /// \returns current index pointed by handle.
       inline size_t GetIndex() const
       {
-	return m_nIndex;
+      	return m_nIndex;
       }
       ////////////////////
       /// Initializes handle.
@@ -894,6 +897,13 @@ Phoenix::Core::CHandle<TAG>::operator->() const
 template<typename TAG>
 inline
 Phoenix::Core::CHandle<TAG>::~CHandle()
+{
+  Release();
+}
+////////////////////////////////////////////////////////////////////////////////
+template<typename TAG>
+inline void
+Phoenix::Core::CHandle<TAG>::Release()
 {
   // this has to be released, otherwise we'll go see the boogie man. :)
   Phoenix::Core::CResourceManager<TAG, CHandle<TAG> >::GetInstance()->Release(*this);
