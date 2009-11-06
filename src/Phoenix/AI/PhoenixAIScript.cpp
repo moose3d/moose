@@ -3,12 +3,17 @@
 #include "PhoenixVector3.h"
 #include "PhoenixGameObject.h"
 #include "PhoenixLogger.h"
+#include "PhoenixMilkshapeLoader.h"
+#include "PhoenixModelHelper.h"
+#include "PhoenixOGLRenderer.h"
+#include "PhoenixDefaultEntities.h"
 ////////////////////////////////////////////////////////////////////////////////
 using namespace std;
 using namespace Phoenix::Math;
 using namespace Phoenix::Core;
 using namespace Phoenix::AI;
 using namespace Phoenix::Scene;
+using namespace Phoenix::Graphics;
 ////////////////////////////////////////////////////////////////////////////////
 #define CHECK_ARGS( ARGC, USAGE_MSG ) {              \
 	if ( (objc-1) != ARGC ) {                              \
@@ -26,6 +31,59 @@ using namespace Phoenix::Scene;
 ////////////////////////////////////////////////////////////////////////////////
 #define SCRIPT_CMD_DECL( NAME ) int NAME( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
 #define SCRIPT_CMD_IMPL( NAME ) int NAME( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
+#define SCRIPT_GET_INT( PARAM_NUM, VAR ) {\
+	if ( Tcl_GetIntFromObj( pInterp, objv[PARAM_NUM], &VAR ) != TCL_OK )\
+	{\
+		return TCL_ERROR;\
+	}\
+}
+///////////////////////////////////////////////////////////////////////////////
+#define SCRIPT_GET_STR( PARAM_NUM ) Tcl_GetString(objv[PARAM_NUM])
+///////////////////////////////////////////////////////////////////////////////
+#define SCRIPT_GET_DOUBLE( PARAM_NUM, VAR ) {\
+	if ( Tcl_GetIntFromObj( pInterp, objv[PARAM_NUM], &VAR ) != TCL_OK )\
+	{\
+		return TCL_ERROR;\
+	}\
+}
+///////////////////////////////////////////////////////////////////////////////
+#define SCRIPT_GET_FLOAT( PARAM_NUM, VAR ) {\
+	double dScriptTmpDoubleVal = 0.0f;\
+	if ( Tcl_GetIntFromObj( pInterp, objv[PARAM_NUM], &dScriptTmpDoubleVal ) != TCL_OK )\
+	{\
+		return TCL_ERROR;\
+	}\
+	VAR = dScriptTmpDoubleVal;\
+}
+///////////////////////////////////////////////////////////////////////////////
+#define SCRIPT_ERROR( ERROR_MSG ){\
+	Tcl_SetResult(pInterp, (char *)ERROR_MSG, NULL);\
+	return TCL_ERROR;\
+}
+///////////////////////////////////////////////////////////////////////////////
+#define SCRIPT_PARSE_VALUE_MAP( MAP, SEP, PARAM_NUM ){\
+\
+	int length = 0;\
+\
+	if ( Tcl_ListObjLength( pInterp, objv[PARAM_NUM], &length) != TCL_OK )\
+	{\
+		Tcl_SetResult( pInterp, (char *)"Value parse error", NULL);\
+		return TCL_ERROR;\
+	}\
+\
+	Tcl_Obj *pTmp = NULL;\
+	for( int i=0;i<length; i++)\
+	{\
+		Tcl_ListObjIndex( pInterp, objv[PARAM_NUM], i, &pTmp);\
+		std::string strNameVal( Tcl_GetString(pTmp));\
+		size_t pos;\
+		if ( (pos = strNameVal.find("=")) != string::npos)\
+		{\
+			MAP.insert(std::make_pair(strNameVal.substr(0, pos),\
+									strNameVal.substr(pos+1, strNameVal.size())));\
+		}\
+	}\
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 // We use regular functions instead of static member functions to reduce dependencies.
@@ -36,6 +94,11 @@ SCRIPT_CMD_DECL( SendMessageToObj ); ///<! This one takes care of message passin
 SCRIPT_CMD_DECL( GetObjVar );    /// Retrieves a global variable from an object.
 SCRIPT_CMD_DECL( SetObjVar );    /// Assings a global variable of an object.
 SCRIPT_CMD_DECL( GetPosition );  /// Returns local position from transform
+SCRIPT_CMD_DECL( CreateModelFromFile );    /// Attempts to Load a model from given file, and if successful, manage it.
+SCRIPT_CMD_DECL( LoadTexture2D );  /// Attempts to Load a texture from given file and manage it.
+SCRIPT_CMD_DECL( SetModelTexture ); /// Assigns texture to renderable model by resource name.
+SCRIPT_CMD_DECL( ResetModelTexture ); /// Assigns texture to renderable model by resource name.
+SCRIPT_CMD_DECL( UseModel );          /// Assigns model handle according to name.
 /////////////////////////////////////////////////////////////////
 // Macro for creating commands. FUNC must be an existing static function
 // declared with SCRIPT_CMD_DECL and implemented using SCRIPT_CMD_IMPL.
@@ -62,11 +125,18 @@ Phoenix::AI::CAIObject::~CAIObject()
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::AI::CAIObject::LoadScript( const char *szScript )
+Phoenix::AI::CAIObject::SetScript( const char *szScript )
 {
-	if ( szScript )
-		m_pAIScript = new CAIScript( this, szScript);
 	m_strScriptFile = szScript;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::AI::CAIObject::LoadScript()
+{
+	if ( !m_pAIScript )
+	{
+		m_pAIScript = new CAIScript( this, m_strScriptFile.c_str() );
+	}
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -103,6 +173,11 @@ Phoenix::AI::CAIScript::CAIScript( CAIObject *pEntity, const char *szScript )
   CREATE_CMD( GetObjVar   );
   CREATE_CMD( SetObjVar   );
   CREATE_CMD_PTR( GetPosition, pEntity->GetGameObject() );
+  CREATE_CMD( CreateModelFromFile );
+  CREATE_CMD( LoadTexture2D );
+  CREATE_CMD( UseModel );
+  CREATE_CMD( SetModelTexture );
+  CREATE_CMD( ResetModelTexture );
   m_fPassedTime = 0.0f;
   ////////////////////////////////////////////////////////////////
   ReloadScript( szScript );
@@ -161,7 +236,7 @@ Phoenix::AI::CAIScript::ReloadScript( const char * szScript )
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
-Phoenix::AI::CAIScript::EnqueueMessage( std::string & msg )
+Phoenix::AI::CAIScript::EnqueueMessage( const std::string & msg )
 {
   m_lstProcCalls.push_back(msg);
 }
@@ -221,7 +296,7 @@ Phoenix::AI::CAIObject::SetGlobalVar( const std::string &varName, Tcl_Obj *pVar 
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
-Phoenix::AI::CAIObject::EnqueueMessage( std::string &msg )
+Phoenix::AI::CAIObject::EnqueueMessage( const std::string &msg )
 {
   m_pAIScript->EnqueueMessage( msg );
 }
@@ -413,7 +488,175 @@ SCRIPT_CMD_IMPL( GetPosition )
 
   return TCL_OK;
 }
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateModelFromFile )
+{
+	CHECK_ARGS(1, "loaderParamList {fileName resourceName {dataLoadingFlags} groupName storeDataInterleaved }");
+	int length = 0;
+	Tcl_Obj * pFilename;
+	Tcl_Obj * pResource;
+	Tcl_Obj * pFlags;
+	Tcl_Obj * pGroupName;
+	Tcl_Obj * pInterleaved;
 
+	if ( (Tcl_ListObjLength( pInterp, objv[1], &length) != TCL_OK  ||
+			length != 5)  )
+	{
+		Tcl_WrongNumArgs(pInterp, 0, objv, "loaderParamList {fileName resourceName {dataLoadingFlags} groupName storeDataInterleaved }");
+		return TCL_ERROR;
+	}
+
+	Tcl_ListObjIndex( pInterp, objv[1], 0, &pFilename);
+	Tcl_ListObjIndex( pInterp, objv[1], 1, &pResource);
+	Tcl_ListObjIndex( pInterp, objv[1], 2, &pFlags );
+	Tcl_ListObjIndex( pInterp, objv[1], 3, &pGroupName );
+	Tcl_ListObjIndex( pInterp, objv[1], 4, &pInterleaved );
+
+	const char *szFilename = Tcl_GetString( pFilename );
+	const char *szResource = Tcl_GetString( pResource );
+
+
+	////////////////////
+	// flags
+	int iFlags = 0;
+
+	Tcl_Obj ** pListObj     = NULL;
+	if ( Tcl_ListObjGetElements(pInterp, pFlags, &length, &pListObj) != TCL_OK )
+	{
+		g_Error << Tcl_GetStringResult(pInterp) << endl;
+		return TCL_ERROR;
+	}
+	// Collect given int values as a single ORed int value.
+	for( int i=0;i<length;i++)
+	{
+		int tmpVal;
+		Tcl_GetIntFromObj( pInterp, pListObj[i], &tmpVal );
+		iFlags |= tmpVal;
+	}
+	pListObj = NULL;
+	////////////////////
+	// group name
+
+	// Collect group names into array
+	const char *szGroupName = Tcl_GetStringFromObj( pGroupName, &length );
+	if ( length == 0 ) szGroupName = NULL;
+
+	// interleaved flags
+	int       bInterleaved = 0;
+	Tcl_GetIntFromObj(pInterp, pInterleaved, &bInterleaved );
+
+	if ( Phoenix::Data::CMilkshapeLoader::IsMilkshapeFile(szFilename ) )
+	{
+		if ( g_ModelHelper->LoadMilkshapeData(szFilename) != 0 )
+		{
+			g_Error << "There was an error while loading milkshape file " << szFilename << endl;
+			return TCL_ERROR;
+		}
+	}
+	else if ( g_ModelHelper->LoadObjData( szFilename) ) // this succeeds even though it ain't obj file.
+	{
+		g_Error << "There was an error while loading obj file" << szFilename << endl;
+		return TCL_ERROR;
+	}
+	g_Error << "Creating resource '" << szResource << "'" << endl;
+	g_Error << "Group name is '" << (szGroupName == NULL ? "NULL" : szGroupName ) << "'" << endl;
+	g_Error << "Use interleaved " << bInterleaved << endl;
+	g_Error << "Flags are : " << iFlags << endl;
+	CModel *pModel = g_ModelHelper->CreateModel( iFlags, szGroupName, bInterleaved );
+	if ( g_ModelMgr->Create( pModel, szResource) != 0 ) return TCL_ERROR;
+
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( LoadTexture2D )
+{
+	CHECK_ARGS( 2, "textureFile resourceName");
+	int len = 0;
+	int len_tex = 0;
+	const char *szTextureFile = Tcl_GetStringFromObj( objv[1], &len_tex);
+	const char *szResourceName = Tcl_GetStringFromObj( objv[2], &len );
+	COglRenderer tmp;
+	COglTexture *pTex = NULL;
+	g_Log << "Loading textures '" << &szTextureFile[len_tex-4] << "'" << endl;
+	if ( strncasecmp( &szTextureFile[len_tex-4], ".dds", 4) == 0 )
+	{
+
+		pTex= tmp.CreateCompressedTexture( szTextureFile, TEXTURE_2D);
+	}
+	else
+	{
+		g_Log << "Loading regular textures" << endl;
+		pTex =tmp.CreateTexture( szTextureFile, TEXTURE_2D);
+	}
+
+	if (pTex == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such texture file '" << szTextureFile << "'";
+		SCRIPT_ERROR( tmp.str().c_str());
+	}
+
+	if ( g_TextureMgr->Create(pTex, szResourceName) )
+	{
+		delete pTex;
+		ostringstream tmp;
+		tmp << "Cannot create resource '" << szResourceName << "'";
+		SCRIPT_ERROR(tmp.str().c_str());
+	}
+	else g_Log << "created texture resource '" << szResourceName << "'" << endl;
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( UseModel )
+{
+	CHECK_ARGS(3, "modelName lod renderState");
+	const char *szModelname = Tcl_GetString(objv[1]);
+	int lod = 0;
+	SCRIPT_GET_INT( 2, lod );
+	std::map<string,string> mapValueList;
+	SCRIPT_PARSE_VALUE_MAP( mapValueList, "=", 3);
+	CGameObject *pGameObject = reinterpret_cast<CAIObject *>(clientData)->GetGameObject();
+	CRenderableModelShared *pRenderable = pGameObject->AddRenderableModel( szModelname, lod, true, &pGameObject->GetWorldTransform() );
+	pRenderable->GetRenderState().ParseFrom(mapValueList);
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetModelTexture )
+{
+	CHECK_ARGS(3, "modelName textureId textureName");
+	const char *szModelName = SCRIPT_GET_STR(1);
+	const char *szTexName   = SCRIPT_GET_STR(3);
+	int texId = 0;
+
+	SCRIPT_GET_INT( 2, texId);
+	CModel *pModel = g_ModelMgr->GetResource(szModelName);
+	ostringstream tmp;
+	tmp << "No such model " << szModelName;
+	if ( ! pModel ) SCRIPT_ERROR( tmp.str().c_str() );
+
+	pModel->GetTextureHandle(texId) = szTexName;
+	if ( pModel->GetTextureHandle(texId).IsNull() )
+	{
+		g_Warn << "Setting texture to null (if you really want this,"
+					 << " use command ResetModelTexture. Null texture was '" << szTexName << "'" << endl;
+	}
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( ResetModelTexture )
+{
+	CHECK_ARGS(2, "modelName textureId");
+	const char *szModelName = SCRIPT_GET_STR(1);
+	int texId = 0;
+	SCRIPT_GET_INT( 2, texId);
+
+	CModel *pModel = g_ModelMgr->GetResource(szModelName);
+	if ( ! pModel ) SCRIPT_ERROR("No such model");
+
+	pModel->GetTextureCoordinateHandle(texId).Release();
+
+	return TCL_OK;
+}
 /////////////////////////////////////////////////////////////////
 // void
 // Phoenix::AI::CAIObject::AddProperty( IProperty * pProp )

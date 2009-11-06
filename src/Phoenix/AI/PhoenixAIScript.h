@@ -31,9 +31,10 @@ namespace Phoenix
       void 	SetPassedTime( float fSeconds );
       float 	GetPassedTime() const;
 
-      void  	LoadScript( const char *szScript );
+      void  	SetScript( const char *szScript );
+      void    LoadScript();
       void    ReloadScript();
-      void    EnqueueMessage( std::string & msg );
+      void    EnqueueMessage( const std::string & msg );
 
       bool   CopyGlobalVarToResult( Tcl_Interp *pInterp, 
 				    const std::string & varName );
@@ -64,7 +65,7 @@ namespace Phoenix
 
       void Update( float fSeconds );
       void ReloadScript( const char * szScript );
-      void EnqueueMessage( std::string & msg );
+      void EnqueueMessage( const std::string & msg );
 
       Tcl_Obj * GetGlobalVar( const std::string & name);
       bool SetGlobalVar( const std::string & name, Tcl_Obj *pValue );
