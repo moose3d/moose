@@ -1,9 +1,9 @@
-UNIT_OBJ=PhoenixVectorTest2.o PhoenixVectorTest3.o PhoenixVectorTest4.o PhoenixQuaternionTest.o PhoenixMatrix3x3Test.o PhoenixMathTest.o PhoenixAVLTreeTest.o PhoenixTest.o PhoenixHashTableTest.o PhoenixResourceManagerTest.o PhoenixCameraTest.o PhoenixCollisionTest.o PhoenixOctreeTest.o PhoenixTransformTest.o PhoenixTimeStampTest.o PhoenixEventHandlerTest.o PhoenixObjLoaderTest.o PhoenixLightTest.o
+UNIT_OBJ=PhoenixVectorTest2.o PhoenixVectorTest3.o PhoenixVectorTest4.o PhoenixQuaternionTest.o PhoenixMatrix3x3Test.o PhoenixMathTest.o PhoenixAVLTreeTest.o PhoenixTest.o PhoenixHashTableTest.o PhoenixResourceManagerTest.o PhoenixCameraTest.o PhoenixCollisionTest.o PhoenixOctreeTest.o PhoenixTransformTest.o PhoenixTimeStampTest.o PhoenixEventHandlerTest.o PhoenixObjLoaderTest.o PhoenixLightTest.o PhoenixSpatialGraphTest.o
 
 # helpful targets for unit test compiling
 all: unit
-	g++ -g -Wall $(UNIT_OBJ) -o PhoenixTest -lUnitTest++ `pkg-config --libs phoenix`
-unit: $(UNIT_OBJ)
+	g++ -g -Wall $(UNIT_OBJ) -o PhoenixTest -lUnitTest++ `pkg-config --libs phoenix` -ltcl
+unit: $(UNIT_OBJ) 
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall `pkg-config --cflags phoenix`  $(@:.o=.cpp) -o $@ 
 .PHONY: clean

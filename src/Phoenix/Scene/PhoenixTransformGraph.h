@@ -110,6 +110,7 @@ namespace Phoenix
         return this;
       }
     };
+    typedef std::list<CTransformable*> TransformableList;
     ///////////////////////////////////////////////////////////////////////////
     class CTransformGraph : public TGraph<CTransformNode>
     {
@@ -129,7 +130,15 @@ namespace Phoenix
       // Adds object into transform graph. It must be  inherited from
       // CTransformable.
       CObjectTransform * Insert( CGameObject * pObject );
-
+      ///////////////////
+			/// Removes an object from graph (with its children).
+      /// \param pSubRoot Subtree root node which will be removed (including).
+      void RemoveSubtree( CTransformable *pSubRoot );
+      ///////////////////
+      /// Collects subtree in graph (with its children).
+      /// \param pSubRoot Subtree root node from which subtree will be collected (included).
+      /// \param subtree list of Transformables forming a subtree.
+      void CollectSubtree( CTransformable *pSubRoot, TransformableList & subtree  );
     };
     ///////////////////////////////////////////////////////////////////////////
   } // namespace Scene

@@ -199,6 +199,47 @@ prefix::CTransformGraph::Insert( CGameObject * pObject )
 	return pTR;
 }
 ///////////////////////////////////////////////////////////////////////////////
+void
+prefix::CTransformGraph::RemoveSubtree( CTransformable *pTransformable )
+{
+	TransformableList lstObjects;
+	CollectSubtree( pTransformable, lstObjects );
+	TransformableList::iterator it = lstObjects.begin();
+
+	while( lstObjects.empty() == false )
+	{
+		CTransformable *pTmp = lstObjects.front();
+		lstObjects.pop_front();
+		delete pTmp->GetTransformNode();
+		delete pTmp;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////
+void
+prefix::CTransformGraph::CollectSubtree( CTransformable *pSubRoot, TransformableList & subtree )
+{
+	subtree.clear(); // remove previous, if any
+
+	TransformableList tmpList;
+	tmpList.push_back( pSubRoot );
+	while( tmpList.empty() == false)
+	{
+		CTransformable *pTr = tmpList.front();
+		tmpList.pop_front();
+		// add node to subtree node list
+		subtree.push_back( pTr );
+
+		std::list< Phoenix::Core::TGraphEdge<CTransformNode> * >::iterator it;
+
+		for( it = pTr->GetTransformNode()->GetLeavingEdges().begin();
+				 it != pTr->GetTransformNode()->GetLeavingEdges().end();
+				 ++it)
+		{
+			tmpList.push_back( (*it)->GetToNode()->GetTransformable() );
+		}
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CTransformable *
 prefix::CObjectTransform::GetTransformable()
 {
