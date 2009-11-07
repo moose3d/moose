@@ -42,6 +42,8 @@
 #include "PhoenixRenderableModelShared.h"
 #include "PhoenixTransform.h"
 #include "PhoenixTransformGraph.h"
+#include "PhoenixSpatialGraph.h"
+#include "PhoenixScene.h"
 #include "PhoenixParticleSystem.h"
 #include "PhoenixObjectUpdater.h"
 #include "PhoenixStateMachine.h"
@@ -65,4 +67,5 @@
 #include <PhoenixLogger.h>
 #include <PhoenixBoxBound.h>
 #include <PhoenixSphereBound.h>
+
 /////////////////////////////////////////////////////////////////

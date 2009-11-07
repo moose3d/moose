@@ -1,8 +1,8 @@
 GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
-h_sources = 	PhoenixGameObject.h  PhoenixTransformGraph.h PhoenixSpatialGraph.h 
+h_sources = 	PhoenixGameObject.h  PhoenixTransformGraph.h PhoenixSpatialGraph.h PhoenixScene.h
 
-cc_sources = 	PhoenixGameObject.cpp PhoenixTransformGraph.cpp PhoenixSpatialGraph.cpp
+cc_sources = 	PhoenixGameObject.cpp PhoenixTransformGraph.cpp PhoenixSpatialGraph.cpp PhoenixScene.cpp
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
