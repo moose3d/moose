@@ -1,9 +1,12 @@
 #include "PhoenixGameObject.h"
 #include "PhoenixCollision.h"
+#include "PhoenixSpatialGraph.h"
+#include <list>
 /////////////////////////////////////////////////////////////////
 //using namespace Phoenix::Scene;
 //using namespace Phoenix::Core;
 //using namespace Phoenix::Graphics;
+using std::list;
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::~CGameObject()
 {
@@ -103,6 +106,31 @@ Phoenix::Scene::CGameObject::GetCollider()
 void
 Phoenix::Scene::CGameObject::Update( float fSecondsPassed )
 {
+  UpdateScript(fSecondsPassed);
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CGameObject::UpdateColliders( float fRadius, Phoenix::Scene::CSpatialGraph & graph )
+{
+	m_lstColliders.clear();
+	graph.CollectObjects( Phoenix::Volume::CSphere(GetWorldTransform().GetTranslation(), fRadius), m_lstColliders );
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CGameObject::CheckCollisions()
+{
+	list<CGameObject *>::iterator it = m_lstColliders.begin();
 
+	for ( ; it != m_lstColliders.end(); it++)
+	{
+		// ignore collision on itself
+		if ( *it == this) continue;
+		// enqueue messages if intersection occurs
+		if ( this->Intersects( **it ) )
+		{
+			(*it)->EnqueueMessage("OnCollisionEnter");
+			this->EnqueueMessage("OnCollisionEnter");
+		}
+	}
 }
 ////////////////////////////////////////////////////////////////////////////////

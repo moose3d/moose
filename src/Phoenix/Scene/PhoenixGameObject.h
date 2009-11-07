@@ -19,22 +19,23 @@ namespace Phoenix
 {
   namespace Scene
   {
+  	class CSpatialGraph;
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
     class PHOENIX_API CGameObject : public Phoenix::Scene::CTransformable,
-				    public Phoenix::Graphics::CRenderableProperty,
-				    public Phoenix::Core::CTagged,
-				    public Phoenix::Collision::CSphereCollider,
-				    public Phoenix::Core::CNamed,
-				    public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
-				    public Phoenix::AI::CAIObject,
-				    public Phoenix::Core::IUpdateable
-      
-    {
+																		public Phoenix::Graphics::CRenderableProperty,
+																		public Phoenix::Core::CTagged,
+																		public Phoenix::Collision::CSphereCollider,
+																		public Phoenix::Core::CNamed,
+																		public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
+																		public Phoenix::AI::CAIObject,
+																		public Phoenix::Core::IUpdateable
+		{
     protected:
-      /// In which spatial index this node is in.
-      unsigned int                     m_nSpatialIndex;
-      Phoenix::Collision::ICollider *  m_pCollider;
+
+      unsigned int                     m_nSpatialIndex; ///!< In which spatial index of spatial graph this object is in.
+      Phoenix::Collision::ICollider *  m_pCollider; 		///!< Specialized collider instead of Sphere.
+      std::list<CGameObject *> 				 m_lstColliders; 	///!< List of possible colliders.
     public:
       ////////////////////
       /// Constructor.
@@ -77,9 +78,19 @@ namespace Phoenix
       /// \returns Pointer to collider, or this if alternative collider not set (NULL).
       Phoenix::Collision::ICollider * GetCollider();
       ////////////////////
-      ///
+      /// Updates game object.
+      /// \param fSecondsPassed Seconds passed since last Update().
       void Update( float fSecondsPassed );
+      ////////////////////
+      /// Updates neighbour list, should be called infrequently.
+      /// \param fRadius Radius of sphere around game object which encloses possible colliders.
+      /// \param graph Reference to spatial graph used in search.
+      void UpdateColliders( float fRadius, Phoenix::Scene::CSpatialGraph & graph );
+      ////////////////////
+      /// Checks collisions between neighbors and enqueues messages for scripts accordingly.
+      void CheckCollisions();
     };
+    typedef std::list<CGameObject *> GameObjectList;
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
