@@ -34,6 +34,7 @@ namespace Phoenix
       void  	SetScript( const char *szScript );
       void    LoadScript();
       void    ReloadScript();
+      void    UpdateScript( float fSeconds );
       void    EnqueueMessage( const std::string & msg );
 
       bool   CopyGlobalVarToResult( Tcl_Interp *pInterp, 

@@ -148,6 +148,12 @@ Phoenix::AI::CAIObject::ReloadScript()
 }
 /////////////////////////////////////////////////////////////////
 void
+Phoenix::AI::CAIObject::UpdateScript( float fSeconds )
+{
+	if ( m_pAIScript) m_pAIScript->Update(fSeconds);
+}
+/////////////////////////////////////////////////////////////////
+void
 Phoenix::AI::CAIObject::SetPassedTime( float fSeconds )
 {
 	m_fPassedTime = fSeconds;
@@ -298,7 +304,8 @@ Phoenix::AI::CAIObject::SetGlobalVar( const std::string &varName, Tcl_Obj *pVar 
 void
 Phoenix::AI::CAIObject::EnqueueMessage( const std::string &msg )
 {
-  m_pAIScript->EnqueueMessage( msg );
+	if ( m_pAIScript )
+		m_pAIScript->EnqueueMessage( msg );
 }
 ////////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject * 
