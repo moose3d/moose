@@ -15,75 +15,6 @@ using namespace Phoenix::AI;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Graphics;
 ////////////////////////////////////////////////////////////////////////////////
-#define CHECK_ARGS( ARGC, USAGE_MSG ) {              \
-	if ( (objc-1) != ARGC ) {                              \
-		Tcl_WrongNumArgs(pInterp, 0, objv, USAGE_MSG);   \
-		return TCL_ERROR;                                \
-	}                                                  \
-}
-///////////////////////////////////////////////////////////////////////////////
-#define CHECK_ARGS_BETWEEN( ARGC_MIN, ARGC_MAX, USAGE_MSG ) {              \
-	if ( (objc - 1) < ARGC_MIN || (objc - 1) > ARGC_MAX ) {                              \
-		Tcl_WrongNumArgs(pInterp, 0, objv, USAGE_MSG);   \
-		return TCL_ERROR;                                \
-	}                                                  \
-}
-////////////////////////////////////////////////////////////////////////////////
-#define SCRIPT_CMD_DECL( NAME ) int NAME( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
-#define SCRIPT_CMD_IMPL( NAME ) int NAME( ClientData clientData, Tcl_Interp *pInterp, int objc, Tcl_Obj * CONST objv[])
-#define SCRIPT_GET_INT( PARAM_NUM, VAR ) {\
-	if ( Tcl_GetIntFromObj( pInterp, objv[PARAM_NUM], &VAR ) != TCL_OK )\
-	{\
-		return TCL_ERROR;\
-	}\
-}
-///////////////////////////////////////////////////////////////////////////////
-#define SCRIPT_GET_STR( PARAM_NUM ) Tcl_GetString(objv[PARAM_NUM])
-///////////////////////////////////////////////////////////////////////////////
-#define SCRIPT_GET_DOUBLE( PARAM_NUM, VAR ) {\
-	if ( Tcl_GetIntFromObj( pInterp, objv[PARAM_NUM], &VAR ) != TCL_OK )\
-	{\
-		return TCL_ERROR;\
-	}\
-}
-///////////////////////////////////////////////////////////////////////////////
-#define SCRIPT_GET_FLOAT( PARAM_NUM, VAR ) {\
-	double dScriptTmpDoubleVal = 0.0f;\
-	if ( Tcl_GetIntFromObj( pInterp, objv[PARAM_NUM], &dScriptTmpDoubleVal ) != TCL_OK )\
-	{\
-		return TCL_ERROR;\
-	}\
-	VAR = dScriptTmpDoubleVal;\
-}
-///////////////////////////////////////////////////////////////////////////////
-#define SCRIPT_ERROR( ERROR_MSG ){\
-	Tcl_SetResult(pInterp, (char *)ERROR_MSG, NULL);\
-	return TCL_ERROR;\
-}
-///////////////////////////////////////////////////////////////////////////////
-#define SCRIPT_PARSE_VALUE_MAP( MAP, SEP, PARAM_NUM ){\
-\
-	int length = 0;\
-\
-	if ( Tcl_ListObjLength( pInterp, objv[PARAM_NUM], &length) != TCL_OK )\
-	{\
-		Tcl_SetResult( pInterp, (char *)"Value parse error", NULL);\
-		return TCL_ERROR;\
-	}\
-\
-	Tcl_Obj *pTmp = NULL;\
-	for( int i=0;i<length; i++)\
-	{\
-		Tcl_ListObjIndex( pInterp, objv[PARAM_NUM], i, &pTmp);\
-		std::string strNameVal( Tcl_GetString(pTmp));\
-		size_t pos;\
-		if ( (pos = strNameVal.find("=")) != string::npos)\
-		{\
-			MAP.insert(std::make_pair(strNameVal.substr(0, pos),\
-									strNameVal.substr(pos+1, strNameVal.size())));\
-		}\
-	}\
-}
 ///////////////////////////////////////////////////////////////////////////////
 //
 // We use regular functions instead of static member functions to reduce dependencies.
@@ -99,7 +30,15 @@ SCRIPT_CMD_DECL( LoadTexture2D );  /// Attempts to Load a texture from given fil
 SCRIPT_CMD_DECL( SetModelTexture ); /// Assigns texture to renderable model by resource name.
 SCRIPT_CMD_DECL( ResetModelTexture ); /// Assigns texture to renderable model by resource name.
 SCRIPT_CMD_DECL( UseModel );          /// Assigns model handle according to name.
-/////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+/// User versions are slightly different from what is used in here.
+#ifdef CREATE_CMD
+#undef CREATE_CMD
+#endif
+#ifdef CREATE_CMD_PTR
+#undef CREATE_CMD_PTR
+#endif
+///////////////////////////////////////////////////////////////////////////////
 // Macro for creating commands. FUNC must be an existing static function
 // declared with SCRIPT_CMD_DECL and implemented using SCRIPT_CMD_IMPL.
 #define CREATE_CMD(  FUNC ) {				\
@@ -108,6 +47,7 @@ SCRIPT_CMD_DECL( UseModel );          /// Assigns model handle according to name
 				     NULL) != NULL );		\
 }
 /////////////////////////////////////////////////////////////////
+/// Same as CREATE_CMD, but with alternate data passed as client parameter.
 #define CREATE_CMD_PTR(  FUNC, OBJPTR) {			\
 	assert(Tcl_CreateObjCommand( m_pInterp, #FUNC,		\
 				     FUNC, (ClientData)OBJPTR,	\
@@ -124,6 +64,14 @@ Phoenix::AI::CAIObject::~CAIObject()
 
 }
 /////////////////////////////////////////////////////////////////
+Tcl_Interp *
+Phoenix::AI::CAIObject::GetInterp()
+{
+	if ( m_pAIScript )
+		return m_pAIScript->m_pInterp;
+	else return NULL;
+}
+/////////////////////////////////////////////////////////////////
 void
 Phoenix::AI::CAIObject::SetScript( const char *szScript )
 {
@@ -133,9 +81,11 @@ Phoenix::AI::CAIObject::SetScript( const char *szScript )
 void
 Phoenix::AI::CAIObject::LoadScript()
 {
-	if ( !m_pAIScript )
+	if ( !m_pAIScript && !m_strScriptFile.empty() )
 	{
 		m_pAIScript = new CAIScript( this, m_strScriptFile.c_str() );
+		RegisterUserCommands();
+		ReloadScript();
 	}
 }
 /////////////////////////////////////////////////////////////////
@@ -186,7 +136,7 @@ Phoenix::AI::CAIScript::CAIScript( CAIObject *pEntity, const char *szScript )
   CREATE_CMD( ResetModelTexture );
   m_fPassedTime = 0.0f;
   ////////////////////////////////////////////////////////////////
-  ReloadScript( szScript );
+
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -228,6 +178,9 @@ Phoenix::AI::CAIScript::~CAIScript()
 void
 Phoenix::AI::CAIScript::ReloadScript( const char * szScript )
 {
+
+	if ( strlen( szScript ) == 0 ) return;
+
 	int status = Tcl_EvalFile(m_pInterp, szScript);
 	if ( status != TCL_OK )
 	{
