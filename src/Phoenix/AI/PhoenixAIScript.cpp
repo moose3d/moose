@@ -84,9 +84,11 @@ Phoenix::AI::CAIObject::LoadScript()
 	if ( !m_pAIScript && !m_strScriptFile.empty() )
 	{
 		m_pAIScript = new CAIScript( this, m_strScriptFile.c_str() );
+		RegisterCommands();
 		RegisterUserCommands();
 		ReloadScript();
 	}
+
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -122,21 +124,39 @@ Phoenix::AI::CAIScript::CAIScript( CAIObject *pEntity, const char *szScript )
   m_pInterp = Tcl_CreateInterp();
   assert( m_pInterp != NULL );
   assert( m_pEntity != NULL );
-
-  CREATE_CMD( SendMessage );
+  m_fPassedTime = 0.0f;
+  ////////////////////////////////////////////////////////////////
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::AI::CAIObject::RegisterCommands()
+{
+	if ( m_pAIScript )
+	{
+		m_pAIScript->RegisterCommands();
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::AI::CAIScript::RegisterCommands()
+{
+	CREATE_CMD( SendMessage );
   CREATE_CMD( SendMessageToObj );
 
   CREATE_CMD( GetObjVar   );
   CREATE_CMD( SetObjVar   );
-  CREATE_CMD_PTR( GetPosition, pEntity->GetGameObject() );
+
   CREATE_CMD( CreateModelFromFile );
   CREATE_CMD( LoadTexture2D );
   CREATE_CMD( UseModel );
   CREATE_CMD( SetModelTexture );
   CREATE_CMD( ResetModelTexture );
-  m_fPassedTime = 0.0f;
-  ////////////////////////////////////////////////////////////////
 
+  // Register commands with GameObject clientData param
+  if ( m_pEntity->GetGameObject() != NULL )
+  {
+    CREATE_CMD_PTR( GetPosition, m_pEntity->GetGameObject() );
+  }
 }
 ////////////////////////////////////////////////////////////////////////////////
 void

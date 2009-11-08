@@ -50,6 +50,8 @@ namespace Phoenix
       //////////////////////
       /// Overwrite this to create new commands.
       virtual void RegisterUserCommands() {}
+      void 				 RegisterCommands();
+
     protected:
       Tcl_Interp * GetInterp();
 
@@ -78,7 +80,7 @@ namespace Phoenix
       Tcl_Obj * GetGlobalVar( const std::string & name);
       bool SetGlobalVar( const std::string & name, Tcl_Obj *pValue );
       void PrintResult();
-
+      void 				 RegisterCommands();
       bool   GetGlobalVar( const std::string & varName, int & value );
       bool   GetGlobalVar( const std::string & varName, float & value );
       bool   GetGlobalVar( const std::string & varName, std::string & value );
