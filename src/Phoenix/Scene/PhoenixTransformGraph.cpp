@@ -28,6 +28,11 @@ prefix::CTransformable::CTransformable() : m_pTransformNode(NULL)
   SetChanged(true);
 }
 /////////////////////////////////////////////////////////////////
+prefix::CTransformable::~CTransformable()
+{
+
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Math::CTransform &
 prefix::CTransformable::GetLocalTransform()
 {
@@ -112,9 +117,16 @@ prefix::CTransformable::GetTransformNode()
 void
 prefix::CTransformable::Reparent( CTransformable *pNewParent )
 {
-	assert( pNewParent->GetTransformNode() != NULL && "Reparent: Transformable must have a TransformNode!" );
+	assert( pNewParent->GetTransformNode() != NULL && "Reparent: new parent must have a TransformNode!" );
 	assert( GetTransformNode() != NULL && "Reparent: current node must have TransformNode!");
 	GetTransformNode()->Reparent( pNewParent->GetTransformNode() );
+	// So changes will be reflected on next Update().
+	GetLocalTransform().SetChanged(true);
+}
+///////////////////////////////////////////////////////////////////////////////
+prefix::CTransformNode::~CTransformNode()
+{
+	TGraphNodeDestroy();
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Core::TGraphEdge<Phoenix::Scene::CTransformNode> *
@@ -123,11 +135,18 @@ prefix::CTransformNode::AddEdge( CTransformNode *pTo )
 	return m_pGraph->AddEdge( this, pTo );
 }
 ///////////////////////////////////////////////////////////////////////////////
+prefix::CTransformNode *
+prefix::CTransformNode::GetParentTransformNode()
+{
+	// Returns first (hopefully the ONLY) node where edge is leading to this.
+	return GetArrivingEdges().front()->GetFromNode();
+}
+///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CTransformNode::Reparent( CTransformNode * pNewParent )
 {
 
-	CTransformNode *pCurrentParent = GetArrivingEdges().front()->GetFromNode();
+	//CTransformNode *pCurrentParent = GetParentTransformNode();
 	// Makes node parentless
 	RemoveArrivingEdges();
 	assert( GetArrivingEdges().empty() && "Not empty!");

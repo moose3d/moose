@@ -53,7 +53,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
-    pTexture = *model.GetTextureHandle(i);
+    pTexture = *GetRenderState().GetTextureHandle(i);
 
     // check that texcoord resources actually exist
     if ( pTemp == NULL )
@@ -69,41 +69,41 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     if ( pTexture  != NULL )
     {
       renderer.CommitTexture( i, pTexture );
-      renderer.CommitFilters( model.GetTextureFilters(i), pTexture->GetType() );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
     }
     else
       renderer.DisableTexture(i, NULL);
   }
 
 
-  CShader *pShader = *model.GetShaderHandle();
+  CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
 
-  if ( !model.GetShaderHandle().IsNull())
+  if ( !GetRenderState().GetShaderHandle().IsNull())
   {
     CVertexDescriptor *pParam = NULL;
     // Go through all parameters and commit them
-    for(unsigned int nSP=0; nSP< model.GetShaderParameters().size(); nSP++)
+    for(unsigned int nSP=0; nSP< GetRenderState().GetShaderParameters().size(); nSP++)
     {
-      pParam = *( *model.GetShaderParameters()[nSP].second );
+      pParam = *( *GetRenderState().GetShaderParameters()[nSP].second );
       if ( pParam != NULL )
       {
-      	renderer.CommitShaderParam( *pShader, model.GetShaderParameters()[nSP].first, *pParam );
+      	renderer.CommitShaderParam( *pShader, GetRenderState().GetShaderParameters()[nSP].first, *pParam );
       }
     }
 
     // Go through all int parameters and commit them
     {
-      ShaderIntParams::iterator it = model.GetShaderIntParameters().begin();
-      for(; it != model.GetShaderIntParameters().end(); it++)
+      ShaderIntParams::iterator it = GetRenderState().GetShaderIntParameters().begin();
+      for(; it != GetRenderState().GetShaderIntParameters().end(); it++)
       {
       	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
       }
     }
     // Go through all float parameters and commit them
     {
-      ShaderFloatParams::iterator it = model.GetShaderFloatParameters().begin();
-      for( ; it != model.GetShaderFloatParameters().end(); it++)
+      ShaderFloatParams::iterator it = GetRenderState().GetShaderFloatParameters().begin();
+      for( ; it != GetRenderState().GetShaderFloatParameters().end(); it++)
       {
       	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
       }

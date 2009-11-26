@@ -158,7 +158,7 @@ namespace Phoenix
       	m_iColor = 0;
       }
       ////////////////////
-      /// Destructor.
+      /// Write your own destructor into your inherited graph and call necessary removal routines (leaving, arriving and the node itself from graph).
       virtual ~TGraphNode();
     public:
       ////////////////////

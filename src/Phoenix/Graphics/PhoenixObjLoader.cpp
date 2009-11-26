@@ -276,7 +276,7 @@ Phoenix::Data::CObjLoader::ParseGroups( const char *szLine )
       }
       else tmp = buf;
 
-      cerr << "group name is now: '" << tmp << "'" << endl;      
+      //cerr << "group name is now: '" << tmp << "'" << endl;
       m_currGroups.push_back( tmp );  
       
     }
@@ -299,7 +299,7 @@ Phoenix::Data::CObjLoader::ParseGroups( const char *szLine )
       tmp = buf+prefix.size();
     }
     else tmp = buf;
-      cerr << "group name is now: '" << tmp << "'" << endl;      
+      //cerr << "group name is now: '" << tmp << "'" << endl;
     m_currGroups.push_back( tmp );  
     
   }
@@ -425,7 +425,7 @@ Phoenix::Data::CObjLoader::ParseObject( const char *szLine )
   assert( end-begin < 256 );
   buf[end-begin]='\0';
   m_objName = string(buf);
-  cerr << "obj name is now : '" << m_objName << "'" << endl;
+  //cerr << "obj name is now : '" << m_objName << "'" << endl;
   assert( begin <= szLine+strlen(szLine ));
   assert( end <= szLine+strlen(szLine ));    
 }

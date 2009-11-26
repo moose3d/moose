@@ -8,7 +8,7 @@ using std::vector;
 using std::string;
 using namespace Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CRenderable::CRenderable() : m_pTransform(NULL)
+Phoenix::Graphics::CRenderable::CRenderable() : m_pTransform(NULL), m_iId(-1)
 {
 
 }
@@ -33,5 +33,17 @@ void
 Phoenix::Graphics::CRenderable::SetTransform( Phoenix::Math::CTransform *pTransform )
 {
   m_pTransform = pTransform;
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderable::SetId( int id )
+{
+	m_iId = id;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Graphics::CRenderable::GetId() const
+{
+	return m_iId;
 }
 /////////////////////////////////////////////////////////////////

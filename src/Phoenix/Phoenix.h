@@ -67,5 +67,6 @@
 #include <PhoenixLogger.h>
 #include <PhoenixBoxBound.h>
 #include <PhoenixSphereBound.h>
-
+#include <PhoenixApplication.h>
+#include <PhoenixDirectionalLightObject.h>
 /////////////////////////////////////////////////////////////////

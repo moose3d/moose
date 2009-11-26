@@ -7,6 +7,9 @@
 #include "PhoenixModelHelper.h"
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixDefaultEntities.h"
+#include "PhoenixSDLScreen.h"
+#include <SDL.h>
+#include <string>
 ////////////////////////////////////////////////////////////////////////////////
 using namespace std;
 using namespace Phoenix::Math;
@@ -14,22 +17,61 @@ using namespace Phoenix::Core;
 using namespace Phoenix::AI;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Graphics;
-////////////////////////////////////////////////////////////////////////////////
+using namespace Phoenix::Volume;
+using namespace Phoenix::Window;
 ///////////////////////////////////////////////////////////////////////////////
 //
 // We use regular functions instead of static member functions to reduce dependencies.
 // 
+SCRIPT_CMD_DECL( BroadcastMessage); ///!< This one sends message to ALL registered objects in a scene.
 SCRIPT_CMD_DECL( SendMessage ); ///<! This one takes care of message passing between same script
 SCRIPT_CMD_DECL( SendMessageToObj ); ///<! This one takes care of message passing between to separate objects
+SCRIPT_CMD_DECL( GetObjectName );  ///!< Returns name of gameobject where script is ran.
 ////////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_DECL( GetObjVar );    /// Retrieves a global variable from an object.
 SCRIPT_CMD_DECL( SetObjVar );    /// Assings a global variable of an object.
-SCRIPT_CMD_DECL( GetPosition );  /// Returns local position from transform
+SCRIPT_CMD_DECL( GetPosition );  /// Returns world position from transform
+SCRIPT_CMD_DECL( GetPositionLocal );  /// Returns local position from transform
 SCRIPT_CMD_DECL( CreateModelFromFile );    /// Attempts to Load a model from given file, and if successful, manage it.
 SCRIPT_CMD_DECL( LoadTexture2D );  /// Attempts to Load a texture from given file and manage it.
-SCRIPT_CMD_DECL( SetModelTexture ); /// Assigns texture to renderable model by resource name.
-SCRIPT_CMD_DECL( ResetModelTexture ); /// Assigns texture to renderable model by resource name.
+SCRIPT_CMD_DECL( LoadTextureCube ); // attempts to create a cube texture from given textures and manage it.
+//SCRIPT_CMD_DECL( SetModelTexture ); /// Assigns texture to renderable model by resource name.
+//SCRIPT_CMD_DECL( ResetModelTexture ); /// Assigns texture to renderable model by resource name.
 SCRIPT_CMD_DECL( UseModel );          /// Assigns model handle according to name.
+SCRIPT_CMD_DECL( Move );
+SCRIPT_CMD_DECL( SetPosition );
+SCRIPT_CMD_DECL( MoveLocal );
+SCRIPT_CMD_DECL( SetPositionLocal );
+SCRIPT_CMD_DECL( ComputeBoundingSphere );
+SCRIPT_CMD_DECL( ComputeBoundingBox );
+SCRIPT_CMD_DECL( UseBoxCollider );
+SCRIPT_CMD_DECL( UseSphereCollider );
+SCRIPT_CMD_DECL( GetModelVertices );
+SCRIPT_CMD_DECL( GetModelTexCoords );
+SCRIPT_CMD_DECL( GetModelIndices );
+SCRIPT_CMD_DECL( SetModelVertices );
+SCRIPT_CMD_DECL( SetModelTexCoords );
+SCRIPT_CMD_DECL( SetModelIndices );
+SCRIPT_CMD_DECL( DuplicateModel );
+SCRIPT_CMD_DECL( LoadModelFile);
+SCRIPT_CMD_DECL( CreateModel ); // Creates a model from currently loaded data.
+SCRIPT_CMD_DECL( CreateEmptyModel ); // Creates an Empty model
+
+SCRIPT_CMD_DECL( CreateVertexResource ); // Creates vertex resource from current model data
+SCRIPT_CMD_DECL( CreateTexCoordResource ); // Creates texcoord resource from current model data
+SCRIPT_CMD_DECL( CreateNormalResource ); // Creates normal resource from current model data
+SCRIPT_CMD_DECL( CreateIndexResource );// Creates normal resource from current model data
+SCRIPT_CMD_DECL( CreateInterleavedResource );// Creates interleaved array resource from current model data
+
+SCRIPT_CMD_DECL( GetNumLods ); // Returns number of LODs in this gameObject.
+SCRIPT_CMD_DECL( GetRenderables ); // Returns a list of renderable ids from given lod.
+SCRIPT_CMD_DECL( SetRenderState ); // Sets renderstate for a renderable in a lod.
+SCRIPT_CMD_DECL( SetVisible );     // sets gameobject visibility.
+SCRIPT_CMD_DECL( SetEnabled );     // sets gameobject enabled or disabled.
+
+SCRIPT_CMD_DECL( RotationFromAxisAngles ); // returns Quaternion formed from rotations over axis angles x,y,z.
+SCRIPT_CMD_DECL( GetScreenParams );        // returns Screen parameters currently stored as a key-value list.
+SCRIPT_CMD_DECL( LoadShader );             // Loads shader from file(s) and manages it under shadermanager.
 ///////////////////////////////////////////////////////////////////////////////
 /// User versions are slightly different from what is used in here.
 #ifdef CREATE_CMD
@@ -61,7 +103,7 @@ Phoenix::AI::CAIObject::CAIObject(Phoenix::Scene::CGameObject *pObj) : m_pAIScri
 /////////////////////////////////////////////////////////////////
 Phoenix::AI::CAIObject::~CAIObject()
 {
-
+	delete m_pAIScript;
 }
 /////////////////////////////////////////////////////////////////
 Tcl_Interp *
@@ -118,6 +160,12 @@ Phoenix::AI::CAIObject::GetPassedTime() const
 	return m_fPassedTime;
 }
 ////////////////////////////////////////////////////////////////////////////////
+const std::string &
+Phoenix::AI::CAIObject::GetScript() const
+{
+	return m_strScriptFile;
+}
+////////////////////////////////////////////////////////////////////////////////
 Phoenix::AI::CAIScript::CAIScript( CAIObject *pEntity, const char *szScript )
 {
   m_pEntity = pEntity;
@@ -142,20 +190,55 @@ Phoenix::AI::CAIScript::RegisterCommands()
 {
 	CREATE_CMD( SendMessage );
   CREATE_CMD( SendMessageToObj );
-
+  CREATE_CMD( GetObjectName );
   CREATE_CMD( GetObjVar   );
   CREATE_CMD( SetObjVar   );
 
   CREATE_CMD( CreateModelFromFile );
   CREATE_CMD( LoadTexture2D );
+  CREATE_CMD( LoadTextureCube );
   CREATE_CMD( UseModel );
-  CREATE_CMD( SetModelTexture );
-  CREATE_CMD( ResetModelTexture );
+  //CREATE_CMD( SetModelTexture );
+  //CREATE_CMD( ResetModelTexture );
+  CREATE_CMD( GetScreenParams );
+  CREATE_CMD( ComputeBoundingBox );
+  CREATE_CMD( ComputeBoundingSphere );
 
+  CREATE_CMD( GetModelVertices );
+  CREATE_CMD( GetModelTexCoords );
+  CREATE_CMD( GetModelIndices );
+  CREATE_CMD( SetModelVertices );
+  CREATE_CMD( SetModelTexCoords );
+  CREATE_CMD( SetModelIndices );
+  CREATE_CMD( DuplicateModel );
+  CREATE_CMD( LoadModelFile );
+  CREATE_CMD( CreateEmptyModel );
+  CREATE_CMD( CreateModel );
+  CREATE_CMD( RotationFromAxisAngles );
+  CREATE_CMD( CreateVertexResource ); // Creates vertex resource from current model data
+  CREATE_CMD( CreateTexCoordResource ); // Creates texcoord resource from current model data
+  CREATE_CMD( CreateNormalResource ) // Creates normal resource from current model data
+  CREATE_CMD( CreateIndexResource );// Creates normal resource from current model data
+  CREATE_CMD( CreateInterleavedResource );// Creates interleaved array resource from current model data
+  CREATE_CMD( BroadcastMessage );
+  CREATE_CMD( LoadShader );
   // Register commands with GameObject clientData param
   if ( m_pEntity->GetGameObject() != NULL )
   {
     CREATE_CMD_PTR( GetPosition, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( Move, m_pEntity->GetGameObject()  );
+    CREATE_CMD_PTR( SetPosition, m_pEntity->GetGameObject()  );
+    CREATE_CMD_PTR( GetPositionLocal, m_pEntity->GetGameObject() );
+		CREATE_CMD_PTR( MoveLocal, m_pEntity->GetGameObject()  );
+		CREATE_CMD_PTR( SetPositionLocal, m_pEntity->GetGameObject()  );
+		CREATE_CMD_PTR( UseBoxCollider, m_pEntity->GetGameObject()  );
+		CREATE_CMD_PTR( UseSphereCollider, m_pEntity->GetGameObject()  );
+    CREATE_CMD_PTR( GetNumLods, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( GetRenderables, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( SetRenderState, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( SetVisible, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( SetEnabled, m_pEntity->GetGameObject() );
+
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,23 +250,25 @@ Phoenix::AI::CAIScript::Update(  float fSeconds  )
 
   if ( Tcl_Eval(m_pInterp, "Update") != TCL_OK )
   {
-    g_Error << "CAIScript says: No Update{} found or error, " 
-	    << Tcl_GetStringResult(m_pInterp) << std::endl;
+    g_Error << "No Update{} found or error : "
+						<< m_pEntity->GetScript() << ":" << m_pInterp->errorLine << " "
+						<< Tcl_GetStringResult(m_pInterp) << std::endl;
   }
 
   // Handle all enqueued proc calls
   while( !m_lstProcCalls.empty()  )
   {
-    std::string & strProcName = m_lstProcCalls.front(); 
+    ScriptMessage * pProcCall= m_lstProcCalls.front();
 
-    if ( Tcl_Eval( m_pInterp, strProcName.c_str() ) != TCL_OK )
+    if ( (Tcl_Eval( m_pInterp, pProcCall->msg.c_str() ) != TCL_OK) &&
+    		 (pProcCall->bRequireReceiver == true) )
     {
       g_Error << this << " says : Either proc is missing or error in " 
-	      << strProcName << " : " 
+	      << pProcCall->msg << " : "
 	      << Tcl_GetStringResult( m_pInterp) << endl;
 
     }
-    
+    delete pProcCall;
     m_lstProcCalls.pop_front();
   }
   
@@ -204,20 +289,24 @@ Phoenix::AI::CAIScript::ReloadScript( const char * szScript )
 	int status = Tcl_EvalFile(m_pInterp, szScript);
 	if ( status != TCL_OK )
 	{
-	  g_Error << "CAIScript says:  Error in script, " << Tcl_GetStringResult(m_pInterp) << std::endl;
+	  g_Error << "Error in script  "
+						<< m_pEntity->GetScript()<< ":" << m_pInterp->errorLine << " "
+						<< Tcl_GetStringResult(m_pInterp) << std::endl;
 	  return;
 	}
 
 	if ( Tcl_Eval(m_pInterp, "Start") != TCL_OK )
 	{
-	  g_Error << "CAIScript says: No Start{} found or error, " << Tcl_GetStringResult(m_pInterp) << std::endl;
+	  g_Error << "No Start{} found or error, "
+						<< m_pEntity->GetScript()<< ":" << m_pInterp->errorLine << " "
+	  				<< Tcl_GetStringResult(m_pInterp) << std::endl;
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
-Phoenix::AI::CAIScript::EnqueueMessage( const std::string & msg )
+Phoenix::AI::CAIScript::EnqueueMessage( const std::string & msg, bool bRequireReceiver )
 {
-  m_lstProcCalls.push_back(msg);
+  m_lstProcCalls.push_back( new ScriptMessage(msg, bRequireReceiver) );
 }
 ////////////////////////////////////////////////////////////////////////////////
 Tcl_Obj *
@@ -275,10 +364,10 @@ Phoenix::AI::CAIObject::SetGlobalVar( const std::string &varName, Tcl_Obj *pVar 
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
-Phoenix::AI::CAIObject::EnqueueMessage( const std::string &msg )
+Phoenix::AI::CAIObject::EnqueueMessage( const std::string &msg, bool bRequireReceiver )
 {
 	if ( m_pAIScript )
-		m_pAIScript->EnqueueMessage( msg );
+		m_pAIScript->EnqueueMessage( msg, bRequireReceiver );
 }
 ////////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject * 
@@ -409,8 +498,8 @@ SCRIPT_CMD_IMPL( SendMessageToObj )
 
   return TCL_OK;
 }
-
 ////////////////////////////////////////////////////////////////////////////////
+
 SCRIPT_CMD_IMPL( GetObjVar )
 {
   CHECK_ARGS( 2, "objName varName" );
@@ -455,6 +544,23 @@ SCRIPT_CMD_IMPL( SetObjVar )
 SCRIPT_CMD_IMPL( GetPosition )
 {
   CGameObject *pThis = reinterpret_cast<CGameObject *>(clientData);
+  const CVector3<float> & vTmp = pThis->GetWorldTransform().GetTranslation();
+
+  Tcl_Obj *pValues[3];
+  pValues[0] = Tcl_NewDoubleObj( vTmp[0] );
+  pValues[1] = Tcl_NewDoubleObj( vTmp[1] );
+  pValues[2] = Tcl_NewDoubleObj( vTmp[2] );
+
+  Tcl_Obj *pVec = Tcl_NewListObj( 0, pValues );
+  Tcl_FreeResult( pInterp );
+  Tcl_SetObjResult( pInterp, pVec );
+
+  return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetPositionLocal )
+{
+  CGameObject *pThis = reinterpret_cast<CGameObject *>(clientData);
   const CVector3<float> & vTmp = pThis->GetLocalTransform().GetTranslation();
 
   Tcl_Obj *pValues[3];
@@ -469,6 +575,69 @@ SCRIPT_CMD_IMPL( GetPosition )
   return TCL_OK;
 }
 /////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateModel )
+{
+	CHECK_ARGS(1, "loaderParamList {resourceName {dataLoadingFlags} groupName storeDataInterleaved }");
+	int length = 0;
+
+	Tcl_Obj * pResource;
+	Tcl_Obj * pFlags;
+	Tcl_Obj * pGroupName;
+	Tcl_Obj * pInterleaved;
+
+	if ( (Tcl_ListObjLength( pInterp, objv[1], &length) != TCL_OK  ||
+			length != 4)  )
+	{
+		Tcl_WrongNumArgs(pInterp, 0, objv, "loaderParamList {resourceName {dataLoadingFlags} groupName storeDataInterleaved }");
+		return TCL_ERROR;
+	}
+
+
+	Tcl_ListObjIndex( pInterp, objv[1], 0, &pResource);
+	Tcl_ListObjIndex( pInterp, objv[1], 1, &pFlags );
+	Tcl_ListObjIndex( pInterp, objv[1], 2, &pGroupName );
+	Tcl_ListObjIndex( pInterp, objv[1], 3, &pInterleaved );
+
+	const char *szResource = Tcl_GetString( pResource );
+
+
+	////////////////////
+	// flags
+	int iFlags = 0;
+
+	Tcl_Obj ** pListObj     = NULL;
+	if ( Tcl_ListObjGetElements(pInterp, pFlags, &length, &pListObj) != TCL_OK )
+	{
+		SCRIPT_ERROR( Tcl_GetStringResult(pInterp));
+	}
+	// Collect given int values as a single ORed int value.
+	for( int i=0;i<length;i++)
+	{
+		int tmpVal;
+		Tcl_GetIntFromObj( pInterp, pListObj[i], &tmpVal );
+		iFlags |= tmpVal;
+	}
+	pListObj = NULL;
+	////////////////////
+	// Collect group name
+	const char *szGroupName = Tcl_GetStringFromObj( pGroupName, &length );
+	if ( length == 0 ) szGroupName = NULL;
+
+	// interleaved flags
+	int       bInterleaved = 0;
+	Tcl_GetIntFromObj(pInterp, pInterleaved, &bInterleaved );
+
+	CModel *pModel = g_ModelHelper->CreateModel( iFlags, szGroupName, bInterleaved );
+	if ( g_ModelMgr->Create( pModel, szResource) != 0 )
+	{
+		ostringstream s;
+		s << "Could not create resource " << szResource;
+		SCRIPT_ERROR( s.str().c_str() );
+	}
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_IMPL( CreateModelFromFile )
 {
 	CHECK_ARGS(1, "loaderParamList {fileName resourceName {dataLoadingFlags} groupName storeDataInterleaved }");
@@ -503,8 +672,7 @@ SCRIPT_CMD_IMPL( CreateModelFromFile )
 	Tcl_Obj ** pListObj     = NULL;
 	if ( Tcl_ListObjGetElements(pInterp, pFlags, &length, &pListObj) != TCL_OK )
 	{
-		g_Error << Tcl_GetStringResult(pInterp) << endl;
-		return TCL_ERROR;
+		SCRIPT_ERROR( Tcl_GetStringResult(pInterp));
 	}
 	// Collect given int values as a single ORed int value.
 	for( int i=0;i<length;i++)
@@ -525,25 +693,23 @@ SCRIPT_CMD_IMPL( CreateModelFromFile )
 	int       bInterleaved = 0;
 	Tcl_GetIntFromObj(pInterp, pInterleaved, &bInterleaved );
 
-	if ( Phoenix::Data::CMilkshapeLoader::IsMilkshapeFile(szFilename ) )
+	if ( g_ModelHelper->Load(szFilename) != 0 )
 	{
-		if ( g_ModelHelper->LoadMilkshapeData(szFilename) != 0 )
-		{
-			g_Error << "There was an error while loading milkshape file " << szFilename << endl;
-			return TCL_ERROR;
-		}
+		ostringstream s;
+		s << "There was an error while loading model file " << szFilename;
+		SCRIPT_ERROR(s.str().c_str());
 	}
-	else if ( g_ModelHelper->LoadObjData( szFilename) ) // this succeeds even though it ain't obj file.
-	{
-		g_Error << "There was an error while loading obj file" << szFilename << endl;
-		return TCL_ERROR;
-	}
-	g_Error << "Creating resource '" << szResource << "'" << endl;
-	g_Error << "Group name is '" << (szGroupName == NULL ? "NULL" : szGroupName ) << "'" << endl;
-	g_Error << "Use interleaved " << bInterleaved << endl;
-	g_Error << "Flags are : " << iFlags << endl;
+	//g_Error << "Creating resource '" << szResource << "'" << endl;
+	//g_Error << "Group name is '" << (szGroupName == NULL ? "NULL" : szGroupName ) << "'" << endl;
+	//g_Error << "Use interleaved " << bInterleaved << endl;
+	//g_Error << "Flags are : " << iFlags << endl;
 	CModel *pModel = g_ModelHelper->CreateModel( iFlags, szGroupName, bInterleaved );
-	if ( g_ModelMgr->Create( pModel, szResource) != 0 ) return TCL_ERROR;
+	if ( g_ModelMgr->Create( pModel, szResource) != 0 )
+	{
+		ostringstream s;
+		s << "Could not create resource " << szResource;
+		SCRIPT_ERROR( s.str().c_str() );
+	}
 
 	return TCL_OK;
 }
@@ -557,7 +723,7 @@ SCRIPT_CMD_IMPL( LoadTexture2D )
 	const char *szResourceName = Tcl_GetStringFromObj( objv[2], &len );
 	COglRenderer tmp;
 	COglTexture *pTex = NULL;
-	g_Log << "Loading textures '" << &szTextureFile[len_tex-4] << "'" << endl;
+	//g_Log << "Loading textures '" << &szTextureFile[len_tex-4] << "'" << endl;
 	if ( strncasecmp( &szTextureFile[len_tex-4], ".dds", 4) == 0 )
 	{
 
@@ -565,7 +731,7 @@ SCRIPT_CMD_IMPL( LoadTexture2D )
 	}
 	else
 	{
-		g_Log << "Loading regular textures" << endl;
+		//g_Log << "Loading regular textures" << endl;
 		pTex =tmp.CreateTexture( szTextureFile, TEXTURE_2D);
 	}
 
@@ -583,170 +749,752 @@ SCRIPT_CMD_IMPL( LoadTexture2D )
 		tmp << "Cannot create resource '" << szResourceName << "'";
 		SCRIPT_ERROR(tmp.str().c_str());
 	}
-	else g_Log << "created texture resource '" << szResourceName << "'" << endl;
+	//else g_Log << "created texture resource '" << szResourceName << "'" << endl;
 	return TCL_OK;
 }
 /////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( LoadTextureCube )
+{
+	CHECK_ARGS( 2, "cubeTexParams resourceName");
+	int len = 0;
+	int len_tex = 0;
+	NameObjMap mapNameObj;
+	char *files[6] = { NULL };
+	if ( ParseKeyValueMap(pInterp, mapNameObj, objv[1]) != TCL_OK) return TCL_ERROR;
+	if ( MAP_HAS(mapNameObj, ".left")    ) files[0] = Tcl_GetString(mapNameObj[".left"]);
+	if ( MAP_HAS(mapNameObj, ".right") ) files[1] = Tcl_GetString(mapNameObj[".right"]);;
+	if ( MAP_HAS(mapNameObj, ".top")  ) files[2] = Tcl_GetString(mapNameObj[".top"]);
+	if ( MAP_HAS(mapNameObj, ".bottom")   ) files[3] = Tcl_GetString(mapNameObj[".bottom"]);
+	if ( MAP_HAS(mapNameObj, ".back")   ) files[4] = Tcl_GetString(mapNameObj[".back"]);
+	if ( MAP_HAS(mapNameObj, ".front")  ) files[5] = Tcl_GetString(mapNameObj[".front"]);
+
+	const char *szResourceName = Tcl_GetStringFromObj( objv[2], &len );
+	COglRenderer tmp;
+	COglTexture *pTex = NULL;
+	//g_Log << "Loading textures '" << &szTextureFile[len_tex-4] << "'" << endl;
+	if ( files[0] == NULL ) 	SCRIPT_ERROR(".left texture is invalid.");
+	if ( files[1] == NULL ) 	SCRIPT_ERROR(".right texture is invalid.");
+	if ( files[2] == NULL ) 	SCRIPT_ERROR(".top texture is invalid.");
+	if ( files[3] == NULL ) 	SCRIPT_ERROR(".bottom texture is invalid.");
+	if ( files[4] == NULL ) 	SCRIPT_ERROR(".back texture is invalid.");
+	if ( files[5] == NULL ) 	SCRIPT_ERROR(".front texture is invalid.");
+
+	pTex= tmp.CreateCubeTexture( (const char **)files );
+
+	if (pTex == NULL )
+	{
+		ostringstream tmp;
+		tmp << "Could not create cube texture '" << szResourceName<< "'. Problem with TGA files?";
+		SCRIPT_ERROR( tmp.str().c_str());
+	}
+
+	if ( g_TextureMgr->Create(pTex, szResourceName) )
+	{
+		delete pTex;
+		ostringstream tmp;
+		tmp << "Cannot create resource '" << szResourceName << "'";
+		SCRIPT_ERROR(tmp.str().c_str());
+	}
+
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+int
+ParseRenderState( Tcl_Interp *pInterp, Tcl_Obj *pRenderStateList,
+									std::map<string,Tcl_Obj *> & mapNameObj,
+									std::map<string,Tcl_Obj *> & mapMaterial)
+{
+	if ( ParseKeyValueMap(pInterp, mapNameObj, pRenderStateList) != TCL_OK ) return TCL_ERROR;
+	if ( MAP_HAS(mapNameObj, std::string(".material")) )
+	{
+		if ( ParseKeyValueMap( pInterp, mapMaterial, mapNameObj[string(".material")] ) != TCL_OK ) return TCL_ERROR;
+	}
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+void PrintMap( std::map<string,Tcl_Obj *> & map)
+{
+	std::map<string,Tcl_Obj *>::iterator it = map.begin();
+	for( ; it != map.end(); it++ )
+	{
+		g_Log << it->first << " = " << Tcl_GetString(it->second) << endl;
+	}
+
+}
+/////////////////////////////////////////////////////////////////
+/// Parses the renderstate list and passes proper values into given renderstate.
+int
+ApplyRenderState( Tcl_Interp *pInterp,
+									std::map<string,Tcl_Obj *> & mapNameObj,
+									std::map<string, Tcl_Obj *> & mapMaterial,
+									CRenderState & state )
+{
+
+	using std::string;
+	CVector4<float> vColor;
+	if ( ! mapMaterial.empty() )
+	{
+		CMaterial & mat = state.GetMaterial();
+		if ( MAP_HAS(mapMaterial, string(".diffuse") ) )
+		{
+			SCRIPT_GET_FLOAT_VECP( mapMaterial[string(".diffuse")], 4, vColor );
+			mat.SetDiffuse( vColor );
+		}
+		if ( MAP_HAS(mapMaterial, string(".ambient") ) )
+		{
+			SCRIPT_GET_FLOAT_VECP( mapMaterial[string(".ambient")], 4, vColor );
+			mat.SetAmbient( vColor );
+		}
+		if ( MAP_HAS(mapMaterial, string(".emission") ) )
+		{
+			SCRIPT_GET_FLOAT_VECP( mapMaterial[string(".emission")], 4, vColor );
+			mat.SetEmission( vColor );
+		}
+		if ( MAP_HAS(mapMaterial, string(".shininess") ) )
+		{
+			float fTmp;
+			SCRIPT_GET_FLOATP( mapMaterial[string(".shininess")], fTmp );
+			mat.SetShininess( fTmp );
+		}
+
+	}
+	int bValue;
+
+	if ( MAP_HAS( mapNameObj, string(".useLighting")) )
+	{
+		// Int param to bool works properly only via this hoop
+		SCRIPT_GET_INTP( mapNameObj[string(".useLighting")], bValue);
+		state.GetLighting() = bValue;
+	}
+	if ( MAP_HAS( mapNameObj, string(".depthTest")) )
+	{
+		// Int param to bool works properly only via this hoop
+		SCRIPT_GET_INTP( mapNameObj[string(".depthTest")], bValue);
+		state.GetDepthTest() = bValue;
+	}
+	if ( MAP_HAS( mapNameObj, string(".depthWrite")) )
+	{
+		// Int param to bool works properly only via this hoop
+		SCRIPT_GET_INTP( mapNameObj[string(".depthWrite")], bValue);
+		state.GetDepthWrite() = bValue;
+	}
+	if ( MAP_HAS( mapNameObj, string(".faceCulling")) )
+	{
+		// Int param to bool works properly only via this hoop
+		SCRIPT_GET_INTP( mapNameObj[string(".faceCulling")], bValue);
+		state.GetFaceCulling() = bValue;
+	}
+	// ability to map all textures with syntax.tex[0...MAX_TEXTURES-1]  textureResourceName
+	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;i++)
+	{
+		ostringstream s;
+		s << ".tex" << i;
+		if ( MAP_HAS( mapNameObj, s.str()) )
+		{
+			state.GetTextureHandle(i) = SCRIPT_GET_STRP( mapNameObj[s.str()] );
+		}
+	}
+	// some helpful reminders
+	if ( MAP_HAS( mapNameObj, string(".diffuse")) )
+	{
+		state.GetTextureHandle(0) = SCRIPT_GET_STRP( mapNameObj[string(".diffuse")] );
+	}
+	if ( MAP_HAS( mapNameObj, string(".bump") ) )
+	{
+		state.GetTextureHandle(1) = SCRIPT_GET_STRP( mapNameObj[string(".bump")] );
+	}
+	if ( MAP_HAS( mapNameObj, ".shader") )
+	{
+		state.GetShaderHandle() = SCRIPT_GET_STRP( mapNameObj[".shader"] );
+	}
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+// TODO Finish this missing parameters from renderstate.
 SCRIPT_CMD_IMPL( UseModel )
 {
-	CHECK_ARGS(3, "modelName lod renderState");
+	CHECK_ARGS(4, "modelName lod id renderState");
 	const char *szModelname = Tcl_GetString(objv[1]);
 	int lod = 0;
 	SCRIPT_GET_INT( 2, lod );
-	std::map<string,string> mapValueList;
-	SCRIPT_PARSE_VALUE_MAP( mapValueList, "=", 3);
+	int id = 0;
+	SCRIPT_GET_INT( 3, id );
+
 	CGameObject *pGameObject = reinterpret_cast<CAIObject *>(clientData)->GetGameObject();
-	CRenderableModelShared *pRenderable = pGameObject->AddRenderableModel( szModelname, lod, true, &pGameObject->GetWorldTransform() );
-	pRenderable->GetRenderState().ParseFrom(mapValueList);
+	CRenderableModelShared *pRenderable = pGameObject->AddRenderableModel( szModelname, lod, &pGameObject->GetWorldTransform() );
+	pRenderable->SetId(id);
+	std::map<string,Tcl_Obj *> mapNameObj;
+	std::map<string,Tcl_Obj *> mapMaterial;
+	if ( ParseRenderState( pInterp, objv[4], mapNameObj, mapMaterial ) != TCL_OK ) return TCL_ERROR;
+	return ApplyRenderState( pInterp, mapNameObj, mapMaterial, pRenderable->GetRenderState() );
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( Move )
+{
+
+	CHECK_ARGS(1, "{x y z}" );
+	CVector3<float> vFwd;
+	SCRIPT_GET_FLOAT_VEC(1, 3, vFwd );
+
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+  //SCRIPT_GET_FLOATP( 1, fX );
+	//SCRIPT_GET_FLOATP( 2, fY );
+	//SCRIPT_GET_FLOATP( 3, fZ );
+
+	// Rotate given vector so that it is applied via local transformation.
+
+  RotateVector( pObj->GetWorldTransform().GetRotation().GetReverse(), vFwd );
+
+  // Move ship
+  pObj->GetLocalTransform().Move( vFwd );
+  pObj->SetChanged(true);
+
+  //pObj->AddMovement( vFwd.Length());
+  Tcl_ResetResult( pInterp );
+  return TCL_OK;
+}
+//////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( MoveLocal )
+{
+
+	CHECK_ARGS(1, "{x y z}" );
+	CVector3<float> vFwd;
+	SCRIPT_GET_FLOAT_VEC(1, 3, vFwd );
+
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+  //SCRIPT_GET_FLOATP( 1, fX );
+	//SCRIPT_GET_FLOATP( 2, fY );
+	//SCRIPT_GET_FLOATP( 3, fZ );
+
+	// Rotate given vector so that it is applied via local transformation.
+  //RotateVector( pObj->GetWorldTransform().GetRotation().GetReverse(), vFwd );
+
+  // Move ship
+  pObj->GetLocalTransform().Move( vFwd );
+  pObj->SetChanged(true);
+
+  //pObj->AddMovement( vFwd.Length());
+  Tcl_ResetResult( pInterp );
+  return TCL_OK;
+}
+//////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetPosition )
+{
+	CHECK_ARGS( 1, "{x y z}");
+	CVector3<float> vParam;
+	SCRIPT_GET_FLOAT_VEC( 1, 3, vParam );
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+
+  CVector3<float> vMovement = vParam - pObj->GetWorldTransform().GetTranslation();
+  RotateVector( pObj->GetWorldTransform().GetRotation().GetReverse(), vMovement );
+
+  // Set ship position
+  pObj->GetLocalTransform().Move( vMovement);
+  pObj->SetChanged(true);
+
+
+  Tcl_ResetResult( pInterp );
+  return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetPositionLocal )
+{
+	CHECK_ARGS( 1, "{x y z}");
+	CVector3<float> vParam;
+	SCRIPT_GET_FLOAT_VEC( 1, 3, vParam );
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+
+	//CVector3<float> vMovement = vParam - pObj->GetWorldTransform().GetTranslation();
+  //RotateVector( pObj->GetWorldTransform().GetRotation().GetReverse(), vMovement );
+
+  // Set ship position
+	pObj->GetLocalTransform().SetTranslation( vParam );
+  pObj->SetChanged(true);
+
+
+  Tcl_ResetResult( pInterp );
+  return TCL_OK;
+}
+//////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( ComputeBoundingSphere )
+{
+	CHECK_ARGS( 2, "modelName sphereResourceName");
+	const char *szModelName = SCRIPT_GET_STR( 1 );
+	const char *szResourceName = SCRIPT_GET_STR( 2 );
+	CModel *pModel = g_ModelMgr->GetResource( szModelName );
+	if ( pModel == NULL )
+	{
+		ostringstream s;
+		s << "No such model '" << szModelName << "'";
+		SCRIPT_ERROR(s.str().c_str() );
+	}
+	CSphere *pSphere = new CSphere();
+	*pSphere = Phoenix::Volume::CalculateBoundingSphereTight( **pModel->GetVertexHandle(),
+																														**pModel->GetIndices() );
+	CResourceManager<CSphere, CHandle<CSphere> >::GetInstance()->Create( pSphere, szResourceName );
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( ComputeBoundingBox )
+{
+	CHECK_ARGS( 2, "modelName boxResourceName");
+	const char *szModelName = SCRIPT_GET_STR( 1 );
+	const char *szResourceName = SCRIPT_GET_STR( 2 );
+	CModel *pModel = g_ModelMgr->GetResource( szModelName );
+	if ( pModel == NULL )
+	{
+		ostringstream s;
+		s << "No such model '" << szModelName << "'";
+		SCRIPT_ERROR( s.str().c_str() );
+	}
+
+	COrientedBox *pBox = new COrientedBox();
+	*pBox = Phoenix::Volume::CalculateOrientedBoundingBox( **pModel->GetVertexHandle(),
+																														**pModel->GetIndices() );
+	CResourceManager<COrientedBox, CHandle<COrientedBox> >::GetInstance()->Create( pBox, szResourceName );
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( UseBoxCollider  )
+{
+	CHECK_ARGS( 1, "boxResource");
+	const char *szBox = SCRIPT_GET_STR(1);
+
+	SCRIPT_ERROR("Not implemented");
+
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( UseSphereCollider )
+{
+	CHECK_ARGS( 1, "sphereResource");
+	const char *szSphere = SCRIPT_GET_STR(1);
+	CSphere *pSphere = CResourceManager<CSphere, CHandle<CSphere> >::GetInstance()->GetResource(szSphere);
+	if ( pSphere == NULL ) SCRIPT_ERROR( "No such sphere. ");
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	pObj->GetBoundingSphere() = *pSphere;
 	return TCL_OK;
 }
 /////////////////////////////////////////////////////////////////
-SCRIPT_CMD_IMPL( SetModelTexture )
+SCRIPT_CMD_IMPL( GetModelVertices )
 {
-	CHECK_ARGS(3, "modelName textureId textureName");
-	const char *szModelName = SCRIPT_GET_STR(1);
-	const char *szTexName   = SCRIPT_GET_STR(3);
-	int texId = 0;
-
-	SCRIPT_GET_INT( 2, texId);
-	CModel *pModel = g_ModelMgr->GetResource(szModelName);
-	ostringstream tmp;
-	tmp << "No such model " << szModelName;
-	if ( ! pModel ) SCRIPT_ERROR( tmp.str().c_str() );
-
-	pModel->GetTextureHandle(texId) = szTexName;
-	if ( pModel->GetTextureHandle(texId).IsNull() )
+	CHECK_ARGS(1, "model");
+	const char *szModel = SCRIPT_GET_STR(1);
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
 	{
-		g_Warn << "Setting texture to null (if you really want this,"
-					 << " use command ResetModelTexture. Null texture was '" << szTexName << "'" << endl;
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+	std::string tmp = g_VertexMgr->GetResourceName(pModel->GetVertexHandle());
+	SCRIPT_RESULT( tmp.c_str() );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetModelTexCoords )
+{
+	CHECK_ARGS(1, "model texId");
+	const char *szModel = SCRIPT_GET_STR(1);
+	int iTexID = 0;
+	SCRIPT_GET_INT(2, iTexID );
+
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+	std::string tmp = g_VertexMgr->GetResourceName(pModel->GetTextureCoordinateHandle(iTexID));
+	SCRIPT_RESULT( tmp.c_str() );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetModelIndices )
+{
+	CHECK_ARGS(1, "model texId");
+	const char *szModel = SCRIPT_GET_STR(1);
+	int iTexID = 0;
+	SCRIPT_GET_INT(2, iTexID );
+
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+
+	std::string tmp = g_IndexMgr->GetResourceName(pModel->GetIndices());
+	SCRIPT_RESULT( tmp.c_str() );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetModelVertices )
+{
+	CHECK_ARGS(2, "model vertexResource");
+	const char *szModel = SCRIPT_GET_STR(1);
+	const char *szResource = SCRIPT_GET_STR(2);
+
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+
+
+	pModel->GetVertexHandle() = szResource;
+	Tcl_ResetResult( pInterp );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetModelTexCoords )
+{
+	CHECK_ARGS(2, "model texId texResource");
+	const char *szModel = SCRIPT_GET_STR(1);
+	int texId = 0;        SCRIPT_GET_INT( 2, texId );
+	const char *szResource = SCRIPT_GET_STR(3);
+
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+
+	pModel->GetTextureCoordinateHandle(texId) = szResource;
+	Tcl_ResetResult( pInterp );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetModelIndices )
+{
+	CHECK_ARGS(2, "model indexResource");
+	const char *szModel = SCRIPT_GET_STR(1);
+	const char *szResource = SCRIPT_GET_STR(2);
+
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+
+	pModel->GetIndices() = szResource;
+	Tcl_ResetResult( pInterp );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( DuplicateModel )
+{
+
+	CHECK_ARGS(2, "model newResource");
+	const char *szModel = SCRIPT_GET_STR(1);
+	const char *szNew= SCRIPT_GET_STR(2);
+
+	CModel *pModel = g_ModelMgr->GetResource(szModel);
+	if ( pModel == NULL )
+	{
+		ostringstream tmp;
+		tmp << "No such model " << szModel;
+		SCRIPT_ERROR( tmp.str().c_str() );
+	}
+
+	CModel *pNew = new CModel( *pModel );
+	g_ModelMgr->Create( pNew, szNew );
+	Tcl_ResetResult( pInterp );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( LoadModelFile )
+{
+	CHECK_ARGS(1, "filename");
+	const char *szModel = SCRIPT_GET_STR(1);
+	if ( g_ModelHelper->Load( szModel ) != 0 )
+	{
+		ostringstream s;
+		s << "Could not load model file " << szModel;
+		SCRIPT_ERROR( s.str().c_str() );
+	}
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateEmptyModel )
+{
+	CHECK_ARGS(1, "resourceName");
+	const char *szRes = SCRIPT_GET_STR(1);
+	if ( szRes == NULL || strlen(szRes) == 0 )
+		SCRIPT_ERROR("Invalid resource name");
+
+	if ( g_ModelMgr->Create( new CModel(), szRes ) != 0 )
+	{
+		SCRIPT_ERROR("Invalid resource name.");
+	}
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateVertexResource )
+{
+	CHECK_ARGS(1, "resourceName");
+	const char *szRes = SCRIPT_GET_STR(1);
+
+	if ( szRes == NULL || strlen(szRes) == 0 )
+		SCRIPT_ERROR("Invalid resource name");
+
+	if ( g_VertexMgr->Create( g_ModelHelper->GetModelLoader()->GetVertexArray(), szRes ) != 0 )
+	{
+		SCRIPT_ERROR("Failed to create vertex resource.");
+	}
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateTexCoordResource )
+{
+	CHECK_ARGS(1, "resourceName");
+	const char *szRes = SCRIPT_GET_STR(1);
+
+	if ( szRes == NULL || strlen(szRes) == 0 )
+		SCRIPT_ERROR("Invalid resource name");
+
+	if ( g_VertexMgr->Create( g_ModelHelper->GetModelLoader()->GetTexCoordArray(), szRes ) != 0 )
+	{
+		SCRIPT_ERROR("Failed to create texcoord resource.");
+	}
+	return TCL_OK;
+
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateNormalResource )
+{
+	CHECK_ARGS(1, "resourceName");
+	const char *szRes = SCRIPT_GET_STR(1);
+
+	if ( szRes == NULL || strlen(szRes) == 0 )
+		SCRIPT_ERROR("Invalid resource name");
+
+	if ( g_VertexMgr->Create( g_ModelHelper->GetModelLoader()->GetNormalArray(), szRes ) != 0 )
+	{
+		SCRIPT_ERROR("Failed to create normal resource.");
+	}
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateIndexResource )
+{
+	CHECK_ARGS(2, "groupName resourceName");
+
+	const char *szGroup = SCRIPT_GET_STR(1);
+	const char *szRes = SCRIPT_GET_STR(2);
+	if ( szRes == NULL || strlen(szRes) == 0 )
+		SCRIPT_ERROR("Invalid resource name");
+	if ( szGroup == NULL || strlen(szGroup) == 0 ) szGroup = NULL;
+
+	if ( g_IndexMgr->Create( g_ModelHelper->GetModelLoader()->GetIndexArray(szGroup), szRes ) != 0 )
+	{
+		ostringstream s;
+		s << "Failed to create index resource '" << szRes << "' ";
+		if ( szGroup != NULL ) s << "from group '" << szGroup << "'" << endl;
+		else							     s << "from all vertices.";
+
+		SCRIPT_ERROR(s.str().c_str());
+	}
+	return TCL_OK;
+
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( CreateInterleavedResource )
+{
+	CHECK_ARGS(1, "resourceName");
+	const char *szRes = SCRIPT_GET_STR(1);
+
+	if ( szRes == NULL || strlen(szRes) == 0 )
+		SCRIPT_ERROR("Invalid resource name");
+
+	if ( g_VertexMgr->Create( g_ModelHelper->GetModelLoader()->GetInterleavedArray(), szRes ) != 0 )
+	{
+		SCRIPT_ERROR("Failed to create interleaved array resource.");
+	}
+	return TCL_OK;
+
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetNumLods )
+{
+	CHECK_ARGS( 0, "this command accepts no arguments");
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	int i = pObj->GetNumLodLevels();
+	SCRIPT_INT_RESULT(i);
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetRenderables )
+{
+	CHECK_ARGS( 1, "lodLevel");
+	int lod = 0;
+	SCRIPT_GET_INT( 1, lod );
+
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	RenderableList::iterator it = pObj->GetRenderableObjects(lod).begin();
+	Tcl_Obj *pList = Tcl_NewListObj( 0, NULL );
+
+	for( ; it != pObj->GetRenderableObjects(lod).end(); it++)
+	{
+		 if ( Tcl_ListObjAppendElement( pInterp, pList, Tcl_NewIntObj( (*it)->GetId() )) != TCL_OK )
+		 {
+			 return TCL_ERROR;
+		 }
+	}
+	Tcl_SetObjResult( pInterp, pList );
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetRenderState )
+{
+	CHECK_ARGS( 3, "lodLevel id renderstate");
+	int lod = 0;
+	int id = 0;
+	SCRIPT_GET_INT( 1, lod );
+	SCRIPT_GET_INT( 2, id );
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	if ( lod >= pObj->GetNumLodLevels() )
+	{
+		ostringstream s;
+		s << "Lod level " << lod << " is too high, max is : " << pObj->GetNumLodLevels();
+		SCRIPT_ERROR(s.str().c_str());
+	}
+	RenderableList::iterator it = pObj->GetRenderableObjects(lod).begin();
+
+	int iResult = TCL_OK;
+
+	std::map<string,Tcl_Obj *> mapNameObj;
+	std::map<string,Tcl_Obj *> mapMaterial;
+	if ( ParseRenderState( pInterp, objv[3], mapNameObj, mapMaterial ) != TCL_OK ) return TCL_ERROR;
+
+	bool bFoundRenderable= false;
+	for( ; it != pObj->GetRenderableObjects(lod).end(); it++)
+	{
+		if ( (*it)->GetId() == id )
+		{
+			bFoundRenderable = true;
+			// TODO make this more efficient
+			if ( ApplyRenderState(pInterp, mapNameObj, mapMaterial, (*it)->GetRenderState()) != TCL_OK )
+				return TCL_ERROR;
+		}
+	}
+	if ( bFoundRenderable == false )
+	{
+		ostringstream s;
+		s << "Could not find renderable with id " << id;
+		SCRIPT_ERROR(s.str().c_str());
+	}
+	return TCL_OK;
+
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetEnabled )
+{
+	CHECK_ARGS(1, "boolean")
+	int bFlag = 0;
+	SCRIPT_GET_INT(1, bFlag);
+	reinterpret_cast<CGameObject *>(clientData)->SetEnabled(bFlag);
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetVisible )
+{
+	CHECK_ARGS(1, "boolean")
+	int bFlag = 0;
+	SCRIPT_GET_INT(1, bFlag);
+	reinterpret_cast<CGameObject *>(clientData)->SetVisible(bFlag);
+	return TCL_OK;
+}
+/////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( RotationFromAxisAngles )
+{
+	CHECK_ARGS(1, "listAxisAngles");
+	CVector3<float> vAngles;
+	SCRIPT_GET_FLOAT_VECP( objv[1], 3, vAngles);
+	CQuaternion q;
+	q.CreateFromAxisAngles( vAngles );
+	SCRIPT_RESULT_FLOAT_VECP( 4, q);
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetScreenParams )
+{
+	Tcl_Obj *pList = Tcl_NewListObj(0, NULL );
+	CSDLScreenParams & p = CSDLScreen::m_SDLScreenParams;
+	SCRIPT_LIST_ADD_INT( pList, ".redBits", p.m_iRedSize);
+	SCRIPT_LIST_ADD_INT( pList, ".greenBits", p.m_iGreenSize);
+	SCRIPT_LIST_ADD_INT( pList, ".blueBits", p.m_iBlueSize);
+	SCRIPT_LIST_ADD_INT( pList, ".doubleBuffer", p.m_bDoubleBuffer);
+	SCRIPT_LIST_ADD_INT( pList, ".depthBits", p.m_iDepthBufferSize);
+	SCRIPT_LIST_ADD_INT( pList, ".width", p.m_iWidth);
+	SCRIPT_LIST_ADD_INT( pList, ".height", p.m_iHeight);
+	SCRIPT_LIST_ADD_INT( pList, ".colorDepth", p.m_iScreenDepth);
+	int bFullscreen = p.m_iVideoModeFlags & SDL_FULLSCREEN;
+	SCRIPT_LIST_ADD_INT( pList, ".fullscreen", bFullscreen);
+	SCRIPT_LIST_ADD_INT( pList, ".multiSampleBuffers", p.m_iMultiSampleBuffers);
+	SCRIPT_LIST_ADD_INT( pList, ".multiSampleSamples", p.m_iMultiSampleSamples);
+	Tcl_SetObjResult(pInterp, pList);
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+struct SendMsg_f {
+	const char *szMessage;
+
+	inline void operator()( CGameObject * pObj )
+	{
+		pObj->EnqueueMessage( szMessage );
+	}
+};
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( BroadcastMessage )
+{
+	CHECK_ARGS(1, "message")
+	SendMsg_f f;
+	f.szMessage = SCRIPT_GET_STR(1);
+	g_ObjectMgr->ForEachObjectPtr( f);
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( LoadShader )
+{
+	CHECK_ARGS(3, "vertexShaderFile fragmentShaderFile resourceName");
+	const char *szVertSh = SCRIPT_GET_STR(1);
+	const char *szFragSh = SCRIPT_GET_STR(2);
+	const char *szResource = SCRIPT_GET_STR(3);
+	COglRenderer r;
+	CShader *pShader = r.CreateShader( szVertSh, szFragSh );
+	if ( pShader == NULL )
+	{
+		ostringstream s;
+		s << "Could not load shader from files vert = '" << szVertSh << "' and frag = '" << szFragSh << "'";
+		SCRIPT_ERROR( s.str().c_str() );
+	}
+
+	if ( g_ShaderMgr->Create( pShader, szResource ) != 0 )
+	{
+		ostringstream s;
+		s << "Could not register shader under name '" << szResource << "'";
+		SCRIPT_ERROR( s.str().c_str() );
 	}
 	return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////
-SCRIPT_CMD_IMPL( ResetModelTexture )
+SCRIPT_CMD_IMPL( GetObjectName )
 {
-	CHECK_ARGS(2, "modelName textureId");
-	const char *szModelName = SCRIPT_GET_STR(1);
-	int texId = 0;
-	SCRIPT_GET_INT( 2, texId);
-
-	CModel *pModel = g_ModelMgr->GetResource(szModelName);
-	if ( ! pModel ) SCRIPT_ERROR("No such model");
-
-	pModel->GetTextureCoordinateHandle(texId).Release();
-
+	CGameObject *pObj = reinterpret_cast<CAIObject *>(clientData)->GetGameObject();
+	if ( pObj )
+	{
+		SCRIPT_RESULT( pObj->GetName().c_str());
+	}
+	else SCRIPT_ERROR("Script not ran in gameobject.");
 	return TCL_OK;
 }
-/////////////////////////////////////////////////////////////////
-// void
-// Phoenix::AI::CAIObject::AddProperty( IProperty * pProp )
-// {
-//   m_Properties[pProp->GetName()] = pProp;
-// }
-// ////////////////////////////////////////////////////////////////////////////////
-// void
-// Phoenix::AI::CAIObject::RemoveProperty( const std::string & name  )
-// {
-//   PropertyMap::iterator it = m_Properties.find(name);
-//   if ( it != m_Properties.end()) m_Properties.erase(it);
-// }
-// ////////////////////////////////////////////////////////////////////////////////
-// IProperty * 
-// Phoenix::AI::CAIObject::GetProperty( const std::string & name )
-// {
-//   PropertyMap::iterator it = m_Properties.find(name);
-  
-//   if ( it != m_Properties.end() ) return it->second;
-//   else				  return NULL;
-// }
-// ////////////////////////////////////////////////////////////////////////////////
-// bool
-// Phoenix::AI::CAIObject::HasProperty( const std::string & name )
-// {
-//   return (m_Properties.find(name) != m_Properties.end());
-// }
-////////////////////////////////////////////////////////////////////////////////
-// SCRIPT_CMD_IMPL( SetFloatProperty )
-// {
-//   CHECK_ARGS( 2, "propertyName floatValue" );
-//   int iLen = 0;
-//   const char *szPropName = Tcl_GetStringFromObj( objv[1], &iLen );
-  
-//   CAIObject *pAIObj = reinterpret_cast<CAIObject *>(clientData);
-//   IProperty *pProp = pAIObj->GetProperty( std::string(szPropName) );
-    
-//   if (  pProp != NULL )
-//   {
-//     if ( pProp->AlterValue( pInterp, objv[2] ) == false ) 
-//     {
-//       return TCL_ERROR;
-//     }
-//     pProp->SetResult( pInterp );
-//   }
-//   else
-//   {
-//     double dTmp = 0;
-
-//     if ( Tcl_GetDoubleFromObj(pInterp, objv[2], &dTmp) != TCL_OK )
-//     {
-//       return TCL_ERROR;
-//     }
-    
-//     FloatProperty * pFloatProperty = new FloatProperty( std::string(szPropName), dTmp );
-//     pAIObj->AddProperty( pFloatProperty );
-//     pFloatProperty->SetResult( pInterp );
-//   }
-
-  
-//   return TCL_OK;
-// }
-
-////////////////////////////////////////////////////////////////////////////////
-// SCRIPT_CMD_IMPL( GetProperty )
-// {
-//   CHECK_ARGS( 1, "propertyName" );
-//   int iLen = 0;
-//   const char *szPropName = Tcl_GetStringFromObj( objv[1], &iLen );
-//   // g_Log << "Asking for " << szPropName << endl;
-//   CAIObject *pAIObj = reinterpret_cast<CAIObject *>(clientData);
-//   IProperty *pTmp = pAIObj->GetProperty( std::string(szPropName) );
-
-//   if ( pTmp == NULL ) 
-//   {
-//     Tcl_ResetResult( pInterp);
-//     return TCL_ERROR;
-//   }
-//   else 
-//   {
-//     pTmp->SetResult( pInterp );
-    
-//     return TCL_OK;
-
-//   }
-
-// }
-// ////////////////////////////////////////////////////////////////////////////////
-// SCRIPT_CMD_IMPL( SetProperty )
-// {
-//   CHECK_ARGS( 2, "propertyName list " );
-//   int iLen = 0;
-//   const char *szPropName = Tcl_GetStringFromObj( objv[1], &iLen );
-  
-//   CAIObject *pAIObj = reinterpret_cast<CAIObject *>(clientData);
-//   IProperty *pProp = pAIObj->GetProperty( std::string(szPropName) );
-    
-//   if (  pProp == NULL )
-//   {
-//     pProp = new CListProperty( std::string(szPropName) );    
-//     pAIObj->AddProperty( pProp );
-//   }
-
-//   if ( pProp->AlterValue( pInterp, objv[2] ) == false)
-//   {
-//     return TCL_ERROR;
-//   }
-
-//   pProp->SetResult( pInterp );
-  
-//   return TCL_OK;
-// }
+///////////////////////////////////////////////////////////////////////////////

@@ -26,7 +26,7 @@ namespace Phoenix
 
     /////////////////////////////////////////////////////////////////
     /// Class for game objects that can be rendered in a game.
-    class PHOENIX_API CRenderableProperty : public Phoenix::Core::CEnableable
+    class PHOENIX_API CRenderableProperty : public Phoenix::Core::CViewable
     {
     private:
       LodLevelObjects			m_LodLevels; ///< Renderable objects.
@@ -64,19 +64,18 @@ namespace Phoenix
       virtual size_t GetLodLevel( float fDistanceSqr ) const;
       ////////////////////
       /// Adds new renderable handle to given lod level and
-      /// \par attaches resource by name to it. Use this if your model data is interleaved or grouped.
+      /// \par attaches resource by name to it.
       /// \param szModelName Name of the Model resource.
       /// \param nLodLevel To which lod level modelrenderable is added.
-      /// \param bInterleaved Attempt to use interleaved data. By default, false.
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
       /// \returns Pointer to a RenderableModel
-      Phoenix::Graphics::CRenderableModelShared * AddRenderableModel( const char *szModelName, size_t nLodLevel, bool bInterleaved = false, Phoenix::Math::CTransform *pWorldTransform = NULL );
+      Phoenix::Graphics::CRenderableModelShared * AddRenderableModel( const char *szModelName, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL );
       ////////////////////
-      /// Adds existing renderable object to given lod level. Use this only for adding non-grouped renderables.
+      /// Adds existing renderable object to given lod level.
       /// \param pRenderable Renderable to be added.
       /// \param nLodLevel To which level renderable is added.
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
-      void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL) __attribute__((deprecated));
+      void AddRenderable( Phoenix::Graphics::CRenderable *pRenderable, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform = NULL) ;
       ////////////////////
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
@@ -85,6 +84,13 @@ namespace Phoenix
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
       const RenderableList & GetLights() const;
+      ////////////////////
+      /// Returns renderable with id iId from lod iLod, if found.
+      /// \param nLod Lod level where search is applied.
+      /// \param iId  Id of renderable to be sought.
+      /// \returns Pointer to renderable if found
+      /// \returns NULL if not found or if invalid iLod is given.
+      Phoenix::Graphics::CRenderable * GetRenderableById( size_t nLod, int iId );
     };
   }
 }

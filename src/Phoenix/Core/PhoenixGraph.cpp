@@ -1,5 +1,21 @@
-//#include "PhoenixGraph.h"
-//#include <iostream>
+/////////////////////////////////////////////////////////////////
+/// Macro that has to be called in the destructor of inherited graph node.
+/// It releases node from graph properly and destroys edges.
+/// ie.
+///
+/// class YourNode : public TGraphNode<YourNode>
+/// {
+/// public:
+///     ~YourNode() { TGraphNodeDestroy(); }
+/// };
+///
+#define TGraphNodeDestroy() {\
+	if ( GetGraph() ) {\
+		GetGraph()->RemoveLeavingEdgesFrom(this);\
+		GetGraph()->RemoveArrivingEdgesFrom(this);\
+		GetGraph()->GetNodes().remove(this);\
+	}\
+}
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Core;
 /////////////////////////////////////////////////////////////////
@@ -181,22 +197,26 @@ Phoenix::Core::TGraphNode<NODE_TYPE>::~TGraphNode()
 		// Because lists in graph are stored directly with subclass type,
 	  // we need some magic here. Causes slight overhead, but I am unsure if
 	  // that is relevant while destroying an object.
-		NODE_TYPE *pTmp = dynamic_cast<NODE_TYPE*>(this);
-
+		//NODE_TYPE *pTmp = dynamic_cast<NODE_TYPE*>(this);
+		/*
 		typename NodeListType::iterator it;
     it = find(GetGraph()->GetNodes().begin(), GetGraph()->GetNodes().end(), this );
 
     if ( it != GetGraph()->GetNodes().end() )
     {
-				GetGraph()->RemoveLeavingEdgesFrom(pTmp);
-     	  GetGraph()->RemoveArrivingEdgesFrom(pTmp);
-     	  GetGraph()->GetNodes().erase(it);
-     }
+*/
+	/*if ( GetGraph() )
+	{
+		GetGraph()->RemoveLeavingEdgesFrom(pTmp);
+		GetGraph()->RemoveArrivingEdgesFrom(pTmp);
+		GetGraph()->GetNodes().remove(pTmp);
+	}*/
+    /* }
      else
      {
      	    //std::cerr << "Node " << pNode
      		  //    << "is not part of this graph!" << std::endl;
-     }
+     }*/
 }
 /////////////////////////////////////////////////////////////////
 

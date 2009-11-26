@@ -21,6 +21,7 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0),
 					      CAIObject( this )
 {
         m_pCollider = this;
+        SetEnabled(true); // by default, each object is active
 }
 /////////////////////////////////////////////////////////////////
 void

@@ -20,6 +20,7 @@ namespace Phoenix
     {
       friend class Phoenix::Core::TGraph<CTransformNode>;
     public:
+      ~CTransformNode();
       /// For adding new edges without compiler errors.
       Phoenix::Core::TGraphEdge<CTransformNode> * AddEdge( CTransformNode *pTo );
       ////////////////////
@@ -27,6 +28,8 @@ namespace Phoenix
       virtual Phoenix::Scene::CTransformable * GetTransformable() = 0;
       ////////////////////
       void Reparent( CTransformNode * pNewParent );
+      ////////////////////
+      CTransformNode * GetParentTransformNode();
       ////////////////////
       bool Enter();
       ////////////////////
@@ -43,7 +46,7 @@ namespace Phoenix
 			Phoenix::Scene::CTransformNode *m_pTransformNode;
 		public:
 			CTransformable();
-			virtual ~CTransformable() {}
+			virtual ~CTransformable();
 			////////////////////
 			/// Returns reference to local transform.
 			/// \returns Local transform

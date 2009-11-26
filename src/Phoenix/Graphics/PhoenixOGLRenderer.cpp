@@ -17,12 +17,14 @@
 #include <fstream>
 #include <assert.h>
 #include <ft2build.h>
+#include "PhoenixLogger.h"
 // include freetype stuff
 #include FT_FREETYPE_H
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Default;
 using namespace Phoenix::Spatial;
+using namespace Phoenix::Core;
 using std::endl;
 using std::cerr;
 using std::ifstream;
@@ -1118,7 +1120,12 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
   {
     ////////////////////
     CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
-    assert ( pImage != NULL && "Unable to load TGA image for CUBE TEXTURE." );
+    if ( pImage == NULL )
+    {
+    	g_Error << __FUNCTION__ << " : Unable to load TGA image for CUBE TEXTURE." << endl;
+    	delete pTexture;
+    	return NULL;
+    }
     ////////////////////
     int    iGLInternalFormat = 3;
     GLenum iGLformat = GL_RGB;
@@ -2157,7 +2164,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
   CModel & model = **skybox.GetModelHandle();
-  COglTexture *pTexture = *model.GetTextureHandle(0);
+  COglTexture *pTexture = *skybox.GetRenderState().GetTextureHandle(0);
   CIndexArray *pIndices = *model.GetIndices();
   CVertexDescriptor *pTexCoords = *model.GetTextureCoordinateHandle(0);
   CVertexDescriptor *pVertices  = *model.GetVertexHandle();
@@ -2167,7 +2174,7 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   if ( pTexture )
   {
 	  CommitTexture( 0, pTexture );
-	  CommitFilters( model.GetTextureFilters(0), pTexture->GetType());
+	  CommitFilters( skybox.GetRenderState().GetTextureFilters(0), pTexture->GetType());
   }
   if ( pIndices )   CommitPrimitive( pIndices );
   /////////////////////////////////////////////////////////////////
@@ -2929,5 +2936,7 @@ Phoenix::Graphics::COglRenderer::CommitRenderState( const Phoenix::Graphics::CRe
 		}
 	}
 	else DisableState( STATE_LIGHTING );
+
+	CommitMaterial( s.GetMaterial() );
 }
 /////////////////////////////////////////////////////////////////

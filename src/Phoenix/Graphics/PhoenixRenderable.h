@@ -20,10 +20,9 @@ namespace Phoenix
     class PHOENIX_API CRenderable
     {
     protected:
-      /// Renderstate.
-      Phoenix::Graphics::CRenderState	      m_RenderState;
-      /// How renderable should be transformed.
-      Phoenix::Math::CTransform		      *m_pTransform;
+      Phoenix::Graphics::CRenderState	      m_RenderState; 	///<! Renderstate.
+      Phoenix::Math::CTransform		      *m_pTransform; 			///<! How renderable should be transformed.
+      int 																m_iId; 						///<! Identifier for marking renderables in some manner. Comes handy with CRenderableProperty and CGameObject.
     public:
       ////////////////////
       /// Constructor.
@@ -49,7 +48,13 @@ namespace Phoenix
 
       Phoenix::Math::CTransform * GetTransform();
       void	   SetTransform( Phoenix::Math::CTransform *pTransform );
-
+      ////////////////////
+      /// Sets identifier number for this renderable.
+      /// \param iId Identifier number to be set.
+      void     SetId( int iId );
+      ////////////////////
+      /// \returns identifier number of this renderable.
+      int      GetId() const;
     };
   }; // namespace Graphics
 }; // namespace Phoenix

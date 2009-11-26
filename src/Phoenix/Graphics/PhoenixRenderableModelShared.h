@@ -30,7 +30,6 @@ namespace Phoenix
     class COglRenderer;
     ////////////////////
     /// Renderable class for 3D models with texture and vertex data.
-    // TODO Add concept of model between renderablemodel and 3D data, and manage it using handles.
     class PHOENIX_API CRenderableModelShared : public Phoenix::Graphics::CRenderable
     {
     protected:

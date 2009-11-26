@@ -6,6 +6,7 @@
 #include <map>
 #include <list>
 #include <assert.h>
+#include "PhoenixLogger.h"
 /////////////////////////////////////////////////////////////////
 #if TRISTRIPPER == 1
   #include <tri_stripper.h>
@@ -119,13 +120,13 @@ Phoenix::Data::CMilkshapeLoader::Load(const char *szFilename)
   
   if ( !fFile )
   {
-    cerr << "Couldn't open " << szFilename << std::endl;
+    g_Error << "Couldn't open " << szFilename << std::endl;
     return 1;
   }
   
   if ( Check_File(fFile) )
   {
-    cerr << "Invalid file, loading cancelled." << std::endl;
+  	g_Error << "Invalid file, loading cancelled." << std::endl;
     return 1;
   }
   Destroy();
@@ -173,20 +174,20 @@ Phoenix::Data::CMilkshapeLoader::Check_File( std::fstream &File)
   
   if ( File.bad())
   {
-    cerr << "Couldn't read file!" << std::endl;
+    g_Error << "Couldn't read file!" << std::endl;
     bRetval = 1;
 
   } 
   else 
   {
-    cerr << "MS3Dheader.id = "      << MS3Dheader.id << std::endl;
-    cerr << "MS3Dheader.version = " << MS3Dheader.version << std::endl;
+  	//cerr << "MS3Dheader.id = "      << MS3Dheader.id << std::endl;
+    //cerr << "MS3Dheader.version = " << MS3Dheader.version << std::endl;
     // Check file type and version, exit if invalid
     if ( strncmp(MS3Dheader.id, "MS3D000000", 10) != 0 ){
-      cerr << "Not a Milkshape3D file!" << std::endl;
+      //cerr << "Not a Milkshape3D file!" << std::endl;
       bRetval = 1;
     } else if ( MS3Dheader.version < 3 || MS3Dheader.version > 4 ){
-      cerr << "Only ms3d versions 1.3 and 1.4 are supported!" << std::endl;
+      //cerr << "Only ms3d versions 1.3 and 1.4 are supported!" << std::endl;
       bRetval = 1;
     }
   }
@@ -233,8 +234,7 @@ Phoenix::Data::CMilkshapeLoader::Handle_Vertices( unsigned char *pWorkBuffer, un
     m_nNumVertices = *(WORD *)pWorkBuffer;
     pWorkBuffer += sizeof(WORD);
     
-    cerr << m_nNumVertices 
-	 << " vertices to be read..." << std::endl;
+    //cerr << m_nNumVertices  << " vertices to be read..." << std::endl;
     
     if ( m_nNumVertices >= MAX_VERTICES )
     {
@@ -282,8 +282,8 @@ Phoenix::Data::CMilkshapeLoader::Handle_Triangles( unsigned char *pWorkBuffer)
     {
       m_pTriangles = new MS3D_Triangle_t[m_nNumTriangles];
 
-      cerr << m_nNumTriangles 
-			<< " triangles to be read.." << std::endl;
+      //cerr << m_nNumTriangles
+			//<< " triangles to be read.." << std::endl;
 
       for(unsigned int i=0;i<m_nNumTriangles;i++)
       {
@@ -331,8 +331,8 @@ Phoenix::Data::CMilkshapeLoader::Handle_Groups( unsigned char *pWorkBuffer)
 
     if ( m_nNumGroups > 0 && m_nNumGroups < MAX_GROUPS )
     {
-      cerr << m_nNumGroups 
-	   << " groups to be read.." << std::endl;
+     // cerr << m_nNumGroups
+	   //<< " groups to be read.." << std::endl;
       m_pGroups = new MS3D_Group_t[m_nNumGroups];
 
       for(WORD i=0;i<m_nNumGroups;i++)
@@ -378,7 +378,7 @@ Phoenix::Data::CMilkshapeLoader::Handle_Materials( unsigned char *pWorkBuffer)
     if ( m_nNumMaterials < MAX_MATERIALS)
     {
       m_pMaterials = new MS3D_Material_t[m_nNumMaterials];
-      cerr << m_nNumMaterials << " materials to be read.." << std::endl;
+      //cerr << m_nNumMaterials << " materials to be read.." << std::endl;
       for(WORD i=0;i<m_nNumMaterials;i++)
       {
 	memcpy( &m_pMaterials[i], pWorkBuffer, sizeof(MS3D_Material_t));
@@ -425,7 +425,7 @@ Phoenix::Data::CMilkshapeLoader::Handle_Joints( unsigned char *pWorkBuffer)
     
     if ( m_nNumJoints == 0 ) 
     {
-      cerr <<  "No joints to be read" << endl;
+      //cerr <<  "No joints to be read" << endl;
     }
     else if (m_nNumJoints >= MAX_JOINTS) 
     {
@@ -502,7 +502,7 @@ Phoenix::Data::CMilkshapeLoader::GenerateModelData()
   delete m_pNormals;
   delete m_pTexCoords;
   delete m_pIndices;
-  cerr << "generating model data" << vecVertices.size() << endl;
+  //cerr << "generating model data" << vecVertices.size() << endl;
   
   // Create new descriptors / array
   m_pPositions = new CVertexDescriptor(ELEMENT_TYPE_VERTEX_3F, vecVertices.size());
@@ -946,13 +946,13 @@ Phoenix::Data::CMilkshapeLoader::IsMilkshapeFile( const char *szFilename )
 
   if ( !fFile )
   {
-    cerr << "Couldn't open " << szFilename << std::endl;
+    //cerr << "Couldn't open " << szFilename << std::endl;
     return false;
   }
 
   if ( loader.Check_File(fFile) )
   {
-    cerr << "Invalid file, loading cancelled." << std::endl;
+    //cerr << "Invalid file, loading cancelled." << std::endl;
     return false;
   }
   return true;

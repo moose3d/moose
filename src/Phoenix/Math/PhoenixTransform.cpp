@@ -162,4 +162,3 @@ Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft,
   RotateVector( rTLeft.GetRotation(), vRightTransl );
   rTransformResult.SetTranslation( vRightTransl + rTLeft.GetTranslation());
 }
-/////////////////////////////////////////////////////////////////

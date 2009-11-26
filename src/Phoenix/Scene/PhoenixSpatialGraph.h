@@ -78,6 +78,14 @@ namespace Phoenix
 		  /// \returns Number of collected objects.
 		  size_t CollectObjects( const Phoenix::Graphics::CCamera &camera, std::list<CGameObject *> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
 		  ////////////////////
+			/// Collects objects from Octree into list of objects.
+			/// \param frustum Frustumused in culling.
+			/// \param list List where objects are inserted.
+			/// \param tag What TAG is used in comparison.
+			/// \param compare How TAG value is used in comparison. By default, it is not used.
+			/// \returns Number of collected objects.
+			size_t CollectObjects( const Phoenix::Graphics::CFrustum &frustum, std::list<CGameObject *> & list, Phoenix::Core::TAG tag = 0, Phoenix::Core::CTagged::TagCompare compare = Phoenix::Core::CTagged::NOT_USED ) const;
+			////////////////////
 		  /// Collects objects from Octree into list of objects.
 		  /// All objects must should be inherited from CGameObject or provide similar interface
 		  /// ( GetBoundingSphere, GetWorldTransform() ).

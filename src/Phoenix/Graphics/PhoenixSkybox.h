@@ -14,6 +14,7 @@ namespace Phoenix
 {
   namespace Graphics
   {
+  	class COglRenderer;
     /////////////////////////////////////////////////////////////////
     /// Skybox class.
     class PHOENIX_API CSkybox : public Phoenix::Graphics::CRenderableModelShared
@@ -25,6 +26,7 @@ namespace Phoenix
       ////////////////////
       /// Destructor.
       ~CSkybox();
+      void Render( Phoenix::Graphics::COglRenderer & renderer );
     };
   }
 }

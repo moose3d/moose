@@ -1,5 +1,6 @@
 #include "PhoenixSkybox.h"
 #include "PhoenixVertexDescriptor.h"
+#include "PhoenixOGLRenderer.h"
 #include <iostream>
 #include <assert.h>
 /////////////////////////////////////////////////////////////////
@@ -136,6 +137,16 @@ Phoenix::Graphics::CSkybox::CSkybox( )
     // manage actual model
 		g_ModelMgr->Create( pModel, PHOENIX_SKYBOX_MODEL, m_hModel);
   }
+  // Set usually required renderstate.
+  CRenderState & state = GetRenderState();
+  state.AddTextureFilter(T_WRAP_CLAMP_TO_EDGE);
+  state.AddTextureFilter(S_WRAP_CLAMP_TO_EDGE);
+  state.AddTextureFilter(R_WRAP_CLAMP_TO_EDGE);
+  state.AddTextureFilter( MIN_LINEAR );
+  state.AddTextureFilter( MAG_LINEAR );
+  state.GetLighting() = false;
+  state.GetDepthTest() = false;
+  state.GetFaceCulling() = false;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CSkybox::~CSkybox()
@@ -143,3 +154,46 @@ Phoenix::Graphics::CSkybox::~CSkybox()
   
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CSkybox::Render( Phoenix::Graphics::COglRenderer & renderer)
+{
+	Phoenix::Graphics::CCamera & camera = *renderer.GetCurrentCamera();
+	// Get view matrix, reset translation part
+	Phoenix::Math::CMatrix4x4<float> mView = camera.GetViewMatrix();
+	mView(0,3) = 0.0f;
+	mView(1,3) = 0.0f;
+	mView(2,3) = 0.0f;
+
+	glPushMatrix();
+	glLoadTransposeMatrixf( mView.GetArray());
+	CModel *pModel = *GetModelHandle();
+	COglTexture *pTexture = *GetRenderState().GetTextureHandle(0);
+	CIndexArray *pIndices = *pModel->GetIndices();
+	CVertexDescriptor *pTexCoords = *pModel->GetTextureCoordinateHandle(0);
+	CVertexDescriptor *pVertices  = *pModel->GetVertexHandle();
+	renderer.CommitRenderState( GetRenderState() );
+	// draw actual skybox
+	if ( pVertices )  renderer.CommitVertexDescriptor( pVertices );
+	if ( pTexCoords ) renderer.CommitVertexDescriptor( pTexCoords );
+	if ( pTexture )
+	{
+		renderer.CommitTexture( 0, pTexture );
+	  renderer.CommitFilters( GetRenderState().GetTextureFilters(0), pTexture->GetType());
+	}
+	if ( pIndices )   renderer.CommitPrimitive( pIndices );
+
+	renderer.DisableTexture(0, pTexture);
+	renderer.CommitShader( NULL );
+	renderer.DisableCaches();
+	glUseProgram(0);
+	for( int i=0;i<8;i++)
+	{
+		glClientActiveTexture( GL_TEXTURE0 + i);
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY);
+	}
+
+	/////////////////////////////////////////////////////////////////
+	glPopMatrix();
+}
+
+

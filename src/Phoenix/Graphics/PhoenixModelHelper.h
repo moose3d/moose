@@ -39,6 +39,12 @@ namespace Phoenix
       /// \returns On success, zero.
       /// \returns On failure, non-zero.
       int LoadObjData( const char *szFilename );
+      ///////////////////
+      /// Automatically determines which file type given file is.
+      /// \param szFilename File to be loaded.
+      /// \returns On success, zero.
+      /// \retursn On failure, non-zero.
+      int Load( const char *szFilename );
       ////////////////////
       /// Creates CModel object from data that is currently loaded.
       /// \param iFlags Flags that indicate what data should be loaded from renderable - use MS3DDATA_OPTIONS values.
@@ -47,16 +53,9 @@ namespace Phoenix
       /// \returns On success, pointer to CModel object, on failure NULL ptr.
       Phoenix::Graphics::CModel * CreateModel( int iFlags, const char *szGroupName = NULL, bool bInterleaved = false );
       ////////////////////
-      /// Initializes CRenderable object from currently loaded data.
-      /// \attention This function does not add Model itself into ModelManager.
-      /// \warning Color loading is disabled, see constructor. It is not implemented in CRenderable.
-      /// \param szName Renderable name prefix for storing data in resourcemanagers. \attention Actual names are <szName>_vertices, _normals, _indices, _texcoords0, _colors.
-      /// \param rModel CRenderable where data handles are attached to.
-      /// \param lstGroupNames List of group names that are attached to renderable index handles in that order.
-            /// \returns On success, zero.
-      /// \returns On failure, non-zero.
-      //int CreateRenderable( const char * szName, Phoenix::Graphics::CRenderable & rModel, std::list<std::string> & lstGroupNames);
-
+      /// Accesses current model loader.
+      /// \returns Pointer to current model loader.
+      const CModelLoader * GetModelLoader();
       ////////////////////
       /// Clears currently loaded data.
       void Clear();

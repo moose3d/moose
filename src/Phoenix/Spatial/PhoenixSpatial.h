@@ -551,14 +551,14 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Return the right vector.
       /// \return CVector3<float> The vector currently used as local right axis.
-      inline const Phoenix::Math::CVector3<float> & GetRightVector   () const
+      inline const Phoenix::Math::CVector3<float> & GetRightVector  () const
       {
 	return m_vRight;
       }
       /////////////////////////////////////////////////////////////////
       /// Return the up vector.
       /// \return CVector3<float> The vector currently used as local up axis.
-      inline const Phoenix::Math::CVector3<float> & GetUpVector      () const
+      inline const Phoenix::Math::CVector3<float> &GetUpVector      () const
       {
 	return m_vUpward;
       }

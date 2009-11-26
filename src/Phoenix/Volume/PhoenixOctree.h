@@ -73,7 +73,8 @@ namespace Phoenix
       ////////////////////
       /// Removes node from section iSection.
       /// \param iSection Section to be deleted.
-      void DeleteNode( OCTREE_SECTION iSection);
+      // This must not be used, since all nodes go or nothing goes.
+      //void DeleteNode( OCTREE_SECTION iSection);
       ////////////////////
       /// Assigns node into section.
       /// \param iSection Section to be inserted.
@@ -298,7 +299,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode() : CAxisAlignedCube()
 template<typename TYPE>
 Phoenix::Spatial::COctreeNode<TYPE>::~COctreeNode()
 {
-  PHOENIX_DELETE(m_pChildren[TOP_LEFT_FRONT]);
+  /*PHOENIX_DELETE(m_pChildren[TOP_LEFT_FRONT]);
   PHOENIX_DELETE(m_pChildren[TOP_LEFT_BACK]);
   PHOENIX_DELETE(m_pChildren[TOP_RIGHT_FRONT]);
   PHOENIX_DELETE(m_pChildren[TOP_RIGHT_BACK]);
@@ -306,7 +307,7 @@ Phoenix::Spatial::COctreeNode<TYPE>::~COctreeNode()
   PHOENIX_DELETE(m_pChildren[BOTTOM_LEFT_BACK]);
   PHOENIX_DELETE(m_pChildren[BOTTOM_RIGHT_FRONT]);
   PHOENIX_DELETE(m_pChildren[BOTTOM_RIGHT_BACK]);
-
+   */
   m_pNeighbors[TOP] = NULL;
   m_pNeighbors[BOTTOM] = NULL;
   m_pNeighbors[LEFT] = NULL;
@@ -368,12 +369,12 @@ Phoenix::Spatial::COctreeNode<TYPE>::SetChild( Phoenix::Spatial::OCTREE_SECTION 
   m_pChildren[iSection] = pNode;
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-void
-inline Phoenix::Spatial::COctreeNode<TYPE>::DeleteNode( Phoenix::Spatial::OCTREE_SECTION iSection )
-{
-  PHOENIX_DELETE(m_pChildren[iSection]);
-}
+//template<typename TYPE>
+//void
+//inline Phoenix::Spatial::COctreeNode<TYPE>::DeleteNode( Phoenix::Spatial::OCTREE_SECTION iSection )
+//{
+//  PHOENIX_DELETE(m_pChildren[iSection]);
+//}
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
 inline Phoenix::Spatial::COctreeNode<TYPE> **
@@ -465,7 +466,7 @@ Phoenix::Spatial::COctree<TYPE>::COctree( unsigned int nNumLevels, float fWorldS
 template<typename TYPE>
 Phoenix::Spatial::COctree<TYPE>::~COctree()
 {
-  delete [] m_pAllNodes;
+	delete [] m_pAllNodes;
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>

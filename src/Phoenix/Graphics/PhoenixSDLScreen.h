@@ -17,7 +17,7 @@ namespace Phoenix
     class PHOENIX_API CSDLScreenParams
     {
     public:
-
+    	// These need to remain as INTs otherwise scripting fails.
       int m_iRedSize;///< The number of red bits
       int m_iGreenSize;///< The number of green bits
       int m_iBlueSize;///< The number of blue bits

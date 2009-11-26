@@ -78,6 +78,7 @@ namespace Phoenix
       {
 	return m_fHalfHeight;
       }
+      void CreateFrom2DCoords(int iX1, int iY1, int iX2, int iY2 );
       friend std::ostream& operator<<( std::ostream &stream, const CQuad & quad );
     }; // class CQuad
     /////////////////////////////////////////////////////////////////

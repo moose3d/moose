@@ -44,6 +44,12 @@ namespace Phoenix
 									  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const = 0;
       
       virtual Phoenix::Graphics::CIndexArray *	     GetIndexArray( const char *szGroupName = NULL ) const = 0;
+
+      virtual bool  HasTexCoordArray( size_t nTexUnit = 0) const	{ return  ( m_pTexCoords != NULL); }
+      virtual bool  HasColorArray() const  											 	{ return  ( m_pPositions != NULL); }
+      virtual bool  HasNormalArray() const 												{ return  ( m_pNormals   != NULL); }
+      virtual bool  HasVertexArray() const 												{ return  ( m_pColors    != NULL); }
+      virtual bool  HasIndexArray() const  												{ return  ( m_pIndices   != NULL); }
     };
   }
 }

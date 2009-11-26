@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixResourceManager.h"
 #include "PhoenixAPI.h"
-#include <vector>
+#include <list>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -57,9 +57,9 @@ namespace Phoenix
     class PHOENIX_API CObjectUpdater
     {
     protected:
-      typedef std::vector< IHandlerBase * > UpdateableVector;
+      typedef std::list< IHandlerBase * > UpdateableList;
       /// Holds all handles to updateable objects
-      UpdateableVector m_vecUpdateables;
+      UpdateableList m_lstUpdateables;
     public:
 
       ////////////////////
@@ -82,7 +82,7 @@ template<class TYPE>
 inline void
 Phoenix::Core::CObjectUpdater::Manage( const Phoenix::Core::CHandle<TYPE> &hResource )
 {
-  m_vecUpdateables.push_back( new CUpdateableObjectHandler<TYPE>(hResource) );
+  m_lstUpdateables.push_back( new CUpdateableObjectHandler<TYPE>(hResource) );
 }
 /////////////////////////////////////////////////////////////////
 #endif

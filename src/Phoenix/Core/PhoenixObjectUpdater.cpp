@@ -2,23 +2,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 Phoenix::Core::CObjectUpdater::~CObjectUpdater()
 {
-  for(size_t n=0;n<m_vecUpdateables.size();n++)
+  while( m_lstUpdateables.empty() == false )
   {
-    delete m_vecUpdateables[n];
+  	IHandlerBase * pTmp = m_lstUpdateables.front();
+		m_lstUpdateables.pop_front();
+  	delete pTmp;
   }
-  m_vecUpdateables.clear();
+
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
 Phoenix::Core::CObjectUpdater::Update( float fSecondsPassed  )
 {
-  UpdateableVector::iterator it = m_vecUpdateables.begin();
-  while( it != m_vecUpdateables.end() )
+  UpdateableList::iterator it = m_lstUpdateables.begin();
+  while( it != m_lstUpdateables.end() )
   {
 	if ( (*it)->IsNull())
     {
       delete (*it);
-      it = m_vecUpdateables.erase(it);
+      it = m_lstUpdateables.erase(it);
     }
     else
     {
@@ -32,6 +34,6 @@ Phoenix::Core::CObjectUpdater::Update( float fSecondsPassed  )
 size_t 
 Phoenix::Core::CObjectUpdater::GetUpdateableCount() const
 {
-  return m_vecUpdateables.size();
+  return m_lstUpdateables.size();
 }
 ////////////////////////////////////////////////////////////////////////////////

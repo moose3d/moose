@@ -1,5 +1,7 @@
 #include "PhoenixGlobals.h"
 #include "PhoenixDDSImage.h"
+#include "PhoenixLogger.h"
+#include "PhoenixDefaultEntities.h"
 #include <iostream>
 #include <cstring>
 /////////////////////////////////////////////////////////////////
@@ -53,30 +55,30 @@ Phoenix::Graphics::CDDSImage::Load( const char *szFilename )
   case FOURCC_DXT1:
     m_Format = DDS_FORMAT_DXT1;
     iMipmapFactor = 2;
-    cerr << "we got DXT1" << endl;
+    //cerr << "we got DXT1" << endl;
     break;
   case FOURCC_DXT3:
     m_Format = DDS_FORMAT_DXT3;
     iMipmapFactor = 4;
-    cerr << "we got DXT3" << endl;
+    //cerr << "we got DXT3" << endl;
     break;
   case FOURCC_DXT5:
     m_Format = DDS_FORMAT_DXT5;
     iMipmapFactor = 4;
-    cerr << "we got DXT5" << endl;
+    //cerr << "we got DXT5" << endl;
     break;
   case FOURCC_DXT4:
     m_Format = DDS_FORMAT_DXT4;
     iMipmapFactor = 4;
-    cerr << "we got DXT4" << endl;
+    //cerr << "we got DXT4" << endl;
     break;
   case FOURCC_DXT2:
     m_Format = DDS_FORMAT_DXT2;
     iMipmapFactor = 4;
-    cerr << "we got DXT2" << endl;
+    //cerr << "we got DXT2" << endl;
     break;
   default:
-    cerr << "Uh-oh, we got " << FOURCC(ddsd.ddpfPixelFormat.dwFourCC) << endl;
+    g_Error << "Uh-oh, we got " << FOURCC(ddsd.ddpfPixelFormat.dwFourCC) << endl;
     iRetval = IMG_ERR_BAD_FORMAT;
     goto cleanup;
     break;

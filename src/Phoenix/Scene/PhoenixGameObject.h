@@ -19,6 +19,14 @@ namespace Phoenix
 {
   namespace Scene
   {
+  	/////////////////////////////////////////////////////////////////
+  	enum Tags {
+  		NOT_TAGGED, 	///!< Default.
+  		LIGHT_TAG = 1,  	///!< Lights have their own tags
+  		COLLIDER_TAG = 2, ///!< Areas that are used only for collision checking.
+  		USER_TAG = 4     ///!< First allowed user-specified tag value.
+  	};
+  	/////////////////////////////////////////////////////////////////
   	class CSpatialGraph;
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
@@ -29,7 +37,8 @@ namespace Phoenix
 																		public Phoenix::Core::CNamed,
 																		public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
 																		public Phoenix::AI::CAIObject,
-																		public Phoenix::Core::IUpdateable
+																		public Phoenix::Core::IUpdateable,
+																		public Phoenix::Core::CEnableable
 		{
     protected:
 

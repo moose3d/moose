@@ -35,7 +35,7 @@ Phoenix::Graphics::CRenderableProperty::InitializeRenderables( size_t nLodLevels
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CRenderableModelShared *
-Phoenix::Graphics::CRenderableProperty::AddRenderableModel( const char *szResourceName, size_t nLodLevel, bool bInterleaved, Phoenix::Math::CTransform *pWorldTransform  )
+Phoenix::Graphics::CRenderableProperty::AddRenderableModel( const char *szResourceName, size_t nLodLevel, Phoenix::Math::CTransform *pWorldTransform  )
 {
   // Create renderable
   CRenderableModelShared *pRenderable = new CRenderableModelShared();
@@ -101,5 +101,19 @@ const Phoenix::Graphics::RenderableList &
 Phoenix::Graphics::CRenderableProperty::GetLights() const
 {
 	return m_lstLights;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CRenderable *
+Phoenix::Graphics::CRenderableProperty::GetRenderableById( size_t nLod, int iId )
+{
+	// sanity check for lod level
+	if ( nLod >= GetNumLodLevels() ) return NULL;
+	// Check objects from given lod.
+	RenderableList::iterator it = GetRenderableObjects(nLod).begin();
+	for ( ; it != GetRenderableObjects(nLod).end(); it++ )
+	{
+		if ( (*it)->GetId() == iId ) return *it;
+	}
+	return NULL;
 }
 /////////////////////////////////////////////////////////////////

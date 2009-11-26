@@ -13,11 +13,26 @@ using namespace Phoenix::Spatial;
 using std::ostringstream;
 using std::string;
 /////////////////////////////////////////////////////////////////
-void
-CreateModelUsingLoader( CModelLoader * pLoader, int iFlags, const char **aszGroupNames, bool bInterleaved, float fScaling )
+const CModelLoader *
+Phoenix::Data::CModelHelper::GetModelLoader()
 {
+	return m_pLoader;
+}
+/////////////////////////////////////////////////////////////////
+int
+Phoenix::Data::CModelHelper::Load( const char *szFilename  )
+{
+	if ( Phoenix::Data::CMilkshapeLoader::IsMilkshapeFile(szFilename ) )
+	{
+		return g_ModelHelper->LoadMilkshapeData(szFilename);
+	}
 
-
+	int len = strlen(szFilename);
+	if ( (len > 4) && (strcasestr( ".obj", szFilename-4 ) != 0) )
+	{
+		return g_ModelHelper->LoadObjData( szFilename );
+	}
+	else return 1;
 }
 /////////////////////////////////////////////////////////////////
 int
@@ -92,13 +107,13 @@ Phoenix::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, b
 	    assert( g_DefaultVertexManager->Create(m_pLoader->GetVertexArray(m_fScale),  g_UniqueName, pModel->GetVertexHandle() ) == 0);
 
 	    /* load vertex normals */
-	    if ( iFlags & OPT_VERTEX_NORMALS && m_pLoader->GetNormalArray() )
+	    if ( iFlags & OPT_VERTEX_NORMALS && m_pLoader->HasNormalArray() )
 	    {
 	      /* Create normal handle */
 	      assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormalArray(), g_UniqueName, pModel->GetNormalHandle()) == 0);
 	    }
 	    /* load texture coordinates */
-	    if ( iFlags & OPT_VERTEX_TEXCOORDS && m_pLoader->GetTexCoordArray())
+	    if ( iFlags & OPT_VERTEX_TEXCOORDS && m_pLoader->HasTexCoordArray())
 	    {
 	      /* Create texcoord handle */
 	      assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoordArray(), g_UniqueName, pModel->GetTextureCoordinateHandle(0)) == 0);
