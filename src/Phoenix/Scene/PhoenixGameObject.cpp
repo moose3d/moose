@@ -22,6 +22,7 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0),
 {
         m_pCollider = this;
         SetEnabled(true); // by default, each object is active
+        SetColliderTransform( & GetWorldTransform() ); // collider tracks world transform
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -81,11 +82,14 @@ Phoenix::Scene::CGameObject::Intersects( const Phoenix::Collision::ICollider & c
 Phoenix::Volume::CSphere
 Phoenix::Scene::CGameObject::GetWorldBoundingSphere() const
 {
-	CVector3<float> vTmp;
-	Transform( GetBoundingSphere().GetPosition(),
+	//CVector3<float> vTmp;
+
+	/*Transform( GetBoundingSphere().GetPosition(),
 				const_cast<Phoenix::Math::CTransform &>(GetWorldTransform()).GetMatrix(),
-				vTmp );
-	return Phoenix::Volume::CSphere( vTmp, GetBoundingSphere().GetRadius() );
+				vTmp );*/
+
+	return Phoenix::Volume::CSphere( GetBoundingSphere().GetPosition() +GetWorldTransform().GetTranslation(),
+																	 GetBoundingSphere().GetRadius() );
 }
 ////////////////////////////////////////////////////////////////////////////////
 void

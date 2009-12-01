@@ -8,6 +8,8 @@
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixSDLScreen.h"
+#include <PhoenixMathGeometry.h>
+#include "PhoenixCollision.h"
 #include <SDL.h>
 #include <string>
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +21,7 @@ using namespace Phoenix::Scene;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Window;
+using namespace Phoenix::Collision;
 ///////////////////////////////////////////////////////////////////////////////
 //
 // We use regular functions instead of static member functions to reduce dependencies.
@@ -31,17 +34,26 @@ SCRIPT_CMD_DECL( GetObjectName );  ///!< Returns name of gameobject where script
 SCRIPT_CMD_DECL( GetObjVar );    /// Retrieves a global variable from an object.
 SCRIPT_CMD_DECL( SetObjVar );    /// Assings a global variable of an object.
 SCRIPT_CMD_DECL( GetPosition );  /// Returns world position from transform
+SCRIPT_CMD_DECL( GetRotation ); /// Returns world rotation from transform.
+
+SCRIPT_CMD_DECL( GetRotationLocal ); /// Returns local rotation from transform.
+SCRIPT_CMD_DECL( SetRotationLocal );  /// Sets rotation quaternion in local coordinates.
+SCRIPT_CMD_DECL( SetPositionLocal );
 SCRIPT_CMD_DECL( GetPositionLocal );  /// Returns local position from transform
+SCRIPT_CMD_DECL( GetObjectPosition );  /// Returns position of a gameobject.
+SCRIPT_CMD_DECL( GetForwardVector );   /// Returns direction of forward vector in world coordinates.
+SCRIPT_CMD_DECL( GetRightVector );   /// Returns direction of right vector in world coordinates.
+SCRIPT_CMD_DECL( GetUpVector );   /// Returns direction of up vector in world coordinates.
+SCRIPT_CMD_DECL( Move );
+SCRIPT_CMD_DECL( SetPosition );
+SCRIPT_CMD_DECL( MoveLocal );
 SCRIPT_CMD_DECL( CreateModelFromFile );    /// Attempts to Load a model from given file, and if successful, manage it.
 SCRIPT_CMD_DECL( LoadTexture2D );  /// Attempts to Load a texture from given file and manage it.
 SCRIPT_CMD_DECL( LoadTextureCube ); // attempts to create a cube texture from given textures and manage it.
 //SCRIPT_CMD_DECL( SetModelTexture ); /// Assigns texture to renderable model by resource name.
 //SCRIPT_CMD_DECL( ResetModelTexture ); /// Assigns texture to renderable model by resource name.
 SCRIPT_CMD_DECL( UseModel );          /// Assigns model handle according to name.
-SCRIPT_CMD_DECL( Move );
-SCRIPT_CMD_DECL( SetPosition );
-SCRIPT_CMD_DECL( MoveLocal );
-SCRIPT_CMD_DECL( SetPositionLocal );
+
 SCRIPT_CMD_DECL( ComputeBoundingSphere );
 SCRIPT_CMD_DECL( ComputeBoundingBox );
 SCRIPT_CMD_DECL( UseBoxCollider );
@@ -72,6 +84,8 @@ SCRIPT_CMD_DECL( SetEnabled );     // sets gameobject enabled or disabled.
 SCRIPT_CMD_DECL( RotationFromAxisAngles ); // returns Quaternion formed from rotations over axis angles x,y,z.
 SCRIPT_CMD_DECL( GetScreenParams );        // returns Screen parameters currently stored as a key-value list.
 SCRIPT_CMD_DECL( LoadShader );             // Loads shader from file(s) and manages it under shadermanager.
+SCRIPT_CMD_DECL( GetObjectPlane );
+SCRIPT_CMD_DECL( RayPlaneCollision );      // returns point where given ray and plane collide.
 ///////////////////////////////////////////////////////////////////////////////
 /// User versions are slightly different from what is used in here.
 #ifdef CREATE_CMD
@@ -133,6 +147,13 @@ Phoenix::AI::CAIObject::LoadScript()
 
 }
 /////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIObject::HasCommand( const char *szName )
+{
+	if ( m_pAIScript ) return m_pAIScript->HasCommand( szName );
+	else return false;
+}
+/////////////////////////////////////////////////////////////////
 void
 Phoenix::AI::CAIObject::ReloadScript()
 {
@@ -185,6 +206,14 @@ Phoenix::AI::CAIObject::RegisterCommands()
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool
+Phoenix::AI::CAIScript::HasCommand( const char *szName )
+{
+	Tcl_CmdInfo info;
+	if ( Tcl_GetCommandInfo( m_pInterp, szName, &info ) == 0 ) return false;
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////
 void
 Phoenix::AI::CAIScript::RegisterCommands()
 {
@@ -222,14 +251,21 @@ Phoenix::AI::CAIScript::RegisterCommands()
   CREATE_CMD( CreateInterleavedResource );// Creates interleaved array resource from current model data
   CREATE_CMD( BroadcastMessage );
   CREATE_CMD( LoadShader );
+  CREATE_CMD( GetObjectPosition );
+  CREATE_CMD( RayPlaneCollision );
   // Register commands with GameObject clientData param
   if ( m_pEntity->GetGameObject() != NULL )
   {
     CREATE_CMD_PTR( GetPosition, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( GetRotation, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( GetRotationLocal, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( SetRotationLocal, m_pEntity->GetGameObject() );
     CREATE_CMD_PTR( Move, m_pEntity->GetGameObject()  );
     CREATE_CMD_PTR( SetPosition, m_pEntity->GetGameObject()  );
+
     CREATE_CMD_PTR( GetPositionLocal, m_pEntity->GetGameObject() );
-		CREATE_CMD_PTR( MoveLocal, m_pEntity->GetGameObject()  );
+    CREATE_CMD_PTR( SetPositionLocal, m_pEntity->GetGameObject() );
+    CREATE_CMD_PTR( MoveLocal, m_pEntity->GetGameObject()  );
 		CREATE_CMD_PTR( SetPositionLocal, m_pEntity->GetGameObject()  );
 		CREATE_CMD_PTR( UseBoxCollider, m_pEntity->GetGameObject()  );
 		CREATE_CMD_PTR( UseSphereCollider, m_pEntity->GetGameObject()  );
@@ -238,7 +274,10 @@ Phoenix::AI::CAIScript::RegisterCommands()
     CREATE_CMD_PTR( SetRenderState, m_pEntity->GetGameObject() );
     CREATE_CMD_PTR( SetVisible, m_pEntity->GetGameObject() );
     CREATE_CMD_PTR( SetEnabled, m_pEntity->GetGameObject() );
-
+    CREATE_CMD_PTR( GetForwardVector, m_pEntity->GetGameObject() );   /// Returns direction of forward vector in world coordinates.
+    CREATE_CMD_PTR( GetRightVector,   m_pEntity->GetGameObject() );   /// Returns direction of right vector in world coordinates.
+    CREATE_CMD_PTR( GetUpVector,      m_pEntity->GetGameObject() );   /// Returns direction of up in world coordinates.
+    CREATE_CMD_PTR( GetObjectPlane, m_pEntity->GetGameObject());
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -551,7 +590,7 @@ SCRIPT_CMD_IMPL( GetPosition )
   pValues[1] = Tcl_NewDoubleObj( vTmp[1] );
   pValues[2] = Tcl_NewDoubleObj( vTmp[2] );
 
-  Tcl_Obj *pVec = Tcl_NewListObj( 0, pValues );
+  Tcl_Obj *pVec = Tcl_NewListObj( 3, pValues );
   Tcl_FreeResult( pInterp );
   Tcl_SetObjResult( pInterp, pVec );
 
@@ -568,7 +607,7 @@ SCRIPT_CMD_IMPL( GetPositionLocal )
   pValues[1] = Tcl_NewDoubleObj( vTmp[1] );
   pValues[2] = Tcl_NewDoubleObj( vTmp[2] );
   
-  Tcl_Obj *pVec = Tcl_NewListObj( 0, pValues );
+  Tcl_Obj *pVec = Tcl_NewListObj( 3, pValues );
   Tcl_FreeResult( pInterp );
   Tcl_SetObjResult( pInterp, pVec );
 
@@ -797,6 +836,29 @@ SCRIPT_CMD_IMPL( LoadTextureCube )
 	}
 
 	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+int
+ParseRay( Tcl_Interp *pInterp, NameObjMap & rayParam, CRay & ray )
+{
+	bool bHasDir = false;
+	bool bHasOrigin = false;
+	if ( MAP_HAS(rayParam, ".dir") )
+	{
+		CVector3<float> vTmp;
+		SCRIPT_GET_FLOAT_VECP( rayParam[".dir"], 3, vTmp );
+		ray.SetDirection(vTmp);
+		bHasDir = true;
+	}
+	if ( MAP_HAS(rayParam, ".origin") )
+	{
+		CVector3<float> vTmp;
+		SCRIPT_GET_FLOAT_VECP( rayParam[".origin"],3, vTmp );
+		ray.SetPosition(vTmp);
+		bHasOrigin = true;
+	}
+	if ( (bHasOrigin && bHasDir) == false ) return TCL_ERROR;
+	else return TCL_OK;
 }
 /////////////////////////////////////////////////////////////////
 int
@@ -1495,6 +1557,133 @@ SCRIPT_CMD_IMPL( GetObjectName )
 		SCRIPT_RESULT( pObj->GetName().c_str());
 	}
 	else SCRIPT_ERROR("Script not ran in gameobject.");
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetObjectPosition )
+{
+	CHECK_ARGS(1, "objectName");
+	const char *szName = SCRIPT_GET_STR(1);
+	CGameObject *pObj = g_ObjectMgr->GetResource( szName );
+	if  ( pObj == NULL )
+	{
+		ostringstream s;
+		s << "No such object '" << szName << "'";
+		SCRIPT_ERROR(s.str().c_str());
+	}
+	SCRIPT_RESULT_FLOAT_VECP( 3, pObj->GetWorldTransform().GetTranslation() );
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetRotation )
+{
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	if ( pObj )
+	{
+		SCRIPT_RESULT_FLOAT_VECP( 4, pObj->GetWorldTransform().GetRotation());
+	}
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetRotationLocal )
+{
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	if ( pObj == NULL ) SCRIPT_ERROR("Not a gameobject");
+
+	SCRIPT_RESULT_FLOAT_VECP( 4, pObj->GetLocalTransform().GetRotation());
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetRotationLocal )
+{
+	CHECK_ARGS(1, "{ x y z w }")
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+
+	if ( pObj == NULL ) SCRIPT_ERROR("Not a gameobject.");
+
+	CQuaternion q;
+	SCRIPT_GET_FLOAT_VEC(1,4,q);
+	pObj->GetLocalTransform().SetRotation( q );
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetForwardVector)
+{
+
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	if ( pObj == NULL ) SCRIPT_ERROR("Not a gameobject.");
+
+
+
+	const CMatrix4x4<float> & m = pObj->GetWorldTransform().GetMatrix();
+	CVector3<float> vVec( m(0,2), m(1,2), m(2,2));
+	SCRIPT_RESULT_FLOAT_VECP( 3, vVec);
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetRightVector)
+{
+
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	if ( pObj == NULL ) SCRIPT_ERROR("Not a gameobject.");
+
+
+
+	const CMatrix4x4<float> & m = pObj->GetWorldTransform().GetMatrix();
+	CVector3<float> vVec( m(0,0), m(1,0), m(2,0));
+	SCRIPT_RESULT_FLOAT_VECP( 3, vVec);
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetUpVector)
+{
+
+	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
+	if ( pObj == NULL ) SCRIPT_ERROR("Not a gameobject.");
+
+	const CMatrix4x4<float> & m = pObj->GetWorldTransform().GetMatrix();
+	CVector3<float> vVec( m(0,1), m(1,1), m(2,1) );
+	SCRIPT_RESULT_FLOAT_VECP( 3, vVec);
+
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( GetObjectPlane )
+{
+	CHECK_ARGS(1,"objectName");
+	const char *szName = SCRIPT_GET_STR(1);
+	CGameObject *pObj = g_ObjectMgr->GetResource(szName);
+	if ( pObj == NULL )
+	{
+		ostringstream s;
+		s << "No such object '" << szName << "'";
+		SCRIPT_ERROR(s.str().c_str());
+	}
+	/// distance = -(normal · point), and since 0,1,0 and position, we take a shortcut.
+	CPlane p( 0, 1, 0, -pObj->GetWorldTransform().GetTranslation()[1]);
+	SCRIPT_RESULT_FLOAT_VECP( 4, p );
+	return TCL_OK;
+}
+///////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( RayPlaneCollision )
+{
+	CHECK_ARGS(2, "ray plane");
+
+	CRay ray;
+	NameObjMap rayParam;
+	if ( ParseKeyValueMap(pInterp, rayParam, objv[1]) != TCL_OK ) return TCL_ERROR;
+	if ( ParseRay( pInterp, rayParam, ray) != TCL_OK ) SCRIPT_ERROR("Invalid ray parameters.");
+	CPlane plane;
+	SCRIPT_GET_FLOAT_VEC( 2, 4, plane );
+	CVector3<float> vPos;
+	RayIntersectsPlane( plane, ray, vPos);
+	SCRIPT_RESULT_FLOAT_VECP( 3, vPos);
 	return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////

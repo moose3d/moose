@@ -15,6 +15,12 @@ namespace prefix = Phoenix::Scene;
 prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
 {
 	SetEnabled(true);
+	m_bSceneHasKeyUp = false;
+	m_bSceneHasKeyDown = false;
+	m_bSceneHasMouseDown = false;
+	m_bSceneHasMouseUp = false;
+	m_bSceneHasMouseMotion = false;
+	m_bHasQuit = false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CApplication::~CApplication()
@@ -37,6 +43,9 @@ prefix::CApplication::Init()
 		}
 		g_ObjectMgr->Create(this, GetName());
 		CGameObject::Init();
+
+		m_bHasQuit 									= HasCommand("OnQuit");
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CScene *
@@ -51,6 +60,21 @@ prefix::CApplication::SetCurrentScene( const std::string & name )
 	SceneMap::iterator it = m_mapScenes.find( name );
 	if ( it != m_mapScenes.end() ) m_pCurrentScene = it->second;
 	else m_pCurrentScene = NULL;
+	CheckSceneInputs();
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+prefix::CApplication::CheckSceneInputs()
+{
+	if ( m_pCurrentScene == NULL ) return;
+
+	m_bSceneHasKeyUp 						= m_pCurrentScene->HasCommand("OnKeyUp");
+	m_bSceneHasKeyDown 					= m_pCurrentScene->HasCommand("OnKeyDown");
+	m_bSceneHasMouseDown 				= m_pCurrentScene->HasCommand("OnMouseDown");
+	m_bSceneHasMouseUp 					= m_pCurrentScene->HasCommand("OnMouseUp");
+	m_bSceneHasMouseMotion 			= m_pCurrentScene->HasCommand("OnMouseMotion");
+
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -97,7 +121,7 @@ prefix::CApplication::ProcessInput()
 			{
 				ostringstream s;
 				s << "OnKeyUp " << SDL_GetKeyName(event.key.keysym.sym);
-				scene.EnqueueMessage(s.str().c_str(), false );
+				scene.EnqueueMessage(s.str().c_str(), m_bSceneHasKeyUp );
 			}
 			break;
 			case SDL_KEYDOWN:
@@ -105,7 +129,7 @@ prefix::CApplication::ProcessInput()
 				ostringstream s;
 				s << "OnKeyDown "
 					<< SDL_GetKeyName(event.key.keysym.sym);
-				scene.EnqueueMessage(s.str().c_str(), false );
+				scene.EnqueueMessage(s.str().c_str(), m_bSceneHasKeyDown );
 			}
 			break;
 			case SDL_MOUSEMOTION:
@@ -114,7 +138,7 @@ prefix::CApplication::ProcessInput()
 				s << "OnMouseMotion "
 					<< event.motion.x << " "
 					<< event.motion.y;
-				scene.EnqueueMessage( s.str().c_str(), false );
+				scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseMotion );
 			}
 			break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -124,7 +148,7 @@ prefix::CApplication::ProcessInput()
 					<< (unsigned int)event.button.button << " "
 					<< event.button.x 		 << " "
 					<< event.button.y;
-				scene.EnqueueMessage( s.str().c_str(), false );
+				scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseDown );
 			}
 			break;
 			case SDL_MOUSEBUTTONUP:
@@ -134,11 +158,11 @@ prefix::CApplication::ProcessInput()
 					<< (unsigned int)event.button.button << " "
 					<< event.button.x 		 << " "
 					<< event.button.y;
-				scene.EnqueueMessage( s.str().c_str(), false );
+				scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseUp );
 			}
 			break;
 			case SDL_QUIT:
-				this->EnqueueMessage( "OnQuit", false );
+				this->EnqueueMessage( "OnQuit", m_bHasQuit );
 				break;
 		}
 	}

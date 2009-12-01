@@ -24,12 +24,17 @@ namespace Phoenix
 			Phoenix::Scene::CScene *				m_pCurrentScene; 		///!< For faster access.
 			Phoenix::Graphics::COglRenderer m_Renderer;					///!< This is usually needed. :)
 			Phoenix::Core::CTimer 					m_Timer;						///!< Main timer.
-
+			bool 				m_bSceneHasKeyUp;
+			bool				m_bSceneHasKeyDown;
+			bool 				m_bSceneHasMouseDown;
+			bool 				m_bSceneHasMouseUp;
+			bool 				m_bSceneHasMouseMotion;
+			bool 				m_bHasQuit;
 		protected:
 
 			void 		  			 SetCurrentScene( Phoenix::Scene::CScene *pScene );
 			void      			 ProcessInput();
-
+			void 						 CheckSceneInputs();
 		public:
 
 			CApplication();

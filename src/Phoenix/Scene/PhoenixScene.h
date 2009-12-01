@@ -28,14 +28,17 @@ namespace Phoenix
 			Phoenix::Scene::GameObjectList	m_lstGameObjects; 	///!< Temporary collection of visible gameobjects.
 			Phoenix::Scene::GameObjectList	m_lstActiveLights;	///!< Temporary list of visible lights within frustum.
 			RenderQueue											m_RenderQueue; 			///!< Renderqueue for this camera.
-
+			bool														m_bColliderRendering;  /// Should colliders be rendered for game objects.
 		public:
-
+			CCameraProperty( ) :m_bColliderRendering(false) { }
 			Phoenix::Scene::CCameraObject *     GetCamera() { return m_pCamera; }
 			void													   SetCamera( Phoenix::Scene::CCameraObject* pCamera ) { m_pCamera = pCamera; }
 			Phoenix::Scene::GameObjectList & GetGameObjectList() { return m_lstGameObjects; }
 			Phoenix::Scene::GameObjectList & GetActiveLights() 	{ return m_lstActiveLights; }
 			RenderQueue										 & GetRenderQueue() { return m_RenderQueue; }
+			void															SetColliderRendering( bool bFlag ) { m_bColliderRendering = bFlag; }
+			bool															IsColliderRendering() const { return m_bColliderRendering; }
+
 		}; // CCameraProperty
 		///////////////////////////////////////////////////////////////////////////////
 		typedef std::map<const std::string, CCameraProperty *> 				 CameraMap;

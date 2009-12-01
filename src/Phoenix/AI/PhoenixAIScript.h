@@ -8,6 +8,11 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+	namespace Math
+	{
+		class CRay;
+
+	}
   namespace Scene
   {
     class CGameObject;
@@ -50,6 +55,7 @@ namespace Phoenix
       bool   GetGlobalVar( const std::string & varName, int & value );
       bool   GetGlobalVar( const std::string & varName, float & value );
       bool   GetGlobalVar( const std::string & varName, std::string & value );
+      bool	 HasCommand( const char *szName );
       //////////////////////
       /// Overwrite this to create new commands.
       virtual void RegisterUserCommands() {}
@@ -94,6 +100,7 @@ namespace Phoenix
       bool   GetGlobalVar( const std::string & varName, int & value );
       bool   GetGlobalVar( const std::string & varName, float & value );
       bool   GetGlobalVar( const std::string & varName, std::string & value );
+      bool	 HasCommand( const char *szName );
     };
   } // AI
 } // Phoenix
@@ -282,6 +289,8 @@ namespace Phoenix
 ///////////////////////////////////////////////////////////////////////////////
 typedef std::map<std::string, Tcl_Obj *> NameObjMap;
 ///////////////////////////////////////////////////////////////////////////////
+int
+ParseRay( Tcl_Interp *pInterp, NameObjMap & rayParam, Phoenix::Math::CRay & ray );
 ///////////////////////////////////////////////////////////////////////////////
 inline int
 ParseKeyValueMap( Tcl_Interp *pInterp,

@@ -237,11 +237,23 @@ Phoenix::Scene::CScene::Render( COglRenderer & renderer )
 		m_PreRenderQueue.Render( renderer );          // before scene objects
 		prop.GetRenderQueue().Render( renderer );     // scene objects
 		m_PostObjectRenderQueue.Render( renderer );   // after scene objects
-		m_PreGUIRenderQueue.Render( renderer );       // before GUI
-                                                  // GUI
-		m_PostGUIRenderQueue.Render( renderer );      // After GUI
+
+		if ( prop.IsColliderRendering() ) // For collider rendering.
+		{
+			renderer.CommitShader( NULL );
+			renderer.DisableCaches();
+			for( GameObjectList::iterator it = prop.GetGameObjectList().begin();
+					it != prop.GetGameObjectList().end(); it++)
+			{
+				(*it)->GetCollider()->Render( renderer );
+			}
+		}
 		//g_Log << "Num of renderables: " << prop.GetRenderQueue().GetObjectList().size() << endl;
 	}
+	m_PreGUIRenderQueue.Render( renderer );       // before GUI
+	                                                  // GUI
+	m_PostGUIRenderQueue.Render( renderer );      // After GUI
+
 	renderer.Finalize();
 	CSDLScreen::GetInstance()->SwapBuffers();
 	// for each camera do
@@ -421,6 +433,8 @@ SCRIPT_CMD_DECL( ElevateCamera );
 SCRIPT_CMD_DECL( StrafeCamera );
 SCRIPT_CMD_DECL( GetCameraPosition );
 SCRIPT_CMD_DECL( SetCameraPosition );
+SCRIPT_CMD_DECL( SetCameraColliderRendering ); ///!< Enables / disables collider rendering for given camera.
+SCRIPT_CMD_DECL( ToggleCameraColliderRendering ); ///!< Enables / disables collider rendering for given camera.
 SCRIPT_CMD_DECL( StopCamera );
 SCRIPT_CMD_DECL( TrackballRotate );
 SCRIPT_CMD_DECL( ZoomCamera );
@@ -456,7 +470,8 @@ Phoenix::Scene::CScene::RegisterUserCommands()
 	CREATE_CMD_PTR( Destroy, this );
 	CREATE_CMD_PTR( SetParent, this );
 	CREATE_CMD_PTR( ResetParent, this );
-
+	CREATE_CMD_PTR( SetCameraColliderRendering, this);
+	CREATE_CMD_PTR( ToggleCameraColliderRendering, this);
 }
 ///////////////////////////////////////////////////////////////////////////////
 int
@@ -714,29 +729,6 @@ SCRIPT_CMD_IMPL( CameraCreateRay )
 	if ( Tcl_ListObjAppendElement( pInterp, pList, pOrigin) != TCL_OK ) return TCL_ERROR;
 	Tcl_SetObjResult( pInterp, pList );
 	return TCL_OK;
-}
-///////////////////////////////////////////////////////////////////////////////
-int
-ParseRay( Tcl_Interp *pInterp, NameObjMap & rayParam, CRay & ray )
-{
-	bool bHasDir = false;
-	bool bHasOrigin = false;
-	if ( MAP_HAS(rayParam, ".dir") )
-	{
-		CVector3<float> vTmp;
-		SCRIPT_GET_FLOAT_VECP( rayParam[".dir"], 3, vTmp );
-		ray.SetDirection(vTmp);
-		bHasDir = true;
-	}
-	if ( MAP_HAS(rayParam, ".origin") )
-	{
-		CVector3<float> vTmp;
-		SCRIPT_GET_FLOAT_VECP( rayParam[".origin"],3, vTmp );
-		ray.SetPosition(vTmp);
-		bHasOrigin = true;
-	}
-	if ( (bHasOrigin && bHasDir) == false ) return TCL_ERROR;
-	else return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_IMPL( RayCast )
@@ -1057,6 +1049,39 @@ SCRIPT_CMD_IMPL( ResetParent )
 
 	pObj->Reparent( reinterpret_cast<CScene *>(clientData)->GetTransformGraph().GetRoot()->GetTransformable());
 
+	return TCL_OK;
+}
+////////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( SetCameraColliderRendering )
+{
+	CHECK_ARGS(2, "cameraName boolean");
+	const char *szCamera = SCRIPT_GET_STR(1);
+	int bEnabled = 0;
+	SCRIPT_GET_INT( 2, bEnabled );
+	CCameraProperty *pProp = reinterpret_cast<CScene *>(clientData)->GetCameraProperty(string(szCamera));
+	if ( pProp == NULL )
+	{
+		ostringstream s;
+		s << "No such camera '" << szCamera << "'";
+		SCRIPT_ERROR( s.str().c_str() );
+	}
+	pProp->SetColliderRendering( bEnabled );
+	return TCL_OK;
+}
+////////////////////////////////////////////////////////////////////////////////
+SCRIPT_CMD_IMPL( ToggleCameraColliderRendering )
+{
+	CHECK_ARGS(1, "cameraName");
+	const char *szCamera = SCRIPT_GET_STR(1);
+
+	CCameraProperty *pProp = reinterpret_cast<CScene *>(clientData)->GetCameraProperty(string(szCamera));
+	if ( pProp == NULL )
+	{
+		ostringstream s;
+		s << "No such camera '" << szCamera << "'";
+		SCRIPT_ERROR( s.str().c_str() );
+	}
+	pProp->SetColliderRendering( ! pProp->IsColliderRendering() );
 	return TCL_OK;
 }
 ////////////////////////////////////////////////////////////////////////////////
