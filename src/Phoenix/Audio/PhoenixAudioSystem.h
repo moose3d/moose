@@ -8,7 +8,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #endif
-#include "PhoenixCore.h"
+#include "PhoenixSingleton.h"
 #include "PhoenixListener.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ namespace Phoenix
     public:
       /// Attempts to open device.
       /// \param szDevice Device name or path.
-      /// \returns true, if successful. 
+      /// \returns true, if successful.
       /// \returns false on failure.
       bool OpenDevice ( const char *szDevice = NULL );
       ////////////////////
@@ -39,8 +39,8 @@ namespace Phoenix
   }
 }
 /////////////////////////////////////////////////////////////////
-#define g_AudioManager  ( CAudioSystem::GetInstance()) 
-#define g_StreamManager ( Phoenix::Core::CResourceManager<CALStreamSample, CHandle<CALStreamSample> >::GetInstance()) 
-#define g_SampleManager ( Phoenix::Core::CResourceManager<CALSample, CHandle<CALSample> >::GetInstance()) 
+#define g_AudioManager  ( CAudioSystem::GetInstance())
+#define g_StreamManager ( Phoenix::Core::CResourceManager<CALStreamSample, CHandle<CALStreamSample> >::GetInstance())
+#define g_SampleManager ( Phoenix::Core::CResourceManager<CALSample, CHandle<CALSample> >::GetInstance())
 /////////////////////////////////////////////////////////////////
 #endif

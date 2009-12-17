@@ -17,7 +17,7 @@
 	}\
 }
 /////////////////////////////////////////////////////////////////
-using namespace Phoenix::Core;
+//using namespace Phoenix::Core;
 /////////////////////////////////////////////////////////////////
 template<class NODE_TYPE>
 Phoenix::Core::TGraphEdge<NODE_TYPE>::TGraphEdge( NODE_TYPE *pFrom, NODE_TYPE *pTo )

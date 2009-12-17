@@ -8,7 +8,7 @@
 #include "PhoenixQuaternion.h"
 #include "PhoenixMatrix4x4.h"
 #include "PhoenixMatrix3x3.h"
-#include "PhoenixDefaultEntities.h"
+#include "PhoenixGlobals.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix

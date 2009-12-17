@@ -1,6 +1,8 @@
 #ifndef __PhoenixStateMachine_h__
 #define __PhoenixStateMachine_h__
 /////////////////////////////////////////////////////////////////
+#include <PhoenixGraphEdge.h>
+#include <PhoenixGraphNode.h>
 #include <PhoenixGraph.h>
 #include <PhoenixCore.h>
 #include <PhoenixResourceManager.h>

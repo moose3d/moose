@@ -5,6 +5,7 @@
 #include "PhoenixIndexArray.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixAPI.h"
+#include <map>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -29,7 +30,7 @@ namespace Phoenix
 		       m_pNormals(NULL),
 		       m_pColors(NULL),
 		       m_pTexCoords(NULL),
-		       m_pIndices(NULL) {} 
+		       m_pIndices(NULL) {}
       /// Map of group names to index arrays.
       std::map<std::string, Phoenix::Graphics::CIndexArray *> m_mapGroups;
     public:
@@ -40,9 +41,9 @@ namespace Phoenix
       virtual Phoenix::Graphics::CVertexDescriptor * GetNormalArray() const = 0;
       virtual Phoenix::Graphics::CVertexDescriptor * GetVertexArray( float fScale = 1.0f) const = 0;
 
-      virtual Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType = 
+      virtual Phoenix::Graphics::CVertexDescriptor * GetInterleavedArray( Phoenix::Graphics::ELEMENT_TYPE tType =
 									  Phoenix::Graphics::ELEMENT_TYPE_V3F_N3F_T2F) const = 0;
-      
+
       virtual Phoenix::Graphics::CIndexArray *	     GetIndexArray( const char *szGroupName = NULL ) const = 0;
 
       virtual bool  HasTexCoordArray( size_t nTexUnit = 0) const	{ return  ( m_pTexCoords != NULL); }

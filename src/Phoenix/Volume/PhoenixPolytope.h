@@ -6,6 +6,7 @@
 #include "PhoenixIndexArray.h"
 #include "PhoenixTransform.h"
 #include <iostream>
+#include <vector>
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix

@@ -2,14 +2,18 @@
 #define __PhoenixResourceManager_h__
 /////////////////////////////////////////////////////////////////
 #include <string>
-#include "PhoenixCore.h"
+#include <vector>
+#include <list>
 #include "PhoenixAPI.h"
+#include "PhoenixNullable.h"
+#include "PhoenixHashTable.h"
+#include "PhoenixSingleton.h"
+#include "PhoenixGlobals.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Core
   {
-
     template<typename OBJECTTYPE, typename HANDLE> class CResourceManager;
     ////////////////////
     /// Handle class. Handle is always null handle before it is Initialize()'d.
@@ -302,7 +306,7 @@ namespace Phoenix
       /// Initializes hash table with given size. If size is not given, it defaults to PHOENIX_MAGIC_NUMBER.
       /// \param nSize Number of hash table arrays.
       /// \returns non-zero on error, zero on success.
-      int Initialize( size_t nSize = PHOENIX_MAGIC_NUMBER );
+      int Initialize( size_t nSize = Phoenix::Globals::PHOENIX_MAGIC_NUMBER );
       ////////////////////
       /// Creates new resource to pointer, named strName - handle
       /// is initialized refer to that object.

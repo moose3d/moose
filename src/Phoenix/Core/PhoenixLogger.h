@@ -1,7 +1,7 @@
 #ifndef __PhoenixLogger_h__
 #define __PhoenixLogger_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixCore.h"
+#include "PhoenixSingleton.h"
 #include "PhoenixLog.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -19,7 +19,7 @@ namespace Phoenix
       Phoenix::Core::CLog * m_pMessages;
       Phoenix::Core::CLog * m_pErrors;
       Phoenix::Core::CLog * m_pWarnings;
-    private:                             
+    private:
       CLogger();
     public:
       ////////////////////

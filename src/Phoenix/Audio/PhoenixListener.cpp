@@ -1,4 +1,5 @@
 #include "PhoenixListener.h"
+#include <cstring>
 #ifdef WIN32
 #include <al.h>
 #else
@@ -24,13 +25,13 @@ libname::CListener::SetVelocity(const Phoenix::Math::CVector3<float> & vDir )
   m_vVelocity = vDir;
 }
 /////////////////////////////////////////////////////////////////
-const Phoenix::Math::CVector3<float> & 
+const Phoenix::Math::CVector3<float> &
 libname::CListener::GetVelocity() const
 {
   return m_vVelocity;
 }
 /////////////////////////////////////////////////////////////////
-void 
+void
 libname::CListener::CommitChanges()
 {
   ALfloat buf[6];

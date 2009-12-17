@@ -32,12 +32,12 @@ namespace Phoenix
     //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::CVertexDescriptor,  Phoenix::Default::TEXTURE_HANDLE>;
     //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::CIndexArray,	    Phoenix::Default::INDEX_HANDLE>;
     //  extern template class __declspec(dllimport) Phoenix::Core::CResourceManager<Phoenix::Graphics::CShader,	    Phoenix::Default::SHADER_HANDLE>;
-    
+
 #endif
 #endif
     /////////////////////////////////////////////////////////////////
     /// Default object updater object.
-    class PHOENIX_API CPhoenixObjectUpdater : public Phoenix::Core::CObjectUpdater, 
+    class PHOENIX_API CPhoenixObjectUpdater : public Phoenix::Core::CObjectUpdater,
 				  public Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>
     {
       friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;
@@ -70,8 +70,6 @@ namespace Phoenix
 #define g_ModelMgr             (Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >::GetInstance())
 #define g_ObjectUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
 
-////////////////////
-// Constants
-#define TEXTURE_HANDLE_COUNT 8
+
 #endif
 /////////////////////////////////////////////////////////////////

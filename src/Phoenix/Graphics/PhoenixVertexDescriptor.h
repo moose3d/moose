@@ -2,10 +2,11 @@
 #define __PhoenixVertexDescriptor_h__
 /////////////////////////////////////////////////////////////////
 #include <stdlib.h>
-#include <PhoenixCore.h>
+#include "PhoenixCacheable.h"
+#include "PhoenixTypeBase.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
-namespace Phoenix 
+namespace Phoenix
 {
   namespace Graphics
   {
@@ -42,14 +43,14 @@ namespace Phoenix
       ELEMENT_TYPE_ATTRIB_2UB,
       ELEMENT_TYPE_ATTRIB_3UB,
       ELEMENT_TYPE_ATTRIB_4UB, /* this is critical value, must be last of attribs */
-      // following types are for combined data 
+      // following types are for combined data
       ELEMENT_TYPE_V3F_N3F_T2F
     };
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
     class PHOENIX_API CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>,
 					  public Phoenix::Core::CTypeBase<ELEMENT_TYPE>
-    {  
+    {
     protected:
       /// number of elements.
       size_t 		        m_nSize;
@@ -73,7 +74,7 @@ namespace Phoenix
       ////////////////////
       /// Returns float pointer.
       /// \returns pointer to float array
-      template<typename TYPE> 
+      template<typename TYPE>
       inline TYPE * GetPointer( size_t nElement = 0) const
       {
 	return reinterpret_cast<TYPE *>(reinterpret_cast<unsigned char *>(m_pData)+(GetElementByteSize()*nElement) );

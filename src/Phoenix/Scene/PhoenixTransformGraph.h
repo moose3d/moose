@@ -2,6 +2,8 @@
 #define __TransformGraph_h__
 /////////////////////////////////////////////////////////////////
 #include <PhoenixTransform.h>
+#include <PhoenixGraphEdge.h>
+#include <PhoenixGraphNode.h>
 #include <PhoenixGraph.h>
 #include <PhoenixAPI.h>
 #include <PhoenixResourceManager.h>
@@ -115,7 +117,7 @@ namespace Phoenix
     };
     typedef std::list<CTransformable*> TransformableList;
     ///////////////////////////////////////////////////////////////////////////
-    class CTransformGraph : public TGraph<CTransformNode>
+    class CTransformGraph : public Phoenix::Core::TGraph<CTransformNode>
     {
     protected:
       CPlainTransform *     m_pRoot;

@@ -3,7 +3,7 @@
 #ifndef __PhoenixIndexArray_h__
 #define __PhoenixIndexArray_h__
 /////////////////////////////////////////////////////////////////
-#include <PhoenixCore.h>
+#include <PhoenixCacheable.h>
 #include "PhoenixAPI.h"
 #include <cstring>
 /////////////////////////////////////////////////////////////////
@@ -35,11 +35,11 @@ namespace Phoenix
       void *	   m_pIndexData;
       /// Number of indices to be drawn from beginning.
       unsigned int m_nNumDrawableIndices;
-      
+
     public:
       ////////////////////
       /// Constructor. Initializes index count and sets drawable indices to max indices.
-      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices), 
+      CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices),
 								     m_nType(nType),
 								     m_nNumDrawableIndices(nNumIndices)
       {
@@ -64,7 +64,7 @@ namespace Phoenix
 	{
 	  delete [] reinterpret_cast<unsigned short int *>(m_pIndexData);
 	}
-	else 
+	else
 	{
 	  delete [] reinterpret_cast<unsigned int *>(m_pIndexData);
 	}
@@ -86,12 +86,12 @@ namespace Phoenix
       }
       ////////////////////
       /// Returns true if indices are stored with ushort int data type.
-      /// \returns boolean 
+      /// \returns boolean
       inline int IsShortIndices() const
       {
 	return (GetNumIndices() <= 65536);
       }
-      //////////////////// 
+      ////////////////////
       /// Returns primitive type.
       /// \returns PRIMITIVE_TYPE
       inline int GetPrimitiveType() const
@@ -108,9 +108,9 @@ namespace Phoenix
       ////////////////////
       /// Sets the number of drawable indices.
       /// \param nCount Number of indices that is allowed to be drawn.
-      inline void SetDrawableCount( unsigned int nCount ) 
+      inline void SetDrawableCount( unsigned int nCount )
       {
-	// Safety check 
+	// Safety check
 	if ( nCount > GetNumIndices())
 	  m_nNumDrawableIndices = GetNumIndices();
 	else

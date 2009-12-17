@@ -2,7 +2,8 @@
 #define __PhoenixMath_h__
 /////////////////////////////////////////////////////////////////
 #include <iostream>
-#include <math.h>
+#include <vector>
+#include <cmath>
 #include "PhoenixVector2.h"
 #include "PhoenixVector3.h"
 #include "PhoenixVector4.h"

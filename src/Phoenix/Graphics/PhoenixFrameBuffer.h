@@ -4,6 +4,7 @@
 #include "PhoenixTexture.h"
 #include "PhoenixSpatial.h"
 #include "PhoenixAPI.h"
+#include "PhoenixDefaultEntities.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -23,7 +24,7 @@ namespace Phoenix
       ////////////////////
       /// Constructor.
       /// \param nFrameBufferId OpenGL frame buffer object id.
-      CFrameBufferObject( unsigned int nFrameBufferId);       
+      CFrameBufferObject( unsigned int nFrameBufferId);
       ////////////////////
       /// Constructor.
       /// \param nFrameBufferId OpenGL frame buffer object id.
@@ -31,7 +32,7 @@ namespace Phoenix
       /// \param nHeight Height of this frame buffer in pixels.
       CFrameBufferObject( unsigned int nFrameBufferId,
 			  unsigned int nWidth,
-			  unsigned int nHeight); 
+			  unsigned int nHeight);
 
       ////////////////////
       /// Destructor.
@@ -58,20 +59,20 @@ namespace Phoenix
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
-inline 
-Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBufferId ) : COglBase(nFrameBufferId), 
-											   CDimensional2D(), 
+inline
+Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBufferId ) : COglBase(nFrameBufferId),
+											   CDimensional2D(),
 											   m_nDepthBufferId(0)
 {
-  
+
 }
 /////////////////////////////////////////////////////////////////
 inline
-Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBufferId, unsigned int nWidth, unsigned int nHeight ) : COglBase(nFrameBufferId), 
-																      CDimensional2D(static_cast<float>(nWidth), static_cast<float>(nHeight)), 
+Phoenix::Graphics::CFrameBufferObject::CFrameBufferObject( unsigned int nFrameBufferId, unsigned int nWidth, unsigned int nHeight ) : COglBase(nFrameBufferId),
+																      CDimensional2D(static_cast<float>(nWidth), static_cast<float>(nHeight)),
 																      m_nDepthBufferId(0)
 {
-  
+
 }
 /////////////////////////////////////////////////////////////////
 inline unsigned int &
@@ -86,13 +87,13 @@ Phoenix::Graphics::CFrameBufferObject::GetDepthBufferId() const
   return m_nDepthBufferId;
 }
 /////////////////////////////////////////////////////////////////
-inline const Phoenix::Default::TEXTURE_HANDLE & 
+inline const Phoenix::Default::TEXTURE_HANDLE &
 Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( size_t nUnit ) const
 {
   return m_hTextures[nUnit % TEXTURE_HANDLE_COUNT];
 }
 /////////////////////////////////////////////////////////////////
-inline Phoenix::Default::TEXTURE_HANDLE & 
+inline Phoenix::Default::TEXTURE_HANDLE &
 Phoenix::Graphics::CFrameBufferObject::GetTextureHandle( size_t nUnit )
 {
   return m_hTextures[nUnit % TEXTURE_HANDLE_COUNT];
