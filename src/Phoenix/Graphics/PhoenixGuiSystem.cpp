@@ -155,7 +155,7 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
   {
     config.readFile( szPath );
     if ( ! config.lookup("gui_config").isGroup())
-      throw libconfig::SettingNotFoundException();
+      throw libconfig::ConfigException();
 
     CEGUI::DefaultResourceProvider *rp = 
     static_cast<CEGUI::DefaultResourceProvider*>  (CEGUI::System::getSingleton().getResourceProvider());
@@ -191,7 +191,7 @@ Phoenix::GUI::CGuiSystem::LoadResources( const char *szPath )
   {
     cerr << "Couldn't load file." << endl;
   }
-  catch ( libconfig::SettingNotFoundException & ex )
+  catch ( libconfig::ConfigException & ex )
   {
     cerr << "Setting not found!" << endl;
   }

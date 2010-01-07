@@ -31,6 +31,8 @@
 #include "PhoenixDirectionalLight.h"
 #include "PhoenixPointLight.h"
 #include "PhoenixSpotLight.h"
+#include "PhoenixGraphNode.h"
+#include "PhoenixGraphEdge.h"
 #include "PhoenixGraph.h"
 #include "PhoenixOctree.h"
 #include "PhoenixSpatialGraph.h"

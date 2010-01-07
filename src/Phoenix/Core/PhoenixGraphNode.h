@@ -112,6 +112,8 @@ namespace Phoenix
        ///  Removes arriving edges from this node.
        /// Edges are removed alse from nodes where they lead to.
        void RemoveArrivingEdges();
+       // This causes some headaches in swig...
+#ifndef SWIG
        ////////////////////
        ///  Adds an edge from this to given node
        /// \param pTo A pointer to CGraphNode.
@@ -119,6 +121,7 @@ namespace Phoenix
        {
        	return m_pGraph->AddEdge( this, pTo );
        }
+#endif
        ////////////////////
        ///  Removes and edge leading from this node to given node.
        /// \param pTo A pointer to CGraphNode.
