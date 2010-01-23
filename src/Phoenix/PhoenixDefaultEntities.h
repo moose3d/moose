@@ -11,6 +11,11 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+  namespace Scene
+  {
+	  class CGameObject;
+
+  }
   namespace Default
   {
     // Typedefs for default handle types.
@@ -25,6 +30,7 @@ namespace Phoenix
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CVertexDescriptor,	VERTEX_HANDLE>   VertexManager;
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CIndexArray,		INDEX_HANDLE>    IndexManager;
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CShader,		SHADER_HANDLE>   ShaderManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> > ObjectMgr;
     ////////////////////
 #ifdef WIN32
 #ifndef PHOENIX_DLL_EXPORT
@@ -42,6 +48,7 @@ namespace Phoenix
     {
       friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;
     };
+    ObjectMgr * GetObjectMgr();
   }; // namespace Default
 }; // namespace Phoenix
 ////////////////////
@@ -62,7 +69,11 @@ namespace Phoenix
 #define g_Warn  ( Phoenix::Core::CLogger::GetInstance()->Warn())
 ////////////////////////////////////////////////////////////////////////////////
 /// Manager for gameobjects.
-#define g_ObjectMgr            (Phoenix::Core::CResourceManager<Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<CGameObject> >::GetInstance())
+
+
+//Phoenix::Core::CResourceManager<Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> > * GetObjectMgr();
+
+#define g_ObjectMgr            (Phoenix::Default::ObjectMgr::GetInstance())
 #define g_TextureMgr           (Phoenix::Default::TextureManager::GetInstance())
 #define g_VertexMgr            (Phoenix::Default::VertexManager::GetInstance())
 #define g_IndexMgr             (Phoenix::Default::IndexManager::GetInstance())

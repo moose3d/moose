@@ -49,6 +49,7 @@ namespace Phoenix
 				    const std::string & varName );
 
       bool   SetGlobalVar( const std::string &varName, Tcl_Obj *pVar );
+
       Phoenix::Scene::CGameObject * GetGameObject();
 
       bool   GetGlobalVar( const std::string & varName, bool & value );

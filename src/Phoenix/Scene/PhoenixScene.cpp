@@ -426,6 +426,30 @@ Phoenix::Scene::CScene::GetPostGUIRenderQueue()
 	return m_PostGUIRenderQueue;
 }
 ///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::PushPreRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPreRenderQueue().GetObjectList().push_back(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::PushPostRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPostRenderQueue().GetObjectList().push_back(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::PushPreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPreGUIRenderQueue().GetObjectList().push_back(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::PushPostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPostGUIRenderQueue().GetObjectList().push_back(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_DECL( Destroy );          ///!< Kill switch for any object in the scene.
 SCRIPT_CMD_DECL( CreateCamera );
 SCRIPT_CMD_DECL( MoveCamera );

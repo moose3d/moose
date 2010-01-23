@@ -47,3 +47,9 @@ Phoenix::Graphics::CRenderable::GetId() const
 	return m_iId;
 }
 /////////////////////////////////////////////////////////////////
+/*std::ostream &
+Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & renderable )
+{
+	stream << renderable.m_iId << renderable.m_RenderState << renderable.m_pTransform;
+	return stream;
+}*/

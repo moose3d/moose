@@ -10,12 +10,12 @@ SUBDIRS = Core Audio Math Graphics Scene AI Spatial Volume
 
 h_sources = Phoenix.h PhoenixDefaultEntities.h
 
-cc_sources = 
+cc_sources = PhoenixDefaultEntities.cpp
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources) 
 
-INCLUDES = -I$(top_srcdir) 
+INCLUDES = -I$(top_srcdir) -I./Core -I./Volume  -I./Graphics -I./Spatial -I./Math -I./AI -I./Scene -I./Audio
 
 lib_LTLIBRARIES= libPhoenix.la
 libPhoenix_la_SOURCES= $(h_sources) $(cc_sources)

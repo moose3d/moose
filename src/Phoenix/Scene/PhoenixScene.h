@@ -82,6 +82,13 @@ namespace Phoenix
 			RenderQueue & GetPostRenderQueue();
 			RenderQueue & GetPreGUIRenderQueue();
 			RenderQueue & GetPostGUIRenderQueue();
+
+			void PushPreRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+			void PushPostRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+			void PushPreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+			void PushPostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+
+
 			void RegisterUserCommands();
 
 		};

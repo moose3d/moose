@@ -113,7 +113,42 @@ namespace Phoenix
       TEX_FORMAT_RGB  = GL_RGB,
       TEX_FORMAT_DEPTH_COMPONENT = GL_DEPTH_COMPONENT
     };
-
+    enum ELEMENT_TYPE
+        {
+          ELEMENT_TYPE_VERTEX_3F,
+          ELEMENT_TYPE_NORMAL_3F,
+          ELEMENT_TYPE_COLOR_4UB,
+          ELEMENT_TYPE_COLOR_3F,
+          ELEMENT_TYPE_COLOR_4F,
+          ELEMENT_TYPE_TEX_2F,
+          ELEMENT_TYPE_TEX_3F,
+          ELEMENT_TYPE_TEX_4F,
+          ELEMENT_TYPE_UNIFORM_1F,/* this is critical value, must be first of uniforms */
+          ELEMENT_TYPE_UNIFORM_2F,
+          ELEMENT_TYPE_UNIFORM_3F,
+          ELEMENT_TYPE_UNIFORM_4F,
+          ELEMENT_TYPE_UNIFORM_1I,
+          ELEMENT_TYPE_UNIFORM_2I,
+          ELEMENT_TYPE_UNIFORM_3I,
+          ELEMENT_TYPE_UNIFORM_4I,
+          ELEMENT_TYPE_UNIFORM_2X2F,
+          ELEMENT_TYPE_UNIFORM_3X3F,
+          ELEMENT_TYPE_UNIFORM_4X4F,/* this is critical value, must be last of uniforms */
+          ELEMENT_TYPE_ATTRIB_1F, /* this is critical value, must be first of attribs */
+          ELEMENT_TYPE_ATTRIB_2F,
+          ELEMENT_TYPE_ATTRIB_3F,
+          ELEMENT_TYPE_ATTRIB_4F,
+          ELEMENT_TYPE_ATTRIB_1I,
+          ELEMENT_TYPE_ATTRIB_2I,
+          ELEMENT_TYPE_ATTRIB_3I,
+          ELEMENT_TYPE_ATTRIB_4I,
+          ELEMENT_TYPE_ATTRIB_1UB,
+          ELEMENT_TYPE_ATTRIB_2UB,
+          ELEMENT_TYPE_ATTRIB_3UB,
+          ELEMENT_TYPE_ATTRIB_4UB, /* this is critical value, must be last of attribs */
+          // following types are for combined data
+          ELEMENT_TYPE_V3F_N3F_T2F
+        };
   } // namespace Graphics
 } // namespace Phoenix
 #endif
