@@ -3,6 +3,8 @@
 #include <math.h>
 #include <iostream>
 using Phoenix::Math::CQuaternion;
+using Phoenix::Math::CVector3;
+using Phoenix::Math::CVector4;
 /////////////////////////////////////////////////////////////////
 CQuaternion 
 CQuaternion::operator * ( const CQuaternion & qQuat ) const

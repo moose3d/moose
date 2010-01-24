@@ -1,7 +1,8 @@
 #ifndef PHOENIXAACUBE_H_
 #define PHOENIXAACUBE_H_
-#include "PhoenixSpatial.h"
-#include "PhoenixMathGeometry.h"
+#include "PhoenixVector3.h"
+#include "PhoenixPositional.h"
+#include "PhoenixDimensional1D.h"
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixTransform.h"
@@ -23,8 +24,8 @@ namespace Phoenix
       CAxisAlignedCube()    {}
       ////////////////////
       /// The parameterized constructor.
-      CAxisAlignedCube( const CVector3<float> &vCenter, float fEdgeLength ) :
-      CPositional( vCenter ), CDimensional1D( fEdgeLength ) {  }
+      CAxisAlignedCube( const Phoenix::Math::CVector3<float> &vCenter, float fEdgeLength ) :
+    		  Phoenix::Spatial::CPositional( vCenter ), Phoenix::Spatial::CDimensional1D( fEdgeLength ) {  }
     }; // AACube
   } // Volume
 } // Phoenix

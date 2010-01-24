@@ -1,10 +1,4 @@
-#include "PhoenixVolume.h"
-#include "PhoenixGlobals.h"
-#include "PhoenixMatrix3x3.h"
-#include "PhoenixMath.h"
-#include "PhoenixVertexDescriptor.h"
-#include "PhoenixIndexArray.h"
-using namespace Phoenix::Graphics;
+#include "PhoenixCone.h"
 using namespace Phoenix::Math;
 using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
@@ -19,7 +13,7 @@ Phoenix::Volume::CCone::SetAngle( float fAngle )
   m_fSinAngleSqr = m_fSinAngle * m_fSinAngle;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Volume::CCone::CCone() : CPositional(), m_vDirection(CVector3<float>(0,0,-1.0f)),m_fLength(1.0f)
+Phoenix::Volume::CCone::CCone() : CPositional(), m_vDirection(CVector3<float>(0.0f,0.0f,-1.0f)),m_fLength(1.0f)
 {
   SetAngle(0.0f);
 }
@@ -29,3 +23,4 @@ Phoenix::Volume::CCone::CCone( const CVector3<float> &vPos, const CVector3<float
   SetAngle(fAngle);
   m_fLength = fLength;
 }
+/////////////////////////////////////////////////////////////////

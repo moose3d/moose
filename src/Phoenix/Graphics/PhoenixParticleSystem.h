@@ -4,7 +4,8 @@
 /////////////////////////////////////////////////////////////////
 #include <PhoenixGlobals.h>
 #include <PhoenixVector3.h>
-#include <PhoenixVolume.h>
+#include <PhoenixAABB.h>
+#include <PhoenixSphere.h>
 #include <PhoenixVertexDescriptor.h>
 #include <PhoenixIndexArray.h>
 #include "PhoenixAPI.h"

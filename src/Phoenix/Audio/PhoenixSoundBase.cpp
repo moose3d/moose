@@ -1,11 +1,12 @@
 #include "PhoenixSoundBase.h"
+#include "PhoenixVector3.h"
 namespace libname = Phoenix::Sound;
 /////////////////////////////////////////////////////////////////
 libname::CSoundBase::CSoundBase()
 {
   SetPosition(0,0,0);
   SetDirection(0,0,-1);
-  SetVelocity(CVector3<float>(0,0,0));
+  SetVelocity(Phoenix::Math::CVector3<float>(0,0,0));
 }
 /////////////////////////////////////////////////////////////////
 void

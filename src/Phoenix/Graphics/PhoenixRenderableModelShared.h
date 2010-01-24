@@ -15,14 +15,6 @@
 #include <utility>
 #include <map>
 /////////////////////////////////////////////////////////////////
-using Phoenix::Graphics::CVertexDescriptor;
-using Phoenix::Graphics::CIndexArray;
-using Phoenix::Graphics::COglTexture;
-using Phoenix::Default::TEXTURE_HANDLE;
-using Phoenix::Default::VERTEX_HANDLE;
-using Phoenix::Default::INDEX_HANDLE;
-using Phoenix::Default::SHADER_HANDLE;
-/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
@@ -33,7 +25,7 @@ namespace Phoenix
     class PHOENIX_API CRenderableModelShared : public Phoenix::Graphics::CRenderable
     {
     protected:
-      MODEL_HANDLE m_hModel;
+      Phoenix::Default::MODEL_HANDLE m_hModel;
     public:
       ////////////////////
       /// Constructor.
@@ -46,16 +38,18 @@ namespace Phoenix
       /// \param stream Output stream.
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
-      friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & renderable );
+      friend std::ostream & Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & renderable );
       ////////////////////
       /// Renders this renderable using renderer.
       /// Overwrite this method to specialize rendering.
       /// \param renderer Renderer to be used.
-      virtual void Render( COglRenderer & renderer );
+      virtual void Render( Phoenix::Graphics::COglRenderer & renderer );
       ////////////////////
       /// \returns model handle.
-      MODEL_HANDLE & GetModelHandle();
+      Phoenix::Default::MODEL_HANDLE & GetModelHandle();
     };
+    std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & renderable );
+
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////

@@ -1,6 +1,5 @@
 #include "PhoenixFrustum.h"
 #include "PhoenixCollision.h"
-#include "PhoenixMathGeometry.h"
 #include <vector>
 /////////////////////////////////////////////////////////////////
 using std::vector;

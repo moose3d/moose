@@ -35,7 +35,7 @@ namespace Phoenix
       /// \param stream Output stream.
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
-      friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & renderable );
+      friend std::ostream & Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & renderable );
       ////////////////////
       /// Returns renderstate.
       /// \returns Current renderstate settings for renderable.
@@ -56,6 +56,7 @@ namespace Phoenix
       /// \returns identifier number of this renderable.
       int      GetId() const;
     };
+    std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderable & renderable );
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////

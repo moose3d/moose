@@ -135,7 +135,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     renderer.RollbackTransform();
 }
 /////////////////////////////////////////////////////////////////
-MODEL_HANDLE &
+Phoenix::Default::MODEL_HANDLE &
 Phoenix::Graphics::CRenderableModelShared::GetModelHandle()
 {
 	return m_hModel;

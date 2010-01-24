@@ -120,6 +120,7 @@ namespace Phoenix
 	        m_aValues[2] == vVector.m_aValues[2] && 
 		m_aValues[3] == vVector.m_aValues[3]);
       }
+#ifndef SWIG
       ////////////////////
       /// The inequality comparison operator.
       /// \returns truth value - non-zero if one or more components in 
@@ -131,6 +132,7 @@ namespace Phoenix
 	        m_aValues[2] != vVector.m_aValues[2] ||
 		m_aValues[3] != vVector.m_aValues[3]);
       }
+#endif
       ////////////////////
       /// Calculates the dot product.
       inline TYPE Dot( const CVector4 & vVector ) const
@@ -193,18 +195,6 @@ namespace Phoenix
 			m_aValues[3] * tScalar);
       }
       ////////////////////
-      /// Scaling operation.
-      /// \param tScalar scaling magnitude.
-
-      inline CVector4 & operator*=(TYPE tScalar) 
-      {
-	m_aValues[0] *= tScalar;
-	m_aValues[1] *= tScalar;
-	m_aValues[2] *= tScalar;
-	m_aValues[3] *= tScalar;
-	return *this;
-      }
-      ////////////////////
       /// The division operator.
       /// \param tDivider division value.
       /// \returns Divided vector.
@@ -244,6 +234,18 @@ namespace Phoenix
 			m_aValues[1] + vVector[1],
 			m_aValues[2] + vVector[2],
 			m_aValues[3] + vVector[3]);
+      }
+#ifndef SWIG
+      ////////////////////
+      /// Scaling operation.
+      /// \param tScalar scaling magnitude.
+      inline CVector4 & operator*=(TYPE tScalar)
+      {
+	m_aValues[0] *= tScalar;
+	m_aValues[1] *= tScalar;
+	m_aValues[2] *= tScalar;
+	m_aValues[3] *= tScalar;
+	return *this;
       }
       ////////////////////
       /// Sum with assigning.
@@ -298,7 +300,7 @@ namespace Phoenix
 	stream << vVector[0] << "," << vVector[1] << "," << vVector[2] << "," << vVector[3];
 	return stream;
       }
-      
+#endif
     }; // CVector4
     /////////////////////////////////////////////////////////////////
     /// specialized template
@@ -411,6 +413,7 @@ namespace Phoenix
 		QUITE_CLOSE_TO(m_aValues[2], vVector.m_aValues[2]) && 
 		QUITE_CLOSE_TO(m_aValues[3], vVector.m_aValues[3]) );
       }
+#ifndef SWIG
       ////////////////////
       /// The inequality comparison operator.
       /// \returns truth value - non-zero if one or more components in 
@@ -422,6 +425,7 @@ namespace Phoenix
 	        m_aValues[2] != vVector.m_aValues[2] ||
 		m_aValues[3] != vVector.m_aValues[3]);
       }
+#endif
       ////////////////////
       /// Calculates the dot product.
       inline float Dot( const CVector4 & vVector ) const
@@ -484,18 +488,6 @@ namespace Phoenix
 			m_aValues[3] * tScalar);
       }
       ////////////////////
-      /// Scaling operation.
-      /// \param tScalar scaling magnitude.
-
-      inline CVector4 & operator*=(float tScalar) 
-      {
-	m_aValues[0] *= tScalar;
-	m_aValues[1] *= tScalar;
-	m_aValues[2] *= tScalar;
-	m_aValues[3] *= tScalar;
-	return *this;
-      }
-      ////////////////////
       /// The division operator.
       /// \param tDivider division value.
       /// \returns Divided vector.
@@ -535,6 +527,18 @@ namespace Phoenix
 			m_aValues[1] + vVector[1],
 			m_aValues[2] + vVector[2],
 			m_aValues[3] + vVector[3]);
+      }
+#ifndef SWIG
+      ////////////////////
+      /// Scaling operation.
+      /// \param tScalar scaling magnitude.
+      inline CVector4 & operator*=(float tScalar)
+      {
+	m_aValues[0] *= tScalar;
+	m_aValues[1] *= tScalar;
+	m_aValues[2] *= tScalar;
+	m_aValues[3] *= tScalar;
+	return *this;
       }
       ////////////////////
       /// Sum with assigning.
@@ -589,7 +593,7 @@ namespace Phoenix
 	stream << vVector[0] << "," << vVector[1] << "," << vVector[2] << "," << vVector[3];
 	return stream;
       }
-      
+#endif
     }; // CVector4<float>
   } // namespace Math
 } // namespace Phoenix

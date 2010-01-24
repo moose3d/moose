@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <PhoenixVertexDescriptor.h>
 #include <PhoenixIndexArray.h>
-#include <PhoenixSpatial.h>
+#include <PhoenixVertex.h>
 #include <PhoenixModelLoader.h>
 #include "PhoenixAPI.h"
 #include <iostream>

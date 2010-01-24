@@ -1,7 +1,7 @@
 GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
-h_sources = PhoenixOctree.h PhoenixVolume.h PhoenixSphereBound.h PhoenixBoxBound.h PhoenixAABB.h PhoenixAACube.h PhoenixOBB.h PhoenixSphere.h PhoenixCapsule.h PhoenixCone.h PhoenixPolytope.h PhoenixDecalVolume.h
-cc_sources = PhoenixVolume.cpp PhoenixSphereBound.cpp PhoenixBoxBound.cpp PhoenixAABB.cpp PhoenixOBB.cpp PhoenixSphere.cpp 
+h_sources = PhoenixOctree.h PhoenixSphereBound.h PhoenixBoxBound.h PhoenixAABB.h PhoenixAACube.h PhoenixOBB.h PhoenixSphere.h PhoenixCapsule.h PhoenixCone.h PhoenixPolytope.h PhoenixDecalVolume.h
+cc_sources = PhoenixCone.cpp PhoenixSphereBound.cpp PhoenixBoxBound.cpp PhoenixAABB.cpp PhoenixOBB.cpp PhoenixSphere.cpp 
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)

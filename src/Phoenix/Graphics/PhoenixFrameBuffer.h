@@ -2,7 +2,7 @@
 #define __PhoenixFrameBuffer_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixTexture.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixDimensional2D.h"
 #include "PhoenixAPI.h"
 #include "PhoenixDefaultEntities.h"
 /////////////////////////////////////////////////////////////////

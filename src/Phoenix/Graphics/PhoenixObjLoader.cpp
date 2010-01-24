@@ -1,5 +1,5 @@
 #include "PhoenixObjLoader.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixVertex.h"
 #include "PhoenixVector3.h"
 #include "PhoenixConvert.h"
 #include <fstream>
@@ -24,6 +24,7 @@ using namespace Phoenix::Data;
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Core;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 //#define DELETE(OBJ) delete OBJ; OBJ=NULL;
 //#define DEBUG

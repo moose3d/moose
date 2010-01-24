@@ -17,7 +17,14 @@
 #include "PhoenixObjectCounter.h"
 #include "PhoenixQuaternion.h"
 #include "PhoenixSDLScreen.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixOrientable.h"
+#include "PhoenixDimensional1D.h"
+#include "PhoenixDimensional2D.h"
+#include "PhoenixDimensional3D.h"
+#include "PhoenixOneDirectional.h"
+#include "PhoenixPositional.h"
+#include "PhoenixTriangle.h"
+#include "PhoenixVertex.h"
 #include "PhoenixTGAImage.h"
 #include "PhoenixVector2.h"
 #include "PhoenixVector3.h"
@@ -71,4 +78,9 @@
 #include <PhoenixSphereBound.h>
 #include <PhoenixApplication.h>
 #include <PhoenixDirectionalLightObject.h>
+#include <PhoenixPlane.h>
+#include <PhoenixLine.h>
+#include <PhoenixLineSegment.h>
+#include <PhoenixQuad.h>
+#include <PhoenixRay.h>
 /////////////////////////////////////////////////////////////////

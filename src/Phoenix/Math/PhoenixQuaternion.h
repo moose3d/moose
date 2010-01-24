@@ -6,16 +6,13 @@
 #include "PhoenixVector4.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
-using Phoenix::Math::CVector3;
-using Phoenix::Math::CVector4;
-/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Math
   {
     ////////////////////
     /// Quaternion class.
-    class PHOENIX_API CQuaternion  : public CVector4<float>
+    class PHOENIX_API CQuaternion  : public Phoenix::Math::CVector4<float>
     {
 
     public:
@@ -26,7 +23,7 @@ namespace Phoenix
       }
       ////////////////////
       /// The parametrized constructor.
-      CQuaternion( float fX, float fY, float fZ, float fW) : CVector4<float>(fX,fY,fZ,fW)
+      CQuaternion( float fX, float fY, float fZ, float fW) : Phoenix::Math::CVector4<float>(fX,fY,fZ,fW)
       {
       }
       ////////////////////
@@ -48,7 +45,7 @@ namespace Phoenix
       /// Creates quaternion from axis angle in degrees
       /// \param vValues Vector representing axis.
       /// \param fDegrees Rotation angle in degrees.
-      inline void CreateFromAxisAngle( const CVector3<float> & vValues, float fDegrees )
+      inline void CreateFromAxisAngle( const Phoenix::Math::CVector3<float> & vValues, float fDegrees )
       {
 	CreateFromAxisAngleRad( vValues[0],  vValues[1], vValues[2], Deg2Rad(fDegrees) );
       }
@@ -56,7 +53,7 @@ namespace Phoenix
       /// Creates quaternion from axis angle in radians
       /// \param vValues Vector representing axis.
       /// \param fRad Rotation angle in radians.
-      inline void CreateFromAxisAngleRad ( const CVector3<float> & vValues, float fRad )
+      inline void CreateFromAxisAngleRad ( const Phoenix::Math::CVector3<float> & vValues, float fRad )
       {
 	CreateFromAxisAngleRad( vValues[0], vValues[1], vValues[2], fRad);
       }
@@ -70,11 +67,11 @@ namespace Phoenix
       ////////////////////
       /// Creates a quaternion from axis angles (degrees) with axis X=(1,0,0), Y=(0,1,0), Z=(0,0,1).
       /// \param vValues Vector with degree values for each axis.
-      void CreateFromAxisAngles( const CVector3<float> &vValues );
+      void CreateFromAxisAngles( const Phoenix::Math::CVector3<float> &vValues );
       ////////////////////
       /// Creates a quaternion from axis angles (radians) with axis X=(1,0,0), Y=(0,1,0), Z=(0,0,1);
       /// \param vValues Vector with radian values for each axis.
-      void CreateFromAxisAnglesRad( const CVector3<float> &vValues );
+      void CreateFromAxisAnglesRad( const Phoenix::Math::CVector3<float> &vValues );
       ////////////////////
       /// The * Operator to enable multiplying Quaternions,
       ///  q1*q2 means first rotating by q2 and then by q1

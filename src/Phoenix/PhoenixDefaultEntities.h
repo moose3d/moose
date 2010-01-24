@@ -16,6 +16,10 @@ namespace Phoenix
 	  class CGameObject;
 
   }
+  namespace Graphics
+  {
+	  class CModel;
+  }
   namespace Default
   {
     // Typedefs for default handle types.
@@ -23,7 +27,7 @@ namespace Phoenix
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CVertexDescriptor> VERTEX_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CIndexArray>       INDEX_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CShader>           SHADER_HANDLE;
-#define MODEL_HANDLE Phoenix::Core::CHandle<Phoenix::Graphics::CModel>
+    typedef Phoenix::Core::CHandle<Phoenix::Graphics::CModel>			 MODEL_HANDLE;
     ////////////////////
     // Typedefs for default resource manager types.
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::COglTexture,		TEXTURE_HANDLE>  TextureManager;

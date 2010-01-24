@@ -1,5 +1,7 @@
 #ifndef PHOENIXCONE_H_
 #define PHOENIXCONE_H_
+#include <PhoenixPositional.h>
+#include <PhoenixVector3.h>
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -23,7 +25,7 @@ namespace Phoenix
       // The angle of the cone, in radians.
       float m_fAngle;
       // The direction of the cone
-      CVector3<float> m_vDirection;
+      Phoenix::Math::CVector3<float> m_vDirection;
       // The length of the cone
       float m_fLength;
       // 1 / sin(a); speeds up the calculations
@@ -43,7 +45,7 @@ namespace Phoenix
       /// \param vDir Direction where cone is facing.
       /// \param fAngle Angle of cone.
       /// \param fLength How far cone reaches.
-      CCone( const CVector3<float> &vPos, const CVector3<float> &vDir, float fAngle, float fLength );
+      CCone( const Phoenix::Math::CVector3<float> &vPos, const Phoenix::Math::CVector3<float> &vDir, float fAngle, float fLength );
       ////////////////////
       /// Assigns view angle of the cone
       /// \param fAngle Angle in degrees.
@@ -51,11 +53,11 @@ namespace Phoenix
       ////////////////////
       /// Assigns direction of cone.
       /// \param vDir direction where cone will be facing.
-      void SetDirection( const CVector3<float> &  vDir );
+      void SetDirection( const Phoenix::Math::CVector3<float> &  vDir );
       ////////////////////
       /// Returns cone direction.
       /// \returns CVector3 with cone direction.
-      CVector3<float> GetDirection()  const;
+      Phoenix::Math::CVector3<float> GetDirection()  const;
       ////////////////////
       /// Returns angle of the cone in degrees
       /// \returns Cone angle.
@@ -96,12 +98,12 @@ namespace Phoenix
 };// namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline void
-Phoenix::Volume::CCone::SetDirection( const CVector3<float> &  vDir )
+Phoenix::Volume::CCone::SetDirection( const Phoenix::Math::CVector3<float> &  vDir )
 {
   m_vDirection = vDir.GetNormalized();
 }
 /////////////////////////////////////////////////////////////////
-inline CVector3<float>
+inline Phoenix::Math::CVector3<float>
 Phoenix::Volume::CCone::GetDirection()  const
 {
   return m_vDirection;

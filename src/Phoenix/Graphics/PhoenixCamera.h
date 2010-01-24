@@ -2,9 +2,15 @@
 #ifndef __PhoenixCamera_h__
 #define __PhoenixCamera_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixVector2.h"
+#include "PhoenixQuaternion.h"
 #include "PhoenixMatrix4x4.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixPositional.h"
+#include "PhoenixOrientable.h"
+#include "PhoenixCone.h"
+#include "PhoenixSphere.h"
 #include "PhoenixFrustum.h"
+#include "PhoenixRay.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -276,7 +282,7 @@ namespace Phoenix
       /// Converts eye coordinates into world coordinates.
       /// \param vPosition The position in eye coordinates which is converted into world coordinates.
       /// \returns CVector3<float> the vPosition in world coordinates.
-      Phoenix::Math::CVector3<float> EyeToWorld( const CVector3<float> &vPosition );
+      Phoenix::Math::CVector3<float> EyeToWorld( const Phoenix::Math::CVector3<float> &vPosition );
       ////////////////////
       /// Converts window coordinates (x,y,z) into world coordinates. 
       /// \param fX x coordinate with 0,0 as lower left corner.

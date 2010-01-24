@@ -1,0 +1,20 @@
+#ifndef __PHOENIXRAY_H__
+#define __PHOENIXRAY_H__
+/////////////////////////////////////////////////////////////
+#include <PhoenixAPI.h>
+#include <PhoenixLine.h>
+/////////////////////////////////////////////////////////////
+namespace Phoenix
+{
+  namespace Math
+  {
+  /////////////////////////////////////////////////////////////////
+      /// Abstraction for rays ( like lines, but extend only to one direction. ).
+      class PHOENIX_API CRay : public Phoenix::Math::CLine
+      {
+
+      };
+  } // Math
+} // Phoenix
+/////////////////////////////////////////////////////////////
+#endif /* PHOENIXRAY_H_ */

@@ -16,13 +16,13 @@
 #include "PhoenixMaterial.h"
 #include "PhoenixSkybox.h"
 #include "PhoenixTransform.h"
-#include "PhoenixSpatial.h"
 #include "PhoenixFrameBuffer.h"
 #include <PhoenixRenderable.h>
 #include "PhoenixGlobals.h"
 #include "PhoenixRenderState.h"
 #include "PhoenixBlendingOperation.h"
 #include "PhoenixAlphaTestOperation.h"
+#include "PhoenixVertex.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -630,7 +630,7 @@ namespace Phoenix
       /// \param bWireframe Is circle rendered as wireframe (only outer edge). Default true.
       void CommitCircle( const Phoenix::Math::CVector3<float> & vCenter,
 			 float fRadius,
-			 const CVector3<float> & vRotation, bool bWireframe = true );
+			 const Phoenix::Math::CVector3<float> & vRotation, bool bWireframe = true );
       ////////////////////
       /// Renders a box.
       /// \param box OBB to be rendered.
@@ -748,7 +748,7 @@ namespace Phoenix
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////
 inline void
-Phoenix::Graphics::COglRenderer::CommitColor( const CVector4<unsigned char> &vColor )
+Phoenix::Graphics::COglRenderer::CommitColor( const Phoenix::Math::CVector4<unsigned char> &vColor )
 {
   glColor4ubv( vColor.GetArray());
 }

@@ -8,7 +8,6 @@
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixSDLScreen.h"
-#include <PhoenixMathGeometry.h>
 #include "PhoenixCollision.h"
 #include <SDL.h>
 #include <string>

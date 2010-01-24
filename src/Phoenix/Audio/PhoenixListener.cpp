@@ -6,6 +6,7 @@
 #include <AL/al.h>
 #endif
 namespace libname = Phoenix::Sound;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 libname::CListener::CListener()
 {

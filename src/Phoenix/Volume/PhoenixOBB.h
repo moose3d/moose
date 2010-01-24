@@ -1,8 +1,11 @@
 #ifndef __PhoenixOBB_h__
 #define __PhoenixOBB_h__
 ///////////////////////////////////////////////////////////////////////////////
-#include "PhoenixSpatial.h"
-#include "PhoenixMathGeometry.h"
+#include "PhoenixVector3.h"
+#include "PhoenixPositional.h"
+#include "PhoenixDimensional3D.h"
+#include "PhoenixOrientable.h"
+#include "PhoenixPlane.h"
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixTransform.h"
@@ -126,12 +129,12 @@ namespace Phoenix
       /// Returns specific corner as vector.
       /// \param tCorner Corner index.
       /// \returns CVector3<float>.
-      CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner );
+      Phoenix::Math::CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner );
       ////////////////////
       /// Returns specific corner as vector.
       /// \param tCorner Corner index.
       /// \returns CVector3<float>.
-      const CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner ) const;
+      const Phoenix::Math::CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner ) const;
       ////////////////////
       /// Stream output.
       /// \param stream Output stream.
@@ -144,36 +147,37 @@ namespace Phoenix
 							 << "R = " << box.GetRightVector()   << ", scale " << box.GetWidth() << std::endl
 							 << "U = " << box.GetUpVector()      << ", scale " << box.GetHeight() << std::endl
 							 << "C = " << box.GetPosition() << std::endl;
-				stream << "TLF:" << CVector3<float>(box.GetCorner(TOP_LEFT_FRONT)) << std::endl;
-				stream << "TLB:" << CVector3<float>(box.GetCorner(TOP_LEFT_BACK)) << std::endl;
-				stream << "TRF:" << CVector3<float>(box.GetCorner(TOP_RIGHT_FRONT)) << std::endl;
-				stream << "TRB:" << CVector3<float>(box.GetCorner(TOP_RIGHT_BACK)) << std::endl;
-				stream << "BLF:" << CVector3<float>(box.GetCorner(BOTTOM_LEFT_FRONT)) << std::endl;
-				stream << "BLB:" << CVector3<float>(box.GetCorner(BOTTOM_LEFT_BACK)) << std::endl;
-				stream << "BRF:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_FRONT)) << std::endl;
-				stream << "BRB:" << CVector3<float>(box.GetCorner(BOTTOM_RIGHT_BACK)) << std::endl;
+				stream << "TLF:" << Phoenix::Math::CVector3<float>(box.GetCorner(TOP_LEFT_FRONT)) << std::endl;
+				stream << "TLB:" << Phoenix::Math::CVector3<float>(box.GetCorner(TOP_LEFT_BACK)) << std::endl;
+				stream << "TRF:" << Phoenix::Math::CVector3<float>(box.GetCorner(TOP_RIGHT_FRONT)) << std::endl;
+				stream << "TRB:" << Phoenix::Math::CVector3<float>(box.GetCorner(TOP_RIGHT_BACK)) << std::endl;
+				stream << "BLF:" << Phoenix::Math::CVector3<float>(box.GetCorner(BOTTOM_LEFT_FRONT)) << std::endl;
+				stream << "BLB:" << Phoenix::Math::CVector3<float>(box.GetCorner(BOTTOM_LEFT_BACK)) << std::endl;
+				stream << "BRF:" << Phoenix::Math::CVector3<float>(box.GetCorner(BOTTOM_RIGHT_FRONT)) << std::endl;
+				stream << "BRB:" << Phoenix::Math::CVector3<float>(box.GetCorner(BOTTOM_RIGHT_BACK)) << std::endl;
 				return stream;
       }
-      friend void operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf );
+      friend void Phoenix::Volume::operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf );
     };
     ////////////////////
-		/// Calculates the oriented bounding box for vertices in vertexarray
-		/// \param vertexDescriptor Vertices.
-		/// \returns Oriented bounding box
-		PHOENIX_API Phoenix::Volume::COrientedBox    CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
-		////////////////////
-		/// Calculates the oriented bounding box for vertices in vertexarray using the given set of indices.
-		/// \param vertexDescriptor Vertices.
-		/// \param indices Which vertices are used.
-		/// \returns Bounding sphere.
-		PHOENIX_API Phoenix::Volume::COrientedBox CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
-											const Phoenix::Graphics::CIndexArray &elementList );
-		////////////////////
-		/// Creates a new Oriented Box containing two oriented boxes.
-		/// \param obOne One oriented box.
-		/// \param obTwo Another oriented box.
-		/// \returns Bounding box enclosing both boxes.
-		PHOENIX_API Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
+    /// Calculates the oriented bounding box for vertices in vertexarray
+    /// \param vertexDescriptor Vertices.
+    /// \returns Oriented bounding box
+    PHOENIX_API Phoenix::Volume::COrientedBox    CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the oriented bounding box for vertices in vertexarray using the given set of indices.
+    /// \param vertexDescriptor Vertices.
+    /// \param indices Which vertices are used.
+    /// \returns Bounding sphere.
+    PHOENIX_API Phoenix::Volume::COrientedBox CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
+    		const Phoenix::Graphics::CIndexArray &elementList );
+    ////////////////////
+    /// Creates a new Oriented Box containing two oriented boxes.
+    /// \param obOne One oriented box.
+    /// \param obTwo Another oriented box.
+    /// \returns Bounding box enclosing both boxes.
+    PHOENIX_API Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
+    void operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf );
   } // Volume
 } // Phoenix
 ///////////////////////////////////////////////////////////////////////////////

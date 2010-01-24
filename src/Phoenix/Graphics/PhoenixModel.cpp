@@ -66,31 +66,31 @@ Phoenix::Graphics::CModel::~CModel()
 
 }
 /////////////////////////////////////////////////////////////////
-VERTEX_HANDLE &
+Phoenix::Default::VERTEX_HANDLE &
 Phoenix::Graphics::CModel::GetVertexHandle()
 {
   return m_VertexDescriptorHandle;
 }
 /////////////////////////////////////////////////////////////////
-VERTEX_HANDLE &
+Phoenix::Default::VERTEX_HANDLE &
 Phoenix::Graphics::CModel::GetNormalHandle()
 {
   return m_VertexNormalHandle;
 }
 /////////////////////////////////////////////////////////////////
-VERTEX_HANDLE &
+Phoenix::Default::VERTEX_HANDLE &
 Phoenix::Graphics::CModel::GetColorHandle()
 {
   return m_VertexColorHandle;
 }
 /////////////////////////////////////////////////////////////////
-INDEX_HANDLE &
+Phoenix::Default::INDEX_HANDLE &
 Phoenix::Graphics::CModel::GetIndices()
 {
   return m_hIndices;
 }
 /////////////////////////////////////////////////////////////////
-VERTEX_HANDLE &
+Phoenix::Default::VERTEX_HANDLE &
 Phoenix::Graphics::CModel::GetTextureCoordinateHandle( unsigned int nId )
 {
   return m_aTextureCoordinateHandles[nId % TEXTURE_HANDLE_COUNT];

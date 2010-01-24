@@ -25,6 +25,7 @@ using namespace Phoenix::Graphics;
 using namespace Phoenix::Default;
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Core;
+using namespace Phoenix::Math;
 using std::endl;
 using std::cerr;
 using std::ifstream;

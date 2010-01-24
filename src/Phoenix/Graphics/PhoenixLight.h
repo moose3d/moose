@@ -2,10 +2,9 @@
 #define __PhoenixLight_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
-#include "PhoenixSpatial.h"
-#include "PhoenixMathGeometry.h"
 #include "PhoenixAPI.h"
 #include "PhoenixRenderable.h"
+#include "PhoenixVector4.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -50,9 +49,9 @@ namespace Phoenix
 			SetQuadraticAttenuation(0.0f);
 			SetLinearAttenuation(0.0f);
 			SetConstantAttenuation(0.0f);
-			SetDiffuseColor( CVector4<unsigned char>(125,125,125,255));
-			SetAmbientColor( CVector4<unsigned char>(25,25,25,255));
-			SetSpecularColor( CVector4<unsigned char>(225,225,225,255));
+			SetDiffuseColor( Phoenix::Math::CVector4<unsigned char>(125,125,125,255));
+			SetAmbientColor( Phoenix::Math::CVector4<unsigned char>(25,25,25,255));
+			SetSpecularColor( Phoenix::Math::CVector4<unsigned char>(225,225,225,255));
 			SetBrightness(0.0f);
 			GetRenderState().IsLightSource() = true;
       }

@@ -1,9 +1,20 @@
 #ifndef __PhoenixCollision_h__
 #define __PhoenixCollision_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixVolume.h"
+#include "PhoenixVector3.h"
+#include "PhoenixOBB.h"
+#include "PhoenixAABB.h"
+#include "PhoenixAACube.h"
+#include "PhoenixCapsule.h"
+#include "PhoenixSphere.h"
+#include "PhoenixDecalVolume.h"
+#include "PhoenixPolytope.h"
+#include "PhoenixCone.h"
 #include "PhoenixAPI.h"
-#include "PhoenixMathGeometry.h"
+#include "PhoenixPlane.h"
+#include "PhoenixRay.h"
+#include "PhoenixVertex.h"
+#include "PhoenixLineSegment.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -166,7 +177,7 @@ namespace Phoenix
     /// \param vPoint Point in space.
     /// \param ray Ray which is compared to point.
     /// \param Closest position on ray to given point.
-    PHOENIX_API  void ClosestPointOnRay( const CVector3<float> &vPoint,
+    PHOENIX_API  void ClosestPointOnRay( const Phoenix::Math::CVector3<float> &vPoint,
 					 const Phoenix::Math::CRay &ray,
 					 Phoenix::Math::CVector3<float> & vClosestPoint);
 
@@ -175,7 +186,7 @@ namespace Phoenix
     /// \param vPoint Point in space.
     /// \param line Line which is compared to point.
     /// \param Closest position on line to given point.
-    PHOENIX_API void ClosestPointOnLine( const CVector3<float> &vPoint,
+    PHOENIX_API void ClosestPointOnLine( const Phoenix::Math::CVector3<float> &vPoint,
 					 const Phoenix::Math::CLine &line,
 					 Phoenix::Math::CVector3<float> & vClosestPoint);
 
@@ -185,7 +196,7 @@ namespace Phoenix
     /// \param vPoint Point in space.
     /// \param line Line which is compared to point.
     /// \param vClosestPoint Closest position on line to given point.
-    PHOENIX_API void ClosestPointOnLineSegment( const CVector3<float> &vPoint,
+    PHOENIX_API void ClosestPointOnLineSegment( const Phoenix::Math::CVector3<float> &vPoint,
 						const Phoenix::Math::CLineSegment & line,
 						Phoenix::Math::CVector3<float> & vClosestPoint );
 
@@ -223,7 +234,7 @@ namespace Phoenix
     /// \param vPoint The point to be checked.
     /// \param obBox An oriented box.
     /// \returns non-zero on intersect, zero otherwise.
-    PHOENIX_API int   PointIntersectsOBB( const CVector3<float> &vPoint,
+    PHOENIX_API int   PointIntersectsOBB( const Phoenix::Math::CVector3<float> &vPoint,
 					  const Phoenix::Volume::COrientedBox &obBox );
 
     ////////////////////
@@ -324,7 +335,7 @@ namespace Phoenix
     /// \returns non-zero on intersectsion.
     /// \returns zero on non-intersection.
     PHOENIX_API int PointInsideSphere( const Phoenix::Volume::CSphere & sphere,
-				       const CVector3<float> & vPoint );
+				       const Phoenix::Math::CVector3<float> & vPoint );
 
 
     ////////////////////

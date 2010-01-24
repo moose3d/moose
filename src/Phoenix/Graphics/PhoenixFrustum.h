@@ -2,8 +2,10 @@
 #ifndef __PhoenixFrustum_h__
 #define __PhoenixFrustum_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixSpatial.h"
-#include "PhoenixVolume.h"
+#include "PhoenixVector3.h"
+#include "PhoenixPolytope.h"
+#include "PhoenixOBB.h"
+#include "PhoenixPlane.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 #define NUM_FRUSTUM_CORNERS 8
@@ -70,7 +72,7 @@ namespace Phoenix
       /// Returns a corner of the frustum.
       /// \param nIndex The index of the corner.
       /// \returns CVector3 with the position of the desired corner.
-      CVector3<float>   GetCorner( FRUSTUM_CORNER nIndex );
+      Phoenix::Math::CVector3<float>   GetCorner( FRUSTUM_CORNER nIndex );
       ////////////////////
       /// Sets a corner value.
       /// \param nIndex The index of the corner to be set.

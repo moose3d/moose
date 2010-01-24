@@ -2,7 +2,7 @@
 #define __PhoenixDirectionalLight_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixOneDirectional.h"
 #include "PhoenixLight.h"
 #include "PhoenixAPI.h"
 #include "PhoenixRenderable.h"

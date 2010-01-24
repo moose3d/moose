@@ -2,7 +2,8 @@
 #define __CListener_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVector3.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixOrientable.h"
+#include "PhoenixPositional.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix

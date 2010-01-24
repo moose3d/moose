@@ -4,6 +4,7 @@
 namespace libname = Phoenix::AI;
 using namespace Phoenix::Collision;
 using namespace Phoenix::AI;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 libname::CFlock::CFlock()
 {

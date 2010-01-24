@@ -15,14 +15,6 @@
 #include <utility>
 #include <map>
 /////////////////////////////////////////////////////////////////
-using Phoenix::Graphics::CVertexDescriptor;
-using Phoenix::Graphics::CIndexArray;
-using Phoenix::Graphics::COglTexture;
-using Phoenix::Default::TEXTURE_HANDLE;
-using Phoenix::Default::VERTEX_HANDLE;
-using Phoenix::Default::INDEX_HANDLE;
-using Phoenix::Default::SHADER_HANDLE;
-/////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
   namespace Graphics
@@ -33,7 +25,7 @@ namespace Phoenix
     class PHOENIX_API CRenderableModel: public Phoenix::Graphics::CRenderable
     {
     protected:
-      CModel * m_pModel;
+      Phoenix::Graphics::CModel * m_pModel;
     public:
       ////////////////////
       /// Constructor.
@@ -46,12 +38,12 @@ namespace Phoenix
       /// \param stream Output stream.
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
-      friend std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModel & renderable );
+      friend std::ostream & Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModel & renderable );
       ////////////////////
       /// Renders this renderable using renderer.
       /// Overwrite this method to specialize rendering.
       /// \param renderer Renderer to be used.
-      virtual void Render( COglRenderer & renderer );
+      virtual void Render( Phoenix::Graphics::COglRenderer & renderer );
       ////////////////////
       /// \returns model handle.
       Phoenix::Graphics::CModel * GetModel();
@@ -59,6 +51,7 @@ namespace Phoenix
       /// Sets model.
       void SetModel( Phoenix::Graphics::CModel *pModel );
     };
+    std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModel & renderable );
   }; // namespace Graphics
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////

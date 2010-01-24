@@ -2,7 +2,6 @@
 #include "PhoenixCollision.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixVertexDescriptor.h"
-#include "PhoenixSpatial.h"
 #include <iostream>
 #include <assert.h>
 /////////////////////////////////////////////////////////////////

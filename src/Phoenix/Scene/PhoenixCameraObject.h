@@ -7,6 +7,8 @@
 #include <PhoenixVector2.h>
 #include <PhoenixGameObject.h>
 #include <PhoenixDefaultEntities.h>
+#include <PhoenixFrustum.h>
+#include <PhoenixQuad.h>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {

@@ -1,7 +1,8 @@
 #ifndef __CSoundBase_h__
 #define __CSoundBase_h__
 /////////////////////////////////////////////////////////////////
-#include "PhoenixSpatial.h"
+#include "PhoenixPositional.h"
+#include "PhoenixOneDirectional.h"
 #include "PhoenixVector3.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////

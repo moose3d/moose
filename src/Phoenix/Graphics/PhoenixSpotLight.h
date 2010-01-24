@@ -2,7 +2,8 @@
 #define __PhoenixSpotLight_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixPositional.h"
+#include "PhoenixOneDirectional.h"
 #include "PhoenixLight.h"
 #include "PhoenixAPI.h"
 #include "PhoenixRenderable.h"

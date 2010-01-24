@@ -1,7 +1,9 @@
 #ifndef PHOENIXDECALVOLUME_H_
 #define PHOENIXDECALVOLUME_H_
 #include "PhoenixPolytope.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixPositional.h"
+#include "PhoenixDimensional3D.h"
+#include "PhoenixOrientable.h"
 #include "PhoenixVector3.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -59,17 +61,17 @@ namespace Phoenix
 				AddPlane( plane );
       }
 
-      const CVector3<float> & GetNormalVector() const
+      const Phoenix::Math::CVector3<float> & GetNormalVector() const
       {
       	return GetForwardVector();
       }
 
-      const CVector3<float> & GetTangentVector() const
+      const Phoenix::Math::CVector3<float> & GetTangentVector() const
       {
       	return GetUpVector();
       }
 
-      const CVector3<float> & GetBitangentVector() const
+      const Phoenix::Math::CVector3<float> & GetBitangentVector() const
       {
       	return GetRightVector();
       }

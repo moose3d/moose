@@ -2,7 +2,6 @@
 #include "PhoenixMilkshapeLoader.h"
 #include "PhoenixObjLoader.h"
 #include "PhoenixDefaultEntities.h"
-#include "PhoenixSpatial.h"
 #include <sstream>
 #include <string>
 #include <assert.h>

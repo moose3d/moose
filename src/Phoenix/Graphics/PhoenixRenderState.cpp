@@ -54,14 +54,14 @@ Phoenix::Graphics::CRenderState::ParseFrom( Phoenix::Graphics::NameValueMap & ma
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
-TEXTURE_HANDLE &
+Phoenix::Default::TEXTURE_HANDLE &
 Phoenix::Graphics::CRenderState::GetTextureHandle( unsigned int nId )
 {
   return m_aTextureHandles[nId % TEXTURE_HANDLE_COUNT];
 }
 ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-vector<TEXTURE_FILTER> &
+vector<Phoenix::Graphics::TEXTURE_FILTER> &
 Phoenix::Graphics::CRenderState::GetTextureFilters( unsigned int nId )
 {
   assert( nId < TEXTURE_HANDLE_COUNT && "nId Over TEXTURE_HANDLE_COUNT");
@@ -77,14 +77,14 @@ Phoenix::Graphics::CRenderState::AddTextureFilter( TEXTURE_FILTER tTexFilter, un
   }
 }
 /////////////////////////////////////////////////////////////////
-SHADER_HANDLE &
+Phoenix::Default::SHADER_HANDLE &
 Phoenix::Graphics::CRenderState::GetShaderHandle()
 {
   return m_ShaderHandle;
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderState::AddShaderParameter( const char *sName, VERTEX_HANDLE *pHandle )
+Phoenix::Graphics::CRenderState::AddShaderParameter( const char *sName, Phoenix::Default::VERTEX_HANDLE *pHandle )
 {
   m_vShaderParams.push_back( std::make_pair( string(sName), pHandle)  );
 }

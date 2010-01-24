@@ -1,7 +1,7 @@
 GENERIC_LIBRARY_NAME="Phoenix"
 #AM_CXXFLAGS = -O0 
-h_sources = PhoenixSpatial.h
-cc_sources = PhoenixSpatial.cpp
+h_sources = PhoenixOrientable.h PhoenixDimensional1D.h PhoenixDimensional2D.h PhoenixDimensional3D.h PhoenixOneDirectional.h PhoenixPositional.h PhoenixTriangle.h PhoenixVertex.h
+cc_sources = PhoenixOrientable.cpp
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)

@@ -2,7 +2,7 @@
 #define __PhoenixPointLight_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixCore.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixPositional.h"
 #include "PhoenixLight.h"
 #include "PhoenixAPI.h"
 #include "PhoenixRenderable.h"

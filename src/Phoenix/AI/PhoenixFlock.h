@@ -4,8 +4,9 @@
 #include <vector>
 #include <list>
 #include "PhoenixVector3.h"
-#include "PhoenixVolume.h"
-#include "PhoenixSpatial.h"
+#include "PhoenixSphere.h"
+#include "PhoenixAABB.h"
+#include "PhoenixOneDirectional.h"
 #include "PhoenixAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -50,7 +51,7 @@ namespace Phoenix
       /// Updates all boids.
       void Update();
       void SetTarget( const Phoenix::Math::CVector3<float> & vTargetPos );
-      const CVector3<float> & GetTarget() const;
+      const Phoenix::Math::CVector3<float> & GetTarget() const;
       BoidPtrVector & GetBoids();
       Phoenix::Volume::CSphere & GetBoundingSphere();
     private:

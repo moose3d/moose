@@ -1,8 +1,8 @@
 #ifndef PHOENIXPOLYTOPE_H_
 #define PHOENIXPOLYTOPE_H_
 /////////////////////////////////////////////////////////////////
-#include "PhoenixSpatial.h"
-#include "PhoenixMathGeometry.h"
+#include "PhoenixPlane.h"
+#include "PhoenixPolytope.h"
 #include "PhoenixIndexArray.h"
 #include "PhoenixTransform.h"
 #include <iostream>

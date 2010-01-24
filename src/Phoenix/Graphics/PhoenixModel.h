@@ -18,30 +18,21 @@ namespace Phoenix
 {
   namespace Graphics
   {
-  	using Phoenix::Graphics::CVertexDescriptor;
-  	using Phoenix::Graphics::CIndexArray;
-  	using Phoenix::Graphics::COglTexture;
-  	using Phoenix::Default::TEXTURE_HANDLE;
-  	using Phoenix::Default::VERTEX_HANDLE;
-  	using Phoenix::Default::INDEX_HANDLE;
-  	using Phoenix::Default::SHADER_HANDLE;
-
   	////////////////////
     /// class for 3D models with texture and vertex data.
     class PHOENIX_API CModel
     {
-
     protected:
       /// Handle to texture coordinates.
-      VERTEX_HANDLE			      m_aTextureCoordinateHandles[TEXTURE_HANDLE_COUNT];
+  	  Phoenix::Default::VERTEX_HANDLE			      m_aTextureCoordinateHandles[TEXTURE_HANDLE_COUNT];
       /// Handle to vertices. (position data)
-      VERTEX_HANDLE			      m_VertexDescriptorHandle;
+  	  Phoenix::Default::VERTEX_HANDLE			      m_VertexDescriptorHandle;
       /// Handle to vertex normals.
-      VERTEX_HANDLE			      m_VertexNormalHandle;
+  	  Phoenix::Default::VERTEX_HANDLE			      m_VertexNormalHandle;
       /// Handle to vertex colors.
-      VERTEX_HANDLE			      m_VertexColorHandle;
+  	  Phoenix::Default::VERTEX_HANDLE			      m_VertexColorHandle;
       /// Handle to index arrays for triangle list and/or Triangle strips.
-      INDEX_HANDLE			      m_hIndices;
+      Phoenix::Default::INDEX_HANDLE			      m_hIndices;
 
 
     public:
@@ -59,24 +50,24 @@ namespace Phoenix
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE     & GetVertexHandle();
+      Phoenix::Default::VERTEX_HANDLE     & GetVertexHandle();
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE    & GetNormalHandle();
+      Phoenix::Default::VERTEX_HANDLE    & GetNormalHandle();
       ////////////////////
       /// Returns handle to vertex descriptor.
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE    & GetColorHandle();
+      Phoenix::Default::VERTEX_HANDLE    & GetColorHandle();
       ////////////////////
       /// Returns reference to a handle with triangle lists indices .
       /// \returns INDEX_HANDLE.
-      INDEX_HANDLE &	GetIndices();
+      Phoenix::Default::INDEX_HANDLE &	GetIndices();
       ////////////////////
       /// Returns handle to Texture Coordinate vertex descriptor.
       /// \param nId From which texture unit these coordinates are retrieved. By default, the first one (zero).
       /// \returns VERTEX_HANDLE.
-      VERTEX_HANDLE & GetTextureCoordinateHandle( unsigned int nId = 0 );
+      Phoenix::Default::VERTEX_HANDLE & GetTextureCoordinateHandle( unsigned int nId = 0 );
       ////////////////////
       /// Debugging output.
       /// \param stream Output stream.

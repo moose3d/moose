@@ -8,7 +8,8 @@
 #ifndef PHOENIXSPHERE_H_
 #define PHOENIXSPHERE_H_
 /////////////////////////////////////////////////////////////////
-#include "PhoenixSpatial.h"
+#include "PhoenixVector3.h"
+#include "PhoenixPositional.h"
 #include "PhoenixTransform.h"
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"
@@ -36,7 +37,7 @@ namespace Phoenix
       }
       /////////////////////////////////////////////////////////////////
       /// The parametrized constructor.
-      CSphere( const CVector3<float> & vPosition, float fRadius ) : CPositional( vPosition )
+      CSphere( const Phoenix::Math::CVector3<float> & vPosition, float fRadius ) : Phoenix::Spatial::CPositional( vPosition )
       {
 				m_fRadius = fRadius;
 				m_fRadiusSqr = m_fRadius * m_fRadius;
@@ -44,7 +45,7 @@ namespace Phoenix
       /////////////////////////////////////////////////////////////////
       /// Assingment operator.
       /// \param ref sphere to be assigned.
-      inline CSphere & operator=(CSphere ref)
+      inline Phoenix::Volume::CSphere & operator=(CSphere ref)
       {
 				SetPosition(ref.GetPosition());
 				SetRadius( ref.m_fRadius );
@@ -74,7 +75,7 @@ namespace Phoenix
       }
       /////////////////////////////////////////////////////////////////
       /// For debugging.
-      friend std::ostream& operator<<( std::ostream &stream, CSphere sphere )
+      friend std::ostream& operator<<( std::ostream &stream, Phoenix::Volume::CSphere sphere )
       {
 				stream << "C = " << sphere.GetPosition() << ", radius " << sphere.GetRadius();
 				return stream;
@@ -84,28 +85,28 @@ namespace Phoenix
 
     }; // class CSphere
     ////////////////////
-		/// Calculates the bounding sphere for vertices in VertexDescriptor using fast but not so accurate algorithm.
-		/// \param vertexDescriptor Vertices.
-		/// \returns Bounding sphere.
-		PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
-		////////////////////
-		/// Calculates the bounding sphere for vertices in VertexDescriptor using slightly slower, but more accurate algorithm
-		/// \param vertexDescriptor Vertices.
-		/// \returns Bounding sphere.
-		PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
-		////////////////////
-		/// Calculates the bounding sphere for vertices in VertexDescriptor by given set of indices using slightly slower, but more accurate algorithm
-		/// \param vertexDescriptor Vertices.
-		/// \param indices Which vertices are used.
-		/// \returns Bounding sphere.
-		PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
-											 const Phoenix::Graphics::CIndexArray &indices );
-		 ////////////////////
-		/// Creates a new sphere is the minimum sphere containing two spheres given as arguments.
-		/// \param one One sphere.
-		/// \param two Another sphere.
-		/// \returns Sphere enclosing both spheres.
-		PHOENIX_API Phoenix::Volume::CSphere MergeSpheres( const Phoenix::Volume::CSphere &one, const Phoenix::Volume::CSphere &two);
+    /// Calculates the bounding sphere for vertices in VertexDescriptor using fast but not so accurate algorithm.
+    /// \param vertexDescriptor Vertices.
+    /// \returns Bounding sphere.
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphere( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the bounding sphere for vertices in VertexDescriptor using slightly slower, but more accurate algorithm
+    /// \param vertexDescriptor Vertices.
+    /// \returns Bounding sphere.
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor );
+    ////////////////////
+    /// Calculates the bounding sphere for vertices in VertexDescriptor by given set of indices using slightly slower, but more accurate algorithm
+    /// \param vertexDescriptor Vertices.
+    /// \param indices Which vertices are used.
+    /// \returns Bounding sphere.
+    PHOENIX_API Phoenix::Volume::CSphere CalculateBoundingSphereTight( const Phoenix::Graphics::CVertexDescriptor &vertexDescriptor,
+    		const Phoenix::Graphics::CIndexArray &indices );
+    ////////////////////
+    /// Creates a new sphere is the minimum sphere containing two spheres given as arguments.
+    /// \param one One sphere.
+    /// \param two Another sphere.
+    /// \returns Sphere enclosing both spheres.
+    PHOENIX_API Phoenix::Volume::CSphere MergeSpheres( const Phoenix::Volume::CSphere &one, const Phoenix::Volume::CSphere &two);
 
   }// Volume
 } // Phoenix

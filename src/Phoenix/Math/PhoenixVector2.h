@@ -101,6 +101,7 @@ namespace Phoenix
 	return (m_aValues[0] == vVector.m_aValues[0] &&
 		m_aValues[1] == vVector.m_aValues[1] );
       }
+#ifndef SWIG
       ////////////////////
       /// The inequality comparison operator.
       /// \returns truth value - non-zero if one or more components in 
@@ -110,6 +111,7 @@ namespace Phoenix
 	return (m_aValues[0] != vVector.m_aValues[0] ||
 		m_aValues[1] != vVector.m_aValues[1] );
       }
+#endif
       ////////////////////
       /// Calculates the dot product.
       inline TYPE Dot( const CVector2 & vVector ) const
@@ -192,6 +194,7 @@ namespace Phoenix
 	return CVector2(m_aValues[0] + vVector[0],
 			m_aValues[1] + vVector[1]);
       }
+#ifndef SWIG
       ////////////////////
       /// Sum with assigning.
       /// \param vVector vector to be added.
@@ -217,6 +220,7 @@ namespace Phoenix
 	m_aValues[0] *= t1DivValue;
 	m_aValues[1] *= t1DivValue;
       }
+
       ////////////////////
       /// Multiplying with scalar must be able from both sides.
       /// \param tScalar Scaling magnitude.
@@ -237,7 +241,7 @@ namespace Phoenix
 	stream << vVector[0] << "," << vVector[1] ;
 	return stream;
       }
-
+#endif
     }; // CVector2
     /////////////////////////////////////////////////////////////////
     template <>
@@ -338,6 +342,7 @@ namespace Phoenix
 	return ( QUITE_CLOSE_TO(m_aValues[0], vVector.m_aValues[0]) &&
 		 QUITE_CLOSE_TO(m_aValues[1], vVector.m_aValues[1]) );
       }
+#ifndef SWIG
       ////////////////////
       /// The inequality comparison operator.
       /// \returns truth value - non-zero if one or more components in 
@@ -347,6 +352,7 @@ namespace Phoenix
 	return ( !QUITE_CLOSE_TO(m_aValues[0], vVector.m_aValues[0]) ||
 		 !QUITE_CLOSE_TO(m_aValues[1], vVector.m_aValues[1]) );
       }
+#endif
       ////////////////////
       /// Calculates the dot product.
       inline float Dot( const CVector2 & vVector ) const
@@ -429,6 +435,7 @@ namespace Phoenix
 	return CVector2(m_aValues[0] + vVector[0],
 			m_aValues[1] + vVector[1]);
       }
+#ifndef SWIG
       ////////////////////
       /// Sum with assigning.
       /// \param vVector vector to be added.
@@ -474,7 +481,7 @@ namespace Phoenix
 	stream << vVector[0] << "," << vVector[1] ;
 	return stream;
       }
-
+#endif
     }; // CVector2<float>
   } // namespace Math
 } // namespace Phoenix

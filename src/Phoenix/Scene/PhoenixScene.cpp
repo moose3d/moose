@@ -95,8 +95,9 @@ Phoenix::Scene::CGameObject *
 Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
 {
 	pObj->Init();
+
 	// Create handle to object
-	g_ObjectMgr->Create(pObj, pObj->GetName(), pObj->GetObjectHandle());
+	assert( g_ObjectMgr->Create(pObj, pObj->GetName(), pObj->GetObjectHandle()) == 0 );
 
 	// so it is affected by transforms.
 	CObjectTransform *pObjTr = GetTransformGraph().Insert(pObj);

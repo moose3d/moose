@@ -3,7 +3,9 @@
 #define __PhoenixCollider_h__
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixMath.h"
-#include "PhoenixVolume.h"
+#include "PhoenixSphere.h"
+#include "PhoenixOBB.h"
+#include "PhoenixRay.h"
 #include "PhoenixFrustum.h"
 #include "PhoenixTransform.h"
 ///////////////////////////////////////////////////////////////////////////////

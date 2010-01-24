@@ -3,8 +3,7 @@
 /////////////////////////////////////////////////////////////////
 #include <list>
 #include <iostream>
-#include "PhoenixSpatial.h"
-#include "PhoenixVolume.h"
+#include "PhoenixAACube.h"
 #include "PhoenixCamera.h"
 #include "PhoenixCollision.h"
 #include "PhoenixGlobals.h"

@@ -1,6 +1,7 @@
 #include "PhoenixAABB.h"
 #include "PhoenixGlobals.h"
 #include "PhoenixVertexDescriptor.h"
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 Phoenix::Volume::CAxisAlignedBox::CAxisAlignedBox() :
 								  CPositional(CVector3<float>(0.0f,0.0f,0.0f)),
