@@ -1,15 +1,8 @@
-/*
- * PhoenixSphereCollider.h
- *
- *  Created on: Jun 1, 2009
- *      Author: entity
- */
-
-#ifndef __PhoenixSphereCollider_h__
-#define __PhoenixSphereCollider_h__
+#ifndef __PhoenixOBBCollider_h__
+#define __PhoenixOBBCollider_h__
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixCollider.h"
-#include "PhoenixSphereBound.h"
+#include "PhoenixBoxBound.h"
 #include "PhoenixRay.h"
 #include "PhoenixSphere.h"
 #include "PhoenixOBB.h"
@@ -19,15 +12,12 @@ namespace Phoenix
 {
 	namespace Collision
 	{
-		///////////////////
-		/// Sphere-based collider
-	    class CSphereCollider : public Phoenix::Collision::ICollider,
-								 public Phoenix::Volume::CSphereBound
+		class COBBCollider : public Phoenix::Collision::ICollider,
+							  public Phoenix::Volume::CBoxBound
 		{
 		public:
-			CSphereCollider();
-			virtual ~CSphereCollider();
-
+			COBBCollider();
+			virtual ~COBBCollider();
 			bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const;
 			bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const;
 			bool Intersects( const Phoenix::Volume::COrientedBox & box ) const;
@@ -42,8 +32,8 @@ namespace Phoenix
 			bool Intersects( const Phoenix::Collision::ICollider & collider ) const;
 
 			void Render( Phoenix::Graphics::COglRenderer & renderer );
-		}; // CSphereCollider
-	};// Collision
-}; // Phoenix
+		};
+	}
+}
 ///////////////////////////////////////////////////////////////////////////////
-#endif /* PHOENIXSPHERECOLLIDER_H_ */
+#endif /* PHOENIXOBBCOLLIDER_H_ */

@@ -122,18 +122,14 @@ prefix::CSphereCollider::Intersects( const Phoenix::Collision::ICollider & colli
 		tmp.Move( m_pTransform->GetTranslation());
 		return collider.Intersects(tmp);
 	}
-  return collider.Intersects(GetBoundingSphere());
+	return collider.Intersects(GetBoundingSphere());
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CSphereCollider::Render( Phoenix::Graphics::COglRenderer & renderer )
 {
-	if ( m_pTransform )
-	{
-			Phoenix::Volume::CSphere tmp = GetBoundingSphere();
-			tmp.Move( m_pTransform->GetTranslation());
-			renderer.CommitSphere( tmp );
-	}
-	else renderer.CommitSphere( GetBoundingSphere() );
+	if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
+	renderer.CommitSphere( GetBoundingSphere() );
+	if ( m_pTransform ) renderer.RollbackTransform();
 }
 ///////////////////////////////////////////////////////////////////////////////

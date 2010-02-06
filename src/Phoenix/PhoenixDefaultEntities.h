@@ -19,6 +19,7 @@ namespace Phoenix
   namespace Graphics
   {
 	  class CModel;
+	  class CCamera;
   }
   namespace Default
   {
@@ -28,13 +29,17 @@ namespace Phoenix
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CIndexArray>       INDEX_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CShader>           SHADER_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CModel>			 MODEL_HANDLE;
+    typedef Phoenix::Core::CHandle<Phoenix::Scene::CGameObject>			 OBJECT_HANDLE;
+    typedef Phoenix::Core::CHandle<Phoenix::Graphics::CCamera>			 CAMERA_HANDLE;
     ////////////////////
     // Typedefs for default resource manager types.
-    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::COglTexture,		TEXTURE_HANDLE>  TextureManager;
-    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CVertexDescriptor,	VERTEX_HANDLE>   VertexManager;
-    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CIndexArray,		INDEX_HANDLE>    IndexManager;
-    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CShader,		SHADER_HANDLE>   ShaderManager;
-    typedef Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> > ObjectMgr;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::COglTexture,		TEXTURE_HANDLE > TextureManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CVertexDescriptor,	VERTEX_HANDLE  > VertexManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CIndexArray,		INDEX_HANDLE   > IndexManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CShader,			SHADER_HANDLE  > ShaderManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera,			CAMERA_HANDLE  > CameraManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, 			OBJECT_HANDLE  > ObjectMgr;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, 			MODEL_HANDLE   > ModelManager;
     ////////////////////
 #ifdef WIN32
 #ifndef PHOENIX_DLL_EXPORT
@@ -52,7 +57,14 @@ namespace Phoenix
     {
       friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;
     };
-    ObjectMgr * GetObjectMgr();
+    ObjectMgr * 		GetObjectMgr();
+    TextureManager * 	GetTextureMgr();
+    VertexManager * 	GetVertexMgr();
+    IndexManager  * 	GetIndexMgr();
+    ShaderManager * 	GetShaderMgr();
+    ModelManager * 		GetModelMgr();
+    CameraManager * 	GetCameraMgr();
+
   }; // namespace Default
 }; // namespace Phoenix
 ////////////////////
@@ -83,6 +95,7 @@ namespace Phoenix
 #define g_IndexMgr             (Phoenix::Default::IndexManager::GetInstance())
 #define g_ShaderMgr            (Phoenix::Default::ShaderManager::GetInstance())
 #define g_ModelMgr             (Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >::GetInstance())
+#define g_CameraMgr            (Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera, Phoenix::Core::CHandle<Phoenix::Graphics::CCamera> >::GetInstance())
 #define g_ObjectUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
 
 

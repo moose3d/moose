@@ -256,7 +256,8 @@ Phoenix::Scene::CScene::Render( COglRenderer & renderer )
 	m_PostGUIRenderQueue.Render( renderer );      // After GUI
 
 	renderer.Finalize();
-	CSDLScreen::GetInstance()->SwapBuffers();
+	// OpenGL context may be created also via other method.
+	if (CSDLScreen::Exists()){ CSDLScreen::GetInstance()->SwapBuffers();}
 	// for each camera do
 	// CollectVisibleGameObjects();
 	// for each game object

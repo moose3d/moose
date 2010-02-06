@@ -1,32 +1,27 @@
 /*
- * PhoenixSphereCollider.h
+ * PhoenixCompoundCollider.h
  *
- *  Created on: Jun 1, 2009
+ *  Created on: 7 Feb 2010
  *      Author: entity
  */
 
-#ifndef __PhoenixSphereCollider_h__
-#define __PhoenixSphereCollider_h__
-///////////////////////////////////////////////////////////////////////////////
+#ifndef PHOENIXCOMPOUNDCOLLIDER_H_
+#define PHOENIXCOMPOUNDCOLLIDER_H_
+
 #include "PhoenixCollider.h"
-#include "PhoenixSphereBound.h"
-#include "PhoenixRay.h"
-#include "PhoenixSphere.h"
-#include "PhoenixOBB.h"
-#include "PhoenixFrustum.h"
-///////////////////////////////////////////////////////////////////////////////
+#include <vector>
 namespace Phoenix
 {
 	namespace Collision
 	{
-		///////////////////
-		/// Sphere-based collider
-	    class CSphereCollider : public Phoenix::Collision::ICollider,
-								 public Phoenix::Volume::CSphereBound
+		typedef std::vector<ICollider *> ColliderVector;
+		class CCompoundCollider: public Phoenix::Collision::ICollider
 		{
+		protected:
+			ColliderVector m_vecColliders;
 		public:
-			CSphereCollider();
-			virtual ~CSphereCollider();
+			CCompoundCollider( );
+			virtual ~CCompoundCollider();
 
 			bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const;
 			bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const;
@@ -40,10 +35,16 @@ namespace Phoenix
 			//bool Intersects( const Phoenix::Math::CLine & line ) const;
 			bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const;
 			bool Intersects( const Phoenix::Collision::ICollider & collider ) const;
-
+			void SetColliderTransform( Phoenix::Math::CTransform *pTransform );
 			void Render( Phoenix::Graphics::COglRenderer & renderer );
-		}; // CSphereCollider
-	};// Collision
-}; // Phoenix
-///////////////////////////////////////////////////////////////////////////////
-#endif /* PHOENIXSPHERECOLLIDER_H_ */
+			void AddCollider( ICollider *pCollider );
+			ColliderVector & GetColliders();
+			const ColliderVector & GetColliders() const;
+			ICollider * At( int index );
+
+		};
+	}
+
+}
+
+#endif /* PHOENIXCOMPOUNDCOLLIDER_H_ */

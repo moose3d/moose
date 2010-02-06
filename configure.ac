@@ -4,6 +4,7 @@ AC_INIT(src/Phoenix/Phoenix.h)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER(src/Phoenix/config.h)
 AM_INIT_AUTOMAKE(Phoenix, 0.99, entity@iki.fi)
 
@@ -12,7 +13,7 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_LANG(C++)
 
-
+ACLOCAL_AMFLAGS="-I m4"
 # Checks for libraries.
 
 # Checks for header files.

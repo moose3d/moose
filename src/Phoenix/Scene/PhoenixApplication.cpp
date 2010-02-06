@@ -21,6 +21,7 @@ prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
 	m_bSceneHasMouseUp = false;
 	m_bSceneHasMouseMotion = false;
 	m_bHasQuit = false;
+	m_pMainLoopThread = NULL;
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CApplication::~CApplication()
@@ -205,6 +206,46 @@ Phoenix::Core::CTimer &
 prefix::CApplication::GetTimer()
 {
 	return m_Timer;
+}
+///////////////////////////////////////////////////////////////////////////////
+int MainLoop( void * data )
+{
+	CApplication *pApp = reinterpret_cast<CApplication *>(data);
+	if ( !pApp ) return 1;
+	CFpsCounter & fps = pApp->GetFPSCounter();
+	while( pApp->IsEnabled() )
+	{
+		pApp->Update();
+		pApp->Render();
+		fps++;
+		fps.Update();
+		if ( fps.HasPassed(1,0))
+		{
+			//cout << "FPS: " << counter.GetFPS() << endl;
+			fps.Reset();
+		}
+	}
+
+	return 0;
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+prefix::CApplication::Run()
+{
+	m_pMainLoopThread = SDL_CreateThread(MainLoop, this);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+prefix::CApplication::Halt()
+{
+	SetEnabled(false);
+	if ( m_pMainLoopThread ) SDL_WaitThread(m_pMainLoopThread, NULL);
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Core::CFpsCounter &
+prefix::CApplication::GetFPSCounter()
+{
+	return m_FpsCounter;
 }
 ///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_DECL( OpenScreen );

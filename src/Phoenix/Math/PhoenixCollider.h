@@ -43,7 +43,7 @@ namespace Phoenix
 //			virtual bool Intersects( const Phoenix::Math::CLine & line ) const = 0;
 			virtual bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const = 0;
 			virtual bool Intersects( const Phoenix::Collision::ICollider & collider ) const = 0;
-			void SetColliderTransform( Phoenix::Math::CTransform *pTransform ) { m_pTransform = pTransform; }
+			virtual void SetColliderTransform( Phoenix::Math::CTransform *pTransform ) { m_pTransform = pTransform; }
 			Phoenix::Math::CTransform * GetColliderTransform() { return m_pTransform; }
       ///////////////////
 			/// Makes it possible to generate visual representations of colliders.

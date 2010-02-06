@@ -33,6 +33,8 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixCollision.h"
 #include <PhoenixSphereCollider.h>
+#include <PhoenixOBBCollider.h>
+#include <PhoenixCompoundCollider.h>
 #include "PhoenixMilkshapeLoader.h"
 #include "PhoenixAmbientLight.h"
 #include "PhoenixDirectionalLight.h"
