@@ -71,13 +71,14 @@ Phoenix::Math::CPlane::Calculate( CVector3<float> vNormal, const CVector3<float>
   m_aValues[3] = -(vNormal.Dot(vPoint));
 }
 /////////////////////////////////////////////////////////////////
+#ifndef SWIG
 std::ostream&
 Phoenix::Math::operator<<( std::ostream &stream, const CPlane &plane )
 {
   stream << "(" << plane[0] << "," << plane[1] << "," << plane[2] << "," << plane[3] ;
   return stream;
 }
-
+#endif
 // /////////////////////////////////////////////////////////////////
 // CPlaneIntersection
 // Geometry::SphereIntersectsPlane( CPlane &plane,

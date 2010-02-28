@@ -71,10 +71,19 @@ namespace Phoenix
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
-      inline TYPE At( unsigned int nIndex ) const
+      inline const TYPE & At( unsigned int nIndex ) const
       {
 	return m_aValues[nIndex];
       }
+      ////////////////////
+      /// Returns value of an element.
+      /// \param nIndex Element index.
+      /// \return value of the element.
+      inline TYPE & At( unsigned int nIndex )
+      {
+          return m_aValues[nIndex];
+      }
+#ifndef SWIG
       ////////////////////
       /// [] operator to help accessing the values, 
       /// \returns returns reference to value at index iIndex.
@@ -89,6 +98,7 @@ namespace Phoenix
       {
 	return m_aValues[iIndex];
       }
+#endif
       ////////////////////
       /// The assignment operator.
       /// \returns reference to this object.
@@ -98,6 +108,7 @@ namespace Phoenix
 	m_aValues[1] = vVector.m_aValues[1];
 	m_aValues[2] = vVector.m_aValues[2];
       }
+#ifndef SWIG
       ////////////////////
       /// The equality comparison operator.
       /// \returns truth value - non-zero if each corresponding component in 
@@ -108,7 +119,6 @@ namespace Phoenix
 		m_aValues[1] == vVector.m_aValues[1] &&
 	        m_aValues[2] == vVector.m_aValues[2] );
       }
-#ifndef SWIG
       ////////////////////
       /// The inequality comparison operator.
       /// \returns truth value - non-zero if one or more components in 
@@ -345,10 +355,19 @@ namespace Phoenix
       /// Returns value of an element.
       /// \param nIndex Element index.
       /// \return value of the element.
-      inline float At( unsigned int nIndex ) const
+      inline const float & At( unsigned int nIndex ) const
       {
 	return m_aValues[nIndex];
       }
+      ////////////////////
+      /// Returns value of an element.
+      /// \param nIndex Element index.
+      /// \return value of the element.
+      inline float & At( unsigned int nIndex )
+      {
+    return m_aValues[nIndex];
+      }
+#ifndef SWIG
       ////////////////////
       /// [] operator to help accessing the values, 
       /// \returns returns reference to value at index iIndex.
@@ -363,6 +382,7 @@ namespace Phoenix
       {
 	return m_aValues[iIndex];
       }
+#endif
       ////////////////////
       /// The assignment operator.
       /// \returns reference to this object.
@@ -372,6 +392,7 @@ namespace Phoenix
 	m_aValues[1] = vVector.m_aValues[1];
 	m_aValues[2] = vVector.m_aValues[2];
       }
+#ifndef SWIG
       ////////////////////
       /// The equality comparison operator.
       /// \returns truth value - non-zero if each corresponding component in 
@@ -382,7 +403,6 @@ namespace Phoenix
 		 QUITE_CLOSE_TO(m_aValues[1], vVector.m_aValues[1]) &&
 		 QUITE_CLOSE_TO(m_aValues[2], vVector.m_aValues[2]) );
       }
-#ifndef SWIG
       ////////////////////
       /// The inequality comparison operator.
       /// \returns truth value - non-zero if one or more components in 

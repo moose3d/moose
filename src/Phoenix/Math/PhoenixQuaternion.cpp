@@ -67,6 +67,7 @@ CQuaternion::CreateFromAxisAnglesRad( const CVector3<float> &vValues )
   *this = qCombined;
 }
 /////////////////////////////////////////////////////////////////
+#ifndef SWIG
 std::ostream & 
 Phoenix::Math::operator<<(std::ostream &stream, const CQuaternion & qQuat)
 {
@@ -74,3 +75,4 @@ Phoenix::Math::operator<<(std::ostream &stream, const CQuaternion & qQuat)
   return stream;
 }
 /////////////////////////////////////////////////////////////////
+#endif

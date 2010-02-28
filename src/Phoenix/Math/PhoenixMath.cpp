@@ -199,7 +199,7 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, CMatrix4x4<float> & 
 //
 // ---------------------------------------------------------------------------------
 void
-GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> vPoint2,
+Phoenix::Math::GetTBNMatrix( CVector3<float> vPoint0, CVector3<float> vPoint1, CVector3<float> vPoint2,
 	      CVector2<float> vTexCoord0, CVector2<float> vTexCoord1, CVector2<float> vTexCoord2,
 	      CMatrix3x3<float> & mResult)
 {

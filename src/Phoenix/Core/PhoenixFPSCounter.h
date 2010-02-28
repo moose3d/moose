@@ -20,6 +20,7 @@ namespace Phoenix
     {
 	ResetFrames();
     }
+#ifndef SWIG
     ////////////////////
     /// Makes it possible to write ++fpsCounter in order to increase framecount.
     /// \returns reference to fpscounter object.
@@ -37,6 +38,7 @@ namespace Phoenix
 	AddFrame();
 	return *this;
     }
+
     ////////////////////
     /// So Frames per second can be printed directly using the object itself.
     /// \param s output stream.
@@ -47,6 +49,7 @@ namespace Phoenix
 	s << ref.GetFPS();
 	return s;
     }
+#endif
     ////////////////////
     /// Increases the frame count by 1.
     inline void AddFrame()

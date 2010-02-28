@@ -312,10 +312,21 @@ namespace Phoenix
       /// \param iRow Row id. Must be 0-3.
       /// \param iCol Column id. Must be 0-3.
       /// \returns Value at matrix[ iRow, iCol ].
-      inline const TYPE At(unsigned int iRow, unsigned int iCol) const
+      inline const TYPE & At(unsigned int iRow, unsigned int iCol) const
       {
 	return m_aValues[(iRow*4)+iCol];
       }
+      ////////////////////
+      /// Returns value (logically ) located at the
+      /// iRow:th row and iCol:th column of the matrix.
+      /// \param iRow Row id. Must be 0-3.
+      /// \param iCol Column id. Must be 0-3.
+      /// \returns Value at matrix[ iRow, iCol ].
+      inline  TYPE & At(unsigned int iRow, unsigned int iCol)
+      {
+          return m_aValues[(iRow*4)+iCol];
+      }
+#ifndef SWIG
       ////////////////////
       /// Returns reference to value logically located at the
       /// iRow:th row and iCol:th column of the matrix. 
@@ -336,6 +347,7 @@ namespace Phoenix
       {
 	return m_aValues[(iRow*4)+iCol];
       }
+#endif
       ////////////////////
       /// Transposes matrix.
       void Transpose()
@@ -380,28 +392,34 @@ namespace Phoenix
       {
 	return m_aValues[0] + m_aValues[5] + m_aValues[10] + m_aValues[15];
       }
+#ifndef SWIG
       ////////////////////
       /// Division operator with assign.
       /// \param divider value for division.
       inline void operator/=(TYPE divider)
       {
-	TYPE t1DivValue = 1.0f / divider;
-	m_aValues[0] *= t1DivValue;
-	m_aValues[1] *= t1DivValue;
-	m_aValues[2] *= t1DivValue;
-	m_aValues[3] *= t1DivValue;
-	m_aValues[4] *= t1DivValue;
-	m_aValues[5] *= t1DivValue;
-	m_aValues[6] *= t1DivValue;
-	m_aValues[7] *= t1DivValue;
-	m_aValues[8] *= t1DivValue;
-	m_aValues[9] *= t1DivValue;
-	m_aValues[10] *= t1DivValue;
-	m_aValues[11] *= t1DivValue;
-	m_aValues[12] *= t1DivValue;
-	m_aValues[13] *= t1DivValue;
-	m_aValues[14] *= t1DivValue;
-	m_aValues[15] *= t1DivValue;
+          Div(divider);
+      }
+#endif
+      inline void Div(TYPE divider)
+      {
+          TYPE t1DivValue = 1.0f / divider;
+          m_aValues[0] *= t1DivValue;
+          m_aValues[1] *= t1DivValue;
+          m_aValues[2] *= t1DivValue;
+          m_aValues[3] *= t1DivValue;
+          m_aValues[4] *= t1DivValue;
+          m_aValues[5] *= t1DivValue;
+          m_aValues[6] *= t1DivValue;
+          m_aValues[7] *= t1DivValue;
+          m_aValues[8] *= t1DivValue;
+          m_aValues[9] *= t1DivValue;
+          m_aValues[10] *= t1DivValue;
+          m_aValues[11] *= t1DivValue;
+          m_aValues[12] *= t1DivValue;
+          m_aValues[13] *= t1DivValue;
+          m_aValues[14] *= t1DivValue;
+          m_aValues[15] *= t1DivValue;
       }
       ////////////////////
       /// Swaps the two rows.
@@ -473,6 +491,7 @@ namespace Phoenix
 	(*this)(2,iCol) *= tMultiplier;
 	(*this)(3,iCol) *= tMultiplier;
       }
+#ifndef SWIG
       ////////////////////
       /// Prints the matrix values to stream.
       /// \param stream The output stream where matrix is printed.
@@ -494,6 +513,7 @@ namespace Phoenix
 	stream << std::endl;
 	return stream;
       }
+#endif
       ////////////////////
       /// Initializes a matrix to Identity matrix.
       inline void IdentityMatrix()

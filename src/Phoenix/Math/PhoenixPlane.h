@@ -4,7 +4,6 @@
 #include <PhoenixAPI.h>
 #include <PhoenixVector3.h>
 #include <PhoenixVector4.h>
-#include <PhoenixPlane.h>
 /////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -24,11 +23,13 @@ namespace Phoenix
 		void SetDistance( float fDistance );
 		void Normalize();
 		void Calculate( Phoenix::Math::CVector3<float> vNormal, const Phoenix::Math::CVector3<float> & vPoint );
-
+#ifndef SWIG
 		friend std::ostream& Phoenix::Math::operator<<( std::ostream &stream, const Phoenix::Math::CPlane & plane );
-
+#endif
 	  };
+#ifndef SWIG
 	  std::ostream& operator<<( std::ostream &stream, const Phoenix::Math::CPlane & plane );
+#endif
   } // Math
 } // Phoenix
 /////////////////////////////////////////////////////////////

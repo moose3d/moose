@@ -99,6 +99,7 @@ namespace Phoenix
 			    -m_aValues[2],
 			    -m_aValues[3]);
       }
+#ifndef SWIG
       ////////////////////
       /// So the scaling can be done both ways, from left or right.
       /// \param fValue Scaling magnitude.
@@ -111,6 +112,7 @@ namespace Phoenix
 			   qQuat[2] * fValue,
 			   qQuat[3] * fValue);
       }    
+#endif
       ////////////////////
       /// Returns the magnitude of the Quaternion.
       /// \return square root of sum of squares of each component.
@@ -160,13 +162,14 @@ namespace Phoenix
 	m_aValues[2] = 0.0f;
 	m_aValues[3] = 1.0f;
       }
+#ifndef SWIG
       ////////////////////
       /// For simplistic debug outputting.
       /// \param stream ostream where values are printed.
       /// \param qQuat quaternion which values are printed.
       /// \returns a reference to ostream.
       friend std::ostream& operator<<(std::ostream &stream, const CQuaternion & qQuat);
-      
+#endif
       ////////////////////
       /// The assignment operator.
       inline void operator=( CQuaternion qQuat)

@@ -69,9 +69,18 @@ namespace Phoenix
       /// Comparison for handles by indices.
       /// \param handle Another handle.
       /// \returns boolean true if same, false otherwise.
+      bool Equals( const CHandle<TAG> & handle ) const
+      {
+          return (handle.GetIndex() == GetIndex());
+      }
+#ifndef SWIG
+      ////////////////////
+      /// Comparison for handles by indices.
+      /// \param handle Another handle.
+      /// \returns boolean true if same, false otherwise.
       bool operator==( const CHandle<TAG> & handle ) const
       {
-	return (handle.GetIndex() == GetIndex());
+          return Equals(handle);
       }
       ////////////////////
       /// Comparison for handles by indices.
@@ -81,7 +90,7 @@ namespace Phoenix
       {
 	return ( GetIndex() < handle.GetIndex() );
       }
-
+#endif
       TAG * operator*() const;
       TAG * operator->() const;
       ////////////////////
