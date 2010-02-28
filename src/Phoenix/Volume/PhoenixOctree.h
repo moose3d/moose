@@ -17,25 +17,25 @@ namespace Phoenix
     /// Symbolic indices for Octree children nodes.
     enum OCTREE_SECTION
     {
-      TOP_LEFT_FRONT     = 0,
-      TOP_LEFT_BACK      = 1,
-      TOP_RIGHT_FRONT    = 2,
-      TOP_RIGHT_BACK     = 3,
-      BOTTOM_LEFT_FRONT  = 4,
-      BOTTOM_LEFT_BACK   = 5,
-      BOTTOM_RIGHT_FRONT = 6,
-      BOTTOM_RIGHT_BACK  = 7
+      O_TOP_LEFT_FRONT     = 0,
+      O_TOP_LEFT_BACK      = 1,
+      O_TOP_RIGHT_FRONT    = 2,
+      O_TOP_RIGHT_BACK     = 3,
+      O_BOTTOM_LEFT_FRONT  = 4,
+      O_BOTTOM_LEFT_BACK   = 5,
+      O_BOTTOM_RIGHT_FRONT = 6,
+      O_BOTTOM_RIGHT_BACK  = 7
     };
     ////////////////////
     /// Symbolic indices for node neighbors.
     enum OCTREE_NEIGHBOR
     {
-      LEFT   = 0,
-      RIGHT  = 1,
-      TOP    = 2,
-      BOTTOM = 3,
-      FRONT  = 4,
-      BACK   = 5
+      O_LEFT   = 0,
+      O_RIGHT  = 1,
+      O_TOP    = 2,
+      O_BOTTOM = 3,
+      O_FRONT  = 4,
+      O_BACK   = 5
     };
     /////////////////////////////////////////////////////////////////
     /// Octreenode class template.
@@ -276,21 +276,21 @@ Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode() : CAxisAlignedCube()
 {
   m_bChildrenContainObjects = 0;
   // initialize nodes
-  m_pChildren[TOP_LEFT_FRONT] = NULL;
-  m_pChildren[TOP_LEFT_BACK] = NULL;
-  m_pChildren[TOP_RIGHT_FRONT] = NULL;
-  m_pChildren[TOP_RIGHT_BACK] = NULL;
-  m_pChildren[BOTTOM_LEFT_FRONT] = NULL;
-  m_pChildren[BOTTOM_LEFT_BACK] = NULL;
-  m_pChildren[BOTTOM_RIGHT_FRONT] = NULL;
-  m_pChildren[BOTTOM_RIGHT_BACK] = NULL;
+  m_pChildren[O_TOP_LEFT_FRONT] = NULL;
+  m_pChildren[O_TOP_LEFT_BACK] = NULL;
+  m_pChildren[O_TOP_RIGHT_FRONT] = NULL;
+  m_pChildren[O_TOP_RIGHT_BACK] = NULL;
+  m_pChildren[O_BOTTOM_LEFT_FRONT] = NULL;
+  m_pChildren[O_BOTTOM_LEFT_BACK] = NULL;
+  m_pChildren[O_BOTTOM_RIGHT_FRONT] = NULL;
+  m_pChildren[O_BOTTOM_RIGHT_BACK] = NULL;
 
-  m_pNeighbors[TOP] = NULL;
-  m_pNeighbors[BOTTOM] = NULL;
-  m_pNeighbors[LEFT] = NULL;
-  m_pNeighbors[RIGHT] = NULL;
-  m_pNeighbors[FRONT] = NULL;
-  m_pNeighbors[BACK] = NULL;
+  m_pNeighbors[O_TOP] = NULL;
+  m_pNeighbors[O_BOTTOM] = NULL;
+  m_pNeighbors[O_LEFT] = NULL;
+  m_pNeighbors[O_RIGHT] = NULL;
+  m_pNeighbors[O_FRONT] = NULL;
+  m_pNeighbors[O_BACK] = NULL;
 
   m_pParent = NULL;
 }
@@ -298,21 +298,21 @@ Phoenix::Spatial::COctreeNode<TYPE>::COctreeNode() : CAxisAlignedCube()
 template<typename TYPE>
 Phoenix::Spatial::COctreeNode<TYPE>::~COctreeNode()
 {
-  /*PHOENIX_DELETE(m_pChildren[TOP_LEFT_FRONT]);
-  PHOENIX_DELETE(m_pChildren[TOP_LEFT_BACK]);
-  PHOENIX_DELETE(m_pChildren[TOP_RIGHT_FRONT]);
-  PHOENIX_DELETE(m_pChildren[TOP_RIGHT_BACK]);
-  PHOENIX_DELETE(m_pChildren[BOTTOM_LEFT_FRONT]);
-  PHOENIX_DELETE(m_pChildren[BOTTOM_LEFT_BACK]);
-  PHOENIX_DELETE(m_pChildren[BOTTOM_RIGHT_FRONT]);
-  PHOENIX_DELETE(m_pChildren[BOTTOM_RIGHT_BACK]);
+  /*PHOENIX_DELETE(m_pChildren[O_TOP_LEFT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[O_TOP_LEFT_BACK]);
+  PHOENIX_DELETE(m_pChildren[O_TOP_RIGHT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[O_TOP_RIGHT_BACK]);
+  PHOENIX_DELETE(m_pChildren[O_BOTTOM_LEFT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[O_BOTTOM_LEFT_BACK]);
+  PHOENIX_DELETE(m_pChildren[O_BOTTOM_RIGHT_FRONT]);
+  PHOENIX_DELETE(m_pChildren[O_BOTTOM_RIGHT_BACK]);
    */
-  m_pNeighbors[TOP] = NULL;
-  m_pNeighbors[BOTTOM] = NULL;
-  m_pNeighbors[LEFT] = NULL;
-  m_pNeighbors[RIGHT] = NULL;
-  m_pNeighbors[FRONT] = NULL;
-  m_pNeighbors[BACK] = NULL;
+  m_pNeighbors[O_TOP] = NULL;
+  m_pNeighbors[O_BOTTOM] = NULL;
+  m_pNeighbors[O_LEFT] = NULL;
+  m_pNeighbors[O_RIGHT] = NULL;
+  m_pNeighbors[O_FRONT] = NULL;
+  m_pNeighbors[O_BACK] = NULL;
 
   m_pParent = NULL;
 }
@@ -343,20 +343,20 @@ void
 Phoenix::Spatial::COctreeNode<TYPE>::CheckDoChildrenContainObjects()
 {
   // if one of child nodes is NULL, others are too.
-  if ( m_pChildren[TOP_LEFT_FRONT] == NULL)
+  if ( m_pChildren[O_TOP_LEFT_FRONT] == NULL)
   {
     m_bChildrenContainObjects = 0;
   }
   else
   {
-    m_bChildrenContainObjects = (m_pChildren[TOP_LEFT_FRONT]->HasObjects()     || m_pChildren[TOP_LEFT_FRONT]->ChildrenContainObjects()     ||
-				 m_pChildren[TOP_LEFT_BACK]->HasObjects()      || m_pChildren[TOP_LEFT_BACK]->ChildrenContainObjects()      ||
-				 m_pChildren[TOP_RIGHT_FRONT]->HasObjects()    || m_pChildren[TOP_RIGHT_FRONT]->ChildrenContainObjects()    ||
-				 m_pChildren[TOP_RIGHT_BACK]->HasObjects()     || m_pChildren[TOP_RIGHT_BACK]->ChildrenContainObjects()     ||
-				 m_pChildren[BOTTOM_LEFT_FRONT]->HasObjects()  || m_pChildren[BOTTOM_LEFT_FRONT]->ChildrenContainObjects()  ||
-				 m_pChildren[BOTTOM_LEFT_BACK]->HasObjects()   || m_pChildren[BOTTOM_LEFT_BACK]->ChildrenContainObjects()   ||
-				 m_pChildren[BOTTOM_RIGHT_FRONT]->HasObjects() || m_pChildren[BOTTOM_RIGHT_FRONT]->ChildrenContainObjects() ||
-				 m_pChildren[BOTTOM_RIGHT_BACK]->HasObjects()  || m_pChildren[BOTTOM_RIGHT_BACK]->ChildrenContainObjects() );
+    m_bChildrenContainObjects = (m_pChildren[O_TOP_LEFT_FRONT]->HasObjects()     || m_pChildren[O_TOP_LEFT_FRONT]->ChildrenContainObjects()     ||
+				 m_pChildren[O_TOP_LEFT_BACK]->HasObjects()      || m_pChildren[O_TOP_LEFT_BACK]->ChildrenContainObjects()      ||
+				 m_pChildren[O_TOP_RIGHT_FRONT]->HasObjects()    || m_pChildren[O_TOP_RIGHT_FRONT]->ChildrenContainObjects()    ||
+				 m_pChildren[O_TOP_RIGHT_BACK]->HasObjects()     || m_pChildren[O_TOP_RIGHT_BACK]->ChildrenContainObjects()     ||
+				 m_pChildren[O_BOTTOM_LEFT_FRONT]->HasObjects()  || m_pChildren[O_BOTTOM_LEFT_FRONT]->ChildrenContainObjects()  ||
+				 m_pChildren[O_BOTTOM_LEFT_BACK]->HasObjects()   || m_pChildren[O_BOTTOM_LEFT_BACK]->ChildrenContainObjects()   ||
+				 m_pChildren[O_BOTTOM_RIGHT_FRONT]->HasObjects() || m_pChildren[O_BOTTOM_RIGHT_FRONT]->ChildrenContainObjects() ||
+				 m_pChildren[O_BOTTOM_RIGHT_BACK]->HasObjects()  || m_pChildren[O_BOTTOM_RIGHT_BACK]->ChildrenContainObjects() );
   }
 
 }
@@ -628,7 +628,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
 
   //std::cerr << "node at " << nLevel+1 << " at " << vNewPos << " is " << pChild << std::endl;
   // Set child/parent pointers
-  pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_BACK, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_BOTTOM_LEFT_BACK, pChild);
   pChild->SetParent( pNode );
   // Initialize child recursively.
   Initialize( nLevel + 1, vNewPos, pChild);
@@ -638,7 +638,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::BOTTOM_LEFT_FRONT, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_BOTTOM_LEFT_FRONT, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
 
@@ -647,7 +647,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_BACK, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_BOTTOM_RIGHT_BACK, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
   // 4th
@@ -655,7 +655,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::BOTTOM_RIGHT_FRONT, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_BOTTOM_RIGHT_FRONT, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
   // 5th
@@ -663,7 +663,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::TOP_LEFT_BACK, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_TOP_LEFT_BACK, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
   // 6th
@@ -671,7 +671,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] - fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::TOP_LEFT_FRONT, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_TOP_LEFT_FRONT, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
   // 7th
@@ -679,7 +679,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] - fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_BACK, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_TOP_RIGHT_BACK, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
   // 8th
@@ -687,7 +687,7 @@ Phoenix::Spatial::COctree<TYPE>::Initialize( unsigned int nLevel, const Phoenix:
   vNewPos[1] = vPosition[1] + fChildCenterPosDiff;
   vNewPos[2] = vPosition[2] + fChildCenterPosDiff;
   pChild = GetNode( nLevel+1, vNewPos[0], vNewPos[1], vNewPos[2]);
-  pNode->SetChild( Phoenix::Spatial::TOP_RIGHT_FRONT, pChild);
+  pNode->SetChild( Phoenix::Spatial::O_TOP_RIGHT_FRONT, pChild);
   pChild->SetParent( pNode );
   Initialize( nLevel + 1, vNewPos, pChild);
 }
