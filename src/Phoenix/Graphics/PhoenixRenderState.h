@@ -54,16 +54,32 @@ namespace Phoenix
       CRenderState();
       virtual ~CRenderState();
       inline Phoenix::Graphics::CAlphaTestOperation & GetAlphaOperation()    { return m_AlphaTestOp; }
+      inline void SetAlphaOperation(Phoenix::Graphics::CAlphaTestOperation & op)    { m_AlphaTestOp = op; }
       inline Phoenix::Graphics::CBlendingOperation  & GetBlendingOperation() { return m_BlendingOp;  }
+      inline void SetBlendingOperation(Phoenix::Graphics::CBlendingOperation  & op) { m_BlendingOp = op;  }
+
       inline bool IsTransparent() const    { return m_BlendingOp.IsEnabled(); }
       inline bool & GetDepthTest()  { return m_DepthTest; }
+      inline void SetDepthTest(bool bFlag)  { m_DepthTest = bFlag; }
+
       inline bool & GetDepthWrite() { return m_DepthWrite; }
+      inline void SetDepthWrite(bool bFlag) { m_DepthWrite = bFlag; }
+
       inline bool & GetFaceCulling() { return m_FaceCulling; }
+      inline void SetFaceCulling(bool bFlag) { m_FaceCulling = bFlag; }
+
       inline bool & IsLightSource() { return m_bLightSource; }
+      inline void SetLightSource(bool bFlag) { m_bLightSource = bFlag; }
+
       inline Phoenix::Math::CVector4<unsigned char> & GetBaseColor() { return m_BaseColor; }
+      inline void SetBaseColor(Phoenix::Math::CVector4<unsigned char> & col) { m_BaseColor = col; }
+
       inline bool & GetLighting() { return m_bLighting; }
+      inline void SetLighting(bool bFlag) { m_bLighting = bFlag; }
+
       inline LightRenderableList & GetLights() { return m_lstLights; }
       inline unsigned int & GetLightId() { return m_nLightId; }
+      inline void SetLightId(unsigned int nVal) { m_nLightId = nVal; }
       void   ParseFrom( NameValueMap & map );
 
       ////////////////////
