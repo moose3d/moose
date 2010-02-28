@@ -16,9 +16,9 @@ namespace Phoenix
 {
   namespace Sound
   {
-    class PHOENIX_API CAudioSystem : public Phoenix::Core::CSingleton<CAudioSystem>
+    class PHOENIX_API CAudioSystem : public Phoenix::Core::CSingleton<Phoenix::Sound::CAudioSystem>
     {
-      friend class Phoenix::Core::CSingleton<CAudioSystem>;
+      friend class Phoenix::Core::CSingleton<Phoenix::Sound::CAudioSystem>;
     protected:
       ALCcontext *m_pContext;
       ALCdevice *m_pDevice;
@@ -38,9 +38,5 @@ namespace Phoenix
     };
   }
 }
-/////////////////////////////////////////////////////////////////
-#define g_AudioManager  ( CAudioSystem::GetInstance())
-#define g_StreamManager ( Phoenix::Core::CResourceManager<CALStreamSample, CHandle<CALStreamSample> >::GetInstance())
-#define g_SampleManager ( Phoenix::Core::CResourceManager<CALSample, CHandle<CALSample> >::GetInstance())
 /////////////////////////////////////////////////////////////////
 #endif
