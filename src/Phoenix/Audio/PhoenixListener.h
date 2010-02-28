@@ -10,11 +10,15 @@ namespace Phoenix
 {
   namespace Sound
   {
+#ifndef SWIG
     class CAudioSystem;
+#endif
     class PHOENIX_API CListener : public Phoenix::Spatial::COrientable,
 		      public Phoenix::Spatial::CPositional
     {
-      friend class CAudioSystem;
+#ifndef SWIG
+        friend class CAudioSystem;
+#endif
     protected:
       Phoenix::Math::CVector3<float> m_vVelocity;
 
