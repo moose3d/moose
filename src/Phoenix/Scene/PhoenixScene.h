@@ -88,6 +88,11 @@ namespace Phoenix
 			void PushPreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
 			void PushPostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
 
+			void RemovePreRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+			void RemovePostRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+			void RemovePreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+			void RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
+
 
 			void RegisterUserCommands();
 

@@ -94,11 +94,13 @@ Phoenix::Scene::CScene::Init()
 Phoenix::Scene::CGameObject *
 Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
 {
-	pObj->Init();
+
 
 	// Create handle to object
 	assert( g_ObjectMgr->Create(pObj, pObj->GetName(), pObj->GetObjectHandle()) == 0 );
-
+    // Intialize after object has been registered, so it can be accessed during script init via
+    // objectmgr.
+    pObj->Init();
 	// so it is affected by transforms.
 	CObjectTransform *pObjTr = GetTransformGraph().Insert(pObj);
 
@@ -450,6 +452,30 @@ void
 Phoenix::Scene::CScene::PushPostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
 {
 	GetPostGUIRenderQueue().GetObjectList().push_back(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::RemovePreRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPreRenderQueue().GetObjectList().remove(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::RemovePostRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPostRenderQueue().GetObjectList().remove(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::RemovePreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPreGUIRenderQueue().GetObjectList().remove(pRenderable);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable )
+{
+	GetPostGUIRenderQueue().GetObjectList().remove(pRenderable);
 }
 ///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_DECL( Destroy );          ///!< Kill switch for any object in the scene.
