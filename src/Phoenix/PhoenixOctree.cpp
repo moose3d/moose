@@ -215,14 +215,14 @@ using std::endl;
 //     pOctree->SetPosition(vCenter);
 //     //cerr << "Subdividing at level " << nMaxTreeDepth << endl;
 //     // Call split for each child node recursively.
-//     pOctree->SetNode( COctree::TOP_LEFT_FRONT, 
+//     pOctree->SetNode( COctree::O_TOP_LEFT_FRONT, 
 // 		      CGeometryOctree::Split( pVertices, lstNode1,
 // 						 nMaxTreeDepth-1,nMinFacesInNode,
 // 						 fWidthDiv2, fHeightDiv2,
 // 						 fLengthDiv2, vTopLeftFront,
 // 						 rRenderGraph));
     
-//     pOctree->SetNode( COctree::TOP_LEFT_BACK, 
+//     pOctree->SetNode( COctree::O_TOP_LEFT_BACK, 
 // 		      CGeometryOctree::Split( pVertices, lstNode2,
 // 						 nMaxTreeDepth-1,nMinFacesInNode,
 // 						 fWidthDiv2, fHeightDiv2,
