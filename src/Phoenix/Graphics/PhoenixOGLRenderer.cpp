@@ -2935,9 +2935,15 @@ Phoenix::Graphics::COglRenderer::CommitRenderState( const Phoenix::Graphics::CRe
 			pTmp->GetRenderState().GetLightId() = i;
 			CommitRenderable( *pTmp );
 		}
+	    CommitMaterial( s.GetMaterial() );
 	}
-	else DisableState( STATE_LIGHTING );
+	else
+    {
+	    DisableState( STATE_LIGHTING );
+	    CommitColor( s.GetBaseColor() );
+    }
 
-	CommitMaterial( s.GetMaterial() );
+
+
 }
 /////////////////////////////////////////////////////////////////
