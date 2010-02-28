@@ -119,11 +119,13 @@ namespace Phoenix
       /// Sets lens flares enabled or disabled according the bFlag.
       /// \param bFlag Non-zero to enable, zero to disable.
       void SetLensFlaresEnabled(int bFlag);
+#ifndef SWIG
       ////////////////////
       /// Prints out info about camera into stream.
       /// \param stream output stream
       /// \param obj Camera.
       friend std::ostream &operator<<(std::ostream &stream, const CCamera &obj);
+#endif
       ////////////////////
       /// Returns reference to frustum object
       /// \returns Reference to frustum
@@ -292,14 +294,27 @@ namespace Phoenix
       /// \returns CVector3<float> the window coordinates as world coordinates.
       Phoenix::Math::CVector3<float> UnProject( float fX, float fY, float fZ);
       ////////////////////
+      /// Gets rotation of sphere using trackball system. If rays projected from
+      /// mouse coordinates do not intersect with sphere, rotation does not occur.
+      /// \param sphere Sphere used for rotation (in world coordinates).
+      /// \param vStartPoint The point where rotation begins in screen coordinates.
+      /// \param vEndPoint The point where rotation ends in screen coordinates.
+      /// \param qResult Rotation quaternion is stored here.
+      /// \returns Non-zero on success, zero otherwise.
+      int VirtualTrackball( const Phoenix::Volume::CSphere & sphere,
+                             const Phoenix::Math::CVector2<int> &vStartPoint,
+                             const Phoenix::Math::CVector2<int> &vEndPoint,
+                             Phoenix::Math::CQuaternion & qResult  );
+
+      ////////////////////
       /// Creates an imaginary trackball and rotates camera using two
       /// positions on the surface of the sphere.
       /// \param vPosition The center of the sphere.
       /// \param vStartPoint The point where rotation begins.
       /// \param vEndPoint The point where rotation ends.
       void VirtualTrackball( const Phoenix::Math::CVector3<float> &vPosition,
-			     const Phoenix::Math::CVector2<int> &vStartPoint,
-			     const Phoenix::Math::CVector2<int> &vEndPoint );
+                             const Phoenix::Math::CVector2<int> &vStartPoint,
+                             const Phoenix::Math::CVector2<int> &vEndPoint);
       ////////////////////
       /// Creates an imaginary trackball and calculates rotation quaterion using two
       /// positions on the surface of the sphere.

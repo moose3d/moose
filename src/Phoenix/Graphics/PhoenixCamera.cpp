@@ -214,6 +214,7 @@ Phoenix::Graphics::CCamera::FrustumSphere() const
   return m_FrustumSphere;
 }
 /////////////////////////////////////////////////////////////////
+#ifndef SWIG
 // Handy operator override  for debug printing
 std::ostream &
 operator<<(std::ostream &stream, const CCamera &obj)
@@ -224,6 +225,7 @@ operator<<(std::ostream &stream, const CCamera &obj)
 	 << "right: "   << obj.GetRightVector();
   return stream;
 }
+#endif
 /////////////////////////////////////////////////////////////////
 void 
 Phoenix::Graphics::CCamera::RotateAroundPoint( const CVector3<float> & vPoint, const CQuaternion & q)
@@ -355,18 +357,16 @@ Phoenix::Graphics::CCamera::UnProjectToEye( float fX, float fY, float fZ )
   float fH;
   if ( IsOrthogonal())
   {
-    // (Top - bottom) / 2
-    fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
-    
+    return CVector3<float>(fNormX * (GetOrthoPlanes()[1] - GetOrthoPlanes()[0])*0.5f,
+                           fNormY * (GetOrthoPlanes()[3] - GetOrthoPlanes()[2])*0.5f,
+                           -fZInEye);
   }   
   else
   {
     fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+    return CVector3<float>(fH * fNormX,fH * fAspect * fNormY, -fZInEye);
   }
-  // GetOrthoPlanes()[3]... will make all orthogonal views work too. ie. ortho(0,1,0,1).
-  return CVector3<float>(fH * fAspect * fNormX + ((GetOrthoPlanes()[3] + GetOrthoPlanes()[2])*0.5f), 
-			 fH * fNormY + ((GetOrthoPlanes()[1] + GetOrthoPlanes()[0])*0.5f),
-			 -fZInEye);
+
   
 }
 /////////////////////////////////////////////////////////////////
@@ -425,31 +425,35 @@ Phoenix::Graphics::CCamera::UnProject( float fX, float fY, float fZ)
   //  |___|___|
   //
   /////////////////////////////////////////////////////////////////
-  float fH;
+
+  CVector4<float> vTmp;
   if ( IsOrthogonal())
   {
-    fH = (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
+
+      vTmp[0] = fNormX * (GetOrthoPlanes()[1] - GetOrthoPlanes()[0]) * 0.5f;
+      vTmp[1] = fNormY * (GetOrthoPlanes()[3] - GetOrthoPlanes()[2]) * 0.5f;
+      vTmp[2] = -fZInEye;
+      vTmp[3] = 1.0f;
   } 
   else
   {
-    fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+    float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye;
+    vTmp[0] = fH * fNormX;
+    vTmp[1] = fH * fAspect * fNormY;
+    vTmp[2] = -fZInEye;
+    vTmp[3] = 1.0f;
   }
-  // GetOrthoPlanes()[3]... will make all orthogonal views work too. ie. ortho(0,1,0,1).
-  CVector4<float> vTmp;
-  vTmp[0] = fH * fNormX + ((GetOrthoPlanes()[3] + GetOrthoPlanes()[2])*0.5f);
-  vTmp[1] = fH * fAspect * fNormY + ((GetOrthoPlanes()[1] + GetOrthoPlanes()[0])*0.5f);
-  vTmp[2] = -fZInEye;
-  vTmp[3] = 1.0f;
+
   //cerr << "vTmp " << vTmp << endl;
   vTmp = m_mViewInv * vTmp;
   ////////////////////
   // m_mViewInv[3][3] should be 1.
-  // if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
-  //   {
-//     vTmp[0] /= vTmp[3];
-//     vTmp[1] /= vTmp[3];
-//     vTmp[2] /= vTmp[3];
-//   }
+  if ( !TOO_CLOSE_TO_ZERO(vTmp[3]) )
+  {
+    vTmp[0] /= vTmp[3];
+    vTmp[1] /= vTmp[3];
+    vTmp[2] /= vTmp[3];
+  }
 
   return CVector3<float>(vTmp[0],vTmp[1],vTmp[2]);
 }
@@ -466,7 +470,6 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector2<int> &vStartPoint, 
 void 
 Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint )
 {
-
   CQuaternion qRotation;
   CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
   if ( VirtualTrackball( vPosition, vStartPoint, vEndPoint, qRotation ) )
@@ -477,44 +480,48 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, 
 }
 /////////////////////////////////////////////////////////////////
 int
+Phoenix::Graphics::CCamera::VirtualTrackball( const CSphere & sphere, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint, CQuaternion & qResult )
+{
+      CVector3<float> vOrig = UnProject( static_cast<float>(vStartPoint[0]),
+                         static_cast<float>(vStartPoint[1]),
+                                0.0f);
+      CVector3<float> vEnd = UnProject( static_cast<float>(vStartPoint[0]),
+                        static_cast<float>(vStartPoint[1]),
+                        1.0f);
+      CRay ray;
+      ray.SetPosition( vOrig );
+      ray.SetDirection( vEnd-vOrig );
+      /////////////////////////////////////////////////////////////////
+      CVector3<float> vIntersection0;
+      CVector3<float> vIntersection1;
+      /////////////////////////////////////////////////////////////////
+      if ( Collision::RayIntersectsSphere( ray, &vIntersection0, NULL, sphere) >= 1)
+      {
+        vOrig = UnProject( static_cast<float>(vEndPoint[0]), static_cast<float>(vEndPoint[1]), 0.0f);
+        vEnd = UnProject( static_cast<float>(vEndPoint[0]), static_cast<float>(vEndPoint[1]),  1.0f);
+        ray.SetPosition( vOrig );
+        ray.SetDirection( vEnd-vOrig);
+        /////////////////////////////////////////////////////////////////
+        if ( Collision::RayIntersectsSphere( ray, &vIntersection1, NULL, sphere) >= 1)
+        {
+          vOrig = vIntersection0 - sphere.GetPosition();
+          vEnd  = vIntersection1 - sphere.GetPosition();
+
+          vOrig.Normalize();
+          vEnd.Normalize();
+
+          Phoenix::Math::RotationArc(vOrig,vEnd, qResult);
+          return 1;
+        }
+      }
+      return 0;
+}
+/////////////////////////////////////////////////////////////////
+int
 Phoenix::Graphics::CCamera::VirtualTrackball( const CVector3<float> &vPosition, const CVector2<int> &vStartPoint, const CVector2<int> &vEndPoint, CQuaternion & qResult )
 {
-  CVector3<float> vOrig = UnProject( static_cast<float>(vStartPoint[0]), 
-				     static_cast<float>(vStartPoint[1]),
-						    0.0f);
-  CVector3<float> vEnd = UnProject( static_cast<float>(vStartPoint[0]), 
-				    static_cast<float>(vStartPoint[1]),
-				    1.0f);
-  CRay ray;
-  ray.SetPosition( vOrig );
-  ray.SetDirection( vEnd-vOrig );
-  //CLineSegment line;
-  //line.Set( vOrig, vEnd );
-  /////////////////////////////////////////////////////////////////
-  CVector3<float> vIntersection0;
-  CVector3<float> vIntersection1;
   CSphere  sphere(vPosition,((GetPosition()-vPosition).Length()-GetNearClipping())*TRACKBALL_FUDGE_FACTOR);
-  /////////////////////////////////////////////////////////////////
-  if ( Collision::RayIntersectsSphere( ray, &vIntersection0, NULL, sphere) >= 1)
-  {
-    vOrig = UnProject( static_cast<float>(vEndPoint[0]), static_cast<float>(vEndPoint[1]), 0.0f);
-    vEnd = UnProject( static_cast<float>(vEndPoint[0]), static_cast<float>(vEndPoint[1]),  1.0f);
-    ray.SetPosition( vOrig );
-    ray.SetDirection( vEnd-vOrig);
-    /////////////////////////////////////////////////////////////////
-    if ( Collision::RayIntersectsSphere( ray, &vIntersection1, NULL, sphere) >= 1)
-    {
-      vOrig = vIntersection0 - sphere.GetPosition();
-      vEnd  = vIntersection1 - sphere.GetPosition();
-
-      vOrig.Normalize();
-      vEnd.Normalize();
-      
-      Phoenix::Math::RotationArc(vOrig,vEnd, qResult);
-      return 1;
-    }
-  }
-  return 0;
+  return VirtualTrackball( sphere, vStartPoint, vEndPoint, qResult);
 }
 /////////////////////////////////////////////////////////////////
 #undef TRACKBALL_FUDGE_FACTOR
@@ -726,6 +733,7 @@ Phoenix::Graphics::CCamera::CreateRay( float fX, float fY, CRay & ray)
 {
   ray.SetPosition( UnProject( fX, fY,  0.0f) );
   ray.SetDirection( UnProject( fX, fY, 1.0f) - ray.GetPosition() );
+  //std::cout << "Ray: " << ray.GetDirection() << ", " << ray.GetPosition() << endl;
 }
 /////////////////////////////////////////////////////////////////
 float
