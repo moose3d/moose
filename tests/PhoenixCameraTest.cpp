@@ -3,6 +3,7 @@
 #include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 namespace PhoenixCameraTest
 {
@@ -171,6 +172,29 @@ TEST(CCamera_Movements)
   aPos[1] -= 20.0f;
   g_Camera.Elevate( -20.0f );
   CHECK_ARRAY_CLOSE( aPos, const_cast<CVector3<float> &>(g_Camera.GetPosition()).GetArray(), 3, 0.001f);
+
+}
+/////////////////////////////////////////////////////////////////
+TEST( CCamera_UnProject_Ortho )
+{
+  CCamera c;
+  c.SetFarClipping(1.0);
+  c.SetNearClipping(0.001);
+  c.SetPosition(0,0,0);
+  c.SetViewOrtho(0.0, 541.0, 0.0, 992.0);
+  c.SetViewport(0,0,640,480);
+  c.UpdateView();
+  c.UpdateProjection();
+  {
+    CVector3<float> vNear = c.UnProject( 640.0, 480.0, 0.0 );
+    CVector3<float> vFar  = c.UnProject( 640.0, 480.0, 1.0 );
+    const float result[] = { 541.0, 992.0, c.GetNearClipping() };
+    const float result2[] = { 541.0, 992.0, c.GetFarClipping() };
+
+    CHECK_ARRAY_CLOSE( result, vNear.GetArray(), 3, 0.001f);
+    CHECK_ARRAY_CLOSE( result2, vFar.GetArray(), 3, 0.001f);
+  }
+  
 
 }
 /////////////////////////////////////////////////////////////////

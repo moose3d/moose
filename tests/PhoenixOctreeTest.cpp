@@ -6,6 +6,7 @@
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Scene;
+using namespace Phoenix::Math;
 using namespace std;
 /////////////////////////////////////////////////////////////////
 TEST( COctree )

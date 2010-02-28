@@ -2,6 +2,10 @@
 #include "PhoenixScene.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixCamera.h"
+#include "PhoenixCollider.h"
+#include "PhoenixAudioSystem.h"
+#include "PhoenixALSampleTypes.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Default::ObjectMgr *
 Phoenix::Default::GetObjectMgr()
@@ -43,5 +47,29 @@ Phoenix::Default::CameraManager *
 Phoenix::Default::GetCameraMgr()
 {
 	return g_CameraMgr;
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Default::ColliderManager *
+Phoenix::Default::GetColliderMgr()
+{
+	return g_ColliderMgr;
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Sound::CAudioSystem *
+Phoenix::Default::GetAudioSystem()
+{
+    return g_AudioSystem;
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Default::SoundSampleManager *
+Phoenix::Default::GetSoundSampleMgr()
+{
+    return g_SampleMgr;
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Default::SoundStreamManager *
+Phoenix::Default::GetSoundStreamMgr()
+{
+    return g_StreamMgr;
 }
 ///////////////////////////////////////////////////////////////////////////////

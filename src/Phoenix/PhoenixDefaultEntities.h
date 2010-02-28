@@ -21,6 +21,16 @@ namespace Phoenix
 	  class CModel;
 	  class CCamera;
   }
+  namespace Collision 
+  {
+    class ICollider;
+  }
+  namespace Sound
+  {
+      class CALSample;
+      class CALStreamSample;
+      class CAudioSystem;
+  }
   namespace Default
   {
     // Typedefs for default handle types.
@@ -31,6 +41,9 @@ namespace Phoenix
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CModel>			 MODEL_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Scene::CGameObject>			 OBJECT_HANDLE;
     typedef Phoenix::Core::CHandle<Phoenix::Graphics::CCamera>			 CAMERA_HANDLE;
+    typedef Phoenix::Core::CHandle<Phoenix::Collision::ICollider>		 COLLIDER_HANDLE;
+    typedef Phoenix::Core::CHandle<Phoenix::Sound::CALSample>            SOUND_SAMPLE_HANDLE;
+    typedef Phoenix::Core::CHandle<Phoenix::Sound::CALStreamSample>      SOUND_STREAM_HANDLE;
     ////////////////////
     // Typedefs for default resource manager types.
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::COglTexture,		TEXTURE_HANDLE > TextureManager;
@@ -40,6 +53,9 @@ namespace Phoenix
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera,			CAMERA_HANDLE  > CameraManager;
     typedef Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, 			OBJECT_HANDLE  > ObjectMgr;
     typedef Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, 			MODEL_HANDLE   > ModelManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Collision::ICollider, 		COLLIDER_HANDLE > ColliderManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Sound::CALSample,             SOUND_SAMPLE_HANDLE>   SoundSampleManager;
+    typedef Phoenix::Core::CResourceManager< Phoenix::Sound::CALStreamSample,       SOUND_STREAM_HANDLE>   SoundStreamManager;
     ////////////////////
 #ifdef WIN32
 #ifndef PHOENIX_DLL_EXPORT
@@ -64,7 +80,10 @@ namespace Phoenix
     ShaderManager * 	GetShaderMgr();
     ModelManager * 		GetModelMgr();
     CameraManager * 	GetCameraMgr();
-
+    ColliderManager *   GetColliderMgr();
+    Phoenix::Sound::CAudioSystem * GetAudioSystem();
+    SoundSampleManager * GetSoundSampleMgr();
+    SoundStreamManager * GetSoundStreamMgr();
   }; // namespace Default
 }; // namespace Phoenix
 ////////////////////
@@ -97,7 +116,12 @@ namespace Phoenix
 #define g_ModelMgr             (Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >::GetInstance())
 #define g_CameraMgr            (Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera, Phoenix::Core::CHandle<Phoenix::Graphics::CCamera> >::GetInstance())
 #define g_ObjectUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
-
-
+#define g_ColliderMgr          (Phoenix::Core::CResourceManager< Phoenix::Collision::ICollider, Phoenix::Core::CHandle<Phoenix::Collision::ICollider> >::GetInstance())
+// TODO should these be combined?
+#define g_StreamMgr            (SoundStreamManager::GetInstance())
+#define g_SampleMgr            (SoundSampleManager::GetInstance())
+// Audio system
+#define g_AudioSystem          (Phoenix::Sound::CAudioSystem::GetInstance())
+/////////////////////////////////////////////////////////////////
 #endif
 /////////////////////////////////////////////////////////////////

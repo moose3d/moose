@@ -1,5 +1,6 @@
 #include <UnitTest++/UnitTest++.h>
 #include <PhoenixMath.h>
+#include <PhoenixTriangle.h>
 using namespace Phoenix::Math;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Spatial;

@@ -7,6 +7,7 @@ using namespace Phoenix::Spatial;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Scene;
 using namespace std;
+using namespace Phoenix::Math;
 /////////////////////////////////////////////////////////////////
 /// Test collecting with various tags.
 TEST( CollectObjects )
