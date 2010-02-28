@@ -67,14 +67,14 @@ Phoenix::Scene::CSpatialGraph::CollectObjects( const Phoenix::Graphics::CFrustum
 			// If there's objects left in children, push them into nodeptr list
 			if ( pNode->ChildrenContainObjects())
 			{
-		INSERT( TOP_LEFT_FRONT );
-		INSERT( TOP_LEFT_BACK );
-		INSERT( TOP_RIGHT_FRONT );
-		INSERT( TOP_RIGHT_BACK );
-		INSERT( BOTTOM_LEFT_FRONT );
-		INSERT( BOTTOM_LEFT_BACK );
-		INSERT( BOTTOM_RIGHT_FRONT );
-		INSERT( BOTTOM_RIGHT_BACK );
+		INSERT( O_TOP_LEFT_FRONT );
+		INSERT( O_TOP_LEFT_BACK );
+		INSERT( O_TOP_RIGHT_FRONT );
+		INSERT( O_TOP_RIGHT_BACK );
+		INSERT( O_BOTTOM_LEFT_FRONT );
+		INSERT( O_BOTTOM_LEFT_BACK );
+		INSERT( O_BOTTOM_RIGHT_FRONT );
+		INSERT( O_BOTTOM_RIGHT_BACK );
 			}
 		}
 	}
@@ -122,14 +122,14 @@ Phoenix::Scene::CSpatialGraph::CollectObjects( const Phoenix::Graphics::CCamera 
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
       {
-		INSERT( TOP_LEFT_FRONT );
-		INSERT( TOP_LEFT_BACK );
-		INSERT( TOP_RIGHT_FRONT );
-		INSERT( TOP_RIGHT_BACK );
-		INSERT( BOTTOM_LEFT_FRONT );
-		INSERT( BOTTOM_LEFT_BACK );
-		INSERT( BOTTOM_RIGHT_FRONT );
-		INSERT( BOTTOM_RIGHT_BACK );
+		INSERT( O_TOP_LEFT_FRONT );
+		INSERT( O_TOP_LEFT_BACK );
+		INSERT( O_TOP_RIGHT_FRONT );
+		INSERT( O_TOP_RIGHT_BACK );
+		INSERT( O_BOTTOM_LEFT_FRONT );
+		INSERT( O_BOTTOM_LEFT_BACK );
+		INSERT( O_BOTTOM_RIGHT_FRONT );
+		INSERT( O_BOTTOM_RIGHT_BACK );
       }
     }
   }
@@ -175,14 +175,14 @@ Phoenix::Scene::CSpatialGraph::CollectObjects( const Phoenix::Volume::CSphere &c
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
       {
-	INSERT( TOP_LEFT_FRONT );
-	INSERT( TOP_LEFT_BACK );
-	INSERT( TOP_RIGHT_FRONT );
-	INSERT( TOP_RIGHT_BACK );
-	INSERT( BOTTOM_LEFT_FRONT );
-	INSERT( BOTTOM_LEFT_BACK );
-	INSERT( BOTTOM_RIGHT_FRONT );
-	INSERT( BOTTOM_RIGHT_BACK );
+	INSERT( O_TOP_LEFT_FRONT );
+	INSERT( O_TOP_LEFT_BACK );
+	INSERT( O_TOP_RIGHT_FRONT );
+	INSERT( O_TOP_RIGHT_BACK );
+	INSERT( O_BOTTOM_LEFT_FRONT );
+	INSERT( O_BOTTOM_LEFT_BACK );
+	INSERT( O_BOTTOM_RIGHT_FRONT );
+	INSERT( O_BOTTOM_RIGHT_BACK );
       }
     }
   }
@@ -223,14 +223,14 @@ Phoenix::Scene::CSpatialGraph::CollectObjects( const Phoenix::Math::CRay &ray, s
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
       {
-	INSERT( TOP_LEFT_FRONT );
-	INSERT( TOP_LEFT_BACK );
-	INSERT( TOP_RIGHT_FRONT );
-	INSERT( TOP_RIGHT_BACK );
-	INSERT( BOTTOM_LEFT_FRONT );
-	INSERT( BOTTOM_LEFT_BACK );
-	INSERT( BOTTOM_RIGHT_FRONT );
-	INSERT( BOTTOM_RIGHT_BACK );
+	INSERT( O_TOP_LEFT_FRONT );
+	INSERT( O_TOP_LEFT_BACK );
+	INSERT( O_TOP_RIGHT_FRONT );
+	INSERT( O_TOP_RIGHT_BACK );
+	INSERT( O_BOTTOM_LEFT_FRONT );
+	INSERT( O_BOTTOM_LEFT_BACK );
+	INSERT( O_BOTTOM_RIGHT_FRONT );
+	INSERT( O_BOTTOM_RIGHT_BACK );
       }
     }
   }
