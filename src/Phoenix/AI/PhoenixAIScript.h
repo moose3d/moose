@@ -56,6 +56,8 @@ namespace Phoenix
       bool   GetGlobalVar( const std::string & varName, int & value );
       bool   GetGlobalVar( const std::string & varName, float & value );
       bool   GetGlobalVar( const std::string & varName, std::string & value );
+      Tcl_Obj * GetGlobalVar( const std::string & name);
+
       bool	 HasCommand( const char *szName );
       //////////////////////
       /// Overwrite this to create new commands.

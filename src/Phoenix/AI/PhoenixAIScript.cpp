@@ -371,6 +371,13 @@ Phoenix::AI::CAIScript::PrintResult()
   g_Error << this << "Says: : " << Tcl_GetStringResult(m_pInterp) << endl;
 }
 ////////////////////////////////////////////////////////////////////////////////
+Tcl_Obj *
+Phoenix::AI::CAIObject::GetGlobalVar( const std::string & name)
+{
+  if ( m_pAIScript ) return m_pAIScript->GetGlobalVar(name);
+  else		     return NULL;
+}
+////////////////////////////////////////////////////////////////////////////////
 bool
 Phoenix::AI::CAIObject::CopyGlobalVarToResult( Tcl_Interp *pInterp, const std::string & varName )
 {
