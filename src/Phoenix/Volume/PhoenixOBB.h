@@ -73,13 +73,23 @@ namespace Phoenix
 						Phoenix::Math::CVector3<float>(1,0,0));
 				m_qRotation.Identity();
       }
+#ifndef SWIG
       ////////////////////
       /// Index operator for accessing box planes.
       /// \param iPlane Plane id.
       /// \returns One of box planes.
       inline Phoenix::Math::CPlane &operator[](BBOX_PLANE_TYPE iPlane)
       {
-      	return m_Planes[iPlane];
+      	return GetPlane(iPlane);
+      }
+#endif
+      ////////////////////
+      /// Index operator for accessing box planes.
+      /// \param iPlane Plane id.
+      /// \returns One of box planes.
+      inline Phoenix::Math::CPlane &GetPlane(BBOX_PLANE_TYPE iPlane)
+      {
+          return m_Planes[iPlane];
       }
       ////////////////////
       /// Assignment operator for creating OBB from AABB.
@@ -135,6 +145,7 @@ namespace Phoenix
       /// \param tCorner Corner index.
       /// \returns CVector3<float>.
       const Phoenix::Math::CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner ) const;
+#ifndef SWIG
       ////////////////////
       /// Stream output.
       /// \param stream Output stream.
@@ -157,7 +168,10 @@ namespace Phoenix
 				stream << "BRB:" << Phoenix::Math::CVector3<float>(box.GetCorner(BOTTOM_RIGHT_BACK)) << std::endl;
 				return stream;
       }
+
       friend void Phoenix::Volume::operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf );
+#endif
+      void Transform(const Phoenix::Math::CTransform & transf );
     };
     ////////////////////
     /// Calculates the oriented bounding box for vertices in vertexarray
@@ -177,7 +191,9 @@ namespace Phoenix
     /// \param obTwo Another oriented box.
     /// \returns Bounding box enclosing both boxes.
     PHOENIX_API Phoenix::Volume::COrientedBox MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne, const Phoenix::Volume::COrientedBox &obTwo );
+#ifndef SWIG
     void operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf );
+#endif
   } // Volume
 } // Phoenix
 ///////////////////////////////////////////////////////////////////////////////

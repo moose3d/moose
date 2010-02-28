@@ -651,14 +651,21 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
-Phoenix::Volume::operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf )
+Phoenix::Volume::COrientedBox::Transform( const Phoenix::Math::CTransform & transf )
 {
-	// TODO There's a bug in here, Move is not sufficient without rotation!!!!
   // Transform box according to world transformation
-  box.Move( transf.GetTranslation() );
-  box.AppendToRotation( transf.GetRotation() );
+  Move( transf.GetTranslation() );
+  AppendToRotation( transf.GetRotation() );
   // Update box values
-  box.CalculatePlanes();
-  box.CalculateCorners();
+  CalculatePlanes();
+  CalculateCorners();
 }
 /////////////////////////////////////////////////////////////////
+#ifndef SWIG
+void
+Phoenix::Volume::operator*=( Phoenix::Volume::COrientedBox & box, const Phoenix::Math::CTransform & transf )
+{
+    box.Transform(transf);
+}
+/////////////////////////////////////////////////////////////////
+#endif
