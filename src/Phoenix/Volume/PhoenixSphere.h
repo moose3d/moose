@@ -73,6 +73,7 @@ namespace Phoenix
       {
       	return m_fRadiusSqr;
       }
+#ifndef SWIG
       /////////////////////////////////////////////////////////////////
       /// For debugging.
       friend std::ostream& operator<<( std::ostream &stream, Phoenix::Volume::CSphere sphere )
@@ -82,7 +83,8 @@ namespace Phoenix
       }
 
       friend void operator*=( Phoenix::Volume::CSphere & sphere, const Phoenix::Math::CTransform & transf );
-
+#endif
+      void Transform( const Phoenix::Math::CTransform & transf );
     }; // class CSphere
     ////////////////////
     /// Calculates the bounding sphere for vertices in VertexDescriptor using fast but not so accurate algorithm.

@@ -329,9 +329,18 @@ Phoenix::Volume::MergeSpheres( const Phoenix::Volume::CSphere &sphereOne, const 
   }
 }
 /////////////////////////////////////////////////////////////////
+#ifndef SWIG
 void
 Phoenix::Volume::operator*=( Phoenix::Volume::CSphere & sphere, const Phoenix::Math::CTransform & transf )
 {
-  sphere.Move( transf.GetTranslation() );
+  sphere.Transform(transf);
+}
+/////////////////////////////////////////////////////////////////
+#endif
+void
+Phoenix::Volume::CSphere::Transform( const Phoenix::Math::CTransform & transf )
+{
+    Move(transf.GetTranslation());
+    SetRadius( GetRadius() * transf.GetScaling());
 }
 /////////////////////////////////////////////////////////////////
