@@ -1,5 +1,5 @@
 GENERIC_LIBRARY_NAME="Phoenix"
-#AM_CXXFLAGS = -O0 
+AM_CXXFLAGS = -O2
 h_sources =  	PhoenixAPI.h \
 	     	PhoenixGraphEdge.h \
 	     	PhoenixGraphNode.h \

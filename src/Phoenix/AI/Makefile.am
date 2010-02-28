@@ -1,5 +1,5 @@
 GENERIC_LIBRARY_NAME="Phoenix"
-#AM_CXXFLAGS = -O0 
+AM_CXXFLAGS = -O2
 h_sources = PhoenixFlock.h  PhoenixMessageSystem.h  PhoenixPathFinding.h  PhoenixStateMachine.h PhoenixAIScript.h
 cc_sources = PhoenixFlock.cpp  PhoenixMessageSystem.cpp    PhoenixStateMachine.cpp  PhoenixAIScript.cpp
 

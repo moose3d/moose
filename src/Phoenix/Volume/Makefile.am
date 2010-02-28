@@ -1,5 +1,5 @@
 GENERIC_LIBRARY_NAME="Phoenix"
-#AM_CXXFLAGS = -O0 
+AM_CXXFLAGS = -O2
 h_sources = PhoenixOctree.h PhoenixSphereBound.h PhoenixBoxBound.h PhoenixAABB.h PhoenixAACube.h PhoenixOBB.h PhoenixSphere.h PhoenixCapsule.h PhoenixCone.h PhoenixPolytope.h PhoenixDecalVolume.h
 cc_sources = PhoenixCone.cpp PhoenixSphereBound.cpp PhoenixBoxBound.cpp PhoenixAABB.cpp PhoenixOBB.cpp PhoenixSphere.cpp 
 
