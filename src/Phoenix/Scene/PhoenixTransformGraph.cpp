@@ -117,11 +117,20 @@ prefix::CTransformable::GetTransformNode()
 void
 prefix::CTransformable::Reparent( CTransformable *pNewParent )
 {
-	assert( pNewParent->GetTransformNode() != NULL && "Reparent: new parent must have a TransformNode!" );
-	assert( GetTransformNode() != NULL && "Reparent: current node must have TransformNode!");
-	GetTransformNode()->Reparent( pNewParent->GetTransformNode() );
-	// So changes will be reflected on next Update().
-	GetLocalTransform().SetChanged(true);
+    if ( pNewParent == NULL )
+    {
+        // Assigns root of transform graph as parent in this case.
+        GetTransformNode()->Reparent( NULL );
+        GetLocalTransform().SetChanged(true);
+    }
+    else
+    {
+        assert( pNewParent->GetTransformNode() != NULL && "Reparent: new parent must have a TransformNode!" );
+        assert( GetTransformNode() != NULL && "Reparent: current node must have TransformNode!");
+        GetTransformNode()->Reparent( pNewParent->GetTransformNode() );
+        // So changes will be reflected on next Update().
+        GetLocalTransform().SetChanged(true);
+   }
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CTransformNode::~CTransformNode()
@@ -138,6 +147,7 @@ prefix::CTransformNode::AddEdge( CTransformNode *pTo )
 prefix::CTransformNode *
 prefix::CTransformNode::GetParentTransformNode()
 {
+    if ( GetArrivingEdges().empty() ) return NULL;
 	// Returns first (hopefully the ONLY) node where edge is leading to this.
 	return GetArrivingEdges().front()->GetFromNode();
 }
@@ -145,7 +155,10 @@ prefix::CTransformNode::GetParentTransformNode()
 void
 prefix::CTransformNode::Reparent( CTransformNode * pNewParent )
 {
-
+    if ( pNewParent == NULL )
+    {
+        pNewParent = dynamic_cast<CTransformGraph *>(this->m_pGraph)->GetRoot();
+    }
 	//CTransformNode *pCurrentParent = GetParentTransformNode();
 	// Makes node parentless
 	RemoveArrivingEdges();
