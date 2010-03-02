@@ -95,15 +95,18 @@ void
 libname::CALStreamSound::UseStream( CALStreamSample * pSample )
 {
   m_pStream = pSample;
-  cerr << "Using: " << GetALObject() << " with streams: " << m_pStream->GetALObject(0) << " and " << m_pStream->GetALObject(1) << endl;
-  // enqueue two buffers
-  alSourceQueueBuffers(GetALObject(), 2, &m_pStream->GetALObject());
-  ReportAndHaltOnALErrors();
+  //cerr << "Using: " << GetALObject() << " with streams: " << m_pStream->GetALObject(0) << " and " << m_pStream->GetALObject(1) << endl;
+  
   // get data into buffer one
   m_pStream->Stream(m_pStream->GetALObject(0));
   ReportAndHaltOnALErrors();
   // get data into buffer two
   m_pStream->Stream(m_pStream->GetALObject(1));
+  ReportAndHaltOnALErrors();
+  // THIS MUST BE AFTER STREAMING, otherwise
+  // OpenAL won't allow streaming into buffers (since they are in use).
+  // enqueue two buffers.
+  alSourceQueueBuffers(GetALObject(), 2, &m_pStream->GetALObject());
   ReportAndHaltOnALErrors();
 }
 /////////////////////////////////////////////////////////////////
