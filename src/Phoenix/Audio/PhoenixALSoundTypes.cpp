@@ -95,6 +95,7 @@ void
 libname::CALStreamSound::UseStream( CALStreamSample * pSample )
 {
   m_pStream = pSample;
+  cerr << "Using: " << GetALObject() << " with streams: " << m_pStream->GetALObject(0) << " and " << m_pStream->GetALObject(1) << endl;
   // enqueue two buffers
   alSourceQueueBuffers(GetALObject(), 2, &m_pStream->GetALObject());
   ReportAndHaltOnALErrors();

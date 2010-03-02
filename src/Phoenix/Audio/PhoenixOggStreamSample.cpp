@@ -4,7 +4,7 @@
 using namespace std;
 namespace libname = Phoenix::Sound;
 /////////////////////////////////////////////////////////////////
-#define BUFFER_SIZE (4096 * 8)
+#define BUFFER_SIZE (4096 * 4)
 #define OGG_LITTLE_ENDIAN 0
 #define OGG_BIG_ENDIAN 1
 #define SIGNED_DATA 1
@@ -106,7 +106,7 @@ libname::COggStreamSample::Stream( ALuint buffer )
   ALenum error = alGetError();
   if ( error != AL_NO_ERROR )
   {
-    cerr << GetOpenALErrorString(error) << endl;
+    cerr << __FUNCTION__ << GetOpenALErrorString(error) << endl;
     return false;
   }
   return true;

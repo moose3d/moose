@@ -1,5 +1,5 @@
 GENERIC_LIBRARY_NAME="Phoenix"
-AM_CXXFLAGS = -O0 
+AM_CXXFLAGS = 
 h_sources = 	PhoenixALObjectArray.h \
 		PhoenixALSampleTypes.h  \
 	    	PhoenixALSoundTypes.h  \
