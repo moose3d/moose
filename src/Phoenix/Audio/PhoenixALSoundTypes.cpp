@@ -4,7 +4,7 @@ using namespace std;
 namespace libname = Phoenix::Sound;
 /////////////////////////////////////////////////////////////////
 bool 
-libname::CALSoundOperations::IsLooping()
+libname::CALSound::IsLooping()
 {
   ALint state;
   alGetSourcei( GetALObject(), AL_LOOPING, &state);
@@ -12,7 +12,7 @@ libname::CALSoundOperations::IsLooping()
 }
 /////////////////////////////////////////////////////////////////
 void 
-libname::CALSoundOperations::SetLooping( bool flag)
+libname::CALSound::SetLooping( bool flag)
 {
   alSourcei( GetALObject(), AL_LOOPING, flag ? AL_TRUE : AL_FALSE );
 }
@@ -79,7 +79,7 @@ libname::CALSound::UseSample( CALSample & sample )
   //<< GetALObject() << endl;
 }
 /////////////////////////////////////////////////////////////////
-libname::CALStreamSound::CALStreamSound() :  m_pStream(NULL)
+libname::CALStreamSound::CALStreamSound() :  m_pStream(NULL), m_bLooping(false)
 {
   alGenSources(1, &GetALObject());
   ReportAndHaltOnALErrors();
@@ -168,3 +168,15 @@ libname::CALStreamSound::Rewind()
   UseStream(m_pStream);
 }
 /////////////////////////////////////////////////////////////////
+bool 
+libname::CALStreamSound::IsLooping()
+{
+  return m_bLooping;
+}
+/////////////////////////////////////////////////////////////////
+void 
+libname::CALStreamSound::SetLooping( bool flag)
+{
+  m_bLooping = flag;
+}
+/////////////////////////////////////////////////////////////////  

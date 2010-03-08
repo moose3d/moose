@@ -14,9 +14,7 @@ namespace Phoenix
 			       virtual public CSoundBase
     {
     public:
-      bool IsLooping();
-      void SetLooping( bool flag);
-  
+
       bool IsPlaying() const;  
       void Play();
   
@@ -32,16 +30,23 @@ namespace Phoenix
       CALSound();
       virtual ~CALSound();
       void UseSample( CALSample & sample );
-  
+      bool IsLooping();
+      void SetLooping( bool flag);  
     };
     /////////////////////////////////////////////////////////////////
     class PHOENIX_API CALStreamSound : public CALSoundOperations
     {
     protected:
       CALStreamSample *m_pStream;
+      bool              m_bLooping;
     public:
+
       CALStreamSound();
       virtual ~CALStreamSound();
+
+      bool IsLooping();
+      void SetLooping( bool flag);
+
       void UseStream( CALStreamSample * pSample );
       bool Update();
       void Clear();

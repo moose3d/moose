@@ -988,6 +988,12 @@ SCRIPT_CMD_IMPL( UseModel )
 	int id = 0;
 	SCRIPT_GET_INT( 3, id );
 
+    if ( g_ModelMgr->HasResource( szModelname ) == false )
+    {
+        ostringstream s;
+        s << "There is no such model '" << szModelname << "'";
+        SCRIPT_ERROR(s.str().c_str());
+    }
 	CGameObject *pGameObject = reinterpret_cast<CAIObject *>(clientData)->GetGameObject();
 	CRenderableModelShared *pRenderable = pGameObject->AddRenderableModel( szModelname, lod, &pGameObject->GetWorldTransform() );
 	pRenderable->SetId(id);
