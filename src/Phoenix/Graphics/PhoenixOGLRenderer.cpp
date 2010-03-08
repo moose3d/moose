@@ -2440,7 +2440,7 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescri
 {
   if ( !GetFeatures().HasVertexBufferObject() ) return;
 
-  if(  !rVertexDescriptor.IsCached() )
+  if(  rVertexDescriptor.IsCached() )
   {
     glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
     glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
@@ -2453,7 +2453,7 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray &
 {
   if ( !GetFeatures().HasVertexBufferObject() ) return;
 
-  if(  !rIndexArray.IsCached() )
+  if(  rIndexArray.IsCached() )
   {
     glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
     glDeleteBuffersARB( 1, &rIndexArray.GetCache());
