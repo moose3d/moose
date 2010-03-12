@@ -29,9 +29,12 @@ Phoenix::Graphics::CRenderableProperty::~CRenderableProperty()
 void
 Phoenix::Graphics::CRenderableProperty::InitializeRenderables( size_t nLodLevels )
 {
-	if ( nLodLevels == 0 ) nLodLevels = 1;
-	  for ( size_t i=0;i<nLodLevels;i++)
-	    m_LodLevels.push_back( Phoenix::Graphics::RenderableList() );
+  if ( nLodLevels == 0 ) nLodLevels = 1;
+  for ( size_t i=0;i<nLodLevels;i++)
+  {
+    m_LodLevels.push_back( Phoenix::Graphics::RenderableList() );
+    m_LodDistances.push_back(0.0f);  // add default value for distances
+  }
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CRenderableModelShared *
@@ -68,7 +71,18 @@ Phoenix::Graphics::CRenderableProperty::GetNumLodLevels() const
 size_t
 Phoenix::Graphics::CRenderableProperty::GetLodLevel( float fDistanceSqr ) const
 {
-  return 0;
+  // there won't be several thousands of lod levels (or if there are, 
+  // this should be overwritten in child class). A few tens should not matter in this.
+  size_t index = 0;
+  while( (index < (GetNumLodLevels()-1)) && (fDistanceSqr > m_LodDistances[index]) ) ++index;
+  return index;
+}
+////////////////////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CRenderableProperty::SetLodDistance( size_t lod, float fDistance )
+{
+  // store distances as squared so GetLodLevel works
+  m_LodDistances[lod % GetNumLodLevels()] = fDistance * fDistance;
 }
 ////////////////////////////////////////////////////////
 Phoenix::Graphics::RenderableList &

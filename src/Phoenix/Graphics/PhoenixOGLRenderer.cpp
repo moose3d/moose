@@ -269,6 +269,7 @@ Phoenix::Graphics::COglRendererFeatures::GetRenderer() const
   return reinterpret_cast<const char *>(glGetString( GL_RENDERER ));
 }
 /////////////////////////////////////////////////////////////////
+#ifndef SWIG
 std::ostream &
 Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &obj)
 {
@@ -319,6 +320,7 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
 //   }
   return stream;
 }
+#endif
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NULL),  m_pQuadric(NULL)
 {

@@ -90,6 +90,10 @@ namespace Phoenix
       /// \returns Pointer to particle array.
       const PARTICLE_TYPE * GetParticles() const;
       ////////////////////
+      /// An accessor method for particle array
+      /// \returns Pointer to particle array.
+      PARTICLE_TYPE * GetParticles();
+      ////////////////////
       /// Intializes system.
       /// \param nNumParticles Number of particles to be created.
       void Init(const size_t nNumParticles );
@@ -480,6 +484,13 @@ Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE
 template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
 inline const PARTICLE_TYPE *	
 Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::GetParticles() const
+{
+  return m_aParticles;
+}
+/////////////////////////////////////////////////////////////////
+template <size_t SIZE, class InitializePolicy, class ActionPolicy, class PARTICLE_TYPE >
+inline PARTICLE_TYPE *	
+Phoenix::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::GetParticles() 
 {
   return m_aParticles;
 }

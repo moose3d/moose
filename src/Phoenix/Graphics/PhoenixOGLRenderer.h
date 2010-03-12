@@ -229,11 +229,12 @@ namespace Phoenix
       /// Returns maximum number of vertex attributes per shader.
       /// \returns max vertex attribs.
       int GetMaxVertexAttribs() const;
+#ifndef SWIG
       ////////////////////
       /// for printing out supported features.
       friend std::ostream &operator<<(std::ostream &stream,
 				      const COglRendererFeatures &obj);
-
+#endif
 
       ////////////////////
       /// \returns vendor string.

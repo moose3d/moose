@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <set>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -17,20 +18,20 @@ namespace Phoenix
   {
 
     class COglRenderer;
-
     /// One object can consist of several renderables that are drawn consequently.
     /// Each object may have several LOD levels.
-    typedef std::vector< std::pair<float,size_t> >									LodDistanceLevel;
-    typedef std::list< Phoenix::Graphics::CRenderable *> 						RenderableList;
-    typedef std::vector< RenderableList >				        						LodLevelObjects;
+    typedef std::vector< float >			    LodLevels;
+    typedef std::list< Phoenix::Graphics::CRenderable *>    RenderableList;
+    typedef std::vector< RenderableList >		    LodLevelObjects;
 
     /////////////////////////////////////////////////////////////////
     /// Class for game objects that can be rendered in a game.
     class PHOENIX_API CRenderableProperty : public Phoenix::Core::CViewable
     {
     private:
-      LodLevelObjects			m_LodLevels; ///< Renderable objects.
-      RenderableList		m_lstLights; ///< Lights that have effect on this Object.
+      LodLevelObjects			m_LodLevels; ///!< Renderable objects.
+      RenderableList		        m_lstLights; ///!< Lights that have effect on this Object.
+      LodLevels			        m_LodDistances; ///!< Maximum distance values per index (lod). First value is max value for lod level 0, second value is max for lod level 1, etc. Values must be stored as squared distances.
     public:
       ////////////////////
       /// Constructor.
@@ -62,6 +63,12 @@ namespace Phoenix
       /// \param fDistanceSqr Distance squard to object.
       /// \return Lod index
       virtual size_t GetLodLevel( float fDistanceSqr ) const;
+      ////////////////////
+      /// Sets lod level distance.
+      /// \param lod  Lod level (0,1,2, ...).
+      /// \param fDistance Distance for this lod level (NOT squared distance). 
+      /// \par You must make sure that distances are in ascending order.
+      void SetLodDistance( size_t lod, float fDistance );
       ////////////////////
       /// Adds new renderable handle to given lod level and
       /// \par attaches resource by name to it.

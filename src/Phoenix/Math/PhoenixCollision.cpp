@@ -1073,18 +1073,28 @@ Phoenix::Collision::CalculateDecalMesh( const CDecalVolume & decalVolume,
       index0 = indices.GetPointer<unsigned short int>()[i];
       index1 = indices.GetPointer<unsigned short int>()[i+1];
       index2 = indices.GetPointer<unsigned short int>()[i+2];
+      if ( vertices.GetType() == ELEMENT_TYPE_V3F_N3F_T2F )
+      {
+	pTmp = vertices.GetPointer<float>(index0);           vPoint0.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = &(vertices.GetPointer<float>(index0)[3]);      vPoint0.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
 
-      pTmp = &(vertices.GetPointer<float>()[index0*3]);     vPoint0.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
-      pTmp = &(normals.GetPointer<float>()[index0*3]);      vPoint0.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = vertices.GetPointer<float>(index1);           vPoint1.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = &(vertices.GetPointer<float>(index1)[3]);      vPoint1.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
 
+	pTmp = vertices.GetPointer<float>(index2);           vPoint2.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = &(vertices.GetPointer<float>(index2)[3]);      vPoint2.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+      }
+      else 
+      {
+	pTmp = vertices.GetPointer<float>(index0);     vPoint0.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = normals.GetPointer<float>(index0);      vPoint0.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
 
-      pTmp = &(vertices.GetPointer<float>()[index1*3]);     vPoint1.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
-      pTmp = &(normals.GetPointer<float>()[index1*3]);      vPoint1.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = vertices.GetPointer<float>(index1);     vPoint1.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = normals.GetPointer<float>(index1);      vPoint1.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
 
-
-      pTmp = &(vertices.GetPointer<float>()[index2*3]);     vPoint2.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
-      pTmp = &(normals.GetPointer<float>()[index2*3]);      vPoint2.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
-
+	pTmp = vertices.GetPointer<float>(index2);     vPoint2.SetPosition( pTmp[0], pTmp[1], pTmp[2] );
+	pTmp = normals.GetPointer<float>(index2);      vPoint2.SetNormal( pTmp[0], pTmp[1], pTmp[2] );
+      }
       std::list<Phoenix::Math::CPlane>::iterator it;
       // Check that triangle normal points same direction as decal volume's.
       if ( ((vPoint1.GetPosition()-vPoint0.GetPosition()).
