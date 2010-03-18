@@ -51,6 +51,16 @@ namespace Phoenix
 	/// volume contains another completely.
 	INSIDE
       };
+    ///////////////////
+    /// Checks does capsule intersect a plane.
+    /// \param plane Plane used in comparison.
+    /// \param capsule Capsule used in comparison.
+    /// \return -1 if capsule is behind the plane.
+    /// \return 0 if capsule intersects plane.
+    /// \return 1 if capsule is in front of the plane.
+    PHOENIX_API int CapsuleIntersectsPlane( const Phoenix::Math::CPlane & plane,
+                                            const Phoenix::Volume::CCapsule & capsule );
+
     ////////////////////
     /// Checks does line segment intersects a plane.
     /// \param plane Plane operand.
@@ -161,9 +171,9 @@ namespace Phoenix
 						   Phoenix::Math::CVector3<float> &vPointOfIntersection );
 
 
-    PHOENIX_API  float LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1 );
+    PHOENIX_API  float LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1, float * pfS = NULL, float * pfT = NULL );
 
-
+    PHOENIX_API float LineToLineDistanceSquared( const Phoenix::Math::CLine & line0, const Phoenix::Math::CLine & line1, float * pfS = NULL, float * pfT = NULL );
     ////////////////////
     /// Returns the floating-point distance from point to a plane.
     /// \param vPoint Point of origin.

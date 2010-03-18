@@ -184,15 +184,16 @@ prefix::CApplication::Update()
 	ProcessInput();
 
 	m_Timer.Update();
-	// Update our own script
-	UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
-	// Update every object put under management.
-	g_DefaultUpdater->Update( m_Timer.GetPassedTime().ToSeconds() );
+
 	if ( m_Timer.HasPassed(0, 5 )) // TODO change this into reasonable property
 	{
-		// TODO add pause capability.
-		GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
-		m_Timer.Reset();
+      // Update our own script
+      UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
+      // Update every object put under management.
+      g_DefaultUpdater->Update( m_Timer.GetPassedTime().ToSeconds() );
+      // TODO add pause capability.
+      GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
+      m_Timer.Reset();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////

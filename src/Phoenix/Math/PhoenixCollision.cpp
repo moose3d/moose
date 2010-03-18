@@ -15,6 +15,42 @@ using std::endl;
 /////////////////////////////////////////////////////////////////
 #define PLANE_DOT_POS( PLANE, POS ) (PLANE[0]*POS[0] + PLANE[1]*POS[1] + PLANE[2]*POS[2] + PLANE[3])
 /////////////////////////////////////////////////////////////////
+PHOENIX_API int
+Phoenix::Collision::CapsuleIntersectsPlane( const Phoenix::Math::CPlane & plane,
+                                            const Phoenix::Volume::CCapsule & capsule )
+{
+
+  float fDistanceOne = 0.0f, fDistanceTwo = 0.0f;
+  CVector3<float> vNormal;
+  vNormal.Set( const_cast<CPlane &>(plane).GetArray());
+
+  fDistanceOne = vNormal.Dot( capsule.GetStart() ) + plane[3];
+  fDistanceTwo = vNormal.Dot( capsule.GetEnd() ) + plane[3];
+
+  float fDistanceSqr = fDistanceOne * fDistanceTwo;
+  if ( fDistanceSqr <= 0.0f ) return 0; // intersects
+  else
+  {
+      CVector3<float> vDir = capsule.GetDirection();
+      vDir.Normalize();
+      float fDenominator = vNormal.Dot(vDir);
+
+      // if capsule is parallel to plane (or close enough)
+      if ( TOO_CLOSE_TO_ZERO(fDenominator ))
+      {
+          if ( fDistanceOne <= capsule.GetRadius() ) return 0; // intersects
+          else if ( fDistanceOne < -capsule.GetRadius() ) return -1; // behind plane
+          else return 1; // in front of plane
+      }
+      else
+      {
+          if ( fDistanceOne < -capsule.GetRadius() && fDistanceTwo < -capsule.GetRadius() ) return -1; // behind plane
+          else if ( fDistanceOne > capsule.GetRadius() && fDistanceTwo > capsule.GetRadius() ) return 1; // in front of plane
+          else return 0; // intersects
+      }
+  }
+}
+/////////////////////////////////////////////////////////////////
 LINESEGM_PLANE_INTERSECTION
 Phoenix::Collision::LineSegmentIntersectsPlane( const CPlane &plane,
 						const CLineSegment &line,
@@ -383,74 +419,214 @@ Phoenix::Collision::RayIntersectsTriangle( const Phoenix::Math::CRay & ray,
 }
 /////////////////////////////////////////////////////////////////
 float
-Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1 )
+Phoenix::Collision::LineToLineDistanceSquared( const Phoenix::Math::CLine & line0, const Phoenix::Math::CLine & line1, float * pfS, float * pfT )
 {
-  // Direction is calculated from end points.
-  CVector3<float> vDir0 = line0.GetDirection();
-  CVector3<float> vDir1 = line1.GetDirection();
+    // Real-time- rendering, p. 618.
+   CVector3<float> vOriginDiff = line1.GetPosition() - line0.GetPosition();
+   CVector3<float> vCrossD0D1  = line0.GetDirection().Cross( line1.GetDirection());
+   float fDenominator = vCrossD0D1.LengthSqr();
 
-  float fV0DotV1      = vDir0.Dot( vDir1 );
-  float fV0DotV0      = vDir0.Dot( vDir0 );
-  float fV1DotV1      = vDir1.Dot( vDir1 );
+   float fS, fT;
+   if ( TOO_CLOSE_TO_ZERO(fDenominator) ) // parallel lines
+   {
 
-  float fDenominator = (fV0DotV1*fV0DotV1) - (fV0DotV0*fV1DotV1);
+       if ( pfS ) *pfS = 0.0f;
+       if ( pfT )  *pfT = 0.0f;
+       return (line1.GetPosition()-line0.GetPosition()).LengthSqr();
+   }
+   else
+   {
+       CMatrix3x3<float> mTmp;
+       SetColumnVector( mTmp, 0, vOriginDiff);
+       SetColumnVector( mTmp, 1, line1.GetDirection());
+       SetColumnVector( mTmp, 2, vCrossD0D1);
+       float fDenominatorInv = 1.0f / fDenominator;
 
-  // if lines are parallel (enough)
-  if ( TOO_CLOSE_TO_ZERO(fDenominator) )
-  {
-    // Check distances between each start and end
-    float fDistSqr ;
-    CVector3<float> v00 = line1.GetStart() - line0.GetStart();
-    CVector3<float> v10 = line1.GetStart() - line0.GetEnd();
-    CVector3<float> v01 = line1.GetEnd() - line0.GetStart();
-    CVector3<float> v11 = line1.GetEnd() - line0.GetEnd();
+       fS= Det( mTmp ) * fDenominatorInv;
+       SetColumnVector( mTmp, 1, line0.GetDirection());
+       fT= Det( mTmp ) * fDenominatorInv;
+
+       if (pfS) *pfS = fS;
+       if (pfT) *pfT = fT;
+
+       return ((line0.GetPosition()+line0.GetDirection() * fS) -
+               (line1.GetPosition()+line1.GetDirection() * fT)).LengthSqr();
+   }
+}
+/////////////////////////////////////////////////////////////////
+// float
+// Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1, float *pfS, float * pfT )
+// {
+//     // Real-time- rendering, p. 618.
+//     CVector3<float> vOriginDiff = line1.GetPosition() - line0.GetPosition();
+//     CVector3<float> vCrossD0D1  = line0.GetDirection().Cross( line1.GetDirection());
 
 
-    float f00sign = v00.Dot(vDir0);
-    float f10sign = v10.Dot(vDir0);
-    float f01sign = v01.Dot(vDir0);
-    float f11sign = v11.Dot(vDir0);
+//     float fDenominator = vCrossD0D1.LengthSqr();
+//     float fS, fT;
 
-    if ( (f00sign < 0.0f && f10sign < 0.0f && f01sign < 0.0f && f11sign < 0.0f) ||
+
+
+//     if ( TOO_CLOSE_TO_ZERO(fDenominator) ) // parallel lines
+//     {
+
+//         // compute line1 origin to line0 origin.
+//         CVector3<float> vStartToPoint = line0.GetPosition() - line1.GetStart();
+//         float fDotStart = vStartToPoint.Dot(line1.GetDirection());
+
+//         // compute line1 origin to line0 end.
+//         vStartToPoint = line0.GetEnd() - line1.GetStart();
+//         float fDotEnd = vStartToPoint.Dot(line1.GetDirection());
+
+//         // line0 start is within line1
+//         if ( fDotStart >= -0.001f && fDotStart <= line1.GetDistanceEnd() )
+//         {
+//               fS = 0.0f;
+//               fT = fDotStart;
+//         }
+//         else if (fDotEnd >= -0.001f && fDotEnd <= line1.GetDistanceEnd()  )
+//         {
+//             // line0 end is within line1
+//             fS = line0.GetDistanceEnd();
+//             fT = fDotEnd;
+//         }
+//         else if ( fDotStart < -0.001f && fDotEnd > line1.GetDistanceEnd())
+//         {
+//             // same direction, line1 is shorter than line0 and in range,
+//             fS = -fDotStart;
+//             fT = 0.0f;
+
+//         }
+//         else if ( fDotEnd < -0.001f && fDotStart > line1.GetDistanceEnd())
+//         {
+//             // opposite direction, line1 is shorter than line0 and in range,
+//             fS = line0.GetDistanceEnd() + fDotEnd;
+//             fT = 0.0f;
+//         }
+//         else if ( fDotStart < -0.001f && fDotEnd < -0.001f )
+//         {
+//             // start and end of line0 are "before" line1 start, so check
+//             // which one is closer to line1 start.
+//             fT = 0.0f;
+//             if ( fDotStart > fDotEnd ) fS = 0.0f;
+//             else                       fS = line0.GetDistanceEnd();
+
+//         }
+//         else
+//         {
+//             // line0 start and end are "after" line1 end, so check which
+//             // one is closer to line1 end.
+//             fT = line1.GetDistanceEnd();
+//             if ( fDotStart < fDotEnd ) fS = 0.0f;
+//             else                       fS = line0.GetDistanceEnd();
+//         }
+
+//         // set lengths if asked
+//         if ( pfS ) *pfS = fS;
+//         if ( pfT ) *pfT = fT;
+//         // Compute squared distance between points
+//         return ( (line1.GetPosition()+line1.GetDirection()*fT)-
+//                  (line0.GetPosition()+line0.GetDirection()*fS)).LengthSqr();
+//     }
+//     else
+//     {
+
+//         CMatrix3x3<float> mTmp;
+//         SetColumnVector( mTmp, 0, vOriginDiff);
+//         SetColumnVector( mTmp, 1, line1.GetDirection());
+//         SetColumnVector( mTmp, 2, vCrossD0D1);
+//         float fDenominatorInv = 1.0f / fDenominator;
+
+//         fS= Det( mTmp ) * fDenominatorInv;
+
+//         SetColumnVector( mTmp, 1, CVector3<float>(line0.GetDirection()));
+//         fT= Det( mTmp ) * fDenominatorInv;
+
+//         // These puts caps on distance
+//         if ( fS > line0.GetDistanceEnd()) fS = line0.GetDistanceEnd();
+//         else if ( fS < 0.0f ) fS = 0.0;
+
+//         if ( fT > line1.GetDistanceEnd()) fT = line1.GetDistanceEnd();
+//         else if ( fT < 0.0f ) fT = 0.0;
+
+//         if (pfS) *pfS = fS;
+//         if (pfT) *pfT = fT;
+
+//         return ((line0.GetPosition()+line0.GetDirection() * fS) -
+//                 (line1.GetPosition()+line1.GetDirection() * fT)).LengthSqr();
+//     }
+// }
+/////////////////////////////////////////////////////////////////
+// Old code, don't remember where it was retrieved from.
+float
+Phoenix::Collision::LineSegmentToLineSegmentDistanceSquared( const Phoenix::Math::CLineSegment & line0, const Phoenix::Math::CLineSegment & line1, float *pfS, float *pfT )
+{
+ // Direction is calculated from end points.
+ CVector3<float> vDir0 = line0.GetDirection();
+ CVector3<float> vDir1 = line1.GetDirection();
+
+ float fV0DotV1      = vDir0.Dot( vDir1 );
+ float fV0DotV0      = vDir0.Dot( vDir0 );
+ float fV1DotV1      = vDir1.Dot( vDir1 );
+
+ float fDenominator = (fV0DotV1*fV0DotV1) - (fV0DotV0*fV1DotV1);
+
+ // if lines are parallel (enough)
+ if ( TOO_CLOSE_TO_ZERO(fDenominator) )
+ {
+   // Check distances between each start and end
+   float fDistSqr ;
+   CVector3<float> v00 = line1.GetStart() - line0.GetStart();
+   CVector3<float> v10 = line1.GetStart() - line0.GetEnd();
+   CVector3<float> v01 = line1.GetEnd() - line0.GetStart();
+   CVector3<float> v11 = line1.GetEnd() - line0.GetEnd();
+
+
+   float f00sign = v00.Dot(vDir0);
+   float f10sign = v10.Dot(vDir0);
+   float f01sign = v01.Dot(vDir0);
+   float f11sign = v11.Dot(vDir0);
+
+   if ( (f00sign < 0.0f && f10sign < 0.0f && f01sign < 0.0f && f11sign < 0.0f) ||
 	 (f00sign > 0.0f && f10sign > 0.0f && f01sign > 0.0f && f11sign > 0.0f) )
-    {
-      // lines do not overlap on direction vector, minimal distance is
-      // mnin distance between start and end point combinations.
-      fDistSqr = v00.LengthSqr();
-      float fTmp = v10.LengthSqr();
-      if ( fTmp < fDistSqr ) fDistSqr = fTmp;
+   {
+     // lines do not overlap on direction vector, minimal distance is
+     // mnin distance between start and end point combinations.
+     fDistSqr = v00.LengthSqr();
+     float fTmp = v10.LengthSqr();
+     if ( fTmp < fDistSqr ) fDistSqr = fTmp;
 
-      fTmp = v01.LengthSqr();
-      if ( fTmp < fDistSqr ) fDistSqr = fTmp;
+     fTmp = v01.LengthSqr();
+     if ( fTmp < fDistSqr ) fDistSqr = fTmp;
 
-      fTmp = v11.LengthSqr();
-      if ( fTmp < fDistSqr ) fDistSqr = fTmp;
-    }
-    else
-    {
-      vDir0.Normalize();
-      f00sign = v00.Dot(vDir0);
+     fTmp = v11.LengthSqr();
+     if ( fTmp < fDistSqr ) fDistSqr = fTmp;
+   }
+   else
+   {
+     vDir0.Normalize();
+     f00sign = v00.Dot(vDir0);
 
-      // lines overlap on direction vector, closest point on ray will do
-      // vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );
-      fDistSqr = (line1.GetStart() - (line0.GetStart()+(vDir0*f00sign))).LengthSqr();
-    }
-    return fDistSqr;
-  }
-  else
-  {
-    // skewed lines, calculate distance square
-    float fMult = 1.0f / fDenominator;
-    CVector3<float> startDiff = line1.GetStart() - line0.GetStart();
-    float fStartDiffDotV0 = startDiff.Dot( vDir0 );
-    float fStartDiffDotV1 = startDiff.Dot( vDir1 );
+     // lines overlap on direction vector, closest point on ray will do
+     // vClosestPoint = ray.GetPosition() + (ray.GetDirection() * (ray.GetDirection().Dot(vPoint - ray.GetPosition())) );
+     fDistSqr = (line1.GetStart() - (line0.GetStart()+(vDir0*f00sign))).LengthSqr();
+   }
+   return fDistSqr;
+ }
+ else
+ {
+   // skewed lines, calculate distance square
+   float fMult = 1.0f / fDenominator;
+   CVector3<float> startDiff = line1.GetStart() - line0.GetStart();
+   float fStartDiffDotV0 = startDiff.Dot( vDir0 );
+   float fStartDiffDotV1 = startDiff.Dot( vDir1 );
 
-    float fT0 = fMult * (-fV1DotV1 * fStartDiffDotV0 + fV0DotV1*fStartDiffDotV1);
-    float fT1 = fMult * (-fV0DotV1 * fStartDiffDotV0 + fV0DotV0*fStartDiffDotV1);
+   float fT0 = fMult * (-fV1DotV1 * fStartDiffDotV0 + fV0DotV1*fStartDiffDotV1);
+   float fT1 = fMult * (-fV0DotV1 * fStartDiffDotV0 + fV0DotV0*fStartDiffDotV1);
 
-    return ( (line0.GetStart() + fT0*vDir0) -
+   return ( (line0.GetStart() + fT0*vDir0) -
 	     (line1.GetStart() + fT1*vDir1)   ).LengthSqr();
-  }
+ }
 }
 /////////////////////////////////////////////////////////////////
 float

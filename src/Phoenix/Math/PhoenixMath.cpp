@@ -935,31 +935,31 @@ Phoenix::Math::RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix,
 				  CMatrix3x3<float> & mResult)
 {
 
-  //CMatrix3x3<float> mResult;
-  unsigned int iResultRow = 1;
-  unsigned int iResultCol = 1;
+    //CMatrix3x3<float> mResult;
+    unsigned int iResultRow = 0;
+    unsigned int iResultCol = 0;
 
-  for( unsigned int iRow = 1;iRow <= 4;iRow++)
-  {
-    if ( iRow == iRowSkip ){}
-    else
+    for( unsigned int iRow = 0;iRow < 4;iRow++)
     {
-      iResultCol = 1;
-      for( unsigned int iCol = 1;iCol <= 4;iCol++)
-      {
+        if ( iRow == iRowSkip ){}
+        else
+        {
+            iResultCol = 0;
+            for( unsigned int iCol = 0;iCol < 4;iCol++)
+            {
 
-	if ( iCol == iColSkip ){}
-	else
-	{
-	  mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
-	  iResultCol++;
-	}
+                if ( iCol == iColSkip ){}
+                else
+                {
+                    mResult(iResultRow, iResultCol) = mMatrix(iRow,iCol);
+                    iResultCol++;
+                }
 
-      }
-      iResultRow++;
+            }
+            iResultRow++;
+        }
     }
-  }
-  //return mResult;
+    //return mResult;
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -969,31 +969,31 @@ Phoenix::Math::RemoveRowAndColumn( const CMatrix3x3<float> & mMatrix,
 				   CMatrix2x2<float> & mResult)
 {
 
-  //CMatrix2x2<float> mResult;
-  unsigned int iResultRow = 1;
-  unsigned int iResultCol = 1;
+    //CMatrix2x2<float> mResult;
+    unsigned int iResultRow = 0;
+    unsigned int iResultCol = 0;
 
-  for( unsigned int iRow = 1;iRow <= 3;iRow++)
-  {
-    if ( iRow == iRowSkip ){}
-    else
+    for( unsigned int iRow = 0;iRow < 3;iRow++)
     {
-      iResultCol = 1;
-      for( unsigned int iCol = 1;iCol <= 3;iCol++)
-      {
+        if ( iRow == iRowSkip ){}
+        else
+        {
+            iResultCol = 0;
+            for( unsigned int iCol = 0;iCol < 3;iCol++)
+            {
 
-	if ( iCol == iColSkip ){}
-	else
-	{
-	  mResult(iResultRow+1, iResultCol+1) = mMatrix(iRow+1,iCol+1);
-	  iResultCol++;
-	}
+                if ( iCol == iColSkip ){}
+                else
+                {
+                    mResult(iResultRow, iResultCol) = mMatrix(iRow,iCol);
+                    iResultCol++;
+                }
 
-      }
-      iResultRow++;
+            }
+            iResultRow++;
+        }
     }
-  }
-  //return mResult;
+    //return mResult;
 }
 /////////////////////////////////////////////////////////////////
 #define MATRIX_NOT_INVERTIBLE 1

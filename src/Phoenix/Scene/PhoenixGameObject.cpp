@@ -79,6 +79,12 @@ Phoenix::Scene::CGameObject::Intersects( const Phoenix::Collision::ICollider & c
   return collider.Intersects( GetWorldBoundingSphere() );
 }
 //////////////////////////////////////////////////////////////////////////////
+bool
+Phoenix::Scene::CGameObject::Intersects( const Phoenix::Volume::CCapsule & capsule ) const
+{
+    return Phoenix::Collision::SphereIntersectsCapsule( GetWorldBoundingSphere(), capsule);
+}
+//////////////////////////////////////////////////////////////////////////////
 Phoenix::Volume::CSphere
 Phoenix::Scene::CGameObject::GetWorldBoundingSphere() const
 {

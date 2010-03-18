@@ -109,3 +109,18 @@ prefix::COBBCollider::Render( Phoenix::Graphics::COglRenderer & renderer )
 	if ( m_pTransform ) renderer.RollbackTransform();
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::COBBCollider::Intersects( const Phoenix::Volume::CCapsule & capsule ) const
+{
+    if ( m_pTransform )
+    {
+
+        COrientedBox thisbox = GetBoundingBox();
+        thisbox.Move( m_pTransform->GetTranslation());
+        thisbox.AppendToRotation( m_pTransform->GetRotation() );
+        thisbox.CalculateCorners();
+        thisbox.CalculatePlanes();
+        return Phoenix::Collision::OBBIntersectsCapsule( thisbox, capsule);
+    } else return Phoenix::Collision::OBBIntersectsCapsule( GetBoundingBox(), capsule);
+}
+///////////////////////////////////////////////////////////////////////////////

@@ -125,6 +125,18 @@ prefix::CSphereCollider::Intersects( const Phoenix::Collision::ICollider & colli
 	return collider.Intersects(GetBoundingSphere());
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Phoenix::Volume::CCapsule & capsule ) const
+{
+    if ( m_pTransform )
+    {
+        Phoenix::Volume::CSphere tmp = GetBoundingSphere();
+        tmp.Move( m_pTransform->GetTranslation());
+        return SphereIntersectsCapsule(tmp, capsule);
+    }
+    return SphereIntersectsCapsule(GetBoundingSphere(), capsule);
+}
+///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CSphereCollider::Render( Phoenix::Graphics::COglRenderer & renderer )
 {

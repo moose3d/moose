@@ -7,6 +7,7 @@
 #include "PhoenixSphere.h"
 #include "PhoenixOBB.h"
 #include "PhoenixFrustum.h"
+#include "PhoenixCapsule.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -21,7 +22,7 @@ namespace Phoenix
 			bool Intersects( const Phoenix::Volume::CSphere & sphere   ) const;
 			bool Intersects( const Phoenix::Graphics::CFrustum & frustum ) const;
 			bool Intersects( const Phoenix::Volume::COrientedBox & box ) const;
-			//bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const;
+			bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const;
 			//bool Intersects( const Phoenix::Volume::CAxisAlignedBox & aabb) const;
 			//bool Intersects( const Phoenix::Volume::CCone & cone ) const;
 			bool Intersects( const Phoenix::Math::CRay & ray, float *pfValue = NULL ) const;

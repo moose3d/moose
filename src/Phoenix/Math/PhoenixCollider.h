@@ -7,6 +7,7 @@
 #include "PhoenixOBB.h"
 #include "PhoenixRay.h"
 #include "PhoenixFrustum.h"
+#include "PhoenixCapsule.h"
 #include "PhoenixTransform.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -33,8 +34,7 @@ namespace Phoenix
 			virtual bool Intersects( const Phoenix::Volume::COrientedBox & box ) const = 0;
 			virtual bool Intersects( const Phoenix::Math::CRay & ray, float *pfDistance = NULL ) const = 0;
 // TODO implement intersection tests
-
-//			virtual bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const = 0;
+			virtual bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const = 0;
 //			virtual bool Intersects( const Phoenix::Volume::CAxisAlignedBox & aabb) const = 0;
 //			virtual bool Intersects( const Phoenix::Volume::CCone & cone ) const = 0;
 

@@ -188,8 +188,8 @@ TEST( CCamera_UnProject_Ortho )
   {
     CVector3<float> vNear = c.UnProject( 640.0, 480.0, 0.0 );
     CVector3<float> vFar  = c.UnProject( 640.0, 480.0, 1.0 );
-    const float result[] = { 541.0, 992.0, c.GetNearClipping() };
-    const float result2[] = { 541.0, 992.0, c.GetFarClipping() };
+    const float result[] = { 541.0 / 2.0, 992.0/2.0, -c.GetNearClipping() };
+    const float result2[] = { 541.0/ 2.0, 992.0/2.0, -c.GetFarClipping() };
 
     CHECK_ARRAY_CLOSE( result, vNear.GetArray(), 3, 0.001f);
     CHECK_ARRAY_CLOSE( result2, vFar.GetArray(), 3, 0.001f);

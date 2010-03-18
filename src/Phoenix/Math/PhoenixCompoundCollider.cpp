@@ -90,6 +90,18 @@ prefix::CCompoundCollider::Intersects( const Phoenix::Collision::ICollider & col
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CCompoundCollider::Intersects( const Phoenix::Volume::CCapsule & capsule ) const
+{
+    ColliderVector::const_iterator it  = m_vecColliders.begin();
+    for ( ; it != m_vecColliders.end(); it++)
+    {
+       bool bCollides = (*it)->Intersects(capsule);
+       if ( bCollides ) return true;
+    }
+    return false;
+}
+///////////////////////////////////////////////////////////////////////////////
 struct CallRender
 {
 	Phoenix::Graphics::COglRenderer & r;

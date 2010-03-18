@@ -70,6 +70,7 @@ namespace Phoenix
       bool Intersects( const Phoenix::Math::CVector3<float> & vPoint ) const;
       bool Intersects( const Phoenix::Math::CRay & ray, float *pfDistance = NULL ) const;
       bool Intersects( const Phoenix::Collision::ICollider & collider ) const;
+      bool Intersects( const Phoenix::Volume::CCapsule & capsule ) const;
       ////////////////////
       /// Returns bounding sphere transformed using current world transform.
       /// \return Bounding sphere in world coordinates.

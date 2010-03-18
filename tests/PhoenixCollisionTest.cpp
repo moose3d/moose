@@ -1974,150 +1974,73 @@ TEST( SphereIntersectsCapsule )
   
 // }
 /////////////////////////////////////////////////////////////////
-// TEST(LineToLineDistanceSquared_ParallelLines)
-// {
-//   CLineSegment line0, line1;
+TEST(LineSegmentToLineSegmentDistanceSquared_ParallelLines)
+{
+   CLineSegment line0, line1;
+   line1.Set(CVector3<float>(0,0,0), CVector3<float>(2,0,0));
 
-//   line1.Set(0,0,0);
-//   line1.SetEnd( 2,0,0);
-//   // no overlap, far
-//   line0.SetStart( -2,1,0);
-//   line0.SetEnd( -1,1,0);
-//   CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+   // no overlap, far
+   line0.Set( CVector3<float>(-2,1,0), CVector3<float>( -1,1,0));
+   CHECK_CLOSE( 2.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 2.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // no overlap, closer
+   line0.Set( CVector3<float>( -1.01,1.0,0.0), CVector3<float>( -0.01,1.0,0.0));
+   CHECK_CLOSE( 1.0001f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.0001f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // overlap, border
+   line0.Set(CVector3<float>( -1.00,1.0,0.0), CVector3<float>( 0.0,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
 
-//   // no overlap, closer
-//   line0.SetStart( -1.01,1.0,0.0);
-//   line0.SetEnd( -0.01,1.0,0.0);
-//   CHECK_CLOSE( 1.0001f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-  
-//   // overlap, border
-//   line0.SetStart( -1.00,1.0,0.0);
-//   line0.SetEnd( 0.0,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+   // overlap, close
+   line0.Set(CVector3<float>( -0.5,1.0,0.0),   CVector3<float>( 0.5,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // overlap, full
+   line0.Set(CVector3<float>( 0.5,1.0,0.0),   CVector3<float>( 1.5,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // overlap, border
+   line0.Set(CVector3<float>( 1.0,1.0,0.0),   CVector3<float>( 2.0,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // overlap, partial
+   line0.Set(CVector3<float>( 1.001,1.0,0.0),   CVector3<float>( 2.001,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // overlap, partial
+   line0.Set(CVector3<float>( 1.999,1.0,0.0),   CVector3<float>( 2.999,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // overlap, border
+   line0.Set(CVector3<float>( 2.0,1.0,0.0),   CVector3<float>( 3.0,1.0,0.0));
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // no overlap, very close
+   line0.Set(CVector3<float>( 2.001,1.0,0.0),   CVector3<float>( 3.001,1.0,0.0));
+   CHECK_CLOSE( 1.000001f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 1.000001f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
+   // no overlap, far
+   line0.Set(CVector3<float>( 3.0,1.0,0.0),   CVector3<float>( 4.0,1.0,0.0));
+   CHECK_CLOSE( 2.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   CHECK_CLOSE( 2.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0), 0.000001f);
 
 
-//   // overlap, close
-//   line0.SetStart( -0.5,1.0,0.0);
-//   line0.SetEnd( 0.5,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-  
-//   // overlap, full
-//   line0.SetStart( 0.5,1.0,0.0);
-//   line0.SetEnd( 1.5,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   // overlap, border 
-//   line0.SetStart( 1.0,1.0,0.0);
-//   line0.SetEnd( 2.0,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   // overlap, partial
-//   line0.SetStart( 1.001,1.0,0.0);
-//   line0.SetEnd( 2.001,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   // overlap, partial
-//   line0.SetStart( 1.999,1.0,0.0);
-//   line0.SetEnd( 2.999,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   // overlap, border
-//   line0.SetStart( 2.0,1.0,0.0);
-//   line0.SetEnd( 3.0,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   // no overlap, very close
-//   line0.SetStart( 2.001,1.0,0.0);
-//   line0.SetEnd( 3.001,1.0,0.0);
-//   CHECK_CLOSE( 1.000001f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   // no overlap, far
-//   line0.SetStart( 3.0,1.0,0.0);
-//   line0.SetEnd( 4.0,1.0,0.0);
-//   CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-
-//   /////////////////////////////////////////////////////////////////
-//   /// lines other way
-//   line1.SetStart(0,0,0);
-//   line1.SetEnd( 2,0,0);
-//   // no overlap, far
-//   line0.SetStart( -2,1,0);
-//   line0.SetEnd( -1,1,0);
-//   CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // no overlap, closer
-//   line0.SetStart( -1.01,1.0,0.0);
-//   line0.SetEnd( -0.01,1.0,0.0);
-//   CHECK_CLOSE( 1.0001f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-  
-//   // overlap, border
-//   line0.SetStart( -1.00,1.0,0.0);
-//   line0.SetEnd( 0.0,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // overlap, close
-//   line0.SetStart( -0.5,1.0,0.0);
-//   line0.SetEnd( 0.5,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-  
-//   // overlap, full
-//   line0.SetStart( 0.5,1.0,0.0);
-//   line0.SetEnd( 1.5,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // overlap, border 
-//   line0.SetStart( 1.0,1.0,0.0);
-//   line0.SetEnd( 2.0,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // overlap, partial
-//   line0.SetStart( 1.001,1.0,0.0);
-//   line0.SetEnd( 2.001,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // overlap, partial
-//   line0.SetStart( 1.999,1.0,0.0);
-//   line0.SetEnd( 2.999,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // overlap, border
-//   line0.SetStart( 2.0,1.0,0.0);
-//   line0.SetEnd( 3.0,1.0,0.0);
-//   CHECK_CLOSE( 1.000f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // no overlap, very close
-//   line0.SetStart( 2.001,1.0,0.0);
-//   line0.SetEnd( 3.001,1.0,0.0);
-//   CHECK_CLOSE( 1.000001f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-//   // no overlap, far
-//   line0.SetStart( 3.0,1.0,0.0);
-//   line0.SetEnd( 4.0,1.0,0.0);
-//   CHECK_CLOSE( 2.0f, LineToLineDistanceSquared( line1, line0), 0.000001f);
-
-// }
+}
 /////////////////////////////////////////////////////////////////
-// This won't work.
-// TEST(LineToLineDistanceSquared_Crossing)
-// {
-//   CLineSegment line0, line1;
 
-//   line1.SetStart(0,0,0);
-//   line1.SetEnd( 2,0,0);
+TEST(LineSegmentToLineSegmentDistanceSquared_Crossing)
+{
+   CLineSegment line0, line1;
+
+   line1.Set( CVector3<float>(0,0,0), CVector3<float>( 2,0,0));
   
-//   line0.SetStart( 0,2,0);
-//   line0.SetEnd(  0,1,0);
-//   CHECK_CLOSE( 1.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
+   line0.Set( CVector3<float>( 0,2,0), CVector3<float>(  0,1,0));
+   CHECK_CLOSE( 1.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
+   
 
-//   line0.SetStart( 0,1.001,0);
-//   line0.SetEnd(  0, 0.001,0);
-//   CHECK_CLOSE( 0.001f, LineToLineDistanceSquared( line0, line1), 0.000001f);
-  
-//   line0.SetStart( 0,1.0,0);
-//   line0.SetEnd(  0, 0.0,0);
-//   CHECK_CLOSE( 0.0f, LineToLineDistanceSquared( line0, line1), 0.000001f);
 
-// }
+}
 /////////////////////////////////////////////////////////////////
 struct OBBFixture
 {
