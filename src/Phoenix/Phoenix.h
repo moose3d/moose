@@ -61,6 +61,8 @@
 #include "PhoenixStateMachine.h"
 #include "PhoenixModelHelper.h"
 #include "PhoenixDDSImage.h"
+#include "PhoenixFFMpeg.h"
+#include "PhoenixVideoTexture.h"
 #include "PhoenixMessageSystem.h"
 #include "PhoenixAIScript.h"
 #include "PhoenixModelLoader.h"
