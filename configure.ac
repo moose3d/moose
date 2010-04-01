@@ -158,6 +158,19 @@ dnl **************************
 AC_CHECK_HEADER(GL/GLee.h, [ LIBS="$LIBS -lGLee" ], 
 			   [AC_MSG_ERROR(GLee is missing!);])
 
+dnl **************************
+dnl check libffmpeg
+dnl **************************
+PKG_CHECK_MODULES(AVUTIL, libavutil >= 0.23 )
+AM_CXXFLAGS="$AM_CXXFLAGS $AVUTIL_CFLAGS"
+LIBS="$LIBS $AVUTIL_LIBS"
+PKG_CHECK_MODULES(AVFORMAT, libavformat >= 0.23 )
+AM_CXXFLAGS="$AM_CXXFLAGS $AVFORMAT_CFLAGS"
+LIBS="$LIBS $AVFORMAT_LIBS"
+PKG_CHECK_MODULES(AVCODEC, libavcodec >= 0.23 )
+AM_CXXFLAGS="$AM_CXXFLAGS $AVCODEC_CFLAGS"
+LIBS="$LIBS $AVCODEC_LIBS"
+
 # error ABORT if one of the libraries was not found
 if test $DEPENDENCYNOTFOUND = 1; then
 	AC_MSG_NOTICE()
