@@ -35,6 +35,7 @@
 #include <PhoenixSphereCollider.h>
 #include <PhoenixOBBCollider.h>
 #include <PhoenixCompoundCollider.h>
+#include <PhoenixCapsuleCollider.h>
 #include "PhoenixMilkshapeLoader.h"
 #include "PhoenixAmbientLight.h"
 #include "PhoenixDirectionalLight.h"

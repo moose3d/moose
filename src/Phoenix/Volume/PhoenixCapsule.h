@@ -17,6 +17,10 @@ namespace Phoenix
             /// Squared radius.
             float m_fRadiusSqr;
         public:
+            CCapsule()
+            {
+
+            }
             ////////////////////
             /// Constructor.
             /// \param vStart Start point of capsule.

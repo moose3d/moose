@@ -412,6 +412,14 @@ namespace Phoenix
     /// \return OUTSIDE if the do not intersect.
     PHOENIX_API VOLUME_INTERSECTION  AABBIntersectsPolytope( const Phoenix::Volume::CAxisAlignedCube &aabb, const Phoenix::Volume::CPolytope & poly );
     ////////////////////
+    /// Does capsuled intersect a polytope.
+    /// \param capsule Capsule to be checked.
+    /// \param poly Polytope to be checked against.
+    /// \returns INTERSECTS if the intersect
+    /// \return OUTSIDE if the do not intersect.
+    PHOENIX_API VOLUME_INTERSECTION  CapsuleIntersectsPolytope( const Phoenix::Volume::CCapsule & capsule, const Phoenix::Volume::CPolytope & poly );
+
+    ////////////////////
     /// Checks intersection with ray and OBB.
     /// \param ray Ray object.
     /// \param obBox The oriented box which is checked

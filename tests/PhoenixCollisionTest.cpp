@@ -2028,18 +2028,116 @@ TEST(LineSegmentToLineSegmentDistanceSquared_ParallelLines)
 
 }
 /////////////////////////////////////////////////////////////////
+TEST(LineSegmentToLineSegmentDistanceSquared_Perpendicular)
+{
+    float fS, fT;
 
+    CLineSegment line0, line1;
+
+    line1.Set( CVector3<float>(0,0,0), CVector3<float>(2,0,0));
+    line0.Set( CVector3<float>(0,2,0), CVector3<float>(0,1,0));
+    CHECK_CLOSE( 1.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+
+    CHECK_CLOSE( 1.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+
+
+    line0.Set( CVector3<float>(0,1.001,0), CVector3<float>(0,0.001,0));
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+
+    line0.Set( CVector3<float>(0,1.0,0), CVector3<float>(0,0.0,0));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+
+    line0.Set( CVector3<float>(0,0.999,0), CVector3<float>(0,-0.001,0));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+    line0.Set( CVector3<float>(0,0.001,0), CVector3<float>(0,-0.999,0));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+
+    line0.Set( CVector3<float>(0,0.0,0), CVector3<float>(0,-1.0,0));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+    line0.Set( CVector3<float>(0,-0.001,0), CVector3<float>(0,-1.001,0));
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    line0.Set( CVector3<float>(0,-0.002,0), CVector3<float>(0,-1.002,0));
+    CHECK_CLOSE( 0.000004f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 0.000004f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    line0.Set( CVector3<float>(0, -1.0,0), CVector3<float>(0,-2.0,0));
+    CHECK_CLOSE( 1.0, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 1.0, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    // same distances, different coordinate axes.
+    line1.Set( CVector3<float>(7,10,-10), CVector3<float>(9,10,-10));
+    line0.Set( CVector3<float>(7,12,-10), CVector3<float>(7,11,-10));
+    CHECK_CLOSE( 1.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 1.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    line0.Set( CVector3<float>(7,11.001,-10), CVector3<float>(7,10.001,-10));
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    line0.Set( CVector3<float>(7,11.0,-10), CVector3<float>(7,10.0,-10));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+    line0.Set( CVector3<float>(7,10.999,-10), CVector3<float>(7,9.999,-10));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+    line0.Set( CVector3<float>(7,10.001,-10), CVector3<float>(7, 9.001,-10));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+    line0.Set( CVector3<float>(7,10.0,-10), CVector3<float>(7,9.0,-10));
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.001f);
+    CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.001f);
+
+    line0.Set( CVector3<float>(7, 9.999,-10), CVector3<float>(7,8.999,-10));
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 0.000001f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    line0.Set( CVector3<float>(7, 9.998,-10), CVector3<float>(7,8.998,-10));
+    CHECK_CLOSE( 0.000004f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 0.000004f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+
+    line0.Set( CVector3<float>(7, 9.0,-10), CVector3<float>(7, 8.0,-10));
+    CHECK_CLOSE( 1.0, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+    CHECK_CLOSE( 1.0, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+}
+/////////////////////////////////////////////////////////////////
 TEST(LineSegmentToLineSegmentDistanceSquared_Crossing)
 {
    CLineSegment line0, line1;
 
    line1.Set( CVector3<float>(0,0,0), CVector3<float>( 2,0,0));
-  
    line0.Set( CVector3<float>( 0,2,0), CVector3<float>(  0,1,0));
+
    CHECK_CLOSE( 1.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1), 0.000001f);
-   
 
+   line0.Set( CVector3<float>(0,0,0), CVector3<float>( 2,0,0));
+   line1.Set( CVector3<float>( 0,2,0), CVector3<float>(  2,-2,0));
+   float fS, fT;
+   CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+   CHECK_CLOSE( 0.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
+   line0.Set( CVector3<float>(0,0,0), CVector3<float>( 2,0,0));
+   line1.Set( CVector3<float>( 0,2,2), CVector3<float>(  2,-2,2));
 
+   CHECK_CLOSE( 4.0f, LineSegmentToLineSegmentDistanceSquared( line0, line1, &fS, &fT), 0.000001f);
+   CHECK_CLOSE( 4.0f, LineSegmentToLineSegmentDistanceSquared( line1, line0, &fS, &fT), 0.000001f);
 }
 /////////////////////////////////////////////////////////////////
 struct OBBFixture

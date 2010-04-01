@@ -45,6 +45,7 @@ namespace Phoenix
 
             void Render( Phoenix::Graphics::COglRenderer & renderer );
             Phoenix::Volume::CCapsule & GetBoundingCapsule();
+            const Phoenix::Volume::CCapsule & GetBoundingCapsule() const;
             void SetBoundingCapsule(Phoenix::Volume::CCapsule & capsule);
         };
 

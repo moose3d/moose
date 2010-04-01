@@ -1,6 +1,12 @@
-#include "CCapsuleCollider.h"
+#include "PhoenixCapsuleCollider.h"
+#include "PhoenixCollision.h"
+#include "PhoenixLogger.h"
+#include "PhoenixDefaultEntities.h"
+#include "PhoenixOGLRenderer.h"
+#include <iostream>
 ///////////////////////////////////////////////////////////////////////////////
 namespace prefix=Phoenix::Collision;
+using namespace Phoenix::Core;
 using namespace Phoenix::Collision;
 using namespace Phoenix::Volume;
 using namespace Phoenix::Math;
@@ -21,9 +27,9 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Volume::CSphere & sphere ) 
     if ( m_pTransform )
     {
         CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsule(vStart, vEnd);
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+        CCapsule capsule(vStart, vEnd, GetBoundingCapsule().GetRadius());
         return SphereIntersectsCapsule(sphere, capsule);
     } return SphereIntersectsCapsule( sphere, GetBoundingCapsule());
 }
@@ -34,11 +40,12 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Graphics::CFrustum & frustu
     if ( m_pTransform )
     {
         CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsule(vStart, vEnd);
-        return SphereIntersectsCapsule(sphere, capsule);
-    } return SphereIntersectsCapsule( sphere, GetBoundingCapsule());
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+        CCapsule capsule(vStart, vEnd, GetBoundingCapsule().GetRadius());
+
+        return CapsuleIntersectsPolytope(capsule, frustum);
+    } return CapsuleIntersectsPolytope( GetBoundingCapsule(), frustum);
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
@@ -47,9 +54,9 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Volume::COrientedBox & box 
     if ( m_pTransform )
     {
         CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsule(vStart, vEnd);
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+        CCapsule capsule(vStart, vEnd, GetBoundingCapsule().GetRadius());
         return OBBIntersectsCapsule(box, capsule);
     } return OBBIntersectsCapsule( box, GetBoundingCapsule());
 }
@@ -62,9 +69,9 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Volume::CCapsule & capsule 
     if ( m_pTransform )
     {
         CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsTransf(vStart, vEnd);
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+        CCapsule capsTransf(vStart, vEnd, GetBoundingCapsule().GetRadius());
         fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( capsule, capsTransf);
         fRadiiSum = capsule.GetRadius() + capsTransf.GetRadius();
     }
@@ -82,37 +89,36 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Math::CRay & ray, float *pf
 
     CVector3<float> vStart, vEnd;
     float fDistanceSqr;
-    float fRadiiSum;
+    float fDistAlongCapsuleLineSegment;
 
     if ( m_pTransform )
     {
         // Transform original capsule
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
         // Create transformed capsule
-        CCapsule capsTransf(vStart, vEnd);
+        CCapsule capsTransf(vStart, vEnd, GetBoundingCapsule().GetRadius());
         // check closest points on ray
         ClosestPointOnRay( capsTransf.GetStart(), ray, vStart);
         ClosestPointOnRay( capsTransf.GetEnd(),   ray, vEnd);
         // Do line segment check
         CLineSegment vTmp(vStart,vEnd);
-        fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( vTmp, capsTransf);
-        fRadiiSum = capsule.GetRadius() + capsTransf.GetRadius();
+        fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( vTmp, capsTransf, NULL, &fDistAlongCapsuleLineSegment);
     }
     else
     {
         ClosestPointOnRay( GetBoundingCapsule().GetStart(), ray, vStart);
         ClosestPointOnRay( GetBoundingCapsule().GetEnd(),   ray, vEnd);
         CLineSegment vTmp(vStart,vEnd);
-        fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( vTmp, GetBoundingCapsule());
-        fRadiiSum = capsule.GetRadius() + GetBoundingCapsule().GetRadius();
+        fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( vTmp, GetBoundingCapsule(), NULL, &fDistAlongCapsuleLineSegment);
     }
 
-    if ( pValue )
+    if ( pfValue )
     {
-        g_Error << "CapsuleCollider: Setting pfvalue is not supported yet." << endl;
+        g_Error << __PRETTY_FUNCTION__ << ": Setting pfValue not implemented." << std::endl;
+
     }
-    return ( fDistanceSqr <= fRadiiSum * fRadiiSum );
+    return ( fDistanceSqr <= GetBoundingCapsule().GetRadiusSqr());
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
@@ -122,9 +128,9 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Math::CVector3<float> & vPo
     if ( m_pTransform )
     {
         CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsTransf(vStart, vEnd);
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+        CCapsule capsTransf(vStart, vEnd, GetBoundingCapsule().GetRadius());
         ClosestPointOnLineSegment( vPoint, capsTransf, vTmp);
         return ((vTmp-vPoint).LengthSqr() <= capsTransf.GetRadiusSqr());
     }
@@ -142,9 +148,9 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Collision::ICollider & coll
     if ( m_pTransform )
     {
         CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule()->GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule()->GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsTransf(vStart,vEnd);
+        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+        CCapsule capsTransf(vStart,vEnd, GetBoundingCapsule().GetRadius());
         return collider.Intersects( capsTransf );
     }
     return collider.Intersects( GetBoundingCapsule());
@@ -153,11 +159,19 @@ prefix::CCapsuleCollider::Intersects( const Phoenix::Collision::ICollider & coll
 void
 prefix::CCapsuleCollider::Render( Phoenix::Graphics::COglRenderer & renderer )
 {
-
+    if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
+    renderer.CommitCapsule( GetBoundingCapsule() );
+    if ( m_pTransform ) renderer.RollbackTransform();
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Volume::CCapsule &
 prefix::CCapsuleCollider::GetBoundingCapsule()
+{
+    return m_Capsule;
+}
+///////////////////////////////////////////////////////////////////////////////
+const Phoenix::Volume::CCapsule &
+prefix::CCapsuleCollider::GetBoundingCapsule() const
 {
     return m_Capsule;
 }
