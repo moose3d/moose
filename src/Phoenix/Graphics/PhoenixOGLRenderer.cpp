@@ -14,10 +14,14 @@
 #include "PhoenixTGAImage.h"
 #include "PhoenixDDSImage.h"
 #include "PhoenixDefaultEntities.h"
+#include "PhoenixCapsule.h"
+#include "PhoenixSphere.h"
+#include "PhoenixMath.h"
 #include <fstream>
 #include <assert.h>
 #include <ft2build.h>
 #include "PhoenixLogger.h"
+#include "PhoenixVideoTexture.h"
 // include freetype stuff
 #include FT_FREETYPE_H
 /////////////////////////////////////////////////////////////////
@@ -26,6 +30,7 @@ using namespace Phoenix::Default;
 using namespace Phoenix::Spatial;
 using namespace Phoenix::Core;
 using namespace Phoenix::Math;
+using namespace Phoenix::Volume;
 using std::endl;
 using std::cerr;
 using std::ifstream;
@@ -62,6 +67,7 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
     iRetval = GL_TEXTURE_2D;
     break;
   case TEXTURE_RECT:
+  case TEXTURE_VIDEO:
     iRetval = GL_TEXTURE_RECTANGLE_ARB;
     break;
   case TEXTURE_CUBE:
@@ -884,6 +890,13 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
 {
+  if ( tType == TEXTURE_VIDEO )
+  {
+
+      unsigned int iTexId;
+      glGenTextures( 1, &iTexId);
+      return new COglVideoTexture( iTexId, strFilename.c_str());
+  }
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
   ////////////////////
@@ -1299,9 +1312,6 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
     // Set texture pointer to renderstate
     GetRenderState().SetCurrentTexture( nTexUnit, pTexture);
   }
-
-
-
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2205,13 +2215,26 @@ Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &s
     m_pQuadric = gluNewQuadric();
 
   // Set drawing style.
-  if ( bWireframe )	gluQuadricDrawStyle( m_pQuadric, GLU_LINE  );
-  else			gluQuadricDrawStyle( m_pQuadric, GLU_FILL  );
+  if ( bWireframe )	gluQuadricDrawStyle( m_pQuadric, GLU_SILHOUETTE  );
+  else			    gluQuadricDrawStyle( m_pQuadric, GLU_FILL  );
 
   // Translate and render
   glPushMatrix();
     glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
-    gluSphere(m_pQuadric, sphere.GetRadius(), 16, 16);
+
+    gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
+    glPushMatrix();
+        glRotatef(90.0, 0.0, 1.0, 0.0);
+        gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
+    glPopMatrix();
+
+    glPushMatrix();
+        glRotatef(90.0, 1.0, 0.0, 0.0);
+        gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
+    glPopMatrix();
+
+
+
   glPopMatrix();
 
 
@@ -2288,6 +2311,42 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
   glEnd();
   glPopAttrib();
 
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::COglRenderer::CommitCapsule( const Phoenix::Volume::CCapsule &capsule, bool bWireframe )
+{
+
+    if ( !m_pQuadric )
+        m_pQuadric = gluNewQuadric();
+    CQuaternion q;
+    CMatrix4x4<float> m;
+    glPushMatrix();
+        // Create rotation from positive z-axis to capsule line segment
+        RotationArc( CVector3<float>(0.0, 0.0, 1.0f), capsule.GetDirection(), q);
+        QuaternionToMatrix(q, m);
+        glMultTransposeMatrixf( m.GetArray());
+
+        // Render end spheres
+        CommitSphere( CSphere( CVector3<float>(0,0,0),                          capsule.GetRadius()), true );
+        CommitSphere( CSphere( CVector3<float>(0,0,capsule.GetDistanceEnd()),   capsule.GetRadius()), true );
+        // Render lines
+        glBegin(GL_LINES);
+
+            glVertex3f( 0.0, capsule.GetRadius(), 0.0);
+            glVertex3f( 0.0, capsule.GetRadius(), capsule.GetDistanceEnd());
+
+            glVertex3f( 0.0, -capsule.GetRadius(), 0.0);
+            glVertex3f( 0.0, -capsule.GetRadius(), capsule.GetDistanceEnd());
+
+            glVertex3f( capsule.GetRadius(), 0.0, 0.0);
+            glVertex3f( capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
+
+            glVertex3f( -capsule.GetRadius(), 0.0, 0.0);
+            glVertex3f( -capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
+
+        glEnd();
+    glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
 void

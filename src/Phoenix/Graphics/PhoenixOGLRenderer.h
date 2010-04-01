@@ -27,6 +27,10 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+    namespace Volume
+    {
+        class CCapsule;
+    }
   namespace Graphics
   {
 	class CDirectionalLight;
@@ -637,6 +641,11 @@ namespace Phoenix
       /// \param box OBB to be rendered.
       /// \param bWireframe Is box rendered as wireframe. Default true.
       void CommitBox( const Phoenix::Volume::COrientedBox &box, bool bWireframe = true );
+      ////////////////////
+      /// Renders a capsule.
+      /// \param capsule Capsule to be rendered.
+      /// \param bWireframe Is capsule rendered in writeframe, default true.
+      void CommitCapsule( const Phoenix::Volume::CCapsule & capsule, bool bWireframe = true );
       ////////////////////
       /// Renders a quad with texcoords, color and normal. Vertices must be given in counter-clockwise order.
       /// \param vertexOne First vertex.
