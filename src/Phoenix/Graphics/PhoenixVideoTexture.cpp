@@ -93,7 +93,7 @@ prefix::COglVideoTexture::Update( unsigned int nPassedTimeMS)
     // Set viewport
     glViewport(0,0,m_pCodecCtx->width, m_pCodecCtx->height );
     // Set raster position
-    //glRasterPos2i( 0, CScreen::GetScreen()->m_OglScreenParams.m_iHeight );
+    glRasterPos2i( 0, CSDLScreen::GetInstance()->m_SDLScreenParams.m_iHeight );
     glPixelZoom(1.0,-1.0f);      
     // draw m_pBuffer contentst on framebuffer
     glDrawPixels( m_pCodecCtx->width, m_pCodecCtx->height,
