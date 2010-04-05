@@ -15,8 +15,7 @@ namespace Phoenix
       TEXTURE_2D,      /* Normal 2D texture */
       TEXTURE_RECT,    /* Rectangular 2D texture */
       TEXTURE_DEPTH2D, /* 2D depth texture */
-      TEXTURE_CUBE,     /* Cube texture map */
-      TEXTURE_VIDEO     /* 2D video texture */
+      TEXTURE_CUBE     /* Cube texture map */
     };
     /// Texture filter modes.
     enum TEXTURE_FILTER

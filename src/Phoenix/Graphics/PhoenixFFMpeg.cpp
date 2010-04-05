@@ -3,15 +3,20 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixLogger.h"
 #include <iostream>
+#include <cassert>
+extern "C" {
+  #include "libswscale/swscale.h"
+}
 using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Default;
 namespace prefix=Phoenix::Graphics;
 /////////////////////////////////////////////////////////////////
-#ifdef CFFMPEG_USE_RGB_FORMAT
-#undef CFFMPEG_USE_RGB_FORMAT
-#endif
+#define CFFMPEG_USE_RGB_FORMAT
+//#ifdef CFFMPEG_USE_RGB_FORMAT
+//#undef CFFMPEG_USE_RGB_FORMAT
+//#endif
 /////////////////////////////////////////////////////////////////
 prefix::CFFMpegStream::CFFMpegStream() : m_bIsPlaying(0)
 {
@@ -48,11 +53,9 @@ prefix::CFFMpegStream::Init()
   m_pCodecCtx = NULL;
   m_iVideoStream = -1;
   m_bLooping = 0;
-  m_pCurrentFrame = NULL;
   m_pBuffer = NULL;
   m_nFrameDisplayTimeMS = 0;
-  
-  
+  m_pCurrentFrame = NULL;
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -106,7 +109,7 @@ prefix::CFFMpegStream::SetStream( const char *sFilename )
   }
   // Clean previous stuff
   Destroy();
-  
+
   // Open file
   if(av_open_input_file(&m_pFormatCtx, sFilename, NULL, 0, NULL)!=0) 
   {
@@ -166,7 +169,7 @@ prefix::CFFMpegStream::SetStream( const char *sFilename )
     g_Error << "Couldn't open codec" << endl;
     return -1; 
   }
-  
+  // if this would be fixed framerate content...
   SetFrameDisplayTimeMS( 1000 / m_pCodecCtx->time_base.den);
 
   // Determine required buffer size, and allocate
@@ -184,6 +187,8 @@ prefix::CFFMpegStream::SetStream( const char *sFilename )
   g_Log << "start time: " << m_pFormatCtx->start_time << endl;
   g_Log << "duration: " << m_pFormatCtx->duration << endl;
   SetSection(0, m_pFormatCtx->duration);
+  // Create a new frame 
+  m_pCurrentFrame = new CFFMpegFrame();
   return 0;
 }
 /////////////////////////////////////////////////////////////////
@@ -198,11 +203,6 @@ prefix::CFFMpegStream::GetStream() const
 prefix::CFFMpegFrame *
 prefix::CFFMpegStream::GetNextFrame()
 {
-
-  if ( m_pCurrentFrame == NULL )
-  {
-    m_pCurrentFrame = new CFFMpegFrame();
-  }
   AVFrame *pFrameYUV = NULL;
   /// Allocate frame only once, and reuse.
   if ( m_pCurrentFrame->GetAVFrame()== NULL )
@@ -241,7 +241,6 @@ prefix::CFFMpegStream::GetNextFrame()
 int 
 prefix::CFFMpegStream::DecodeNextFrame( AVFrame *pFrame)
 {
-
   AVPacket packet;
   int      bytesRemaining=0;
 
@@ -279,9 +278,13 @@ prefix::CFFMpegStream::DecodeNextFrame( AVFrame *pFrame)
 
       // Did we finish the current frame? Then we can return
       if(frameFinished)
+      {
+	packet->pts*(m_pCodecCtx.time_base.num/m_pCodecCtx.time_base.den);
+	av_free_packet(&packet);
 	return true;
+      }
     }
-
+    
     // Read the next packet, skipping all packets that aren't for this
     // stream
     do
@@ -299,16 +302,15 @@ prefix::CFFMpegStream::DecodeNextFrame( AVFrame *pFrame)
     //rawData=packet.data;
   }
   
- loop_exit:
-  
+ loop_exit:  
   // Decode the rest of the last frame
-  bytesDecoded=avcodec_decode_video2(m_pCodecCtx, pFrame, &frameFinished,
-				    &packet);
+  //bytesDecoded=avcodec_decode_video2(m_pCodecCtx, pFrame, &frameFinished,
+  //				    &packet);
   
   // Free last packet
   if(packet.data!=NULL)
     av_free_packet(&packet);
-  
+ 
   return frameFinished!=0;
 }
 /////////////////////////////////////////////////////////////////
@@ -359,7 +361,7 @@ prefix::CFFMpegStream::UpdateBuffer()
 {
 
   if ( m_pCurrentFrame == NULL ) return;
-
+  if ( m_pCurrentFrame->GetAVFrame() == NULL ) return;
 
 #ifdef CFFMPEG_USE_RGB_FORMAT
   AVFrame *pFrameRGB = avcodec_alloc_frame();
@@ -376,13 +378,38 @@ prefix::CFFMpegStream::UpdateBuffer()
   // Deprecated code:
   /*img_convert(reinterpret_cast<AVPicture *>(pFrameRGB), PIX_FMT_RGB24,
   	      reinterpret_cast<AVPicture*>(m_pCurrentFrame->GetAVFrame()), 
-  	      m_pCodecCtx->pix_fmt, m_pCodecCtx->width, m_pCodecCtx->height);*/
+   	      m_pCodecCtx->pix_fmt, m_pCodecCtx->width, m_pCodecCtx->height);*/
+  struct SwsContext *pSwsCtx = sws_getContext(GetWidth(), GetHeight(), 
+					      m_pCodecCtx->pix_fmt, 
+					      GetWidth(), GetHeight(), 
+					      PIX_FMT_RGB24, SWS_BICUBIC, 
+					      NULL, NULL, NULL);
+  
+  
+  
+  // Assign appropriate parts of buffer to image planes in pFrameRGB
+  sws_scale(pSwsCtx, 
+	    m_pCurrentFrame->GetAVFrame()->data, 
+	    m_pCurrentFrame->GetAVFrame()->linesize, 
+	    0, GetHeight(), 
+	    pFrameRGB->data, 
+	    pFrameRGB->linesize);
+
+  
   av_free(pFrameRGB);
+  sws_freeContext(pSwsCtx);
 
 #else
-  avpicture_fill( reinterpret_cast<AVPicture *>(m_pCurrentFrame->GetAVFrame()),  
+
+  /*memcpy( GetBuffer(), 
+	  m_pCurrentFrame->GetAVFrame()->data[0], 
+	  avpicture_get_size(PIX_FMT_YUV420P,
+			     m_pCodecCtx->width, 
+			     m_pCodecCtx->height));*/
+  avpicture_fill( reinterpret_cast<AVPicture *>(GetCurrentFrame()->GetAVFrame()),  
   		  GetBuffer(), PIX_FMT_YUV420P,  
-  		  m_pCodecCtx->width, m_pCodecCtx->height);
+   		  m_pCodecCtx->width, m_pCodecCtx->height);
+  
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -394,10 +421,11 @@ prefix::CFFMpegStream::SeekNextFrameFromStream( unsigned int nPassedTimeMS )
   {
     return;
   }
-  
+  assert ( GetCurrentFrame() != NULL );
   GetCurrentFrame()->AddToDisplayTimeMS(nPassedTimeMS);
   unsigned int nCurrFrameTime = GetCurrentFrame()->GetDisplayTimeMS();
-
+  m_currentTime += nPassedTimeMS;
+  
   // If enough time has passed, get new frame and update buffer
   if ( nCurrFrameTime >= GetFrameDisplayTimeMS() )
   {
@@ -405,6 +433,7 @@ prefix::CFFMpegStream::SeekNextFrameFromStream( unsigned int nPassedTimeMS )
     {
       GetNextFrame();
       nCurrFrameTime-=GetFrameDisplayTimeMS();
+      
     } 
     UpdateBuffer();
   }

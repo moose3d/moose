@@ -2,28 +2,34 @@
 #define __PhoenixRenderableVideo_h__
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixRenderable.h"
+#include "PhoenixFFMpeg.h"
+#include "PhoenixFrameBuffer.h"
+#include "PhoenixOGLRenderer.h"
+#include "PhoenixDefaultEntities.h"
+#include <string>
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
 
     namespace Graphics
     {
-        class CVideoTexture;
-        class COglRenderer;
+
         ///////////////////////////////////////////////////////////////////////
         /// Renderable quad for video stream.
-        class CRenderableVideo: public Phoenix::Graphics::CRenderable
+        class CRenderableVideo : public Phoenix::Graphics::CFFMpegStream,
+	                         public Phoenix::Graphics::CRenderable,
+	                         public Phoenix::Core::IUpdateable
         {
         protected:
-            Phoenix::Graphics::CVideoTexture * m_pVideoTexture;
-
+            Phoenix::Graphics::CFrameBufferObject *m_pFrameBufferObj;
+            Phoenix::Graphics::COglRenderer        m_Renderer;
         public:
-            CRenderableVideo();
+            ////////////////////////7
+            /// Creates renderable video object, framebufferobj must be supported.
+            CRenderableVideo( const std::string & strFilename );
             virtual ~CRenderableVideo();
-            void SetTexture( Phoenix::Graphics::CVideoTexture * pTexture );
-            Phoenix::Graphics::CVideoTexture * GetTexture();
             void Render( Phoenix::Graphics::COglRenderer & r );
-            void Update(unsigned int nMilliSeconds );
+            void Update( float fSeconds );
         };
 
     }

@@ -1,24 +1,3 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
-/////////////////////////////////////////////////////////////////
 #ifndef __PhoenixFFMpeg_h__
 #define __PhoenixFFMpeg_h__
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,7 +86,9 @@ namespace Phoenix
         protected:
             /// Frame display time in milliseconds.
             unsigned int m_nFrameDisplayTimeMS;
-            /// RGB image data.
+	    /// Current time since playback has started.
+	    int64_t m_currentTime;
+            /// RGB / YUV image data.
             uint8_t *m_pBuffer;
             /// Stream filename.
             std::string m_strFilename;
@@ -214,12 +195,14 @@ namespace Phoenix
                 return m_nSectionEnd;
                     }
             /// Sets stream to playing mode.
-            inline void Play() { m_bIsPlaying = 1; }
+            inline void Play() { m_bIsPlaying = 1; m_currentTime = 0;}
             /// Stops playing.
             inline void Stop() { m_bIsPlaying = 0; }
             /// Is stream playing now.
             /// \return true if so, false otherwise.
             inline int IsPlaying() const { return m_bIsPlaying; }
+            inline int GetWidth() const { return m_pCodecCtx->width; }
+            inline int GetHeight() const { return m_pCodecCtx->height; }
         };
     } // Graphics
 } // Phoenix

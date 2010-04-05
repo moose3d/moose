@@ -1,29 +1,10 @@
-/******************************************************************
- *   Copyright(c) 2006,2007 eNtity/Anssi Gröhn
- * 
- *   This file is part of GSE.
- *
- *   GSE is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *    GSE is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with GSE; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- ******************************************************************/
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
 #include <iostream>
 #include <math.h>
 #include <cassert>
 #include "PhoenixVideoTexture.h"
+#include "PhoenixSDLScreen.h"
 /////////////////////////////////////////////////////////////////
 using namespace std;
 namespace prefix = Phoenix::Graphics;
@@ -93,7 +74,7 @@ prefix::COglVideoTexture::Update( unsigned int nPassedTimeMS)
     // Set viewport
     glViewport(0,0,m_pCodecCtx->width, m_pCodecCtx->height );
     // Set raster position
-    glRasterPos2i( 0, CSDLScreen::GetInstance()->m_SDLScreenParams.m_iHeight );
+    glRasterPos2i( 0, Phoenix::Window::CSDLScreen::GetInstance()->m_SDLScreenParams.m_iHeight );
     glPixelZoom(1.0,-1.0f);      
     // draw m_pBuffer contentst on framebuffer
     glDrawPixels( m_pCodecCtx->width, m_pCodecCtx->height,

@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <ft2build.h>
 #include "PhoenixLogger.h"
-#include "PhoenixVideoTexture.h"
 // include freetype stuff
 #include FT_FREETYPE_H
 /////////////////////////////////////////////////////////////////
@@ -67,7 +66,6 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
     iRetval = GL_TEXTURE_2D;
     break;
   case TEXTURE_RECT:
-  case TEXTURE_VIDEO:
     iRetval = GL_TEXTURE_RECTANGLE_ARB;
     break;
   case TEXTURE_CUBE:
@@ -890,13 +888,6 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
 {
-  if ( tType == TEXTURE_VIDEO )
-  {
-
-      unsigned int iTexId;
-      glGenTextures( 1, &iTexId);
-      return new COglVideoTexture( iTexId, strFilename.c_str());
-  }
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
   ////////////////////
