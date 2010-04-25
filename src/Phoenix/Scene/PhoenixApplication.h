@@ -1,7 +1,7 @@
 #ifndef __PhoenixApplication_h__
 #define __PhoenixApplication_h__
 #include <PhoenixScene.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <string>
 ///////////////////////////////////////////////////////////////////////////////
 typedef SDLKey	  KEY_TYPE;

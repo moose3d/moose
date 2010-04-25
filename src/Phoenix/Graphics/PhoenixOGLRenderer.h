@@ -2,9 +2,15 @@
 #ifndef __PhoenixOGLRenderer_h__
 #define __PhoenixOGLRenderer_h__
 /////////////////////////////////////////////////////////////////
+#ifdef __APPLE__
+#include <GL/GLee.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 /////////////////////////////////////////////////////////////////
 #include "PhoenixVertexDescriptor.h"
 #include "PhoenixIndexArray.h"

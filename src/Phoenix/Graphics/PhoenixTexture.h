@@ -2,7 +2,11 @@
 #define __PhoenixTexture_h__
 /////////////////////////////////////////////////////////////////
 #include <GL/GLee.h>
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 #include "PhoenixAPI.h"
 //#include <PhoenixRenderable.h>
 /////////////////////////////////////////////////////////////////

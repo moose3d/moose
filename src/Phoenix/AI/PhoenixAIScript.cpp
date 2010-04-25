@@ -9,7 +9,7 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixSDLScreen.h"
 #include "PhoenixCollision.h"
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <string>
 ////////////////////////////////////////////////////////////////////////////////
 using namespace std;

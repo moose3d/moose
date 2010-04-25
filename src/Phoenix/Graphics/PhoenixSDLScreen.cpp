@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////
 #include "PhoenixSDLScreen.h"
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <GL/GLee.h>
-#include <GL/glu.h>
+//#include <GL/glu.h>
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Window;
 /// declare visiblity for static member.
@@ -18,8 +18,8 @@ Phoenix::Window::CSDLScreenParams::CSDLScreenParams()
   m_iScreenDepth = 24;
   m_iWidth = 640;
   m_iHeight = 480;
-  m_iVideoModeFlags = SDL_OPENGL,
-  m_iMultiSampleBuffers = 0,
+  m_iVideoModeFlags = SDL_OPENGL;
+  m_iMultiSampleBuffers = 0;
   m_iMultiSampleSamples = 0;
 }
 /////////////////////////////////////////////////////////////////
@@ -114,6 +114,7 @@ Phoenix::Window::CSDLScreen::CSDLScreen( )
       SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_SDLScreenParams.m_iDepthBufferSize);
       SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_SDLScreenParams.m_iMultiSampleBuffers );
       SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_SDLScreenParams.m_iMultiSampleSamples );
+      SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, m_SDLScreenParams.m_bDoubleBuffer);
 
       if ( SDL_SetVideoMode( m_SDLScreenParams.m_iWidth,
 			     m_SDLScreenParams.m_iHeight,

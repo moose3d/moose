@@ -1,5 +1,4 @@
 /////////////////////////////////////////////////////////////////
-#include <config.h>
 #include <PhoenixMilkshapeLoader.h>
 #include <fstream>
 #include <vector>

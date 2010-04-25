@@ -3,7 +3,7 @@
 #include "PhoenixWindowsWrapper.h"
 #endif
 /////////////////////////////////////////////////////////////////
-#include "PhoenixGuiSystem.h"
+//#include "PhoenixGuiSystem.h"
 #include "PhoenixAVLTree.h"
 #include "PhoenixCore.h"
 #include "PhoenixGlobals.h"
@@ -61,8 +61,11 @@
 #include "PhoenixStateMachine.h"
 #include "PhoenixModelHelper.h"
 #include "PhoenixDDSImage.h"
+/* These aren't implemented yet.*/
+#ifndef __APPLE__
 #include "PhoenixFFMpeg.h"
 #include "PhoenixRenderableVideo.h"
+#endif
 #include "PhoenixMessageSystem.h"
 #include "PhoenixAIScript.h"
 #include "PhoenixModelLoader.h"

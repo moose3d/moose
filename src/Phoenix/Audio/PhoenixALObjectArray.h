@@ -3,6 +3,8 @@
 /////////////////////////////////////////////////////////////////
 #ifdef WIN32
 #include <al.h>
+#elif __APPLE__
+#include <OpenAL/al.h>
 #else
 #include <AL/al.h>
 #endif

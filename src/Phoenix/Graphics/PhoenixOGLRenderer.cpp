@@ -1,7 +1,14 @@
 ////////////////////////////////////////////////////////////////
+#ifdef __APPLE__
+#include <GL/GLee.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/GLee.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
+////////////////////////////////////////////////////////////////////////////////
 #include <string.h>
 #include <list>
 #include <iostream>
@@ -2202,7 +2209,7 @@ Phoenix::Graphics::COglRenderer::RollbackTransform()
 void
 Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, bool bWireframe )
 {
-  if ( !m_pQuadric )
+    if ( !m_pQuadric )
     m_pQuadric = gluNewQuadric();
 
   // Set drawing style.
@@ -2227,7 +2234,7 @@ Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &s
 
 
   glPopMatrix();
-
+  
 
 }
 /////////////////////////////////////////////////////////////////
@@ -2236,7 +2243,7 @@ Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<flo
 					       float fRadius, const CVector3<float> & vRotation,
 					       bool bWireframe )
 {
-  if ( !m_pQuadric )
+    if ( !m_pQuadric )
     m_pQuadric = gluNewQuadric();
   gluQuadricDrawStyle( m_pQuadric, (bWireframe ? GLU_SILHOUETTE : GLU_FILL) );
   glPushMatrix();
@@ -2245,7 +2252,7 @@ Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<flo
 	glRotatef( vRotation[1], 0, 1, 0);
 	glRotatef( vRotation[0], 1, 0, 0);
 	gluDisk( m_pQuadric, 0.0, fRadius, 16, 1);
-  glPopMatrix();
+        glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2308,7 +2315,7 @@ void
 Phoenix::Graphics::COglRenderer::CommitCapsule( const Phoenix::Volume::CCapsule &capsule, bool bWireframe )
 {
 
-    if ( !m_pQuadric )
+      if ( !m_pQuadric )
         m_pQuadric = gluNewQuadric();
     CQuaternion q;
     CMatrix4x4<float> m;
@@ -2337,7 +2344,7 @@ Phoenix::Graphics::COglRenderer::CommitCapsule( const Phoenix::Volume::CCapsule 
             glVertex3f( -capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
 
         glEnd();
-    glPopMatrix();
+        glPopMatrix();
 }
 /////////////////////////////////////////////////////////////////
 void
