@@ -13,5 +13,11 @@
 # define PHOENIX_API  /* Unix / static build does not need this */
 #endif
 /////////////////////////////////////////////////////////////////
-
+#if defined(__APPLE__)
+#include "TargetConditionals.h"
 #endif
+#if (defined(__APPLE__) && (defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_IPHONE_OS))) 
+#define PHOENIX_APPLE_IPHONE
+#endif
+#endif
+

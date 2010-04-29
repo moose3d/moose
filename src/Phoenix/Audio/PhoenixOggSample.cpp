@@ -1,3 +1,5 @@
+#include "PhoenixAPI.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixOggSample.h"
 #include <vorbis/vorbisfile.h>
 #include <iostream>
@@ -88,3 +90,4 @@ libname::COggSample::Load( const char *szFilename )
   return true;
 }
 /////////////////////////////////////////////////////////////////
+#endif

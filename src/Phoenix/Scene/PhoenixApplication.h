@@ -1,13 +1,12 @@
 #ifndef __PhoenixApplication_h__
 #define __PhoenixApplication_h__
 #include <PhoenixScene.h>
-#include <SDL/SDL.h>
 #include <string>
 ///////////////////////////////////////////////////////////////////////////////
-typedef SDLKey	  KEY_TYPE;
+/*typedef SDLKey	  KEY_TYPE;
 typedef SDL_Event MOUSEBUTTON_EVENT;
 typedef SDL_Event MOUSEMOTION_EVENT;
-typedef SDL_Event KEYPRESS_EVENT;
+typedef SDL_Event KEYPRESS_EVENT;*/
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -31,7 +30,11 @@ namespace Phoenix
 			bool 				m_bSceneHasMouseUp;
 			bool 				m_bSceneHasMouseMotion;
 			bool 				m_bHasQuit;
+#if !defined(PHOENIX_APPLE_IPHONE)
 			SDL_Thread *		m_pMainLoopThread;
+#else
+                  void *  m_pMainLoopThread;
+#endif
 		protected:
 
 			void 		  			 SetCurrentScene( Phoenix::Scene::CScene *pScene );

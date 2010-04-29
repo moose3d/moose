@@ -117,7 +117,7 @@ inline void CreateIndices( Phoenix::Graphics::CIndexArray *pIndices )
 Phoenix::Graphics::CSkybox::CSkybox( ) 
 {
   m_hModel = PHOENIX_SKYBOX_MODEL;
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   if ( m_hModel.IsNull() )
   {
   	// create model
@@ -137,6 +137,7 @@ Phoenix::Graphics::CSkybox::CSkybox( )
     // manage actual model
 		g_ModelMgr->Create( pModel, PHOENIX_SKYBOX_MODEL, m_hModel);
   }
+#endif
   // Set usually required renderstate.
   CRenderState & state = GetRenderState();
   state.AddTextureFilter(T_WRAP_CLAMP_TO_EDGE);
@@ -163,9 +164,10 @@ Phoenix::Graphics::CSkybox::Render( Phoenix::Graphics::COglRenderer & renderer)
 	mView(0,3) = 0.0f;
 	mView(1,3) = 0.0f;
 	mView(2,3) = 0.0f;
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 	glPushMatrix();
 	glLoadTransposeMatrixf( mView.GetArray());
+
 	CModel *pModel = *GetModelHandle();
 	COglTexture *pTexture = *GetRenderState().GetTextureHandle(0);
 	CIndexArray *pIndices = *pModel->GetIndices();
@@ -186,6 +188,7 @@ Phoenix::Graphics::CSkybox::Render( Phoenix::Graphics::COglRenderer & renderer)
 	renderer.CommitShader( NULL );
 	renderer.DisableCaches();
 	glUseProgram(0);
+
 	for( int i=0;i<8;i++)
 	{
 		glClientActiveTexture( GL_TEXTURE0 + i);
@@ -194,6 +197,8 @@ Phoenix::Graphics::CSkybox::Render( Phoenix::Graphics::COglRenderer & renderer)
 
 	/////////////////////////////////////////////////////////////////
 	glPopMatrix();
+#endif
+
 }
 
 

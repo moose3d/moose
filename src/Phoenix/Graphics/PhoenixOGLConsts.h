@@ -1,8 +1,14 @@
 #ifndef __PhoenixOGLConsts_h__
 #define __PhoenixOGLConsts_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixAPI.h"
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#else
 #include <GL/GLee.h>
 #include <OpenGL/gl.h>
+#endif
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -32,13 +38,23 @@ namespace Phoenix
     };
     enum STATE_TYPE
     {
-      STATE_LIGHTING = GL_LIGHTING,
+#if defined(PHOENIX_APPLE_IPHONE)
+      STATE_LIGHTING = 0,
       STATE_DEPTH_TEST = GL_DEPTH_TEST,
-      STATE_ALPHA_TEST = GL_ALPHA_TEST,
+      STATE_ALPHA_TEST = 0,
       STATE_BLENDING   = GL_BLEND,
       STATE_DEPTH_WRITE = GL_TRUE,
       STATE_FACECULLING = GL_CULL_FACE,
-      STATE_MULTISAMPLE = GL_MULTISAMPLE
+      STATE_MULTISAMPLE = 0
+#else
+        STATE_LIGHTING = GL_LIGHTING,
+        STATE_DEPTH_TEST = GL_DEPTH_TEST,
+        STATE_ALPHA_TEST = GL_ALPHA_TEST,
+        STATE_BLENDING   = GL_BLEND,
+        STATE_DEPTH_WRITE = GL_TRUE,
+        STATE_FACECULLING = GL_CULL_FACE,
+        STATE_MULTISAMPLE = GL_MULTISAMPLE
+#endif
     };
     enum ALPHA_TEST_TYPE
     {
@@ -81,15 +97,28 @@ namespace Phoenix
     /// Stream  ( define and use once per frame).
     enum CACHE_ACCESS_TYPE
     {
-      CACHE_STATIC_DRAW  = GL_STATIC_DRAW_ARB,
-      CACHE_STATIC_READ  = GL_STATIC_READ_ARB,
-      CACHE_STATIC_COPY  = GL_STATIC_COPY_ARB,
-      CACHE_DYNAMIC_DRAW = GL_DYNAMIC_DRAW_ARB,
-      CACHE_DYNAMIC_READ = GL_DYNAMIC_READ_ARB,
-      CACHE_DYNAMIC_COPY = GL_DYNAMIC_COPY_ARB,
-      CACHE_STREAM_DRAW  = GL_STREAM_DRAW_ARB,
-      CACHE_STREAM_READ  = GL_STREAM_READ_ARB,
-      CACHE_STREAM_COPY  = GL_STREAM_COPY_ARB
+#if defined(PHOENIX_APPLE_IPHONE)
+        
+        CACHE_STATIC_DRAW,
+      CACHE_STATIC_READ,
+      CACHE_STATIC_COPY,
+      CACHE_DYNAMIC_DRAW,
+      CACHE_DYNAMIC_READ,
+      CACHE_DYNAMIC_COPY,
+      CACHE_STREAM_DRAW,
+      CACHE_STREAM_READ,
+      CACHE_STREAM_COPY
+#else
+        CACHE_STATIC_DRAW  = GL_STATIC_DRAW_ARB,
+        CACHE_STATIC_READ  = GL_STATIC_READ_ARB,
+        CACHE_STATIC_COPY  = GL_STATIC_COPY_ARB,
+        CACHE_DYNAMIC_DRAW = GL_DYNAMIC_DRAW_ARB,
+        CACHE_DYNAMIC_READ = GL_DYNAMIC_READ_ARB,
+        CACHE_DYNAMIC_COPY = GL_DYNAMIC_COPY_ARB,
+        CACHE_STREAM_DRAW  = GL_STREAM_DRAW_ARB,
+        CACHE_STREAM_READ  = GL_STREAM_READ_ARB,
+        CACHE_STREAM_COPY  = GL_STREAM_COPY_ARB
+#endif        
     };
     /////////////////////////////////////////////////////////////////
     /// BufferType

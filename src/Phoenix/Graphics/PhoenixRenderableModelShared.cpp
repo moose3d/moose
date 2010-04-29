@@ -50,6 +50,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   CModel & model = **m_hModel;
   ////////////////////
   // Commit textures
+#if !defined(PHOENIX_APPLE_IPHONE)
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
@@ -58,7 +59,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     // check that texcoord resources actually exist
     if ( pTemp == NULL )
     {
-      glClientActiveTextureARB( GL_TEXTURE0_ARB + i);
+      glClientActiveTextureARB( GL_TEXTURE0 + i);
       glDisableClientState( GL_TEXTURE_COORD_ARRAY);
     }
     else
@@ -74,7 +75,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     else
       renderer.DisableTexture(i, NULL);
   }
-
+#endif
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
@@ -110,7 +111,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     }
   }
 
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   // commit normals
   if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
   else	renderer.CommitVertexDescriptor( *model.GetNormalHandle() );
@@ -126,7 +127,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   // commit position data
   if ( model.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY );
   else	renderer.CommitVertexDescriptor ( *model.GetVertexHandle() );
-
+#endif
 
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );

@@ -1,3 +1,5 @@
+#include "PhoenixAPI.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include <cassert>
 #include "PhoenixAIScript.h"
 #include "PhoenixVector3.h"
@@ -1699,3 +1701,4 @@ SCRIPT_CMD_IMPL( RayPlaneCollision )
 	return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////
+#endif

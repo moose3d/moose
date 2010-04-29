@@ -2,7 +2,11 @@
 #ifndef __PhoenixOGLRenderer_h__
 #define __PhoenixOGLRenderer_h__
 /////////////////////////////////////////////////////////////////
-#ifdef __APPLE__
+#include "PhoenixAPI.h"
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#elif defined(__APPLE__)
 #include <GL/GLee.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -317,8 +321,9 @@ namespace Phoenix
       CAlphaTestOperation		       m_AlphaTest;
       Phoenix::Graphics::CCamera	       *m_pCamera;
       Phoenix::Graphics::CInternalRenderState  m_RenderState;
-      GLUquadric *			       m_pQuadric;
-
+#if !defined(PHOENIX_APPLE_IPHONE)
+        GLUquadric *			       m_pQuadric;
+#endif
     public:
       ////////////////////
       /// Default constructor
@@ -333,6 +338,7 @@ namespace Phoenix
       /// Forces the rendering commands to be completed.
       /// Returns after currently given commands have been executed.
       void Finalize();
+#if !defined(PHOENIX_APPLE_IPHONE)
       ////////////////////
       /// Commits vertex descriptor.
       /// \param pBuffer Buffer to be applied.
@@ -343,6 +349,7 @@ namespace Phoenix
       /// \param pBuffer Buffer to be applied.
       /// \param nId Number for active texture unit. Used only in conjunction of ELEMENT_TYPE_TEX_*. If value is omitted, it defaults to zero.
       void RollbackVertexDescriptor( Phoenix::Graphics::CVertexDescriptor *pBuffer, unsigned int nId = 0);
+#endif
       ////////////////////
       /// Draws the elements from previously set arrays.
       /// \param pIndexBuffer which indices are used and what primitives will be created.
@@ -766,13 +773,17 @@ namespace Phoenix
 inline void
 Phoenix::Graphics::COglRenderer::CommitColor( const Phoenix::Math::CVector4<unsigned char> &vColor )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   glColor4ubv( vColor.GetArray());
+#endif
 }
 /////////////////////////////////////////////////////////////////
 inline void
 Phoenix::Graphics::COglRenderer::CommitColor( unsigned char bR, unsigned char bG, unsigned char bB, unsigned char bA)
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   glColor4ub( bR,bG,bB,bA );
+#endif
 }
 /////////////////////////////////////////////////////////////////
 inline Phoenix::Graphics::CInternalRenderState &

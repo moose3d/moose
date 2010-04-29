@@ -1,12 +1,14 @@
 #include "PhoenixApplication.h"
 #include "PhoenixLogger.h"
-#include "PhoenixSDLScreen.h"
+//#include "PhoenixSDLScreen.h"
 #include <sstream>
 #include <iostream>
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
+#if !defined(PHOENIX_APPLE_IPHONE)
 using namespace Phoenix::Window;
+#endif
 using std::ostringstream;
 using namespace std;
 namespace prefix = Phoenix::Scene;
@@ -113,6 +115,7 @@ prefix::CApplication::ProcessInput()
 {
 	if ( GetCurrentScene() == NULL ) return;
 	CScene & scene = *GetCurrentScene();
+#if !defined(PHOENIX_APPLE_IPHONE)
 	SDL_Event event;
 	while ( SDL_PollEvent(&event ))
 	{
@@ -167,6 +170,7 @@ prefix::CApplication::ProcessInput()
 				break;
 		}
 	}
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -233,14 +237,18 @@ int MainLoop( void * data )
 void
 prefix::CApplication::Run()
 {
-	m_pMainLoopThread = SDL_CreateThread(MainLoop, this);
+#if !defined(PHOENIX_APPLE_IPHONE)
+  m_pMainLoopThread = SDL_CreateThread(MainLoop, this);
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::Halt()
 {
 	SetEnabled(false);
+#if !defined(PHOENIX_APPLE_IPHONE)
 	if ( m_pMainLoopThread ) SDL_WaitThread(m_pMainLoopThread, NULL);
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Core::CFpsCounter &
@@ -249,13 +257,18 @@ prefix::CApplication::GetFPSCounter()
 	return m_FpsCounter;
 }
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 SCRIPT_CMD_DECL( OpenScreen );
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::RegisterUserCommands()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	CREATE_CMD( OpenScreen );
+#endif
 }
+#if !defined(PHOENIX_APPLE_IPHONE)
 ///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_IMPL( OpenScreen )
 {
@@ -289,3 +302,4 @@ SCRIPT_CMD_IMPL( OpenScreen )
 	return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////
+#endif

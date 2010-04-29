@@ -1,7 +1,13 @@
 #ifndef __PhoenixAIScript_h__
 #define __PhoenixAIScript_h__
 /////////////////////////////////////////////////////////////////
+#include <PhoenixAPI.h>
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include <tcl.h>
+#else
+class Tcl_Obj {};
+class Tcl_Interp {};
+#endif
 #include <list>
 #include <string>
 #include <map>
@@ -295,11 +301,13 @@ typedef std::map<std::string, Tcl_Obj *> NameObjMap;
 int
 ParseRay( Tcl_Interp *pInterp, NameObjMap & rayParam, Phoenix::Math::CRay & ray );
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 inline int
 ParseKeyValueMap( Tcl_Interp *pInterp,
 									NameObjMap & mapNameObj,
 									Tcl_Obj *pList )
 {
+
 	// Do some sanity checking first
 	int lstLength = 0;
 	if ( Tcl_ListObjLength( pInterp, pList, &lstLength) != TCL_OK  ) return TCL_ERROR;
@@ -317,6 +325,7 @@ ParseKeyValueMap( Tcl_Interp *pInterp,
 	}
 	return TCL_OK;
 }
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #define MAP_HAS( MAP, PARAM ) ( MAP.find(PARAM) != MAP.end() )
 ///////////////////////////////////////////////////////////////////////////////
@@ -350,4 +359,5 @@ ParseKeyValueMap( Tcl_Interp *pInterp,
 }
 ///////////////////////////////////////////////////////////////////////////////
 #endif
+
 

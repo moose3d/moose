@@ -1,18 +1,13 @@
-////////////////////////////////////////////////////////////////
-#ifdef __APPLE__
-#include <GL/GLee.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/GLee.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
 ////////////////////////////////////////////////////////////////////////////////
 #include <string.h>
 #include <list>
 #include <iostream>
 #include "PhoenixGlobals.h"
+#include "PhoenixAPI.h"
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <OpenGLES/EAGL.h>
+#include <OpenGLES/EAGLDrawable.h>
+#endif
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixAmbientLight.h"
 #include "PhoenixSpotLight.h"
@@ -26,10 +21,15 @@
 #include "PhoenixMath.h"
 #include <fstream>
 #include <assert.h>
-#include <ft2build.h>
 #include "PhoenixLogger.h"
+
+
+
+#if !defined(PHOENIX_APPLE_IPHONE)
 // include freetype stuff
+#include <ft2build.h>
 #include FT_FREETYPE_H
+#endif
 /////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Default;
@@ -46,20 +46,33 @@ using std::string;
 #define BUFFER_OFFSET(i) ((char *)NULL+(i))
 /////////////////////////////////////////////////////////////////
 /// Famous last words: Eight color buffers is enough for anyone :)
-const GLenum g_ColorBufferNames[] = { GL_COLOR_ATTACHMENT0_EXT,
-				      GL_COLOR_ATTACHMENT1_EXT,
-				      GL_COLOR_ATTACHMENT2_EXT,
-				      GL_COLOR_ATTACHMENT3_EXT,
-				      GL_COLOR_ATTACHMENT4_EXT,
-				      GL_COLOR_ATTACHMENT5_EXT,
-				      GL_COLOR_ATTACHMENT6_EXT,
-				      GL_COLOR_ATTACHMENT7_EXT };
+const GLenum g_ColorBufferNames[] = { 
+#if defined(PHOENIX_APPLE_IPHONE)
+    GL_COLOR_ATTACHMENT0
+#else
+    GL_COLOR_ATTACHMENT0,
+                      GL_COLOR_ATTACHMENT1,
+				      GL_COLOR_ATTACHMENT2,
+				      GL_COLOR_ATTACHMENT3,
+				      GL_COLOR_ATTACHMENT4,
+				      GL_COLOR_ATTACHMENT5,
+				      GL_COLOR_ATTACHMENT6,
+				      GL_COLOR_ATTACHMENT7 
+#endif
+};
 /////////////////////////////////////////////////////////////////
+#if defined(PHOENIX_APPLE_IPHONE)
+#define DISABLE_ALL_TEXTURES(){			\
+glDisable(GL_TEXTURE_2D);			\
+glDisable(GL_TEXTURE_CUBE_MAP);		\
+}
+#else
 #define DISABLE_ALL_TEXTURES(){			\
     glDisable(GL_TEXTURE_2D);			\
     glDisable(GL_TEXTURE_CUBE_MAP);		\
     glDisable(GL_TEXTURE_RECTANGLE_ARB);	\
 }
+#endif
 /////////////////////////////////////////////////////////////////
 /// Returns corresponding opengl texture type.
 inline GLenum
@@ -72,10 +85,12 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
   case TEXTURE_DEPTH2D:
     iRetval = GL_TEXTURE_2D;
     break;
-  case TEXTURE_RECT:
-    iRetval = GL_TEXTURE_RECTANGLE_ARB;
+#if !defined(PHOENIX_APPLE_IPHONE)
+      case TEXTURE_RECT:
+    iRetval = GL_TEXTURE_RECTANGLE;
     break;
-  case TEXTURE_CUBE:
+#endif
+   case TEXTURE_CUBE:
     iRetval = GL_TEXTURE_CUBE_MAP;
     break;
   }
@@ -98,8 +113,10 @@ Phoenix::Graphics::CFontset::~CFontset()
      // delete textures, this is static array of pointers. delete only pointed textures.
      delete m_ppTextures[0];
   }
-// Release lists
+#if !defined(PHOENIX_APPLE_IPHONE)
+    // Release lists
   glDeleteLists( GetDisplayList(), Phoenix::Globals::MAX_FONT_CHARACTERS );
+#endif
 }
 /////////////////////////////////////////////////////////////////
 GLuint &
@@ -123,6 +140,22 @@ Phoenix::Graphics::CFontset::GetTextures()
 Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
 {
   Init();
+#if defined(PHOENIX_APPLE_IPHONE)
+    m_bARB_vertex_program  = true;
+    m_bARB_vertex_shader   = true;
+    m_bARB_fragment_shader = true;
+    m_bARB_shader_objects  = true;
+    m_bEXT_vertex_array    = false;
+    m_bARB_multitexture    = true;
+    m_bARB_vertex_buffer_object     = false;
+    m_bEXT_framebuffer_object       = true;
+    m_iMaxLights  = 0;
+    m_iMaxElementsVertices = 0;
+    m_iMaxElementsIndices = 0;
+    m_iMaxColorAttachments = 1;
+    m_iMaxDrawBuffers = 1;
+    
+#else
   // Check for required extensions:
   m_bARB_vertex_program  = GLEE_ARB_vertex_program;
   m_bARB_vertex_shader   = GLEE_ARB_vertex_shader;
@@ -134,12 +167,14 @@ Phoenix::Graphics::COglRendererFeatures::COglRendererFeatures()
   m_bARB_vertex_buffer_object     = GLEE_ARB_vertex_buffer_object;
   m_bEXT_framebuffer_object       = GLEE_EXT_framebuffer_object;
   m_bEXT_texture_compression_s3tc = GLEE_EXT_texture_compression_s3tc;
-
-  glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
-  glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
-  glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);
-  glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &m_iMaxColorAttachments );
-  glGetIntegerv( GL_MAX_DRAW_BUFFERS,      &m_iMaxDrawBuffers );
+    glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
+    glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
+    glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);
+    glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &m_iMaxColorAttachments );
+    glGetIntegerv( GL_MAX_DRAW_BUFFERS,      &m_iMaxDrawBuffers );
+    
+#endif
+    
   glGetIntegerv( GL_SAMPLE_BUFFERS, 	   &m_iMultiSampleBuffers);
   glGetIntegerv( GL_SAMPLES, 		   &m_iMultiSamples);
   glGetIntegerv( GL_MAX_VERTEX_ATTRIBS,    &m_iMaxVertexAttribs);
@@ -333,7 +368,10 @@ Phoenix::Graphics::operator<<(std::ostream &stream, const COglRendererFeatures &
 }
 #endif
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NULL),  m_pQuadric(NULL)
+Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NULL)
+#if !defined(PHOENIX_APPLE_IPHONE)
+                                                ,  m_pQuadric(NULL)
+#endif
 {
 
 }
@@ -341,7 +379,9 @@ Phoenix::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(N
 Phoenix::Graphics::COglRenderer::~COglRenderer()
 {
   if ( m_pFeatures )  delete m_pFeatures;
+#if !defined(PHOENIX_APPLE_IPHONE)
   if ( m_pQuadric  )  gluDeleteQuadric(m_pQuadric);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -365,7 +405,7 @@ Phoenix::Graphics::COglRenderer::Finalize()
   // disable textures, these tend to make nasty problems.
   for( int i=0;i<TEXTURE_HANDLE_COUNT;i++)
   {
-    glActiveTextureARB( GL_TEXTURE0_ARB+i);
+    glActiveTexture( GL_TEXTURE0+i);
     DISABLE_ALL_TEXTURES();
 
   }
@@ -374,6 +414,9 @@ Phoenix::Graphics::COglRenderer::Finalize()
   // Remember call buffer swapping from another source.
 }
 /////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
+// For iPhone platform we do things in different manner; shaders are 
+// required for everything so vertexdescriptors are bound as shader parameters.
 void
 Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
@@ -454,8 +497,8 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
     }
     break;
   case ELEMENT_TYPE_TEX_2F:
-    if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTextureARB( GL_TEXTURE0_ARB + nId); }
-    else                              { glClientActiveTextureARB( GL_TEXTURE0_ARB);       }
+    if ( nId < TEXTURE_HANDLE_COUNT ) { glClientActiveTexture( GL_TEXTURE0 + nId); }
+    else                              { glClientActiveTexture( GL_TEXTURE0);       }
 
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
@@ -465,7 +508,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuf
 
     if ( pBuffer->IsCached())
     {
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, pBuffer->GetCache() );
+      glBindBuffer( GL_ARRAY_BUFFER, pBuffer->GetCache() );
       glTexCoordPointer(2, GL_FLOAT, 0, 0);
     }
     else
@@ -663,6 +706,7 @@ Phoenix::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pB
     break;
   }
 }
+#endif
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
@@ -687,12 +731,14 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
   case PRIMITIVE_LINE_STRIP:
     glPrimitive = GL_LINE_STRIP;
     break;
+#if !defined(PHOENIX_APPLE_IPHONE)
   case PRIMITIVE_QUAD_LIST:
     glPrimitive = GL_QUADS;
     break;
   case PRIMITIVE_QUAD_STRIP:
     glPrimitive = GL_QUAD_STRIP;
     break;
+#endif
   }
   //bool bIsActive = (GetRenderState().m_pIndexArray == pIndexBuffer ) ;
   GLenum iIndexBufferType;
@@ -714,12 +760,13 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 
   if ( !GetRenderState().IsCurrentIndices( pIndexBuffer ) )
   {
+#if !defined(PHOENIX_APPLE_IPHONE)      
     if ( pIndices == 0 )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
     else
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-
-    // store current indexbuffer pointer to renderstate
+#endif
+      // store current indexbuffer pointer to renderstate
     GetRenderState().SetCurrentIndices(pIndexBuffer);
   }
   glDrawElements( glPrimitive, pIndexBuffer->GetDrawableCount(),
@@ -803,16 +850,19 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( Phoenix::Graphics::PRIMITIVE_T
   case PRIMITIVE_LINE_STRIP:
     glPrimitive = GL_LINE_STRIP;
     break;
+#if !defined(PHOENIX_APPLE_IPHONE)
   case PRIMITIVE_QUAD_LIST:
     glPrimitive = GL_QUADS;
     break;
   case PRIMITIVE_QUAD_STRIP:
     glPrimitive = GL_QUAD_STRIP;
     break;
+#endif
   }
   glDrawArrays( glPrimitive, nStart, nCount);
 }
 /////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 void
 Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex & rVertex, int iIgnoreFlags )
 {
@@ -822,7 +872,7 @@ Phoenix::Graphics::COglRenderer::CommitVertex( const Phoenix::Spatial::CVertex &
   {
     for(int i=0;i<TEXTURE_HANDLE_COUNT;i++)
     {
-      glMultiTexCoord2fARB( GL_TEXTURE0_ARB+i,
+      glMultiTexCoord2f( GL_TEXTURE0+i,
 			    rVertex.GetTextureCoordinates( i )[0],
 			    rVertex.GetTextureCoordinates( i )[1] );
     }
@@ -856,11 +906,12 @@ Phoenix::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_TEX5_ARRAY:
   case CLIENT_STATE_TEX6_ARRAY:
   case CLIENT_STATE_TEX7_ARRAY:
-    glClientActiveTexture( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
+    glClientActiveTexture( GL_TEXTURE0 + (tType-CLIENT_STATE_TEX0_ARRAY));
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
   }
 }
+
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
@@ -884,14 +935,13 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
   case CLIENT_STATE_TEX5_ARRAY:
   case CLIENT_STATE_TEX6_ARRAY:
   case CLIENT_STATE_TEX7_ARRAY:
-    glClientActiveTextureARB( GL_TEXTURE0_ARB + (tType-CLIENT_STATE_TEX0_ARRAY));
+    glClientActiveTexture( GL_TEXTURE0 + (tType-CLIENT_STATE_TEX0_ARRAY));
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     break;
   }
 }
+#endif
 /////////////////////////////////////////////////////////////////
-
-
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
 {
@@ -979,13 +1029,17 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
   /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
   /// Somehow it prevents it occurring.
   /// ****************************************
-  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
-
+#if !defined(PHOENIX_APPLE_IPHONE)
+    glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
   glTexImage2D( iGLType, 0, iGLInternalFormat,
 		pImage->GetWidth(), pImage->GetHeight(), 0,
 		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
   // build mipmaps
-  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
+#if defined(PHOENIX_APPLE_IPHONE)
+    glGenerateMipmap(iGLType);
+#endif
+    /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
 		    pImage->GetWidth(), pImage->GetHeight(),
 		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
 
@@ -1002,6 +1056,11 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename, TEXTURE_TYPE tType  )
 {
+#if defined(PHOENIX_APPLE_IPHONE)
+    g_Error << "CreateCompressedTexture: Not implemented" << endl;
+    return NULL;
+#else
+    
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
   ////////////////////
@@ -1035,21 +1094,21 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
 
   ////////////////////
   size_t nBlockSize = 16;
-  GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+  GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1;
   ////////////////////
   // Check correct format:
   switch (pImage->GetFormat())
   {
   case DDS_FORMAT_DXT1:
     nBlockSize = 8;
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1;
     break;
   case DDS_FORMAT_DXT3:
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT3;
     nBlockSize = 16;
     break;
   case DDS_FORMAT_DXT5:
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT5;
     nBlockSize = 16;
     break;
   default:
@@ -1117,7 +1176,7 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
   CLEANUP();
 
 #undef CLEANUP
-
+#endif
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture *
@@ -1180,7 +1239,9 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     // Set default texture parameters
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_CLAMP_TO_EDGE);
+#if !defined(PHOENIX_APPLE_IPHONE)
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_CLAMP_TO_EDGE);
+#endif
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     ////////////////////
@@ -1255,7 +1316,9 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
   // depth texture requires special settings
   if ( tType == TEXTURE_DEPTH2D )
   {
+#if !defined(PHOENIX_APPLE_IPHONE)
     glTexParameteri( iGLType, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+#endif
     glTexImage2D( iGLType, 0, GL_DEPTH_COMPONENT, nWidth, nHeight, 0,
 		  GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
   }
@@ -1301,7 +1364,7 @@ Phoenix::Graphics::COglRenderer::CreateTexture( size_t nWidth, size_t nHeight, T
 void
 Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
-  glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
+  glActiveTexture( GL_TEXTURE0 + nTexUnit);
   glEnable( GetGLTextureType( pTexture->GetType() ) );
   if ( ! GetRenderState().IsCurrentTexture( nTexUnit, pTexture) )
   {
@@ -1315,7 +1378,7 @@ Phoenix::Graphics::COglRenderer::CommitTexture( unsigned int nTexUnit, COglTextu
 void
 Phoenix::Graphics::COglRenderer::DisableTexture( unsigned int nTexUnit, COglTexture *pTexture )
 {
-  glActiveTextureARB( GL_TEXTURE0_ARB + nTexUnit);
+  glActiveTexture( GL_TEXTURE0 + nTexUnit);
   if ( pTexture != NULL )
   {
     glDisable( GetGLTextureType( pTexture->GetType()));
@@ -1338,6 +1401,9 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
 
   int *pViewport = camera.GetViewport();
   glViewport(pViewport[0], pViewport[1], pViewport[2], pViewport[3]);
+
+#if !defined(PHOENIX_APPLE_IPHONE)
+  // these need to be fed to shaders.
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity();
   glMultTransposeMatrixf( camera.GetProjectionMatrix().GetArray());
@@ -1346,6 +1412,8 @@ Phoenix::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultTransposeMatrixf( camera.GetViewMatrix().GetArray());
+#endif
+
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera *
@@ -1368,6 +1436,16 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
   ////////////////////
   switch( tFilter )
   {
+
+#if defined(PHOENIX_APPLE_IPHONE)
+  case ENV_MODULATE:
+  case ENV_DECAL:
+  case ENV_REPLACE:
+  case ENV_BLEND:
+  case ENV_COMBINE_INCR:
+  case ENV_COMBINE_REPLACE:
+    break;
+#else
   case ENV_MODULATE:
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     break;
@@ -1388,6 +1466,7 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
     glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE);
     break;
+#endif
   case MIN_NEAREST:
     glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     break;
@@ -1413,16 +1492,25 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
     break;
   case R_WRAP_REPEAT:
+#if !defined(PHOENIX_APPLE_IPHONE)
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_R, GL_REPEAT);
+#endif
     break;
+
   case T_WRAP_CLAMP:
+#if !defined(PHOENIX_APPLE_IPHONE)
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP);
+#endif
     break;
   case S_WRAP_CLAMP:
+#if !defined(PHOENIX_APPLE_IPHONE)
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP);
+#endif
     break;
   case R_WRAP_CLAMP:
+#if !defined(PHOENIX_APPLE_IPHONE)
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_R, GL_CLAMP);
+#endif
     break;
   case T_WRAP_CLAMP_TO_EDGE:
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -1431,7 +1519,9 @@ Phoenix::Graphics::COglRenderer::CommitFilter( TEXTURE_FILTER tFilter, TEXTURE_T
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     break;
   case R_WRAP_CLAMP_TO_EDGE:
+#if !defined(PHOENIX_APPLE_IPHONE)
     glTexParameteri( glTarget, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+#endif
     break;
   }
   //  case ENV_COLOR:
@@ -1449,7 +1539,7 @@ Phoenix::Graphics::COglRenderer::CommitFilters( const std::vector<Phoenix::Graph
   }
 }
 /////////////////////////////////////////////////////////////////
-int
+inline int
 LoadFile( const char * szFilename, std::string &sContents )
 {
 
@@ -1537,140 +1627,7 @@ GetProgramInfoLog( unsigned int nProg, std::string &strInfoLog )
 {
   GetInfoLog( nProg, strInfoLog, 1 );
 }
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader *
-Phoenix::Graphics::COglRenderer::CreateShader( const std::string & strVertexShader, const std::string & strFragmentShader )
-{
-  return CreateShader(strVertexShader.c_str(), strFragmentShader.c_str());
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader *
-Phoenix::Graphics::COglRenderer::CreateShader( const char * szVertexShader, const char * szFragmentShader )
-{
 
-
-  string strVSSource, strFSSource;
-  ////////////////////
-  // Vertex shader loading
-  if ( szVertexShader != NULL && strlen(szVertexShader) > 0 )
-  {
-    if ( LoadFile( szVertexShader, strVSSource ))
-    {
-      std::cerr << "Failed to load vertex shader '" << szVertexShader << "'" << std::endl;
-    }
-
-  }
-  ////////////////////
-  // Fragment shader loading
-  if ( szFragmentShader != NULL && strlen(szFragmentShader) > 0 )
-  {
-    if ( LoadFile( szFragmentShader, strFSSource ))
-    {
-      std::cerr << "Failed to load fragment shader '" << szFragmentShader << "'" << std::endl;
-    }
-  }
-
-  return CreateShaderFromSource( strVSSource.size() > 0 ? strVSSource.c_str() : NULL,
-				 strFSSource.size() > 0 ? strFSSource.c_str() : NULL, szVertexShader, szFragmentShader );
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::CShader *
-Phoenix::Graphics::COglRenderer::CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode,
-							 const char * szVSname, const char * szFSname)
-{
-  int bHasShader = 0;
-  int iState = 0; // compile and link status
-
-  unsigned int nProgram = glCreateProgram();
-  CShader *pShader = new CShader( nProgram );
-
-  if ( pShader == NULL )
-  {
-    std::cerr << "Failed to allocate shader memory." << std::endl;
-    return NULL;
-  }
-
-  ////////////////////
-  // Vertex shader loading
-  if ( szVertexShaderCode != NULL && strlen(szVertexShaderCode) > 0 )
-  {
-
-    unsigned int nVertexShader = glCreateShader( GL_VERTEX_SHADER );
-    int nLength = strlen(szVertexShaderCode); // source code length
-    const char *pStrCode = szVertexShaderCode;
-
-    // compile source
-    glShaderSource(nVertexShader,1, &pStrCode, &nLength );
-    glCompileShader( nVertexShader );
-    // get compile status
-    glGetShaderiv( nVertexShader, GL_COMPILE_STATUS, &iState);
-    if ( iState == GL_TRUE )
-    {
-      // compiling went ok
-      pShader->SetVertexShader( nVertexShader );
-      bHasShader = 1;
-    }
-    else
-    {
-      string strLog;
-      GetShaderInfoLog( nVertexShader, strLog );
-      std::cerr << "Error in vertex shader " << (szVSname == NULL  ? "" : szVSname) << " : " << strLog << std::endl;
-    }
-
-  }
-
-  ////////////////////
-  // Fragment shader loading
-  if ( szFragmentShaderCode != NULL && strlen(szFragmentShaderCode) > 0 )
-  {
-
-    unsigned int nFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-    int nLength = strlen(szFragmentShaderCode); // source code length
-    const char *pStrCode = szFragmentShaderCode;
-
-    glShaderSource(nFragmentShader,1, &pStrCode, &nLength );
-    glCompileShader( nFragmentShader );
-
-    // get compile status
-    glGetShaderiv( nFragmentShader, GL_COMPILE_STATUS, &iState);
-    if ( iState == GL_TRUE )
-    {
-      // compiling went ok
-      pShader->SetFragmentShader( nFragmentShader );
-      bHasShader = 1;
-    }
-    else
-    {
-      string strLog;
-      GetShaderInfoLog( nFragmentShader, strLog );
-      std::cerr << "Error in fragment shader " << (szFSname == NULL ? "" : szFSname) << strLog << std::endl;
-    }
-
-
-  }
-  // check that shader code exists
-  if ( !bHasShader )
-  {
-    delete pShader;
-    return NULL;
-  }
-
-  // link shader program
-  glLinkProgram(pShader->GetProgram());
-  glGetProgramiv(pShader->GetProgram(), GL_LINK_STATUS, &iState);
-
-  // show linking errors, if any
-  if ( iState == GL_FALSE )
-  {
-    string strLog;
-    GetProgramInfoLog(pShader->GetProgram(), strLog);
-    std::cerr << strLog << std::endl;
-    delete pShader;
-    return NULL;
-  }
-
-  return pShader;
-}
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitShader( CShader *pShader )
@@ -1742,7 +1699,7 @@ Phoenix::Graphics::COglRenderer::CommitShaderParam( CShader &shader, const char 
     else
     {
       glEnableVertexAttribArray(iLoc);
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
       switch ( vParam.GetType())
       {
@@ -1894,6 +1851,7 @@ Phoenix::Graphics::COglRenderer::CommitVertexAttrib( Phoenix::Graphics::CShader 
 inline void CommitLightColors( const CLightBase & light, GLenum iLightID )
 {
 	float aTempVector[4];
+#if !defined(PHOENIX_APPLE_IPHONE)
 	// Set diffuse RGBA intensity
 	aTempVector[0] = (float)light.GetDiffuseColor()[0]/255.0f;
 	aTempVector[1] = (float)light.GetDiffuseColor()[1]/255.0f;
@@ -1914,11 +1872,13 @@ inline void CommitLightColors( const CLightBase & light, GLenum iLightID )
 	aTempVector[2] = (float)light.GetSpecularColor()[2]/255.0f;
 	aTempVector[3] = (float)light.GetSpecularColor()[3]/255.0f;
 	glLightfv(iLightID, GL_SPECULAR, aTempVector);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitLight( const CDirectionalLight &light, unsigned int nLightId)
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   GLenum iLightID = GL_LIGHT0+nLightId;
   glEnable(iLightID);
   float aTempVector[4];
@@ -1938,11 +1898,13 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CDirectionalLight &light, un
 
   // Commit color colors
   CommitLightColors( light, iLightID );
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitLight( const CSpotLight &light, unsigned int nLightId)
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	GLenum iLightID = GL_LIGHT0+nLightId;
 	glEnable(iLightID);
 	float aTempVector[4];
@@ -1966,11 +1928,13 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CSpotLight &light, unsigned 
 	glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
 
 	CommitLightColors( light, iLightID );
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitLight( const CPointLight &light, unsigned int nLightId)
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   GLenum iLightID = GL_LIGHT0+nLightId;
   glEnable(iLightID);
   float aTempVector[4];
@@ -1998,6 +1962,7 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CPointLight &light, unsigned
   glLightf(iLightID, GL_SPOT_EXPONENT,  0.0f);
 
   CommitLightColors(light, iLightID);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2010,8 +1975,9 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CAmbientLight &light )
 						light.GetColor()[1] * ONE_DIV_255,
 						light.GetColor()[2] * ONE_DIV_255,
 						light.GetColor()[3] * ONE_DIV_255};
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, array );
+#endif
 }
 /////////////////////////////////////////////////////////////////
 //void
@@ -2097,7 +2063,9 @@ Phoenix::Graphics::COglRenderer::CommitLight( const CAmbientLight &light )
 void
 Phoenix::Graphics::COglRenderer::DisableLight ( unsigned int nLightId )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   glDisable(GL_LIGHT0+nLightId);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2121,6 +2089,11 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
   case STATE_DEPTH_WRITE:
     glDepthMask(GL_TRUE);
     break;
+#if defined(PHOENIX_APPLE_IPHONE)
+  case STATE_LIGHTING:
+    /*OpenGL version 2 won't use lighting (always shaders)*/
+    break;
+#endif
   default:
     glEnable(static_cast<GLenum>(tState));
     break;
@@ -2130,18 +2103,22 @@ Phoenix::Graphics::COglRenderer::CommitState( STATE_TYPE tState )
 void
 Phoenix::Graphics::COglRenderer::CommitMaterial( const Phoenix::Graphics::CMaterial & material, int iFace )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   GLenum glFace = iFace ? GL_BACK : GL_FRONT;
   glMaterialfv( glFace, GL_DIFFUSE,   material.GetDiffuse().GetArray());
   glMaterialfv( glFace, GL_AMBIENT,   material.GetAmbient().GetArray());
   glMaterialfv( glFace, GL_SPECULAR,  material.GetSpecular().GetArray());
   glMaterialfv( glFace, GL_EMISSION,  material.GetEmission().GetArray());
   glMaterialf(  glFace, GL_SHININESS, material.GetShininess()*128.0f);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitAlpha(  Phoenix::Graphics::ALPHA_TEST_TYPE tType, float fReference )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   glAlphaFunc( static_cast<GLenum>(tType), fReference);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2171,9 +2148,10 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   mView(0,3) = 0.0f;
   mView(1,3) = 0.0f;
   mView(2,3) = 0.0f;
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
+
   CModel & model = **skybox.GetModelHandle();
   COglTexture *pTexture = *skybox.GetRenderState().GetTextureHandle(0);
   CIndexArray *pIndices = *model.GetIndices();
@@ -2191,24 +2169,31 @@ Phoenix::Graphics::COglRenderer::CommitSkybox( Phoenix::Graphics::CSkybox & skyb
   /////////////////////////////////////////////////////////////////
 
   glPopMatrix();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitTransform( const Phoenix::Math::CTransform &transform )
 {
-  glPushMatrix();
+#if !defined(PHOENIX_APPLE_IPHONE) 
+ glPushMatrix();
   glMultTransposeMatrixf( const_cast<Phoenix::Math::CTransform &>(transform).GetMatrix().GetArray());
+#endif
 }
+
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::RollbackTransform()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   glPopMatrix();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &sphere, bool bWireframe )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
     if ( !m_pQuadric )
     m_pQuadric = gluNewQuadric();
 
@@ -2235,7 +2220,7 @@ Phoenix::Graphics::COglRenderer::CommitSphere( const Phoenix::Volume::CSphere &s
 
   glPopMatrix();
   
-
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2243,6 +2228,7 @@ Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<flo
 					       float fRadius, const CVector3<float> & vRotation,
 					       bool bWireframe )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
     if ( !m_pQuadric )
     m_pQuadric = gluNewQuadric();
   gluQuadricDrawStyle( m_pQuadric, (bWireframe ? GLU_SILHOUETTE : GLU_FILL) );
@@ -2253,6 +2239,7 @@ Phoenix::Graphics::COglRenderer::CommitCircle( const Phoenix::Math::CVector3<flo
 	glRotatef( vRotation[0], 1, 0, 0);
 	gluDisk( m_pQuadric, 0.0, fRadius, 16, 1);
         glPopMatrix();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2270,7 +2257,7 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
 //     glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
 //     gluSphere(m_pQuadric, sphere.GetRadius(), 16, 16);
 //   glPopMatrix();
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 	glPushAttrib( GL_POLYGON_BIT );
 	if ( bWireframe ) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else 							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -2308,13 +2295,14 @@ Phoenix::Graphics::COglRenderer::CommitBox( const Phoenix::Volume::COrientedBox 
   glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
   glEnd();
   glPopAttrib();
+#endif
 
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitCapsule( const Phoenix::Volume::CCapsule &capsule, bool bWireframe )
 {
-
+#if !defined(PHOENIX_APPLE_IPHONE)
       if ( !m_pQuadric )
         m_pQuadric = gluNewQuadric();
     CQuaternion q;
@@ -2345,6 +2333,7 @@ Phoenix::Graphics::COglRenderer::CommitCapsule( const Phoenix::Volume::CCapsule 
 
         glEnd();
         glPopMatrix();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2353,6 +2342,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
 					     const Phoenix::Spatial::CVertex &vertexThree,
 					     const Phoenix::Spatial::CVertex &vertexFour)
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   // Handy macro for multiple similar commands
 #define COMMIT_VERTEX( V ) {			\
   glColor4ubv( V.GetColor().GetArray() );	\
@@ -2369,6 +2359,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Spatial::CVertex &ve
     COMMIT_VERTEX( vertexFour );
   glEnd();
 #undef COMMIT_VERTEX
+#endif
 }
 /////////////////////////////////////////////////////////////////
 int
@@ -2378,10 +2369,10 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
 
   if(  !rVertexDescriptor.IsCached() )
   {
-    glGenBuffersARB(1, &rVertexDescriptor.GetCache());
+    glGenBuffers(1, &rVertexDescriptor.GetCache());
   }
 
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB, rVertexDescriptor.GetCache());
+  glBindBuffer( GL_ARRAY_BUFFER, rVertexDescriptor.GetCache());
 
   // determine proper buffer size.
   switch ( rVertexDescriptor.GetType())
@@ -2394,13 +2385,13 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   case ELEMENT_TYPE_TEX_4F:
   case ELEMENT_TYPE_TEX_2F:
   case ELEMENT_TYPE_V3F_N3F_T2F:
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+    glBufferData( GL_ARRAY_BUFFER,
 		     rVertexDescriptor.GetByteSize(),
 		     rVertexDescriptor.GetPointer<float>(),
 		     static_cast<GLenum>(tType));
 
   case ELEMENT_TYPE_COLOR_4UB:
-    glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+    glBufferData( GL_ARRAY_BUFFER,
 		     rVertexDescriptor.GetByteSize(),
 		     rVertexDescriptor.GetPointer<unsigned char>(),
 		     static_cast<GLenum>(tType));
@@ -2436,7 +2427,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
   // Prepare for case that data does not fit
   if ( glGetError() == GL_OUT_OF_MEMORY )
   {
-    glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
+    glDeleteBuffers( 1, &rVertexDescriptor.GetCache());
     rVertexDescriptor.SetState(Phoenix::Core::CACHE_NOCACHE);
     return 2;
   }
@@ -2445,7 +2436,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CVertexDescript
     rVertexDescriptor.SetState(Phoenix::Core::CACHE_UP2DATE);
   }
   // Unset current cache buffer.
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   return 0;
 }
@@ -2458,21 +2449,21 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & r
 
   if(  !rIndexArray.IsCached() )
   {
-    glGenBuffersARB(1, &rIndexArray.GetCache());
+    glGenBuffers(1, &rIndexArray.GetCache());
   }
 
-  glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, rIndexArray.GetCache());
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, rIndexArray.GetCache());
 
   if ( rIndexArray.IsShortIndices() )
   {
-    glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER,
 		     sizeof(unsigned short int)*rIndexArray.GetNumIndices(),
 		     rIndexArray.GetPointer<unsigned short int>(),
 		     static_cast<GLenum>(tType));
   }
   else
   {
-    glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER,
 		     sizeof(unsigned int)*rIndexArray.GetNumIndices(),
 		     rIndexArray.GetPointer<unsigned int>(),
 		     static_cast<GLenum>(tType));
@@ -2480,7 +2471,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & r
   // Prepare for case that data does not fit
   if ( glGetError() == GL_OUT_OF_MEMORY )
   {
-    glDeleteBuffersARB( 1, &(rIndexArray.GetCache()));
+    glDeleteBuffers( 1, &(rIndexArray.GetCache()));
     rIndexArray.SetState(Phoenix::Core::CACHE_NOCACHE);
     return 2;
   }
@@ -2489,7 +2480,7 @@ Phoenix::Graphics::COglRenderer::CommitCache( Phoenix::Graphics::CIndexArray & r
     rIndexArray.SetState(Phoenix::Core::CACHE_UP2DATE);
   }
   // Unset current cache buffer.
-  glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   return 0;
 }
@@ -2501,8 +2492,8 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CVertexDescri
 
   if(  rVertexDescriptor.IsCached() )
   {
-    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-    glDeleteBuffersARB( 1, &rVertexDescriptor.GetCache());
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glDeleteBuffers( 1, &rVertexDescriptor.GetCache());
     rVertexDescriptor.SetState(Phoenix::Core::CACHE_NOCACHE);
   }
 }
@@ -2514,8 +2505,8 @@ Phoenix::Graphics::COglRenderer::RollbackCache( Phoenix::Graphics::CIndexArray &
 
   if(  rIndexArray.IsCached() )
   {
-    glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
-    glDeleteBuffersARB( 1, &rIndexArray.GetCache());
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glDeleteBuffers( 1, &rIndexArray.GetCache());
     rIndexArray.SetState(Phoenix::Core::CACHE_NOCACHE);
   }
 }
@@ -2524,8 +2515,8 @@ void
 Phoenix::Graphics::COglRenderer::DisableCaches()
 {
   // disable VBO objects
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB,		0 );
-  glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER,		0 );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2570,29 +2561,29 @@ Phoenix::Graphics::COglRenderer::CreateFramebuffer( unsigned int nWidth, unsigne
 
   ////////////////////
   // Create and bind framebuffer
-  glGenFramebuffersEXT(1, &iFBO);
+  glGenFramebuffers(1, &iFBO);
   pFBO = new CFrameBufferObject( iFBO, nWidth, nHeight );
 
 
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, pFBO->GetID());
+  glBindFramebuffer(GL_FRAMEBUFFER, pFBO->GetID());
 
   if ( iBufferFlags & FBO_DEPTH_BUFFER )
   {
     ////////////////////
     // Create depth buffer
-    glGenRenderbuffersEXT(1, &pFBO->GetDepthBufferId());
-    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
+    glGenRenderbuffers(1, &pFBO->GetDepthBufferId());
+    glBindRenderbuffer(GL_RENDERBUFFER, pFBO->GetDepthBufferId());
 
     ////////////////////
     // Attach depth buffer to frame buffer.
-    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,
 			     (unsigned int)pFBO->GetWidth(), (unsigned int)pFBO->GetHeight() );
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-				 GL_RENDERBUFFER_EXT, pFBO->GetDepthBufferId());
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+				 GL_RENDERBUFFER, pFBO->GetDepthBufferId());
   }
 
 
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
   // Return object pointer.
   return pFBO;
 }
@@ -2607,7 +2598,7 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
   {
 
     // bind frame buffer.
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
+    glBindFramebuffer(GL_FRAMEBUFFER, rFBO.GetID());
 
     // Duplicate handle to texture
     g_DefaultTextureManager->DuplicateHandle( hTexture, rFBO.GetTextureHandle( nColorBuffer ) );
@@ -2627,24 +2618,24 @@ Phoenix::Graphics::COglRenderer::AttachTextureToFramebuffer( Phoenix::Graphics::
     glTexParameterf( iTexType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf( iTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT,
-			       GL_COLOR_ATTACHMENT0_EXT+nBufferNumber,
+    glFramebufferTexture2D( GL_FRAMEBUFFER,
+			       GL_COLOR_ATTACHMENT0+nBufferNumber,
 			       iTexType, pTexture->GetID(), 0);
 
     /////////////////////////////////////////////////////////////////
     /// THIS MIGHT REQUIRE TINKERING. I don't know should filters be set
     /// before actually using the texture or not... if there are problems,
     /// this might be the culprit.
-    glGenerateMipmapEXT( iTexType );
+    glGenerateMipmap( iTexType );
     /////////////////////////////////////////////////////////////////
-    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     /// If there were any errors, clean up and return NULL.
-    if ( status !=  GL_FRAMEBUFFER_COMPLETE_EXT )
+    if ( status !=  GL_FRAMEBUFFER_COMPLETE )
     {
       iRetval = 1;
     }
     // disable frame buffer
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     iRetval = 0;
   }
 
@@ -2655,44 +2646,46 @@ void
 Phoenix::Graphics::COglRenderer::CommitFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBufferCount )
 {
   // Bind frame buffer.
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
+  glBindFramebuffer(GL_FRAMEBUFFER, rFBO.GetID());
 
   // Define viewport to texture size and store current settings so they can be retrieved.
   // (This might not be necessary, but sounds resonably now)
-  glPushAttrib(GL_VIEWPORT_BIT);
+  //glPushAttrib(GL_VIEWPORT_BIT);
   glViewport(0,0, (unsigned int)rFBO.GetWidth(), (unsigned int)rFBO.GetHeight());
 
   // select render targets.
   // glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT) or glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT) or etc.
   // but this is better; it allows multiple buffers to be rendered via parameter.
   // Output to buffers must be controlled via GLSL fragment shaders.
+#if !defined(PHOENIX_APPLE_IPHONE)
   glDrawBuffers( nColorBufferCount % TEXTURE_HANDLE_COUNT, g_ColorBufferNames );
-
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitFrameBufferSingle( const Phoenix::Graphics::CFrameBufferObject & rFBO, unsigned int nColorBuffer )
 {
   // Bind frame buffer.
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rFBO.GetID());
+  glBindFramebuffer(GL_FRAMEBUFFER, rFBO.GetID());
 
   // Define viewport to texture size and store current settings so they can be retrieved.
   // (This might not be necessary, but sounds resonably now)
-  glPushAttrib(GL_VIEWPORT_BIT);
+
+  //glPushAttrib(GL_VIEWPORT_BIT);
   glViewport(0,0, (unsigned int)rFBO.GetWidth(), (unsigned int)rFBO.GetHeight());
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   // select render target
-  glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT+nColorBuffer);
-
+  glDrawBuffer(GL_COLOR_ATTACHMENT0+nColorBuffer);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::CFrameBufferObject & rFBO )
 {
   // Reset viewport settings
-  glPopAttrib();
+  //glPopAttrib();
   // Put render commands back to ordinary buffer
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 /////////////////////////////////////////////////////////////////
 /// A handle macro for commiting vertices with N
@@ -2711,7 +2704,7 @@ Phoenix::Graphics::COglRenderer::RollbackFrameBuffer( const Phoenix::Graphics::C
 void
 Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CFrameBufferObject & rFBO )
 {
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   glBegin(GL_QUADS);
 
     COMMIT_COORDINATES( 0.0f,            0.0f,		0.0f,            0.0f);
@@ -2720,12 +2713,14 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CFrameBuff
     COMMIT_COORDINATES( 0.0f,            rFBO.GetHeight(),0.0f,            rFBO.GetHeight());
 
   glEnd();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CCamera & rCamera, const Phoenix::Graphics::CFrameBufferObject & rFBO)
 {
-  glBegin(GL_QUADS);
+#if !defined(PHOENIX_APPLE_IPHONE) 
+ glBegin(GL_QUADS);
 
     COMMIT_COORDINATES( 0.0f,				 0.0f,				0.0f,            0.0f);
     COMMIT_COORDINATES( rCamera.GetViewport()[2],	 0.0f,				rFBO.GetWidth(), 0.0f);
@@ -2733,6 +2728,7 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CCamera & 
     COMMIT_COORDINATES( 0.0f,				 rCamera.GetViewport()[3],	0.0f,            rFBO.GetHeight());
 
   glEnd();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 #undef COMMIT_COORDINATES
@@ -2741,7 +2737,9 @@ Phoenix::Graphics::COglRenderer::CommitQuad( const Phoenix::Graphics::CCamera & 
 Phoenix::Graphics::CFontset *
 Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontSize)
 {
-
+#if defined(PHOENIX_APPLE_IPHONE)
+    return NULL;
+#else
 #define WHITESPACE 32
   // Fontset to be created.
   CFontset *	pFontset = NULL;
@@ -2853,7 +2851,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
     glGenTextures( 1, &iTexId);
     COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_2D );
 
-    glActiveTextureARB( GL_TEXTURE0_ARB );
+    glActiveTexture( GL_TEXTURE0 );
     glEnable( GL_TEXTURE_2D);
     glBindTexture  ( GL_TEXTURE_2D, pTexture->GetID());
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
@@ -2917,6 +2915,7 @@ Phoenix::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, uns
   ////////////////////
   // return new fontset.
   return pFontset;
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -2930,7 +2929,7 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
     cerr << "I shall not render a NULL string!" << endl;
     return;
   }
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   glActiveTextureARB( GL_TEXTURE0_ARB );
   glEnable( GL_TEXTURE_2D );
   ////////////////////
@@ -2951,6 +2950,7 @@ Phoenix::Graphics::COglRenderer::CommitString( CFontset & rFontSet, float fX, fl
 
   glPopAttrib();
   glDisable( GL_TEXTURE_2D );
+#endif
 }
 /////////////////////////////////////////////////////////////////
 const COglRendererFeatures &

@@ -4,7 +4,9 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixDirectionalLightObject.h"
 #include "PhoenixLogger.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include <PhoenixSDLScreen.h>
+#endif
 #include "PhoenixCameraObject.h"
 #include <PhoenixVector2.h>
 #include <iostream>
@@ -12,7 +14,9 @@
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
+#if !defined(PHOENIX_APPLE_IPHONE)
 using namespace Phoenix::Window;
+#endif
 using namespace Phoenix::Math;
 using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,7 +106,7 @@ Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
     // objectmgr.
     pObj->Init();
 	// so it is affected by transforms.
-	CObjectTransform *pObjTr = GetTransformGraph().Insert(pObj);
+	/*CObjectTransform *pObjTr = */GetTransformGraph().Insert(pObj);
 
 	// So it can be culled
 	GetSpatialGraph().InsertObject(pObj);
@@ -132,7 +136,7 @@ Phoenix::Scene::CScene::AddDirectionalLight( Phoenix::Scene::CDirectionalLightOb
 
 	// Call Update periodically
 	g_DefaultUpdater->Manage( pObj->GetObjectHandle() );
-
+    return pObj;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -259,7 +263,9 @@ Phoenix::Scene::CScene::Render( COglRenderer & renderer )
 
 	renderer.Finalize();
 	// OpenGL context may be created also via other method.
+#if !defined(PHOENIX_APPLE_IPHONE)
 	if (CSDLScreen::Exists()){ CSDLScreen::GetInstance()->SwapBuffers();}
+#endif
 	// for each camera do
 	// CollectVisibleGameObjects();
 	// for each game object
@@ -478,6 +484,7 @@ Phoenix::Scene::CScene::RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable
 	GetPostGUIRenderQueue().GetObjectList().remove(pRenderable);
 }
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 SCRIPT_CMD_DECL( Destroy );          ///!< Kill switch for any object in the scene.
 SCRIPT_CMD_DECL( CreateCamera );
 SCRIPT_CMD_DECL( MoveCamera );
@@ -1137,3 +1144,4 @@ SCRIPT_CMD_IMPL( ToggleCameraColliderRendering )
 	return TCL_OK;
 }
 ////////////////////////////////////////////////////////////////////////////////
+#endif

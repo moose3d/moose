@@ -23,7 +23,7 @@ namespace Phoenix
 	  typedef std::vector< std::pair<std::string, Phoenix::Default::VERTEX_HANDLE * > > ShaderParams;
 	  typedef std::map< std::string, int >	       										ShaderIntParams;
 	  typedef std::map< std::string, float >	       									ShaderFloatParams;
-
+          
 	  /////////////////////////////////////////////////////////////////
     /// Renderstate object. Helps to sort things by transparency, for instance.
     class PHOENIX_API CRenderState
@@ -42,9 +42,9 @@ namespace Phoenix
 
       Phoenix::Default::SHADER_HANDLE			      m_ShaderHandle;  			///!< Handle to a shader
       ShaderParams			      m_vShaderParams; 			///!< Shader parameters
-      ShaderIntParams			    m_vShaderIntParams; 	///!< Shader integer parameters
-      ShaderFloatParams			  m_vShaderFloatParams; ///!< Shader float parameters
-
+      ShaderIntParams			      m_vShaderIntParams; 	///!< Shader integer parameters
+      ShaderFloatParams			      m_vShaderFloatParams; ///!< Shader float parameters
+      
       /// Texture filters for each texture.
       std::vector<Phoenix::Graphics::TEXTURE_FILTER>	      m_aTextureFilters[TEXTURE_HANDLE_COUNT];
       /// Handle to textures.

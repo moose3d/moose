@@ -18,9 +18,12 @@ namespace Phoenix
       PRIMITIVE_TRI_LIST,
       PRIMITIVE_TRI_STRIP,
       PRIMITIVE_LINE_LIST,
-      PRIMITIVE_LINE_STRIP,
+      PRIMITIVE_LINE_STRIP
+#if !defined(PHOENIX_APPLE_IPHONE)
+        ,
       PRIMITIVE_QUAD_LIST,
       PRIMITIVE_QUAD_STRIP
+#endif
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.

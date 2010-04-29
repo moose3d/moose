@@ -14,6 +14,7 @@ using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::CCamera() : COrientable()
 {
+    SetViewport(0,0,640,480); // a rather safe bet
   SetFieldOfView(45.0);
   SetProjectionChanged(1);
   m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
