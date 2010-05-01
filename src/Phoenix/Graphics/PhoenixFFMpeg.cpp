@@ -264,13 +264,13 @@ prefix::CFFMpegStream::DecodeNextFrame( AVFrame *pFrame)
     {
       // Decode the next chunk of data
       bytesDecoded=avcodec_decode_video2(m_pCodecCtx, pFrame,
-					&frameFinished, &packet);
+                                         &frameFinished, &packet);
       
       // Was there an error?
       if(bytesDecoded < 0)
       {
-          g_Error << "Error while decoding frame\n";
-          return false;
+        g_Error << "Error while decoding frame\n";
+        return false;
       }
 
       bytesRemaining-=bytesDecoded;
@@ -279,9 +279,9 @@ prefix::CFFMpegStream::DecodeNextFrame( AVFrame *pFrame)
       // Did we finish the current frame? Then we can return
       if(frameFinished)
       {
-	packet->pts*(m_pCodecCtx.time_base.num/m_pCodecCtx.time_base.den);
-	av_free_packet(&packet);
-	return true;
+        //packet->pts*(m_pCodecCtx.time_base.num/m_pCodecCtx.time_base.den);
+        av_free_packet(&packet);
+        return true;
       }
     }
     
@@ -291,11 +291,11 @@ prefix::CFFMpegStream::DecodeNextFrame( AVFrame *pFrame)
     {
       // Free old packet
       if(packet.data!=NULL)
-	av_free_packet(&packet);
+        av_free_packet(&packet);
       
       // Read new packet
       if(av_read_frame(m_pFormatCtx, &packet)<0)
-	goto loop_exit;
+        goto loop_exit;
     } while(packet.stream_index!=m_iVideoStream);
     
     bytesRemaining=packet.size;
