@@ -62,7 +62,8 @@ namespace Phoenix
       void LoadFragmentShader( const char * szFragmentShader );
       void CreateVertexShaderFromSource( const char * szVertexShaderCode, const char * szVSname );
       void CreateFragmentShaderFromSource( const char * szFragmentShaderCode, const char * szFSname);
-        bool Validate();
+      bool Validate();
+      void Apply();
     };
   }; // namespace Graphics
 }; // namespace Phoenix

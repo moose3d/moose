@@ -162,3 +162,25 @@ Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft,
   RotateVector( rTLeft.GetRotation(), vRightTransl );
   rTransformResult.SetTranslation( vRightTransl + rTLeft.GetTranslation());
 }
+////////////////////////////////////////////////////////////////////////////////
+Phoenix::Math::CVector3<float>
+Phoenix::Math::GetForwardVector() const
+{
+  const CMatrix4x4<float> & matrix = GetMatrix();
+  return CVector3<float>(matrix(0,2), matrix(1,2), matrix(2,2));
+}
+////////////////////////////////////////////////////////////////////////////////
+Phoenix::Math::CVector3<float>
+Phoenix::Math::GetRightVector() const
+{
+  const CMatrix4x4<float> & matrix = GetMatrix();
+  return CVector3<float>(matrix(0,0), matrix(1,0), matrix(2,0));
+}
+////////////////////////////////////////////////////////////////////////////////
+Phoenix::Math::CVector3<float>
+Phoenix::Math::GetUpVector() const
+{
+  const CMatrix4x4<float> & matrix = GetMatrix();
+  return CVector3<float>(matrix(0,1), matrix(1,1), matrix(2,1));
+}
+////////////////////////////////////////////////////////////////////////////////

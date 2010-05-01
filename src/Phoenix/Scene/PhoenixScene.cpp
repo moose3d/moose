@@ -82,7 +82,9 @@ Phoenix::Scene::CScene::~CScene()
 void
 Phoenix::Scene::CScene::Init()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	LoadScript();
+#endif
 	// ensure that each scene is managed and have a unique name
 	std::string tmpName = GetName();
 	if ( tmpName.empty() )
@@ -194,8 +196,10 @@ Phoenix::Scene::CScene::GetTransformGraph()
 void
 Phoenix::Scene::CScene::Update( float fSeconds )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   // Run local script
 	UpdateScript(fSeconds);
+#endif
 	// update transform graph
 	GetTransformGraph().Update();
 	// update object positions in spatial graph.

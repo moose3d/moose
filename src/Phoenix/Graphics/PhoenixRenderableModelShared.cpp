@@ -36,10 +36,10 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
 void
 Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
 {
-	if ( GetModelHandle().IsNull() ) return;
+   if ( GetModelHandle().IsNull() ) return;
 
-	// set renderstate first, because of lights, for example.
-	renderer.CommitRenderState(GetRenderState());
+    // set renderstate first, because of lights, for example.
+    renderer.CommitRenderState(GetRenderState());
   if ( m_pTransform != NULL )
     renderer.CommitTransform( *m_pTransform );
   ////////////////////
@@ -82,33 +82,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
 
   if ( !GetRenderState().GetShaderHandle().IsNull())
   {
-    CVertexDescriptor *pParam = NULL;
-    // Go through all parameters and commit them
-    for(unsigned int nSP=0; nSP< GetRenderState().GetShaderParameters().size(); nSP++)
-    {
-      pParam = *( *GetRenderState().GetShaderParameters()[nSP].second );
-      if ( pParam != NULL )
-      {
-      	renderer.CommitShaderParam( *pShader, GetRenderState().GetShaderParameters()[nSP].first, *pParam );
-      }
-    }
-
-    // Go through all int parameters and commit them
-    {
-      ShaderIntParams::iterator it = GetRenderState().GetShaderIntParameters().begin();
-      for(; it != GetRenderState().GetShaderIntParameters().end(); it++)
-      {
-      	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
-      }
-    }
-    // Go through all float parameters and commit them
-    {
-      ShaderFloatParams::iterator it = GetRenderState().GetShaderFloatParameters().begin();
-      for( ; it != GetRenderState().GetShaderFloatParameters().end(); it++)
-      {
-      	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
-      }
-    }
+    GetRenderState().GetShaderUniforms().Apply();
   }
 
 #if !defined(PHOENIX_APPLE_IPHONE)

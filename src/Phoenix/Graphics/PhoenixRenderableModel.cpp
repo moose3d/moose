@@ -36,25 +36,31 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
 void
 Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
 {
-	if ( !GetModel() ) return;
+  if ( !GetModel() ) return;
 
-	// set renderstate first, because of lights, for example.
-	renderer.CommitRenderState(GetRenderState());
-  if ( m_pTransform != NULL )
+  // set renderstate first, because of lights, for example.
+  renderer.CommitRenderState(GetRenderState());
+  if ( m_pTransform != NULL ) {
     renderer.CommitTransform( *m_pTransform );
+  }
   ////////////////////
   // Retrieve resources
   COglTexture *pTexture = NULL;
   CVertexDescriptor *pTemp = NULL;
 
   CModel & model = *GetModel();
+
+  
+
   ////////////////////
   // Commit textures
-#if !defined(PHOENIX_APPLE_IPHONE)
+
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
     pTexture = *GetRenderState().GetTextureHandle(i);
+
+#if !defined(PHOENIX_APPLE_IPHONE)
 
     // check that texcoord resources actually exist
     if ( pTemp == NULL )
@@ -74,41 +80,22 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     }
     else
       renderer.DisableTexture(i, NULL);
-  }
+#else
+    
+    renderer.CommitTexture( i, pTexture );
+    renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
+  
 #endif
+
+  }
+
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
 
   if ( !GetRenderState().GetShaderHandle().IsNull())
   {
-    CVertexDescriptor *pParam = NULL;
-    // Go through all parameters and commit them
-    for(unsigned int nSP=0; nSP< GetRenderState().GetShaderParameters().size(); nSP++)
-    {
-      pParam = *( *GetRenderState().GetShaderParameters()[nSP].second );
-      if ( pParam != NULL )
-      {
-      	renderer.CommitShaderParam( *pShader, GetRenderState().GetShaderParameters()[nSP].first, *pParam );
-      }
-    }
-
-    // Go through all int parameters and commit them
-    {
-      ShaderIntParams::iterator it = GetRenderState().GetShaderIntParameters().begin();
-      for(; it != GetRenderState().GetShaderIntParameters().end(); it++)
-      {
-      	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
-      }
-    }
-    // Go through all float parameters and commit them
-    {
-      ShaderFloatParams::iterator it = GetRenderState().GetShaderFloatParameters().begin();
-      for( ; it != GetRenderState().GetShaderFloatParameters().end(); it++)
-      {
-      	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
-      }
-    }
+    GetRenderState().GetShaderUniforms().Apply();
   }
 
 #if !defined(PHOENIX_APPLE_IPHONE)
@@ -145,6 +132,6 @@ Phoenix::Graphics::CRenderableModel::GetModel()
 void
 Phoenix::Graphics::CRenderableModel::SetModel(Phoenix::Graphics::CModel *pModel)
 {
-	m_pModel = pModel;
+     m_pModel = pModel;
 }
 /////////////////////////////////////////////////////////////////

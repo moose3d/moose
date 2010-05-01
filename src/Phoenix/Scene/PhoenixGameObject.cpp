@@ -17,8 +17,12 @@ Phoenix::Scene::CGameObject::~CGameObject()
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), 
-					      m_pCollider(NULL), 
+					      m_pCollider(NULL)
+#if !defined(PHOENIX_APPLE_IPHONE)
+, 
 					      CAIObject( this )
+#endif
+
 {
         m_pCollider = this;
         SetEnabled(true); // by default, each object is active
@@ -28,7 +32,9 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0),
 void
 Phoenix::Scene::CGameObject::Init()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	LoadScript();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 unsigned int
@@ -117,7 +123,9 @@ Phoenix::Scene::CGameObject::GetCollider()
 void
 Phoenix::Scene::CGameObject::Update( float fSecondsPassed )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   UpdateScript(fSecondsPassed);
+#endif
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -139,8 +147,10 @@ Phoenix::Scene::CGameObject::CheckCollisions()
 		// enqueue messages if intersection occurs
 		if ( this->Intersects( **it ) )
 		{
+#if !defined(PHOENIX_APPLE_IPHONE)
 			(*it)->EnqueueMessage("OnCollisionEnter");
 			this->EnqueueMessage("OnCollisionEnter");
+#endif
 		}
 	}
 }

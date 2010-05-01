@@ -190,7 +190,9 @@ Phoenix::Scene::CCameraObject::Update( float fSeconds )
     SetPosition( GetLocalTransform().GetTranslation() -
 								(GetForwardVector() * this->GetTrackballDistance()) );
   }
+#if !defined(PHOENIX_APPLE_IPHONE)
   UpdateScript(fSeconds);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void

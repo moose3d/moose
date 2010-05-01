@@ -124,6 +124,15 @@ namespace Phoenix
       ////////////////////
       /// Resets all transforms.
       void SetIdentity();
+      ////////////////////
+      /// Returns forward vector.
+      Phoenix::Math::CVector3<float> GetForwardVector() const;
+      ////////////////////
+      /// Returns right vector.
+      Phoenix::Math::CVector3<float> GetRightVector() const;
+      ////////////////////
+      /// Returns up vector.
+      Phoenix::Math::CVector3<float> GetUpVector() const;
     };
     ////////////////////
     /// Multiplies two CTransforms as matrices and stores result.

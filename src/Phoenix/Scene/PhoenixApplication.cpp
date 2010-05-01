@@ -46,9 +46,9 @@ prefix::CApplication::Init()
 		}
 		g_ObjectMgr->Create(this, GetName());
 		CGameObject::Init();
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 		m_bHasQuit 									= HasCommand("OnQuit");
-
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CScene *
@@ -70,13 +70,13 @@ void
 prefix::CApplication::CheckSceneInputs()
 {
 	if ( m_pCurrentScene == NULL ) return;
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 	m_bSceneHasKeyUp 						= m_pCurrentScene->HasCommand("OnKeyUp");
 	m_bSceneHasKeyDown 					= m_pCurrentScene->HasCommand("OnKeyDown");
 	m_bSceneHasMouseDown 				= m_pCurrentScene->HasCommand("OnMouseDown");
 	m_bSceneHasMouseUp 					= m_pCurrentScene->HasCommand("OnMouseUp");
 	m_bSceneHasMouseMotion 			= m_pCurrentScene->HasCommand("OnMouseMotion");
-
+#endif
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,9 +191,11 @@ prefix::CApplication::Update()
 
 	if ( m_Timer.HasPassed(0, 5 )) // TODO change this into reasonable property
 	{
+#if !defined(PHOENIX_APPLE_IPHONE)
       // Update our own script
       UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
-      // Update every object put under management.
+#endif
+    // Update every object put under management.
       g_DefaultUpdater->Update( m_Timer.GetPassedTime().ToSeconds() );
       // TODO add pause capability.
       GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );

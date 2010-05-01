@@ -28,12 +28,6 @@ Phoenix::Graphics::CRenderState::CRenderState() :  m_DepthTest(false),
 Phoenix::Graphics::CRenderState::~CRenderState()
 {
 
-	// Releases dynamically allocatated VERTEX_HANDLEs
-	for(unsigned int i=0;i<m_vShaderParams.size();i++)
-	{
-		g_VertexMgr->Release( *m_vShaderParams[i].second);
-		delete m_vShaderParams[i].second;
-	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void
@@ -84,39 +78,35 @@ Phoenix::Graphics::CRenderState::GetShaderHandle()
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderState::AddShaderParameter( const char *sName, Phoenix::Default::VERTEX_HANDLE *pHandle )
-{
-  m_vShaderParams.push_back( std::make_pair( string(sName), pHandle)  );
+Phoenix::Graphics::CRenderState::AddShaderAttrib( const char *sName, Phoenix::Default::VERTEX_HANDLE & handle )
+{ 
+  CShaderAttrib *pParam = new CShaderAttrib();
+  pParam->SetName(sName);
+  pParam->SetData( handle );  
+  m_ShaderAttribs.Add( pParam ); 
+  
 }
 /////////////////////////////////////////////////////////////////
 void
-Phoenix::Graphics::CRenderState::AddShaderParameter( const char *sName, float fValue )
-{
-  m_vShaderFloatParams.insert( std::make_pair( string(sName), fValue)  );
+Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, Phoenix::Default::VERTEX_HANDLE & handle )
+{ 
+    CShaderUniform *pParam = new CShaderUniform();
+    pParam->SetName(sName);
+    pParam->SetData( handle );  
+    m_ShaderUniforms.Add( pParam ); 
+    
 }
 /////////////////////////////////////////////////////////////////
-void
-Phoenix::Graphics::CRenderState::AddShaderParameter( const char *sName, int iValue )
+Phoenix::Graphics::CShaderParamContainer &
+Phoenix::Graphics::CRenderState::GetShaderAttribs()
 {
-  m_vShaderIntParams.insert( std::make_pair( string(sName), iValue)  );
+  return m_ShaderAttribs;
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::ShaderParams &
-Phoenix::Graphics::CRenderState::GetShaderParameters()
+Phoenix::Graphics::CShaderParamContainer &
+Phoenix::Graphics::CRenderState::GetShaderUniforms()
 {
-  return m_vShaderParams;
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::ShaderIntParams &
-Phoenix::Graphics::CRenderState::GetShaderIntParameters()
-{
-  return m_vShaderIntParams;
-}
-/////////////////////////////////////////////////////////////////
-Phoenix::Graphics::ShaderFloatParams &
-Phoenix::Graphics::CRenderState::GetShaderFloatParameters()
-{
-  return m_vShaderFloatParams;
+    return m_ShaderUniforms;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CMaterial &
