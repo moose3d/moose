@@ -126,6 +126,10 @@ namespace Phoenix
 	if ( IsShortIndices()) return (sizeof(unsigned short int)*GetNumIndices());
 	return (sizeof(unsigned int)*GetNumIndices());
       }
+      inline void Copy( const void *pArray )
+      {
+          memcpy(m_pIndexData, pArray, GetByteSize());
+      }
     };
     /////////////////////////////////////////////////////////////////
   }; //namespace Graphics
