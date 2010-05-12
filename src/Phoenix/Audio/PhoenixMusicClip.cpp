@@ -142,7 +142,8 @@ audio_decode_play_proc( void * pClientData )
            
            printf("done\n");
     pObj->m_bRunning = false;
-           
+    pthread_exit(NULL);
+    return NULL;
 }
 /////////////////////////////////////////////////////////////
 void
