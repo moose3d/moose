@@ -14,7 +14,13 @@
 		EC0A7A261189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */; };
 		EC0A7A2C1189C65C00FBAAF9 /* PhoenixSkybox.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */; };
 		EC0A7A301189C69100FBAAF9 /* PhoenixSpotLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */; };
-		EC299FF01188CEEF00A41DFB /* PhoenixOGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC299FEF1188CEEF00A41DFB /* PhoenixOGLRenderer.mm */; };
+		EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */ = {isa = PBXBuildFile; fileRef = EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */; };
+		EC19A6CB11930D26002D9374 /* PhoenixIPhoneAudioSample.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */; };
+		EC19A70211930E89002D9374 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A70111930E89002D9374 /* AudioToolbox.framework */; };
+		EC19A7771193180C002D9374 /* PhoenixOGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A7761193180C002D9374 /* PhoenixOGLRenderer.mm */; };
+		EC19A78811931C79002D9374 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A78711931C79002D9374 /* UIKit.framework */; };
+		EC19A79011931C8D002D9374 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A78F11931C8D002D9374 /* QuartzCore.framework */; };
+		EC19A7F311931D68002D9374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A7F211931D68002D9374 /* CoreGraphics.framework */; };
 		ECCD88BC1185C99900873F3C /* PhoenixALObjectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */; };
 		ECCD88BD1185C99900873F3C /* PhoenixALSampleTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */; };
 		ECCD88BE1185C99900873F3C /* PhoenixALSampleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */; };
@@ -199,6 +205,8 @@
 		ECCD8AA31185D28000873F3C /* Phoenix.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA01185D28000873F3C /* Phoenix.h */; };
 		ECCD8AA41185D28000873F3C /* PhoenixDefaultEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */; };
 		ECCD8AA51185D28000873F3C /* PhoenixDefaultEntities.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */; };
+		ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */ = {isa = PBXBuildFile; fileRef = ECF1FB74119A986000212362 /* PhoenixMusicClip.h */; };
+		ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -210,7 +218,13 @@
 		EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixRenderableModelShared.mm; sourceTree = "<group>"; };
 		EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixSkybox.mm; sourceTree = "<group>"; };
 		EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixSpotLight.mm; sourceTree = "<group>"; };
-		EC299FEF1188CEEF00A41DFB /* PhoenixOGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixOGLRenderer.mm; sourceTree = "<group>"; };
+		EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixIPhoneAudioSample.h; sourceTree = "<group>"; };
+		EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixIPhoneAudioSample.mm; sourceTree = "<group>"; };
+		EC19A70111930E89002D9374 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		EC19A7761193180C002D9374 /* PhoenixOGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixOGLRenderer.mm; sourceTree = "<group>"; };
+		EC19A78711931C79002D9374 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		EC19A78F11931C8D002D9374 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		EC19A7F211931D68002D9374 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALObjectArray.h; sourceTree = "<group>"; };
 		ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixALSampleTypes.cpp; sourceTree = "<group>"; };
 		ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALSampleTypes.h; sourceTree = "<group>"; };
@@ -396,6 +410,8 @@
 		ECCD8AA01185D28000873F3C /* Phoenix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Phoenix.h; path = ../src/Phoenix/Phoenix.h; sourceTree = SOURCE_ROOT; };
 		ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhoenixDefaultEntities.cpp; path = ../src/Phoenix/PhoenixDefaultEntities.cpp; sourceTree = SOURCE_ROOT; };
 		ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixDefaultEntities.h; path = ../src/Phoenix/PhoenixDefaultEntities.h; sourceTree = SOURCE_ROOT; };
+		ECF1FB74119A986000212362 /* PhoenixMusicClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMusicClip.h; sourceTree = "<group>"; };
+		ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixMusicClip.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -406,6 +422,10 @@
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 				ECCD8A501185CA4D00873F3C /* OpenAL.framework in Frameworks */,
 				ECCD8A541185CA6100873F3C /* OpenGLES.framework in Frameworks */,
+				EC19A70211930E89002D9374 /* AudioToolbox.framework in Frameworks */,
+				EC19A78811931C79002D9374 /* UIKit.framework in Frameworks */,
+				EC19A79011931C8D002D9374 /* QuartzCore.framework in Frameworks */,
+				EC19A7F311931D68002D9374 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +457,10 @@
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 				ECCD8A4F1185CA4D00873F3C /* OpenAL.framework */,
 				ECCD8A531185CA6100873F3C /* OpenGLES.framework */,
+				EC19A70111930E89002D9374 /* AudioToolbox.framework */,
+				EC19A78711931C79002D9374 /* UIKit.framework */,
+				EC19A78F11931C8D002D9374 /* QuartzCore.framework */,
+				EC19A7F211931D68002D9374 /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -487,6 +511,10 @@
 				ECCD88B91185C99900873F3C /* PhoenixSoundBase.h */,
 				ECCD88BA1185C99900873F3C /* PhoenixSoundSampleBase.cpp */,
 				ECCD88BB1185C99900873F3C /* PhoenixSoundSampleBase.h */,
+				EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */,
+				EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */,
+				ECF1FB74119A986000212362 /* PhoenixMusicClip.h */,
+				ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */,
 			);
 			name = Audio;
 			path = ../src/Phoenix/Audio;
@@ -583,8 +611,8 @@
 				ECCD894B1185C9D700873F3C /* PhoenixObjLoader.cpp */,
 				ECCD894C1185C9D700873F3C /* PhoenixObjLoader.h */,
 				ECCD894D1185C9D700873F3C /* PhoenixOGLConsts.h */,
-				EC299FEF1188CEEF00A41DFB /* PhoenixOGLRenderer.mm */,
 				ECCD894F1185C9D700873F3C /* PhoenixOGLRenderer.h */,
+				EC19A7761193180C002D9374 /* PhoenixOGLRenderer.mm */,
 				ECCD89501185C9D700873F3C /* PhoenixParticleSystem.h */,
 				ECCD89521185C9D700873F3C /* PhoenixPointLight.h */,
 				ECCD89531185C9D700873F3C /* PhoenixRenderable.cpp */,
@@ -850,6 +878,8 @@
 				ECCD8A4E1185CA1C00873F3C /* PhoenixVertex.h in Headers */,
 				ECCD8AA31185D28000873F3C /* Phoenix.h in Headers */,
 				ECCD8AA51185D28000873F3C /* PhoenixDefaultEntities.h in Headers */,
+				EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */,
+				ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -953,12 +983,14 @@
 				ECCD8A391185CA0700873F3C /* PhoenixSphereBound.cpp in Sources */,
 				ECCD8A4A1185CA1C00873F3C /* PhoenixOrientable.cpp in Sources */,
 				ECCD8AA41185D28000873F3C /* PhoenixDefaultEntities.cpp in Sources */,
-				EC299FF01188CEEF00A41DFB /* PhoenixOGLRenderer.mm in Sources */,
 				EC0A7A191189C55D00FBAAF9 /* PhoenixAmbientLight.mm in Sources */,
 				EC0A7A211189C5CA00FBAAF9 /* PhoenixRenderableModel.mm in Sources */,
 				EC0A7A261189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm in Sources */,
 				EC0A7A2C1189C65C00FBAAF9 /* PhoenixSkybox.mm in Sources */,
 				EC0A7A301189C69100FBAAF9 /* PhoenixSpotLight.mm in Sources */,
+				EC19A6CB11930D26002D9374 /* PhoenixIPhoneAudioSample.mm in Sources */,
+				EC19A7771193180C002D9374 /* PhoenixOGLRenderer.mm in Sources */,
+				ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
