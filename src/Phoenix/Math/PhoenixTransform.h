@@ -126,13 +126,13 @@ namespace Phoenix
       void SetIdentity();
       ////////////////////
       /// Returns forward vector.
-      Phoenix::Math::CVector3<float> GetForwardVector() const;
+      Phoenix::Math::CVector3<float> GetForwardVector();
       ////////////////////
       /// Returns right vector.
-      Phoenix::Math::CVector3<float> GetRightVector() const;
+      Phoenix::Math::CVector3<float> GetRightVector();
       ////////////////////
       /// Returns up vector.
-      Phoenix::Math::CVector3<float> GetUpVector() const;
+      Phoenix::Math::CVector3<float> GetUpVector();
     };
     ////////////////////
     /// Multiplies two CTransforms as matrices and stores result.
