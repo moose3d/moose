@@ -51,16 +51,16 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   CModel & model = *GetModel();
 
   
-
+  
   ////////////////////
   // Commit textures
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
     pTexture = *GetRenderState().GetTextureHandle(i);
 
-#if !defined(PHOENIX_APPLE_IPHONE)
+
 
     // check that texcoord resources actually exist
     if ( pTemp == NULL )
@@ -80,24 +80,52 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     }
     else
       renderer.DisableTexture(i, NULL);
-#else
+
     
-    renderer.CommitTexture( i, pTexture );
-    renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
-  
+
+  }  
+#else
+
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    //pTemp    = *model.GetTextureCoordinateHandle(i);
+    pTexture = *GetRenderState().GetTextureHandle(i);
+
+    
+    //// check that texture resource exists
+    if ( pTexture  != NULL )
+    {
+      
+      renderer.CommitTexture( i, pTexture );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
+    }
+    else 
+    { 
+      
+      renderer.DisableTexture(i, NULL);
+    }
+  } 
 #endif
-
-  }
-
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
 
   if ( !GetRenderState().GetShaderHandle().IsNull())
   {
+    GetRenderState().GetShaderAttribs().Apply();
     GetRenderState().GetShaderUniforms().Apply();
+    if ( renderer.GetCurrentCamera() )
+    {
+      // Update matrices 
+      GetRenderState().GetShaderViewUniform().SetData(      &renderer.GetCurrentCamera()->GetViewMatrix());
+      GetRenderState().GetShaderProjectionUniform().SetData(&renderer.GetCurrentCamera()->GetProjectionMatrix());
+      // Send data to shader
+      GetRenderState().GetShaderViewUniform().Apply();
+      GetRenderState().GetShaderProjectionUniform().Apply();
+    }
   }
-
+  
+  
 #if !defined(PHOENIX_APPLE_IPHONE)
   // commit normals
   if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
