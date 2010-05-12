@@ -1277,6 +1277,7 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
 {
+#define CLEANUP() { CGContextRelease(cgContext); free(data); CGColorSpaceRelease(colorSpace); return pTexture; }
   // Files must not be null
   if ( szFiles == NULL ) return NULL;
 
@@ -1284,47 +1285,122 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
   glGenTextures( 1, &iTexId);
   COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_CUBE );
 
+
+  // Right, boys and girls, this is Objective-C++!
+  UIImage *       image = nil;
+  CGImageRef      cgImage;
+  GLubyte *       data = nil;
+  CGContextRef    cgContext;
+  CGColorSpaceRef colorSpace;
+
+  GLenum err = GL_NO_ERROR;
+  int width, height;
+
   for( size_t i=0;i<6;i++)
   {
-    ////////////////////
-    CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
-    if ( pImage == NULL )
+    NSString *path =  [ [NSString alloc] initWithUTF8String:szFiles[i] ];
+  
+    image = [UIImage imageWithContentsOfFile:path];
+  
+  
+    if (image == nil)
     {
-    	g_Error << __FUNCTION__ << " : Unable to load TGA image for CUBE TEXTURE." << endl;
-    	delete pTexture;
-    	return NULL;
+      g_Error << "Failed to load '" << szFiles[i]<< "'" << endl;
+      return NULL;
     }
+  
+    cgImage = [image CGImage];
+    width = CGImageGetWidth(cgImage);
+    height = CGImageGetHeight(cgImage);
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+  
+    // Malloc may be used instead of calloc if your cg image has dimensions equal to the dimensions of the cg bitmap context
+    data = (GLubyte *)calloc(width * height * 4, sizeof(GLubyte));
+    cgContext = CGBitmapContextCreate(data, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
+    if (cgContext == NULL) 
+    {
+      CLEANUP();
+    }
+    // Set the blend mode to copy. We don't care about the previous contents.
+    CGContextSetBlendMode(cgContext, kCGBlendModeCopy);
+    CGContextDrawImage(cgContext, CGRectMake(0.0f, 0.0f, width, height), cgImage);
     ////////////////////
     int    iGLInternalFormat = 3;
     GLenum iGLformat = GL_RGB;
     ////////////////////
     // Check correct depth
-    switch (pImage->GetBPP())
+    switch ( CGImageGetBitsPerPixel(cgImage) )
     {
     case 8:
-      iGLInternalFormat = 1;
+      iGLInternalFormat = GL_LUMINANCE;
       iGLformat = GL_LUMINANCE;
       break;
     case 16:
-      iGLInternalFormat = 2;
+      iGLInternalFormat = GL_LUMINANCE_ALPHA;
       iGLformat = GL_LUMINANCE_ALPHA;
       break;
     case 24:
-      iGLInternalFormat = 3;
+      iGLInternalFormat = GL_RGB;
       iGLformat = GL_RGB;
       break;
     case 32:
-      iGLInternalFormat = 4;
+      iGLInternalFormat = GL_RGBA;
       iGLformat = GL_RGBA;
       std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
       break;
     default:
+    
+      std::cerr << "Not 8, 16, 24 or 32 BBP image (was " 
+                <<  CGImageGetBitsPerPixel(cgImage)
+                << "):  '" << szFiles[i] << "'" << std::endl;
+      CLEANUP();
+    }
+    g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
+    g_Error << "size :"  << width << "x" << height << std::endl;
+  
+    /*
+      for( size_t i=0;i<6;i++)
+      {
+      ////////////////////
+      CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
+      if ( pImage == NULL )
+      {
+      g_Error << __FUNCTION__ << " : Unable to load TGA image for CUBE TEXTURE." << endl;
+      delete pTexture;
+      return NULL;
+      }
+      ////////////////////
+      int    iGLInternalFormat = 3;
+      GLenum iGLformat = GL_RGB;
+      ////////////////////
+      // Check correct depth
+      switch (pImage->GetBPP())
+      {
+      case 8:
+      iGLInternalFormat = 1;
+      iGLformat = GL_LUMINANCE;
+      break;
+      case 16:
+      iGLInternalFormat = 2;
+      iGLformat = GL_LUMINANCE_ALPHA;
+      break;
+      case 24:
+      iGLInternalFormat = 3;
+      iGLformat = GL_RGB;
+      break;
+      case 32:
+      iGLInternalFormat = 4;
+      iGLformat = GL_RGBA;
+      std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
+      break;
+      default:
       delete pImage;
       std::cerr << "Not 8, 16, 24 or 32 BBP image (was "
-		<< pImage->GetBPP() << "):  '" << szFiles[i] << "'"
-		<< std::endl;
+      << pImage->GetBPP() << "):  '" << szFiles[i] << "'"
+      << std::endl;
       break;
-    }
+      }
+    */
     GLenum iGLType = GL_TEXTURE_CUBE_MAP;
     ////////////////////
     // create actual gl texture
@@ -1335,7 +1411,7 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	GL_CLAMP_TO_EDGE);
 #if !defined(PHOENIX_APPLE_IPHONE)
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	GL_CLAMP_TO_EDGE);
 #endif
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1366,15 +1442,12 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     ////////////////////
     // Create texture.
     glTexImage2D( cubeFace, 0, iGLInternalFormat,
-		  pImage->GetWidth(), pImage->GetHeight(), 0,
-		  iGLformat,  GL_UNSIGNED_BYTE, pImage->GetImg());
-    ////////////////////
-    // Cleanup data, it is not needed anymore.
-    if ( pImage )
-    {
-      delete pImage;
-      pImage = NULL;
-    }
+                  width, height, 0,
+                  iGLformat,  GL_UNSIGNED_BYTE, data);
+    // release data
+    CGContextRelease(cgContext); 
+    free(data); 
+    CGColorSpaceRelease(colorSpace);
 
   } // for ( size_t
   return pTexture;
