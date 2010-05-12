@@ -132,7 +132,8 @@ namespace Phoenix
     enum FBO_BUFFER_FLAG
     {
       FBO_COLOR_BUFFER = 1 << 0,
-      FBO_DEPTH_BUFFER = 1 << 1
+      FBO_DEPTH_BUFFER = 1 << 1,
+      FBO_STENCIL_BUFFER = 1 << 2
     };
     ////////////////////
     /// Texture formats
