@@ -7,6 +7,9 @@
 #if defined(PHOENIX_APPLE_IPHONE)
 #include <OpenGLES/EAGL.h>
 #include <OpenGLES/EAGLDrawable.h>
+#import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
+#import <CoreGraphics/CoreGraphics.h>
 #endif
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixAmbientLight.h"
@@ -22,7 +25,6 @@
 #include <fstream>
 #include <assert.h>
 #include "PhoenixLogger.h"
-
 
 
 #if !defined(PHOENIX_APPLE_IPHONE)
@@ -942,14 +944,13 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 }
 #endif
 /////////////////////////////////////////////////////////////////
-Phoenix::Graphics::COglTexture *
-Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
-{
+/*
+#if !defined(PHOENIX_APPLE_IPHONE)
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
   ////////////////////
   CTGAImage *pImage = new CTGAImage();
-  COglTexture *pTexture = NULL;
+  void *data = NULL;
   switch ( pImage->Load( strFilename ) )
   {
   case IMG_OK:
@@ -1002,50 +1003,144 @@ Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, 
     return NULL;
   }
 
+  width = pImage->GetWidth();
+  height = pImage->GetHeight();
+  data =pImage->GetImg();
+  #else
+*/
+#define CLEANUP() { CGContextRelease(cgContext); free(data); CGColorSpaceRelease(colorSpace); return pTexture; }
+Phoenix::Graphics::COglTexture *
+Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
+{
+
+int             width, height;
+COglTexture *pTexture = NULL;
+
+
+  /* APPLE IPHONE CODE */
+
+  // Right, boys and girls, this is Objective-C++!
+  UIImage *       image = nil;
+  CGImageRef      cgImage;
+  GLubyte *       data = nil;
+  CGContextRef    cgContext;
+  CGColorSpaceRef colorSpace;
+
+  GLenum err;
+
+  
+  NSString *path =  [ [NSString alloc] initWithUTF8String:strFilename.c_str() ];
+  
+  image = [UIImage imageWithContentsOfFile:path];
+  
+  
+  if (image == nil)
+  {
+    g_Error << "Failed to load '" << strFilename<< "'" << endl;
+    return NULL;
+  }
+  
+  cgImage = [image CGImage];
+  width = CGImageGetWidth(cgImage);
+  height = CGImageGetHeight(cgImage);
+  colorSpace = CGColorSpaceCreateDeviceRGB();
+  
+  // Malloc may be used instead of calloc if your cg image has dimensions equal to the dimensions of the cg bitmap context
+  data = (GLubyte *)calloc(width * height * 4, sizeof(GLubyte));
+  cgContext = CGBitmapContextCreate(data, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
+  if (cgContext == NULL) 
+  {
+    CLEANUP();
+  }
+  // Set the blend mode to copy. We don't care about the previous contents.
+  CGContextSetBlendMode(cgContext, kCGBlendModeCopy);
+  CGContextDrawImage(cgContext, CGRectMake(0.0f, 0.0f, width, height), cgImage);
+  ////////////////////
+  int    iGLInternalFormat = 3;
+  GLenum iGLformat = GL_RGB;
+  ////////////////////
+  // Check correct depth
+  switch ( CGImageGetBitsPerPixel(cgImage) )
+  {
+  case 8:
+    iGLInternalFormat = 1;
+    iGLformat = GL_LUMINANCE;
+    break;
+  case 16:
+    iGLInternalFormat = 2;
+    iGLformat = GL_LUMINANCE_ALPHA;
+    break;
+  case 24:
+    iGLInternalFormat = 3;
+    iGLformat = GL_RGB;
+    break;
+  case 32:
+    iGLInternalFormat = 4;
+    iGLformat = GL_RGBA;
+    std::cerr << "Texture " << strFilename << " has alpha channel." <<  std::endl;
+    break;
+  default:
+    
+    std::cerr << "Not 8, 16, 24 or 32 BBP image (was " 
+              <<  CGImageGetBitsPerPixel(cgImage)
+              << "):  '" << strFilename << "'" << std::endl;
+    CLEANUP();
+  }
+  g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
+  g_Error << "size :"  << width << "x" << height << std::endl;
   // create texture
-  unsigned int iTexId;
+  GLuint iTexId;
+
   glGenTextures( 1, &iTexId);
   pTexture = new COglTexture( iTexId, tType );
 
   // set texture dimensions
-  pTexture->SetHeight( pImage->GetHeight());
-  pTexture->SetWidth( pImage->GetWidth());
+  pTexture->SetHeight( height);
+  pTexture->SetWidth( width);
 
   // check memory allocation
   if ( !pTexture )
   {
     std::cerr << "Failed to allocate memory while loading file '"
-	      << strFilename << "'" << std::endl;
+              << strFilename << "'" << std::endl;
     return NULL;
   }
 
   GLenum iGLType = GetGLTextureType( tType );
 
   // create actual gl texture
-  glEnable( iGLType );
+//  glEnable( iGLType );
   glBindTexture(iGLType, pTexture->GetID());
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
   /// ****************************************
   /// build mipmaps automatically.
   /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
   /// Somehow it prevents it occurring.
   /// ****************************************
 #if !defined(PHOENIX_APPLE_IPHONE)
-    glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
+  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
 #endif
-  glTexImage2D( iGLType, 0, iGLInternalFormat,
-		pImage->GetWidth(), pImage->GetHeight(), 0,
-		iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());
+  glTexImage2D( iGLType, 0, iGLformat, /* OpenGL ES 2.0 requirement internal must be equal to glformat!*/
+		width, height, 0,
+		iGLformat, GL_UNSIGNED_BYTE, data);
   // build mipmaps
 #if defined(PHOENIX_APPLE_IPHONE)
-    glGenerateMipmap(iGLType);
+  //glGenerateMipmap(iGLType);
 #endif
-    /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
-		    pImage->GetWidth(), pImage->GetHeight(),
-		    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
+  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
+    pImage->GetWidth(), pImage->GetHeight(),
+    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
 
-
+  
   glDisable( iGLType );
-
+  if ( (err = glGetError() ) != GL_NO_ERROR )
+  {
+    g_Error << "Texture creation error: " << err << endl;
+  }
   // ReleaseMemory
   CLEANUP();
 
@@ -2556,13 +2651,15 @@ Phoenix::Graphics::CFrameBufferObject *
 Phoenix::Graphics::COglRenderer::CreateFramebuffer( unsigned int nWidth, unsigned int nHeight,
 						    int iBufferFlags )
 {
+
+
   GLuint iFBO;
   CFrameBufferObject *pFBO = NULL;
 
   ////////////////////
   // Create and bind framebuffer
   glGenFramebuffers(1, &iFBO);
-  pFBO = new CFrameBufferObject( iFBO, nWidth, nHeight );
+  pFBO = new CFrameBufferObject( );
 
 
   glBindFramebuffer(GL_FRAMEBUFFER, pFBO->GetID());
