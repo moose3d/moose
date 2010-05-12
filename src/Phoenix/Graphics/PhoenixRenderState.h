@@ -9,6 +9,7 @@
 #include "PhoenixVector4.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixMaterial.h"
+#include "PhoenixMatrix4x4.h"
 #include <map>
 #include <iostream>
 #include <cassert>
@@ -25,35 +26,41 @@ namespace Phoenix
 	  /////////////////////////////////////////////////////////////////////////
       class PHOENIX_API IShaderParam : public Phoenix::Core::CNamed 
       {
-      protected:
-          Phoenix::Default::VERTEX_HANDLE       m_hData;
       public:
           virtual ~IShaderParam() {}
-          
-          void SetData( Phoenix::Default::VERTEX_HANDLE & handle ) 
-          {
-              m_hData = handle;
-          }
-          
           virtual void Bind( CShader & s, size_t nIndex ) = 0;
-                   
-          virtual void Apply(size_t nIndex) = 0;
-          
+          virtual void Apply(size_t nIndex) = 0;          
       };
+      ///////////////////////////////////////////////////////////////////
+      /// Shader parameter for generic uniform case.
       class PHOENIX_API CShaderUniform : public Phoenix::Graphics::IShaderParam
       {
       protected:
           GLuint  m_iLocation;
+          Phoenix::Default::VERTEX_HANDLE       m_hData;
+          
       public:
           CShaderUniform() : m_iLocation(-1) {}
           void Bind( CShader & s, size_t nIndex ) 
           {
+              //g_Log << "UNIFORM: Binding " << GetName() << std::endl; 
               m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
           }
-          
-          void Apply( size_t nIndex )
+          void SetData( Phoenix::Default::VERTEX_HANDLE & handle ) 
           {
-              
+              m_hData = handle;
+          }
+          void Apply( size_t nIndex = 0)
+          {
+              if ( m_hData.IsNull() || m_iLocation == -1 ) 
+              {
+                  if ( m_hData.IsNull()) g_Error << GetName() << ": Data is null" << std::endl;
+                  else g_Error << GetName() << ": Location is null" << std::endl;
+                  return;
+              }
+#if defined(DEBUG)
+              g_Log << "UNIFORM: applying " << GetName() << std::endl;
+#endif
               Phoenix::Graphics::CVertexDescriptor *pData = *m_hData;
               switch( pData->GetType() )
               {
@@ -96,46 +103,100 @@ namespace Phoenix
               }
           }
       };
+      //////////////////////////////////////////////////////////////////
+      /// Special case for transforms.
+      class PHOENIX_API CShaderUniformMat4x4f : public Phoenix::Graphics::IShaderParam
+      {
+      protected:
+          GLuint  m_iLocation;
+          /// This matrix is always somewhere else, it should not be freed.
+          Phoenix::Math::CMatrix4x4<float> *m_pMatrix;
+      public:
+          CShaderUniformMat4x4f() : m_iLocation(-1),m_pMatrix(NULL) {}
+          
+          void Bind( CShader & s, size_t nIndex ) 
+          {
+              //g_Log << "UNIFORM: Binding " << GetName() << std::endl; 
+              m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
+          }
+          void SetData( Phoenix::Math::CMatrix4x4<float> *pMatrix )
+          {
+              m_pMatrix = pMatrix;
+          } 
+          void Apply( size_t nIndex = 0 )
+          {
+              if ( m_pMatrix == NULL || m_iLocation == -1 ) return;
+              glUniformMatrix4fv(m_iLocation, sizeof(float)*16, GL_FALSE, m_pMatrix->GetTransposition().GetArray());
+          }
+      };
       ///////////////////////////////////////////////////////////////
+      /// Case for shader attribs.
       class PHOENIX_API CShaderAttrib : public Phoenix::Graphics::IShaderParam 
       {
+      protected:
+          Phoenix::Default::VERTEX_HANDLE       m_hData;
       public:
           
           void Bind( CShader & s, size_t nIndex ) 
           {
+              //g_Log << "ATTRIB: binding " << GetName() << " to index : " << nIndex << std::endl;
               glBindAttribLocation(s.GetProgram(), nIndex, GetName().c_str());
           }
-          
+          void SetData( Phoenix::Default::VERTEX_HANDLE & handle ) 
+          {
+              m_hData = handle;
+          }
           void Apply(size_t nIndex)
           {
               Phoenix::Graphics::CVertexDescriptor *pData = *m_hData;
               switch( pData->GetType() )
               {
+                  case ELEMENT_TYPE_ATTRIB_1F:
+                      glVertexAttribPointer(nIndex, 1, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      break;
+                  case ELEMENT_TYPE_TEX_2F:
+                  case ELEMENT_TYPE_ATTRIB_2F:
+                      glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      break;
                   case ELEMENT_TYPE_VERTEX_3F:
                   case ELEMENT_TYPE_NORMAL_3F:
                   case ELEMENT_TYPE_COLOR_3F:
-                  case ELEMENT_TYPE_COLOR_4F:
-                  case ELEMENT_TYPE_TEX_2F:
                   case ELEMENT_TYPE_TEX_3F:
-                  case ELEMENT_TYPE_TEX_4F:
-                  case ELEMENT_TYPE_ATTRIB_1F:
-                  case ELEMENT_TYPE_ATTRIB_2F:
                   case ELEMENT_TYPE_ATTRIB_3F:
-                  case ELEMENT_TYPE_ATTRIB_4F:
-                      glVertexAttribPointer(nIndex, pData->GetSize(), GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 3, GL_FLOAT, 0, 0, pData->GetPointer<float>());
                       break;
-                  case ELEMENT_TYPE_COLOR_4UB:
+                  case ELEMENT_TYPE_COLOR_4F:
+                  case ELEMENT_TYPE_TEX_4F:
+                  case ELEMENT_TYPE_ATTRIB_4F:
+                      glVertexAttribPointer(nIndex, 4, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      break;
+                  
                   case ELEMENT_TYPE_ATTRIB_1UB:
+                      glVertexAttribPointer(nIndex, 1, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      break;
                   case ELEMENT_TYPE_ATTRIB_2UB:
+                      glVertexAttribPointer(nIndex, 2, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      break;
+
                   case ELEMENT_TYPE_ATTRIB_3UB:
+                      glVertexAttribPointer(nIndex, 3, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      break;
+
                   case ELEMENT_TYPE_ATTRIB_4UB:
-                      glVertexAttribPointer(nIndex, pData->GetSize(), GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                  case ELEMENT_TYPE_COLOR_4UB:
+                      glVertexAttribPointer(nIndex, 4, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
                       break;
                   case ELEMENT_TYPE_ATTRIB_1I:
+                      glVertexAttribPointer(nIndex, 1, GL_INT, 0, 0, pData->GetPointer<int>());
+                      break;
                   case ELEMENT_TYPE_ATTRIB_2I:
+                      glVertexAttribPointer(nIndex, 2, GL_INT, 0, 0, pData->GetPointer<int>());
+                      break;
                   case ELEMENT_TYPE_ATTRIB_3I:
+                      glVertexAttribPointer(nIndex, 3, GL_INT, 0, 0, pData->GetPointer<int>());
+                      break;
                   case ELEMENT_TYPE_ATTRIB_4I:
-                      glVertexAttribPointer(nIndex, pData->GetSize(), GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 4, GL_INT, 0, 0, pData->GetPointer<int>());
                       break;
                   case ELEMENT_TYPE_V3F_N3F_T2F:
                       g_Error << "ELEMENT_TYPE_V3F_N3F_T2F Not supported" << std::endl; 
@@ -143,6 +204,7 @@ namespace Phoenix
                       break;
               }
               glEnableVertexAttribArray(nIndex);
+              //g_Log << "ATTRIB: applied index" << nIndex << std::endl;
           }
       };
       ///////////////////////////////////////////////////////////////
@@ -193,7 +255,8 @@ namespace Phoenix
       Phoenix::Default::SHADER_HANDLE     m_ShaderHandle;    ///!< Handle to a shader
       CShaderParamContainer               m_ShaderAttribs;   ///!< All attrib parameters;
       CShaderParamContainer               m_ShaderUniforms;  ///!< All uniform parameters;
-        
+      CShaderUniformMat4x4f               m_ViewUniform;   ///!< View transform.  
+      CShaderUniformMat4x4f               m_ProjUniform;   ///!< Projection transform.  
         /// Texture filters for each texture.
       std::vector<Phoenix::Graphics::TEXTURE_FILTER>	   m_aTextureFilters[TEXTURE_HANDLE_COUNT];
       /// Handle to textures.
@@ -249,7 +312,8 @@ namespace Phoenix
       /// \param pAttrib Shader attrib.
       void		AddShaderAttrib( const char *sName, Phoenix::Default::VERTEX_HANDLE & handle );
       void		AddShaderUniform( const char *sName, Phoenix::Default::VERTEX_HANDLE & handle );
-      ////////////////////
+      void		AddShaderUniform( const char *sName, Phoenix::Math::CMatrix4x4<float> *pMatrix );
+        ////////////////////
       /// Returns reference to shader attribs.
       /// \returns Shader attribute container.
       CShaderParamContainer & GetShaderAttribs();
@@ -257,6 +321,12 @@ namespace Phoenix
       /// Returns reference to shader uniforms.
       /// \returns Shader uniform container.
       CShaderParamContainer & GetShaderUniforms();
+      ////////////////////
+      /// Returns reference to view transform param in shader.
+      CShaderUniformMat4x4f & GetShaderViewUniform();
+      ////////////////////
+      /// Returns reference to view transform param in shader.
+      CShaderUniformMat4x4f & GetShaderProjectionUniform();
       ////////////////////
       /// Returns texture filters for given texture.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1.  By default, it is first (zero).
@@ -270,6 +340,10 @@ namespace Phoenix
       ////////////////////
       /// \returns material reference.
       Phoenix::Graphics::CMaterial & GetMaterial();
+      ////////////////////
+      /// Prepares shader attributes and uniform paramters.
+      /// \return true on success, false on failure. 
+      bool Prepare();
     };
   }
 }

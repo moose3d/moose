@@ -94,7 +94,15 @@ Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, Phoenix::D
     pParam->SetName(sName);
     pParam->SetData( handle );  
     m_ShaderUniforms.Add( pParam ); 
-    
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, Phoenix::Math::CMatrix4x4<float> *pMatrix )
+{ 
+    CShaderUniformMat4x4f *pParam = new CShaderUniformMat4x4f();
+    pParam->SetName(sName);
+    pParam->SetData( pMatrix );  
+    m_ShaderUniforms.Add( pParam ); 
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CShaderParamContainer &
@@ -108,6 +116,18 @@ Phoenix::Graphics::CRenderState::GetShaderUniforms()
 {
     return m_ShaderUniforms;
 }
+////////////////////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShaderUniformMat4x4f &
+Phoenix::Graphics::CRenderState::GetShaderViewUniform()
+{
+    return m_ViewUniform;
+}
+/////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShaderUniformMat4x4f &
+Phoenix::Graphics::CRenderState::GetShaderProjectionUniform()
+{
+    return m_ProjUniform;
+}
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CMaterial &
 Phoenix::Graphics::CRenderState::GetMaterial()
@@ -115,4 +135,22 @@ Phoenix::Graphics::CRenderState::GetMaterial()
 	return m_Material;
 }
 /////////////////////////////////////////////////////////////////
-
+bool
+Phoenix::Graphics::CRenderState::Prepare()
+{
+    bool bRetval = true;
+    if ( GetShaderHandle().IsNull() == false )
+    {
+        GetShaderAttribs().Bind( **GetShaderHandle());
+        bRetval = (*GetShaderHandle())->Link();
+        GetShaderUniforms().Bind( **GetShaderHandle());
+        m_ViewUniform.SetName("moose_viewMatrix");
+        // index 0 is not used since this is Uniform parameter. 
+        m_ViewUniform.Bind( **GetShaderHandle(), 0); 
+        m_ProjUniform.SetName("moose_projMatrix");
+        // index 0 is not used since this is Uniform parameter. 
+        m_ProjUniform.Bind( **GetShaderHandle(), 0); 
+    }
+    return bRetval;
+}
+/////////////////////////////////////////////////////////////////
