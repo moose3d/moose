@@ -1,3 +1,5 @@
+#ifndef __PhoenixMusicClip_h__
+#define __PhoenixMusicClip_h__
 /*
  *  PhoenixMusicClip.h
  *  iPhoneMoose
@@ -70,3 +72,4 @@ namespace Phoenix
         ////////////////////////////////////////////////////////////////////////////////////
     }
 }
+#endif

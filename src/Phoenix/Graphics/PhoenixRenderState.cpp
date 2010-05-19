@@ -129,6 +129,12 @@ Phoenix::Graphics::CRenderState::GetShaderProjectionUniform()
     return m_ProjUniform;
 }
 /////////////////////////////////////////////////////////////////
+Phoenix::Graphics::CShaderUniformMat4x4f &
+Phoenix::Graphics::CRenderState::GetShaderModelUniform()
+{
+    return m_ModelUniform;
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CMaterial &
 Phoenix::Graphics::CRenderState::GetMaterial()
 {
@@ -144,12 +150,14 @@ Phoenix::Graphics::CRenderState::Prepare()
         GetShaderAttribs().Bind( **GetShaderHandle());
         bRetval = (*GetShaderHandle())->Link();
         GetShaderUniforms().Bind( **GetShaderHandle());
-        m_ViewUniform.SetName("moose_viewMatrix");
-        // index 0 is not used since this is Uniform parameter. 
-        m_ViewUniform.Bind( **GetShaderHandle(), 0); 
-        m_ProjUniform.SetName("moose_projMatrix");
-        // index 0 is not used since this is Uniform parameter. 
-        m_ProjUniform.Bind( **GetShaderHandle(), 0); 
+        
+        m_ViewUniform.SetName("m_viewMatrix");
+        m_ViewUniform.Bind( **GetShaderHandle(), 0);  // index 0 is not used in uniform
+        m_ProjUniform.SetName("m_projMatrix");
+        m_ProjUniform.Bind( **GetShaderHandle(), 0);  // index 0 is not used in uniform
+        m_ModelUniform.SetName("m_modelMatrix");
+        m_ModelUniform.Bind( **GetShaderHandle(), 0 ); // index 0 is not used in uniform
+        
     }
     return bRetval;
 }

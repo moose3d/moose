@@ -4,7 +4,9 @@
 #include "PhoenixSpatialGraph.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixDefaultEntities.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixAIScript.h"
+#endif
 #include <PhoenixGameObject.h>
 #include <PhoenixRenderQueue.h>
 #include <PhoenixCameraObject.h>
@@ -97,9 +99,11 @@ namespace Phoenix
 			void RegisterUserCommands();
 
 		};
+#if !defined(PHOENIX_APPLE_IPHONE)
 		/////////////////////////////////////////////////////////////////
 		/// Parses regular camera parameters from name-object map.
 		int ParseCameraParameters( Tcl_Interp *pInterp, NameObjMap & params, Phoenix::Scene::CCameraObject & cam );
+#endif
 	} // Scene
 } // Phoenix
 ///////////////////////////////////////////////////////////////////////////////////

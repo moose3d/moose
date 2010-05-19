@@ -507,10 +507,11 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CSphere & sphere, const CVec
         {
           vOrig = vIntersection0 - sphere.GetPosition();
           vEnd  = vIntersection1 - sphere.GetPosition();
-
+            //float fLen = (sphere.GetPosition()-GetPosition()).Length();
           vOrig.Normalize();
           vEnd.Normalize();
-
+            //vOrig *= fLen;
+            //vEnd *= fLen;
           Phoenix::Math::RotationArc(vOrig,vEnd, qResult);
           return 1;
         }

@@ -101,7 +101,7 @@ Phoenix::Scene::CGameObject::GetWorldBoundingSphere() const
 				vTmp );*/
 
 	return Phoenix::Volume::CSphere( GetBoundingSphere().GetPosition() +GetWorldTransform().GetTranslation(),
-																	 GetBoundingSphere().GetRadius() );
+																	 GetBoundingSphere().GetRadius()*GetWorldTransform().GetScaling() );
 }
 ////////////////////////////////////////////////////////////////////////////////
 void

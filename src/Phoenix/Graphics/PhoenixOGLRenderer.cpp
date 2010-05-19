@@ -3151,6 +3151,15 @@ Phoenix::Graphics::COglRenderer::CommitRenderState( const Phoenix::Graphics::CRe
 	// Check face culling flag.
 	if ( s.GetFaceCulling()) CommitState( STATE_FACECULLING );
 	else DisableState( STATE_FACECULLING );
+        ////////////////////
+        // Polygon offset.
+        if ( s.GetPolygonOffset().IsEnabled() ) 
+        {
+          CommitState( STATE_POLYGONOFFSET );
+          glPolygonOffset( s.GetPolygonOffset().GetFactor(), 
+                           s.GetPolygonOffset().GetUnits());
+        }
+        else DisableState( STATE_POLYGONOFFSET );
 	////////////////////
 	// Check lighting flag
 	if ( s.GetLighting())

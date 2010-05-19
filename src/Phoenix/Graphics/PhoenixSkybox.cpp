@@ -9,22 +9,28 @@ using std::cerr;
 using std::endl;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Default;
+/* *****************************************************************************
+   matrix transpose code 
+********************************************************************************
+ "mat4 mv = mat4(m_viewMatrix[0][0], m_viewMatrix[0][1], m_viewMatrix[0][2],0.0," \
+ "m_viewMatrix[1][0], m_viewMatrix[1][1], m_viewMatrix[1][2],0.0," \
+ "m_viewMatrix[2][0], m_viewMatrix[2][1], m_viewMatrix[2][2],0.0," \
+ "m_viewMatrix[3][0], m_viewMatrix[3][1], m_viewMatrix[3][2],1.0);" \
+ "mat4 pr = mat4(m_projMatrix[0][0], m_projMatrix[0][1], m_projMatrix[0][2],m_projMatrix[0][3]," \
+ "m_projMatrix[1][0], m_projMatrix[1][1], m_projMatrix[1][2],m_projMatrix[1][3]," \
+ "m_projMatrix[2][0], m_projMatrix[2][1], m_projMatrix[2][2],m_projMatrix[2][3]," \
+ "m_projMatrix[3][0], m_projMatrix[3][1], m_projMatrix[3][2],m_projMatrix[3][3]);" \
+*/
 ////////////////////////////////////////////////////////////////////////////////
 const char *SB_VERT_SH = "attribute vec3 position;"     \
  "attribute vec3 a_texcoord;"                           \
  "varying vec3 v_texcoord;"                             \
- "uniform mat4 moose_viewMatrix;"                       \
- "uniform mat4 moose_projMatrix;"                       \
+ "uniform mat4 m_viewMatrix;"                       \
+ "uniform mat4 m_projMatrix;"                       \
  "void main(){"                                                         \
- "mat4 mv = mat4(moose_viewMatrix[0][0], moose_viewMatrix[0][1], moose_viewMatrix[0][2],0.0," \
- "moose_viewMatrix[1][0], moose_viewMatrix[1][1], moose_viewMatrix[1][2],0.0," \
- "moose_viewMatrix[2][0], moose_viewMatrix[2][1], moose_viewMatrix[2][2],0.0," \
- "moose_viewMatrix[3][0], moose_viewMatrix[3][1], moose_viewMatrix[3][2],1.0);" \
- "mat4 pr = mat4(moose_projMatrix[0][0], moose_projMatrix[0][1], moose_projMatrix[0][2],moose_projMatrix[0][3]," \
- "moose_projMatrix[1][0], moose_projMatrix[1][1], moose_projMatrix[1][2],moose_projMatrix[1][3]," \
- "moose_projMatrix[2][0], moose_projMatrix[2][1], moose_projMatrix[2][2],moose_projMatrix[2][3]," \
- "moose_projMatrix[3][0], moose_projMatrix[3][1], moose_projMatrix[3][2],moose_projMatrix[3][3]);" \
- "gl_Position = pr * mv * vec4(position,1.0);"              \
+ "mat4 mv = m_viewMatrix;" \
+ "mv[3][0] = 0.0; mv[3][1] = 0.0; mv[3][2] = 0.0;"\
+ "gl_Position = m_projMatrix * mv * vec4(position,1.0);"              \
  "v_texcoord = a_texcoord;}";
 
 const char *SB_FRAG_SH = "varying mediump vec3 v_texcoord;"\
@@ -203,6 +209,7 @@ Phoenix::Graphics::CSkybox::CSkybox( )
   state.GetLighting() = false;
   state.GetDepthTest() = false;
   state.GetFaceCulling() = false;
+  state.GetDepthWrite() = false;
   // necessary params
   state.AddShaderAttrib("position", (*m_hModel)->GetVertexHandle() );
   state.AddShaderAttrib("a_texcoord", (*m_hModel)->GetTextureCoordinateHandle() );

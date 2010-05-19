@@ -1,3 +1,5 @@
+#ifndef __PhoenixIPhoneAudioSample_h__
+#define __PhoenixIPhoneAudioSample_h__
 #include "PhoenixALSampleTypes.h"
 /////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -11,3 +13,4 @@ namespace Phoenix
         };
     }
 }
+#endif

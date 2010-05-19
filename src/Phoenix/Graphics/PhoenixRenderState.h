@@ -5,6 +5,7 @@
 #include "PhoenixLogger.h"
 #include "PhoenixBlendingOperation.h"
 #include "PhoenixAlphaTestOperation.h"
+#include "PhoenixPolygonOffset.h"
 #include "PhoenixAPI.h"
 #include "PhoenixVector4.h"
 #include "PhoenixDefaultEntities.h"
@@ -110,7 +111,7 @@ namespace Phoenix
       protected:
           GLuint  m_iLocation;
           /// This matrix is always somewhere else, it should not be freed.
-          Phoenix::Math::CMatrix4x4<float> *m_pMatrix;
+          const Phoenix::Math::CMatrix4x4<float> *m_pMatrix;
       public:
           CShaderUniformMat4x4f() : m_iLocation(-1),m_pMatrix(NULL) {}
           
@@ -119,7 +120,7 @@ namespace Phoenix
               //g_Log << "UNIFORM: Binding " << GetName() << std::endl; 
               m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
           }
-          void SetData( Phoenix::Math::CMatrix4x4<float> *pMatrix )
+          void SetData( const Phoenix::Math::CMatrix4x4<float> *pMatrix )
           {
               m_pMatrix = pMatrix;
           } 
@@ -242,7 +243,8 @@ namespace Phoenix
     private:
       Phoenix::Graphics::CAlphaTestOperation m_AlphaTestOp; ///!< Is alpha test enabled and what comparison to use.
       Phoenix::Graphics::CBlendingOperation  m_BlendingOp; ///!< Is blending enabled and what operation to use.
-      bool	     m_DepthTest;    ///!< Is Depth testing enabled.
+      Phoenix::Graphics::CPolygonOffset    m_PolyOffset; ///!< Is polygon offset enabled and using which parameters.
+        bool	     m_DepthTest;    ///!< Is Depth testing enabled.
       bool	     m_DepthWrite;   ///!< Is Depth write enabled
       bool	     m_FaceCulling;  ///!< Is faceculling enabled.
       bool	     m_bLighting;    ///!< Is lighting enabled.
@@ -256,7 +258,8 @@ namespace Phoenix
       CShaderParamContainer               m_ShaderAttribs;   ///!< All attrib parameters;
       CShaderParamContainer               m_ShaderUniforms;  ///!< All uniform parameters;
       CShaderUniformMat4x4f               m_ViewUniform;   ///!< View transform.  
-      CShaderUniformMat4x4f               m_ProjUniform;   ///!< Projection transform.  
+      CShaderUniformMat4x4f               m_ProjUniform;   ///!< Projection transform.
+      CShaderUniformMat4x4f               m_ModelUniform;   ///!< Model transform.
         /// Texture filters for each texture.
       std::vector<Phoenix::Graphics::TEXTURE_FILTER>	   m_aTextureFilters[TEXTURE_HANDLE_COUNT];
       /// Handle to textures.
@@ -296,7 +299,8 @@ namespace Phoenix
       inline unsigned int & GetLightId() { return m_nLightId; }
       inline void SetLightId(unsigned int nVal) { m_nLightId = nVal; }
       void   ParseFrom( NameValueMap & map );
-
+      inline CPolygonOffset & GetPolygonOffset() { return m_PolyOffset; }
+      inline void SetPolygonOffset( Phoenix::Graphics::CPolygonOffset & offset ) { m_PolyOffset = offset; }
       ////////////////////
       /// Returns handle to Texture.
       /// \param nId Which texture unit is handled. By default it is zero, the first.
@@ -327,6 +331,10 @@ namespace Phoenix
       ////////////////////
       /// Returns reference to view transform param in shader.
       CShaderUniformMat4x4f & GetShaderProjectionUniform();
+      ////////////////////
+        /// Returns reference to view transform param in shader.
+        CShaderUniformMat4x4f & GetShaderModelUniform();
+        
       ////////////////////
       /// Returns texture filters for given texture.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1.  By default, it is first (zero).

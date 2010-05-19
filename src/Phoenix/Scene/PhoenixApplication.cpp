@@ -114,8 +114,9 @@ void
 prefix::CApplication::ProcessInput()
 {
 	if ( GetCurrentScene() == NULL ) return;
-	CScene & scene = *GetCurrentScene();
 #if !defined(PHOENIX_APPLE_IPHONE)
+	CScene & scene = *GetCurrentScene();
+
 	SDL_Event event;
 	while ( SDL_PollEvent(&event ))
 	{
