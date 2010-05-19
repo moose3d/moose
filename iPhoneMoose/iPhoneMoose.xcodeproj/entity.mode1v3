@@ -231,8 +231,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -269,21 +267,22 @@
 							<array>
 								<string>0867D691FE84028FC02AAC07</string>
 								<string>08FB77AEFE84172EC02AAC07</string>
-								<string>ECCD88CD1185C9BC00873F3C</string>
-								<string>0867D69AFE84028FC02AAC07</string>
+								<string>ECCD89F21185C9F900873F3C</string>
+								<string>ECCD892C1185C9D700873F3C</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+									<integer>33</integer>
 									<integer>25</integer>
-									<integer>20</integer>
+									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {299, 679}}</string>
+							<string>{{0, 165}, {299, 679}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -302,7 +301,7 @@
 							<real>299</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>295 124 1161 738 0 0 1440 878 </string>
+						<string>150 67 1161 738 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -313,12 +312,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>PhoenixDefaultEntities.cpp</string>
+								<string>PhoenixCamera.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,22 +327,39 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>PhoenixDefaultEntities.cpp</string>
+										<string>PhoenixCamera.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>ECF1FD87119B4FAE00212362</string>
+										<string>ECEC006C11A3384600FA5760</string>
 										<key>history</key>
 										<array>
-											<string>ECF1FC9B119ACD8300212362</string>
-											<string>ECF1FC9C119ACD8300212362</string>
-											<string>ECF1FC9D119ACD8300212362</string>
-											<string>ECF1FC9E119ACD8300212362</string>
-											<string>ECF1FD82119B4FAE00212362</string>
-											<string>ECF1FD83119B4FAE00212362</string>
-											<string>ECF1FD84119B4FAE00212362</string>
-											<string>ECF1FD85119B4FAE00212362</string>
-											<string>ECF1FD86119B4FAE00212362</string>
+											<string>ECD99C1F11A07EBB000C1C25</string>
+											<string>ECD99C2011A07EBB000C1C25</string>
+											<string>ECD99C2111A07EBB000C1C25</string>
+											<string>ECD99C2211A07EBB000C1C25</string>
+											<string>ECD99C2311A07EBB000C1C25</string>
+											<string>ECD99C2511A07EBB000C1C25</string>
+											<string>ECD99C2611A07EBB000C1C25</string>
+											<string>ECD99C2711A07EBB000C1C25</string>
+											<string>ECD99C2811A07EBB000C1C25</string>
+											<string>ECD99C2911A07EBB000C1C25</string>
+											<string>ECCDFF1611A1A484002EA13C</string>
+											<string>ECCDFF1711A1A484002EA13C</string>
+											<string>ECECFFD811A2E37D00FA5760</string>
+											<string>ECECFFD911A2E37D00FA5760</string>
+											<string>ECECFFDA11A2E37D00FA5760</string>
+											<string>ECECFFDB11A2E37D00FA5760</string>
+											<string>ECECFFEC11A2E40C00FA5760</string>
+											<string>ECECFFEE11A2E40C00FA5760</string>
+											<string>ECECFFF111A2E40C00FA5760</string>
+											<string>ECEC006511A3384600FA5760</string>
+											<string>ECEC006611A3384600FA5760</string>
+											<string>ECEC006711A3384600FA5760</string>
+											<string>ECEC006811A3384600FA5760</string>
+											<string>ECEC006911A3384600FA5760</string>
+											<string>ECEC006A11A3384600FA5760</string>
+											<string>ECEC006B11A3384600FA5760</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -353,14 +371,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {840, 321}}</string>
+								<string>{{0, 0}, {840, 640}}</string>
 								<key>RubberWindowFrame</key>
-								<string>295 124 1161 738 0 0 1440 878 </string>
+								<string>150 67 1161 738 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>321pt</string>
+							<string>640pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -373,14 +391,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 326}, {840, 371}}</string>
+								<string>{{0, 645}, {840, 52}}</string>
 								<key>RubberWindowFrame</key>
-								<string>295 124 1161 738 0 0 1440 878 </string>
+								<string>150 67 1161 738 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>371pt</string>
+							<string>52pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -399,9 +417,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>ECF1FCA2119ACD8300212362</string>
+				<string>ECEC006D11A3384600FA5760</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>ECF1FCA3119ACD8300212362</string>
+				<string>ECEC006E11A3384600FA5760</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -543,7 +561,7 @@
 		<string>/Users/entity/workdir/phoenix/iPhoneMoose/iPhoneMoose.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>295 124 1161 738 0 0 1440 878 </string>
+	<string>150 67 1161 738 0 0 1440 878 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -559,14 +577,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>PhoenixOGLRenderer.mm</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -575,7 +591,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {596, 214}}</string>
 								<key>RubberWindowFrame</key>
-								<string>784 318 596 439 0 0 1440 878 </string>
+								<string>784 317 596 439 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -599,7 +615,7 @@
 								<key>Frame</key>
 								<string>{{0, 219}, {596, 179}}</string>
 								<key>RubberWindowFrame</key>
-								<string>784 318 596 439 0 0 1440 878 </string>
+								<string>784 317 596 439 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
@@ -622,7 +638,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>ECCD8A631185CB0100873F3C</string>
-				<string>ECF1FC9A119ACD7C00212362</string>
+				<string>ECEC006F11A3384600FA5760</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -631,7 +647,7 @@
 			<key>WindowContentMinSize</key>
 			<string>486 300</string>
 			<key>WindowString</key>
-			<string>784 318 596 439 0 0 1440 878 </string>
+			<string>784 317 596 439 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>ECCD8A631185CB0100873F3C</string>
 			<key>WindowToolIsVisible</key>

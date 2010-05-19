@@ -21,6 +21,8 @@
 		EC19A78811931C79002D9374 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A78711931C79002D9374 /* UIKit.framework */; };
 		EC19A79011931C8D002D9374 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A78F11931C8D002D9374 /* QuartzCore.framework */; };
 		EC19A7F311931D68002D9374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A7F211931D68002D9374 /* CoreGraphics.framework */; };
+		EC88533611A3C931009D8112 /* PhoenixPolygonOffset.h in Headers */ = {isa = PBXBuildFile; fileRef = EC88533411A3C931009D8112 /* PhoenixPolygonOffset.h */; };
+		EC88533711A3C931009D8112 /* PhoenixPolygonOffset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC88533511A3C931009D8112 /* PhoenixPolygonOffset.cpp */; };
 		ECCD88BC1185C99900873F3C /* PhoenixALObjectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */; };
 		ECCD88BD1185C99900873F3C /* PhoenixALSampleTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */; };
 		ECCD88BE1185C99900873F3C /* PhoenixALSampleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */; };
@@ -225,6 +227,8 @@
 		EC19A78711931C79002D9374 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EC19A78F11931C8D002D9374 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EC19A7F211931D68002D9374 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		EC88533411A3C931009D8112 /* PhoenixPolygonOffset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixPolygonOffset.h; sourceTree = "<group>"; };
+		EC88533511A3C931009D8112 /* PhoenixPolygonOffset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixPolygonOffset.cpp; sourceTree = "<group>"; };
 		ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALObjectArray.h; sourceTree = "<group>"; };
 		ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixALSampleTypes.cpp; sourceTree = "<group>"; };
 		ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALSampleTypes.h; sourceTree = "<group>"; };
@@ -635,6 +639,8 @@
 				ECCD896B1185C9D700873F3C /* PhoenixTGAImage.h */,
 				ECCD896C1185C9D700873F3C /* PhoenixVertexDescriptor.cpp */,
 				ECCD896D1185C9D700873F3C /* PhoenixVertexDescriptor.h */,
+				EC88533411A3C931009D8112 /* PhoenixPolygonOffset.h */,
+				EC88533511A3C931009D8112 /* PhoenixPolygonOffset.cpp */,
 			);
 			name = Graphics;
 			path = ../src/Phoenix/Graphics;
@@ -880,6 +886,7 @@
 				ECCD8AA51185D28000873F3C /* PhoenixDefaultEntities.h in Headers */,
 				EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */,
 				ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */,
+				EC88533611A3C931009D8112 /* PhoenixPolygonOffset.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -991,6 +998,7 @@
 				EC19A6CB11930D26002D9374 /* PhoenixIPhoneAudioSample.mm in Sources */,
 				EC19A7771193180C002D9374 /* PhoenixOGLRenderer.mm in Sources */,
 				ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */,
+				EC88533711A3C931009D8112 /* PhoenixPolygonOffset.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
