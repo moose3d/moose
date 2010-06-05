@@ -9,11 +9,18 @@
 /* Begin PBXBuildFile section */
 		AA747D9F0F9514B9006C5449 /* iPhoneMoose_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* iPhoneMoose_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		EC04F98D11B9200B00B8F605 /* PhoenixCapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC04F98C11B9200B00B8F605 /* PhoenixCapsule.cpp */; };
 		EC0A7A191189C55D00FBAAF9 /* PhoenixAmbientLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A181189C55D00FBAAF9 /* PhoenixAmbientLight.mm */; };
 		EC0A7A211189C5CA00FBAAF9 /* PhoenixRenderableModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A201189C5CA00FBAAF9 /* PhoenixRenderableModel.mm */; };
 		EC0A7A261189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */; };
 		EC0A7A2C1189C65C00FBAAF9 /* PhoenixSkybox.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */; };
 		EC0A7A301189C69100FBAAF9 /* PhoenixSpotLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */; };
+		EC121F4E11BADEB6003C94EE /* PhoenixBoxRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F4A11BADEB6003C94EE /* PhoenixBoxRenderable.cpp */; };
+		EC121F4F11BADEB6003C94EE /* PhoenixBoxRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F4B11BADEB6003C94EE /* PhoenixBoxRenderable.h */; };
+		EC121F5011BADEB7003C94EE /* PhoenixSphereRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F4C11BADEB6003C94EE /* PhoenixSphereRenderable.cpp */; };
+		EC121F5111BADEB7003C94EE /* PhoenixSphereRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F4D11BADEB6003C94EE /* PhoenixSphereRenderable.h */; };
+		EC121F8211BAE317003C94EE /* PhoenixLineRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */; };
+		EC121F8311BAE317003C94EE /* PhoenixLineRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */; };
 		EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */ = {isa = PBXBuildFile; fileRef = EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */; };
 		EC19A6CB11930D26002D9374 /* PhoenixIPhoneAudioSample.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */; };
 		EC19A70211930E89002D9374 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A70111930E89002D9374 /* AudioToolbox.framework */; };
@@ -215,11 +222,18 @@
 		AA747D9E0F9514B9006C5449 /* iPhoneMoose_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneMoose_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libiPhoneMoose.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiPhoneMoose.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC04F98C11B9200B00B8F605 /* PhoenixCapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCapsule.cpp; sourceTree = "<group>"; };
 		EC0A7A181189C55D00FBAAF9 /* PhoenixAmbientLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixAmbientLight.mm; sourceTree = "<group>"; };
 		EC0A7A201189C5CA00FBAAF9 /* PhoenixRenderableModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixRenderableModel.mm; sourceTree = "<group>"; };
 		EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixRenderableModelShared.mm; sourceTree = "<group>"; };
 		EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixSkybox.mm; sourceTree = "<group>"; };
 		EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixSpotLight.mm; sourceTree = "<group>"; };
+		EC121F4A11BADEB6003C94EE /* PhoenixBoxRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixBoxRenderable.cpp; sourceTree = "<group>"; };
+		EC121F4B11BADEB6003C94EE /* PhoenixBoxRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixBoxRenderable.h; sourceTree = "<group>"; };
+		EC121F4C11BADEB6003C94EE /* PhoenixSphereRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSphereRenderable.cpp; sourceTree = "<group>"; };
+		EC121F4D11BADEB6003C94EE /* PhoenixSphereRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSphereRenderable.h; sourceTree = "<group>"; };
+		EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLineRenderable.h; sourceTree = "<group>"; };
+		EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixLineRenderable.cpp; sourceTree = "<group>"; };
 		EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixIPhoneAudioSample.h; sourceTree = "<group>"; };
 		EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixIPhoneAudioSample.mm; sourceTree = "<group>"; };
 		EC19A70111930E89002D9374 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -585,6 +599,12 @@
 		ECCD892C1185C9D700873F3C /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				EC121F4A11BADEB6003C94EE /* PhoenixBoxRenderable.cpp */,
+				EC121F4B11BADEB6003C94EE /* PhoenixBoxRenderable.h */,
+				EC121F4C11BADEB6003C94EE /* PhoenixSphereRenderable.cpp */,
+				EC121F4D11BADEB6003C94EE /* PhoenixSphereRenderable.h */,
+				EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */,
+				EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */,
 				EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */,
 				EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */,
 				EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */,
@@ -718,6 +738,7 @@
 				ECCD8A1C1185CA0700873F3C /* PhoenixBoxBound.cpp */,
 				ECCD8A1D1185CA0700873F3C /* PhoenixBoxBound.h */,
 				ECCD8A1E1185CA0700873F3C /* PhoenixCapsule.h */,
+				EC04F98C11B9200B00B8F605 /* PhoenixCapsule.cpp */,
 				ECCD8A1F1185CA0700873F3C /* PhoenixCone.cpp */,
 				ECCD8A201185CA0700873F3C /* PhoenixCone.h */,
 				ECCD8A211185CA0700873F3C /* PhoenixDecalVolume.h */,
@@ -758,6 +779,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECCD88DA1185C9BC00873F3C /* PhoenixAIScript.h in Headers */,
 				AA747D9F0F9514B9006C5449 /* iPhoneMoose_Prefix.pch in Headers */,
 				ECCD88BC1185C99900873F3C /* PhoenixALObjectArray.h in Headers */,
 				ECCD88BE1185C99900873F3C /* PhoenixALSampleTypes.h in Headers */,
@@ -768,7 +790,6 @@
 				ECCD88C81185C99900873F3C /* PhoenixOggStreamSample.h in Headers */,
 				ECCD88CA1185C99900873F3C /* PhoenixSoundBase.h in Headers */,
 				ECCD88CC1185C99900873F3C /* PhoenixSoundSampleBase.h in Headers */,
-				ECCD88DA1185C9BC00873F3C /* PhoenixAIScript.h in Headers */,
 				ECCD88DE1185C9BC00873F3C /* PhoenixMessageSystem.h in Headers */,
 				ECCD88E21185C9BC00873F3C /* PhoenixStateMachine.h in Headers */,
 				ECCD89091185C9C800873F3C /* PhoenixAPI.h in Headers */,
@@ -887,6 +908,9 @@
 				EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */,
 				ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */,
 				EC88533611A3C931009D8112 /* PhoenixPolygonOffset.h in Headers */,
+				EC121F4F11BADEB6003C94EE /* PhoenixBoxRenderable.h in Headers */,
+				EC121F5111BADEB7003C94EE /* PhoenixSphereRenderable.h in Headers */,
+				EC121F8211BAE317003C94EE /* PhoenixLineRenderable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -999,6 +1023,10 @@
 				EC19A7771193180C002D9374 /* PhoenixOGLRenderer.mm in Sources */,
 				ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */,
 				EC88533711A3C931009D8112 /* PhoenixPolygonOffset.cpp in Sources */,
+				EC04F98D11B9200B00B8F605 /* PhoenixCapsule.cpp in Sources */,
+				EC121F4E11BADEB6003C94EE /* PhoenixBoxRenderable.cpp in Sources */,
+				EC121F5011BADEB7003C94EE /* PhoenixSphereRenderable.cpp in Sources */,
+				EC121F8311BAE317003C94EE /* PhoenixLineRenderable.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1015,7 +1043,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iPhoneMoose_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
@@ -1031,6 +1059,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/iPhoneMoose.dst;
 				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iPhoneMoose_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
