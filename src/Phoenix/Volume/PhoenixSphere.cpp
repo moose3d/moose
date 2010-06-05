@@ -341,6 +341,7 @@ void
 Phoenix::Volume::CSphere::Transform( const Phoenix::Math::CTransform & transf )
 {
     Move(transf.GetTranslation());
-    SetRadius( GetRadius() * transf.GetScaling());
+    float fScaleMax = std::max( std::max( fabsf( transf.GetScaling()[0]),fabsf( transf.GetScaling()[1])), fabsf( transf.GetScaling()[2]));
+    SetRadius( GetRadius() * fScaleMax);
 }
 /////////////////////////////////////////////////////////////////
