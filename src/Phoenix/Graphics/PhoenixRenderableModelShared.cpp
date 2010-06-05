@@ -70,11 +70,31 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     if ( pTexture  != NULL )
     {
       renderer.CommitTexture( i, pTexture );
-      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), 
+                              pTexture->GetType() );
     }
     else
       renderer.DisableTexture(i, NULL);
   }
+
+#else
+
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    pTexture = *GetRenderState().GetTextureHandle(i);
+    // check that texture resource exists
+    if ( pTexture  != NULL )
+    {
+      renderer.CommitTexture( i, pTexture );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), 
+                              pTexture->GetType() );
+    }
+    else 
+    { 
+      
+      renderer.DisableTexture(i, NULL);
+    }
+  } 
 #endif
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
@@ -82,7 +102,19 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
 
   if ( !GetRenderState().GetShaderHandle().IsNull())
   {
+    GetRenderState().GetShaderAttribs().Apply();
     GetRenderState().GetShaderUniforms().Apply();
+    if ( renderer.GetCurrentCamera() )
+    {
+      // Update matrices 
+      GetRenderState().GetShaderViewUniform().SetData(      &renderer.GetCurrentCamera()->GetViewMatrix());
+      GetRenderState().GetShaderProjectionUniform().SetData(&renderer.GetCurrentCamera()->GetProjectionMatrix());
+      GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+      // Send data to shader
+      GetRenderState().GetShaderViewUniform().Apply();
+      GetRenderState().GetShaderProjectionUniform().Apply();
+      GetRenderState().GetShaderModelUniform().Apply(); 
+    }
   }
 
 #if !defined(PHOENIX_APPLE_IPHONE)

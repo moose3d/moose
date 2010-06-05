@@ -88,11 +88,57 @@ Phoenix::Graphics::CRenderState::AddShaderAttrib( const char *sName, Phoenix::De
 }
 /////////////////////////////////////////////////////////////////
 void
+Phoenix::Graphics::CRenderState::AddShaderAttrib( const char *sName, Phoenix::Graphics::CVertexDescriptor *pData )
+{ 
+    CShaderAttribPtr *pParam = new CShaderAttribPtr();
+    pParam->SetName(sName);
+    pParam->SetData( pData );  
+    m_ShaderAttribs.Add( pParam ); 
+    
+}
+/////////////////////////////////////////////////////////////////
+void
 Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, Phoenix::Default::VERTEX_HANDLE & handle )
 { 
     CShaderUniform *pParam = new CShaderUniform();
     pParam->SetName(sName);
     pParam->SetData( handle );  
+    m_ShaderUniforms.Add( pParam ); 
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, Phoenix::Graphics::CVertexDescriptor *pData )
+{ 
+    CShaderUniformPtr *pParam = new CShaderUniformPtr();
+    pParam->SetName(sName);
+    pParam->SetData( pData );  
+    m_ShaderUniforms.Add( pParam ); 
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, const char *szResourceName )
+{ 
+    CShaderUniform *pParam = new CShaderUniform();
+    pParam->SetName(sName);
+    pParam->SetData( szResourceName );  
+    m_ShaderUniforms.Add( pParam ); 
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, GLint iValue )
+{ 
+    CShaderUniformInt *pParam = new CShaderUniformInt();
+    pParam->SetName(sName);
+    pParam->SetData( iValue );  
+    m_ShaderUniforms.Add( pParam ); 
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, GLfloat fValue )
+{ 
+    CShaderUniformFloat *pParam = new CShaderUniformFloat();
+    pParam->SetName(sName);
+    pParam->SetData( fValue );  
     m_ShaderUniforms.Add( pParam ); 
 }
 /////////////////////////////////////////////////////////////////
@@ -103,6 +149,18 @@ Phoenix::Graphics::CRenderState::AddShaderUniform( const char *sName, Phoenix::M
     pParam->SetName(sName);
     pParam->SetData( pMatrix );  
     m_ShaderUniforms.Add( pParam ); 
+}
+/////////////////////////////////////////////////////////////////
+IShaderParam * 
+Phoenix::Graphics::CRenderState::GetShaderAttrib( const char *szName)
+{
+    return m_ShaderAttribs.GetParameter(szName);
+}
+/////////////////////////////////////////////////////////////////
+IShaderParam * 
+Phoenix::Graphics::CRenderState::GetShaderUniform( const char *szName)
+{
+    return m_ShaderUniforms.GetParameter(szName);
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CShaderParamContainer &

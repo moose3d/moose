@@ -1,5 +1,5 @@
 #include "PhoenixAPI.h"
-#if !defined(PHOENIX_APPLE_IPHONE)
+
 #include <cassert>
 #include "PhoenixAIScript.h"
 #include "PhoenixVector3.h"
@@ -9,10 +9,13 @@
 #include "PhoenixModelHelper.h"
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixDefaultEntities.h"
-#include "PhoenixSDLScreen.h"
 #include "PhoenixCollision.h"
-#include <SDL/SDL.h>
 #include <string>
+
+#if !defined(PHOENIX_APPLE_IPHONE)
+#include "PhoenixSDLScreen.h"
+#include <SDL/SDL.h>
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 using namespace std;
 using namespace Phoenix::Math;
@@ -21,8 +24,11 @@ using namespace Phoenix::AI;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Volume;
+#if !defined(PHOENIX_APPLE_IPHONE)
 using namespace Phoenix::Window;
+#endif
 using namespace Phoenix::Collision;
+#if !defined(PHOENIX_APPLE_IPHONE)
 ///////////////////////////////////////////////////////////////////////////////
 //
 // We use regular functions instead of static member functions to reduce dependencies.
@@ -110,6 +116,8 @@ SCRIPT_CMD_DECL( RayPlaneCollision );      // returns point where given ray and 
 				     FUNC, (ClientData)OBJPTR,	\
 				     NULL) != NULL );		\
 }
+#endif // PHOENIX_APPLE_IPHONE
+
 /////////////////////////////////////////////////////////////////
 Phoenix::AI::CAIObject::CAIObject(Phoenix::Scene::CGameObject *pObj) : m_pAIScript(NULL), m_pGameObject(pObj)
 {
@@ -118,9 +126,25 @@ Phoenix::AI::CAIObject::CAIObject(Phoenix::Scene::CGameObject *pObj) : m_pAIScri
 /////////////////////////////////////////////////////////////////
 Phoenix::AI::CAIObject::~CAIObject()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	delete m_pAIScript;
+#endif
 }
 /////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::AI::CAIObject::LoadScript()
+{
+	if ( !m_pAIScript && !m_strScriptFile.empty() )
+	{
+		m_pAIScript = new CAIScript( this, m_strScriptFile.c_str() );
+		RegisterCommands();
+		RegisterUserCommands();
+		ReloadScript();
+	}
+}
+///////////////////////////////////////////////////////////////////
 Tcl_Interp *
 Phoenix::AI::CAIObject::GetInterp()
 {
@@ -133,19 +157,6 @@ void
 Phoenix::AI::CAIObject::SetScript( const char *szScript )
 {
 	m_strScriptFile = szScript;
-}
-/////////////////////////////////////////////////////////////////
-void
-Phoenix::AI::CAIObject::LoadScript()
-{
-	if ( !m_pAIScript && !m_strScriptFile.empty() )
-	{
-		m_pAIScript = new CAIScript( this, m_strScriptFile.c_str() );
-		RegisterCommands();
-		RegisterUserCommands();
-		ReloadScript();
-	}
-
 }
 /////////////////////////////////////////////////////////////////
 bool
@@ -162,11 +173,16 @@ Phoenix::AI::CAIObject::ReloadScript()
 		m_pAIScript->ReloadScript(m_strScriptFile.c_str());
 
 }
+
+#endif // PHOENIX_APPLE_IPHONE
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::AI::CAIObject::UpdateScript( float fSeconds )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	if ( m_pAIScript) m_pAIScript->Update(fSeconds);
+#endif
+    m_MessageQueue.Update();
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -181,7 +197,13 @@ Phoenix::AI::CAIObject::GetPassedTime() const
 {
 	return m_fPassedTime;
 }
+Phoenix::AI::CMessageQueue & 
+Phoenix::AI::CAIObject::GetMessageQueue()
+{
+    return m_MessageQueue;
+}
 ////////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 const std::string &
 Phoenix::AI::CAIObject::GetScript() const
 {

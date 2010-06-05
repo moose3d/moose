@@ -16,12 +16,9 @@ Phoenix::Scene::CGameObject::~CGameObject()
 	}
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), 
-					      m_pCollider(NULL)
-#if !defined(PHOENIX_APPLE_IPHONE)
-, 
-					      CAIObject( this )
-#endif
+Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), m_pCollider(NULL), 
+                                              CAIObject( this )
+
 
 {
         m_pCollider = this;
@@ -34,6 +31,8 @@ Phoenix::Scene::CGameObject::Init()
 {
 #if !defined(PHOENIX_APPLE_IPHONE)
 	LoadScript();
+#else 
+    RegisterUserCommands();
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -99,9 +98,9 @@ Phoenix::Scene::CGameObject::GetWorldBoundingSphere() const
 	/*Transform( GetBoundingSphere().GetPosition(),
 				const_cast<Phoenix::Math::CTransform &>(GetWorldTransform()).GetMatrix(),
 				vTmp );*/
-
+    float fScaleMax = std::max( std::max( fabsf(GetWorldTransform().GetScaling()[0]),fabsf(GetWorldTransform().GetScaling()[1])), fabsf(GetWorldTransform().GetScaling()[2]));
 	return Phoenix::Volume::CSphere( GetBoundingSphere().GetPosition() +GetWorldTransform().GetTranslation(),
-																	 GetBoundingSphere().GetRadius()*GetWorldTransform().GetScaling() );
+																	 GetBoundingSphere().GetRadius()*fScaleMax );
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -123,9 +122,7 @@ Phoenix::Scene::CGameObject::GetCollider()
 void
 Phoenix::Scene::CGameObject::Update( float fSecondsPassed )
 {
-#if !defined(PHOENIX_APPLE_IPHONE)
   UpdateScript(fSecondsPassed);
-#endif
 }
 ////////////////////////////////////////////////////////////////////////////////
 void

@@ -2,9 +2,7 @@
 #define __PhoenixGameObject_h__
 /////////////////////////////////////////////////////////////////
 #include "PhoenixMath.h"
-#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixAIScript.h"
-#endif
 #include "PhoenixTransformGraph.h"
 #include "PhoenixSphereBound.h"
 #include "PhoenixRenderable.h"
@@ -38,9 +36,7 @@ namespace Phoenix
 																		public Phoenix::Collision::CSphereCollider,
 																		public Phoenix::Core::CNamed,
 																		public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
-#if !defined(PHOENIX_APPLE_IPHONE)
                                                                         public Phoenix::AI::CAIObject,
-#endif
                                                                         public Phoenix::Core::IUpdateable,
 																		public Phoenix::Core::CEnableable
 		{

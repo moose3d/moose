@@ -487,6 +487,32 @@ Phoenix::Scene::CScene::RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable
 {
 	GetPostGUIRenderQueue().GetObjectList().remove(pRenderable);
 }
+void
+Phoenix::Scene::CScene::OnEnter()
+{
+
+}
+void
+Phoenix::Scene::CScene::OnExit()
+{
+
+}
+void
+Phoenix::Scene::CScene::Load()
+{
+
+}
+void
+Phoenix::Scene::CScene::Unload()
+{
+
+}
+void
+Phoenix::Scene::CScene::Reload()
+{
+    Unload();
+    Load();
+}
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(PHOENIX_APPLE_IPHONE)
 SCRIPT_CMD_DECL( Destroy );          ///!< Kill switch for any object in the scene.

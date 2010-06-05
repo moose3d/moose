@@ -126,7 +126,7 @@ namespace Phoenix
       /// \param pEvent Pointer to event to be handled.
       void Call(const Phoenix::AI::CMessage* pMessage)
       {
-	(m_pObj->*m_Function)(static_cast<MESSAGE_TYPE*>(pMessage));
+	(m_pObj->*m_Function)(static_cast<const MESSAGE_TYPE*>(pMessage));
       }
       ////////////////////
       /// Returns pointer to object.
@@ -165,15 +165,14 @@ namespace Phoenix
       void SendMessage( const Phoenix::AI::CMessage *pMessage);
     };
     ////////////////////
-    /// Message router.
+    /// Message router for a single object.
     typedef std::pair< Phoenix::AI::CHandlerFunctionBase *, Phoenix::AI::CMessage *> SoleMessageHandlerPair;
 
-    class PHOENIX_API CMessageQueue : protected Phoenix::Core::CTimer,
-			  public Phoenix::Core::CSingleton<CMessageQueue>
+    class PHOENIX_API CMessageQueue : protected Phoenix::Core::CTimer
     {
-      friend class Phoenix::Core::CSingleton<CMessageQueue>;
+
     private:
-      //
+
       struct Priority
       {
 	bool operator()( const CMessage *pFirst, const CMessage *pSecond)
@@ -182,33 +181,33 @@ namespace Phoenix
 	}
       };
 
-      //
-      struct SoleMessagePriority
+
+      /*struct SoleMessagePriority
       {
 	bool operator()( const std::pair<CHandlerFunctionBase *, CMessage *> * first, const std::pair<CHandlerFunctionBase *, CMessage *>  * second)
 	{
 	  return (first->second->GetTimeStamp() > second->second->GetTimeStamp());
 	}
-      };
+        };*/
 
       typedef std::map<TypeInfo, CHandlerList *> HandlerMap;
       HandlerMap  m_mapHandlers;
       typedef std::priority_queue< CMessage *,
 				   std::vector< CMessage *>,
 				   Priority > MessagePriorityQueue;
-      typedef std::priority_queue< SoleMessageHandlerPair *,
+      /*typedef std::priority_queue< SoleMessageHandlerPair *,
 				   std::vector< SoleMessageHandlerPair *>,
-				   SoleMessagePriority > SoleMessagePriorityQueue;
+				   SoleMessagePriority > SoleMessagePriorityQueue;*/
 
       MessagePriorityQueue	   m_priqMessages;
       /// Message queue for sole messages ( sent only to a single objects )
-      SoleMessagePriorityQueue	   m_priqSoleMessages;
-    protected:      
-      CMessageQueue() {}
+      //SoleMessagePriorityQueue	   m_priqSoleMessages;
+    public:
+        CMessageQueue() {}
       ////////////////////
       /// Destructor.
       ~CMessageQueue();
-    public:
+    
 
       ////////////////////
       /// Enqueues message. Time complexity is O( log number of message types registered )
@@ -216,17 +215,17 @@ namespace Phoenix
 			   const Phoenix::Core::CTimeStamp & tTimeStamp);
       ////////////////////
       /// Enqueues sole message. Time complexity is O( number of objects handling same type of event).
-      template <class CLASS_TYPE >
+      /*template <class CLASS_TYPE >
       void EnqueueMessage( Phoenix::AI::CMessage *pMessage,
 			   const Phoenix::Core::CTimeStamp & tTimeStamp,
-			   const Phoenix::Core::CHandle<CLASS_TYPE> & hReceiver );
+			   const Phoenix::Core::CHandle<CLASS_TYPE> & hReceiver );*/
 
       ////////////////////
       /// Enqueues sole message. Time complexity is O( number of objects handling same type of event).
-      template <class CLASS_TYPE >
+      /*template <class CLASS_TYPE >
       void EnqueueMessage( Phoenix::AI::CMessage *pMessage,
 			   const Phoenix::Core::CTimeStamp & tTimeStamp,
-			   CLASS_TYPE * pObj );
+			   CLASS_TYPE * pObj );*/
 
       ////////////////////
       /// Registers handler for specific event using handle.
@@ -247,7 +246,7 @@ namespace Phoenix
       CMessage * GetNextMessage();
       ////////////////////
       /// Returns next available sole message/handler pair.
-      SoleMessageHandlerPair * GetNextSoleMessage();
+      //SoleMessageHandlerPair * GetNextSoleMessage();
     };
 
   } // Ai
@@ -291,7 +290,7 @@ Phoenix::AI::CMessageQueue::RegisterHandler( CLASS_TYPE * pObj, void (CLASS_TYPE
   }
 }
 /////////////////////////////////////////////////////////////////
-template <class CLASS_TYPE >
+/*template <class CLASS_TYPE >
 void
 Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
 					    const Phoenix::Core::CTimeStamp & tTimeStamp,
@@ -322,9 +321,9 @@ Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
     delete pMessage;
   }
 
-}
+  }*/
 /////////////////////////////////////////////////////////////////
-template <class CLASS_TYPE >
+ /*template <class CLASS_TYPE >
 void
 Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
 					    const Phoenix::Core::CTimeStamp & tTimeStamp,
@@ -355,7 +354,7 @@ Phoenix::AI::CMessageQueue::EnqueueMessage( Phoenix::AI::CMessage *pMessage,
     delete pMessage;
   }
 
-}
+  }*/
 /////////////////////////////////////////////////////////////////
 inline void
 Phoenix::AI::CMessage::SetTimeStamp( const Phoenix::Core::CTimeStamp & tTimeStamp )

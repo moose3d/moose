@@ -20,7 +20,7 @@ namespace Phoenix
       /// Is this transform changed.
       bool    m_bChanged;
       /// Scale factor.
-      float		  m_fScaling;
+      Phoenix::Math::CVector3<float>  m_vScaling;
       /// The transformation matrix.
       Phoenix::Math::CMatrix4x4<float> m_mTransform;
       /// Rotation quaternion.
@@ -34,7 +34,7 @@ namespace Phoenix
       ////////////////////
       /// Default constructor.
       CTransform() : m_bChanged(0),
-                     m_fScaling(1.0f),
+                     m_vScaling(1.0f,1.0f,1.0),
                      m_mTransform(1,0,0,0,
 																	0,1,0,0,
 																	0,0,1,0,
@@ -92,13 +92,23 @@ namespace Phoenix
       /// \returns Quaternion.
       const CQuaternion & GetRotation() const;
       ////////////////////
-      /// Assigns scaling factor.
+      /// Assigns uniform scaling factor.
       /// \param fScale the factor.
       void SetScaling( float fScale );
-      ////////////////////
+        ////////////////////
+        /// Assigns scaling factors.
+        /// \param fX Scale x axis.
+        /// \param fY Scale y axis.
+        /// \param fZ Scale z axis.
+        void SetScaling( float fX, float fY, float fZ);
+        ////////////////////
+        /// Assigns scaling factors.
+        /// \param vScale Vector containing each axis scale values.
+        void SetScaling( const CVector3<float> & vScale );
+        ////////////////////
       /// Returns uniform scaling factor.
       /// \returns Scaling factor.
-      float GetScaling() const;
+      const CVector3<float> & GetScaling() const;
       ////////////////////
       /// Appends given vector to current transform.
       /// \param vVector Vector to be applied.

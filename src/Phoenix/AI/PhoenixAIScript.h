@@ -5,12 +5,13 @@
 #if !defined(PHOENIX_APPLE_IPHONE)
 #include <tcl.h>
 #else
-class Tcl_Obj {};
-class Tcl_Interp {};
+typedef void *Tcl_Obj;
+typedef void *Tcl_Interp;
 #endif
 #include <list>
 #include <string>
 #include <map>
+#include "PhoenixMessageSystem.h"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -29,11 +30,17 @@ namespace Phoenix
     class CAIObject
     {
     protected:
-      
-      float 	   m_fPassedTime;
-      CAIScript *  m_pAIScript;
-      std::string  m_strScriptFile;
-      Phoenix::Scene::CGameObject *m_pGameObject;
+      Phoenix::AI::CMessageQueue  m_MessageQueue; ///!< Message queue for generic message passing.
+      float 	   m_fPassedTime;                 ///!< Passed time since last update.
+      CAIScript *  m_pAIScript;                   ///!< AI Script object.
+      Phoenix::Scene::CGameObject *m_pGameObject; ///!< Game object pointer for scripting.
+
+#if !defined(PHOENIX_APPLE_IPHONE)
+        std::string  m_strScriptFile;               ///!< Script file name.
+    protected:
+        Tcl_Interp * GetInterp();
+
+#endif
       
     public:
 
@@ -42,22 +49,23 @@ namespace Phoenix
 
       void 	SetPassedTime( float fSeconds );
       float 	GetPassedTime() const;
-
-
+      void    UpdateScript( float fSeconds );
+      
+#if !defined(PHOENIX_APPLE_IPHONE)
+      void    LoadScript();
       void  	SetScript( const char *szScript );
       const std::string & GetScript() const;
-      void    LoadScript();
+        
+      
       void    ReloadScript();
-      void    UpdateScript( float fSeconds );
+      
       void    EnqueueMessage( const std::string & msg, bool bRequireReceiver = true );
-
       bool   CopyGlobalVarToResult( Tcl_Interp *pInterp, 
 				    const std::string & varName );
 
       bool   SetGlobalVar( const std::string &varName, Tcl_Obj *pVar );
 
-      Phoenix::Scene::CGameObject * GetGameObject();
-
+      
       bool   GetGlobalVar( const std::string & varName, bool & value );
       bool   GetGlobalVar( const std::string & varName, int & value );
       bool   GetGlobalVar( const std::string & varName, float & value );
@@ -65,18 +73,21 @@ namespace Phoenix
       Tcl_Obj * GetGlobalVar( const std::string & name);
 
       bool	 HasCommand( const char *szName );
-      //////////////////////
-      /// Overwrite this to create new commands.
-      virtual void RegisterUserCommands() {}
+
+       
+      
       void 				 RegisterCommands();
-
-    protected:
-      Tcl_Interp * GetInterp();
-
-
+        
+#endif
+        //////////////////////
+        /// Overwrite this to create new commands or register listeners in messagequeue.
+        virtual void RegisterUserCommands() {}
+        Phoenix::Scene::CGameObject * GetGameObject();
+        Phoenix::AI::CMessageQueue & GetMessageQueue();
     };
     /////////////////////////////////////////////////////////////////
-    struct ScriptMessage
+#if !defined(PHOENIX_APPLE_IPHONE)
+      struct ScriptMessage
     {
     	std::string msg;
     	bool        bRequireReceiver;
@@ -111,6 +122,7 @@ namespace Phoenix
       bool   GetGlobalVar( const std::string & varName, std::string & value );
       bool	 HasCommand( const char *szName );
     };
+#endif
   } // AI
 } // Phoenix
 ////////////////////////////////////////////////////////////////////////////////

@@ -46,7 +46,7 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   ////////////////////
   // Retrieve resources
   COglTexture *pTexture = NULL;
-  CVertexDescriptor *pTemp = NULL;
+
 
   CModel & model = *GetModel();
 
@@ -55,6 +55,7 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   ////////////////////
   // Commit textures
 #if !defined(PHOENIX_APPLE_IPHONE)
+  CVertexDescriptor *pTemp = NULL;
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
@@ -92,16 +93,15 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     pTexture = *GetRenderState().GetTextureHandle(i);
 
     
-    //// check that texture resource exists
+    // check that texture resource exists
     if ( pTexture  != NULL )
     {
-      
       renderer.CommitTexture( i, pTexture );
-      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), 
+                              pTexture->GetType() );
     }
     else 
     { 
-      
       renderer.DisableTexture(i, NULL);
     }
   } 
@@ -126,7 +126,6 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
       GetRenderState().GetShaderModelUniform().Apply();
     }
   }
-  
   
 #if !defined(PHOENIX_APPLE_IPHONE)
   // commit normals

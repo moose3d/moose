@@ -12,7 +12,9 @@
 #include <PhoenixCameraObject.h>
 #include <PhoenixRenderable.h>
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 struct Tcl_Interp;
+#endif
 namespace Phoenix
 {
 	namespace Scene
@@ -95,11 +97,16 @@ namespace Phoenix
 			void RemovePreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
 			void RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
 
-
-			void RegisterUserCommands();
-
+            
+			virtual void OnEnter();
+            virtual void OnExit();
+            virtual void Load();
+            virtual void Unload();
+            virtual void Reload();
 		};
 #if !defined(PHOENIX_APPLE_IPHONE)
+        void RegisterUserCommands();
+        
 		/////////////////////////////////////////////////////////////////
 		/// Parses regular camera parameters from name-object map.
 		int ParseCameraParameters( Tcl_Interp *pInterp, NameObjMap & params, Phoenix::Scene::CCameraObject & cam );

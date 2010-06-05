@@ -16,7 +16,9 @@
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixObjectCounter.h"
 #include "PhoenixQuaternion.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixSDLScreen.h"
+#endif
 #include "PhoenixOrientable.h"
 #include "PhoenixDimensional1D.h"
 #include "PhoenixDimensional2D.h"
@@ -52,6 +54,9 @@
 #include <PhoenixRenderableProperty.h>
 #include "PhoenixRenderableModel.h"
 #include "PhoenixRenderableModelShared.h"
+#include "PhoenixBoxRenderable.h"
+#include "PhoenixSphereRenderable.h"
+#include "PhoenixLineRenderable.h"
 #include "PhoenixTransform.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixSpatialGraph.h"

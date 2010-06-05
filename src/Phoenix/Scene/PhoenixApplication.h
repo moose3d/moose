@@ -40,7 +40,8 @@ namespace Phoenix
 			void 		  			 SetCurrentScene( Phoenix::Scene::CScene *pScene );
 			void      			 ProcessInput();
 			void 						 CheckSceneInputs();
-
+            /// Loads default set of shaders, etc.
+            void                         LoadDefaultResources();
 		public:
 
 			CApplication();

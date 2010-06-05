@@ -18,14 +18,13 @@ Phoenix::Math::CTransform::GetMatrix()
   if ( m_bChanged )
   {
     CMatrix4x4<float> mTmp;
-    // Constructs STR-transform.
-    // First, convert quaterion into matrix (use m_mTransform).
-    QuaternionToMatrix(m_qRotation, m_mTransform);
+    // Constructs SRT-transform (scale first).
+    ScaleMatrix(m_vScaling, m_mTransform);
+    QuaternionToMatrix(m_qRotation, mTmp);
+    m_mTransform  = mTmp * m_mTransform;
     TranslationMatrix( m_vTranslation, mTmp );
     // Concatenate transforms 
-    m_mTransform =  mTmp * m_mTransform; 
-    UniformScaleMatrix(m_fScaling, mTmp);
-    m_mTransform = m_mTransform * mTmp;
+    m_mTransform =  mTmp * m_mTransform;
     m_bChanged = 0;
   }
   return m_mTransform;
@@ -97,14 +96,29 @@ Phoenix::Math::CTransform::GetRotation( ) const
 void 
 Phoenix::Math::CTransform::SetScaling( float fScale )
 {
-  m_fScaling = fScale;
-  m_bChanged = 1;
+    SetScaling(fScale,fScale,fScale);
 }
 /////////////////////////////////////////////////////////////////
-float
+void
+Phoenix::Math::CTransform::SetScaling( float fX, float fY, float fZ)
+{
+    m_vScaling[0] = fX;
+    m_vScaling[1] = fY;
+    m_vScaling[2] = fZ;
+    SetChanged(true);
+}
+/////////////////////////////////////////////////////////////////
+void
+Phoenix::Math::CTransform::SetScaling( const CVector3<float> & vScale )
+{
+    m_vScaling = vScale;
+    SetChanged(true);
+}
+/////////////////////////////////////////////////////////////////
+const CVector3<float> &
 Phoenix::Math::CTransform::GetScaling() const
 {
-  return m_fScaling;
+  return m_vScaling;
 }
 /////////////////////////////////////////////////////////////////
 void 
@@ -140,7 +154,7 @@ void
 Phoenix::Math::CTransform::SetIdentity()
 {
   m_bChanged = false;
-  m_fScaling = 1.0f;
+  m_vScaling[0] = m_vScaling[1] = m_vScaling[2] = 1.0f;
   m_mTransform.IdentityMatrix();
   m_qRotation.Identity();
   m_vTranslation[0] = m_vTranslation[1] = m_vTranslation[2] = 0.0f;
@@ -157,9 +171,10 @@ Phoenix::Math::Multiply( const Phoenix::Math::CTransform & rTLeft,
   // Set combined scaling and rotation
   rTransformResult.SetScaling( rTRight.GetScaling()*rTLeft.GetScaling());
   rTransformResult.SetRotation( rTLeft.GetRotation()*rTRight.GetRotation());
-  vRightTransl *= rTLeft.GetScaling();
   // Set translation
-  RotateVector( rTLeft.GetRotation(), vRightTransl );
+  
+RotateVector( rTLeft.GetRotation(), vRightTransl );
+    vRightTransl *= rTLeft.GetScaling();
   rTransformResult.SetTranslation( vRightTransl + rTLeft.GetTranslation());
 }
 ////////////////////////////////////////////////////////////////////////////////
