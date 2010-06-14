@@ -5,7 +5,8 @@ using namespace std;
 namespace libname = Phoenix::Sound;
 /////////////////////////////////////////////////////////////////
 #define CHECK_ALC( A ) {			        \
-  cerr << #A << " : " << alcGetString( NULL, A );	\
+  const ALCchar * tmp = alcGetString( NULL, A );\
+  cerr << #A << " : " << (tmp ? tmp : "NULL");	\
   if ( alcGetError(NULL) == ALC_INVALID_ENUM )		\
   {							\
     cerr << "No such enum: '" << #A << "'";		\
@@ -14,7 +15,8 @@ namespace libname = Phoenix::Sound;
 }
 /////////////////////////////////////////////////////////////////
 #define CHECK_AL( A ) {			\
-    cerr << #A << " : " << alGetString( A );		\
+  const ALchar * tmp = alGetString( A );\
+  cerr << #A << " : " << (tmp ? tmp : "NULL");	\
   if ( alGetError() == AL_INVALID_ENUM )		\
   {							\
     cerr << "No such enum: '" << #A << "'";		\

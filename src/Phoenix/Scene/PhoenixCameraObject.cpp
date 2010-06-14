@@ -182,15 +182,18 @@ Phoenix::Scene::CCameraObject::Update( float fSeconds )
   	}
   	else
   	{
-  		SetPosition( pParent->GetWorldTransform().GetTranslation() - (GetForwardVector() * this->GetTrackballDistance()) );
+        SetPosition( pParent->GetWorldTransform().GetTranslation() - (GetForwardVector() * this->GetTrackballDistance()) );
   	}
   }
   else
   {
-    SetPosition( GetLocalTransform().GetTranslation() -
+      SetRotation( GetWorldTransform().GetRotation());
+      SetPosition( GetWorldTransform().GetTranslation() -
 								(GetForwardVector() * this->GetTrackballDistance()) );
   }
+#if !defined(PHOENIX_APPLE_IPHONE)
   UpdateScript(fSeconds);
+#endif
 }
 /////////////////////////////////////////////////////////////////
 void

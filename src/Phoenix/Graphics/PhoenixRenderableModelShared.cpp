@@ -36,10 +36,10 @@ Phoenix::Graphics::operator<<( std::ostream &stream, const Phoenix::Graphics::CR
 void
 Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
 {
-	if ( GetModelHandle().IsNull() ) return;
+   if ( GetModelHandle().IsNull() ) return;
 
-	// set renderstate first, because of lights, for example.
-	renderer.CommitRenderState(GetRenderState());
+    // set renderstate first, because of lights, for example.
+    renderer.CommitRenderState(GetRenderState());
   if ( m_pTransform != NULL )
     renderer.CommitTransform( *m_pTransform );
   ////////////////////
@@ -50,6 +50,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   CModel & model = **m_hModel;
   ////////////////////
   // Commit textures
+#if !defined(PHOENIX_APPLE_IPHONE)
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
@@ -58,7 +59,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     // check that texcoord resources actually exist
     if ( pTemp == NULL )
     {
-      glClientActiveTextureARB( GL_TEXTURE0_ARB + i);
+      glClientActiveTextureARB( GL_TEXTURE0 + i);
       glDisableClientState( GL_TEXTURE_COORD_ARRAY);
     }
     else
@@ -69,48 +70,57 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     if ( pTexture  != NULL )
     {
       renderer.CommitTexture( i, pTexture );
-      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), 
+                              pTexture->GetType() );
     }
     else
       renderer.DisableTexture(i, NULL);
   }
 
+#else
+
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    pTexture = *GetRenderState().GetTextureHandle(i);
+    // check that texture resource exists
+    if ( pTexture  != NULL )
+    {
+      renderer.CommitTexture( i, pTexture );
+      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), 
+                              pTexture->GetType() );
+    }
+    else 
+    { 
+      
+      renderer.DisableTexture(i, NULL);
+    }
+  } 
+#endif
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
 
   if ( !GetRenderState().GetShaderHandle().IsNull())
   {
-    CVertexDescriptor *pParam = NULL;
-    // Go through all parameters and commit them
-    for(unsigned int nSP=0; nSP< GetRenderState().GetShaderParameters().size(); nSP++)
+    GetRenderState().GetShaderAttribs().Apply();
+    GetRenderState().GetShaderUniforms().Apply();
+    if ( renderer.GetCurrentCamera() )
     {
-      pParam = *( *GetRenderState().GetShaderParameters()[nSP].second );
-      if ( pParam != NULL )
+      // Update matrices 
+      GetRenderState().GetShaderViewUniform().SetData(      &renderer.GetCurrentCamera()->GetViewMatrix());
+      GetRenderState().GetShaderProjectionUniform().SetData(&renderer.GetCurrentCamera()->GetProjectionMatrix());
+      if ( GetTransform() != NULL ) // model transform is optional.
       {
-      	renderer.CommitShaderParam( *pShader, GetRenderState().GetShaderParameters()[nSP].first, *pParam );
+        GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
       }
-    }
-
-    // Go through all int parameters and commit them
-    {
-      ShaderIntParams::iterator it = GetRenderState().GetShaderIntParameters().begin();
-      for(; it != GetRenderState().GetShaderIntParameters().end(); it++)
-      {
-      	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
-      }
-    }
-    // Go through all float parameters and commit them
-    {
-      ShaderFloatParams::iterator it = GetRenderState().GetShaderFloatParameters().begin();
-      for( ; it != GetRenderState().GetShaderFloatParameters().end(); it++)
-      {
-      	renderer.CommitUniformShaderParam( *pShader, it->first, it->second );
-      }
+      // Send data to shader
+      GetRenderState().GetShaderViewUniform().Apply();
+      GetRenderState().GetShaderProjectionUniform().Apply();
+      GetRenderState().GetShaderModelUniform().Apply(); 
     }
   }
 
-
+#if !defined(PHOENIX_APPLE_IPHONE)
   // commit normals
   if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
   else	renderer.CommitVertexDescriptor( *model.GetNormalHandle() );
@@ -126,7 +136,7 @@ Phoenix::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   // commit position data
   if ( model.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY );
   else	renderer.CommitVertexDescriptor ( *model.GetVertexHandle() );
-
+#endif
 
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );

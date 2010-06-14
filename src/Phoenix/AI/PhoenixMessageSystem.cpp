@@ -34,7 +34,7 @@ Phoenix::AI::CMessageQueue::Update(  )
     delete pMessage;
   }
   
-  std::pair< Phoenix::AI::CHandlerFunctionBase *, Phoenix::AI::CMessage *> *pPair;
+  /*std::pair< Phoenix::AI::CHandlerFunctionBase *, Phoenix::AI::CMessage *> *pPair;
   while ( (pPair = GetNextSoleMessage())  != NULL )
   {
     pPair->first->Call(pPair->second);
@@ -42,7 +42,7 @@ Phoenix::AI::CMessageQueue::Update(  )
     delete pPair->second;
     // delete pair
     delete pPair;
-  }
+    }*/
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::AI::CMessage * 
@@ -61,7 +61,7 @@ Phoenix::AI::CMessageQueue::GetNextMessage()
   return NULL;
 }
 /////////////////////////////////////////////////////////////////
-std::pair< Phoenix::AI::CHandlerFunctionBase *, Phoenix::AI::CMessage *> *
+/*std::pair< Phoenix::AI::CHandlerFunctionBase *, Phoenix::AI::CMessage *> *
 Phoenix::AI::CMessageQueue::GetNextSoleMessage()
 {
   // Check are there any messages left
@@ -78,7 +78,7 @@ Phoenix::AI::CMessageQueue::GetNextSoleMessage()
     return pPair;
   }
   return NULL;
-}
+  }*/
 /////////////////////////////////////////////////////////////////
 void
 Phoenix::AI::CMessageQueue::Prepare()

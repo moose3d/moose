@@ -1,5 +1,6 @@
 #include "PhoenixOBB.h"
 #include "PhoenixMath.h"
+#include <cassert>
 ///////////////////////////////////////////////////////////////////////////////
 using namespace Phoenix::Volume;
 using namespace Phoenix::Graphics;
@@ -15,7 +16,7 @@ Phoenix::Volume::COrientedBox::SetOrientation(const CVector3<float> &vUp,
   m_vForward = vForward;
 }
 /////////////////////////////////////////////////////////////////
-void
+/*void
 Phoenix::Volume::COrientedBox::CalculatePlanes()
 {
   m_Planes[TOP].Calculate(   -GetUpVector(),       GetPosition()+(GetUpVector()*GetHalfHeight()));
@@ -24,9 +25,9 @@ Phoenix::Volume::COrientedBox::CalculatePlanes()
   m_Planes[RIGHT].Calculate( -GetRightVector(),    GetPosition()+(GetRightVector()*GetHalfWidth()));
   m_Planes[FRONT].Calculate( -GetForwardVector(),  GetPosition()+(GetForwardVector()*GetHalfLength()));
   m_Planes[BACK].Calculate(   GetForwardVector(),  GetPosition()-(GetForwardVector()*GetHalfLength()));
-}
+}*/
 /////////////////////////////////////////////////////////////////
-void
+/*void
 Phoenix::Volume::COrientedBox::CalculateCorners()
 {
   CVector3<float> vTmp;
@@ -57,34 +58,66 @@ Phoenix::Volume::COrientedBox::CalculateCorners()
 
   vTmp += -GetRightVector()*GetWidth();
   GetCorner( BOTTOM_LEFT_FRONT ) = vTmp;
-}
+}*/
 /////////////////////////////////////////////////////////////////
-CVector3<float> &
-Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner )
+CVector3<float>
+Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner ) const
 {
-  return m_vecCorners[tCorner];
+    
+    
+    switch ( tCorner )
+    {
+    case TOP_LEFT_FRONT:
+        return GetPosition() + GetUpVector() * GetHalfHeight() - GetRightVector() * GetHalfWidth() + GetForwardVector() * GetHalfLength() ;
+        break;
+    case TOP_RIGHT_FRONT:
+        return GetPosition() + GetUpVector() * GetHalfHeight() + GetRightVector() * GetHalfWidth() + GetForwardVector() * GetHalfLength() ;
+        break;
+    case TOP_LEFT_BACK:
+        return GetPosition() + GetUpVector() * GetHalfHeight() - GetRightVector() * GetHalfWidth() - GetForwardVector() * GetHalfLength() ;
+        break;
+    case TOP_RIGHT_BACK:
+        return GetPosition() + GetUpVector() * GetHalfHeight() + GetRightVector() * GetHalfWidth() - GetForwardVector() * GetHalfLength() ;
+        break;
+    case BOTTOM_LEFT_FRONT:
+        return GetPosition() - GetUpVector() * GetHalfHeight() - GetRightVector() * GetHalfWidth() + GetForwardVector() * GetHalfLength() ;
+        break;
+    case BOTTOM_RIGHT_FRONT:
+        return GetPosition() - GetUpVector() * GetHalfHeight() + GetRightVector() * GetHalfWidth() + GetForwardVector() * GetHalfLength() ;
+        break;
+    case BOTTOM_LEFT_BACK:
+        return GetPosition() - GetUpVector() * GetHalfHeight() - GetRightVector() * GetHalfWidth() - GetForwardVector() * GetHalfLength() ;
+        break;
+    case BOTTOM_RIGHT_BACK:
+        return GetPosition() - GetUpVector() * GetHalfHeight() + GetRightVector() * GetHalfWidth() - GetForwardVector() * GetHalfLength() ;
+        break;
+    default:
+        assert( 0 && "OBB getcorner: something is very  wrong");
+    }
 }
 /////////////////////////////////////////////////////////////////
-const CVector3<float> &
+/*const CVector3<float> &
 Phoenix::Volume::COrientedBox::GetCorner( BBOX_CORNER_TYPE tCorner ) const
 {
   return m_vecCorners[tCorner];
-}
+}*/
 ///////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
+/*
+ obOrientedBox[Phoenix::Volume::FRONT].SetNormal(-R);   				\
+ obOrientedBox[Phoenix::Volume::FRONT][3]  = rmax;					\
+ obOrientedBox[Phoenix::Volume::BACK].SetNormal(R);       				\
+ obOrientedBox[Phoenix::Volume::BACK][3] = -rmin;				\
+ obOrientedBox[Phoenix::Volume::RIGHT].SetNormal(-S);			\
+ obOrientedBox[Phoenix::Volume::RIGHT][3] = smax;					\
+ obOrientedBox[Phoenix::Volume::LEFT].SetNormal(S);    				\
+ obOrientedBox[Phoenix::Volume::LEFT][3] = -smin;					\
+ obOrientedBox[Phoenix::Volume::TOP].SetNormal(-T);    				\
+ obOrientedBox[Phoenix::Volume::TOP][3] = tmax;					\
+ obOrientedBox[Phoenix::Volume::BOTTOM].SetNormal(T);					\
+ obOrientedBox[Phoenix::Volume::BOTTOM][3] = -tmin;    				\
+ 
+ *//////////////////////////////////////////////////////////////////
 #define APPLY_CORRECT_VALUES(R,S,T,rmax,rmin,smax, smin,tmax, tmin) {			\
-  obOrientedBox[Phoenix::Volume::FRONT].SetNormal(-R);   				\
-  obOrientedBox[Phoenix::Volume::FRONT][3]  = rmax;					\
-  obOrientedBox[Phoenix::Volume::BACK].SetNormal(R);       				\
-  obOrientedBox[Phoenix::Volume::BACK][3] = -rmin;				\
-  obOrientedBox[Phoenix::Volume::RIGHT].SetNormal(-S);			\
-  obOrientedBox[Phoenix::Volume::RIGHT][3] = smax;					\
-  obOrientedBox[Phoenix::Volume::LEFT].SetNormal(S);    				\
-  obOrientedBox[Phoenix::Volume::LEFT][3] = -smin;					\
-  obOrientedBox[Phoenix::Volume::TOP].SetNormal(-T);    				\
-  obOrientedBox[Phoenix::Volume::TOP][3] = tmax;					\
-  obOrientedBox[Phoenix::Volume::BOTTOM].SetNormal(T);					\
-  obOrientedBox[Phoenix::Volume::BOTTOM][3] = -tmin;    				\
   /* The orientation will be formed so, that the forward vector will point along*/ 	\
   /* principal axis (largest eigenvalue ), right vector along vector with*/        	\
   /* second largest and up points to vector with lowest eigenvalue*/               	\
@@ -229,8 +262,8 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
 
   CVector3<float> vPos = (fA*vR) + (fB*vS) + (fC*vT);
   obOrientedBox.SetPosition( vPos );
-  obOrientedBox.CalculatePlanes();
-  obOrientedBox.CalculateCorners();
+  //obOrientedBox.CalculatePlanes();
+  //obOrientedBox.CalculateCorners();
 
   return obOrientedBox;
 
@@ -394,7 +427,7 @@ Phoenix::Volume::CalculateOrientedBoundingBox( const Phoenix::Graphics::CVertexD
   // second largest and up points to vector with lowest eigenvalue
   ///obOrientedBox.SetOrientation(  vT, vR, vS );
   //obOrientedBox.CalculatePlanes();
-  obOrientedBox.CalculateCorners();
+  //obOrientedBox.CalculateCorners();
 
   /////////////////////////////////////////////////////////////////
   return obOrientedBox;
@@ -433,7 +466,7 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Calculate the length on initial axis
-    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (BBOX_CORNER_TYPE)i) ;
+    vCorner = obOne.GetCorner( (BBOX_CORNER_TYPE)i) ;
     fDot = vDir.Dot(vCorner - obOne.GetPosition());
 
     // calculate possible secondary axis.
@@ -458,7 +491,7 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Calculate the length on initial axis
-    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (BBOX_CORNER_TYPE)i);
+    vCorner = obTwo.GetCorner( (BBOX_CORNER_TYPE)i);
     fDot = vDir.Dot(vCorner - obOne.GetPosition());
 
     // calculate possible secondary axis.
@@ -490,7 +523,7 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Calculate the length on initial axis
-    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (BBOX_CORNER_TYPE)i );
+    vCorner = obOne.GetCorner( (BBOX_CORNER_TYPE)i );
     fDot = vTertiaryAxis.Dot(vCorner - obOne.GetPosition());
     if (fDot > vMax[2])     {  vMax[2] = fDot;  }
 
@@ -500,7 +533,7 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Calculate the length on initial axis
-    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (BBOX_CORNER_TYPE)i );
+    vCorner = obTwo.GetCorner( (BBOX_CORNER_TYPE)i );
     fDot = vTertiaryAxis.Dot(vCorner - obOne.GetPosition());
     if (fDot > vMax[2])     {  vMax[2] = fDot;  }
 
@@ -516,8 +549,8 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   obMerge.SetLength( vExtents[0] );
   obMerge.SetWidth( vExtents[1] );
   obMerge.SetHeight( vExtents[2] );
-  obMerge.CalculateCorners();
-  obMerge.CalculatePlanes();
+  //obMerge.CalculateCorners();
+  //obMerge.CalculatePlanes();
   return obMerge;
 #else
   // construct a box that contains the input boxes
@@ -580,21 +613,21 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Forward axis
-    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vCorner = obOne.GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetForwardVector() );
     if (fDot > vMax[0])  {     vMax[0] = fDot;    }
     else if (fDot < vMin[0]){    vMin[0] = fDot;  }
 
     // right axis
-    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vCorner = obOne.GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetRightVector() );
     if (fDot > vMax[1])  {     vMax[1] = fDot;    }
     else if (fDot < vMin[1]){    vMin[1] = fDot;  }
 
     // Up axis
-    vCorner = const_cast<COrientedBox &>(obOne).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vCorner = obOne.GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetUpVector() );
     if (fDot > vMax[2])  {     vMax[2] = fDot;    }
@@ -606,21 +639,21 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   for (i = 0; i < 8; i++)
   {
     // Forward axis
-    vCorner =  const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vCorner =  obTwo.GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetForwardVector() );
     if (fDot > vMax[0])  {     vMax[0] = fDot; }
     else if (fDot < vMin[0]){  vMin[0] = fDot; }
 
     // right axis
-    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vCorner = obTwo.GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetRightVector() );
     if (fDot > vMax[1])  {     vMax[1] = fDot; }
     else if (fDot < vMin[1]){  vMin[1] = fDot; }
 
     // Up axis
-    vCorner = const_cast<COrientedBox &>(obTwo).GetCorner( (COrientedBox::BoxCorner_t)i);
+    vCorner = obTwo.GetCorner( (COrientedBox::BoxCorner_t)i);
     vDiff = vCorner - obMerge.GetPosition();
     fDot = vDiff.Dot( obMerge.GetUpVector() );
     if (fDot > vMax[2])  {     vMax[2] = fDot; }
@@ -644,8 +677,8 @@ Phoenix::Volume::MergeOrientedBoxes( const Phoenix::Volume::COrientedBox &obOne,
   obMerge.SetPosition( obMerge.GetPosition() + (vMean[2]*obMerge.GetUpVector()));
   obMerge.SetHeight( vExtents[2] );
 
-  obMerge.CalculatePlanes();
-  obMerge.CalculateCorners();
+  //obMerge.CalculatePlanes();
+  //obMerge.CalculateCorners();
   return obMerge;
 #endif
 }
@@ -656,9 +689,12 @@ Phoenix::Volume::COrientedBox::Transform( const Phoenix::Math::CTransform & tran
   // Transform box according to world transformation
   Move( transf.GetTranslation() );
   AppendToRotation( transf.GetRotation() );
+    SetLength( GetLength()*transf.GetScaling()[2]);
+    SetHeight( GetHeight()*transf.GetScaling()[1]);
+    SetWidth( GetWidth()*transf.GetScaling()[0]);
   // Update box values
-  CalculatePlanes();
-  CalculateCorners();
+  //CalculatePlanes();
+  //CalculateCorners();
 }
 /////////////////////////////////////////////////////////////////
 #ifndef SWIG

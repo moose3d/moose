@@ -77,7 +77,17 @@ namespace Phoenix
 		  0,0,  fScale,0,
 		  0,0,0,       1 );
     }
-
+    inline void ScaleMatrix( float fX, float fY, float fZ, CMatrix4x4<float> &matrix )
+    {
+        matrix.Set( fX,  0, 0, 0,
+                     0, fY, 0, 0,
+                     0,  0,fZ, 0,
+                     0,  0, 0, 1);
+    }
+      inline void ScaleMatrix( const CVector3<float> & vScale, CMatrix4x4<float> &matrix )
+      {
+          ScaleMatrix(vScale[0],vScale[1],vScale[2], matrix);
+      }
     ////////////////////
     /// Constructs a Row-Major TBN (Tangent, Bitangent, Normal)-matrix for bump mapping
     PHOENIX_API void GetTBNMatrix( Phoenix::Math::CVector3<float> vPoint0,

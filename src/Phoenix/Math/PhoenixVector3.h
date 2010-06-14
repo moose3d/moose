@@ -194,6 +194,19 @@ namespace Phoenix
 			m_aValues[1] * tScalar,
 			m_aValues[2] * tScalar);
       }
+        inline CVector3 operator*( const CVector3 & vVec ) const
+        {
+            return CVector3( m_aValues[0]*vVec[0],
+                             m_aValues[1]*vVec[1],
+                             m_aValues[2]*vVec[2] );
+            
+        }
+        inline void operator*=( const CVector3 & vVec )
+        {
+            m_aValues[0]*=vVec[0];
+            m_aValues[1]*=vVec[1];
+            m_aValues[2]*=vVec[2];
+        }
       ////////////////////
       /// The division operator.
       /// \param tDivider division value.
@@ -478,6 +491,19 @@ namespace Phoenix
 			m_aValues[1] * tScalar,
 			m_aValues[2] * tScalar);
       }
+        inline CVector3 operator*( const CVector3 & vVec ) const
+        {
+            return CVector3( m_aValues[0]*vVec[0],
+                            m_aValues[1]*vVec[1],
+                            m_aValues[2]*vVec[2] );
+            
+        }
+        inline void operator*=( const CVector3 & vVec )
+        {
+            m_aValues[0]*=vVec[0];
+            m_aValues[1]*=vVec[1];
+            m_aValues[2]*=vVec[2];
+        }
       ////////////////////
       /// The division operator.
       /// \param tDivider division value.

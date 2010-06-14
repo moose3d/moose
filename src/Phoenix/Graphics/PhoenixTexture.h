@@ -1,10 +1,15 @@
 #ifndef __PhoenixTexture_h__
 #define __PhoenixTexture_h__
 /////////////////////////////////////////////////////////////////
+#include "PhoenixAPI.h"
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#elif defined(__APPLE__)
 #include <GL/GLee.h>
-#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #else
+#include <GL/GLee.h>
 #include <GL/gl.h>
 #endif
 #include "PhoenixAPI.h"

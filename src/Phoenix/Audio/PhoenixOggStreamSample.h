@@ -1,5 +1,7 @@
 #ifndef __COggStreamSample_h__
 #define __COggStreamSample_h__
+#include "PhoenixAPI.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 /////////////////////////////////////////////////////////////////
 #include "PhoenixALSampleTypes.h"
 #include <vorbis/vorbisfile.h>
@@ -26,4 +28,5 @@ namespace Phoenix
     /////////////////////////////////////////////////////////////////
   }
 }
+#endif
 #endif

@@ -55,6 +55,16 @@ namespace Phoenix
       {
 	return m_tBlendDstType;
       }
+      /// Enables additive blending.
+      void SetAdditiveBlending()
+      {
+          SetOperation( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE);
+      }
+      /// Enables default operation for transpareny effect.
+      void SetDefaultTransparency()
+      {
+          SetOperation( BLEND_SRC_SRC_ALPHA, BLEND_DST_ONE_MINUS_SRC_ALPHA);
+      }
     };
   }
 }

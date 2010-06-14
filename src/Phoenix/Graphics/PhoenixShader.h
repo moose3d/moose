@@ -2,7 +2,21 @@
 #define __PhoenixShader_h__
 /////////////////////////////////////////////////////////////////
 //#include <PhoenixRenderable.h>
+
 #include "PhoenixAPI.h"
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#elif defined(__APPLE__)
+#include <GL/GLee.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#else
+#include <GL/GLee.h>
+#include <GL/gl.h>
+#endif
+#include <list>
+#include <string>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -14,31 +28,24 @@ namespace Phoenix
     {
     private:
       /// OpenGL program id.
-      unsigned int m_nShaderProgram;
-      /// Vertex shader id.
-      unsigned int m_nVertexShader;
-      /// Fragment shader id.
-      unsigned int m_nFragmentShader;
-      /// Is fragment shader used.
-      int m_bIsFragShader;
-      /// Is vertex shader used.
-      int m_bIsVertexShader;
+      GLuint m_nShaderProgram;
+      std::list<GLuint> m_lstVertexShaders;
+      std::list<GLuint> m_lstFragmentShaders;
     public:
       ////////////////////
-      /// Constructor.
-      /// \param nProgramId Shader program id. Must be created with glCreateProgram.
-      CShader( unsigned int nProgramId );
+      /// Creates a program id (assuming that glContext is set up properly).
+      CShader();
       ////////////////////
       /// Destructor.
       ~CShader();
       ////////////////////
       /// Assigns vertex shader.
       /// \param nVertexShader Vertex shader id. Must be created with glCreateShader( GL_VERTEX_SHADER );
-      void SetVertexShader( unsigned int nVertexShader );
+      void AttachVertexShader( GLuint nVertexShader );
       ////////////////////
       /// Assigns fragment shader.
       /// \param nFragmentShader Fragment shader id. Must be created with glCreateShader( GL_FRAGMENT_SHADER );
-      void SetFragmentShader( unsigned int nFragmentShader );
+      void AttachFragmentShader( GLuint nFragmentShader );
       ////////////////////
       /// Returns program id.
       /// \returns Program number.
@@ -47,19 +54,16 @@ namespace Phoenix
 	return m_nShaderProgram; 
       }
       ////////////////////
-      /// Returns vertex shader id.
-      /// \returns Vertex shader number.
-      inline unsigned int GetVertexShader() const
-      {
-	return m_nVertexShader;
-      }
-      ////////////////////
-      /// Returns fragment shader id.
-      /// \returns Fragment shader number.
-      inline unsigned int GetFragmentShader() const
-      {
-	return m_nFragmentShader;
-      }
+      /// Links shader.
+      bool Link();
+      void LoadVertexShader( const std::string & strVertexShader );
+      void LoadVertexShader( const char * szVertexShader );
+      void LoadFragmentShader( const std::string & strFragmentShader );
+      void LoadFragmentShader( const char * szFragmentShader );
+      void CreateVertexShaderFromSource( const char * szVertexShaderCode, const char * szVSname );
+      void CreateFragmentShaderFromSource( const char * szFragmentShaderCode, const char * szFSname);
+      bool Validate();
+      void Apply();
     };
   }; // namespace Graphics
 }; // namespace Phoenix

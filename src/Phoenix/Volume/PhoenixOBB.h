@@ -50,9 +50,9 @@ namespace Phoenix
     {
     protected:
       /// Planes oriented along the box walls.
-      Phoenix::Math::CPlane    m_Planes[6];
+      //Phoenix::Math::CPlane    m_Planes[6];
       /// Corners of box, 3 floats, 8 corners
-      Phoenix::Math::CVector3<float>     m_vecCorners[8];
+      //Phoenix::Math::CVector3<float>     m_vecCorners[8];
     public:
       ////////////////////
       /// Constructor.
@@ -78,19 +78,19 @@ namespace Phoenix
       /// Index operator for accessing box planes.
       /// \param iPlane Plane id.
       /// \returns One of box planes.
-      inline Phoenix::Math::CPlane &operator[](BBOX_PLANE_TYPE iPlane)
+      /*inline Phoenix::Math::CPlane &operator[](BBOX_PLANE_TYPE iPlane)
       {
       	return GetPlane(iPlane);
-      }
+      }*/
 #endif
       ////////////////////
       /// Index operator for accessing box planes.
       /// \param iPlane Plane id.
       /// \returns One of box planes.
-      inline Phoenix::Math::CPlane &GetPlane(BBOX_PLANE_TYPE iPlane)
+      /*inline Phoenix::Math::CPlane &GetPlane(BBOX_PLANE_TYPE iPlane)
       {
           return m_Planes[iPlane];
-      }
+      }*/
       ////////////////////
       /// Assignment operator for creating OBB from AABB.
       /// \param box Axis-aligned bounding box reference.
@@ -103,8 +103,8 @@ namespace Phoenix
 				SetWidth( box.GetWidth());
 				SetHeight( box.GetHeight());
 				SetLength( box.GetLength());
-				CalculateCorners();
-				CalculatePlanes();
+				//CalculateCorners();
+				//CalculatePlanes();
       }
       ////////////////////
       /// Assignment operator for OBBs.
@@ -119,8 +119,8 @@ namespace Phoenix
 				SetHeight( box.GetHeight());
 				SetLength( box.GetLength());
 				m_qRotation = box.m_qRotation;
-				CalculateCorners();
-				CalculatePlanes();
+				//CalculateCorners();
+				//CalculatePlanes();
       }
       ////////////////////
       /// Sets orientation of this box.
@@ -132,19 +132,19 @@ namespace Phoenix
 			  const Phoenix::Math::CVector3<float> &vRight);
       ////////////////////
       /// Calculates corners of this box.
-      void CalculateCorners();
+      //void CalculateCorners();
       /// Calculates planes of this box.
-      void CalculatePlanes();
+      //void CalculatePlanes();
       ////////////////////
       /// Returns specific corner as vector.
       /// \param tCorner Corner index.
       /// \returns CVector3<float>.
-      Phoenix::Math::CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner );
+      Phoenix::Math::CVector3<float> GetCorner( BBOX_CORNER_TYPE tCorner ) const;
       ////////////////////
       /// Returns specific corner as vector.
       /// \param tCorner Corner index.
       /// \returns CVector3<float>.
-      const Phoenix::Math::CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner ) const;
+      //const Phoenix::Math::CVector3<float> & GetCorner( BBOX_CORNER_TYPE tCorner ) const;
 #ifndef SWIG
       ////////////////////
       /// Stream output.

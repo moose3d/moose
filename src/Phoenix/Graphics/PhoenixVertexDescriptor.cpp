@@ -147,3 +147,9 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( const Phoenix::Graphics
   memcpy( m_pData, obj.m_pData, GetByteSize() );
 }
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Graphics::CVertexDescriptor::Copy( size_t nToWhichIndex, size_t nNumElements, const void *pData )
+{        
+    memcpy( GetPointer<void>(nToWhichIndex), pData, GetElementByteSize()*nNumElements);
+}
+/////////////////////////////////////////////////////////////////

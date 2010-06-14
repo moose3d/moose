@@ -1,12 +1,14 @@
 #include "PhoenixApplication.h"
 #include "PhoenixLogger.h"
-#include "PhoenixSDLScreen.h"
+//#include "PhoenixSDLScreen.h"
 #include <sstream>
 #include <iostream>
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
+#if !defined(PHOENIX_APPLE_IPHONE)
 using namespace Phoenix::Window;
+#endif
 using std::ostringstream;
 using namespace std;
 namespace prefix = Phoenix::Scene;
@@ -22,6 +24,8 @@ prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
 	m_bSceneHasMouseMotion = false;
 	m_bHasQuit = false;
 	m_pMainLoopThread = NULL;
+    GetTimer().Reset();
+    
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CApplication::~CApplication()
@@ -44,9 +48,10 @@ prefix::CApplication::Init()
 		}
 		g_ObjectMgr->Create(this, GetName());
 		CGameObject::Init();
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 		m_bHasQuit 									= HasCommand("OnQuit");
-
+#endif
+    LoadDefaultResources();
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CScene *
@@ -59,22 +64,32 @@ void
 prefix::CApplication::SetCurrentScene( const std::string & name )
 {
 	SceneMap::iterator it = m_mapScenes.find( name );
-	if ( it != m_mapScenes.end() ) m_pCurrentScene = it->second;
-	else m_pCurrentScene = NULL;
-	CheckSceneInputs();
+
+	if ( m_pCurrentScene ) m_pCurrentScene->OnExit();
+    
+    if ( it != m_mapScenes.end() ) 
+    {
+        m_pCurrentScene = it->second;
+        m_pCurrentScene->OnEnter();
+	}
+    else 
+    {
+        m_pCurrentScene = NULL;
+	}
+    CheckSceneInputs();
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::CheckSceneInputs()
 {
 	if ( m_pCurrentScene == NULL ) return;
-
+#if !defined(PHOENIX_APPLE_IPHONE)
 	m_bSceneHasKeyUp 						= m_pCurrentScene->HasCommand("OnKeyUp");
 	m_bSceneHasKeyDown 					= m_pCurrentScene->HasCommand("OnKeyDown");
 	m_bSceneHasMouseDown 				= m_pCurrentScene->HasCommand("OnMouseDown");
 	m_bSceneHasMouseUp 					= m_pCurrentScene->HasCommand("OnMouseUp");
 	m_bSceneHasMouseMotion 			= m_pCurrentScene->HasCommand("OnMouseMotion");
-
+#endif
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +127,9 @@ void
 prefix::CApplication::ProcessInput()
 {
 	if ( GetCurrentScene() == NULL ) return;
+#if !defined(PHOENIX_APPLE_IPHONE)
 	CScene & scene = *GetCurrentScene();
+
 	SDL_Event event;
 	while ( SDL_PollEvent(&event ))
 	{
@@ -167,6 +184,7 @@ prefix::CApplication::ProcessInput()
 				break;
 		}
 	}
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -187,12 +205,15 @@ prefix::CApplication::Update()
 
 	if ( m_Timer.HasPassed(0, 5 )) // TODO change this into reasonable property
 	{
+#if !defined(PHOENIX_APPLE_IPHONE)
       // Update our own script
       UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
-      // Update every object put under management.
+#endif
+    // Update every object put under management.
       g_DefaultUpdater->Update( m_Timer.GetPassedTime().ToSeconds() );
       // TODO add pause capability.
-      GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
+      if ( GetCurrentScene() != NULL)
+          GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
       m_Timer.Reset();
 	}
 }
@@ -207,6 +228,82 @@ Phoenix::Core::CTimer &
 prefix::CApplication::GetTimer()
 {
 	return m_Timer;
+}
+//////////////////////////////////////////////////////////////////////////////
+void
+prefix::CApplication::LoadDefaultResources()
+{
+    // For default volume renderables 
+    if ( g_ShaderMgr->HasResource("moose_color_shader") == false )
+    {
+    char colorVertexShaderCode[] = "attribute vec3 a_vertex;"\
+    "uniform mat4 m_viewMatrix;"\
+    "uniform mat4 m_projMatrix;"\
+    "uniform mat4 m_modelMatrix;"\
+    "uniform vec4 color;"\
+    "void main()"\
+    "{"\
+    "    gl_Position = m_projMatrix * m_viewMatrix * m_modelMatrix * vec4(a_vertex,1.0);"\
+    "}";
+    char colorFragmentShaderCode[] = "uniform lowp vec4 color; void main(){ gl_FragColor = color;}";
+    CShader *pShader = new CShader();
+    pShader->CreateVertexShaderFromSource(colorVertexShaderCode, "color vsh");
+    pShader->CreateFragmentShaderFromSource(colorFragmentShaderCode,"color fsh");
+    assert( g_ShaderMgr->Create(pShader, "moose_color_shader") == 0);
+    }
+    // For boxrenderable
+    if ( g_IndexMgr->HasResource("moose_boxrenderable_indices") == false )
+    {
+        unsigned short int indices[] = { 0,1,2,3,0,4,5,6,7,4,7,3,2,6,5,1};
+        CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 16);
+        pTmp->Copy(indices);
+        g_IndexMgr->Create( pTmp, "moose_boxrenderable_indices");
+    }
+    
+    // For sphererenderable
+    if ( g_IndexMgr->HasResource("moose_sphererenderable_indices") == false )
+    {
+        unsigned short int indices[] = { 0, 1,  2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,0,
+                                         16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,16,
+                                        32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,32 };
+        CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 51);
+        pTmp->Copy(indices);
+        g_IndexMgr->Create( pTmp, "moose_sphererenderable_indices");
+    }
+    
+    if ( g_IndexMgr->HasResource("moose_linerenderable_indices") == false)
+    {
+        unsigned short int indices[] = { 0,1,2,3 };
+        CIndexArray *pTmp = new CIndexArray(PRIMITIVE_TRI_STRIP,4);
+        pTmp->Copy(indices);
+        g_IndexMgr->Create(pTmp, "moose_linerenderable_indices");
+    }
+    
+    if ( g_ShaderMgr->HasResource("moose_line_shader") == false )
+    {
+        // does NOT use model transform
+        const char vsh[] = "attribute vec3 a_vertex;"\
+            "attribute vec4 a_endpos_thickness;"\
+            "uniform mat4 m_viewMatrix;"\
+            "uniform mat4 m_projMatrix;"\
+            "void main()"\
+            "{"\
+            "vec4 endPos   = m_viewMatrix * vec4(a_endpos_thickness.xyz,1.0);"\
+            "vec4 startPos = m_viewMatrix * vec4(a_vertex,1.0);"\
+            "vec3 linedir = (endPos.xyz - startPos.xyz);"\
+            "vec3 offsetVec = normalize(cross(startPos.xyz,linedir));"\
+            "startPos = vec4(startPos.xyz + (offsetVec * a_endpos_thickness.w),startPos.w);"\
+            "gl_Position = m_projMatrix * startPos;"\
+            "}";
+            
+            
+        const char fsh[] = "uniform lowp vec4 color;void main(){gl_FragColor = color;}";
+        CShader *pShader = new CShader();
+        pShader->CreateVertexShaderFromSource(vsh, "line vsh");
+        pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
+        assert( g_ShaderMgr->Create(pShader, "moose_line_shader") == 0);
+    
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////
 int MainLoop( void * data )
@@ -233,14 +330,18 @@ int MainLoop( void * data )
 void
 prefix::CApplication::Run()
 {
-	m_pMainLoopThread = SDL_CreateThread(MainLoop, this);
+#if !defined(PHOENIX_APPLE_IPHONE)
+  m_pMainLoopThread = SDL_CreateThread(MainLoop, this);
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::Halt()
 {
 	SetEnabled(false);
+#if !defined(PHOENIX_APPLE_IPHONE)
 	if ( m_pMainLoopThread ) SDL_WaitThread(m_pMainLoopThread, NULL);
+#endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Core::CFpsCounter &
@@ -249,13 +350,18 @@ prefix::CApplication::GetFPSCounter()
 	return m_FpsCounter;
 }
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 SCRIPT_CMD_DECL( OpenScreen );
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::RegisterUserCommands()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	CREATE_CMD( OpenScreen );
+#endif
 }
+#if !defined(PHOENIX_APPLE_IPHONE)
 ///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_IMPL( OpenScreen )
 {
@@ -289,3 +395,4 @@ SCRIPT_CMD_IMPL( OpenScreen )
 	return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////
+#endif

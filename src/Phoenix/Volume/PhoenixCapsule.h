@@ -2,6 +2,8 @@
 #define PHOENIXCAPSULE_H_
 ///////////////////////////////////////////////////////////////////////////////
 #include "PhoenixLineSegment.h"
+#include "PhoenixVertexDescriptor.h"
+#include "PhoenixIndexArray.h"
 ///////////////////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
@@ -55,7 +57,15 @@ namespace Phoenix
             {
                 return m_fRadiusSqr;
             }
+            
         }; // class CCapsule
+        ////////////////////
+        /// Computes bounding capsule from given vertex set.
+        CCapsule  CalculateBoundingCapsule( const Phoenix::Graphics::CVertexDescriptor &rVertices );
+        ////////////////////
+        /// Computes bounding capsule from given vertex set defined by indexBuffer and vVertices.
+        CCapsule  CalculateBoundingCapsule( const Phoenix::Graphics::CVertexDescriptor &rVertices,
+                                          const Phoenix::Graphics::CIndexArray &indexBuffer);
     } // Volume
 } // Phoenix
 ///////////////////////////////////////////////////////////////////////////////
