@@ -28,7 +28,7 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
             break;
 #if !defined(PHOENIX_APPLE_IPHONE)
         case TEXTURE_RECT:
-            iRetval = GL_TEXTURE_RECTANGLE;
+            iRetval = GL_TEXTURE_RECTANGLE_ARB;
             break;
 #endif
         case TEXTURE_CUBE:

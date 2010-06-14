@@ -13,6 +13,7 @@
 #else
 #include <GL/GLee.h>
 #include <GL/gl.h>
+#include <GL/glext.h>
 #include <GL/glu.h>
 #endif
 /////////////////////////////////////////////////////////////////
@@ -448,27 +449,7 @@ namespace Phoenix
       ////////////////////
       /// Commits multiple filters stored in vector into given texture type.
       void CommitFilters( const std::vector<Phoenix::Graphics::TEXTURE_FILTER> &vecFilters, Phoenix::Graphics::TEXTURE_TYPE tType );
-      ////////////////////
-      /// Creates a shader from files.
-      /// \param strVertexShader Path to vertex shader source.
-      /// \param strFragmentShader Path to fragment shader source.
-      /// \returns Pointer to shader object. NULL if shader could not be created.
-      Phoenix::Graphics::CShader * CreateShader( const std::string & strVertexShader, const std::string & strFragmentShader );
-      ////////////////////
-      /// Creates a shader from files.
-      /// \param szVertexShader Path to vertex shader source.
-      /// \param szFragmentShader Path to fragment shader source.
-      /// \returns Pointer to shader object. NULL if shader could not be created.
-      Phoenix::Graphics::CShader * CreateShader( const char * szVertexShader, const char * szFragmentShader );
-      ////////////////////
-      /// Creates a shader from source codes.
-      /// \param szVertexShaderCode Vertex shader source.
-      /// \param szFragmentShaderCode Fragment shader source.
-      /// \param szVSname Optional name for vertex shader ( for error messages ).
-      /// \param szFSname Optional name for fragment shader ( for error messages ).
-      /// \returns Pointer to shader object. NULL if shader could not be created.
-      Phoenix::Graphics::CShader * CreateShaderFromSource( const char * szVertexShaderCode, const char * szFragmentShaderCode,
-							   const char * szVSname = NULL, const char * szFSname = NULL);
+      
       ////////////////////
       /// Commits shader.
       /// \param pShader Shader object. If NULL, default rendering pipeline is activated.

@@ -3,6 +3,9 @@
 #include <PhoenixScene.h>
 #include <string>
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
+#include <SDL.h>
+#endif
 /*typedef SDLKey	  KEY_TYPE;
 typedef SDL_Event MOUSEBUTTON_EVENT;
 typedef SDL_Event MOUSEMOTION_EVENT;

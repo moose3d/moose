@@ -6,7 +6,11 @@
 using namespace Phoenix::AI;
 using namespace Phoenix::Core;
 /////////////////////////////////////////////////////////////////
-
+class MyQueue : public CMessageQueue,
+                public CSingleton<MyQueue>
+{
+  friend class CSingleton<MyQueue>;
+};
 class TestEvent : public CMessage
 {
 public:
@@ -27,8 +31,8 @@ public:
   int testValue2;
   EventTestObject() : testValue(0), testValue2(0)
   {
-    CMessageQueue::GetInstance()->RegisterHandler(this, &EventTestObject::HandleTestEvent);
-    CMessageQueue::GetInstance()->RegisterHandler(this, &EventTestObject::HandleTestEventSomething);
+    MyQueue::GetInstance()->RegisterHandler(this, &EventTestObject::HandleTestEvent);
+    MyQueue::GetInstance()->RegisterHandler(this, &EventTestObject::HandleTestEventSomething);
   }
 
   void HandleTestEvent( const TestEvent *pTestEvent )
@@ -49,10 +53,10 @@ TEST( PhoenixEventHandler )
   TestEvent *event = new TestEvent();
   TestEvent2 *event2 = new TestEvent2();
 
-  CMessageQueue::GetInstance()->Prepare();
-  CMessageQueue::GetInstance()->EnqueueMessage( event, CTimeStamp(0,0) );
-  CMessageQueue::GetInstance()->EnqueueMessage( event2, CTimeStamp(0,0) );
-  CMessageQueue::GetInstance()->Update();
+  MyQueue::GetInstance()->Prepare();
+  MyQueue::GetInstance()->EnqueueMessage( event, CTimeStamp(0,0) );
+  MyQueue::GetInstance()->EnqueueMessage( event2, CTimeStamp(0,0) );
+  MyQueue::GetInstance()->Update();
   
   ////////////////////
   CHECK_EQUAL( 1, obj.testValue );

@@ -1568,7 +1568,9 @@ SCRIPT_CMD_IMPL( LoadShader )
 	const char *szFragSh = SCRIPT_GET_STR(2);
 	const char *szResource = SCRIPT_GET_STR(3);
 	COglRenderer r;
-	CShader *pShader = r.CreateShader( szVertSh, szFragSh );
+	CShader *pShader = new CShader();
+    pShader->LoadVertexShader( szVertSh);
+    pShader->LoadFragmentShader( szFragSh );
 	if ( pShader == NULL )
 	{
 		ostringstream s;

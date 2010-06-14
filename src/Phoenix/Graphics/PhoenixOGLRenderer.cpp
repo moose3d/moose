@@ -89,7 +89,7 @@ GetGLTextureType( const TEXTURE_TYPE &tType )
     break;
 #if !defined(PHOENIX_APPLE_IPHONE)
       case TEXTURE_RECT:
-    iRetval = GL_TEXTURE_RECTANGLE;
+    iRetval = GL_TEXTURE_RECTANGLE_ARB;
     break;
 #endif
    case TEXTURE_CUBE:
@@ -944,8 +944,14 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 }
 #endif
 /////////////////////////////////////////////////////////////////
-/*
+
 #if !defined(PHOENIX_APPLE_IPHONE)
+Phoenix::Graphics::COglTexture *
+Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
+{
+  int             width, height;
+  COglTexture *pTexture = NULL;
+
   ////////////////////
 #define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
   ////////////////////
@@ -1006,8 +1012,64 @@ Phoenix::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
   width = pImage->GetWidth();
   height = pImage->GetHeight();
   data =pImage->GetImg();
-  #else
-*/
+
+  // create texture
+  GLuint iTexId;
+
+  glGenTextures( 1, &iTexId);
+  pTexture = new COglTexture( iTexId, tType );
+
+  // set texture dimensions
+  pTexture->SetHeight( height);
+  pTexture->SetWidth( width);
+
+  // check memory allocation
+  if ( !pTexture )
+  {
+    std::cerr << "Failed to allocate memory while loading file '"
+              << strFilename << "'" << std::endl;
+    return NULL;
+  }
+
+  GLenum iGLType = GetGLTextureType( tType );
+
+  // create actual gl texture
+//  glEnable( iGLType );
+  glBindTexture(iGLType, pTexture->GetID());
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  /// ****************************************
+  /// build mipmaps automatically.
+  /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
+  /// Somehow it prevents it occurring.
+  /// ****************************************
+
+  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
+  glTexImage2D( iGLType, 0, iGLformat, /* OpenGL ES 2.0 requirement internal must be equal to glformat!*/
+		width, height, 0,
+		iGLformat, GL_UNSIGNED_BYTE, data);
+  // build mipmaps
+  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
+    pImage->GetWidth(), pImage->GetHeight(),
+    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
+
+  GLenum err = GL_NO_ERROR;
+  glDisable( iGLType );
+  if ( (err = glGetError() ) != GL_NO_ERROR )
+  {
+    g_Error << "Texture creation error: " << err << endl;
+  }
+  // ReleaseMemory
+  CLEANUP();
+
+#undef CLEANUP
+}
+#else
+////////////////////////////////////////////////////////////////////////////////
+/// Apple iPhone PNG implementation
 #define CLEANUP() { CGContextRelease(cgContext); free(data); CGColorSpaceRelease(colorSpace); return pTexture; }
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
@@ -1147,6 +1209,7 @@ COglTexture *pTexture = NULL;
 #undef CLEANUP
 
 }
+#endif
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglTexture *
 Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename, TEXTURE_TYPE tType  )
@@ -1189,21 +1252,21 @@ Phoenix::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilenam
 
   ////////////////////
   size_t nBlockSize = 16;
-  GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1;
+  GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
   ////////////////////
   // Check correct format:
   switch (pImage->GetFormat())
   {
   case DDS_FORMAT_DXT1:
     nBlockSize = 8;
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
     break;
   case DDS_FORMAT_DXT3:
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT3;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
     nBlockSize = 16;
     break;
   case DDS_FORMAT_DXT5:
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT5;
+    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
     nBlockSize = 16;
     break;
   default:
@@ -1287,17 +1350,23 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
 
 
   // Right, boys and girls, this is Objective-C++!
+
+
+#if defined(PHOENIX_APPLE_IPHONE)
+  GLubyte *       data = nil;
   UIImage *       image = nil;
   CGImageRef      cgImage;
-  GLubyte *       data = nil;
   CGContextRef    cgContext;
   CGColorSpaceRef colorSpace;
-
+#else
+  GLubyte *       data = NULL;
+#endif
   GLenum err = GL_NO_ERROR;
   int width, height;
 
   for( size_t i=0;i<6;i++)
   {
+#if defined(PHOENIX_APPLE_IPHONE)
     NSString *path =  [ [NSString alloc] initWithUTF8String:szFiles[i] ];
   
     image = [UIImage imageWithContentsOfFile:path];
@@ -1355,52 +1424,51 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
                 << "):  '" << szFiles[i] << "'" << std::endl;
       CLEANUP();
     }
-    g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
-    g_Error << "size :"  << width << "x" << height << std::endl;
-  
-    /*
-      for( size_t i=0;i<6;i++)
-      {
-      ////////////////////
-      CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
-      if ( pImage == NULL )
-      {
+
+#else
+    
+    ////////////////////
+    CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
+    if ( pImage == NULL )
+    {
       g_Error << __FUNCTION__ << " : Unable to load TGA image for CUBE TEXTURE." << endl;
       delete pTexture;
       return NULL;
-      }
-      ////////////////////
-      int    iGLInternalFormat = 3;
-      GLenum iGLformat = GL_RGB;
-      ////////////////////
-      // Check correct depth
-      switch (pImage->GetBPP())
-      {
-      case 8:
+    }
+    ////////////////////
+    int    iGLInternalFormat = 3;
+    GLenum iGLformat = GL_RGB;
+    ////////////////////
+    // Check correct depth
+    switch (pImage->GetBPP())
+    {
+    case 8:
       iGLInternalFormat = 1;
       iGLformat = GL_LUMINANCE;
       break;
-      case 16:
+    case 16:
       iGLInternalFormat = 2;
       iGLformat = GL_LUMINANCE_ALPHA;
       break;
-      case 24:
+    case 24:
       iGLInternalFormat = 3;
       iGLformat = GL_RGB;
       break;
-      case 32:
+    case 32:
       iGLInternalFormat = 4;
       iGLformat = GL_RGBA;
       std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
       break;
-      default:
+    default:
       delete pImage;
       std::cerr << "Not 8, 16, 24 or 32 BBP image (was "
-      << pImage->GetBPP() << "):  '" << szFiles[i] << "'"
-      << std::endl;
+                << pImage->GetBPP() << "):  '" << szFiles[i] << "'"
+                << std::endl;
       break;
-      }
-    */
+    }
+#endif
+    g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
+    g_Error << "size :"  << width << "x" << height << std::endl;
     GLenum iGLType = GL_TEXTURE_CUBE_MAP;
     ////////////////////
     // create actual gl texture
@@ -1445,9 +1513,12 @@ Phoenix::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
                   width, height, 0,
                   iGLformat,  GL_UNSIGNED_BYTE, data);
     // release data
-    CGContextRelease(cgContext); 
+
     free(data); 
+#if defined(PHOENIX_APPLE_IPHONE)
+    CGContextRelease(cgContext); 
     CGColorSpaceRelease(colorSpace);
+#endif
 
   } // for ( size_t
   return pTexture;

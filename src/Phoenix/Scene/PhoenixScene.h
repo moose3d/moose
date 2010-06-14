@@ -105,9 +105,12 @@ namespace Phoenix
             virtual void Load();
             virtual void Unload();
             virtual void Reload();
+#if !defined(PHOENIX_APPLE_IPHONE)
+          void RegisterUserCommands();
+#endif
 		};
 #if !defined(PHOENIX_APPLE_IPHONE)
-        void RegisterUserCommands();
+
         
 		/////////////////////////////////////////////////////////////////
 		/// Parses regular camera parameters from name-object map.

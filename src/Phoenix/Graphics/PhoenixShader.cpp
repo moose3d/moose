@@ -10,6 +10,7 @@
 #include <GL/gl.h>
 #endif
 #endif
+#include <cstring>
 #include <string>
 #include <iostream>
 #include <fstream>

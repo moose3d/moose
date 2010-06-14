@@ -281,7 +281,7 @@ Phoenix::Graphics::CSkybox::Render( Phoenix::Graphics::COglRenderer & renderer)
   /////////////////////////////////////////////////////////////////
 #else
   glPushMatrix();
-  glLoadTransposeMatrixf( mView.GetArray());
+  glLoadTransposeMatrixf( renderer.GetCurrentCamera()->GetViewMatrix().GetArray());
 
   CModel *pModel = *GetModelHandle();
   COglTexture *pTexture = *GetRenderState().GetTextureHandle(0);

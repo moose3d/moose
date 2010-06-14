@@ -11,13 +11,14 @@ TEST( CTransform )
   CTransform transform;
   CMatrix4x4<float> mId;
   CVector3<float> vTransl(0,0,0);
+  CVector3<float> vScale(1,1,1);
   CQuaternion q;
   // Check initial state ( scale = 1, matrix = id, no rotation);
   mId.IdentityMatrix();
   q.Identity();
-
+  
   CHECK_ARRAY_CLOSE( mId.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -26,6 +27,7 @@ TEST( CTransform_SetTranslation_Matrix )
 {
   CTransform transform;
   CMatrix4x4<float> mMatrix;
+  CVector3<float> vScale(1,1,1);
   CVector3<float> vTransl(1,4,-5);
   CQuaternion q;
   q.Identity();  
@@ -36,7 +38,7 @@ TEST( CTransform_SetTranslation_Matrix )
   transform.SetTranslation( mMatrix );
 
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -46,6 +48,7 @@ TEST( CTransform_SetTranslation_Vector3 )
   CTransform transform;
   CMatrix4x4<float> mMatrix;
   CVector3<float> vTransl(1,4,-5);
+  CVector3<float> vScale(1,1,1);
   CQuaternion q;
   q.Identity();  
   // Translate by vector
@@ -55,7 +58,7 @@ TEST( CTransform_SetTranslation_Vector3 )
   transform.SetTranslation( vTransl );
 
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -65,6 +68,7 @@ TEST( CTransform_SetTranslation_3_Floats )
   CTransform transform;
   CMatrix4x4<float> mMatrix;
   CVector3<float> vTransl(1,4,-5);
+  CVector3<float> vScale(1,1,1);
   CQuaternion q;
   q.Identity();  
   // Translate by values
@@ -74,7 +78,7 @@ TEST( CTransform_SetTranslation_3_Floats )
   transform.SetTranslation( vTransl[0], vTransl[1], vTransl[2] );
 
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -85,6 +89,7 @@ TEST( CTransform_SetRotation_Matrix )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(1,4,-5);
   CVector3<float> vTransl(0,0,0);
+  CVector3<float> vScale(1,1,1);
   CQuaternion q;
   // Rotate by 3 rotations 
   Phoenix::Math::RotationMatrix( vRot, mMatrix );
@@ -95,7 +100,7 @@ TEST( CTransform_SetRotation_Matrix )
   transform.SetRotation( mMatrix );
 
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -106,6 +111,7 @@ TEST( CTransform_SetRotation_Quaternion )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(1,4,-5);
   CVector3<float> vTransl(0,0,0);
+CVector3<float> vScale(1,1,1);
   CQuaternion q;
   // Rotate by 3 rotations 
   Phoenix::Math::RotationMatrix( vRot, mMatrix );
@@ -116,7 +122,7 @@ TEST( CTransform_SetRotation_Quaternion )
   transform.SetRotation( q );
 
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -127,6 +133,7 @@ TEST( CTransform_SetRotation_3_Floats )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(1,4,-5);
   CVector3<float> vTransl(0,0,0);
+CVector3<float> vScale(1,1,1);
   CQuaternion q;
   // Rotate by 3 rotations 
   Phoenix::Math::RotationMatrix( vRot, mMatrix );
@@ -137,7 +144,7 @@ TEST( CTransform_SetRotation_3_Floats )
   transform.SetRotation( vRot[0], vRot[1], vRot[2] );
   
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -148,6 +155,7 @@ TEST( CTransform_SetRotation_Vector3 )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(1,4,-5);
   CVector3<float> vTransl(0,0,0);
+CVector3<float> vScale(1,1,1);
   CQuaternion q;
   // Rotate by 3 rotations 
   Phoenix::Math::RotationMatrix( vRot, mMatrix );
@@ -158,7 +166,7 @@ TEST( CTransform_SetRotation_Vector3 )
   transform.SetRotation( vRot );
   
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -169,14 +177,16 @@ TEST( CTransform_SetScaling )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(0,0,0);
   CVector3<float> vTransl(0,0,0);
+
   CQuaternion q;
-  float fScaleValue = 3.0f;
-  transform.SetScaling(fScaleValue);
+  CVector3<float> vScale(3,3,3);
+  transform.SetScaling(vScale);
   mMatrix.IdentityMatrix();
   mMatrix(0,0) = mMatrix(1,1) = mMatrix(2,2) = 3.0f;
   q.Identity();
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( fScaleValue, transform.GetScaling(), 0.001f);
+
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -187,7 +197,7 @@ TEST( CTransform_Move_Vector )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(0,0,0);
   CVector3<float> vTranslReal(1,2,3);
-
+CVector3<float> vScale(1,1,1);
   CQuaternion q;
   q.Identity();
 
@@ -197,7 +207,8 @@ TEST( CTransform_Move_Vector )
   transform.Move( CVector3<float>(0,0,3) );
   
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTranslReal.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -208,7 +219,7 @@ TEST( CTransform_Move_3_Floats )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(0,0,0);
   CVector3<float> vTranslReal(1,2,3);
-
+CVector3<float> vScale(1,1,1);
   CQuaternion q;
   q.Identity();
 
@@ -218,7 +229,7 @@ TEST( CTransform_Move_3_Floats )
   transform.Move( 0,0,3 );
   
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTranslReal.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -229,7 +240,7 @@ TEST( CTransform_Rotate )
   CMatrix4x4<float> mMatrix;
   CVector3<float> vRot(0,0,0);
   CVector3<float> vTransl(0,0,0);
-
+CVector3<float> vScale(1,1,1);
   CQuaternion q, qFinal;
   q.Identity();
 
@@ -237,7 +248,7 @@ TEST( CTransform_Rotate )
 
   
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( q.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 
@@ -247,7 +258,7 @@ TEST( CTransform_Rotate )
   transform.Rotate( q );
   transform.Rotate( q );
   CHECK_ARRAY_CLOSE( mMatrix.GetArray(), transform.GetMatrix().GetArray(), 16,0.001f);
-  CHECK_CLOSE( 1.0f, transform.GetScaling(), 0.001f);
+  CHECK_ARRAY_CLOSE( transform.GetScaling(), vScale.GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( vTransl.GetArray(), transform.GetTranslation().GetArray(), 3, 0.001f);
   CHECK_ARRAY_CLOSE( qFinal.GetArray(), transform.GetRotation().GetArray(), 4, 0.001f);
 } 
@@ -260,7 +271,7 @@ TEST( CTransform_Multiply )
   CTransform transform1;
   CTransform transform2;
   CTransform transformResult;
-  
+  CVector3<float> vScale(1,1,1);
   CVector3<float> vTransl[] = { V(0,2,0),  V(0,0,3),
 				V(0,0,0),  V(0,0,0),
 				};

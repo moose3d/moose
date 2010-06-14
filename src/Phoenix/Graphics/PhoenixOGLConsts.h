@@ -10,6 +10,7 @@
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #endif
+#endif
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {

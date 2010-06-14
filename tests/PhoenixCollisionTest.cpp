@@ -375,49 +375,40 @@ TEST(PlaneIntersectsBox)
   box.SetWidth(1.0f);
   box.SetHeight(2.0f);
   box.SetLength(3.0f);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   
   CHECK( PlaneIntersectsBox( plane, box ) == 0 );
 
   box.SetPosition(0,1.001f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 0 );
 
   box.SetPosition(0,1.000f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 1 );
 
   box.SetPosition(0,0.999f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 1 );
 
   box.SetPosition(0,0.000f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 1 );
 
   box.SetPosition(0,-0.999f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 1 );
 
   box.SetPosition(0,-1.000f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 1 );
 
   box.SetPosition(0,-1.001f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 0 );
   
   box.SetPosition(0,-5.000f,0);
-  box.CalculateCorners();
-  box.CalculatePlanes();
+
   CHECK( PlaneIntersectsBox( plane, box ) == 0 );
 }
 /////////////////////////////////////////////////////////////////
@@ -904,7 +895,7 @@ TEST(TriangleIntersectsOBB_RealWorldExample )
   box.SetLength(99.9f);
   CVector3<float> vPosition(0,0,-38.05f);
   box.SetPosition( vPosition);
-  box.CalculateCorners();
+
   
   // cerr << box << endl;
   // F = 0,0,-1, scale 99.9

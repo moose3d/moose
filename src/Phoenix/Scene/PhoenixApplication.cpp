@@ -1,12 +1,13 @@
 #include "PhoenixApplication.h"
 #include "PhoenixLogger.h"
-//#include "PhoenixSDLScreen.h"
+
 #include <sstream>
 #include <iostream>
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
 #if !defined(PHOENIX_APPLE_IPHONE)
+#include "PhoenixSDLScreen.h"
 using namespace Phoenix::Window;
 #endif
 using std::ostringstream;
