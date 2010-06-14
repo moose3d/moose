@@ -108,11 +108,11 @@ prefix::CLineRenderable::SetLine( const Phoenix::Math::CVector3<float> & vStartP
     m_EndposThickness.GetPointer<float>()[8] =  vStartPos[0];
     m_EndposThickness.GetPointer<float>()[9] =  vStartPos[1];
     m_EndposThickness.GetPointer<float>()[10] = vStartPos[2];
-    m_EndposThickness.GetPointer<float>()[11] = GetThickness();
+    m_EndposThickness.GetPointer<float>()[11] = -GetThickness();
     
     m_EndposThickness.GetPointer<float>()[12] = vStartPos[0];
     m_EndposThickness.GetPointer<float>()[13] = vStartPos[1];
     m_EndposThickness.GetPointer<float>()[14] = vStartPos[2];
-    m_EndposThickness.GetPointer<float>()[15] = -GetThickness();
+    m_EndposThickness.GetPointer<float>()[15] = GetThickness();
     
 }
