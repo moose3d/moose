@@ -119,7 +119,10 @@ Phoenix::Graphics::CRenderableModel::Render( COglRenderer & renderer )
       // Update matrices 
       GetRenderState().GetShaderViewUniform().SetData(      &renderer.GetCurrentCamera()->GetViewMatrix());
       GetRenderState().GetShaderProjectionUniform().SetData(&renderer.GetCurrentCamera()->GetProjectionMatrix());
-      GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+      if ( GetTransform() != NULL ) // model transform is optional.
+      {
+        GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+      }
       // Send data to shader
       GetRenderState().GetShaderViewUniform().Apply();
       GetRenderState().GetShaderProjectionUniform().Apply();
