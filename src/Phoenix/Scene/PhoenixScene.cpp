@@ -152,6 +152,22 @@ Phoenix::Scene::CScene::RemoveFromCaches( Phoenix::Scene::CGameObject *pObject )
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
+Phoenix::Scene::GameObjectList & 
+Phoenix::Scene::CScene::GetGameObjects()
+{
+    return m_lstGameObjects;
+}
+///////////////////////////////////////////////////////////////////////////////
+void 
+Phoenix::Scene::CScene::DeleteGameObjects()
+{
+    while( !m_lstGameObjects.empty() )
+    {
+        RemoveGameObject(m_lstGameObjects.front());
+        m_lstGameObjects.pop_front();
+    }
+}
+///////////////////////////////////////////////////////////////////////////////
 void
 Phoenix::Scene::CScene::RemoveGameObject( Phoenix::Scene::CGameObject *pObj )
 {
@@ -178,7 +194,8 @@ Phoenix::Scene::CScene::RemoveGameObject( Phoenix::Scene::CGameObject *pObj )
 			g_ObjectMgr->Destroy( pChild->GetObjectHandle() );
 		}
 	}
-	assert( pObj->GetObjectHandle().IsNull() && "Object not deleted.");
+    else delete pObj;
+	//assert( pObj->GetObjectHandle().IsNull() && "Object not deleted.");
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CSpatialGraph &

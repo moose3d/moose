@@ -74,7 +74,9 @@ namespace Phoenix
 			// Create object, put it into transform graph and spatial graph.
 			Phoenix::Scene::CGameObject * AddGameObject( Phoenix::Scene::CGameObject *pObj );
 			Phoenix::Scene::CDirectionalLightObject * AddDirectionalLight( Phoenix::Scene::CDirectionalLightObject *pObj );
-
+            /// Deletes all gameobjects registered to this scene. 
+            void DeleteGameObjects();
+            Phoenix::Scene::GameObjectList & GetGameObjects();
 			void RemoveGameObject( Phoenix::Scene::CGameObject *pObj );
 			void Update( float fSeconds );
 			void Init();

@@ -64,9 +64,19 @@ void
 prefix::CApplication::SetCurrentScene( const std::string & name )
 {
 	SceneMap::iterator it = m_mapScenes.find( name );
-	if ( it != m_mapScenes.end() ) m_pCurrentScene = it->second;
-	else m_pCurrentScene = NULL;
-	CheckSceneInputs();
+
+	if ( m_pCurrentScene ) m_pCurrentScene->OnExit();
+    
+    if ( it != m_mapScenes.end() ) 
+    {
+        m_pCurrentScene = it->second;
+        m_pCurrentScene->OnEnter();
+	}
+    else 
+    {
+        m_pCurrentScene = NULL;
+	}
+    CheckSceneInputs();
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
