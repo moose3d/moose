@@ -16,7 +16,9 @@
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixObjectCounter.h"
 #include "PhoenixQuaternion.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixSDLScreen.h"
+#endif
 #include "PhoenixOrientable.h"
 #include "PhoenixDimensional1D.h"
 #include "PhoenixDimensional2D.h"
@@ -52,13 +54,18 @@
 #include <PhoenixRenderableProperty.h>
 #include "PhoenixRenderableModel.h"
 #include "PhoenixRenderableModelShared.h"
+#include "PhoenixBoxRenderable.h"
+#include "PhoenixSphereRenderable.h"
+#include "PhoenixLineRenderable.h"
 #include "PhoenixTransform.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixSpatialGraph.h"
 #include "PhoenixScene.h"
 #include "PhoenixParticleSystem.h"
 #include "PhoenixObjectUpdater.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixStateMachine.h"
+#endif
 #include "PhoenixModelHelper.h"
 #include "PhoenixDDSImage.h"
 /* These aren't implemented yet.*/
@@ -66,8 +73,10 @@
 #include "PhoenixFFMpeg.h"
 #include "PhoenixRenderableVideo.h"
 #endif
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixMessageSystem.h"
 #include "PhoenixAIScript.h"
+#endif
 #include "PhoenixModelLoader.h"
 #include "PhoenixObjLoader.h"
 #include <PhoenixALObjectArray.h>
@@ -79,7 +88,7 @@
 #include <PhoenixOggStreamSample.h>
 #include <PhoenixSoundBase.h>
 #include <PhoenixSoundSampleBase.h>
-#include <PhoenixFlock.h>
+//#include <PhoenixFlock.h>
 #include <PhoenixLog.h>
 #include <PhoenixLogger.h>
 #include <PhoenixBoxBound.h>
@@ -91,4 +100,8 @@
 #include <PhoenixLineSegment.h>
 #include <PhoenixQuad.h>
 #include <PhoenixRay.h>
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <PhoenixIPhoneAudioSample.h>
+#include <PhoenixMusicClip.h>
+#endif
 /////////////////////////////////////////////////////////////////

@@ -16,9 +16,10 @@ Phoenix::Scene::CGameObject::~CGameObject()
 	}
 }
 /////////////////////////////////////////////////////////////////
-Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), 
-					      m_pCollider(NULL), 
-					      CAIObject( this )
+Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), m_pCollider(NULL), 
+                                              CAIObject( this )
+
+
 {
         m_pCollider = this;
         SetEnabled(true); // by default, each object is active
@@ -28,7 +29,11 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0),
 void
 Phoenix::Scene::CGameObject::Init()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	LoadScript();
+#else 
+    RegisterUserCommands();
+#endif
 }
 /////////////////////////////////////////////////////////////////
 unsigned int
@@ -93,9 +98,9 @@ Phoenix::Scene::CGameObject::GetWorldBoundingSphere() const
 	/*Transform( GetBoundingSphere().GetPosition(),
 				const_cast<Phoenix::Math::CTransform &>(GetWorldTransform()).GetMatrix(),
 				vTmp );*/
-
+    float fScaleMax = std::max( std::max( fabsf(GetWorldTransform().GetScaling()[0]),fabsf(GetWorldTransform().GetScaling()[1])), fabsf(GetWorldTransform().GetScaling()[2]));
 	return Phoenix::Volume::CSphere( GetBoundingSphere().GetPosition() +GetWorldTransform().GetTranslation(),
-																	 GetBoundingSphere().GetRadius() );
+																	 GetBoundingSphere().GetRadius()*fScaleMax );
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -139,8 +144,10 @@ Phoenix::Scene::CGameObject::CheckCollisions()
 		// enqueue messages if intersection occurs
 		if ( this->Intersects( **it ) )
 		{
+#if !defined(PHOENIX_APPLE_IPHONE)
 			(*it)->EnqueueMessage("OnCollisionEnter");
 			this->EnqueueMessage("OnCollisionEnter");
+#endif
 		}
 	}
 }

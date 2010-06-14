@@ -87,6 +87,8 @@ namespace Phoenix
         {
   	gettimeofday(&m_TimeVal, NULL);
   	SetStartTime( m_TimeVal.tv_sec, (short)(m_TimeVal.tv_usec * 0.001f) );
+            SetTime( m_TimeVal.tv_sec, (short)(m_TimeVal.tv_usec * 0.001f) );
+            
         }
         ////////////////////
         /// Returns the passed time in milliseconds.

@@ -64,6 +64,13 @@ namespace Phoenix
       {
 	return GetElementByteSize()*GetSize();
       }
+      ///////////////////
+      /// Copies data from existing array.
+      /// \param nToWhichIndex To which index data is copied in vertexdescriptor.
+      /// \param nNumElements Number of elements copied from pData.
+      /// \param pData Data buffer pointer where data is copied from. 
+      void Copy( size_t nToWhichIndex, size_t nNumElements, const void *pData );
+        
     };
   };  // end namespace Graphics
 };// end namespace Phoenix

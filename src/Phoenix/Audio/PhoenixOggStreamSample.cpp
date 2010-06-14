@@ -1,3 +1,5 @@
+#include "PhoenixAPI.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixOggStreamSample.h"
 #include <iostream>
 /////////////////////////////////////////////////////////////////
@@ -128,3 +130,4 @@ libname::COggStreamSample::Rewind()
   }
 }
 /////////////////////////////////////////////////////////////////
+#endif

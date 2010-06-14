@@ -36,8 +36,8 @@ namespace Phoenix
 																		public Phoenix::Collision::CSphereCollider,
 																		public Phoenix::Core::CNamed,
 																		public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
-																		public Phoenix::AI::CAIObject,
-																		public Phoenix::Core::IUpdateable,
+                                                                        public Phoenix::AI::CAIObject,
+                                                                        public Phoenix::Core::IUpdateable,
 																		public Phoenix::Core::CEnableable
 		{
     protected:

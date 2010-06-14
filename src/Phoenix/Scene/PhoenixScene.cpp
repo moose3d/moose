@@ -4,7 +4,9 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixDirectionalLightObject.h"
 #include "PhoenixLogger.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include <PhoenixSDLScreen.h>
+#endif
 #include "PhoenixCameraObject.h"
 #include <PhoenixVector2.h>
 #include <iostream>
@@ -12,7 +14,9 @@
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
+#if !defined(PHOENIX_APPLE_IPHONE)
 using namespace Phoenix::Window;
+#endif
 using namespace Phoenix::Math;
 using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,7 +82,9 @@ Phoenix::Scene::CScene::~CScene()
 void
 Phoenix::Scene::CScene::Init()
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
 	LoadScript();
+#endif
 	// ensure that each scene is managed and have a unique name
 	std::string tmpName = GetName();
 	if ( tmpName.empty() )
@@ -102,7 +108,7 @@ Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
     // objectmgr.
     pObj->Init();
 	// so it is affected by transforms.
-	CObjectTransform *pObjTr = GetTransformGraph().Insert(pObj);
+	/*CObjectTransform *pObjTr = */GetTransformGraph().Insert(pObj);
 
 	// So it can be culled
 	GetSpatialGraph().InsertObject(pObj);
@@ -132,7 +138,7 @@ Phoenix::Scene::CScene::AddDirectionalLight( Phoenix::Scene::CDirectionalLightOb
 
 	// Call Update periodically
 	g_DefaultUpdater->Manage( pObj->GetObjectHandle() );
-
+    return pObj;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -144,6 +150,22 @@ Phoenix::Scene::CScene::RemoveFromCaches( Phoenix::Scene::CGameObject *pObject )
 		it->second->GetGameObjectList().remove( pObject ); // if regular object
 		it->second->GetActiveLights().remove( pObject ); // if it was a light.
 	}
+}
+///////////////////////////////////////////////////////////////////////////////
+Phoenix::Scene::GameObjectList & 
+Phoenix::Scene::CScene::GetGameObjects()
+{
+    return m_lstGameObjects;
+}
+///////////////////////////////////////////////////////////////////////////////
+void 
+Phoenix::Scene::CScene::DeleteGameObjects()
+{
+    while( !m_lstGameObjects.empty() )
+    {
+        RemoveGameObject(m_lstGameObjects.front());
+        m_lstGameObjects.pop_front();
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -172,7 +194,8 @@ Phoenix::Scene::CScene::RemoveGameObject( Phoenix::Scene::CGameObject *pObj )
 			g_ObjectMgr->Destroy( pChild->GetObjectHandle() );
 		}
 	}
-	assert( pObj->GetObjectHandle().IsNull() && "Object not deleted.");
+    else delete pObj;
+	//assert( pObj->GetObjectHandle().IsNull() && "Object not deleted.");
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CSpatialGraph &
@@ -190,8 +213,10 @@ Phoenix::Scene::CScene::GetTransformGraph()
 void
 Phoenix::Scene::CScene::Update( float fSeconds )
 {
+#if !defined(PHOENIX_APPLE_IPHONE)
   // Run local script
 	UpdateScript(fSeconds);
+#endif
 	// update transform graph
 	GetTransformGraph().Update();
 	// update object positions in spatial graph.
@@ -259,7 +284,9 @@ Phoenix::Scene::CScene::Render( COglRenderer & renderer )
 
 	renderer.Finalize();
 	// OpenGL context may be created also via other method.
+#if !defined(PHOENIX_APPLE_IPHONE)
 	if (CSDLScreen::Exists()){ CSDLScreen::GetInstance()->SwapBuffers();}
+#endif
 	// for each camera do
 	// CollectVisibleGameObjects();
 	// for each game object
@@ -477,7 +504,34 @@ Phoenix::Scene::CScene::RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable
 {
 	GetPostGUIRenderQueue().GetObjectList().remove(pRenderable);
 }
+void
+Phoenix::Scene::CScene::OnEnter()
+{
+
+}
+void
+Phoenix::Scene::CScene::OnExit()
+{
+
+}
+void
+Phoenix::Scene::CScene::Load()
+{
+
+}
+void
+Phoenix::Scene::CScene::Unload()
+{
+
+}
+void
+Phoenix::Scene::CScene::Reload()
+{
+    Unload();
+    Load();
+}
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 SCRIPT_CMD_DECL( Destroy );          ///!< Kill switch for any object in the scene.
 SCRIPT_CMD_DECL( CreateCamera );
 SCRIPT_CMD_DECL( MoveCamera );
@@ -1137,3 +1191,4 @@ SCRIPT_CMD_IMPL( ToggleCameraColliderRendering )
 	return TCL_OK;
 }
 ////////////////////////////////////////////////////////////////////////////////
+#endif

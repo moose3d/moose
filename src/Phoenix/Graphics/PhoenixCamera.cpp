@@ -14,6 +14,7 @@ using namespace Phoenix::Volume;
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CCamera::CCamera() : COrientable()
 {
+    SetViewport(0,0,640,480); // a rather safe bet
   SetFieldOfView(45.0);
   SetProjectionChanged(1);
   m_aOrthoPlanes[0] = m_aOrthoPlanes[1] = m_aOrthoPlanes[2] = m_aOrthoPlanes[3] = 0.0f;
@@ -506,10 +507,11 @@ Phoenix::Graphics::CCamera::VirtualTrackball( const CSphere & sphere, const CVec
         {
           vOrig = vIntersection0 - sphere.GetPosition();
           vEnd  = vIntersection1 - sphere.GetPosition();
-
+            //float fLen = (sphere.GetPosition()-GetPosition()).Length();
           vOrig.Normalize();
           vEnd.Normalize();
-
+            //vOrig *= fLen;
+            //vEnd *= fLen;
           Phoenix::Math::RotationArc(vOrig,vEnd, qResult);
           return 1;
         }

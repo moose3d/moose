@@ -4,13 +4,17 @@
 #include "PhoenixSpatialGraph.h"
 #include "PhoenixTransformGraph.h"
 #include "PhoenixDefaultEntities.h"
+#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixAIScript.h"
+#endif
 #include <PhoenixGameObject.h>
 #include <PhoenixRenderQueue.h>
 #include <PhoenixCameraObject.h>
 #include <PhoenixRenderable.h>
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(PHOENIX_APPLE_IPHONE)
 struct Tcl_Interp;
+#endif
 namespace Phoenix
 {
 	namespace Scene
@@ -70,7 +74,9 @@ namespace Phoenix
 			// Create object, put it into transform graph and spatial graph.
 			Phoenix::Scene::CGameObject * AddGameObject( Phoenix::Scene::CGameObject *pObj );
 			Phoenix::Scene::CDirectionalLightObject * AddDirectionalLight( Phoenix::Scene::CDirectionalLightObject *pObj );
-
+            /// Deletes all gameobjects registered to this scene. 
+            void DeleteGameObjects();
+            Phoenix::Scene::GameObjectList & GetGameObjects();
 			void RemoveGameObject( Phoenix::Scene::CGameObject *pObj );
 			void Update( float fSeconds );
 			void Init();
@@ -93,13 +99,20 @@ namespace Phoenix
 			void RemovePreGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
 			void RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable *pRenderable );
 
-
-			void RegisterUserCommands();
-
+            
+			virtual void OnEnter();
+            virtual void OnExit();
+            virtual void Load();
+            virtual void Unload();
+            virtual void Reload();
 		};
+#if !defined(PHOENIX_APPLE_IPHONE)
+        void RegisterUserCommands();
+        
 		/////////////////////////////////////////////////////////////////
 		/// Parses regular camera parameters from name-object map.
 		int ParseCameraParameters( Tcl_Interp *pInterp, NameObjMap & params, Phoenix::Scene::CCameraObject & cam );
+#endif
 	} // Scene
 } // Phoenix
 ///////////////////////////////////////////////////////////////////////////////////
