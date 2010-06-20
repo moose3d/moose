@@ -37,7 +37,7 @@ namespace Phoenix
     public:
       ////////////////////
       /// Constructor.
-      ~CCacheable() { }
+      virtual ~CCacheable() { }
       ////////////////////
       /// Returns reference to cache.
       /// \returns Cache reference.
@@ -74,7 +74,7 @@ namespace Phoenix
       {
 	return m_nState;
       }
-    };
+      };
 	}
 }
 

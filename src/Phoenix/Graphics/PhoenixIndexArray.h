@@ -5,6 +5,7 @@
 /////////////////////////////////////////////////////////////////
 #include <PhoenixCacheable.h>
 #include "PhoenixAPI.h"
+#include "PhoenixOGLConsts.h"
 #include <cstring>
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
@@ -27,7 +28,7 @@ namespace Phoenix
     };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
-    class PHOENIX_API CIndexArray : public Phoenix::Core::CCacheable<unsigned int>
+    class PHOENIX_API CIndexArray : public Phoenix::Core::CCacheable<GLuint>
     {
     protected:
       /// Number of indices in this array.
@@ -48,6 +49,7 @@ namespace Phoenix
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
+          GetCache() = 0;
       }
       ////////////////////
       /// Copy constructor.
@@ -58,6 +60,7 @@ namespace Phoenix
 	m_nNumDrawableIndices = m_nNumIndices;
 	m_pIndexData = new char[ GetByteSize() ];
 	memcpy( m_pIndexData, obj.m_pIndexData, GetByteSize());
+          GetCache() = obj.GetCache();
       }
       ////////////////////
       /// Destructor.
@@ -130,6 +133,21 @@ namespace Phoenix
       {
           memcpy(m_pIndexData, pArray, GetByteSize());
       }
+        
+      int CreateCache( GLenum kPerformanceHint )
+      {
+          if ( !IsCached() )
+          {
+          glGenBuffers(1, &GetCache());
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GetCache());
+          glBufferData( GL_ELEMENT_ARRAY_BUFFER, GetByteSize(), GetPointer<unsigned short int>(), kPerformanceHint);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+              SetState( Phoenix::Core::CACHE_UP2DATE);
+              return 0;
+          }
+          return 1;  
+      }
+        
     };
     /////////////////////////////////////////////////////////////////
   }; //namespace Graphics

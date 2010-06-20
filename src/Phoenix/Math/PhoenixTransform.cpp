@@ -18,14 +18,17 @@ Phoenix::Math::CTransform::GetMatrix()
   if ( m_bChanged )
   {
     CMatrix4x4<float> mTmp;
-    // Constructs SRT-transform (scale first).
+    // Constructs SRT-transform (scale first). 
     ScaleMatrix(m_vScaling, m_mTransform);
     QuaternionToMatrix(m_qRotation, mTmp);
     m_mTransform  = mTmp * m_mTransform;
-    TranslationMatrix( m_vTranslation, mTmp );
+    //TranslationMatrix( m_vTranslation, mTmp );
     // Concatenate transforms 
-    m_mTransform =  mTmp * m_mTransform;
-    m_bChanged = 0;
+    //m_mTransform =  mTmp * m_mTransform;
+      m_mTransform(0,3) = m_vTranslation[0];
+      m_mTransform(1,3) = m_vTranslation[1];
+      m_mTransform(2,3) = m_vTranslation[2];
+      m_bChanged = 0;
   }
   return m_mTransform;
 }

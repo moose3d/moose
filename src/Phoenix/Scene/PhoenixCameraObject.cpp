@@ -15,7 +15,10 @@ Phoenix::Scene::CCameraObject::CCameraObject() :
   m_MoveDir( OUT ),
   m_bMoving(false)
 {
-
+    // Set some reasonable defaults
+    SetNearClipping(0.01f);
+    SetFarClipping(100.0f);
+    Zoom(0.0f);
 }
 /////////////////////////////////////////////////////////////////
 void

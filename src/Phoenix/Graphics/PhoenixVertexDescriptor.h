@@ -14,7 +14,7 @@ namespace Phoenix
 
     /////////////////////////////////////////////////////////////////
     /// Data for vertices.
-    class PHOENIX_API CVertexDescriptor : public Phoenix::Core::CCacheable<unsigned int>,
+    class PHOENIX_API CVertexDescriptor : public Phoenix::Core::CCacheable<GLuint>,
 					  public Phoenix::Core::CTypeBase<ELEMENT_TYPE>
     {
     protected:
@@ -70,7 +70,7 @@ namespace Phoenix
       /// \param nNumElements Number of elements copied from pData.
       /// \param pData Data buffer pointer where data is copied from. 
       void Copy( size_t nToWhichIndex, size_t nNumElements, const void *pData );
-        
+        void CreateCache( GLenum kPerformanceHint );
     };
   };  // end namespace Graphics
 };// end namespace Phoenix

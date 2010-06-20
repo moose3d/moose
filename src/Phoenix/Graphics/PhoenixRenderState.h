@@ -11,6 +11,7 @@
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixMaterial.h"
 #include "PhoenixMatrix4x4.h"
+
 #include <map>
 #include <iostream>
 #include <cassert>
@@ -21,7 +22,7 @@ namespace Phoenix
   {
 
 	  class CRenderable;
-
+      class COglRenderer;
 	  typedef std::list< Phoenix::Graphics::CRenderable * > LightRenderableList;
 	  typedef std::map< std::string, std::string > 				  NameValueMap;
 	  /////////////////////////////////////////////////////////////////////////
@@ -30,9 +31,10 @@ namespace Phoenix
       public:
           virtual ~IShaderParam() {}
           virtual void Bind( CShader & s, size_t nIndex ) = 0;
-          virtual void Apply(size_t nIndex) = 0;
+          virtual void Apply(Phoenix::Graphics::COglRenderer & r, size_t nIndex ) = 0;
           virtual void *GetData() = 0;
       };
+      
       ///////////////////////////////////////////////////////////////////
       /// Shader parameter for generic uniform case.
       class PHOENIX_API CShaderUniform : public Phoenix::Graphics::IShaderParam
@@ -57,7 +59,7 @@ namespace Phoenix
           {
               m_hData = szResourceName;
           }
-          void Apply( size_t nIndex = 0)
+          void Apply(  Phoenix::Graphics::COglRenderer & r, size_t nIndex = 0)
           {
               if ( m_hData.IsNull() || m_iLocation == -1 ) 
               {
@@ -135,7 +137,7 @@ namespace Phoenix
               m_pData = pData;
           }
           
-          void Apply( size_t nIndex = 0)
+          void Apply(  Phoenix::Graphics::COglRenderer & r, size_t nIndex = 0)
           {
               if ( m_pData == NULL || m_iLocation == -1 ) 
               {
@@ -212,7 +214,7 @@ namespace Phoenix
           {
               m_pMatrix = pMatrix;
           } 
-          void Apply( size_t nIndex = 0 )
+          void Apply( Phoenix::Graphics::COglRenderer & r, size_t nIndex = 0 )
           {
               if ( m_pMatrix == NULL || m_iLocation == -1 ) return;
               glUniformMatrix4fv(m_iLocation, sizeof(float)*16, GL_FALSE, m_pMatrix->GetTransposition().GetArray());
@@ -242,7 +244,7 @@ namespace Phoenix
           {
               m_iValue = iValue;
           } 
-          void Apply( size_t nIndex = 0 )
+          void Apply( Phoenix::Graphics::COglRenderer & r, size_t nIndex = 0 )
           {
               if ( m_iLocation == -1 ) return;
               glUniform1i(m_iLocation, m_iValue);
@@ -271,7 +273,7 @@ namespace Phoenix
           {
               m_fValue = fValue;
           } 
-          void Apply( size_t nIndex = 0 )
+          void Apply( Phoenix::Graphics::COglRenderer & r, size_t nIndex = 0 )
           {
               if ( m_iLocation == -1 ) return;
               glUniform1f(m_iLocation, m_fValue);
@@ -288,67 +290,84 @@ namespace Phoenix
       protected:
           Phoenix::Graphics::CVertexDescriptor *       m_pData;
       public:
-          
+          CShaderAttribPtr() : m_pData(NULL) {}
           void Bind( CShader & s, size_t nIndex ) 
           {
               //g_Log << "ATTRIB: binding " << GetName() << " to index : " << nIndex << std::endl;
               glBindAttribLocation(s.GetProgram(), nIndex, GetName().c_str());
           }
+          
           void SetData( Phoenix::Graphics::CVertexDescriptor * pData ) 
           {
               m_pData = pData;
           }
-          void Apply(size_t nIndex)
+          
+          void Apply(Phoenix::Graphics::COglRenderer & r, size_t nIndex)
           {
-              Phoenix::Graphics::CVertexDescriptor *pData = m_pData;
-              switch( pData->GetType() )
+              if ( m_pData == NULL ) return;
+              
+              GLvoid *tmp = 0;
+              
+              // check whether VBO is used.
+              if ( m_pData->IsCached() )
+              {
+                  glBindBuffer(GL_ARRAY_BUFFER, m_pData->GetCache());
+              }
+              else 
+              {
+                  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+                  tmp = m_pData->GetPointer<GLvoid>();
+              }
+              
+              
+              switch( m_pData->GetType() )
               {
                   case ELEMENT_TYPE_ATTRIB_1F:
-                      glVertexAttribPointer(nIndex, 1, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 1, GL_FLOAT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_TEX_2F:
                   case ELEMENT_TYPE_ATTRIB_2F:
-                      glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_VERTEX_3F:
                   case ELEMENT_TYPE_NORMAL_3F:
                   case ELEMENT_TYPE_COLOR_3F:
                   case ELEMENT_TYPE_TEX_3F:
                   case ELEMENT_TYPE_ATTRIB_3F:
-                      glVertexAttribPointer(nIndex, 3, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 3, GL_FLOAT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_COLOR_4F:
                   case ELEMENT_TYPE_TEX_4F:
                   case ELEMENT_TYPE_ATTRIB_4F:
-                      glVertexAttribPointer(nIndex, 4, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 4, GL_FLOAT, 0, 0, tmp);
                       break;
                       
                   case ELEMENT_TYPE_ATTRIB_1UB:
-                      glVertexAttribPointer(nIndex, 1, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 1, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_2UB:
-                      glVertexAttribPointer(nIndex, 2, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 2, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
                       
                   case ELEMENT_TYPE_ATTRIB_3UB:
-                      glVertexAttribPointer(nIndex, 3, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 3, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
                       
                   case ELEMENT_TYPE_ATTRIB_4UB:
                   case ELEMENT_TYPE_COLOR_4UB:
-                      glVertexAttribPointer(nIndex, 4, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 4, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_1I:
-                      glVertexAttribPointer(nIndex, 1, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 1, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_2I:
-                      glVertexAttribPointer(nIndex, 2, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 2, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_3I:
-                      glVertexAttribPointer(nIndex, 3, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 3, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_4I:
-                      glVertexAttribPointer(nIndex, 4, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 4, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_V3F_N3F_T2F:
                       g_Error << "ELEMENT_TYPE_V3F_N3F_T2F Not supported" << std::endl; 
@@ -364,6 +383,9 @@ namespace Phoenix
               return m_pData;
           }
       };
+      
+      
+      
       ///////////////////////////////////////////////////////////////
       /// Case for shader attribs.
       class PHOENIX_API CShaderAttrib : public Phoenix::Graphics::IShaderParam 
@@ -381,63 +403,79 @@ namespace Phoenix
           {
               m_hData = handle;
           }
-          void Apply(size_t nIndex)
+          void Apply(Phoenix::Graphics::COglRenderer & r, size_t nIndex)
           {
+              
+              if ( m_hData.IsNull() ) return;
+              GLvoid *tmp = 0;
               Phoenix::Graphics::CVertexDescriptor *pData = *m_hData;
+              // check whether VBO is used.
+              if ( pData->IsCached() )
+              {
+                  glBindBuffer(GL_ARRAY_BUFFER, pData->GetCache());
+              }
+              else 
+              {
+                  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+                  tmp = pData->GetPointer<GLvoid>();
+              }
+              
+              
               switch( pData->GetType() )
               {
                   case ELEMENT_TYPE_ATTRIB_1F:
-                      glVertexAttribPointer(nIndex, 1, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 1, GL_FLOAT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_TEX_2F:
                   case ELEMENT_TYPE_ATTRIB_2F:
-                      glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_VERTEX_3F:
                   case ELEMENT_TYPE_NORMAL_3F:
                   case ELEMENT_TYPE_COLOR_3F:
                   case ELEMENT_TYPE_TEX_3F:
                   case ELEMENT_TYPE_ATTRIB_3F:
-                      glVertexAttribPointer(nIndex, 3, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 3, GL_FLOAT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_COLOR_4F:
                   case ELEMENT_TYPE_TEX_4F:
                   case ELEMENT_TYPE_ATTRIB_4F:
-                      glVertexAttribPointer(nIndex, 4, GL_FLOAT, 0, 0, pData->GetPointer<float>());
+                      glVertexAttribPointer(nIndex, 4, GL_FLOAT, 0, 0, tmp);
                       break;
-                  
+                      
                   case ELEMENT_TYPE_ATTRIB_1UB:
-                      glVertexAttribPointer(nIndex, 1, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 1, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_2UB:
-                      glVertexAttribPointer(nIndex, 2, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 2, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
-
+                      
                   case ELEMENT_TYPE_ATTRIB_3UB:
-                      glVertexAttribPointer(nIndex, 3, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 3, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
-
+                      
                   case ELEMENT_TYPE_ATTRIB_4UB:
                   case ELEMENT_TYPE_COLOR_4UB:
-                      glVertexAttribPointer(nIndex, 4, GL_UNSIGNED_BYTE, 0, 0, pData->GetPointer<unsigned char>());
+                      glVertexAttribPointer(nIndex, 4, GL_UNSIGNED_BYTE, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_1I:
-                      glVertexAttribPointer(nIndex, 1, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 1, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_2I:
-                      glVertexAttribPointer(nIndex, 2, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 2, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_3I:
-                      glVertexAttribPointer(nIndex, 3, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 3, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_ATTRIB_4I:
-                      glVertexAttribPointer(nIndex, 4, GL_INT, 0, 0, pData->GetPointer<int>());
+                      glVertexAttribPointer(nIndex, 4, GL_INT, 0, 0, tmp);
                       break;
                   case ELEMENT_TYPE_V3F_N3F_T2F:
                       g_Error << "ELEMENT_TYPE_V3F_N3F_T2F Not supported" << std::endl; 
                       abort();
                       break;
               }
+              
               glEnableVertexAttribArray(nIndex);
               //g_Log << "ATTRIB: applied index" << nIndex << std::endl;
           }
@@ -469,10 +507,10 @@ namespace Phoenix
               }
           }
           
-          void Apply()
+          void Apply( COglRenderer & r)
           {
               for (size_t i=0;i<m_vecParams.size();i++) {
-                  m_vecParams[i]->Apply(i);
+                  m_vecParams[i]->Apply(r, i);
               }
           }
           

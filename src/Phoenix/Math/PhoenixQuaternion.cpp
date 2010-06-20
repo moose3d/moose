@@ -31,13 +31,13 @@ void
 CQuaternion::CreateFromAxisAngleRad ( float fX, float fY, float fZ, float fRad ) 
 {
   
-  float thetaDiv2    = fRad * 0.5f;
-  float sinThetaDiv2 = sinf ( thetaDiv2 );
+  double thetaDiv2    = fRad * 0.5f;
+  double sinThetaDiv2 = sin ( thetaDiv2 );
 
   m_aValues[0] = fX * sinThetaDiv2 ;
   m_aValues[1] = fY * sinThetaDiv2 ;
   m_aValues[2] = fZ * sinThetaDiv2 ;
-  m_aValues[3] = cosf( thetaDiv2 );  
+  m_aValues[3] = cos( thetaDiv2 );  
 }
 /////////////////////////////////////////////////////////////////
 void 

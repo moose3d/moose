@@ -54,8 +54,8 @@ prefix::CLineRenderable::Render( COglRenderer & r )
     
     if ( !GetRenderState().GetShaderHandle().IsNull())
     {
-        GetRenderState().GetShaderAttribs().Apply();
-        GetRenderState().GetShaderUniforms().Apply();
+        GetRenderState().GetShaderAttribs().Apply(r);
+        GetRenderState().GetShaderUniforms().Apply(r);
         if ( r.GetCurrentCamera() )
         {
             // Update matrices 
@@ -63,9 +63,9 @@ prefix::CLineRenderable::Render( COglRenderer & r )
             GetRenderState().GetShaderProjectionUniform().SetData(&r.GetCurrentCamera()->GetProjectionMatrix());
             //GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
             // Send data to shader
-            GetRenderState().GetShaderViewUniform().Apply();
-            GetRenderState().GetShaderProjectionUniform().Apply();
-            GetRenderState().GetShaderModelUniform().Apply();
+            GetRenderState().GetShaderViewUniform().Apply(r);
+            GetRenderState().GetShaderProjectionUniform().Apply(r);
+            GetRenderState().GetShaderModelUniform().Apply(r);
         }
     }                                           
     r.CommitPrimitive( g_IndexMgr->GetResource("moose_linerenderable_indices") );

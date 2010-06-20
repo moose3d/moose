@@ -24,7 +24,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Volume::CSphere & sphere ) c
 		tmp.Move( m_pTransform->GetTranslation());
         float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
                                              m_pTransform->GetScaling()[1]),
-                                            m_pTransform->GetScaling()[0] );
+                                            m_pTransform->GetScaling()[2] );
         tmp.SetRadius( tmp.GetRadius() * fMaxScale );
 		return SphereIntersectsSphere( tmp, sphere );
 	}
@@ -40,7 +40,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Graphics::CFrustum & frustum
 		tmp.Move( m_pTransform->GetTranslation());
         float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
                                              m_pTransform->GetScaling()[1]),
-                                   m_pTransform->GetScaling()[0] );
+                                            m_pTransform->GetScaling()[2] );
         tmp.SetRadius( tmp.GetRadius() * fMaxScale );
 		return SphereIntersectsPolytope(tmp, frustum);
 	}
@@ -56,7 +56,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Volume::COrientedBox & box )
 		tmp.Move( m_pTransform->GetTranslation());
         float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
                                              m_pTransform->GetScaling()[1]),
-                                   m_pTransform->GetScaling()[0] );
+                                            m_pTransform->GetScaling()[2] );
         tmp.SetRadius( tmp.GetRadius() * fMaxScale );
 		return SphereIntersectsOBB(tmp, box);
 	}
@@ -90,6 +90,10 @@ prefix::CSphereCollider::Intersects( const Phoenix::Math::CRay & ray, float *pfV
 		{
 			Phoenix::Volume::CSphere tmp = GetBoundingSphere();
 			tmp.Move( m_pTransform->GetTranslation());
+            float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                                 m_pTransform->GetScaling()[1]),
+                                       m_pTransform->GetScaling()[2] );
+            tmp.SetRadius( tmp.GetRadius() * fMaxScale );
 			return RayIntersectsSphere(ray, pfValue, NULL, tmp);
 		}
 	return RayIntersectsSphere(ray, pfValue, NULL, this->GetBoundingSphere());
@@ -122,7 +126,7 @@ prefix::CSphereCollider::Intersects( const Phoenix::Math::CVector3<float> & vPoi
 		tmp.Move( m_pTransform->GetTranslation());
         float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
                                              m_pTransform->GetScaling()[1]),
-                                   m_pTransform->GetScaling()[0] );
+                                   m_pTransform->GetScaling()[2] );
         tmp.SetRadius( tmp.GetRadius() * fMaxScale );
 		return PointInsideSphere(tmp, vPoint);
 	}

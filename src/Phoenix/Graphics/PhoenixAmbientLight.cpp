@@ -1,9 +1,1 @@
-#include "PhoenixAmbientLight.h"
-#include "PhoenixOGLRenderer.h"
-///////////////////////////////////////////////////////////////////////////////
-void
-Phoenix::Graphics::CAmbientLight::Render( Phoenix::Graphics::COglRenderer & renderer )
-{
-	if ( IsEnabled() ) 	renderer.CommitLight(*this);
-}
-///////////////////////////////////////////////////////////////////////////////
+PhoenixAmbientLight.mm

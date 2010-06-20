@@ -26,6 +26,7 @@ namespace Phoenix
     {
     protected:
       Phoenix::Graphics::CModel * m_pModel;
+        bool                      m_bDestroyModel; ///!< Whether to destroy model when renderablemodel is destroyed.
     public:
       ////////////////////
       /// Constructor.
@@ -50,6 +51,7 @@ namespace Phoenix
       ////////////////////
       /// Sets model.
       void SetModel( Phoenix::Graphics::CModel *pModel );
+      void SetDestroyModel( bool bValue );
     };
     std::ostream & operator<<( std::ostream &stream, const Phoenix::Graphics::CRenderableModel & renderable );
   }; // namespace Graphics

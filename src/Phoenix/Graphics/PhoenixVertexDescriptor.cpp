@@ -3,7 +3,7 @@
 #include <cstring>
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType, 
-							 unsigned int nNumElements) 
+                                                        unsigned int nNumElements) 
 {
   SetType(nType);
   m_nSize = nNumElements;
@@ -90,6 +90,7 @@ Phoenix::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
     assert( NULL && "Wrong type" );
     break;
   }
+    GetCache() = 0;
 }
 /////////////////////////////////////////////////////////////////
 Phoenix::Graphics::CVertexDescriptor::~CVertexDescriptor()
@@ -153,3 +154,15 @@ Phoenix::Graphics::CVertexDescriptor::Copy( size_t nToWhichIndex, size_t nNumEle
     memcpy( GetPointer<void>(nToWhichIndex), pData, GetElementByteSize()*nNumElements);
 }
 /////////////////////////////////////////////////////////////////
+void
+Phoenix::Graphics::CVertexDescriptor::CreateCache( GLenum kPerformanceHint )
+{
+    if ( ! IsCached() )
+    {
+    glGenBuffers(1, &GetCache());
+    glBindBuffer(GL_ARRAY_BUFFER, GetCache());
+    glBufferData( GL_ARRAY_BUFFER, GetByteSize(), GetPointer<float>(), kPerformanceHint);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+        SetState(Phoenix::Core::CACHE_UP2DATE);
+    }
+}
