@@ -1,4 +1,5 @@
 /////////////////////////////////////////////////////////////////
+#define __STDC_CONSTANT_MACROS 
 #include "PhoenixFFMpeg.h"
 #include "PhoenixDefaultEntities.h"
 #include "PhoenixLogger.h"

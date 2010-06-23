@@ -1,3 +1,4 @@
+#define __STDC_CONSTANT_MACROS 
 #include "PhoenixRenderableVideo.h"
 #include "PhoenixVideoTexture.h"
 #include "PhoenixRenderable.h"
