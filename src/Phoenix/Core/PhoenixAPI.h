@@ -19,5 +19,8 @@
 #if (defined(__APPLE__) && (defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_IPHONE_OS))) 
 #define PHOENIX_APPLE_IPHONE
 #endif
+#if (defined(__APPLE__) && (defined(TARGET_IPHONE_SIMULATOR)))
+#define PHOENIX_APPLE_IPHONE_SIMULATOR
+#endif
 #endif
 

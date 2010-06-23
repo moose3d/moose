@@ -100,7 +100,7 @@ namespace Phoenix
       ///
       inline bool IsCurrentShader( CShader *pShader ) const
       {
-	return (m_pShader == m_pShader);
+          return (m_pShader == pShader);
       }
 
       inline bool IsCurrentVertices ( CVertexDescriptor *pVD ) const

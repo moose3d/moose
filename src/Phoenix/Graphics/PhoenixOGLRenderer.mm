@@ -751,7 +751,7 @@ Phoenix::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
   if ( pIndexBuffer->IsShortIndices() ) iIndexBufferType = GL_UNSIGNED_SHORT;
   else                                  iIndexBufferType = GL_UNSIGNED_INT;
 
-  if ( !GetRenderState().IsCurrentIndices( pIndexBuffer ) )
+  if ( true || !GetRenderState().IsCurrentIndices( pIndexBuffer ) )
   {
 #if !defined(PHOENIX_APPLE_IPHONE)      
     if ( pIndices == 0 )

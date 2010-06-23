@@ -231,6 +231,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -267,20 +269,20 @@
 							<array>
 								<string>0867D691FE84028FC02AAC07</string>
 								<string>08FB77AEFE84172EC02AAC07</string>
-								<string>ECCD892C1185C9D700873F3C</string>
+								<string>ECCD89F21185C9F900873F3C</string>
 								<string>1C37FAAC04509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>46</integer>
-									<integer>9</integer>
+									<integer>18</integer>
+									<integer>7</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 619}, {299, 694}}</string>
+							<string>{{0, 0}, {299, 694}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -299,7 +301,7 @@
 							<real>299</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>275 59 1131 753 0 0 1440 878 </string>
+						<string>272 94 1131 753 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -310,14 +312,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>PhoenixOGLRenderer.mm</string>
+								<string>PhoenixScene.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -325,11 +325,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>PhoenixOGLRenderer.mm</string>
+										<string>PhoenixScene.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>ECD61A9611CED2D300BC9BF7</string>
+										<string>ECD19D1311D15FDD00459AF9</string>
 										<key>history</key>
 										<array>
 											<string>EC4F293E11C92CDF002DA15B</string>
@@ -342,18 +342,9 @@
 											<string>EC4003EB11CA6C2600BEDB85</string>
 											<string>EC4A3F2B11CBF11A000F0D5C</string>
 											<string>EC4A3F2C11CBF11A000F0D5C</string>
-											<string>EC4A3F3011CBF11A000F0D5C</string>
 											<string>EC3553DF11CCEFCD00CEB717</string>
 											<string>EC3553E011CCEFCD00CEB717</string>
 											<string>EC3553E111CCEFCD00CEB717</string>
-											<string>EC3553E211CCEFCD00CEB717</string>
-											<string>EC3553E311CCEFCD00CEB717</string>
-											<string>EC3553E411CCEFCD00CEB717</string>
-											<string>EC3553E511CCEFCD00CEB717</string>
-											<string>EC3553E611CCEFCD00CEB717</string>
-											<string>EC3553E711CCEFCD00CEB717</string>
-											<string>EC3553E811CCEFCD00CEB717</string>
-											<string>EC3553E911CCEFCD00CEB717</string>
 											<string>EC3553EA11CCEFCD00CEB717</string>
 											<string>ECD3AC5211CE3FB100448730</string>
 											<string>ECD3AC5411CE3FB100448730</string>
@@ -364,15 +355,38 @@
 											<string>ECD61A8A11CED2D300BC9BF7</string>
 											<string>ECD61A8B11CED2D300BC9BF7</string>
 											<string>ECD61A8C11CED2D300BC9BF7</string>
-											<string>ECD61A8D11CED2D300BC9BF7</string>
-											<string>ECD61A8E11CED2D300BC9BF7</string>
 											<string>ECD61A8F11CED2D300BC9BF7</string>
 											<string>ECD61A9011CED2D300BC9BF7</string>
-											<string>ECD61A9111CED2D300BC9BF7</string>
 											<string>ECD61A9211CED2D300BC9BF7</string>
-											<string>ECD61A9311CED2D300BC9BF7</string>
-											<string>ECD61A9411CED2D300BC9BF7</string>
-											<string>ECD61A9511CED2D300BC9BF7</string>
+											<string>ECE90C6A11D010E600FD13B9</string>
+											<string>ECE90C6B11D010E600FD13B9</string>
+											<string>ECE90C6C11D010E600FD13B9</string>
+											<string>ECE90C6E11D010E600FD13B9</string>
+											<string>ECE90C6F11D010E600FD13B9</string>
+											<string>ECE90C7011D010E600FD13B9</string>
+											<string>ECE90C8111D012B800FD13B9</string>
+											<string>ECE90C8211D012B800FD13B9</string>
+											<string>ECE90C8311D012B800FD13B9</string>
+											<string>ECE90C8511D012B800FD13B9</string>
+											<string>ECE90CD811D0242C00FD13B9</string>
+											<string>ECE90CD911D0242C00FD13B9</string>
+											<string>ECE90CDA11D0242C00FD13B9</string>
+											<string>ECE90CDB11D0242C00FD13B9</string>
+											<string>ECE90CDD11D0242C00FD13B9</string>
+											<string>ECE90D1E11D0352900FD13B9</string>
+											<string>ECE90D1F11D0352900FD13B9</string>
+											<string>ECE90D2011D0352900FD13B9</string>
+											<string>ECE90D2211D0352900FD13B9</string>
+											<string>ECE90D2311D0352900FD13B9</string>
+											<string>ECE90D2411D0352900FD13B9</string>
+											<string>ECE90D2511D0352900FD13B9</string>
+											<string>ECE90D2611D0352900FD13B9</string>
+											<string>ECE90D2711D0352900FD13B9</string>
+											<string>ECE90D2811D0352900FD13B9</string>
+											<string>ECE90D2911D0352900FD13B9</string>
+											<string>ECE90D2A11D0352900FD13B9</string>
+											<string>ECD19D0D11D14D6500459AF9</string>
+											<string>ECD19D0E11D14D6500459AF9</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -386,7 +400,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {810, 707}}</string>
 								<key>RubberWindowFrame</key>
-								<string>275 59 1131 753 0 0 1440 878 </string>
+								<string>272 94 1131 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -406,7 +420,7 @@
 								<key>Frame</key>
 								<string>{{0, 712}, {810, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>275 59 1131 753 0 0 1440 878 </string>
+								<string>272 94 1131 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -430,9 +444,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>ECD61A9711CED2D300BC9BF7</string>
+				<string>ECD19D1011D14D6500459AF9</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>ECD61A9811CED2D300BC9BF7</string>
+				<string>ECD19D1111D14D6500459AF9</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -574,7 +588,7 @@
 		<string>/Users/entity/workdir/phoenix/iPhoneMoose/iPhoneMoose.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>275 59 1131 753 0 0 1440 878 </string>
+	<string>272 94 1131 753 0 0 1440 878 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -590,14 +604,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>PhoenixLineRenderable.cpp</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -653,7 +665,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>ECCD8A631185CB0100873F3C</string>
-				<string>ECD61A6011CECEFF00BC9BF7</string>
+				<string>ECD19D1211D14D6500459AF9</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

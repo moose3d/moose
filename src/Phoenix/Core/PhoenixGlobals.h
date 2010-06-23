@@ -24,6 +24,11 @@ namespace Phoenix
 		OLDMIN = NEWVAL;\
 	}\
 }
+      enum Tags
+      {
+          kCollider = 1 << 0,
+          kUserTag  = 1 << 1
+      };
   }
 }
 #define PHOENIX_DEPRECATED __attribute__((deprecated))
