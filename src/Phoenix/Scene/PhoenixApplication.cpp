@@ -246,7 +246,8 @@ prefix::CApplication::LoadDefaultResources()
     "{"\
     "    gl_Position = m_projMatrix * m_viewMatrix * m_modelMatrix * vec4(a_vertex,1.0);"\
     "}";
-    char colorFragmentShaderCode[] = "uniform lowp vec4 color; void main(){ gl_FragColor = color;}";
+    char colorFragmentShaderCode[] = "#ifdef GL_ES\nprecision mediump float;\n#endif\n"\
+                                     "uniform vec4 color; void main(){ gl_FragColor = color;}";
     CShader *pShader = new CShader();
     pShader->CreateVertexShaderFromSource(colorVertexShaderCode, "color vsh");
     pShader->CreateFragmentShaderFromSource(colorFragmentShaderCode,"color fsh");
@@ -298,7 +299,8 @@ prefix::CApplication::LoadDefaultResources()
             "}";
             
             
-        const char fsh[] = "uniform lowp vec4 color;void main(){gl_FragColor = color;}";
+        const char fsh[] = "#ifdef GL_ES\nprecision mediump float;\n#endif\n"\
+                            "uniform vec4 color;void main(){gl_FragColor = color;}";
         CShader *pShader = new CShader();
         pShader->CreateVertexShaderFromSource(vsh, "line vsh");
         pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
