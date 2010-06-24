@@ -2,3 +2,13 @@ SUBDIRS = src/Phoenix src/Phoenix/Audio src/Phoenix/AI src/Phoenix/Core src/Phoe
 AUTOMAKE_OPTIONS = foreign
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = phoenix.pc
+noinst_PROGRAMS = postbuild
+postbuild_SOURCES =
+postbuild: 
+	@echo "Generating tcl SWIG interface module..."
+	./mooseswig.sh
+	touch postbuild
+
+
+
+
