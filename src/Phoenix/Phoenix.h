@@ -13,6 +13,7 @@
 #include "PhoenixMatrix2x2.h"
 #include "PhoenixMatrix3x3.h"
 #include "PhoenixMatrix4x4.h"
+#include "PhoenixOGLConsts.h"
 #include "PhoenixOGLRenderer.h"
 #include "PhoenixObjectCounter.h"
 #include "PhoenixQuaternion.h"
@@ -54,6 +55,7 @@
 #include <PhoenixRenderableProperty.h>
 #include "PhoenixRenderableModel.h"
 #include "PhoenixRenderableModelShared.h"
+#include "PhoenixClearBuffers.h"
 #include "PhoenixBoxRenderable.h"
 #include "PhoenixSphereRenderable.h"
 #include "PhoenixLineRenderable.h"

@@ -373,6 +373,9 @@ namespace Phoenix
                       g_Error << "ELEMENT_TYPE_V3F_N3F_T2F Not supported" << std::endl; 
                       abort();
                       break;
+              default:
+                assert(NULL && "This should not be here.");
+                break;
               }
               glEnableVertexAttribArray(nIndex);
               //g_Log << "ATTRIB: applied index" << nIndex << std::endl;
@@ -474,6 +477,9 @@ namespace Phoenix
                       g_Error << "ELEMENT_TYPE_V3F_N3F_T2F Not supported" << std::endl; 
                       abort();
                       break;
+              default:
+                assert(NULL && "This should not be here.");
+                break;
               }
               
               glEnableVertexAttribArray(nIndex);

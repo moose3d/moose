@@ -176,6 +176,7 @@ namespace Phoenix
                             m_aValues[1]*vVec[1]);
         
         }
+#if !defined(SWIG)
         inline void operator*=( const CVector2 & vVec )
         {
             m_aValues[0]*=vVec[0];
@@ -187,6 +188,7 @@ namespace Phoenix
             m_aValues[0]*=value;
             m_aValues[1]*=value;
         }
+#endif
       ////////////////////
       /// The division operator.
       /// \param tDivider division value.
@@ -444,6 +446,7 @@ namespace Phoenix
                             m_aValues[1]*vVec[1]);
             
         }
+#if !defined(SWIG)
         inline void operator*=( const CVector2 & vVec )
         {
             m_aValues[0]*=vVec[0];
@@ -454,6 +457,7 @@ namespace Phoenix
             m_aValues[0]*=value;
             m_aValues[1]*=value;
         }
+#endif
       ////////////////////
       /// The division operator.
       /// \param tDivider division value.

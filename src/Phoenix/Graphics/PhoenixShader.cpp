@@ -153,6 +153,12 @@ Phoenix::Graphics::CShader::LoadVertexShader( const std::string & strVertexShade
 }
 /////////////////////////////////////////////////////////////////
 void
+Phoenix::Graphics::CShader::LoadFragmentShader( const std::string & strFragmentShader )
+{
+  return LoadFragmentShader(strFragmentShader.c_str());
+}
+/////////////////////////////////////////////////////////////////
+void
 Phoenix::Graphics::CShader::LoadVertexShader( const char * szVertexShader)
 {
 
