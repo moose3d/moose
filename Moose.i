@@ -119,8 +119,7 @@ inline double   ToReal( double * f ) { return *f;}
 %include "PhoenixRenderableProperty.h"
 %include "PhoenixTagged.h"
 %include "PhoenixNamed.h"
-%include "PhoenixObjectUpdater.h"
-%template (singletonObjectUpdater) Phoenix::Core::CSingleton< Phoenix::Default::CPhoenixObjectUpdater >;
+%include "PhoenixUpdateable.h"
 %include "PhoenixEnableable.h"
 %include "PhoenixAIScript.h"
 %include "PhoenixCollider.h"

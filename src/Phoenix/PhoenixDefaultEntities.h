@@ -2,7 +2,7 @@
 #define __PhoenixDefaultEntities_h__
 /////////////////////////////////////////////////////////////////
 #include <PhoenixResourceManager.h>
-#include <PhoenixObjectUpdater.h>
+#include <PhoenixUpdateable.h>
 #include <PhoenixTexture.h>
 #include <PhoenixShader.h>
 #include <PhoenixVertexDescriptor.h>
@@ -66,13 +66,7 @@ namespace Phoenix
 
 #endif
 #endif
-    /////////////////////////////////////////////////////////////////
-    /// Default object updater object.
-    class PHOENIX_API CPhoenixObjectUpdater : public Phoenix::Core::CObjectUpdater,
-				  public Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>
-    {
-      friend class Phoenix::Core::CSingleton<Phoenix::Default::CPhoenixObjectUpdater>;
-    };
+
     ObjectMgr * 		GetObjectMgr();
     TextureManager * 	GetTextureMgr();
     VertexManager * 	GetVertexMgr();
@@ -92,7 +86,6 @@ namespace Phoenix
 #define g_DefaultVertexManager  (Phoenix::Default::VertexManager::GetInstance())
 #define g_DefaultIndexManager   (Phoenix::Default::IndexManager::GetInstance())
 #define g_DefaultShaderManager  (Phoenix::Default::ShaderManager::GetInstance())
-#define g_DefaultUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
 #define g_UniqueNameStr         ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName())
 #define g_UniqueName            ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName().c_str())
 #define CreateUniqueNameStr(A)  ((Phoenix::Core::CUniqueNameCreator::GetInstance())->GetUniqueName(A))
@@ -115,7 +108,6 @@ namespace Phoenix
 #define g_ShaderMgr            (Phoenix::Default::ShaderManager::GetInstance())
 #define g_ModelMgr             (Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >::GetInstance())
 #define g_CameraMgr            (Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera, Phoenix::Core::CHandle<Phoenix::Graphics::CCamera> >::GetInstance())
-#define g_ObjectUpdater        (Phoenix::Default::CPhoenixObjectUpdater::GetInstance())
 #define g_ColliderMgr          (Phoenix::Core::CResourceManager< Phoenix::Collision::ICollider, Phoenix::Core::CHandle<Phoenix::Collision::ICollider> >::GetInstance())
 // TODO should these be combined?
 #define g_StreamMgr            (SoundStreamManager::GetInstance())

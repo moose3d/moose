@@ -47,7 +47,7 @@ namespace Phoenix
             void                         LoadDefaultResources();
 		public:
 
-			CApplication();
+			CApplication( );
 			virtual ~CApplication();
 
 			Phoenix::Scene::CScene * GetCurrentScene();

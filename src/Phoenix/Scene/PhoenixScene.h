@@ -108,6 +108,9 @@ namespace Phoenix
 #if !defined(PHOENIX_APPLE_IPHONE)
           void RegisterUserCommands();
 #endif
+          static void AssignLightsToRenderables( GameObjectList & lights, RenderQueue & queue);
+          static void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );
+          static void CollectRenderables( Phoenix::Graphics::CCamera & camera, GameObjectList & gameObjects, RenderQueue &queue );
 		};
 #if !defined(PHOENIX_APPLE_IPHONE)
 

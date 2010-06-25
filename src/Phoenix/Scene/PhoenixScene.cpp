@@ -20,9 +20,9 @@ using namespace Phoenix::Window;
 using namespace Phoenix::Math;
 using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
-void AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue);
-void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );
-void CollectRenderables( CCamera & camera, GameObjectList & gameObjects, CRenderQueue<CRenderable *> &queue );
+//void AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue);
+//void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );
+//void CollectRenderables( CCamera & camera, GameObjectList & gameObjects, CRenderQueue<CRenderable *> &queue );
 ///////////////////////////////////////////////////////////////////////////////
 /// Very simple sorter; sorts only by transparency.
 class CGameObjectSorter
@@ -93,8 +93,7 @@ Phoenix::Scene::CScene::Init()
 	}
 	// For messaging
 	g_ObjectMgr->Create( this, tmpName, this->GetObjectHandle());
-	// Regular Update()s.
-	g_ObjectUpdater->Manage( this->GetObjectHandle() );
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject *
@@ -113,8 +112,6 @@ Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
 	// So it can be culled
 	GetSpatialGraph().InsertObject(pObj);
 
-	// Call Update periodically
-	g_DefaultUpdater->Manage( pObj->GetObjectHandle() );
 	// insert local to local ptr list
 	m_lstGameObjects.push_back( pObj );
 	return pObj;
@@ -136,8 +133,8 @@ Phoenix::Scene::CScene::AddDirectionalLight( Phoenix::Scene::CDirectionalLightOb
 	// So it can be culled
 	GetSpatialGraph().InsertObject(pObj);
 
-	// Call Update periodically
-	g_DefaultUpdater->Manage( pObj->GetObjectHandle() );
+	// object list
+	m_lstGameObjects.push_back( pObj );
     return pObj;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -219,8 +216,15 @@ Phoenix::Scene::CScene::Update( float fSeconds )
 #endif
 	// update transform graph
 	GetTransformGraph().Update();
-	// update object positions in spatial graph.
+	// Update objects themselves.
 	GameObjectList::iterator it = m_lstGameObjects.begin();
+    for ( ; it != m_lstGameObjects.end(); it++ )
+    {
+        (*it)->Update( fSeconds );
+    }
+
+	// update object positions in spatial graph.
+	it = m_lstGameObjects.begin();
 	for ( ; it != m_lstGameObjects.end(); it++ )
 	{
 		GetSpatialGraph().Update( *it );
@@ -241,7 +245,7 @@ Phoenix::Scene::CScene::Update( float fSeconds )
 			c.CalculateBoundingCone();
 		}
 		CollectVisibleGameObjects( *camIt->second );
-		AssignLightsToObjects( camIt->second->GetActiveLights(), camIt->second->GetGameObjectList());
+        AssignLightsToObjects( camIt->second->GetActiveLights(), camIt->second->GetGameObjectList());
 
 	}
 }
@@ -321,7 +325,7 @@ Phoenix::Scene::CScene::GetCameraProperty( const std::string & name )
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
-AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue)
+Phoenix::Scene::CScene::AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue)
 {
 	std::list<CRenderable * >::iterator rIt = queue.GetObjectList().begin();
 	for( ; rIt != queue.GetObjectList().end(); rIt++)
@@ -341,7 +345,7 @@ AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> 
 }
 /////////////////////////////////////////////////////////////////
 void
-AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects )
+Phoenix::Scene::CScene::AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects )
 {
 	GameObjectList::iterator objIt = objects.begin();
 	for( ; objIt != objects.end(); objIt++)
@@ -363,7 +367,7 @@ AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects )
 }
 /////////////////////////////////////////////////////////////////
 void
-CollectRenderables( CCamera & camera, GameObjectList & gameObjects, CRenderQueue<CRenderable *> &queue )
+Phoenix::Scene::CScene::CollectRenderables( CCamera & camera, GameObjectList & gameObjects, CRenderQueue<CRenderable *> &queue )
 {
   GameObjectList::iterator it = gameObjects.begin();
   for( ; it != gameObjects.end(); it++)

@@ -24,14 +24,14 @@ h_sources =  	PhoenixAPI.h \
 		PhoenixObjectCounter.h \
 		PhoenixUniqueNameCreator.h \
 		PhoenixFocusable.h \
-		PhoenixObjectUpdater.h \
+		PhoenixUpdateable.h \
 		PhoenixViewable.h \
 		PhoenixFPSCounter.h \
 		PhoenixRadixSort.h \
 		PhoenixWindowsWrapper.h \
 		PhoenixGlobals.h \
 		PhoenixResourceManager.h
-cc_sources = PhoenixExceptions.cpp    PhoenixLogger.cpp  PhoenixObjectUpdater.cpp  PhoenixWindowsWrapper.cpp 	
+cc_sources = PhoenixExceptions.cpp    PhoenixLogger.cpp   PhoenixWindowsWrapper.cpp 	
 # templatized
 # PhoenixGraph.cpp
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)

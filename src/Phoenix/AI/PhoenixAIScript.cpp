@@ -212,12 +212,15 @@ Phoenix::AI::CAIObject::GetScript() const
 ////////////////////////////////////////////////////////////////////////////////
 Phoenix::AI::CAIScript::CAIScript( CAIObject *pEntity, const char *szScript )
 {
+  Tcl_FindExecutable("/usr/bin/tclsh");
   m_pEntity = pEntity;
   m_pInterp = Tcl_CreateInterp();
+
   assert( m_pInterp != NULL );
   assert( m_pEntity != NULL );
+
   m_fPassedTime = 0.0f;
-  ////////////////////////////////////////////////////////////////
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 void

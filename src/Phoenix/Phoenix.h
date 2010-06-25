@@ -64,7 +64,7 @@
 #include "PhoenixSpatialGraph.h"
 #include "PhoenixScene.h"
 #include "PhoenixParticleSystem.h"
-#include "PhoenixObjectUpdater.h"
+#include "PhoenixUpdateable.h"
 #if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixStateMachine.h"
 #endif

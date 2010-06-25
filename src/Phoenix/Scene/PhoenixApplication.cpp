@@ -210,8 +210,6 @@ prefix::CApplication::Update()
       // Update our own script
       UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
 #endif
-    // Update every object put under management.
-      g_DefaultUpdater->Update( m_Timer.GetPassedTime().ToSeconds() );
       // TODO add pause capability.
       if ( GetCurrentScene() != NULL)
           GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
