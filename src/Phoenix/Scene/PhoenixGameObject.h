@@ -28,23 +28,26 @@ namespace Phoenix
   	};
   	/////////////////////////////////////////////////////////////////
   	class CSpatialGraph;
+    class CGameObject;
+    typedef std::list<CGameObject *> GameObjectList;
+    typedef std::set<CGameObject *> GameObjectSet;
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
-    class PHOENIX_API CGameObject : public Phoenix::Scene::CTransformable,
-																		public Phoenix::Graphics::CRenderableProperty,
-																		public Phoenix::Core::CTagged,
-																		public Phoenix::Collision::CSphereCollider,
-																		public Phoenix::Core::CNamed,
-																		public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
-                                                                        public Phoenix::AI::CAIObject,
-                                                                        public Phoenix::Core::IUpdateable,
-																		public Phoenix::Core::CEnableable
+    class PHOENIX_API CGameObject : public Phoenix::Scene::CTransformable,																		public Phoenix::Graphics::CRenderableProperty,
+                                    public Phoenix::Core::CTagged,
+                                    public Phoenix::Collision::CSphereCollider,
+                                    public Phoenix::Core::CNamed,
+                                    public Phoenix::Core::CHandled<Phoenix::Scene::CGameObject>,
+                                    public Phoenix::AI::CAIObject,
+                                    public Phoenix::Core::IUpdateable,
+                                    public Phoenix::Core::CEnableable
 		{
     protected:
 
       unsigned int                     m_nSpatialIndex; ///!< In which spatial index of spatial graph this object is in.
       Phoenix::Collision::ICollider *  m_pCollider; 		///!< Specialized collider instead of Sphere.
-      std::list<CGameObject *> 				 m_lstColliders; 	///!< List of possible colliders.
+      GameObjectList                    m_lstPotentialColliders; 	///!< List of possible colliders.
+      GameObjectList                    m_lstColliders;             ///!< List of currently colliding objects.
     public:
       ////////////////////
       /// Constructor.
@@ -100,7 +103,6 @@ namespace Phoenix
       /// Checks collisions between neighbors and enqueues messages for scripts accordingly.
       void CheckCollisions();
     };
-    typedef std::list<CGameObject *> GameObjectList;
   }; // namespace Scene
 }; // namespace Phoenix
 /////////////////////////////////////////////////////////////////

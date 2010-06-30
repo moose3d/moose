@@ -1,12 +1,16 @@
 #include "PhoenixGameObject.h"
 #include "PhoenixCollision.h"
 #include "PhoenixSpatialGraph.h"
+#include "PhoenixCollisionEvent.h"
 #include <list>
+#include <iterator>
+#include <algorithm>
 /////////////////////////////////////////////////////////////////
-//using namespace Phoenix::Scene;
-//using namespace Phoenix::Core;
-//using namespace Phoenix::Graphics;
-using std::list;
+using namespace Phoenix::Scene;
+using namespace Phoenix::Core;
+using namespace Phoenix::Graphics;
+using namespace Phoenix::AI;
+using namespace std;
 /////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::~CGameObject()
 {
@@ -128,25 +132,46 @@ Phoenix::Scene::CGameObject::Update( float fSecondsPassed )
 void
 Phoenix::Scene::CGameObject::UpdateColliders( float fRadius, Phoenix::Scene::CSpatialGraph & graph )
 {
-	m_lstColliders.clear();
-	graph.CollectObjects( Phoenix::Volume::CSphere(GetWorldTransform().GetTranslation(), fRadius), m_lstColliders );
+    // Get new potential collider set
+	m_lstPotentialColliders.clear();
+    
+	graph.CollectObjects( Phoenix::Volume::CSphere(GetWorldTransform().GetTranslation(), 
+                                                   fRadius), m_lstPotentialColliders );
+    
+    GameObjectList tmpList;
+    // Sort existing lists for difference
+    m_lstPotentialColliders.sort();
+    m_lstColliders.sort();
+    
+    // remove already colliding objects from potential set
+    set_difference(m_lstPotentialColliders.begin(), m_lstPotentialColliders.end(),
+                   m_lstColliders.begin(), m_lstColliders.end(), back_inserter(tmpList));
+    
+    // update potential colliders to removed values.
+    m_lstPotentialColliders.swap(tmpList);
+    tmpList.clear();
+    
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
 Phoenix::Scene::CGameObject::CheckCollisions()
 {
-	list<CGameObject *>::iterator it = m_lstColliders.begin();
+	GameObjectList::iterator it = m_lstPotentialColliders.begin();
 
-	for ( ; it != m_lstColliders.end(); it++)
+	for ( ; it != m_lstPotentialColliders.end(); it++)
 	{
 		// ignore collision on itself
 		if ( *it == this) continue;
 		// enqueue messages if intersection occurs
 		if ( this->Intersects( **it ) )
 		{
+            
 #if !defined(PHOENIX_APPLE_IPHONE)
 			(*it)->EnqueueMessage("OnCollisionEnter");
 			this->EnqueueMessage("OnCollisionEnter");
+#else
+            (*it)->EnqueueMessage(new CCollisionEvent(this));
+            this->EnqueueMessage( new CCollisionEvent(*it));
 #endif
 		}
 	}

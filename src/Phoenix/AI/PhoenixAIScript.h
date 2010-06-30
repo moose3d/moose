@@ -77,8 +77,11 @@ namespace Phoenix
        
       
       void 				 RegisterCommands();
+#else
+        void EnqueueMessage( Phoenix::AI::CMessage *pMsg, const Phoenix::Core::CTimeStamp & time = Phoenix::Core::CTimeStamp(0,0));
         
 #endif
+
         //////////////////////
         /// Overwrite this to create new commands or register listeners in messagequeue.
         virtual void RegisterUserCommands() {}
