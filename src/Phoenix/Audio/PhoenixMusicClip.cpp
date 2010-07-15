@@ -125,24 +125,31 @@ audio_decode_play_proc( void * pClientData )
                if (err) { PRINTERROR("AudioFileStreamParseBytes"); break; }
                }
     }
-    // enqueue last buffer
-    MyEnqueueBuffer(pObj->m_pData);
+    if ( pObj->IsRunning() == false)
+    {
+        AudioQueueStop( pObj->m_pData->audioQueue, TRUE);
+        pthread_exit(NULL);
+    } 
+    else {
+        // enqueue last buffer
+        MyEnqueueBuffer(pObj->m_pData);
            
-    printf("flushing\n");
-           OSStatus err = AudioQueueFlush(pObj->m_pData->audioQueue);
-           if (err) { PRINTERROR("AudioQueueFlush"); }	
+        printf("flushing\n");
+        OSStatus err = AudioQueueFlush(pObj->m_pData->audioQueue);
+        if (err) { PRINTERROR("AudioQueueFlush"); }	
            
-           pObj->Stop();
+        pObj->Stop();
+    
+        printf("waiting until finished playing..\n");
+        pthread_mutex_lock(&pObj->m_pData->mutex); 
+        pthread_cond_wait(&pObj->m_pData->done, &pObj->m_pData->mutex);
+        pthread_mutex_unlock(&pObj->m_pData->mutex);
            
-           printf("waiting until finished playing..\n");
-           pthread_mutex_lock(&pObj->m_pData->mutex); 
-           pthread_cond_wait(&pObj->m_pData->done, &pObj->m_pData->mutex);
-           pthread_mutex_unlock(&pObj->m_pData->mutex);
            
-           
-           printf("done\n");
-    pObj->m_bRunning = false;
-    pthread_exit(NULL);
+        printf("done\n");
+        pObj->m_bRunning = false;
+        pthread_exit(NULL);
+    }
     return NULL;
 }
 /////////////////////////////////////////////////////////////
@@ -153,6 +160,9 @@ Phoenix::Sound::CMusicClip::Play()
  if ( IsPaused())
  {
      m_bPaused = false;
+     pthread_mutex_lock(&m_pData->mutex); 
+     AudioQueueStart(m_pData->audioQueue, NULL);
+     pthread_mutex_unlock(&m_pData->mutex);
  }
  else 
  {
@@ -179,12 +189,18 @@ void
 Phoenix::Sound::CMusicClip::Stop()
 {
     m_bRunning = false;
+    //pthread_mutex_lock(&m_pData->mutex); 
+	AudioQueueStop(m_pData->audioQueue, TRUE);
+    //pthread_mutex_unlock(&m_pData->mutex);
 }
 /////////////////////////////////////////////////////////////
 void
 Phoenix::Sound::CMusicClip::Pause()
 {
     m_bPaused = true;
+    //pthread_mutex_lock(&m_pData->mutex); 
+    AudioQueuePause(m_pData->audioQueue);
+    //pthread_mutex_unlock(&m_pData->mutex);
 }
 /////////////////////////////////////////////////////////////
 

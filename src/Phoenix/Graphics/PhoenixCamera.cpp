@@ -177,7 +177,7 @@ Phoenix::Graphics::CCamera::CalculateBoundingCone()
   float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
 
   // calculate the length of the fov triangle
-  float fDepth  = fHalfHeight / tanf(Deg2Rad(GetFieldOfView()) * 0.5f);
+  float fDepth  = fHalfHeight / tan(Deg2Rad(GetFieldOfView()) * 0.5f);
 
   // calculate the corner of the screen
   float fCorner = sqrt(fHalfWidth * fHalfWidth + fHalfHeight * fHalfHeight);
@@ -251,7 +251,7 @@ Phoenix::Graphics::CCamera::UpdateProjection()
   //float fH = tanf( fFieldOfViewVertical) * GetNearClipping(); 
   //float fH = (fAspect/fE) * GetNearClipping(); 
   ////////////////////
-  float fH = (fAspect*tanf(Deg2Rad(GetFieldOfView()) * 0.5f)) * GetNearClipping(); 
+  float fH = (fAspect*tan(Deg2Rad(GetFieldOfView()) * 0.5f)) * GetNearClipping(); 
 
   float fW = fH * (float)m_aViewport[2]/(float)m_aViewport[3];
   float fFar = m_fFarClipping;
@@ -364,7 +364,7 @@ Phoenix::Graphics::CCamera::UnProjectToEye( float fX, float fY, float fZ )
   }   
   else
   {
-    fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
+    fH = tan( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye; 
     return CVector3<float>(fH * fNormX,fH * fAspect * fNormY, -fZInEye);
   }
 
@@ -438,7 +438,7 @@ Phoenix::Graphics::CCamera::UnProject( float fX, float fY, float fZ)
   } 
   else
   {
-    float fH = tanf( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye;
+    float fH = tan( Deg2Rad( GetFieldOfView() * 0.5f )) * fZInEye;
     vTmp[0] = fH * fNormX;
     vTmp[1] = fH * fAspect * fNormY;
     vTmp[2] = -fZInEye;
@@ -577,7 +577,7 @@ Phoenix::Graphics::CCamera::Project( const CVector3<float> &vPosition)
 void 
 Phoenix::Graphics::CCamera::CalculateFrustum()
 {
-  float fE = 1.0f / tanf( Deg2Rad(GetFieldOfView()) * 0.5f );
+  float fE = 1.0f / tan( Deg2Rad(GetFieldOfView()) * 0.5f );
   // This is as specified in math for 3d game progrm. & comp. graphics. (height/width)
   float fAspect = (float)m_aViewport[3]/(float)m_aViewport[2]; 
   float f1DivSqrtEPow2plus1 = 1.0f / sqrtf( (fE * fE) + 1.0f); 

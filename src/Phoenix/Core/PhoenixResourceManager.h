@@ -416,6 +416,11 @@ namespace Phoenix
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
       OBJECTTYPE *GetResource( const char *szResName ) const;
       ////////////////////
+      /// GetResource in more compact form.
+      /// \param szResName Registered resource name.
+      /// \returns Pointer to object, if handle is valid. NULL otherwise.
+      OBJECTTYPE *operator()( const char *szResName) const;  
+      ////////////////////
       /// Gets number of currently managed objects.
       /// \returns Number of managed objects.
       size_t GetSize() const;
@@ -669,6 +674,13 @@ Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::DeleteMemory()
     delete m_pResourceHash;
   }
   m_pResourceHash = NULL;
+}
+/////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline OBJECTTYPE *
+Phoenix::Core::CResourceManager<OBJECTTYPE,HANDLE>::operator()( const char *szResName ) const
+{
+    return this->GetResource(szResName);
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>

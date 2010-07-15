@@ -3,6 +3,10 @@
 #include "PhoenixWindowsWrapper.h"
 #endif
 /////////////////////////////////////////////////////////////////
+#include "PhoenixAPI.h"
+#if defined(PHOENIX_APPLE_IPHONE)
+#include <dispatch/dispatch.h>
+#endif
 //#include "PhoenixGuiSystem.h"
 #include "PhoenixAVLTree.h"
 #include "PhoenixCore.h"
@@ -75,10 +79,9 @@
 #include "PhoenixFFMpeg.h"
 #include "PhoenixRenderableVideo.h"
 #endif
-#if !defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixMessageSystem.h"
 #include "PhoenixAIScript.h"
-#endif
+#include "PhoenixCollisionEvent.h"
 #include "PhoenixModelLoader.h"
 #include "PhoenixObjLoader.h"
 #include <PhoenixALObjectArray.h>
@@ -96,6 +99,7 @@
 #include <PhoenixBoxBound.h>
 #include <PhoenixSphereBound.h>
 #include <PhoenixApplication.h>
+#include <PhoenixEventQueue.h>
 #include <PhoenixDirectionalLightObject.h>
 #include <PhoenixPlane.h>
 #include <PhoenixLine.h>

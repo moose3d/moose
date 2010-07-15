@@ -197,9 +197,6 @@ Phoenix::Graphics::CSkybox::CSkybox( )
     assert( g_ShaderMgr->Create(pShader, 
                                 PHOENIX_SKYBOX_SHADER, 
                                 state.GetShaderHandle()) == 0);
-    CVertexDescriptor *pTmp = new CVertexDescriptor(ELEMENT_TYPE_UNIFORM_1I, 1);
-    pTmp->GetPointer<int>()[0] = 0;
-    g_VertexMgr->Create(pTmp, PHOENIX_SKYBOX_TEXTURE_ID);
   }
   state.AddTextureFilter(T_WRAP_CLAMP_TO_EDGE);
   state.AddTextureFilter(S_WRAP_CLAMP_TO_EDGE);
@@ -213,8 +210,7 @@ Phoenix::Graphics::CSkybox::CSkybox( )
   // necessary params
   state.AddShaderAttrib("position", (*m_hModel)->GetVertexHandle() );
   state.AddShaderAttrib("a_texcoord", (*m_hModel)->GetTextureCoordinateHandle() );
-  VERTEX_HANDLE hTmp = PHOENIX_SKYBOX_TEXTURE_ID;
-  state.AddShaderAttrib("diffuse", hTmp); 
+  state.AddShaderUniform("diffuse", 0); 
 
   assert(state.Prepare());
 }

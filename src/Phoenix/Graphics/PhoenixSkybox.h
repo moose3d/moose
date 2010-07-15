@@ -10,7 +10,6 @@
 #define PHOENIX_SKYBOX_INDICES      "PHOENIX_SKYBOX_INDICES"
 #define PHOENIX_SKYBOX_MODEL        "PHOENIX_SKYBOX_MODEL"
 #define PHOENIX_SKYBOX_SHADER       "PHOENIX_SKYBOX_SHADER"
-#define PHOENIX_SKYBOX_TEXTURE_ID   "PHOENIX_SKYBOX_TEXTURE_ID"
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {

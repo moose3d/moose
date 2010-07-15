@@ -112,6 +112,18 @@ namespace Phoenix
 // TODO should these be combined?
 #define g_StreamMgr            (SoundStreamManager::GetInstance())
 #define g_SampleMgr            (SoundSampleManager::GetInstance())
+// For even easier access to resources
+#define g_Objects            (*Phoenix::Default::ObjectMgr::GetInstance())
+#define g_Textures           (*Phoenix::Default::TextureManager::GetInstance())
+#define g_Vertices            (*Phoenix::Default::VertexManager::GetInstance())
+#define g_Indices             (*Phoenix::Default::IndexManager::GetInstance())
+#define g_Shaders            (*Phoenix::Default::ShaderManager::GetInstance())
+#define g_Models             (*Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >::GetInstance())
+#define g_Cameras            (*Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera, Phoenix::Core::CHandle<Phoenix::Graphics::CCamera> >::GetInstance())
+#define g_Colliders          (*Phoenix::Core::CResourceManager< Phoenix::Collision::ICollider, Phoenix::Core::CHandle<Phoenix::Collision::ICollider> >::GetInstance())
+// TODO should these be combined?
+#define g_Streams            (*SoundStreamManager::GetInstance())
+#define g_Samples            (*SoundSampleManager::GetInstance())
 // Audio system
 #define g_AudioSystem          (Phoenix::Sound::CAudioSystem::GetInstance())
 /////////////////////////////////////////////////////////////////

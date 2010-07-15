@@ -19,13 +19,13 @@ namespace Phoenix
 	}
 	namespace Collision
 	{
-		////////////////////
+        ////////////////////
 		/// Interface for colliders.
 		class ICollider
 		{
 		protected:
 			Phoenix::Math::CTransform * m_pTransform;
-		protected:
+        protected:
 			ICollider() : m_pTransform(NULL) { }
 		public:
 			virtual ~ICollider() {};
@@ -48,8 +48,7 @@ namespace Phoenix
       ///////////////////
 			/// Makes it possible to generate visual representations of colliders.
 			virtual void Render( Phoenix::Graphics::COglRenderer & renderer ) = 0;
-
-		};
+        };
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////

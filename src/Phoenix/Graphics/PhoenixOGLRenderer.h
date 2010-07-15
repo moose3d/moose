@@ -8,7 +8,7 @@
 #include <OpenGLES/ES2/glext.h>
 #elif defined(__APPLE__)
 #include <GL/GLee.h>
-#include <OpenGL/gl.h>
+//#include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
 #include <GL/GLee.h>

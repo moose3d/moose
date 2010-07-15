@@ -88,10 +88,10 @@ Phoenix::Math::Slerp( CQuaternion qFrom, CQuaternion qTo, float fInterpolation, 
 
   if ( 1.0f - fCos > 0.00001f )
   {
-    float fOmega = acosf(fCos);
-    float f1DivSinOmega = (1.0f/sinf(fOmega));
-    fScaleFrom = sinf((1.0f - fInterpolation )*fOmega) * f1DivSinOmega;
-    fScaleTo   = sinf( fInterpolation * fOmega )  * f1DivSinOmega;
+    float fOmega = acos(fCos);
+    float f1DivSinOmega = (1.0f/sin(fOmega));
+    fScaleFrom = sin((1.0f - fInterpolation )*fOmega) * f1DivSinOmega;
+    fScaleTo   = sin( fInterpolation * fOmega )  * f1DivSinOmega;
 
   }
   else
@@ -133,8 +133,8 @@ Phoenix::Math::RotationMatrix(float fX, float fY, float fZ, float fRadians, CMat
   fX = vAxisUnit[0];
   fY = vAxisUnit[1];
   // Sine and cosine of the fRadians
-  float fSinAlpha = sinf(fRadians);
-  float fCosAlpha = cosf(fRadians);
+  float fSinAlpha = sin(fRadians);
+  float fCosAlpha = cos(fRadians);
 
   // To remove couple of overlapping mulitiplications
   float fXX = fX * fX;
@@ -924,7 +924,7 @@ Phoenix::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
   vAxis[1] = qQuat[1] * f1DivSinAngle;
   vAxis[2] = qQuat[2] * f1DivSinAngle;
   /// The angle
-  fAngleInDegrees = Rad2Deg(acosf( fCosAngle )) * 2.0f;
+  fAngleInDegrees = Rad2Deg(acos( fCosAngle )) * 2.0f;
 
 }
 /////////////////////////////////////////////////////////////////
@@ -1221,7 +1221,7 @@ Phoenix::Math::AngleBetweenVectors( const CVector3<float> &vVect1, const CVector
 
   if ( fLengthMult != 0.0f )
   {
-    fAngle = acosf( fDot / fLengthMult );
+    fAngle = acos( fDot / fLengthMult );
     // sanity check
     if ( isnan(fAngle) ) fAngle = 0.0f;
   }
