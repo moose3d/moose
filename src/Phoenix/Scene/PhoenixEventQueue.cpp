@@ -6,7 +6,8 @@
  *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
-
+// is not used without iPhoneMoose
+#if defined(PHOENIX_APPLE_IPHONE)
 #include "PhoenixEventQueue.h"
 using namespace std;
 namespace prefix = Phoenix::Scene;
@@ -54,3 +55,4 @@ prefix::CEventQueue::Empty() const
     dispatch_semaphore_signal(m_Lock);    
     return isEmpty;
 }
+#endif

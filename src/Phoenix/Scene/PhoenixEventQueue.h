@@ -40,6 +40,7 @@ namespace Phoenix
             // Abstracted eventqueue.
         class CEventQueue : protected std::queue<Event>
         {
+#if !defined(PHOENIX_APPLE_IPHONE)
         protected:
             dispatch_semaphore_t m_Lock;
         public:
@@ -49,6 +50,7 @@ namespace Phoenix
             void Pop();
             bool Empty() const;
             Event Front() const;
+#endif
         };
     } // Scene
 } // Phoenix

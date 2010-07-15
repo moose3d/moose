@@ -109,7 +109,9 @@ namespace Phoenix
         virtual void OnCollisionExit( Phoenix::Scene::CGameObject *pCollider );
         void SetUserInfo( int iValue ) { m_iUserInfo = iValue; }
         int & GetUserInfo()  { return m_iUserInfo;}
+#if !defined(SWIG)
         const int GetUserInfo() const { return m_iUserInfo; }
+#endif
     };
   }; // namespace Scene
 }; // namespace Phoenix

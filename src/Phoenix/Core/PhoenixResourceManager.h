@@ -415,11 +415,13 @@ namespace Phoenix
       /// \param szResName Registered resource name.
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
       OBJECTTYPE *GetResource( const char *szResName ) const;
+#if !defined(SWIG)
       ////////////////////
       /// GetResource in more compact form.
       /// \param szResName Registered resource name.
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
       OBJECTTYPE *operator()( const char *szResName) const;  
+#endif
       ////////////////////
       /// Gets number of currently managed objects.
       /// \returns Number of managed objects.

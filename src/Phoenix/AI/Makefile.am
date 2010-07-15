@@ -1,6 +1,6 @@
 GENERIC_LIBRARY_NAME="Phoenix"
 AM_CXXFLAGS = -O2
-h_sources = PhoenixFlock.h  PhoenixMessageSystem.h  PhoenixPathFinding.h  PhoenixStateMachine.h PhoenixAIScript.h
+h_sources = PhoenixFlock.h  PhoenixMessageSystem.h  PhoenixPathFinding.h  PhoenixStateMachine.h PhoenixAIScript.h PhoenixCollisionEvent.h
 cc_sources = PhoenixFlock.cpp  PhoenixMessageSystem.cpp    PhoenixStateMachine.cpp  PhoenixAIScript.cpp
 
 library_includedir=$(includedir)/$(GENERIC_LIBRARY_NAME)
