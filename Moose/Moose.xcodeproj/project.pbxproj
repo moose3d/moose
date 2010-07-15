@@ -58,8 +58,6 @@
 		ECB42AEF1182FC6F007C274F /* PhoenixNamed.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42ACB1182FC6F007C274F /* PhoenixNamed.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ECB42AF01182FC6F007C274F /* PhoenixNullable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42ACC1182FC6F007C274F /* PhoenixNullable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ECB42AF11182FC6F007C274F /* PhoenixObjectCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42ACD1182FC6F007C274F /* PhoenixObjectCounter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		ECB42AF21182FC6F007C274F /* PhoenixObjectUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECB42ACE1182FC6F007C274F /* PhoenixObjectUpdater.cpp */; };
-		ECB42AF31182FC6F007C274F /* PhoenixObjectUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42ACF1182FC6F007C274F /* PhoenixObjectUpdater.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ECB42AF41182FC6F007C274F /* PhoenixRadixSort.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42AD01182FC6F007C274F /* PhoenixRadixSort.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ECB42AF51182FC6F007C274F /* PhoenixResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42AD11182FC6F007C274F /* PhoenixResourceManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ECB42AF61182FC6F007C274F /* PhoenixSelectable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB42AD21182FC6F007C274F /* PhoenixSelectable.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -208,6 +206,7 @@
 		ECEC10EA118345E80045CA0A /* PhoenixDefaultEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECEC10E7118345E80045CA0A /* PhoenixDefaultEntities.cpp */; };
 		ECEC10EB118345E80045CA0A /* PhoenixDefaultEntities.h in Headers */ = {isa = PBXBuildFile; fileRef = ECEC10E8118345E80045CA0A /* PhoenixDefaultEntities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ECEC11071183466E0045CA0A /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECEC11061183466E0045CA0A /* OpenAL.framework */; };
+		ECEC269B11D6B30A002C92B3 /* PhoenixUpdateable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECEC269A11D6B30A002C92B3 /* PhoenixUpdateable.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -268,8 +267,6 @@
 		ECB42ACB1182FC6F007C274F /* PhoenixNamed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixNamed.h; path = ../src/Phoenix/Core/PhoenixNamed.h; sourceTree = SOURCE_ROOT; };
 		ECB42ACC1182FC6F007C274F /* PhoenixNullable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixNullable.h; path = ../src/Phoenix/Core/PhoenixNullable.h; sourceTree = SOURCE_ROOT; };
 		ECB42ACD1182FC6F007C274F /* PhoenixObjectCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixObjectCounter.h; path = ../src/Phoenix/Core/PhoenixObjectCounter.h; sourceTree = SOURCE_ROOT; };
-		ECB42ACE1182FC6F007C274F /* PhoenixObjectUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhoenixObjectUpdater.cpp; path = ../src/Phoenix/Core/PhoenixObjectUpdater.cpp; sourceTree = SOURCE_ROOT; };
-		ECB42ACF1182FC6F007C274F /* PhoenixObjectUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixObjectUpdater.h; path = ../src/Phoenix/Core/PhoenixObjectUpdater.h; sourceTree = SOURCE_ROOT; };
 		ECB42AD01182FC6F007C274F /* PhoenixRadixSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixRadixSort.h; path = ../src/Phoenix/Core/PhoenixRadixSort.h; sourceTree = SOURCE_ROOT; };
 		ECB42AD11182FC6F007C274F /* PhoenixResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixResourceManager.h; path = ../src/Phoenix/Core/PhoenixResourceManager.h; sourceTree = SOURCE_ROOT; };
 		ECB42AD21182FC6F007C274F /* PhoenixSelectable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixSelectable.h; path = ../src/Phoenix/Core/PhoenixSelectable.h; sourceTree = SOURCE_ROOT; };
@@ -418,6 +415,7 @@
 		ECEC10E7118345E80045CA0A /* PhoenixDefaultEntities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhoenixDefaultEntities.cpp; path = ../src/Phoenix/PhoenixDefaultEntities.cpp; sourceTree = SOURCE_ROOT; };
 		ECEC10E8118345E80045CA0A /* PhoenixDefaultEntities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixDefaultEntities.h; path = ../src/Phoenix/PhoenixDefaultEntities.h; sourceTree = SOURCE_ROOT; };
 		ECEC11061183466E0045CA0A /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		ECEC269A11D6B30A002C92B3 /* PhoenixUpdateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixUpdateable.h; path = ../src/Phoenix/Core/PhoenixUpdateable.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -481,6 +479,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				ECEC269A11D6B30A002C92B3 /* PhoenixUpdateable.h */,
 				ECEC10E6118345E80045CA0A /* Phoenix.h */,
 				ECEC10E7118345E80045CA0A /* PhoenixDefaultEntities.cpp */,
 				ECEC10E8118345E80045CA0A /* PhoenixDefaultEntities.h */,
@@ -634,8 +633,6 @@
 				ECB42ACB1182FC6F007C274F /* PhoenixNamed.h */,
 				ECB42ACC1182FC6F007C274F /* PhoenixNullable.h */,
 				ECB42ACD1182FC6F007C274F /* PhoenixObjectCounter.h */,
-				ECB42ACE1182FC6F007C274F /* PhoenixObjectUpdater.cpp */,
-				ECB42ACF1182FC6F007C274F /* PhoenixObjectUpdater.h */,
 				ECB42AD01182FC6F007C274F /* PhoenixRadixSort.h */,
 				ECB42AD11182FC6F007C274F /* PhoenixResourceManager.h */,
 				ECB42AD21182FC6F007C274F /* PhoenixSelectable.h */,
@@ -748,7 +745,6 @@
 				ECB42AEF1182FC6F007C274F /* PhoenixNamed.h in Headers */,
 				ECB42AF01182FC6F007C274F /* PhoenixNullable.h in Headers */,
 				ECB42AF11182FC6F007C274F /* PhoenixObjectCounter.h in Headers */,
-				ECB42AF31182FC6F007C274F /* PhoenixObjectUpdater.h in Headers */,
 				ECB42AF41182FC6F007C274F /* PhoenixRadixSort.h in Headers */,
 				ECB42AF51182FC6F007C274F /* PhoenixResourceManager.h in Headers */,
 				ECB42AF61182FC6F007C274F /* PhoenixSelectable.h in Headers */,
@@ -842,6 +838,7 @@
 				ECB42C131182FCDC007C274F /* PhoenixSphereBound.h in Headers */,
 				ECEC10E9118345E80045CA0A /* Phoenix.h in Headers */,
 				ECEC10EB118345E80045CA0A /* PhoenixDefaultEntities.h in Headers */,
+				ECEC269B11D6B30A002C92B3 /* PhoenixUpdateable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -915,7 +912,6 @@
 				ECB42AB61182FC5F007C274F /* PhoenixSoundSampleBase.cpp in Sources */,
 				ECB42AE21182FC6F007C274F /* PhoenixExceptions.cpp in Sources */,
 				ECB42AED1182FC6F007C274F /* PhoenixLogger.cpp in Sources */,
-				ECB42AF21182FC6F007C274F /* PhoenixObjectUpdater.cpp in Sources */,
 				ECB42AFE1182FC6F007C274F /* PhoenixWindowsWrapper.cpp in Sources */,
 				ECB42B431182FC87007C274F /* PhoenixAmbientLight.cpp in Sources */,
 				ECB42B461182FC87007C274F /* PhoenixCamera.cpp in Sources */,

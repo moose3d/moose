@@ -74,8 +74,6 @@
 		ECCD891B1185C9C800873F3C /* PhoenixNamed.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F81185C9C800873F3C /* PhoenixNamed.h */; };
 		ECCD891C1185C9C800873F3C /* PhoenixNullable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F91185C9C800873F3C /* PhoenixNullable.h */; };
 		ECCD891D1185C9C800873F3C /* PhoenixObjectCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FA1185C9C800873F3C /* PhoenixObjectCounter.h */; };
-		ECCD891E1185C9C800873F3C /* PhoenixObjectUpdater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88FB1185C9C800873F3C /* PhoenixObjectUpdater.cpp */; };
-		ECCD891F1185C9C800873F3C /* PhoenixObjectUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FC1185C9C800873F3C /* PhoenixObjectUpdater.h */; };
 		ECCD89201185C9C800873F3C /* PhoenixRadixSort.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FD1185C9C800873F3C /* PhoenixRadixSort.h */; };
 		ECCD89211185C9C800873F3C /* PhoenixResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FE1185C9C800873F3C /* PhoenixResourceManager.h */; };
 		ECCD89221185C9C800873F3C /* PhoenixSelectable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FF1185C9C800873F3C /* PhoenixSelectable.h */; };
@@ -214,6 +212,10 @@
 		ECCD8AA31185D28000873F3C /* Phoenix.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA01185D28000873F3C /* Phoenix.h */; };
 		ECCD8AA41185D28000873F3C /* PhoenixDefaultEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */; };
 		ECCD8AA51185D28000873F3C /* PhoenixDefaultEntities.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */; };
+		ECDD4FD011DB3A800064BB01 /* PhoenixCollisionEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = ECDD4FCE11DB3A800064BB01 /* PhoenixCollisionEvent.h */; };
+		ECE414FC11D77341006C0318 /* PhoenixUpdateable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE414FB11D77341006C0318 /* PhoenixUpdateable.h */; };
+		ECE7539311E3C6710069E989 /* PhoenixEventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE7539111E3C6710069E989 /* PhoenixEventQueue.h */; };
+		ECE7539411E3C6710069E989 /* PhoenixEventQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECE7539211E3C6710069E989 /* PhoenixEventQueue.cpp */; };
 		ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */ = {isa = PBXBuildFile; fileRef = ECF1FB74119A986000212362 /* PhoenixMusicClip.h */; };
 		ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */; };
 /* End PBXBuildFile section */
@@ -288,8 +290,6 @@
 		ECCD88F81185C9C800873F3C /* PhoenixNamed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixNamed.h; sourceTree = "<group>"; };
 		ECCD88F91185C9C800873F3C /* PhoenixNullable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixNullable.h; sourceTree = "<group>"; };
 		ECCD88FA1185C9C800873F3C /* PhoenixObjectCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixObjectCounter.h; sourceTree = "<group>"; };
-		ECCD88FB1185C9C800873F3C /* PhoenixObjectUpdater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixObjectUpdater.cpp; sourceTree = "<group>"; };
-		ECCD88FC1185C9C800873F3C /* PhoenixObjectUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixObjectUpdater.h; sourceTree = "<group>"; };
 		ECCD88FD1185C9C800873F3C /* PhoenixRadixSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRadixSort.h; sourceTree = "<group>"; };
 		ECCD88FE1185C9C800873F3C /* PhoenixResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixResourceManager.h; sourceTree = "<group>"; };
 		ECCD88FF1185C9C800873F3C /* PhoenixSelectable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSelectable.h; sourceTree = "<group>"; };
@@ -428,6 +428,10 @@
 		ECCD8AA01185D28000873F3C /* Phoenix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Phoenix.h; path = ../src/Phoenix/Phoenix.h; sourceTree = SOURCE_ROOT; };
 		ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhoenixDefaultEntities.cpp; path = ../src/Phoenix/PhoenixDefaultEntities.cpp; sourceTree = SOURCE_ROOT; };
 		ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixDefaultEntities.h; path = ../src/Phoenix/PhoenixDefaultEntities.h; sourceTree = SOURCE_ROOT; };
+		ECDD4FCE11DB3A800064BB01 /* PhoenixCollisionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCollisionEvent.h; sourceTree = "<group>"; };
+		ECE414FB11D77341006C0318 /* PhoenixUpdateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixUpdateable.h; sourceTree = "<group>"; };
+		ECE7539111E3C6710069E989 /* PhoenixEventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixEventQueue.h; sourceTree = "<group>"; };
+		ECE7539211E3C6710069E989 /* PhoenixEventQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixEventQueue.cpp; sourceTree = "<group>"; };
 		ECF1FB74119A986000212362 /* PhoenixMusicClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMusicClip.h; sourceTree = "<group>"; };
 		ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixMusicClip.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -547,6 +551,7 @@
 				ECCD88D41185C9BC00873F3C /* PhoenixMessageSystem.h */,
 				ECCD88D71185C9BC00873F3C /* PhoenixStateMachine.cpp */,
 				ECCD88D81185C9BC00873F3C /* PhoenixStateMachine.h */,
+				ECDD4FCE11DB3A800064BB01 /* PhoenixCollisionEvent.h */,
 			);
 			name = AI;
 			path = ../src/Phoenix/AI;
@@ -555,6 +560,7 @@
 		ECCD88E31185C9C800873F3C /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				ECE414FB11D77341006C0318 /* PhoenixUpdateable.h */,
 				ECCD88E51185C9C800873F3C /* PhoenixAPI.h */,
 				ECCD88E61185C9C800873F3C /* PhoenixAVLTree.h */,
 				ECCD88E71185C9C800873F3C /* PhoenixCacheable.h */,
@@ -577,8 +583,6 @@
 				ECCD88F81185C9C800873F3C /* PhoenixNamed.h */,
 				ECCD88F91185C9C800873F3C /* PhoenixNullable.h */,
 				ECCD88FA1185C9C800873F3C /* PhoenixObjectCounter.h */,
-				ECCD88FB1185C9C800873F3C /* PhoenixObjectUpdater.cpp */,
-				ECCD88FC1185C9C800873F3C /* PhoenixObjectUpdater.h */,
 				ECCD88FD1185C9C800873F3C /* PhoenixRadixSort.h */,
 				ECCD88FE1185C9C800873F3C /* PhoenixResourceManager.h */,
 				ECCD88FF1185C9C800873F3C /* PhoenixSelectable.h */,
@@ -606,7 +610,6 @@
 				EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */,
 				EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */,
 				EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */,
-				EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */,
 				ECCD892E1185C9D700873F3C /* PhoenixAlphaTestOperation.h */,
 				EC0A7A181189C55D00FBAAF9 /* PhoenixAmbientLight.mm */,
 				ECCD89301185C9D700873F3C /* PhoenixAmbientLight.h */,
@@ -652,6 +655,7 @@
 				ECCD89621185C9D700873F3C /* PhoenixShader.cpp */,
 				ECCD89631185C9D700873F3C /* PhoenixShader.h */,
 				ECCD89651185C9D700873F3C /* PhoenixSkybox.h */,
+				EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */,
 				ECCD89671185C9D700873F3C /* PhoenixSpotLight.h */,
 				ECCD89681185C9D700873F3C /* PhoenixTexture.cpp */,
 				ECCD89691185C9D700873F3C /* PhoenixTexture.h */,
@@ -724,6 +728,8 @@
 				ECCD8A031185C9F900873F3C /* PhoenixSpatialGraph.h */,
 				ECCD8A041185C9F900873F3C /* PhoenixTransformGraph.cpp */,
 				ECCD8A051185C9F900873F3C /* PhoenixTransformGraph.h */,
+				ECE7539111E3C6710069E989 /* PhoenixEventQueue.h */,
+				ECE7539211E3C6710069E989 /* PhoenixEventQueue.cpp */,
 			);
 			name = Scene;
 			path = ../src/Phoenix/Scene;
@@ -811,7 +817,6 @@
 				ECCD891B1185C9C800873F3C /* PhoenixNamed.h in Headers */,
 				ECCD891C1185C9C800873F3C /* PhoenixNullable.h in Headers */,
 				ECCD891D1185C9C800873F3C /* PhoenixObjectCounter.h in Headers */,
-				ECCD891F1185C9C800873F3C /* PhoenixObjectUpdater.h in Headers */,
 				ECCD89201185C9C800873F3C /* PhoenixRadixSort.h in Headers */,
 				ECCD89211185C9C800873F3C /* PhoenixResourceManager.h in Headers */,
 				ECCD89221185C9C800873F3C /* PhoenixSelectable.h in Headers */,
@@ -911,6 +916,9 @@
 				EC121F4F11BADEB6003C94EE /* PhoenixBoxRenderable.h in Headers */,
 				EC121F5111BADEB7003C94EE /* PhoenixSphereRenderable.h in Headers */,
 				EC121F8211BAE317003C94EE /* PhoenixLineRenderable.h in Headers */,
+				ECE414FC11D77341006C0318 /* PhoenixUpdateable.h in Headers */,
+				ECDD4FD011DB3A800064BB01 /* PhoenixCollisionEvent.h in Headers */,
+				ECE7539311E3C6710069E989 /* PhoenixEventQueue.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -970,7 +978,6 @@
 				ECCD88E11185C9BC00873F3C /* PhoenixStateMachine.cpp in Sources */,
 				ECCD890F1185C9C800873F3C /* PhoenixExceptions.cpp in Sources */,
 				ECCD89191185C9C800873F3C /* PhoenixLogger.cpp in Sources */,
-				ECCD891E1185C9C800873F3C /* PhoenixObjectUpdater.cpp in Sources */,
 				ECCD892A1185C9C800873F3C /* PhoenixWindowsWrapper.cpp in Sources */,
 				ECCD89741185C9D700873F3C /* PhoenixCamera.cpp in Sources */,
 				ECCD89761185C9D700873F3C /* PhoenixDDSImage.cpp in Sources */,
@@ -1027,6 +1034,7 @@
 				EC121F4E11BADEB6003C94EE /* PhoenixBoxRenderable.cpp in Sources */,
 				EC121F5011BADEB7003C94EE /* PhoenixSphereRenderable.cpp in Sources */,
 				EC121F8311BAE317003C94EE /* PhoenixLineRenderable.cpp in Sources */,
+				ECE7539411E3C6710069E989 /* PhoenixEventQueue.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1078,7 +1086,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Debug;
 		};
@@ -1091,7 +1099,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Release;
 		};
