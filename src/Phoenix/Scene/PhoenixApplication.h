@@ -71,7 +71,9 @@ namespace Phoenix
 			Phoenix::Core::CTimer & GetTimer();
 			void		 RegisterUserCommands();
 			void 		 Init();
+#if defined(PHOENIX_APPLE_IPHONE)
             Phoenix::Scene::CEventQueue & GetEventQueue();
+#endif
 			////////////////////
 			/// Executes main loop in a thread.
 			void 		 Run();
