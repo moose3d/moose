@@ -17,14 +17,21 @@
 /////////////////////////////////////////////////////////////////
 namespace Phoenix
 {
+    namespace AI
+    {
+        class CCollisionEnter;
+        class CCollisionStay;
+        class CCollisionExit;
+    }
   namespace Scene
   {
   	/////////////////////////////////////////////////////////////////
   	enum Tags {
   		NOT_TAGGED, 	///!< Default.
   		LIGHT_TAG = 1,  	///!< Lights have their own tags
-  		COLLIDER_TAG = 2, ///!< Areas that are used only for collision checking.
-  		USER_TAG = 4     ///!< First allowed user-specified tag value.
+  		COLLIDER_TAG = 2, ///!< Object is colliding object.
+        CAMERA_TAG = 4,  ///!< Object is camera.
+  		USER_TAG = 8     ///!< First allowed user-specified tag value.
   	};
   	/////////////////////////////////////////////////////////////////
   	class CSpatialGraph;
@@ -41,13 +48,16 @@ namespace Phoenix
                                     public Phoenix::AI::CAIObject,
                                     public Phoenix::Core::IUpdateable,
                                     public Phoenix::Core::CEnableable
-		{
+    {
     protected:
-
+        friend class Phoenix::AI::CMessageQueue;
       unsigned int                     m_nSpatialIndex; ///!< In which spatial index of spatial graph this object is in.
       Phoenix::Collision::ICollider *  m_pCollider; 		///!< Specialized collider instead of Sphere.
-      GameObjectList                    m_lstPotentialColliders; 	///!< List of possible colliders.
-      GameObjectList                    m_lstColliders;             ///!< List of currently colliding objects.
+        int m_iUserInfo;
+    protected:
+        void OnCollisionEnter_( const Phoenix::AI::CCollisionEnter *pMsg ) ;
+        void OnCollisionStay_( const Phoenix::AI::CCollisionStay *pMsg ) ;
+        void OnCollisionExit_( const Phoenix::AI::CCollisionExit *pMsg ) ;
     public:
       ////////////////////
       /// Constructor.
@@ -94,14 +104,12 @@ namespace Phoenix
       /// Updates game object.
       /// \param fSecondsPassed Seconds passed since last Update().
       void Update( float fSecondsPassed );
-      ////////////////////
-      /// Updates neighbour list, should be called infrequently.
-      /// \param fRadius Radius of sphere around game object which encloses possible colliders.
-      /// \param graph Reference to spatial graph used in search.
-      void UpdateColliders( float fRadius, Phoenix::Scene::CSpatialGraph & graph );
-      ////////////////////
-      /// Checks collisions between neighbors and enqueues messages for scripts accordingly.
-      void CheckCollisions();
+        virtual void OnCollisionEnter( Phoenix::Scene::CGameObject *pCollider );
+        virtual void OnCollisionStay( Phoenix::Scene::CGameObject *pCollider );
+        virtual void OnCollisionExit( Phoenix::Scene::CGameObject *pCollider );
+        void SetUserInfo( int iValue ) { m_iUserInfo = iValue; }
+        int & GetUserInfo()  { return m_iUserInfo;}
+        const int GetUserInfo() const { return m_iUserInfo; }
     };
   }; // namespace Scene
 }; // namespace Phoenix

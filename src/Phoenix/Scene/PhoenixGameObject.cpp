@@ -12,6 +12,39 @@ using namespace Phoenix::Graphics;
 using namespace Phoenix::AI;
 using namespace std;
 /////////////////////////////////////////////////////////////////
+void 
+Phoenix::Scene::CGameObject::OnCollisionEnter_( const Phoenix::AI::CCollisionEnter *pMsg ) 
+{
+    this->OnCollisionEnter( pMsg->GetCollider());
+}
+void
+Phoenix::Scene::CGameObject::OnCollisionStay_( const Phoenix::AI::CCollisionStay *pMsg )
+{
+    this->OnCollisionStay( pMsg->GetCollider());
+}
+void 
+Phoenix::Scene::CGameObject::OnCollisionExit_( const Phoenix::AI::CCollisionExit *pMsg )
+{
+    this->OnCollisionExit( pMsg->GetCollider());
+}
+//////////////////////////////////////////////////////////////////
+// Empty stubs to be overwritten in child classes.
+void 
+Phoenix::Scene::CGameObject::OnCollisionEnter( Phoenix::Scene::CGameObject *pCollider )
+{
+
+}
+void 
+Phoenix::Scene::CGameObject::OnCollisionStay( Phoenix::Scene::CGameObject *pCollider )
+{
+
+}
+void 
+Phoenix::Scene::CGameObject::OnCollisionExit( Phoenix::Scene::CGameObject *pCollider )
+{
+
+}
+/////////////////////////////////////////////////////////////////
 Phoenix::Scene::CGameObject::~CGameObject()
 {
 	if ( m_pCollider != this )
@@ -28,6 +61,11 @@ Phoenix::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), m_pCollider(NU
         m_pCollider = this;
         SetEnabled(true); // by default, each object is active
         SetColliderTransform( & GetWorldTransform() ); // collider tracks world transform
+    // Register handlers for enter-stay-exit for collisions.
+    GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionEnter_);
+    GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionStay_);
+    GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionExit_);
+
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -39,6 +77,7 @@ Phoenix::Scene::CGameObject::Init()
     RegisterUserCommands();
 #endif
 }
+
 /////////////////////////////////////////////////////////////////
 unsigned int
 Phoenix::Scene::CGameObject::GetSpatialIndex() const
@@ -128,52 +167,4 @@ Phoenix::Scene::CGameObject::Update( float fSecondsPassed )
 {
   UpdateScript(fSecondsPassed);
 }
-////////////////////////////////////////////////////////////////////////////////
-void
-Phoenix::Scene::CGameObject::UpdateColliders( float fRadius, Phoenix::Scene::CSpatialGraph & graph )
-{
-    // Get new potential collider set
-	m_lstPotentialColliders.clear();
-    
-	graph.CollectObjects( Phoenix::Volume::CSphere(GetWorldTransform().GetTranslation(), 
-                                                   fRadius), m_lstPotentialColliders );
-    
-    GameObjectList tmpList;
-    // Sort existing lists for difference
-    m_lstPotentialColliders.sort();
-    m_lstColliders.sort();
-    
-    // remove already colliding objects from potential set
-    set_difference(m_lstPotentialColliders.begin(), m_lstPotentialColliders.end(),
-                   m_lstColliders.begin(), m_lstColliders.end(), back_inserter(tmpList));
-    
-    // update potential colliders to removed values.
-    m_lstPotentialColliders.swap(tmpList);
-    tmpList.clear();
-    
-}
-////////////////////////////////////////////////////////////////////////////////
-void
-Phoenix::Scene::CGameObject::CheckCollisions()
-{
-	GameObjectList::iterator it = m_lstPotentialColliders.begin();
 
-	for ( ; it != m_lstPotentialColliders.end(); it++)
-	{
-		// ignore collision on itself
-		if ( *it == this) continue;
-		// enqueue messages if intersection occurs
-		if ( this->Intersects( **it ) )
-		{
-            
-#if !defined(PHOENIX_APPLE_IPHONE)
-			(*it)->EnqueueMessage("OnCollisionEnter");
-			this->EnqueueMessage("OnCollisionEnter");
-#else
-            (*it)->EnqueueMessage(new CCollisionEvent(this));
-            this->EnqueueMessage( new CCollisionEvent(*it));
-#endif
-		}
-	}
-}
-////////////////////////////////////////////////////////////////////////////////
