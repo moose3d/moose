@@ -160,6 +160,8 @@ inline double   ToReal( double * f ) { return *f;}
 %template (CGameObjectMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> > >;
 %template (CGameObjectResMgr) Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> >;
 %include "PhoenixParticleSystem.h"
+%include "PhoenixSpatialGraph.h"
+%template (CollectObjects) Phoenix::Scene::CSpatialGraph::CollectObjects< std::vector< Phoenix::Scene::CGameObject *> >;
 %include "PhoenixScene.h"
 %rename (ostreamRenderableModelShared) operator<<(std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & r);
 %include "PhoenixRenderableModelShared.h"
