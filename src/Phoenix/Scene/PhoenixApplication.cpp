@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <cassert>
 using namespace Phoenix::Graphics;
 using namespace Phoenix::Scene;
 using namespace Phoenix::Core;
@@ -13,7 +14,9 @@ using namespace Phoenix::Window;
 using std::ostringstream;
 using namespace std;
 namespace prefix = Phoenix::Scene;
-
+#define DEFAULT_UPDATE_INTERVAL_MS          5
+#define DEFAULT_COLLIDER_UPDATE_INTERVAL_MS 100
+#define DEFAULT_COLLISION_CHECK_INTERVAL_MS 25
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
 {
@@ -25,6 +28,11 @@ prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
 	m_bSceneHasMouseMotion = false;
 	m_bHasQuit = false;
 	m_pMainLoopThread = NULL;
+    m_nUpdateIntervalMs         = DEFAULT_UPDATE_INTERVAL_MS;
+    m_nColliderUpdateIntervalMs = DEFAULT_COLLIDER_UPDATE_INTERVAL_MS;
+    m_nCollisionCheckIntervalMs = DEFAULT_COLLISION_CHECK_INTERVAL_MS;
+    m_fColliderUpdateTime = 0;
+    m_fCollisionCheckTime = 0;
     GetTimer().Reset();
     
 }
@@ -124,13 +132,43 @@ prefix::CApplication::GetScene( const std::string & name )
 
 }
 ///////////////////////////////////////////////////////////////////////////////
+#if defined(PHOENIX_APPLE_IPHONE)
+Phoenix::Scene::CEventQueue & 
+prefix::CApplication::GetEventQueue()
+{
+    return m_EventQueue;
+}
+#endif
+///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::ProcessInput()
 {
 	if ( GetCurrentScene() == NULL ) return;
-#if !defined(PHOENIX_APPLE_IPHONE)
-	CScene & scene = *GetCurrentScene();
-
+    CScene & scene = *GetCurrentScene();
+    
+#if defined(PHOENIX_APPLE_IPHONE)
+    while ( !m_EventQueue.Empty() )
+    {
+        Event e = m_EventQueue.Front();
+        m_EventQueue.Pop();
+        switch( e.type )
+        {
+            case kTouchBegan:
+                scene.OnTouchBegan( e.x, e.y, e.flags);
+                break;
+            case kTouchMoved:
+                scene.OnTouchMoved( e.x, e.y, e.flags);
+                break;
+            case kTouchEnded:
+                scene.OnTouchEnded( e.x, e.y, e.flags);
+                break;
+            default:
+                assert( NULL && "Event type is not defined!!" );
+                break;
+        }
+    }
+#else
+	
 	SDL_Event event;
 	while ( SDL_PollEvent(&event ))
 	{
@@ -203,18 +241,36 @@ prefix::CApplication::Update()
 	ProcessInput();
 
 	m_Timer.Update();
-
-	if ( m_Timer.HasPassed(0, 5 )) // TODO change this into reasonable property
+    m_fColliderUpdateTime += m_Timer.GetPassedTime().ToSeconds();
+	m_fCollisionCheckTime += m_Timer.GetPassedTime().ToSeconds();
+    if ( m_Timer.HasPassed(0, m_nUpdateIntervalMs )) 
 	{
-#if !defined(PHOENIX_APPLE_IPHONE)
       // Update our own script
       UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
-#endif
       // TODO add pause capability.
-      if ( GetCurrentScene() != NULL)
-          GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
+        if ( GetCurrentScene() != NULL)
+        {
+            GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
+        }  
       m_Timer.Reset();
 	}
+    
+    if ( m_fColliderUpdateTime*1000 >= m_nColliderUpdateIntervalMs)
+    {
+        if ( GetCurrentScene() != NULL)
+        {
+            GetCurrentScene()->UpdateColliders();
+        }
+        m_fColliderUpdateTime = 0;
+    }
+    
+    if ( m_fCollisionCheckTime*1000 >= m_nCollisionCheckIntervalMs )
+    {
+        if ( GetCurrentScene() != NULL ) GetCurrentScene()->CheckCollisions();
+        m_fCollisionCheckTime = 0;
+    }
+
+    
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Graphics::COglRenderer &

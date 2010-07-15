@@ -2,6 +2,7 @@
 #define __PhoenixApplication_h__
 #include <PhoenixScene.h>
 #include <string>
+#include <PhoenixEventQueue.h>
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(PHOENIX_APPLE_IPHONE)
 #include <SDL.h>
@@ -15,6 +16,7 @@ namespace Phoenix
 {
 	namespace Scene
 	{
+
 		///////////////////////////////////////////////////////////////////////////////
 		typedef std::map<const std::string, Phoenix::Scene::CScene * > SceneMap;
 		///////////////////////////////////////////////////////////////////////////////
@@ -36,7 +38,8 @@ namespace Phoenix
 #if !defined(PHOENIX_APPLE_IPHONE)
 			SDL_Thread *		m_pMainLoopThread;
 #else
-                  void *  m_pMainLoopThread;
+            void *  m_pMainLoopThread;
+            Phoenix::Scene::CEventQueue   m_EventQueue;    
 #endif
 		protected:
 
@@ -45,7 +48,14 @@ namespace Phoenix
 			void 						 CheckSceneInputs();
             /// Loads default set of shaders, etc.
             void                         LoadDefaultResources();
-		public:
+		protected:
+            unsigned short int           m_nUpdateIntervalMs;
+            unsigned short int           m_nColliderUpdateIntervalMs;
+            unsigned short int           m_nCollisionCheckIntervalMs;
+            float                        m_fColliderUpdateTime;
+            float                        m_fCollisionCheckTime;
+            
+        public:
 
 			CApplication( );
 			virtual ~CApplication();
@@ -61,7 +71,7 @@ namespace Phoenix
 			Phoenix::Core::CTimer & GetTimer();
 			void		 RegisterUserCommands();
 			void 		 Init();
-
+            Phoenix::Scene::CEventQueue & GetEventQueue();
 			////////////////////
 			/// Executes main loop in a thread.
 			void 		 Run();
