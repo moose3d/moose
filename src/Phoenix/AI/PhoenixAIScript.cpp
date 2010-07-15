@@ -203,11 +203,13 @@ Phoenix::AI::CAIObject::GetMessageQueue()
     return m_MessageQueue;
 }
 ////////////////////////////////////////////////////////////////////////////////
+#if defined(PHOENIX_APPLE_IPHONE)
 void 
 Phoenix::AI::CAIObject::EnqueueMessage( Phoenix::AI::CMessage *pMsg, const Phoenix::Core::CTimeStamp & time )
 {
     m_MessageQueue.EnqueueMessage(pMsg, time);
 }
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 #if !defined(PHOENIX_APPLE_IPHONE)
 const std::string &

@@ -608,7 +608,11 @@ Phoenix::Scene::CScene::CheckCollisions( Phoenix::Scene::CGameObject *pObj )
         
         if ( pObj->GetCollider()->Intersects( *(*it)->GetCollider()) == false)
         {
-            pObj->EnqueueMessage( new CCollisionExit(*it));
+#if defined(PHOENIX_APPLE_IPHONE)
+          pObj->EnqueueMessage( new CCollisionExit(*it));      
+#else
+          pObj->EnqueueMessage( "OnCollisionExit");      
+#endif
             // Insert this into 
             nonColliders.push_back( *it );
             it = currentColliders.erase(it);
@@ -629,23 +633,30 @@ Phoenix::Scene::CScene::CheckCollisions( Phoenix::Scene::CGameObject *pObj )
         // enqueue messages if intersection occurs
         if ( pObj->GetCollider()->Intersects( *(*it)->GetCollider() ) )
         {
-            #if !defined(PHOENIX_APPLE_IPHONE)
-            pObj->EnqueueMessage("OnCollisionEnter");
-            it++;
-            #else
+
+
+
+
             // Check new collisions and register them to colliders.
             if ( find( currentColliders.begin(), currentColliders.end(), *it) == currentColliders.end() )
             {
+             #if defined(PHOENIX_APPLE_IPHONE)              
                 pObj->EnqueueMessage( new CCollisionEnter(*it));
-                currentColliders.push_back( *it );
+             #else 
+                pObj->EnqueueMessage("OnCollisionEnter");
+             #endif 
+               currentColliders.push_back( *it );
                 it = lstPotentialColliders.erase(it);
             } 
             else 
             {
+             #if defined(PHOENIX_APPLE_IPHONE)              
                 pObj->EnqueueMessage( new CCollisionStay(*it));
+            #else 
+                pObj->EnqueueMessage("OnCollisionStay");
+             #endif
                 it++;
             }
-            #endif
         }
         else it++;
     }

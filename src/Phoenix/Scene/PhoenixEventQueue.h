@@ -9,7 +9,7 @@
 #ifndef __PhoenixEventQueue_h__
 #define __PhoenixEventQueue_h__
 #include <PhoenixAPI.h>
-#ifdef PHOENIX_APPLE_IPHONE
+#if defined(PHOENIX_APPLE_IPHONE)
 #include <dispatch/dispatch.h>
 #endif
 #include <queue>
@@ -35,7 +35,7 @@ namespace Phoenix
 #include <SDL.h>
         typedef Uint8 EventType;
         typedef SDL_Event Event;
-        typedef dispatch_semaphore_t int;
+        typedef int dispatch_semaphore_t;
 #endif 
             // Abstracted eventqueue.
         class CEventQueue : protected std::queue<Event>
