@@ -105,6 +105,8 @@ Phoenix::Spatial::COrientable::RotateAroundRight( float fDegrees )
   m_qRotation = q * m_qRotation;
   RotateVector(q, m_vForward);
   RotateVector(q, m_vUpward);
+    m_vForward.Normalize();
+    m_vUpward.Normalize();
   SetRotationChanged(1);
 }
 /////////////////////////////////////////////////////////////////
@@ -122,7 +124,8 @@ Phoenix::Spatial::COrientable::RotateAroundUp( float fDegrees )
   m_qRotation = q * m_qRotation;  
   RotateVector(q,m_vRight);
   RotateVector(q,m_vForward);
-
+    m_vRight.Normalize();
+    m_vForward.Normalize();
   SetRotationChanged(1);
 }
 /////////////////////////////////////////////////////////////////
@@ -137,6 +140,8 @@ Phoenix::Spatial::COrientable::RotateAroundForward( float fDegrees )
   RotateVector(q,m_vRight);
   RotateVector(q,m_vUpward);
   SetRotationChanged(1);
+    m_vRight.Normalize();
+    m_vUpward.Normalize();
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -182,6 +187,8 @@ Phoenix::Spatial::COrientable::SetDirectionForwardUp( CVector3<float> f, CVector
   m_vUpward = u;
   m_vRight = m_vForward.Cross(m_vUpward);
   m_vRight.Normalize();
+    m_vForward.Normalize();
+    m_vRight.Normalize();
   // To ensure numerical stability
   CVector3<float> vDiff = f - u;
   if ( vDiff[0] < 0.0001f ||
@@ -225,6 +232,9 @@ Phoenix::Spatial::COrientable::AppendToRotation( const CQuaternion &qQuaternion)
 
   m_qRotation = qQuaternion * m_qRotation;
   SetRotationChanged(1);
+    m_vForward.Normalize();
+    m_vUpward.Normalize();
+    m_vRight.Normalize();
   
 }
 /////////////////////////////////////////////////////////////////

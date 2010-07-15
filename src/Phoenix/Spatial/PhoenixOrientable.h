@@ -190,6 +190,10 @@ namespace Phoenix
 	Phoenix::Math::RotateVector(q, m_vRight);
 	Phoenix::Math::RotateVector(q, m_vForward);
 	Phoenix::Math::RotateVector(q, m_vUpward);
+          m_vRight.Normalize();
+          m_vForward.Normalize();
+          m_vUpward.Normalize();
+        
       }
     }; // COrientable
 
