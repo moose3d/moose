@@ -40,7 +40,19 @@ namespace Phoenix
         glClearColor( m_Color[0], m_Color[1], m_Color[2], m_Color[3] );
         glClear( m_iFlags );
       }
-  
+      ////////////////////
+      /// Sets color.
+      /// \param color Vector4<float> color to be set.
+      void SetColor( const Phoenix::Math::CVector4<float> & vColor )
+      {
+        m_Color = vColor;
+      }
+      ////////////////////
+      /// \returns clear color.
+      Phoenix::Math::CVector4<float> & GetColor()
+      {
+        return m_Color;
+      }
     };
   } // Graphics 
 } // Phoenix

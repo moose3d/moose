@@ -7,6 +7,7 @@
 %{
 
 #include <Phoenix.h>
+#include <list>
  //#include "CClearBuffers.h"
   using namespace Phoenix::Graphics;
   using namespace Phoenix::Math;
