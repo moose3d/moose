@@ -19,6 +19,7 @@ Phoenix::Scene::CCameraObject::CCameraObject() :
     SetNearClipping(0.01f);
     SetFarClipping(100.0f);
     Zoom(0.0f);
+    SetTag( CAMERA_TAG);
 }
 /////////////////////////////////////////////////////////////////
 void
@@ -191,12 +192,10 @@ Phoenix::Scene::CCameraObject::Update( float fSeconds )
   else
   {
       SetRotation( GetWorldTransform().GetRotation());
-      SetPosition( GetWorldTransform().GetTranslation() -
-								(GetForwardVector() * this->GetTrackballDistance()) );
+      SetPosition( GetWorldTransform().GetTranslation());
+      //-(GetForwardVector() * this->GetTrackballDistance()) );
   }
-#if !defined(PHOENIX_APPLE_IPHONE)
   UpdateScript(fSeconds);
-#endif
 }
 /////////////////////////////////////////////////////////////////
 void
