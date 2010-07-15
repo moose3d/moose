@@ -21,7 +21,7 @@ namespace Phoenix
 	{
 		class CRTSCamera;
 		class CDirectionalLightObject;
-		typedef Phoenix::Graphics::CRenderQueue< Phoenix::Graphics::CRenderable *> RenderQueue;
+        typedef Phoenix::Graphics::CRenderQueue< Phoenix::Graphics::CRenderable *> RenderQueue;
 		///////////////////////////////////////////////////////////////////////////////
 		/// Camera with its properties related to rendering.
 		class CCameraProperty
@@ -46,6 +46,7 @@ namespace Phoenix
 		}; // CCameraProperty
 		///////////////////////////////////////////////////////////////////////////////
 		typedef std::map<const std::string, CCameraProperty *> 				 CameraMap;
+        typedef std::map<Phoenix::Scene::CGameObject *, GameObjectList *>    GameObjectCollidersMap;
 		///////////////////////////////////////////////////////////////////////////////
 		/// Scene where everything is.
 		class CScene : public Phoenix::Scene::CGameObject
@@ -59,7 +60,11 @@ namespace Phoenix
 			RenderQueue											m_PreGUIRenderQueue;    	///!< Render queue rendered before GUI objects (using GUI camera).
 			RenderQueue											m_PostGUIRenderQueue;    	///!< Render queue rendered after  GUI objects (using GUI camera).
 			CameraMap												m_mapCameras;       			///!< Storage for all cameras used in this scene.
-		protected:
+
+            GameObjectCollidersMap                              m_mapPotentialColliders; 	///!< From GameObject ptr to List of possible colliders.
+            GameObjectCollidersMap                              m_mapColliders;             ///!< From GameObject ptr to List of currently colliding objects.
+
+        protected:
 			void   					 CollectVisibleGameObjects( CCameraProperty & cameraProp );
 			/// Removes object pointer from caches.
 			void             RemoveFromCaches( Phoenix::Scene::CGameObject *pObject );
@@ -68,7 +73,10 @@ namespace Phoenix
 			CScene(unsigned int nNumLevels, float fWorldSize );
 			CScene(const char *szName, unsigned int nNumLevels, float fWorldSize );
 			virtual ~CScene();
-
+            void UpdateColliders();
+            /// Checks collisions between neighbors and enqueues messages for scripts accordingly.
+            void CheckCollisions();
+            void CheckCollisions( Phoenix::Scene::CGameObject * pObj );
 			Phoenix::Scene::CSpatialGraph & GetSpatialGraph();
 			Phoenix::Scene::CTransformGraph &  GetTransformGraph();
 			// Create object, put it into transform graph and spatial graph.
@@ -105,8 +113,13 @@ namespace Phoenix
             virtual void Load();
             virtual void Unload();
             virtual void Reload();
-#if !defined(PHOENIX_APPLE_IPHONE)
-          void RegisterUserCommands();
+#if defined(PHOENIX_APPLE_IPHONE)
+            virtual void OnTouchBegan( float x, float y, int iFlags ) {}
+            virtual void OnTouchMoved( float x, float y, int iFlags ) {}
+            virtual void OnTouchEnded( float x, float y, int iFlags ) {}
+#else
+            // These contain TCL scripting, not enabled on iPhone
+            void RegisterUserCommands();
 #endif
           static void AssignLightsToRenderables( GameObjectList & lights, RenderQueue & queue);
           static void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );

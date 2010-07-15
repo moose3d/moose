@@ -9,6 +9,7 @@
 #endif
 #include "PhoenixCameraObject.h"
 #include <PhoenixVector2.h>
+#include "PhoenixCollisionEvent.h"
 #include <iostream>
 ///////////////////////////////////////////////////////////////////////////////
 using namespace Phoenix::Graphics;
@@ -18,11 +19,10 @@ using namespace Phoenix::Core;
 using namespace Phoenix::Window;
 #endif
 using namespace Phoenix::Math;
+using namespace Phoenix::AI;
+using namespace Phoenix::Volume;
 using namespace std;
-///////////////////////////////////////////////////////////////////////////////
-//void AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue);
-//void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );
-//void CollectRenderables( CCamera & camera, GameObjectList & gameObjects, CRenderQueue<CRenderable *> &queue );
+#define COLLIDER_SPHERE_FACTOR 1.618
 ///////////////////////////////////////////////////////////////////////////////
 /// Very simple sorter; sorts only by transparency.
 class CGameObjectSorter
@@ -75,6 +75,7 @@ Phoenix::Scene::CScene::CScene( const char *szName, unsigned int nNumLevels, flo
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::CScene::~CScene()
 {
+    DeleteGameObjects();
 	delete m_pSpatialGraph;
 	delete m_pTransformGraph;
 }
@@ -99,8 +100,6 @@ Phoenix::Scene::CScene::Init()
 Phoenix::Scene::CGameObject *
 Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
 {
-
-
 	// Create handle to object
 	assert( g_ObjectMgr->Create(pObj, pObj->GetName(), pObj->GetObjectHandle()) == 0 );
     // Intialize after object has been registered, so it can be accessed during script init via
@@ -114,6 +113,8 @@ Phoenix::Scene::CScene::AddGameObject( Phoenix::Scene::CGameObject *pObj )
 
 	// insert local to local ptr list
 	m_lstGameObjects.push_back( pObj );
+    m_mapPotentialColliders[pObj] = new GameObjectList();
+    m_mapColliders[pObj]          = new GameObjectList();
 	return pObj;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,6 +136,8 @@ Phoenix::Scene::CScene::AddDirectionalLight( Phoenix::Scene::CDirectionalLightOb
 
 	// object list
 	m_lstGameObjects.push_back( pObj );
+    m_mapPotentialColliders[pObj] = new GameObjectList();
+    m_mapColliders[pObj]          = new GameObjectList();
     return pObj;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,7 +149,18 @@ Phoenix::Scene::CScene::RemoveFromCaches( Phoenix::Scene::CGameObject *pObject )
 	{
 		it->second->GetGameObjectList().remove( pObject ); // if regular object
 		it->second->GetActiveLights().remove( pObject ); // if it was a light.
-	}
+        
+        if ( m_mapPotentialColliders.find(pObject) != m_mapPotentialColliders.end())
+        {
+            delete m_mapPotentialColliders[pObject]; // delete list 
+            m_mapPotentialColliders.erase(pObject);  // remove from map
+        }
+        if  ( m_mapColliders.find(pObject) != m_mapColliders.end())
+        {
+            delete m_mapColliders[pObject]; // delete list
+            m_mapColliders.erase(pObject); // remove from map
+        }
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////
 Phoenix::Scene::GameObjectList & 
@@ -161,7 +175,6 @@ Phoenix::Scene::CScene::DeleteGameObjects()
     while( !m_lstGameObjects.empty() )
     {
         RemoveGameObject(m_lstGameObjects.front());
-        m_lstGameObjects.pop_front();
     }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -169,7 +182,6 @@ void
 Phoenix::Scene::CScene::RemoveGameObject( Phoenix::Scene::CGameObject *pObj )
 {
 	if ( pObj == NULL ) return;
-
 
 
 	if ( pObj->GetTransformNode() != NULL ) // remove from transform (with children)
@@ -180,9 +192,27 @@ Phoenix::Scene::CScene::RemoveGameObject( Phoenix::Scene::CGameObject *pObj )
 		{
 			CTransformable *pTmp = tmpList.front();
 			tmpList.pop_front();
-			// remove from spatial
 			CGameObject *pChild = dynamic_cast<Phoenix::Scene::CGameObject *>(pTmp);
-			GetSpatialGraph().DeleteObject( pChild );
+
+            if ( pChild == NULL )  // this is plain transformable.
+            {
+                delete pTmp;
+                continue;
+            }
+            // In case of camera, we need to remove cameraproperties.
+            if ( pChild->GetTag() & CAMERA_TAG )
+            {
+                CameraMap::iterator it = m_mapCameras.find(pChild->GetName());
+                if ( it != m_mapCameras.end() )
+                {
+                    // delete cameraproperty, leave gameobject itself for latter destruction.
+                    delete it->second;
+                    m_mapCameras.erase(it);                        
+                }
+            }
+            
+            // remove from spatial
+            GetSpatialGraph().DeleteObject( pChild );
 			m_lstGameObjects.remove(pChild);
 
 			RemoveFromCaches(pChild);
@@ -191,7 +221,24 @@ Phoenix::Scene::CScene::RemoveGameObject( Phoenix::Scene::CGameObject *pObj )
 			g_ObjectMgr->Destroy( pChild->GetObjectHandle() );
 		}
 	}
-    else delete pObj;
+    else 
+    {
+        if ( pObj->GetTag() & CAMERA_TAG )
+        {
+            CameraMap::iterator it = m_mapCameras.find(pObj->GetName());
+            if ( it != m_mapCameras.end() )
+            {
+                // delete cameraproperty, leave gameobject itself for latter destruction.
+                delete it->second;
+                m_mapCameras.erase(it);
+                
+            }
+        }
+        if ( pObj->GetObjectHandle().IsNull() == false)
+            g_Objects.Destroy(pObj->GetObjectHandle());
+        else
+            delete pObj;
+    }
 	//assert( pObj->GetObjectHandle().IsNull() && "Object not deleted.");
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -210,32 +257,33 @@ Phoenix::Scene::CScene::GetTransformGraph()
 void
 Phoenix::Scene::CScene::Update( float fSeconds )
 {
-#if !defined(PHOENIX_APPLE_IPHONE)
-  // Run local script
-	UpdateScript(fSeconds);
-#endif
-	// update transform graph
-	GetTransformGraph().Update();
-	// Update objects themselves.
-	GameObjectList::iterator it = m_lstGameObjects.begin();
+ 
+    // Run local script / messaging
+    if ( IsEnabled()) UpdateScript(fSeconds);
+    
+    // update transform graph
+    GetTransformGraph().Update();
+    // Update objects themselves.
+    GameObjectList::iterator it = m_lstGameObjects.begin();
+    if ( IsEnabled()){
+        for ( ; it != m_lstGameObjects.end(); it++ )
+        {
+            (*it)->Update( fSeconds );
+        }
+    }
+    // update object positions in spatial graph.
+    it = m_lstGameObjects.begin();
     for ( ; it != m_lstGameObjects.end(); it++ )
     {
-        (*it)->Update( fSeconds );
+        GetSpatialGraph().Update( *it );
     }
-
-	// update object positions in spatial graph.
-	it = m_lstGameObjects.begin();
-	for ( ; it != m_lstGameObjects.end(); it++ )
-	{
-		GetSpatialGraph().Update( *it );
-	}
-
+  
 	CameraMap::iterator camIt = m_mapCameras.begin();
 	for( ; camIt != m_mapCameras.end(); camIt++ )
 	{
 		bool bChanged = false;
 		CCameraObject & c = *camIt->second->GetCamera();
-		c.Update( fSeconds );
+		if ( IsEnabled()) c.Update( fSeconds );
 		if ( c.IsProjectionChanged() )  {   bChanged = true; c.UpdateProjection();    }
 		if ( c.IsViewChanged() )     {      bChanged = true; c.UpdateView();          }
 		if ( bChanged )
@@ -245,7 +293,8 @@ Phoenix::Scene::CScene::Update( float fSeconds )
 			c.CalculateBoundingCone();
 		}
 		CollectVisibleGameObjects( *camIt->second );
-        AssignLightsToObjects( camIt->second->GetActiveLights(), camIt->second->GetGameObjectList());
+       AssignLightsToObjects( camIt->second->GetActiveLights(), 
+                              camIt->second->GetGameObjectList());
 
 	}
 }
@@ -308,8 +357,8 @@ Phoenix::Scene::CScene::CollectVisibleGameObjects( CCameraProperty & camProp )
 	list.clear();
 	GameObjectList & lstLights = camProp.GetActiveLights();
 	lstLights.clear();
-	int iTag = LIGHT_TAG | COLLIDER_TAG;
-	GetSpatialGraph().CollectObjects( camera, list, 		  iTag, CTagged::NOT_AND );
+	
+	GetSpatialGraph().CollectObjects( camera, list, 	  LIGHT_TAG | CAMERA_TAG,  CTagged::NOT_AND );
 	GetSpatialGraph().CollectObjects( camera, lstLights,  LIGHT_TAG, CTagged::AND );
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -409,7 +458,8 @@ Phoenix::Scene::CScene::AddCamera( const std::string & name, Phoenix::Scene::CCa
 		CCameraProperty *pProp = new CCameraProperty();
 		pProp->SetCamera( pCamera );
 		m_mapCameras[name] = pProp;
-		if ( g_ObjectMgr->Create(pCamera, CreateUniqueName(name.c_str()), pCamera->GetObjectHandle()) == 0 )
+        pCamera->SetName( name );
+		if ( g_ObjectMgr->Create(pCamera, pCamera->GetName(), pCamera->GetObjectHandle()) == 0 )
 		{
 			// so it is affected by transforms.
 			GetTransformGraph().Insert(pCamera);
@@ -417,8 +467,9 @@ Phoenix::Scene::CScene::AddCamera( const std::string & name, Phoenix::Scene::CCa
 		}
 		else
 		{
-			RemoveCamera( name );
-			return false;
+            delete m_mapCameras[name];
+			m_mapCameras.erase( name);
+            return false;
 		}
 	}
 	return false;
@@ -427,14 +478,11 @@ Phoenix::Scene::CScene::AddCamera( const std::string & name, Phoenix::Scene::CCa
 void
 Phoenix::Scene::CScene::RemoveCamera( const std::string & name )
 {
-	CameraMap::iterator it = m_mapCameras.find(name);
-	if ( it != m_mapCameras.end() )
+    if ( m_mapCameras.find( name ) != m_mapCameras.end() )
 	{
-		g_ObjectMgr->Destroy( it->second->GetCamera()->GetObjectHandle() );
-		delete it->second;
-		m_mapCameras.erase(it);
+        RemoveGameObject( g_Objects(name.c_str()) );
+    }
 
-	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 RenderQueue &
@@ -508,6 +556,117 @@ Phoenix::Scene::CScene::RemovePostGUIRenderQueue( Phoenix::Graphics::CRenderable
 {
 	GetPostGUIRenderQueue().GetObjectList().remove(pRenderable);
 }
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::UpdateColliders()
+{
+    
+    GameObjectList::iterator it = m_lstGameObjects.begin();
+    for( ; it != m_lstGameObjects.end(); it++)
+    {
+        
+        
+        GameObjectList & potentialColliders = *m_mapPotentialColliders[*it];
+        GameObjectList & currentColliders   = *m_mapColliders[*it];
+        potentialColliders.clear();
+        CSphere tmp = (*it)->GetWorldBoundingSphere();
+        tmp.SetRadius( tmp.GetRadius()*COLLIDER_SPHERE_FACTOR);
+        GetSpatialGraph().CollectObjects( tmp, potentialColliders, COLLIDER_TAG, CTagged::AND );
+    
+        GameObjectList tmpList;
+        // Sort existing lists for difference
+        potentialColliders.sort();
+        currentColliders.sort();
+    
+        // remove already colliding objects from potential set
+        set_difference( potentialColliders.begin(), potentialColliders.end(),
+                        currentColliders.begin(),   currentColliders.end(), 
+                        back_inserter(tmpList));
+    
+        // update potential colliders to removed values.
+        potentialColliders.swap(tmpList);
+        tmpList.clear();
+    }
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::CheckCollisions( Phoenix::Scene::CGameObject *pObj )
+{
+    if ( pObj->IsEnabled() == false ) return;
+    GameObjectList & lstPotentialColliders = *m_mapPotentialColliders[pObj];
+    GameObjectList & currentColliders      = *m_mapColliders[pObj];
+    GameObjectList::iterator it = currentColliders.begin();
+    GameObjectList nonColliders;
+    
+    while ( it != currentColliders.end())
+    {
+        if ( (*it)->IsEnabled() == false || *it == pObj ) 
+        {
+            it++;
+            continue; // skip self or disabled collider
+        }
+        
+        if ( pObj->GetCollider()->Intersects( *(*it)->GetCollider()) == false)
+        {
+            pObj->EnqueueMessage( new CCollisionExit(*it));
+            // Insert this into 
+            nonColliders.push_back( *it );
+            it = currentColliders.erase(it);
+        }
+        else it++;
+    }       
+    
+    it = lstPotentialColliders.begin();
+    
+    while ( it != lstPotentialColliders.end())
+    {
+        // ignore collision on itself or disabled collider
+        if ( (*it)->IsEnabled() == false || *it == pObj) 
+        {
+            it++;
+            continue;
+        }
+        // enqueue messages if intersection occurs
+        if ( pObj->GetCollider()->Intersects( *(*it)->GetCollider() ) )
+        {
+            #if !defined(PHOENIX_APPLE_IPHONE)
+            pObj->EnqueueMessage("OnCollisionEnter");
+            it++;
+            #else
+            // Check new collisions and register them to colliders.
+            if ( find( currentColliders.begin(), currentColliders.end(), *it) == currentColliders.end() )
+            {
+                pObj->EnqueueMessage( new CCollisionEnter(*it));
+                currentColliders.push_back( *it );
+                it = lstPotentialColliders.erase(it);
+            } 
+            else 
+            {
+                pObj->EnqueueMessage( new CCollisionStay(*it));
+                it++;
+            }
+            #endif
+        }
+        else it++;
+    }
+    // Copy non-colliders to potential colliders  
+    lstPotentialColliders.insert(lstPotentialColliders.end(), 
+                                 nonColliders.begin(), nonColliders.end());
+    nonColliders.clear();
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Phoenix::Scene::CScene::CheckCollisions()
+{
+    GameObjectList::iterator it = m_lstGameObjects.begin();    
+    for (  ; it != m_lstGameObjects.end(); it++)
+    {
+        CheckCollisions(*it);
+    }
+}
+////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
 void
 Phoenix::Scene::CScene::OnEnter()
 {
