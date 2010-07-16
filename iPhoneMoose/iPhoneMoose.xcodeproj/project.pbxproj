@@ -9,431 +9,431 @@
 /* Begin PBXBuildFile section */
 		AA747D9F0F9514B9006C5449 /* iPhoneMoose_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* iPhoneMoose_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
-		EC04F98D11B9200B00B8F605 /* PhoenixCapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC04F98C11B9200B00B8F605 /* PhoenixCapsule.cpp */; };
-		EC0A7A191189C55D00FBAAF9 /* PhoenixAmbientLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A181189C55D00FBAAF9 /* PhoenixAmbientLight.mm */; };
-		EC0A7A211189C5CA00FBAAF9 /* PhoenixRenderableModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A201189C5CA00FBAAF9 /* PhoenixRenderableModel.mm */; };
-		EC0A7A261189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */; };
-		EC0A7A2C1189C65C00FBAAF9 /* PhoenixSkybox.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */; };
-		EC0A7A301189C69100FBAAF9 /* PhoenixSpotLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */; };
-		EC121F4E11BADEB6003C94EE /* PhoenixBoxRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F4A11BADEB6003C94EE /* PhoenixBoxRenderable.cpp */; };
-		EC121F4F11BADEB6003C94EE /* PhoenixBoxRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F4B11BADEB6003C94EE /* PhoenixBoxRenderable.h */; };
-		EC121F5011BADEB7003C94EE /* PhoenixSphereRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F4C11BADEB6003C94EE /* PhoenixSphereRenderable.cpp */; };
-		EC121F5111BADEB7003C94EE /* PhoenixSphereRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F4D11BADEB6003C94EE /* PhoenixSphereRenderable.h */; };
-		EC121F8211BAE317003C94EE /* PhoenixLineRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */; };
-		EC121F8311BAE317003C94EE /* PhoenixLineRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */; };
-		EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */ = {isa = PBXBuildFile; fileRef = EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */; };
-		EC19A6CB11930D26002D9374 /* PhoenixIPhoneAudioSample.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */; };
+		EC04F98D11B9200B00B8F605 /* MooseCapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC04F98C11B9200B00B8F605 /* MooseCapsule.cpp */; };
+		EC0A7A191189C55D00FBAAF9 /* MooseAmbientLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A181189C55D00FBAAF9 /* MooseAmbientLight.mm */; };
+		EC0A7A211189C5CA00FBAAF9 /* MooseRenderableModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A201189C5CA00FBAAF9 /* MooseRenderableModel.mm */; };
+		EC0A7A261189C60E00FBAAF9 /* MooseRenderableModelShared.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A251189C60E00FBAAF9 /* MooseRenderableModelShared.mm */; };
+		EC0A7A2C1189C65C00FBAAF9 /* MooseSkybox.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2B1189C65C00FBAAF9 /* MooseSkybox.mm */; };
+		EC0A7A301189C69100FBAAF9 /* MooseSpotLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC0A7A2F1189C69100FBAAF9 /* MooseSpotLight.mm */; };
+		EC121F4E11BADEB6003C94EE /* MooseBoxRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F4A11BADEB6003C94EE /* MooseBoxRenderable.cpp */; };
+		EC121F4F11BADEB6003C94EE /* MooseBoxRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F4B11BADEB6003C94EE /* MooseBoxRenderable.h */; };
+		EC121F5011BADEB7003C94EE /* MooseSphereRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F4C11BADEB6003C94EE /* MooseSphereRenderable.cpp */; };
+		EC121F5111BADEB7003C94EE /* MooseSphereRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F4D11BADEB6003C94EE /* MooseSphereRenderable.h */; };
+		EC121F8211BAE317003C94EE /* MooseLineRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = EC121F8011BAE317003C94EE /* MooseLineRenderable.h */; };
+		EC121F8311BAE317003C94EE /* MooseLineRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC121F8111BAE317003C94EE /* MooseLineRenderable.cpp */; };
+		EC19A6CA11930D26002D9374 /* MooseIPhoneAudioSample.h in Headers */ = {isa = PBXBuildFile; fileRef = EC19A6C811930D26002D9374 /* MooseIPhoneAudioSample.h */; };
+		EC19A6CB11930D26002D9374 /* MooseIPhoneAudioSample.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A6C911930D26002D9374 /* MooseIPhoneAudioSample.mm */; };
 		EC19A70211930E89002D9374 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A70111930E89002D9374 /* AudioToolbox.framework */; };
-		EC19A7771193180C002D9374 /* PhoenixOGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A7761193180C002D9374 /* PhoenixOGLRenderer.mm */; };
+		EC19A7771193180C002D9374 /* MooseOGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = EC19A7761193180C002D9374 /* MooseOGLRenderer.mm */; };
 		EC19A78811931C79002D9374 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A78711931C79002D9374 /* UIKit.framework */; };
 		EC19A79011931C8D002D9374 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A78F11931C8D002D9374 /* QuartzCore.framework */; };
 		EC19A7F311931D68002D9374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A7F211931D68002D9374 /* CoreGraphics.framework */; };
-		EC88533611A3C931009D8112 /* PhoenixPolygonOffset.h in Headers */ = {isa = PBXBuildFile; fileRef = EC88533411A3C931009D8112 /* PhoenixPolygonOffset.h */; };
-		EC88533711A3C931009D8112 /* PhoenixPolygonOffset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC88533511A3C931009D8112 /* PhoenixPolygonOffset.cpp */; };
-		ECCD88BC1185C99900873F3C /* PhoenixALObjectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */; };
-		ECCD88BD1185C99900873F3C /* PhoenixALSampleTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */; };
-		ECCD88BE1185C99900873F3C /* PhoenixALSampleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */; };
-		ECCD88BF1185C99900873F3C /* PhoenixALSoundTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AE1185C99900873F3C /* PhoenixALSoundTypes.cpp */; };
-		ECCD88C01185C99900873F3C /* PhoenixALSoundTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AF1185C99900873F3C /* PhoenixALSoundTypes.h */; };
-		ECCD88C11185C99900873F3C /* PhoenixAudioSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B01185C99900873F3C /* PhoenixAudioSystem.cpp */; };
-		ECCD88C21185C99900873F3C /* PhoenixAudioSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B11185C99900873F3C /* PhoenixAudioSystem.h */; };
-		ECCD88C31185C99900873F3C /* PhoenixListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B21185C99900873F3C /* PhoenixListener.cpp */; };
-		ECCD88C41185C99900873F3C /* PhoenixListener.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B31185C99900873F3C /* PhoenixListener.h */; };
-		ECCD88C51185C99900873F3C /* PhoenixOggSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B41185C99900873F3C /* PhoenixOggSample.cpp */; };
-		ECCD88C61185C99900873F3C /* PhoenixOggSample.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B51185C99900873F3C /* PhoenixOggSample.h */; };
-		ECCD88C71185C99900873F3C /* PhoenixOggStreamSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B61185C99900873F3C /* PhoenixOggStreamSample.cpp */; };
-		ECCD88C81185C99900873F3C /* PhoenixOggStreamSample.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B71185C99900873F3C /* PhoenixOggStreamSample.h */; };
-		ECCD88C91185C99900873F3C /* PhoenixSoundBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B81185C99900873F3C /* PhoenixSoundBase.cpp */; };
-		ECCD88CA1185C99900873F3C /* PhoenixSoundBase.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B91185C99900873F3C /* PhoenixSoundBase.h */; };
-		ECCD88CB1185C99900873F3C /* PhoenixSoundSampleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88BA1185C99900873F3C /* PhoenixSoundSampleBase.cpp */; };
-		ECCD88CC1185C99900873F3C /* PhoenixSoundSampleBase.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88BB1185C99900873F3C /* PhoenixSoundSampleBase.h */; };
-		ECCD88D91185C9BC00873F3C /* PhoenixAIScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88CF1185C9BC00873F3C /* PhoenixAIScript.cpp */; };
-		ECCD88DA1185C9BC00873F3C /* PhoenixAIScript.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88D01185C9BC00873F3C /* PhoenixAIScript.h */; };
-		ECCD88DD1185C9BC00873F3C /* PhoenixMessageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88D31185C9BC00873F3C /* PhoenixMessageSystem.cpp */; };
-		ECCD88DE1185C9BC00873F3C /* PhoenixMessageSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88D41185C9BC00873F3C /* PhoenixMessageSystem.h */; };
-		ECCD88E11185C9BC00873F3C /* PhoenixStateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88D71185C9BC00873F3C /* PhoenixStateMachine.cpp */; };
-		ECCD88E21185C9BC00873F3C /* PhoenixStateMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88D81185C9BC00873F3C /* PhoenixStateMachine.h */; };
-		ECCD89091185C9C800873F3C /* PhoenixAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E51185C9C800873F3C /* PhoenixAPI.h */; };
-		ECCD890A1185C9C800873F3C /* PhoenixAVLTree.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E61185C9C800873F3C /* PhoenixAVLTree.h */; };
-		ECCD890B1185C9C800873F3C /* PhoenixCacheable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E71185C9C800873F3C /* PhoenixCacheable.h */; };
-		ECCD890C1185C9C800873F3C /* PhoenixConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E81185C9C800873F3C /* PhoenixConvert.h */; };
-		ECCD890D1185C9C800873F3C /* PhoenixCore.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E91185C9C800873F3C /* PhoenixCore.h */; };
-		ECCD890E1185C9C800873F3C /* PhoenixEnableable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EA1185C9C800873F3C /* PhoenixEnableable.h */; };
-		ECCD890F1185C9C800873F3C /* PhoenixExceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88EB1185C9C800873F3C /* PhoenixExceptions.cpp */; };
-		ECCD89101185C9C800873F3C /* PhoenixExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EC1185C9C800873F3C /* PhoenixExceptions.h */; };
-		ECCD89111185C9C800873F3C /* PhoenixFocusable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88ED1185C9C800873F3C /* PhoenixFocusable.h */; };
-		ECCD89121185C9C800873F3C /* PhoenixFPSCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EE1185C9C800873F3C /* PhoenixFPSCounter.h */; };
-		ECCD89131185C9C800873F3C /* PhoenixGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EF1185C9C800873F3C /* PhoenixGlobals.h */; };
-		ECCD89141185C9C800873F3C /* PhoenixGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F01185C9C800873F3C /* PhoenixGraph.h */; };
-		ECCD89151185C9C800873F3C /* PhoenixGraphEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F21185C9C800873F3C /* PhoenixGraphEdge.h */; };
-		ECCD89161185C9C800873F3C /* PhoenixGraphNode.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F31185C9C800873F3C /* PhoenixGraphNode.h */; };
-		ECCD89171185C9C800873F3C /* PhoenixHashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F41185C9C800873F3C /* PhoenixHashTable.h */; };
-		ECCD89181185C9C800873F3C /* PhoenixLog.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F51185C9C800873F3C /* PhoenixLog.h */; };
-		ECCD89191185C9C800873F3C /* PhoenixLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88F61185C9C800873F3C /* PhoenixLogger.cpp */; };
-		ECCD891A1185C9C800873F3C /* PhoenixLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F71185C9C800873F3C /* PhoenixLogger.h */; };
-		ECCD891B1185C9C800873F3C /* PhoenixNamed.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F81185C9C800873F3C /* PhoenixNamed.h */; };
-		ECCD891C1185C9C800873F3C /* PhoenixNullable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F91185C9C800873F3C /* PhoenixNullable.h */; };
-		ECCD891D1185C9C800873F3C /* PhoenixObjectCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FA1185C9C800873F3C /* PhoenixObjectCounter.h */; };
-		ECCD89201185C9C800873F3C /* PhoenixRadixSort.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FD1185C9C800873F3C /* PhoenixRadixSort.h */; };
-		ECCD89211185C9C800873F3C /* PhoenixResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FE1185C9C800873F3C /* PhoenixResourceManager.h */; };
-		ECCD89221185C9C800873F3C /* PhoenixSelectable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FF1185C9C800873F3C /* PhoenixSelectable.h */; };
-		ECCD89231185C9C800873F3C /* PhoenixSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89001185C9C800873F3C /* PhoenixSingleton.h */; };
-		ECCD89241185C9C800873F3C /* PhoenixTagged.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89011185C9C800873F3C /* PhoenixTagged.h */; };
-		ECCD89251185C9C800873F3C /* PhoenixTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89021185C9C800873F3C /* PhoenixTimer.h */; };
-		ECCD89261185C9C800873F3C /* PhoenixTimeStamp.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89031185C9C800873F3C /* PhoenixTimeStamp.h */; };
-		ECCD89271185C9C800873F3C /* PhoenixTypeBase.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89041185C9C800873F3C /* PhoenixTypeBase.h */; };
-		ECCD89281185C9C800873F3C /* PhoenixUniqueNameCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89051185C9C800873F3C /* PhoenixUniqueNameCreator.h */; };
-		ECCD89291185C9C800873F3C /* PhoenixViewable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89061185C9C800873F3C /* PhoenixViewable.h */; };
-		ECCD892A1185C9C800873F3C /* PhoenixWindowsWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89071185C9C800873F3C /* PhoenixWindowsWrapper.cpp */; };
-		ECCD892B1185C9C800873F3C /* PhoenixWindowsWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89081185C9C800873F3C /* PhoenixWindowsWrapper.h */; };
-		ECCD89701185C9D700873F3C /* PhoenixAlphaTestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD892E1185C9D700873F3C /* PhoenixAlphaTestOperation.h */; };
-		ECCD89721185C9D700873F3C /* PhoenixAmbientLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89301185C9D700873F3C /* PhoenixAmbientLight.h */; };
-		ECCD89731185C9D700873F3C /* PhoenixBlendingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89311185C9D700873F3C /* PhoenixBlendingOperation.h */; };
-		ECCD89741185C9D700873F3C /* PhoenixCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89321185C9D700873F3C /* PhoenixCamera.cpp */; };
-		ECCD89751185C9D700873F3C /* PhoenixCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89331185C9D700873F3C /* PhoenixCamera.h */; };
-		ECCD89761185C9D700873F3C /* PhoenixDDSImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89341185C9D700873F3C /* PhoenixDDSImage.cpp */; };
-		ECCD89771185C9D700873F3C /* PhoenixDDSImage.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89351185C9D700873F3C /* PhoenixDDSImage.h */; };
-		ECCD89791185C9D700873F3C /* PhoenixDirectionalLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89371185C9D700873F3C /* PhoenixDirectionalLight.h */; };
-		ECCD897C1185C9D700873F3C /* PhoenixFrameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD893A1185C9D700873F3C /* PhoenixFrameBuffer.cpp */; };
-		ECCD897D1185C9D700873F3C /* PhoenixFrameBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD893B1185C9D700873F3C /* PhoenixFrameBuffer.h */; };
-		ECCD897E1185C9D700873F3C /* PhoenixFrustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD893C1185C9D700873F3C /* PhoenixFrustum.cpp */; };
-		ECCD897F1185C9D700873F3C /* PhoenixFrustum.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD893D1185C9D700873F3C /* PhoenixFrustum.h */; };
-		ECCD89821185C9D700873F3C /* PhoenixIndexArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89401185C9D700873F3C /* PhoenixIndexArray.h */; };
-		ECCD89831185C9D700873F3C /* PhoenixLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89411185C9D700873F3C /* PhoenixLight.h */; };
-		ECCD89841185C9D700873F3C /* PhoenixMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89421185C9D700873F3C /* PhoenixMaterial.h */; };
-		ECCD89851185C9D700873F3C /* PhoenixMilkshapeLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89431185C9D700873F3C /* PhoenixMilkshapeLoader.cpp */; };
-		ECCD89861185C9D700873F3C /* PhoenixMilkshapeLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89441185C9D700873F3C /* PhoenixMilkshapeLoader.h */; };
-		ECCD89871185C9D700873F3C /* PhoenixModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89451185C9D700873F3C /* PhoenixModel.cpp */; };
-		ECCD89881185C9D700873F3C /* PhoenixModel.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89461185C9D700873F3C /* PhoenixModel.h */; };
-		ECCD89891185C9D700873F3C /* PhoenixModelHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89471185C9D700873F3C /* PhoenixModelHelper.cpp */; };
-		ECCD898A1185C9D700873F3C /* PhoenixModelHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89481185C9D700873F3C /* PhoenixModelHelper.h */; };
-		ECCD898B1185C9D700873F3C /* PhoenixModelLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89491185C9D700873F3C /* PhoenixModelLoader.cpp */; };
-		ECCD898C1185C9D700873F3C /* PhoenixModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894A1185C9D700873F3C /* PhoenixModelLoader.h */; };
-		ECCD898D1185C9D700873F3C /* PhoenixObjLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD894B1185C9D700873F3C /* PhoenixObjLoader.cpp */; };
-		ECCD898E1185C9D700873F3C /* PhoenixObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894C1185C9D700873F3C /* PhoenixObjLoader.h */; };
-		ECCD898F1185C9D700873F3C /* PhoenixOGLConsts.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894D1185C9D700873F3C /* PhoenixOGLConsts.h */; };
-		ECCD89911185C9D700873F3C /* PhoenixOGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894F1185C9D700873F3C /* PhoenixOGLRenderer.h */; };
-		ECCD89921185C9D700873F3C /* PhoenixParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89501185C9D700873F3C /* PhoenixParticleSystem.h */; };
-		ECCD89941185C9D700873F3C /* PhoenixPointLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89521185C9D700873F3C /* PhoenixPointLight.h */; };
-		ECCD89951185C9D700873F3C /* PhoenixRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89531185C9D700873F3C /* PhoenixRenderable.cpp */; };
-		ECCD89961185C9D700873F3C /* PhoenixRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89541185C9D700873F3C /* PhoenixRenderable.h */; };
-		ECCD89981185C9D700873F3C /* PhoenixRenderableModel.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89561185C9D700873F3C /* PhoenixRenderableModel.h */; };
-		ECCD899A1185C9D700873F3C /* PhoenixRenderableModelShared.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89581185C9D700873F3C /* PhoenixRenderableModelShared.h */; };
-		ECCD899B1185C9D700873F3C /* PhoenixRenderableProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89591185C9D700873F3C /* PhoenixRenderableProperty.cpp */; };
-		ECCD899C1185C9D700873F3C /* PhoenixRenderableProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD895A1185C9D700873F3C /* PhoenixRenderableProperty.h */; };
-		ECCD899F1185C9D700873F3C /* PhoenixRenderQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD895D1185C9D700873F3C /* PhoenixRenderQueue.h */; };
-		ECCD89A01185C9D700873F3C /* PhoenixRenderState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD895E1185C9D700873F3C /* PhoenixRenderState.cpp */; };
-		ECCD89A11185C9D700873F3C /* PhoenixRenderState.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD895F1185C9D700873F3C /* PhoenixRenderState.h */; };
-		ECCD89A41185C9D700873F3C /* PhoenixShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89621185C9D700873F3C /* PhoenixShader.cpp */; };
-		ECCD89A51185C9D700873F3C /* PhoenixShader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89631185C9D700873F3C /* PhoenixShader.h */; };
-		ECCD89A71185C9D700873F3C /* PhoenixSkybox.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89651185C9D700873F3C /* PhoenixSkybox.h */; };
-		ECCD89A91185C9D700873F3C /* PhoenixSpotLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89671185C9D700873F3C /* PhoenixSpotLight.h */; };
-		ECCD89AA1185C9D700873F3C /* PhoenixTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89681185C9D700873F3C /* PhoenixTexture.cpp */; };
-		ECCD89AB1185C9D700873F3C /* PhoenixTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89691185C9D700873F3C /* PhoenixTexture.h */; };
-		ECCD89AC1185C9D700873F3C /* PhoenixTGAImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD896A1185C9D700873F3C /* PhoenixTGAImage.cpp */; };
-		ECCD89AD1185C9D700873F3C /* PhoenixTGAImage.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD896B1185C9D700873F3C /* PhoenixTGAImage.h */; };
-		ECCD89AE1185C9D700873F3C /* PhoenixVertexDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD896C1185C9D700873F3C /* PhoenixVertexDescriptor.cpp */; };
-		ECCD89AF1185C9D700873F3C /* PhoenixVertexDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD896D1185C9D700873F3C /* PhoenixVertexDescriptor.h */; };
-		ECCD89D31185C9E700873F3C /* PhoenixCapsuleCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89B41185C9E700873F3C /* PhoenixCapsuleCollider.cpp */; };
-		ECCD89D41185C9E700873F3C /* PhoenixCapsuleCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89B51185C9E700873F3C /* PhoenixCapsuleCollider.h */; };
-		ECCD89D51185C9E700873F3C /* PhoenixCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89B61185C9E700873F3C /* PhoenixCollider.h */; };
-		ECCD89D61185C9E700873F3C /* PhoenixCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89B71185C9E700873F3C /* PhoenixCollision.cpp */; };
-		ECCD89D71185C9E700873F3C /* PhoenixCollision.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89B81185C9E700873F3C /* PhoenixCollision.h */; };
-		ECCD89D81185C9E700873F3C /* PhoenixCompoundCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89B91185C9E700873F3C /* PhoenixCompoundCollider.cpp */; };
-		ECCD89D91185C9E700873F3C /* PhoenixCompoundCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BA1185C9E700873F3C /* PhoenixCompoundCollider.h */; };
-		ECCD89DA1185C9E700873F3C /* PhoenixLine.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BB1185C9E700873F3C /* PhoenixLine.h */; };
-		ECCD89DB1185C9E700873F3C /* PhoenixLineSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BC1185C9E700873F3C /* PhoenixLineSegment.h */; };
-		ECCD89DC1185C9E700873F3C /* PhoenixMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89BD1185C9E700873F3C /* PhoenixMath.cpp */; };
-		ECCD89DD1185C9E700873F3C /* PhoenixMath.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BE1185C9E700873F3C /* PhoenixMath.h */; };
-		ECCD89DE1185C9E700873F3C /* PhoenixMathUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BF1185C9E700873F3C /* PhoenixMathUtils.h */; };
-		ECCD89DF1185C9E700873F3C /* PhoenixMatrix2x2.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C01185C9E700873F3C /* PhoenixMatrix2x2.h */; };
-		ECCD89E01185C9E700873F3C /* PhoenixMatrix3x3.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C11185C9E700873F3C /* PhoenixMatrix3x3.h */; };
-		ECCD89E11185C9E700873F3C /* PhoenixMatrix4x4.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C21185C9E700873F3C /* PhoenixMatrix4x4.h */; };
-		ECCD89E21185C9E700873F3C /* PhoenixOBBCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C31185C9E700873F3C /* PhoenixOBBCollider.cpp */; };
-		ECCD89E31185C9E700873F3C /* PhoenixOBBCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C41185C9E700873F3C /* PhoenixOBBCollider.h */; };
-		ECCD89E41185C9E700873F3C /* PhoenixPlane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C51185C9E700873F3C /* PhoenixPlane.cpp */; };
-		ECCD89E51185C9E700873F3C /* PhoenixPlane.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C61185C9E700873F3C /* PhoenixPlane.h */; };
-		ECCD89E61185C9E700873F3C /* PhoenixQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C71185C9E700873F3C /* PhoenixQuad.cpp */; };
-		ECCD89E71185C9E700873F3C /* PhoenixQuad.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C81185C9E700873F3C /* PhoenixQuad.h */; };
-		ECCD89E81185C9E700873F3C /* PhoenixQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C91185C9E700873F3C /* PhoenixQuaternion.cpp */; };
-		ECCD89E91185C9E700873F3C /* PhoenixQuaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CA1185C9E700873F3C /* PhoenixQuaternion.h */; };
-		ECCD89EA1185C9E700873F3C /* PhoenixRay.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CB1185C9E700873F3C /* PhoenixRay.h */; };
-		ECCD89EB1185C9E700873F3C /* PhoenixSphereCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89CC1185C9E700873F3C /* PhoenixSphereCollider.cpp */; };
-		ECCD89EC1185C9E700873F3C /* PhoenixSphereCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CD1185C9E700873F3C /* PhoenixSphereCollider.h */; };
-		ECCD89ED1185C9E700873F3C /* PhoenixTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89CE1185C9E700873F3C /* PhoenixTransform.cpp */; };
-		ECCD89EE1185C9E700873F3C /* PhoenixTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CF1185C9E700873F3C /* PhoenixTransform.h */; };
-		ECCD89EF1185C9E700873F3C /* PhoenixVector2.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89D01185C9E700873F3C /* PhoenixVector2.h */; };
-		ECCD89F01185C9E700873F3C /* PhoenixVector3.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89D11185C9E700873F3C /* PhoenixVector3.h */; };
-		ECCD89F11185C9E700873F3C /* PhoenixVector4.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89D21185C9E700873F3C /* PhoenixVector4.h */; };
+		EC88533611A3C931009D8112 /* MoosePolygonOffset.h in Headers */ = {isa = PBXBuildFile; fileRef = EC88533411A3C931009D8112 /* MoosePolygonOffset.h */; };
+		EC88533711A3C931009D8112 /* MoosePolygonOffset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC88533511A3C931009D8112 /* MoosePolygonOffset.cpp */; };
+		ECCD88BC1185C99900873F3C /* MooseALObjectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AB1185C99900873F3C /* MooseALObjectArray.h */; };
+		ECCD88BD1185C99900873F3C /* MooseALSampleTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AC1185C99900873F3C /* MooseALSampleTypes.cpp */; };
+		ECCD88BE1185C99900873F3C /* MooseALSampleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AD1185C99900873F3C /* MooseALSampleTypes.h */; };
+		ECCD88BF1185C99900873F3C /* MooseALSoundTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AE1185C99900873F3C /* MooseALSoundTypes.cpp */; };
+		ECCD88C01185C99900873F3C /* MooseALSoundTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AF1185C99900873F3C /* MooseALSoundTypes.h */; };
+		ECCD88C11185C99900873F3C /* MooseAudioSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B01185C99900873F3C /* MooseAudioSystem.cpp */; };
+		ECCD88C21185C99900873F3C /* MooseAudioSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B11185C99900873F3C /* MooseAudioSystem.h */; };
+		ECCD88C31185C99900873F3C /* MooseListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B21185C99900873F3C /* MooseListener.cpp */; };
+		ECCD88C41185C99900873F3C /* MooseListener.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B31185C99900873F3C /* MooseListener.h */; };
+		ECCD88C51185C99900873F3C /* MooseOggSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B41185C99900873F3C /* MooseOggSample.cpp */; };
+		ECCD88C61185C99900873F3C /* MooseOggSample.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B51185C99900873F3C /* MooseOggSample.h */; };
+		ECCD88C71185C99900873F3C /* MooseOggStreamSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B61185C99900873F3C /* MooseOggStreamSample.cpp */; };
+		ECCD88C81185C99900873F3C /* MooseOggStreamSample.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B71185C99900873F3C /* MooseOggStreamSample.h */; };
+		ECCD88C91185C99900873F3C /* MooseSoundBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88B81185C99900873F3C /* MooseSoundBase.cpp */; };
+		ECCD88CA1185C99900873F3C /* MooseSoundBase.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88B91185C99900873F3C /* MooseSoundBase.h */; };
+		ECCD88CB1185C99900873F3C /* MooseSoundSampleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88BA1185C99900873F3C /* MooseSoundSampleBase.cpp */; };
+		ECCD88CC1185C99900873F3C /* MooseSoundSampleBase.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88BB1185C99900873F3C /* MooseSoundSampleBase.h */; };
+		ECCD88D91185C9BC00873F3C /* MooseAIScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88CF1185C9BC00873F3C /* MooseAIScript.cpp */; };
+		ECCD88DA1185C9BC00873F3C /* MooseAIScript.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88D01185C9BC00873F3C /* MooseAIScript.h */; };
+		ECCD88DD1185C9BC00873F3C /* MooseMessageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88D31185C9BC00873F3C /* MooseMessageSystem.cpp */; };
+		ECCD88DE1185C9BC00873F3C /* MooseMessageSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88D41185C9BC00873F3C /* MooseMessageSystem.h */; };
+		ECCD88E11185C9BC00873F3C /* MooseStateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88D71185C9BC00873F3C /* MooseStateMachine.cpp */; };
+		ECCD88E21185C9BC00873F3C /* MooseStateMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88D81185C9BC00873F3C /* MooseStateMachine.h */; };
+		ECCD89091185C9C800873F3C /* MooseAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E51185C9C800873F3C /* MooseAPI.h */; };
+		ECCD890A1185C9C800873F3C /* MooseAVLTree.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E61185C9C800873F3C /* MooseAVLTree.h */; };
+		ECCD890B1185C9C800873F3C /* MooseCacheable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E71185C9C800873F3C /* MooseCacheable.h */; };
+		ECCD890C1185C9C800873F3C /* MooseConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E81185C9C800873F3C /* MooseConvert.h */; };
+		ECCD890D1185C9C800873F3C /* MooseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88E91185C9C800873F3C /* MooseCore.h */; };
+		ECCD890E1185C9C800873F3C /* MooseEnableable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EA1185C9C800873F3C /* MooseEnableable.h */; };
+		ECCD890F1185C9C800873F3C /* MooseExceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88EB1185C9C800873F3C /* MooseExceptions.cpp */; };
+		ECCD89101185C9C800873F3C /* MooseExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EC1185C9C800873F3C /* MooseExceptions.h */; };
+		ECCD89111185C9C800873F3C /* MooseFocusable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88ED1185C9C800873F3C /* MooseFocusable.h */; };
+		ECCD89121185C9C800873F3C /* MooseFPSCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EE1185C9C800873F3C /* MooseFPSCounter.h */; };
+		ECCD89131185C9C800873F3C /* MooseGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88EF1185C9C800873F3C /* MooseGlobals.h */; };
+		ECCD89141185C9C800873F3C /* MooseGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F01185C9C800873F3C /* MooseGraph.h */; };
+		ECCD89151185C9C800873F3C /* MooseGraphEdge.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F21185C9C800873F3C /* MooseGraphEdge.h */; };
+		ECCD89161185C9C800873F3C /* MooseGraphNode.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F31185C9C800873F3C /* MooseGraphNode.h */; };
+		ECCD89171185C9C800873F3C /* MooseHashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F41185C9C800873F3C /* MooseHashTable.h */; };
+		ECCD89181185C9C800873F3C /* MooseLog.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F51185C9C800873F3C /* MooseLog.h */; };
+		ECCD89191185C9C800873F3C /* MooseLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88F61185C9C800873F3C /* MooseLogger.cpp */; };
+		ECCD891A1185C9C800873F3C /* MooseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F71185C9C800873F3C /* MooseLogger.h */; };
+		ECCD891B1185C9C800873F3C /* MooseNamed.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F81185C9C800873F3C /* MooseNamed.h */; };
+		ECCD891C1185C9C800873F3C /* MooseNullable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88F91185C9C800873F3C /* MooseNullable.h */; };
+		ECCD891D1185C9C800873F3C /* MooseObjectCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FA1185C9C800873F3C /* MooseObjectCounter.h */; };
+		ECCD89201185C9C800873F3C /* MooseRadixSort.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FD1185C9C800873F3C /* MooseRadixSort.h */; };
+		ECCD89211185C9C800873F3C /* MooseResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FE1185C9C800873F3C /* MooseResourceManager.h */; };
+		ECCD89221185C9C800873F3C /* MooseSelectable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88FF1185C9C800873F3C /* MooseSelectable.h */; };
+		ECCD89231185C9C800873F3C /* MooseSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89001185C9C800873F3C /* MooseSingleton.h */; };
+		ECCD89241185C9C800873F3C /* MooseTagged.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89011185C9C800873F3C /* MooseTagged.h */; };
+		ECCD89251185C9C800873F3C /* MooseTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89021185C9C800873F3C /* MooseTimer.h */; };
+		ECCD89261185C9C800873F3C /* MooseTimeStamp.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89031185C9C800873F3C /* MooseTimeStamp.h */; };
+		ECCD89271185C9C800873F3C /* MooseTypeBase.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89041185C9C800873F3C /* MooseTypeBase.h */; };
+		ECCD89281185C9C800873F3C /* MooseUniqueNameCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89051185C9C800873F3C /* MooseUniqueNameCreator.h */; };
+		ECCD89291185C9C800873F3C /* MooseViewable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89061185C9C800873F3C /* MooseViewable.h */; };
+		ECCD892A1185C9C800873F3C /* MooseWindowsWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89071185C9C800873F3C /* MooseWindowsWrapper.cpp */; };
+		ECCD892B1185C9C800873F3C /* MooseWindowsWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89081185C9C800873F3C /* MooseWindowsWrapper.h */; };
+		ECCD89701185C9D700873F3C /* MooseAlphaTestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD892E1185C9D700873F3C /* MooseAlphaTestOperation.h */; };
+		ECCD89721185C9D700873F3C /* MooseAmbientLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89301185C9D700873F3C /* MooseAmbientLight.h */; };
+		ECCD89731185C9D700873F3C /* MooseBlendingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89311185C9D700873F3C /* MooseBlendingOperation.h */; };
+		ECCD89741185C9D700873F3C /* MooseCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89321185C9D700873F3C /* MooseCamera.cpp */; };
+		ECCD89751185C9D700873F3C /* MooseCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89331185C9D700873F3C /* MooseCamera.h */; };
+		ECCD89761185C9D700873F3C /* MooseDDSImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89341185C9D700873F3C /* MooseDDSImage.cpp */; };
+		ECCD89771185C9D700873F3C /* MooseDDSImage.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89351185C9D700873F3C /* MooseDDSImage.h */; };
+		ECCD89791185C9D700873F3C /* MooseDirectionalLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89371185C9D700873F3C /* MooseDirectionalLight.h */; };
+		ECCD897C1185C9D700873F3C /* MooseFrameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD893A1185C9D700873F3C /* MooseFrameBuffer.cpp */; };
+		ECCD897D1185C9D700873F3C /* MooseFrameBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD893B1185C9D700873F3C /* MooseFrameBuffer.h */; };
+		ECCD897E1185C9D700873F3C /* MooseFrustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD893C1185C9D700873F3C /* MooseFrustum.cpp */; };
+		ECCD897F1185C9D700873F3C /* MooseFrustum.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD893D1185C9D700873F3C /* MooseFrustum.h */; };
+		ECCD89821185C9D700873F3C /* MooseIndexArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89401185C9D700873F3C /* MooseIndexArray.h */; };
+		ECCD89831185C9D700873F3C /* MooseLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89411185C9D700873F3C /* MooseLight.h */; };
+		ECCD89841185C9D700873F3C /* MooseMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89421185C9D700873F3C /* MooseMaterial.h */; };
+		ECCD89851185C9D700873F3C /* MooseMilkshapeLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89431185C9D700873F3C /* MooseMilkshapeLoader.cpp */; };
+		ECCD89861185C9D700873F3C /* MooseMilkshapeLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89441185C9D700873F3C /* MooseMilkshapeLoader.h */; };
+		ECCD89871185C9D700873F3C /* MooseModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89451185C9D700873F3C /* MooseModel.cpp */; };
+		ECCD89881185C9D700873F3C /* MooseModel.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89461185C9D700873F3C /* MooseModel.h */; };
+		ECCD89891185C9D700873F3C /* MooseModelHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89471185C9D700873F3C /* MooseModelHelper.cpp */; };
+		ECCD898A1185C9D700873F3C /* MooseModelHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89481185C9D700873F3C /* MooseModelHelper.h */; };
+		ECCD898B1185C9D700873F3C /* MooseModelLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89491185C9D700873F3C /* MooseModelLoader.cpp */; };
+		ECCD898C1185C9D700873F3C /* MooseModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894A1185C9D700873F3C /* MooseModelLoader.h */; };
+		ECCD898D1185C9D700873F3C /* MooseObjLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD894B1185C9D700873F3C /* MooseObjLoader.cpp */; };
+		ECCD898E1185C9D700873F3C /* MooseObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894C1185C9D700873F3C /* MooseObjLoader.h */; };
+		ECCD898F1185C9D700873F3C /* MooseOGLConsts.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894D1185C9D700873F3C /* MooseOGLConsts.h */; };
+		ECCD89911185C9D700873F3C /* MooseOGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD894F1185C9D700873F3C /* MooseOGLRenderer.h */; };
+		ECCD89921185C9D700873F3C /* MooseParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89501185C9D700873F3C /* MooseParticleSystem.h */; };
+		ECCD89941185C9D700873F3C /* MoosePointLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89521185C9D700873F3C /* MoosePointLight.h */; };
+		ECCD89951185C9D700873F3C /* MooseRenderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89531185C9D700873F3C /* MooseRenderable.cpp */; };
+		ECCD89961185C9D700873F3C /* MooseRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89541185C9D700873F3C /* MooseRenderable.h */; };
+		ECCD89981185C9D700873F3C /* MooseRenderableModel.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89561185C9D700873F3C /* MooseRenderableModel.h */; };
+		ECCD899A1185C9D700873F3C /* MooseRenderableModelShared.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89581185C9D700873F3C /* MooseRenderableModelShared.h */; };
+		ECCD899B1185C9D700873F3C /* MooseRenderableProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89591185C9D700873F3C /* MooseRenderableProperty.cpp */; };
+		ECCD899C1185C9D700873F3C /* MooseRenderableProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD895A1185C9D700873F3C /* MooseRenderableProperty.h */; };
+		ECCD899F1185C9D700873F3C /* MooseRenderQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD895D1185C9D700873F3C /* MooseRenderQueue.h */; };
+		ECCD89A01185C9D700873F3C /* MooseRenderState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD895E1185C9D700873F3C /* MooseRenderState.cpp */; };
+		ECCD89A11185C9D700873F3C /* MooseRenderState.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD895F1185C9D700873F3C /* MooseRenderState.h */; };
+		ECCD89A41185C9D700873F3C /* MooseShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89621185C9D700873F3C /* MooseShader.cpp */; };
+		ECCD89A51185C9D700873F3C /* MooseShader.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89631185C9D700873F3C /* MooseShader.h */; };
+		ECCD89A71185C9D700873F3C /* MooseSkybox.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89651185C9D700873F3C /* MooseSkybox.h */; };
+		ECCD89A91185C9D700873F3C /* MooseSpotLight.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89671185C9D700873F3C /* MooseSpotLight.h */; };
+		ECCD89AA1185C9D700873F3C /* MooseTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89681185C9D700873F3C /* MooseTexture.cpp */; };
+		ECCD89AB1185C9D700873F3C /* MooseTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89691185C9D700873F3C /* MooseTexture.h */; };
+		ECCD89AC1185C9D700873F3C /* MooseTGAImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD896A1185C9D700873F3C /* MooseTGAImage.cpp */; };
+		ECCD89AD1185C9D700873F3C /* MooseTGAImage.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD896B1185C9D700873F3C /* MooseTGAImage.h */; };
+		ECCD89AE1185C9D700873F3C /* MooseVertexDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD896C1185C9D700873F3C /* MooseVertexDescriptor.cpp */; };
+		ECCD89AF1185C9D700873F3C /* MooseVertexDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD896D1185C9D700873F3C /* MooseVertexDescriptor.h */; };
+		ECCD89D31185C9E700873F3C /* MooseCapsuleCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89B41185C9E700873F3C /* MooseCapsuleCollider.cpp */; };
+		ECCD89D41185C9E700873F3C /* MooseCapsuleCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89B51185C9E700873F3C /* MooseCapsuleCollider.h */; };
+		ECCD89D51185C9E700873F3C /* MooseCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89B61185C9E700873F3C /* MooseCollider.h */; };
+		ECCD89D61185C9E700873F3C /* MooseCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89B71185C9E700873F3C /* MooseCollision.cpp */; };
+		ECCD89D71185C9E700873F3C /* MooseCollision.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89B81185C9E700873F3C /* MooseCollision.h */; };
+		ECCD89D81185C9E700873F3C /* MooseCompoundCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89B91185C9E700873F3C /* MooseCompoundCollider.cpp */; };
+		ECCD89D91185C9E700873F3C /* MooseCompoundCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BA1185C9E700873F3C /* MooseCompoundCollider.h */; };
+		ECCD89DA1185C9E700873F3C /* MooseLine.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BB1185C9E700873F3C /* MooseLine.h */; };
+		ECCD89DB1185C9E700873F3C /* MooseLineSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BC1185C9E700873F3C /* MooseLineSegment.h */; };
+		ECCD89DC1185C9E700873F3C /* MooseMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89BD1185C9E700873F3C /* MooseMath.cpp */; };
+		ECCD89DD1185C9E700873F3C /* MooseMath.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BE1185C9E700873F3C /* MooseMath.h */; };
+		ECCD89DE1185C9E700873F3C /* MooseMathUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89BF1185C9E700873F3C /* MooseMathUtils.h */; };
+		ECCD89DF1185C9E700873F3C /* MooseMatrix2x2.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C01185C9E700873F3C /* MooseMatrix2x2.h */; };
+		ECCD89E01185C9E700873F3C /* MooseMatrix3x3.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C11185C9E700873F3C /* MooseMatrix3x3.h */; };
+		ECCD89E11185C9E700873F3C /* MooseMatrix4x4.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C21185C9E700873F3C /* MooseMatrix4x4.h */; };
+		ECCD89E21185C9E700873F3C /* MooseOBBCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C31185C9E700873F3C /* MooseOBBCollider.cpp */; };
+		ECCD89E31185C9E700873F3C /* MooseOBBCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C41185C9E700873F3C /* MooseOBBCollider.h */; };
+		ECCD89E41185C9E700873F3C /* MoosePlane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C51185C9E700873F3C /* MoosePlane.cpp */; };
+		ECCD89E51185C9E700873F3C /* MoosePlane.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C61185C9E700873F3C /* MoosePlane.h */; };
+		ECCD89E61185C9E700873F3C /* MooseQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C71185C9E700873F3C /* MooseQuad.cpp */; };
+		ECCD89E71185C9E700873F3C /* MooseQuad.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89C81185C9E700873F3C /* MooseQuad.h */; };
+		ECCD89E81185C9E700873F3C /* MooseQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89C91185C9E700873F3C /* MooseQuaternion.cpp */; };
+		ECCD89E91185C9E700873F3C /* MooseQuaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CA1185C9E700873F3C /* MooseQuaternion.h */; };
+		ECCD89EA1185C9E700873F3C /* MooseRay.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CB1185C9E700873F3C /* MooseRay.h */; };
+		ECCD89EB1185C9E700873F3C /* MooseSphereCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89CC1185C9E700873F3C /* MooseSphereCollider.cpp */; };
+		ECCD89EC1185C9E700873F3C /* MooseSphereCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CD1185C9E700873F3C /* MooseSphereCollider.h */; };
+		ECCD89ED1185C9E700873F3C /* MooseTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89CE1185C9E700873F3C /* MooseTransform.cpp */; };
+		ECCD89EE1185C9E700873F3C /* MooseTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89CF1185C9E700873F3C /* MooseTransform.h */; };
+		ECCD89EF1185C9E700873F3C /* MooseVector2.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89D01185C9E700873F3C /* MooseVector2.h */; };
+		ECCD89F01185C9E700873F3C /* MooseVector3.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89D11185C9E700873F3C /* MooseVector3.h */; };
+		ECCD89F11185C9E700873F3C /* MooseVector4.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89D21185C9E700873F3C /* MooseVector4.h */; };
 		ECCD8A061185C9F900873F3C /* CApplicationStatistics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89F31185C9F900873F3C /* CApplicationStatistics.cpp */; };
 		ECCD8A071185C9F900873F3C /* CApplicationStatistics.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89F41185C9F900873F3C /* CApplicationStatistics.h */; };
-		ECCD8A081185C9F900873F3C /* PhoenixApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89F71185C9F900873F3C /* PhoenixApplication.cpp */; };
-		ECCD8A091185C9F900873F3C /* PhoenixApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89F81185C9F900873F3C /* PhoenixApplication.h */; };
-		ECCD8A0A1185C9F900873F3C /* PhoenixCameraObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89F91185C9F900873F3C /* PhoenixCameraObject.cpp */; };
-		ECCD8A0B1185C9F900873F3C /* PhoenixCameraObject.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89FA1185C9F900873F3C /* PhoenixCameraObject.h */; };
-		ECCD8A0C1185C9F900873F3C /* PhoenixDirectionalLightObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89FB1185C9F900873F3C /* PhoenixDirectionalLightObject.cpp */; };
-		ECCD8A0D1185C9F900873F3C /* PhoenixDirectionalLightObject.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89FC1185C9F900873F3C /* PhoenixDirectionalLightObject.h */; };
-		ECCD8A0E1185C9F900873F3C /* PhoenixGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89FD1185C9F900873F3C /* PhoenixGameObject.cpp */; };
-		ECCD8A0F1185C9F900873F3C /* PhoenixGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89FE1185C9F900873F3C /* PhoenixGameObject.h */; };
-		ECCD8A111185C9F900873F3C /* PhoenixScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A001185C9F900873F3C /* PhoenixScene.cpp */; };
-		ECCD8A121185C9F900873F3C /* PhoenixScene.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A011185C9F900873F3C /* PhoenixScene.h */; };
-		ECCD8A131185C9F900873F3C /* PhoenixSpatialGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A021185C9F900873F3C /* PhoenixSpatialGraph.cpp */; };
-		ECCD8A141185C9F900873F3C /* PhoenixSpatialGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A031185C9F900873F3C /* PhoenixSpatialGraph.h */; };
-		ECCD8A151185C9F900873F3C /* PhoenixTransformGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A041185C9F900873F3C /* PhoenixTransformGraph.cpp */; };
-		ECCD8A161185C9F900873F3C /* PhoenixTransformGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A051185C9F900873F3C /* PhoenixTransformGraph.h */; };
-		ECCD8A2A1185CA0700873F3C /* PhoenixAABB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A191185CA0700873F3C /* PhoenixAABB.cpp */; };
-		ECCD8A2B1185CA0700873F3C /* PhoenixAABB.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1A1185CA0700873F3C /* PhoenixAABB.h */; };
-		ECCD8A2C1185CA0700873F3C /* PhoenixAACube.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1B1185CA0700873F3C /* PhoenixAACube.h */; };
-		ECCD8A2D1185CA0700873F3C /* PhoenixBoxBound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A1C1185CA0700873F3C /* PhoenixBoxBound.cpp */; };
-		ECCD8A2E1185CA0700873F3C /* PhoenixBoxBound.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1D1185CA0700873F3C /* PhoenixBoxBound.h */; };
-		ECCD8A2F1185CA0700873F3C /* PhoenixCapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1E1185CA0700873F3C /* PhoenixCapsule.h */; };
-		ECCD8A301185CA0700873F3C /* PhoenixCone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A1F1185CA0700873F3C /* PhoenixCone.cpp */; };
-		ECCD8A311185CA0700873F3C /* PhoenixCone.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A201185CA0700873F3C /* PhoenixCone.h */; };
-		ECCD8A321185CA0700873F3C /* PhoenixDecalVolume.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A211185CA0700873F3C /* PhoenixDecalVolume.h */; };
-		ECCD8A331185CA0700873F3C /* PhoenixOBB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A221185CA0700873F3C /* PhoenixOBB.cpp */; };
-		ECCD8A341185CA0700873F3C /* PhoenixOBB.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A231185CA0700873F3C /* PhoenixOBB.h */; };
-		ECCD8A351185CA0700873F3C /* PhoenixOctree.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A241185CA0700873F3C /* PhoenixOctree.h */; };
-		ECCD8A361185CA0700873F3C /* PhoenixPolytope.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A251185CA0700873F3C /* PhoenixPolytope.h */; };
-		ECCD8A371185CA0700873F3C /* PhoenixSphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A261185CA0700873F3C /* PhoenixSphere.cpp */; };
-		ECCD8A381185CA0700873F3C /* PhoenixSphere.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A271185CA0700873F3C /* PhoenixSphere.h */; };
-		ECCD8A391185CA0700873F3C /* PhoenixSphereBound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A281185CA0700873F3C /* PhoenixSphereBound.cpp */; };
-		ECCD8A3A1185CA0700873F3C /* PhoenixSphereBound.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A291185CA0700873F3C /* PhoenixSphereBound.h */; };
-		ECCD8A461185CA1C00873F3C /* PhoenixDimensional1D.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A3D1185CA1C00873F3C /* PhoenixDimensional1D.h */; };
-		ECCD8A471185CA1C00873F3C /* PhoenixDimensional2D.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A3E1185CA1C00873F3C /* PhoenixDimensional2D.h */; };
-		ECCD8A481185CA1C00873F3C /* PhoenixDimensional3D.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A3F1185CA1C00873F3C /* PhoenixDimensional3D.h */; };
-		ECCD8A491185CA1C00873F3C /* PhoenixOneDirectional.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A401185CA1C00873F3C /* PhoenixOneDirectional.h */; };
-		ECCD8A4A1185CA1C00873F3C /* PhoenixOrientable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A411185CA1C00873F3C /* PhoenixOrientable.cpp */; };
-		ECCD8A4B1185CA1C00873F3C /* PhoenixOrientable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A421185CA1C00873F3C /* PhoenixOrientable.h */; };
-		ECCD8A4C1185CA1C00873F3C /* PhoenixPositional.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A431185CA1C00873F3C /* PhoenixPositional.h */; };
-		ECCD8A4D1185CA1C00873F3C /* PhoenixTriangle.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A441185CA1C00873F3C /* PhoenixTriangle.h */; };
-		ECCD8A4E1185CA1C00873F3C /* PhoenixVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A451185CA1C00873F3C /* PhoenixVertex.h */; };
+		ECCD8A081185C9F900873F3C /* MooseApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89F71185C9F900873F3C /* MooseApplication.cpp */; };
+		ECCD8A091185C9F900873F3C /* MooseApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89F81185C9F900873F3C /* MooseApplication.h */; };
+		ECCD8A0A1185C9F900873F3C /* MooseCameraObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89F91185C9F900873F3C /* MooseCameraObject.cpp */; };
+		ECCD8A0B1185C9F900873F3C /* MooseCameraObject.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89FA1185C9F900873F3C /* MooseCameraObject.h */; };
+		ECCD8A0C1185C9F900873F3C /* MooseDirectionalLightObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89FB1185C9F900873F3C /* MooseDirectionalLightObject.cpp */; };
+		ECCD8A0D1185C9F900873F3C /* MooseDirectionalLightObject.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89FC1185C9F900873F3C /* MooseDirectionalLightObject.h */; };
+		ECCD8A0E1185C9F900873F3C /* MooseGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD89FD1185C9F900873F3C /* MooseGameObject.cpp */; };
+		ECCD8A0F1185C9F900873F3C /* MooseGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD89FE1185C9F900873F3C /* MooseGameObject.h */; };
+		ECCD8A111185C9F900873F3C /* MooseScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A001185C9F900873F3C /* MooseScene.cpp */; };
+		ECCD8A121185C9F900873F3C /* MooseScene.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A011185C9F900873F3C /* MooseScene.h */; };
+		ECCD8A131185C9F900873F3C /* MooseSpatialGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A021185C9F900873F3C /* MooseSpatialGraph.cpp */; };
+		ECCD8A141185C9F900873F3C /* MooseSpatialGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A031185C9F900873F3C /* MooseSpatialGraph.h */; };
+		ECCD8A151185C9F900873F3C /* MooseTransformGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A041185C9F900873F3C /* MooseTransformGraph.cpp */; };
+		ECCD8A161185C9F900873F3C /* MooseTransformGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A051185C9F900873F3C /* MooseTransformGraph.h */; };
+		ECCD8A2A1185CA0700873F3C /* MooseAABB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A191185CA0700873F3C /* MooseAABB.cpp */; };
+		ECCD8A2B1185CA0700873F3C /* MooseAABB.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1A1185CA0700873F3C /* MooseAABB.h */; };
+		ECCD8A2C1185CA0700873F3C /* MooseAACube.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1B1185CA0700873F3C /* MooseAACube.h */; };
+		ECCD8A2D1185CA0700873F3C /* MooseBoxBound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A1C1185CA0700873F3C /* MooseBoxBound.cpp */; };
+		ECCD8A2E1185CA0700873F3C /* MooseBoxBound.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1D1185CA0700873F3C /* MooseBoxBound.h */; };
+		ECCD8A2F1185CA0700873F3C /* MooseCapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A1E1185CA0700873F3C /* MooseCapsule.h */; };
+		ECCD8A301185CA0700873F3C /* MooseCone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A1F1185CA0700873F3C /* MooseCone.cpp */; };
+		ECCD8A311185CA0700873F3C /* MooseCone.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A201185CA0700873F3C /* MooseCone.h */; };
+		ECCD8A321185CA0700873F3C /* MooseDecalVolume.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A211185CA0700873F3C /* MooseDecalVolume.h */; };
+		ECCD8A331185CA0700873F3C /* MooseOBB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A221185CA0700873F3C /* MooseOBB.cpp */; };
+		ECCD8A341185CA0700873F3C /* MooseOBB.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A231185CA0700873F3C /* MooseOBB.h */; };
+		ECCD8A351185CA0700873F3C /* MooseOctree.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A241185CA0700873F3C /* MooseOctree.h */; };
+		ECCD8A361185CA0700873F3C /* MoosePolytope.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A251185CA0700873F3C /* MoosePolytope.h */; };
+		ECCD8A371185CA0700873F3C /* MooseSphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A261185CA0700873F3C /* MooseSphere.cpp */; };
+		ECCD8A381185CA0700873F3C /* MooseSphere.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A271185CA0700873F3C /* MooseSphere.h */; };
+		ECCD8A391185CA0700873F3C /* MooseSphereBound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A281185CA0700873F3C /* MooseSphereBound.cpp */; };
+		ECCD8A3A1185CA0700873F3C /* MooseSphereBound.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A291185CA0700873F3C /* MooseSphereBound.h */; };
+		ECCD8A461185CA1C00873F3C /* MooseDimensional1D.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A3D1185CA1C00873F3C /* MooseDimensional1D.h */; };
+		ECCD8A471185CA1C00873F3C /* MooseDimensional2D.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A3E1185CA1C00873F3C /* MooseDimensional2D.h */; };
+		ECCD8A481185CA1C00873F3C /* MooseDimensional3D.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A3F1185CA1C00873F3C /* MooseDimensional3D.h */; };
+		ECCD8A491185CA1C00873F3C /* MooseOneDirectional.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A401185CA1C00873F3C /* MooseOneDirectional.h */; };
+		ECCD8A4A1185CA1C00873F3C /* MooseOrientable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8A411185CA1C00873F3C /* MooseOrientable.cpp */; };
+		ECCD8A4B1185CA1C00873F3C /* MooseOrientable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A421185CA1C00873F3C /* MooseOrientable.h */; };
+		ECCD8A4C1185CA1C00873F3C /* MoosePositional.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A431185CA1C00873F3C /* MoosePositional.h */; };
+		ECCD8A4D1185CA1C00873F3C /* MooseTriangle.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A441185CA1C00873F3C /* MooseTriangle.h */; };
+		ECCD8A4E1185CA1C00873F3C /* MooseVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8A451185CA1C00873F3C /* MooseVertex.h */; };
 		ECCD8A501185CA4D00873F3C /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCD8A4F1185CA4D00873F3C /* OpenAL.framework */; };
 		ECCD8A541185CA6100873F3C /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCD8A531185CA6100873F3C /* OpenGLES.framework */; };
-		ECCD8AA31185D28000873F3C /* Phoenix.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA01185D28000873F3C /* Phoenix.h */; };
-		ECCD8AA41185D28000873F3C /* PhoenixDefaultEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */; };
-		ECCD8AA51185D28000873F3C /* PhoenixDefaultEntities.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */; };
-		ECDD4FD011DB3A800064BB01 /* PhoenixCollisionEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = ECDD4FCE11DB3A800064BB01 /* PhoenixCollisionEvent.h */; };
-		ECE414FC11D77341006C0318 /* PhoenixUpdateable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE414FB11D77341006C0318 /* PhoenixUpdateable.h */; };
-		ECE7539311E3C6710069E989 /* PhoenixEventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE7539111E3C6710069E989 /* PhoenixEventQueue.h */; };
-		ECE7539411E3C6710069E989 /* PhoenixEventQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECE7539211E3C6710069E989 /* PhoenixEventQueue.cpp */; };
-		ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */ = {isa = PBXBuildFile; fileRef = ECF1FB74119A986000212362 /* PhoenixMusicClip.h */; };
-		ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */; };
+		ECCD8AA31185D28000873F3C /* Moose.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA01185D28000873F3C /* Moose.h */; };
+		ECCD8AA41185D28000873F3C /* MooseDefaultEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8AA11185D28000873F3C /* MooseDefaultEntities.cpp */; };
+		ECCD8AA51185D28000873F3C /* MooseDefaultEntities.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA21185D28000873F3C /* MooseDefaultEntities.h */; };
+		ECDD4FD011DB3A800064BB01 /* MooseCollisionEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = ECDD4FCE11DB3A800064BB01 /* MooseCollisionEvent.h */; };
+		ECE414FC11D77341006C0318 /* MooseUpdateable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE414FB11D77341006C0318 /* MooseUpdateable.h */; };
+		ECE7539311E3C6710069E989 /* MooseEventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE7539111E3C6710069E989 /* MooseEventQueue.h */; };
+		ECE7539411E3C6710069E989 /* MooseEventQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECE7539211E3C6710069E989 /* MooseEventQueue.cpp */; };
+		ECF1FB76119A986000212362 /* MooseMusicClip.h in Headers */ = {isa = PBXBuildFile; fileRef = ECF1FB74119A986000212362 /* MooseMusicClip.h */; };
+		ECF1FB77119A986000212362 /* MooseMusicClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF1FB75119A986000212362 /* MooseMusicClip.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AA747D9E0F9514B9006C5449 /* iPhoneMoose_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneMoose_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libiPhoneMoose.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiPhoneMoose.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EC04F98C11B9200B00B8F605 /* PhoenixCapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCapsule.cpp; sourceTree = "<group>"; };
-		EC0A7A181189C55D00FBAAF9 /* PhoenixAmbientLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixAmbientLight.mm; sourceTree = "<group>"; };
-		EC0A7A201189C5CA00FBAAF9 /* PhoenixRenderableModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixRenderableModel.mm; sourceTree = "<group>"; };
-		EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixRenderableModelShared.mm; sourceTree = "<group>"; };
-		EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixSkybox.mm; sourceTree = "<group>"; };
-		EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixSpotLight.mm; sourceTree = "<group>"; };
-		EC121F4A11BADEB6003C94EE /* PhoenixBoxRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixBoxRenderable.cpp; sourceTree = "<group>"; };
-		EC121F4B11BADEB6003C94EE /* PhoenixBoxRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixBoxRenderable.h; sourceTree = "<group>"; };
-		EC121F4C11BADEB6003C94EE /* PhoenixSphereRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSphereRenderable.cpp; sourceTree = "<group>"; };
-		EC121F4D11BADEB6003C94EE /* PhoenixSphereRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSphereRenderable.h; sourceTree = "<group>"; };
-		EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLineRenderable.h; sourceTree = "<group>"; };
-		EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixLineRenderable.cpp; sourceTree = "<group>"; };
-		EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixIPhoneAudioSample.h; sourceTree = "<group>"; };
-		EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixIPhoneAudioSample.mm; sourceTree = "<group>"; };
+		EC04F98C11B9200B00B8F605 /* MooseCapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCapsule.cpp; sourceTree = "<group>"; };
+		EC0A7A181189C55D00FBAAF9 /* MooseAmbientLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseAmbientLight.mm; sourceTree = "<group>"; };
+		EC0A7A201189C5CA00FBAAF9 /* MooseRenderableModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseRenderableModel.mm; sourceTree = "<group>"; };
+		EC0A7A251189C60E00FBAAF9 /* MooseRenderableModelShared.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseRenderableModelShared.mm; sourceTree = "<group>"; };
+		EC0A7A2B1189C65C00FBAAF9 /* MooseSkybox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseSkybox.mm; sourceTree = "<group>"; };
+		EC0A7A2F1189C69100FBAAF9 /* MooseSpotLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseSpotLight.mm; sourceTree = "<group>"; };
+		EC121F4A11BADEB6003C94EE /* MooseBoxRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseBoxRenderable.cpp; sourceTree = "<group>"; };
+		EC121F4B11BADEB6003C94EE /* MooseBoxRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseBoxRenderable.h; sourceTree = "<group>"; };
+		EC121F4C11BADEB6003C94EE /* MooseSphereRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSphereRenderable.cpp; sourceTree = "<group>"; };
+		EC121F4D11BADEB6003C94EE /* MooseSphereRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSphereRenderable.h; sourceTree = "<group>"; };
+		EC121F8011BAE317003C94EE /* MooseLineRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseLineRenderable.h; sourceTree = "<group>"; };
+		EC121F8111BAE317003C94EE /* MooseLineRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseLineRenderable.cpp; sourceTree = "<group>"; };
+		EC19A6C811930D26002D9374 /* MooseIPhoneAudioSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseIPhoneAudioSample.h; sourceTree = "<group>"; };
+		EC19A6C911930D26002D9374 /* MooseIPhoneAudioSample.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseIPhoneAudioSample.mm; sourceTree = "<group>"; };
 		EC19A70111930E89002D9374 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		EC19A7761193180C002D9374 /* PhoenixOGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhoenixOGLRenderer.mm; sourceTree = "<group>"; };
+		EC19A7761193180C002D9374 /* MooseOGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseOGLRenderer.mm; sourceTree = "<group>"; };
 		EC19A78711931C79002D9374 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EC19A78F11931C8D002D9374 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EC19A7F211931D68002D9374 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		EC88533411A3C931009D8112 /* PhoenixPolygonOffset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixPolygonOffset.h; sourceTree = "<group>"; };
-		EC88533511A3C931009D8112 /* PhoenixPolygonOffset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixPolygonOffset.cpp; sourceTree = "<group>"; };
-		ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALObjectArray.h; sourceTree = "<group>"; };
-		ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixALSampleTypes.cpp; sourceTree = "<group>"; };
-		ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALSampleTypes.h; sourceTree = "<group>"; };
-		ECCD88AE1185C99900873F3C /* PhoenixALSoundTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixALSoundTypes.cpp; sourceTree = "<group>"; };
-		ECCD88AF1185C99900873F3C /* PhoenixALSoundTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixALSoundTypes.h; sourceTree = "<group>"; };
-		ECCD88B01185C99900873F3C /* PhoenixAudioSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixAudioSystem.cpp; sourceTree = "<group>"; };
-		ECCD88B11185C99900873F3C /* PhoenixAudioSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAudioSystem.h; sourceTree = "<group>"; };
-		ECCD88B21185C99900873F3C /* PhoenixListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixListener.cpp; sourceTree = "<group>"; };
-		ECCD88B31185C99900873F3C /* PhoenixListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixListener.h; sourceTree = "<group>"; };
-		ECCD88B41185C99900873F3C /* PhoenixOggSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixOggSample.cpp; sourceTree = "<group>"; };
-		ECCD88B51185C99900873F3C /* PhoenixOggSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOggSample.h; sourceTree = "<group>"; };
-		ECCD88B61185C99900873F3C /* PhoenixOggStreamSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixOggStreamSample.cpp; sourceTree = "<group>"; };
-		ECCD88B71185C99900873F3C /* PhoenixOggStreamSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOggStreamSample.h; sourceTree = "<group>"; };
-		ECCD88B81185C99900873F3C /* PhoenixSoundBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSoundBase.cpp; sourceTree = "<group>"; };
-		ECCD88B91185C99900873F3C /* PhoenixSoundBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSoundBase.h; sourceTree = "<group>"; };
-		ECCD88BA1185C99900873F3C /* PhoenixSoundSampleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSoundSampleBase.cpp; sourceTree = "<group>"; };
-		ECCD88BB1185C99900873F3C /* PhoenixSoundSampleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSoundSampleBase.h; sourceTree = "<group>"; };
-		ECCD88CF1185C9BC00873F3C /* PhoenixAIScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixAIScript.cpp; sourceTree = "<group>"; };
-		ECCD88D01185C9BC00873F3C /* PhoenixAIScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAIScript.h; sourceTree = "<group>"; };
-		ECCD88D31185C9BC00873F3C /* PhoenixMessageSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixMessageSystem.cpp; sourceTree = "<group>"; };
-		ECCD88D41185C9BC00873F3C /* PhoenixMessageSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMessageSystem.h; sourceTree = "<group>"; };
-		ECCD88D71185C9BC00873F3C /* PhoenixStateMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixStateMachine.cpp; sourceTree = "<group>"; };
-		ECCD88D81185C9BC00873F3C /* PhoenixStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixStateMachine.h; sourceTree = "<group>"; };
-		ECCD88E51185C9C800873F3C /* PhoenixAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAPI.h; sourceTree = "<group>"; };
-		ECCD88E61185C9C800873F3C /* PhoenixAVLTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAVLTree.h; sourceTree = "<group>"; };
-		ECCD88E71185C9C800873F3C /* PhoenixCacheable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCacheable.h; sourceTree = "<group>"; };
-		ECCD88E81185C9C800873F3C /* PhoenixConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixConvert.h; sourceTree = "<group>"; };
-		ECCD88E91185C9C800873F3C /* PhoenixCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCore.h; sourceTree = "<group>"; };
-		ECCD88EA1185C9C800873F3C /* PhoenixEnableable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixEnableable.h; sourceTree = "<group>"; };
-		ECCD88EB1185C9C800873F3C /* PhoenixExceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixExceptions.cpp; sourceTree = "<group>"; };
-		ECCD88EC1185C9C800873F3C /* PhoenixExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixExceptions.h; sourceTree = "<group>"; };
-		ECCD88ED1185C9C800873F3C /* PhoenixFocusable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixFocusable.h; sourceTree = "<group>"; };
-		ECCD88EE1185C9C800873F3C /* PhoenixFPSCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixFPSCounter.h; sourceTree = "<group>"; };
-		ECCD88EF1185C9C800873F3C /* PhoenixGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixGlobals.h; sourceTree = "<group>"; };
-		ECCD88F01185C9C800873F3C /* PhoenixGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixGraph.h; sourceTree = "<group>"; };
-		ECCD88F11185C9C800873F3C /* PhoenixGraph.tpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PhoenixGraph.tpp; sourceTree = "<group>"; };
-		ECCD88F21185C9C800873F3C /* PhoenixGraphEdge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixGraphEdge.h; sourceTree = "<group>"; };
-		ECCD88F31185C9C800873F3C /* PhoenixGraphNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixGraphNode.h; sourceTree = "<group>"; };
-		ECCD88F41185C9C800873F3C /* PhoenixHashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixHashTable.h; sourceTree = "<group>"; };
-		ECCD88F51185C9C800873F3C /* PhoenixLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLog.h; sourceTree = "<group>"; };
-		ECCD88F61185C9C800873F3C /* PhoenixLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixLogger.cpp; sourceTree = "<group>"; };
-		ECCD88F71185C9C800873F3C /* PhoenixLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLogger.h; sourceTree = "<group>"; };
-		ECCD88F81185C9C800873F3C /* PhoenixNamed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixNamed.h; sourceTree = "<group>"; };
-		ECCD88F91185C9C800873F3C /* PhoenixNullable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixNullable.h; sourceTree = "<group>"; };
-		ECCD88FA1185C9C800873F3C /* PhoenixObjectCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixObjectCounter.h; sourceTree = "<group>"; };
-		ECCD88FD1185C9C800873F3C /* PhoenixRadixSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRadixSort.h; sourceTree = "<group>"; };
-		ECCD88FE1185C9C800873F3C /* PhoenixResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixResourceManager.h; sourceTree = "<group>"; };
-		ECCD88FF1185C9C800873F3C /* PhoenixSelectable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSelectable.h; sourceTree = "<group>"; };
-		ECCD89001185C9C800873F3C /* PhoenixSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSingleton.h; sourceTree = "<group>"; };
-		ECCD89011185C9C800873F3C /* PhoenixTagged.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTagged.h; sourceTree = "<group>"; };
-		ECCD89021185C9C800873F3C /* PhoenixTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTimer.h; sourceTree = "<group>"; };
-		ECCD89031185C9C800873F3C /* PhoenixTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTimeStamp.h; sourceTree = "<group>"; };
-		ECCD89041185C9C800873F3C /* PhoenixTypeBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTypeBase.h; sourceTree = "<group>"; };
-		ECCD89051185C9C800873F3C /* PhoenixUniqueNameCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixUniqueNameCreator.h; sourceTree = "<group>"; };
-		ECCD89061185C9C800873F3C /* PhoenixViewable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixViewable.h; sourceTree = "<group>"; };
-		ECCD89071185C9C800873F3C /* PhoenixWindowsWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixWindowsWrapper.cpp; sourceTree = "<group>"; };
-		ECCD89081185C9C800873F3C /* PhoenixWindowsWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixWindowsWrapper.h; sourceTree = "<group>"; };
-		ECCD892E1185C9D700873F3C /* PhoenixAlphaTestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAlphaTestOperation.h; sourceTree = "<group>"; };
-		ECCD89301185C9D700873F3C /* PhoenixAmbientLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAmbientLight.h; sourceTree = "<group>"; };
-		ECCD89311185C9D700873F3C /* PhoenixBlendingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixBlendingOperation.h; sourceTree = "<group>"; };
-		ECCD89321185C9D700873F3C /* PhoenixCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCamera.cpp; sourceTree = "<group>"; };
-		ECCD89331185C9D700873F3C /* PhoenixCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCamera.h; sourceTree = "<group>"; };
-		ECCD89341185C9D700873F3C /* PhoenixDDSImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixDDSImage.cpp; sourceTree = "<group>"; };
-		ECCD89351185C9D700873F3C /* PhoenixDDSImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDDSImage.h; sourceTree = "<group>"; };
-		ECCD89371185C9D700873F3C /* PhoenixDirectionalLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDirectionalLight.h; sourceTree = "<group>"; };
-		ECCD893A1185C9D700873F3C /* PhoenixFrameBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixFrameBuffer.cpp; sourceTree = "<group>"; };
-		ECCD893B1185C9D700873F3C /* PhoenixFrameBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixFrameBuffer.h; sourceTree = "<group>"; };
-		ECCD893C1185C9D700873F3C /* PhoenixFrustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixFrustum.cpp; sourceTree = "<group>"; };
-		ECCD893D1185C9D700873F3C /* PhoenixFrustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixFrustum.h; sourceTree = "<group>"; };
-		ECCD89401185C9D700873F3C /* PhoenixIndexArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixIndexArray.h; sourceTree = "<group>"; };
-		ECCD89411185C9D700873F3C /* PhoenixLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLight.h; sourceTree = "<group>"; };
-		ECCD89421185C9D700873F3C /* PhoenixMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMaterial.h; sourceTree = "<group>"; };
-		ECCD89431185C9D700873F3C /* PhoenixMilkshapeLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixMilkshapeLoader.cpp; sourceTree = "<group>"; };
-		ECCD89441185C9D700873F3C /* PhoenixMilkshapeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMilkshapeLoader.h; sourceTree = "<group>"; };
-		ECCD89451185C9D700873F3C /* PhoenixModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixModel.cpp; sourceTree = "<group>"; };
-		ECCD89461185C9D700873F3C /* PhoenixModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixModel.h; sourceTree = "<group>"; };
-		ECCD89471185C9D700873F3C /* PhoenixModelHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixModelHelper.cpp; sourceTree = "<group>"; };
-		ECCD89481185C9D700873F3C /* PhoenixModelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixModelHelper.h; sourceTree = "<group>"; };
-		ECCD89491185C9D700873F3C /* PhoenixModelLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixModelLoader.cpp; sourceTree = "<group>"; };
-		ECCD894A1185C9D700873F3C /* PhoenixModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixModelLoader.h; sourceTree = "<group>"; };
-		ECCD894B1185C9D700873F3C /* PhoenixObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixObjLoader.cpp; sourceTree = "<group>"; };
-		ECCD894C1185C9D700873F3C /* PhoenixObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixObjLoader.h; sourceTree = "<group>"; };
-		ECCD894D1185C9D700873F3C /* PhoenixOGLConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOGLConsts.h; sourceTree = "<group>"; };
-		ECCD894F1185C9D700873F3C /* PhoenixOGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOGLRenderer.h; sourceTree = "<group>"; };
-		ECCD89501185C9D700873F3C /* PhoenixParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixParticleSystem.h; sourceTree = "<group>"; };
-		ECCD89521185C9D700873F3C /* PhoenixPointLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixPointLight.h; sourceTree = "<group>"; };
-		ECCD89531185C9D700873F3C /* PhoenixRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixRenderable.cpp; sourceTree = "<group>"; };
-		ECCD89541185C9D700873F3C /* PhoenixRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRenderable.h; sourceTree = "<group>"; };
-		ECCD89561185C9D700873F3C /* PhoenixRenderableModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRenderableModel.h; sourceTree = "<group>"; };
-		ECCD89581185C9D700873F3C /* PhoenixRenderableModelShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRenderableModelShared.h; sourceTree = "<group>"; };
-		ECCD89591185C9D700873F3C /* PhoenixRenderableProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixRenderableProperty.cpp; sourceTree = "<group>"; };
-		ECCD895A1185C9D700873F3C /* PhoenixRenderableProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRenderableProperty.h; sourceTree = "<group>"; };
-		ECCD895D1185C9D700873F3C /* PhoenixRenderQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRenderQueue.h; sourceTree = "<group>"; };
-		ECCD895E1185C9D700873F3C /* PhoenixRenderState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixRenderState.cpp; sourceTree = "<group>"; };
-		ECCD895F1185C9D700873F3C /* PhoenixRenderState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRenderState.h; sourceTree = "<group>"; };
-		ECCD89621185C9D700873F3C /* PhoenixShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixShader.cpp; sourceTree = "<group>"; };
-		ECCD89631185C9D700873F3C /* PhoenixShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixShader.h; sourceTree = "<group>"; };
-		ECCD89651185C9D700873F3C /* PhoenixSkybox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSkybox.h; sourceTree = "<group>"; };
-		ECCD89671185C9D700873F3C /* PhoenixSpotLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSpotLight.h; sourceTree = "<group>"; };
-		ECCD89681185C9D700873F3C /* PhoenixTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixTexture.cpp; sourceTree = "<group>"; };
-		ECCD89691185C9D700873F3C /* PhoenixTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTexture.h; sourceTree = "<group>"; };
-		ECCD896A1185C9D700873F3C /* PhoenixTGAImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixTGAImage.cpp; sourceTree = "<group>"; };
-		ECCD896B1185C9D700873F3C /* PhoenixTGAImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTGAImage.h; sourceTree = "<group>"; };
-		ECCD896C1185C9D700873F3C /* PhoenixVertexDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixVertexDescriptor.cpp; sourceTree = "<group>"; };
-		ECCD896D1185C9D700873F3C /* PhoenixVertexDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixVertexDescriptor.h; sourceTree = "<group>"; };
-		ECCD89B41185C9E700873F3C /* PhoenixCapsuleCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCapsuleCollider.cpp; sourceTree = "<group>"; };
-		ECCD89B51185C9E700873F3C /* PhoenixCapsuleCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCapsuleCollider.h; sourceTree = "<group>"; };
-		ECCD89B61185C9E700873F3C /* PhoenixCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCollider.h; sourceTree = "<group>"; };
-		ECCD89B71185C9E700873F3C /* PhoenixCollision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCollision.cpp; sourceTree = "<group>"; };
-		ECCD89B81185C9E700873F3C /* PhoenixCollision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCollision.h; sourceTree = "<group>"; };
-		ECCD89B91185C9E700873F3C /* PhoenixCompoundCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCompoundCollider.cpp; sourceTree = "<group>"; };
-		ECCD89BA1185C9E700873F3C /* PhoenixCompoundCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCompoundCollider.h; sourceTree = "<group>"; };
-		ECCD89BB1185C9E700873F3C /* PhoenixLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLine.h; sourceTree = "<group>"; };
-		ECCD89BC1185C9E700873F3C /* PhoenixLineSegment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixLineSegment.h; sourceTree = "<group>"; };
-		ECCD89BD1185C9E700873F3C /* PhoenixMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixMath.cpp; sourceTree = "<group>"; };
-		ECCD89BE1185C9E700873F3C /* PhoenixMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMath.h; sourceTree = "<group>"; };
-		ECCD89BF1185C9E700873F3C /* PhoenixMathUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMathUtils.h; sourceTree = "<group>"; };
-		ECCD89C01185C9E700873F3C /* PhoenixMatrix2x2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMatrix2x2.h; sourceTree = "<group>"; };
-		ECCD89C11185C9E700873F3C /* PhoenixMatrix3x3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMatrix3x3.h; sourceTree = "<group>"; };
-		ECCD89C21185C9E700873F3C /* PhoenixMatrix4x4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMatrix4x4.h; sourceTree = "<group>"; };
-		ECCD89C31185C9E700873F3C /* PhoenixOBBCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixOBBCollider.cpp; sourceTree = "<group>"; };
-		ECCD89C41185C9E700873F3C /* PhoenixOBBCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOBBCollider.h; sourceTree = "<group>"; };
-		ECCD89C51185C9E700873F3C /* PhoenixPlane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixPlane.cpp; sourceTree = "<group>"; };
-		ECCD89C61185C9E700873F3C /* PhoenixPlane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixPlane.h; sourceTree = "<group>"; };
-		ECCD89C71185C9E700873F3C /* PhoenixQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixQuad.cpp; sourceTree = "<group>"; };
-		ECCD89C81185C9E700873F3C /* PhoenixQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixQuad.h; sourceTree = "<group>"; };
-		ECCD89C91185C9E700873F3C /* PhoenixQuaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixQuaternion.cpp; sourceTree = "<group>"; };
-		ECCD89CA1185C9E700873F3C /* PhoenixQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixQuaternion.h; sourceTree = "<group>"; };
-		ECCD89CB1185C9E700873F3C /* PhoenixRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixRay.h; sourceTree = "<group>"; };
-		ECCD89CC1185C9E700873F3C /* PhoenixSphereCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSphereCollider.cpp; sourceTree = "<group>"; };
-		ECCD89CD1185C9E700873F3C /* PhoenixSphereCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSphereCollider.h; sourceTree = "<group>"; };
-		ECCD89CE1185C9E700873F3C /* PhoenixTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixTransform.cpp; sourceTree = "<group>"; };
-		ECCD89CF1185C9E700873F3C /* PhoenixTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTransform.h; sourceTree = "<group>"; };
-		ECCD89D01185C9E700873F3C /* PhoenixVector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixVector2.h; sourceTree = "<group>"; };
-		ECCD89D11185C9E700873F3C /* PhoenixVector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixVector3.h; sourceTree = "<group>"; };
-		ECCD89D21185C9E700873F3C /* PhoenixVector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixVector4.h; sourceTree = "<group>"; };
+		EC88533411A3C931009D8112 /* MoosePolygonOffset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoosePolygonOffset.h; sourceTree = "<group>"; };
+		EC88533511A3C931009D8112 /* MoosePolygonOffset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MoosePolygonOffset.cpp; sourceTree = "<group>"; };
+		ECCD88AB1185C99900873F3C /* MooseALObjectArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseALObjectArray.h; sourceTree = "<group>"; };
+		ECCD88AC1185C99900873F3C /* MooseALSampleTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseALSampleTypes.cpp; sourceTree = "<group>"; };
+		ECCD88AD1185C99900873F3C /* MooseALSampleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseALSampleTypes.h; sourceTree = "<group>"; };
+		ECCD88AE1185C99900873F3C /* MooseALSoundTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseALSoundTypes.cpp; sourceTree = "<group>"; };
+		ECCD88AF1185C99900873F3C /* MooseALSoundTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseALSoundTypes.h; sourceTree = "<group>"; };
+		ECCD88B01185C99900873F3C /* MooseAudioSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseAudioSystem.cpp; sourceTree = "<group>"; };
+		ECCD88B11185C99900873F3C /* MooseAudioSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAudioSystem.h; sourceTree = "<group>"; };
+		ECCD88B21185C99900873F3C /* MooseListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseListener.cpp; sourceTree = "<group>"; };
+		ECCD88B31185C99900873F3C /* MooseListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseListener.h; sourceTree = "<group>"; };
+		ECCD88B41185C99900873F3C /* MooseOggSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseOggSample.cpp; sourceTree = "<group>"; };
+		ECCD88B51185C99900873F3C /* MooseOggSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOggSample.h; sourceTree = "<group>"; };
+		ECCD88B61185C99900873F3C /* MooseOggStreamSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseOggStreamSample.cpp; sourceTree = "<group>"; };
+		ECCD88B71185C99900873F3C /* MooseOggStreamSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOggStreamSample.h; sourceTree = "<group>"; };
+		ECCD88B81185C99900873F3C /* MooseSoundBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSoundBase.cpp; sourceTree = "<group>"; };
+		ECCD88B91185C99900873F3C /* MooseSoundBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSoundBase.h; sourceTree = "<group>"; };
+		ECCD88BA1185C99900873F3C /* MooseSoundSampleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSoundSampleBase.cpp; sourceTree = "<group>"; };
+		ECCD88BB1185C99900873F3C /* MooseSoundSampleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSoundSampleBase.h; sourceTree = "<group>"; };
+		ECCD88CF1185C9BC00873F3C /* MooseAIScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseAIScript.cpp; sourceTree = "<group>"; };
+		ECCD88D01185C9BC00873F3C /* MooseAIScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAIScript.h; sourceTree = "<group>"; };
+		ECCD88D31185C9BC00873F3C /* MooseMessageSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseMessageSystem.cpp; sourceTree = "<group>"; };
+		ECCD88D41185C9BC00873F3C /* MooseMessageSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMessageSystem.h; sourceTree = "<group>"; };
+		ECCD88D71185C9BC00873F3C /* MooseStateMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseStateMachine.cpp; sourceTree = "<group>"; };
+		ECCD88D81185C9BC00873F3C /* MooseStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseStateMachine.h; sourceTree = "<group>"; };
+		ECCD88E51185C9C800873F3C /* MooseAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAPI.h; sourceTree = "<group>"; };
+		ECCD88E61185C9C800873F3C /* MooseAVLTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAVLTree.h; sourceTree = "<group>"; };
+		ECCD88E71185C9C800873F3C /* MooseCacheable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCacheable.h; sourceTree = "<group>"; };
+		ECCD88E81185C9C800873F3C /* MooseConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseConvert.h; sourceTree = "<group>"; };
+		ECCD88E91185C9C800873F3C /* MooseCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCore.h; sourceTree = "<group>"; };
+		ECCD88EA1185C9C800873F3C /* MooseEnableable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseEnableable.h; sourceTree = "<group>"; };
+		ECCD88EB1185C9C800873F3C /* MooseExceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseExceptions.cpp; sourceTree = "<group>"; };
+		ECCD88EC1185C9C800873F3C /* MooseExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseExceptions.h; sourceTree = "<group>"; };
+		ECCD88ED1185C9C800873F3C /* MooseFocusable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseFocusable.h; sourceTree = "<group>"; };
+		ECCD88EE1185C9C800873F3C /* MooseFPSCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseFPSCounter.h; sourceTree = "<group>"; };
+		ECCD88EF1185C9C800873F3C /* MooseGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseGlobals.h; sourceTree = "<group>"; };
+		ECCD88F01185C9C800873F3C /* MooseGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseGraph.h; sourceTree = "<group>"; };
+		ECCD88F11185C9C800873F3C /* MooseGraph.tpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MooseGraph.tpp; sourceTree = "<group>"; };
+		ECCD88F21185C9C800873F3C /* MooseGraphEdge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseGraphEdge.h; sourceTree = "<group>"; };
+		ECCD88F31185C9C800873F3C /* MooseGraphNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseGraphNode.h; sourceTree = "<group>"; };
+		ECCD88F41185C9C800873F3C /* MooseHashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseHashTable.h; sourceTree = "<group>"; };
+		ECCD88F51185C9C800873F3C /* MooseLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseLog.h; sourceTree = "<group>"; };
+		ECCD88F61185C9C800873F3C /* MooseLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseLogger.cpp; sourceTree = "<group>"; };
+		ECCD88F71185C9C800873F3C /* MooseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseLogger.h; sourceTree = "<group>"; };
+		ECCD88F81185C9C800873F3C /* MooseNamed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseNamed.h; sourceTree = "<group>"; };
+		ECCD88F91185C9C800873F3C /* MooseNullable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseNullable.h; sourceTree = "<group>"; };
+		ECCD88FA1185C9C800873F3C /* MooseObjectCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseObjectCounter.h; sourceTree = "<group>"; };
+		ECCD88FD1185C9C800873F3C /* MooseRadixSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRadixSort.h; sourceTree = "<group>"; };
+		ECCD88FE1185C9C800873F3C /* MooseResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseResourceManager.h; sourceTree = "<group>"; };
+		ECCD88FF1185C9C800873F3C /* MooseSelectable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSelectable.h; sourceTree = "<group>"; };
+		ECCD89001185C9C800873F3C /* MooseSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSingleton.h; sourceTree = "<group>"; };
+		ECCD89011185C9C800873F3C /* MooseTagged.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTagged.h; sourceTree = "<group>"; };
+		ECCD89021185C9C800873F3C /* MooseTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTimer.h; sourceTree = "<group>"; };
+		ECCD89031185C9C800873F3C /* MooseTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTimeStamp.h; sourceTree = "<group>"; };
+		ECCD89041185C9C800873F3C /* MooseTypeBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTypeBase.h; sourceTree = "<group>"; };
+		ECCD89051185C9C800873F3C /* MooseUniqueNameCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseUniqueNameCreator.h; sourceTree = "<group>"; };
+		ECCD89061185C9C800873F3C /* MooseViewable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseViewable.h; sourceTree = "<group>"; };
+		ECCD89071185C9C800873F3C /* MooseWindowsWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseWindowsWrapper.cpp; sourceTree = "<group>"; };
+		ECCD89081185C9C800873F3C /* MooseWindowsWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseWindowsWrapper.h; sourceTree = "<group>"; };
+		ECCD892E1185C9D700873F3C /* MooseAlphaTestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAlphaTestOperation.h; sourceTree = "<group>"; };
+		ECCD89301185C9D700873F3C /* MooseAmbientLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAmbientLight.h; sourceTree = "<group>"; };
+		ECCD89311185C9D700873F3C /* MooseBlendingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseBlendingOperation.h; sourceTree = "<group>"; };
+		ECCD89321185C9D700873F3C /* MooseCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCamera.cpp; sourceTree = "<group>"; };
+		ECCD89331185C9D700873F3C /* MooseCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCamera.h; sourceTree = "<group>"; };
+		ECCD89341185C9D700873F3C /* MooseDDSImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseDDSImage.cpp; sourceTree = "<group>"; };
+		ECCD89351185C9D700873F3C /* MooseDDSImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDDSImage.h; sourceTree = "<group>"; };
+		ECCD89371185C9D700873F3C /* MooseDirectionalLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDirectionalLight.h; sourceTree = "<group>"; };
+		ECCD893A1185C9D700873F3C /* MooseFrameBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseFrameBuffer.cpp; sourceTree = "<group>"; };
+		ECCD893B1185C9D700873F3C /* MooseFrameBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseFrameBuffer.h; sourceTree = "<group>"; };
+		ECCD893C1185C9D700873F3C /* MooseFrustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseFrustum.cpp; sourceTree = "<group>"; };
+		ECCD893D1185C9D700873F3C /* MooseFrustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseFrustum.h; sourceTree = "<group>"; };
+		ECCD89401185C9D700873F3C /* MooseIndexArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseIndexArray.h; sourceTree = "<group>"; };
+		ECCD89411185C9D700873F3C /* MooseLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseLight.h; sourceTree = "<group>"; };
+		ECCD89421185C9D700873F3C /* MooseMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMaterial.h; sourceTree = "<group>"; };
+		ECCD89431185C9D700873F3C /* MooseMilkshapeLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseMilkshapeLoader.cpp; sourceTree = "<group>"; };
+		ECCD89441185C9D700873F3C /* MooseMilkshapeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMilkshapeLoader.h; sourceTree = "<group>"; };
+		ECCD89451185C9D700873F3C /* MooseModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseModel.cpp; sourceTree = "<group>"; };
+		ECCD89461185C9D700873F3C /* MooseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseModel.h; sourceTree = "<group>"; };
+		ECCD89471185C9D700873F3C /* MooseModelHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseModelHelper.cpp; sourceTree = "<group>"; };
+		ECCD89481185C9D700873F3C /* MooseModelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseModelHelper.h; sourceTree = "<group>"; };
+		ECCD89491185C9D700873F3C /* MooseModelLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseModelLoader.cpp; sourceTree = "<group>"; };
+		ECCD894A1185C9D700873F3C /* MooseModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseModelLoader.h; sourceTree = "<group>"; };
+		ECCD894B1185C9D700873F3C /* MooseObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseObjLoader.cpp; sourceTree = "<group>"; };
+		ECCD894C1185C9D700873F3C /* MooseObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseObjLoader.h; sourceTree = "<group>"; };
+		ECCD894D1185C9D700873F3C /* MooseOGLConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOGLConsts.h; sourceTree = "<group>"; };
+		ECCD894F1185C9D700873F3C /* MooseOGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOGLRenderer.h; sourceTree = "<group>"; };
+		ECCD89501185C9D700873F3C /* MooseParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseParticleSystem.h; sourceTree = "<group>"; };
+		ECCD89521185C9D700873F3C /* MoosePointLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoosePointLight.h; sourceTree = "<group>"; };
+		ECCD89531185C9D700873F3C /* MooseRenderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseRenderable.cpp; sourceTree = "<group>"; };
+		ECCD89541185C9D700873F3C /* MooseRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRenderable.h; sourceTree = "<group>"; };
+		ECCD89561185C9D700873F3C /* MooseRenderableModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRenderableModel.h; sourceTree = "<group>"; };
+		ECCD89581185C9D700873F3C /* MooseRenderableModelShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRenderableModelShared.h; sourceTree = "<group>"; };
+		ECCD89591185C9D700873F3C /* MooseRenderableProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseRenderableProperty.cpp; sourceTree = "<group>"; };
+		ECCD895A1185C9D700873F3C /* MooseRenderableProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRenderableProperty.h; sourceTree = "<group>"; };
+		ECCD895D1185C9D700873F3C /* MooseRenderQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRenderQueue.h; sourceTree = "<group>"; };
+		ECCD895E1185C9D700873F3C /* MooseRenderState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseRenderState.cpp; sourceTree = "<group>"; };
+		ECCD895F1185C9D700873F3C /* MooseRenderState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRenderState.h; sourceTree = "<group>"; };
+		ECCD89621185C9D700873F3C /* MooseShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseShader.cpp; sourceTree = "<group>"; };
+		ECCD89631185C9D700873F3C /* MooseShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseShader.h; sourceTree = "<group>"; };
+		ECCD89651185C9D700873F3C /* MooseSkybox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSkybox.h; sourceTree = "<group>"; };
+		ECCD89671185C9D700873F3C /* MooseSpotLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSpotLight.h; sourceTree = "<group>"; };
+		ECCD89681185C9D700873F3C /* MooseTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseTexture.cpp; sourceTree = "<group>"; };
+		ECCD89691185C9D700873F3C /* MooseTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTexture.h; sourceTree = "<group>"; };
+		ECCD896A1185C9D700873F3C /* MooseTGAImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseTGAImage.cpp; sourceTree = "<group>"; };
+		ECCD896B1185C9D700873F3C /* MooseTGAImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTGAImage.h; sourceTree = "<group>"; };
+		ECCD896C1185C9D700873F3C /* MooseVertexDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseVertexDescriptor.cpp; sourceTree = "<group>"; };
+		ECCD896D1185C9D700873F3C /* MooseVertexDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseVertexDescriptor.h; sourceTree = "<group>"; };
+		ECCD89B41185C9E700873F3C /* MooseCapsuleCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCapsuleCollider.cpp; sourceTree = "<group>"; };
+		ECCD89B51185C9E700873F3C /* MooseCapsuleCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCapsuleCollider.h; sourceTree = "<group>"; };
+		ECCD89B61185C9E700873F3C /* MooseCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCollider.h; sourceTree = "<group>"; };
+		ECCD89B71185C9E700873F3C /* MooseCollision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCollision.cpp; sourceTree = "<group>"; };
+		ECCD89B81185C9E700873F3C /* MooseCollision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCollision.h; sourceTree = "<group>"; };
+		ECCD89B91185C9E700873F3C /* MooseCompoundCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCompoundCollider.cpp; sourceTree = "<group>"; };
+		ECCD89BA1185C9E700873F3C /* MooseCompoundCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCompoundCollider.h; sourceTree = "<group>"; };
+		ECCD89BB1185C9E700873F3C /* MooseLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseLine.h; sourceTree = "<group>"; };
+		ECCD89BC1185C9E700873F3C /* MooseLineSegment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseLineSegment.h; sourceTree = "<group>"; };
+		ECCD89BD1185C9E700873F3C /* MooseMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseMath.cpp; sourceTree = "<group>"; };
+		ECCD89BE1185C9E700873F3C /* MooseMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMath.h; sourceTree = "<group>"; };
+		ECCD89BF1185C9E700873F3C /* MooseMathUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMathUtils.h; sourceTree = "<group>"; };
+		ECCD89C01185C9E700873F3C /* MooseMatrix2x2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMatrix2x2.h; sourceTree = "<group>"; };
+		ECCD89C11185C9E700873F3C /* MooseMatrix3x3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMatrix3x3.h; sourceTree = "<group>"; };
+		ECCD89C21185C9E700873F3C /* MooseMatrix4x4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMatrix4x4.h; sourceTree = "<group>"; };
+		ECCD89C31185C9E700873F3C /* MooseOBBCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseOBBCollider.cpp; sourceTree = "<group>"; };
+		ECCD89C41185C9E700873F3C /* MooseOBBCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOBBCollider.h; sourceTree = "<group>"; };
+		ECCD89C51185C9E700873F3C /* MoosePlane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MoosePlane.cpp; sourceTree = "<group>"; };
+		ECCD89C61185C9E700873F3C /* MoosePlane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoosePlane.h; sourceTree = "<group>"; };
+		ECCD89C71185C9E700873F3C /* MooseQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseQuad.cpp; sourceTree = "<group>"; };
+		ECCD89C81185C9E700873F3C /* MooseQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseQuad.h; sourceTree = "<group>"; };
+		ECCD89C91185C9E700873F3C /* MooseQuaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseQuaternion.cpp; sourceTree = "<group>"; };
+		ECCD89CA1185C9E700873F3C /* MooseQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseQuaternion.h; sourceTree = "<group>"; };
+		ECCD89CB1185C9E700873F3C /* MooseRay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseRay.h; sourceTree = "<group>"; };
+		ECCD89CC1185C9E700873F3C /* MooseSphereCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSphereCollider.cpp; sourceTree = "<group>"; };
+		ECCD89CD1185C9E700873F3C /* MooseSphereCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSphereCollider.h; sourceTree = "<group>"; };
+		ECCD89CE1185C9E700873F3C /* MooseTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseTransform.cpp; sourceTree = "<group>"; };
+		ECCD89CF1185C9E700873F3C /* MooseTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTransform.h; sourceTree = "<group>"; };
+		ECCD89D01185C9E700873F3C /* MooseVector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseVector2.h; sourceTree = "<group>"; };
+		ECCD89D11185C9E700873F3C /* MooseVector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseVector3.h; sourceTree = "<group>"; };
+		ECCD89D21185C9E700873F3C /* MooseVector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseVector4.h; sourceTree = "<group>"; };
 		ECCD89F31185C9F900873F3C /* CApplicationStatistics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CApplicationStatistics.cpp; sourceTree = "<group>"; };
 		ECCD89F41185C9F900873F3C /* CApplicationStatistics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CApplicationStatistics.h; sourceTree = "<group>"; };
-		ECCD89F71185C9F900873F3C /* PhoenixApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixApplication.cpp; sourceTree = "<group>"; };
-		ECCD89F81185C9F900873F3C /* PhoenixApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixApplication.h; sourceTree = "<group>"; };
-		ECCD89F91185C9F900873F3C /* PhoenixCameraObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCameraObject.cpp; sourceTree = "<group>"; };
-		ECCD89FA1185C9F900873F3C /* PhoenixCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCameraObject.h; sourceTree = "<group>"; };
-		ECCD89FB1185C9F900873F3C /* PhoenixDirectionalLightObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixDirectionalLightObject.cpp; sourceTree = "<group>"; };
-		ECCD89FC1185C9F900873F3C /* PhoenixDirectionalLightObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDirectionalLightObject.h; sourceTree = "<group>"; };
-		ECCD89FD1185C9F900873F3C /* PhoenixGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixGameObject.cpp; sourceTree = "<group>"; };
-		ECCD89FE1185C9F900873F3C /* PhoenixGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixGameObject.h; sourceTree = "<group>"; };
-		ECCD8A001185C9F900873F3C /* PhoenixScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixScene.cpp; sourceTree = "<group>"; };
-		ECCD8A011185C9F900873F3C /* PhoenixScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixScene.h; sourceTree = "<group>"; };
-		ECCD8A021185C9F900873F3C /* PhoenixSpatialGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSpatialGraph.cpp; sourceTree = "<group>"; };
-		ECCD8A031185C9F900873F3C /* PhoenixSpatialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSpatialGraph.h; sourceTree = "<group>"; };
-		ECCD8A041185C9F900873F3C /* PhoenixTransformGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixTransformGraph.cpp; sourceTree = "<group>"; };
-		ECCD8A051185C9F900873F3C /* PhoenixTransformGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTransformGraph.h; sourceTree = "<group>"; };
-		ECCD8A191185CA0700873F3C /* PhoenixAABB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixAABB.cpp; sourceTree = "<group>"; };
-		ECCD8A1A1185CA0700873F3C /* PhoenixAABB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAABB.h; sourceTree = "<group>"; };
-		ECCD8A1B1185CA0700873F3C /* PhoenixAACube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixAACube.h; sourceTree = "<group>"; };
-		ECCD8A1C1185CA0700873F3C /* PhoenixBoxBound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixBoxBound.cpp; sourceTree = "<group>"; };
-		ECCD8A1D1185CA0700873F3C /* PhoenixBoxBound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixBoxBound.h; sourceTree = "<group>"; };
-		ECCD8A1E1185CA0700873F3C /* PhoenixCapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCapsule.h; sourceTree = "<group>"; };
-		ECCD8A1F1185CA0700873F3C /* PhoenixCone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixCone.cpp; sourceTree = "<group>"; };
-		ECCD8A201185CA0700873F3C /* PhoenixCone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCone.h; sourceTree = "<group>"; };
-		ECCD8A211185CA0700873F3C /* PhoenixDecalVolume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDecalVolume.h; sourceTree = "<group>"; };
-		ECCD8A221185CA0700873F3C /* PhoenixOBB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixOBB.cpp; sourceTree = "<group>"; };
-		ECCD8A231185CA0700873F3C /* PhoenixOBB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOBB.h; sourceTree = "<group>"; };
-		ECCD8A241185CA0700873F3C /* PhoenixOctree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOctree.h; sourceTree = "<group>"; };
-		ECCD8A251185CA0700873F3C /* PhoenixPolytope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixPolytope.h; sourceTree = "<group>"; };
-		ECCD8A261185CA0700873F3C /* PhoenixSphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSphere.cpp; sourceTree = "<group>"; };
-		ECCD8A271185CA0700873F3C /* PhoenixSphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSphere.h; sourceTree = "<group>"; };
-		ECCD8A281185CA0700873F3C /* PhoenixSphereBound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixSphereBound.cpp; sourceTree = "<group>"; };
-		ECCD8A291185CA0700873F3C /* PhoenixSphereBound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixSphereBound.h; sourceTree = "<group>"; };
-		ECCD8A3D1185CA1C00873F3C /* PhoenixDimensional1D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDimensional1D.h; sourceTree = "<group>"; };
-		ECCD8A3E1185CA1C00873F3C /* PhoenixDimensional2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDimensional2D.h; sourceTree = "<group>"; };
-		ECCD8A3F1185CA1C00873F3C /* PhoenixDimensional3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixDimensional3D.h; sourceTree = "<group>"; };
-		ECCD8A401185CA1C00873F3C /* PhoenixOneDirectional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOneDirectional.h; sourceTree = "<group>"; };
-		ECCD8A411185CA1C00873F3C /* PhoenixOrientable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixOrientable.cpp; sourceTree = "<group>"; };
-		ECCD8A421185CA1C00873F3C /* PhoenixOrientable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixOrientable.h; sourceTree = "<group>"; };
-		ECCD8A431185CA1C00873F3C /* PhoenixPositional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixPositional.h; sourceTree = "<group>"; };
-		ECCD8A441185CA1C00873F3C /* PhoenixTriangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixTriangle.h; sourceTree = "<group>"; };
-		ECCD8A451185CA1C00873F3C /* PhoenixVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixVertex.h; sourceTree = "<group>"; };
+		ECCD89F71185C9F900873F3C /* MooseApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseApplication.cpp; sourceTree = "<group>"; };
+		ECCD89F81185C9F900873F3C /* MooseApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseApplication.h; sourceTree = "<group>"; };
+		ECCD89F91185C9F900873F3C /* MooseCameraObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCameraObject.cpp; sourceTree = "<group>"; };
+		ECCD89FA1185C9F900873F3C /* MooseCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCameraObject.h; sourceTree = "<group>"; };
+		ECCD89FB1185C9F900873F3C /* MooseDirectionalLightObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseDirectionalLightObject.cpp; sourceTree = "<group>"; };
+		ECCD89FC1185C9F900873F3C /* MooseDirectionalLightObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDirectionalLightObject.h; sourceTree = "<group>"; };
+		ECCD89FD1185C9F900873F3C /* MooseGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseGameObject.cpp; sourceTree = "<group>"; };
+		ECCD89FE1185C9F900873F3C /* MooseGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseGameObject.h; sourceTree = "<group>"; };
+		ECCD8A001185C9F900873F3C /* MooseScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseScene.cpp; sourceTree = "<group>"; };
+		ECCD8A011185C9F900873F3C /* MooseScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseScene.h; sourceTree = "<group>"; };
+		ECCD8A021185C9F900873F3C /* MooseSpatialGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSpatialGraph.cpp; sourceTree = "<group>"; };
+		ECCD8A031185C9F900873F3C /* MooseSpatialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSpatialGraph.h; sourceTree = "<group>"; };
+		ECCD8A041185C9F900873F3C /* MooseTransformGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseTransformGraph.cpp; sourceTree = "<group>"; };
+		ECCD8A051185C9F900873F3C /* MooseTransformGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTransformGraph.h; sourceTree = "<group>"; };
+		ECCD8A191185CA0700873F3C /* MooseAABB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseAABB.cpp; sourceTree = "<group>"; };
+		ECCD8A1A1185CA0700873F3C /* MooseAABB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAABB.h; sourceTree = "<group>"; };
+		ECCD8A1B1185CA0700873F3C /* MooseAACube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseAACube.h; sourceTree = "<group>"; };
+		ECCD8A1C1185CA0700873F3C /* MooseBoxBound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseBoxBound.cpp; sourceTree = "<group>"; };
+		ECCD8A1D1185CA0700873F3C /* MooseBoxBound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseBoxBound.h; sourceTree = "<group>"; };
+		ECCD8A1E1185CA0700873F3C /* MooseCapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCapsule.h; sourceTree = "<group>"; };
+		ECCD8A1F1185CA0700873F3C /* MooseCone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseCone.cpp; sourceTree = "<group>"; };
+		ECCD8A201185CA0700873F3C /* MooseCone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCone.h; sourceTree = "<group>"; };
+		ECCD8A211185CA0700873F3C /* MooseDecalVolume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDecalVolume.h; sourceTree = "<group>"; };
+		ECCD8A221185CA0700873F3C /* MooseOBB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseOBB.cpp; sourceTree = "<group>"; };
+		ECCD8A231185CA0700873F3C /* MooseOBB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOBB.h; sourceTree = "<group>"; };
+		ECCD8A241185CA0700873F3C /* MooseOctree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOctree.h; sourceTree = "<group>"; };
+		ECCD8A251185CA0700873F3C /* MoosePolytope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoosePolytope.h; sourceTree = "<group>"; };
+		ECCD8A261185CA0700873F3C /* MooseSphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSphere.cpp; sourceTree = "<group>"; };
+		ECCD8A271185CA0700873F3C /* MooseSphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSphere.h; sourceTree = "<group>"; };
+		ECCD8A281185CA0700873F3C /* MooseSphereBound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseSphereBound.cpp; sourceTree = "<group>"; };
+		ECCD8A291185CA0700873F3C /* MooseSphereBound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseSphereBound.h; sourceTree = "<group>"; };
+		ECCD8A3D1185CA1C00873F3C /* MooseDimensional1D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDimensional1D.h; sourceTree = "<group>"; };
+		ECCD8A3E1185CA1C00873F3C /* MooseDimensional2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDimensional2D.h; sourceTree = "<group>"; };
+		ECCD8A3F1185CA1C00873F3C /* MooseDimensional3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseDimensional3D.h; sourceTree = "<group>"; };
+		ECCD8A401185CA1C00873F3C /* MooseOneDirectional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOneDirectional.h; sourceTree = "<group>"; };
+		ECCD8A411185CA1C00873F3C /* MooseOrientable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseOrientable.cpp; sourceTree = "<group>"; };
+		ECCD8A421185CA1C00873F3C /* MooseOrientable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseOrientable.h; sourceTree = "<group>"; };
+		ECCD8A431185CA1C00873F3C /* MoosePositional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoosePositional.h; sourceTree = "<group>"; };
+		ECCD8A441185CA1C00873F3C /* MooseTriangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseTriangle.h; sourceTree = "<group>"; };
+		ECCD8A451185CA1C00873F3C /* MooseVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseVertex.h; sourceTree = "<group>"; };
 		ECCD8A4F1185CA4D00873F3C /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		ECCD8A531185CA6100873F3C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		ECCD8AA01185D28000873F3C /* Phoenix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Phoenix.h; path = ../src/Phoenix/Phoenix.h; sourceTree = SOURCE_ROOT; };
-		ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhoenixDefaultEntities.cpp; path = ../src/Phoenix/PhoenixDefaultEntities.cpp; sourceTree = SOURCE_ROOT; };
-		ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoenixDefaultEntities.h; path = ../src/Phoenix/PhoenixDefaultEntities.h; sourceTree = SOURCE_ROOT; };
-		ECDD4FCE11DB3A800064BB01 /* PhoenixCollisionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixCollisionEvent.h; sourceTree = "<group>"; };
-		ECE414FB11D77341006C0318 /* PhoenixUpdateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixUpdateable.h; sourceTree = "<group>"; };
-		ECE7539111E3C6710069E989 /* PhoenixEventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixEventQueue.h; sourceTree = "<group>"; };
-		ECE7539211E3C6710069E989 /* PhoenixEventQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixEventQueue.cpp; sourceTree = "<group>"; };
-		ECF1FB74119A986000212362 /* PhoenixMusicClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoenixMusicClip.h; sourceTree = "<group>"; };
-		ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhoenixMusicClip.cpp; sourceTree = "<group>"; };
+		ECCD8AA01185D28000873F3C /* Moose.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Moose.h; path = ../src/Moose/Moose.h; sourceTree = SOURCE_ROOT; };
+		ECCD8AA11185D28000873F3C /* MooseDefaultEntities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MooseDefaultEntities.cpp; path = ../src/Moose/MooseDefaultEntities.cpp; sourceTree = SOURCE_ROOT; };
+		ECCD8AA21185D28000873F3C /* MooseDefaultEntities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MooseDefaultEntities.h; path = ../src/Moose/MooseDefaultEntities.h; sourceTree = SOURCE_ROOT; };
+		ECDD4FCE11DB3A800064BB01 /* MooseCollisionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCollisionEvent.h; sourceTree = "<group>"; };
+		ECE414FB11D77341006C0318 /* MooseUpdateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseUpdateable.h; sourceTree = "<group>"; };
+		ECE7539111E3C6710069E989 /* MooseEventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseEventQueue.h; sourceTree = "<group>"; };
+		ECE7539211E3C6710069E989 /* MooseEventQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseEventQueue.cpp; sourceTree = "<group>"; };
+		ECF1FB74119A986000212362 /* MooseMusicClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseMusicClip.h; sourceTree = "<group>"; };
+		ECF1FB75119A986000212362 /* MooseMusicClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseMusicClip.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -490,9 +490,9 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				ECCD8AA01185D28000873F3C /* Phoenix.h */,
-				ECCD8AA11185D28000873F3C /* PhoenixDefaultEntities.cpp */,
-				ECCD8AA21185D28000873F3C /* PhoenixDefaultEntities.h */,
+				ECCD8AA01185D28000873F3C /* Moose.h */,
+				ECCD8AA11185D28000873F3C /* MooseDefaultEntities.cpp */,
+				ECCD8AA21185D28000873F3C /* MooseDefaultEntities.h */,
 				ECCD8A3B1185CA1C00873F3C /* Spatial */,
 				ECCD8A171185CA0700873F3C /* Volume */,
 				ECCD89F21185C9F900873F3C /* Scene */,
@@ -516,197 +516,197 @@
 		ECCD88A91185C99900873F3C /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				ECCD88AB1185C99900873F3C /* PhoenixALObjectArray.h */,
-				ECCD88AC1185C99900873F3C /* PhoenixALSampleTypes.cpp */,
-				ECCD88AD1185C99900873F3C /* PhoenixALSampleTypes.h */,
-				ECCD88AE1185C99900873F3C /* PhoenixALSoundTypes.cpp */,
-				ECCD88AF1185C99900873F3C /* PhoenixALSoundTypes.h */,
-				ECCD88B01185C99900873F3C /* PhoenixAudioSystem.cpp */,
-				ECCD88B11185C99900873F3C /* PhoenixAudioSystem.h */,
-				ECCD88B21185C99900873F3C /* PhoenixListener.cpp */,
-				ECCD88B31185C99900873F3C /* PhoenixListener.h */,
-				ECCD88B41185C99900873F3C /* PhoenixOggSample.cpp */,
-				ECCD88B51185C99900873F3C /* PhoenixOggSample.h */,
-				ECCD88B61185C99900873F3C /* PhoenixOggStreamSample.cpp */,
-				ECCD88B71185C99900873F3C /* PhoenixOggStreamSample.h */,
-				ECCD88B81185C99900873F3C /* PhoenixSoundBase.cpp */,
-				ECCD88B91185C99900873F3C /* PhoenixSoundBase.h */,
-				ECCD88BA1185C99900873F3C /* PhoenixSoundSampleBase.cpp */,
-				ECCD88BB1185C99900873F3C /* PhoenixSoundSampleBase.h */,
-				EC19A6C811930D26002D9374 /* PhoenixIPhoneAudioSample.h */,
-				EC19A6C911930D26002D9374 /* PhoenixIPhoneAudioSample.mm */,
-				ECF1FB74119A986000212362 /* PhoenixMusicClip.h */,
-				ECF1FB75119A986000212362 /* PhoenixMusicClip.cpp */,
+				ECCD88AB1185C99900873F3C /* MooseALObjectArray.h */,
+				ECCD88AC1185C99900873F3C /* MooseALSampleTypes.cpp */,
+				ECCD88AD1185C99900873F3C /* MooseALSampleTypes.h */,
+				ECCD88AE1185C99900873F3C /* MooseALSoundTypes.cpp */,
+				ECCD88AF1185C99900873F3C /* MooseALSoundTypes.h */,
+				ECCD88B01185C99900873F3C /* MooseAudioSystem.cpp */,
+				ECCD88B11185C99900873F3C /* MooseAudioSystem.h */,
+				ECCD88B21185C99900873F3C /* MooseListener.cpp */,
+				ECCD88B31185C99900873F3C /* MooseListener.h */,
+				ECCD88B41185C99900873F3C /* MooseOggSample.cpp */,
+				ECCD88B51185C99900873F3C /* MooseOggSample.h */,
+				ECCD88B61185C99900873F3C /* MooseOggStreamSample.cpp */,
+				ECCD88B71185C99900873F3C /* MooseOggStreamSample.h */,
+				ECCD88B81185C99900873F3C /* MooseSoundBase.cpp */,
+				ECCD88B91185C99900873F3C /* MooseSoundBase.h */,
+				ECCD88BA1185C99900873F3C /* MooseSoundSampleBase.cpp */,
+				ECCD88BB1185C99900873F3C /* MooseSoundSampleBase.h */,
+				EC19A6C811930D26002D9374 /* MooseIPhoneAudioSample.h */,
+				EC19A6C911930D26002D9374 /* MooseIPhoneAudioSample.mm */,
+				ECF1FB74119A986000212362 /* MooseMusicClip.h */,
+				ECF1FB75119A986000212362 /* MooseMusicClip.cpp */,
 			);
 			name = Audio;
-			path = ../src/Phoenix/Audio;
+			path = ../src/Moose/Audio;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD88CD1185C9BC00873F3C /* AI */ = {
 			isa = PBXGroup;
 			children = (
-				ECCD88CF1185C9BC00873F3C /* PhoenixAIScript.cpp */,
-				ECCD88D01185C9BC00873F3C /* PhoenixAIScript.h */,
-				ECCD88D31185C9BC00873F3C /* PhoenixMessageSystem.cpp */,
-				ECCD88D41185C9BC00873F3C /* PhoenixMessageSystem.h */,
-				ECCD88D71185C9BC00873F3C /* PhoenixStateMachine.cpp */,
-				ECCD88D81185C9BC00873F3C /* PhoenixStateMachine.h */,
-				ECDD4FCE11DB3A800064BB01 /* PhoenixCollisionEvent.h */,
+				ECCD88CF1185C9BC00873F3C /* MooseAIScript.cpp */,
+				ECCD88D01185C9BC00873F3C /* MooseAIScript.h */,
+				ECCD88D31185C9BC00873F3C /* MooseMessageSystem.cpp */,
+				ECCD88D41185C9BC00873F3C /* MooseMessageSystem.h */,
+				ECCD88D71185C9BC00873F3C /* MooseStateMachine.cpp */,
+				ECCD88D81185C9BC00873F3C /* MooseStateMachine.h */,
+				ECDD4FCE11DB3A800064BB01 /* MooseCollisionEvent.h */,
 			);
 			name = AI;
-			path = ../src/Phoenix/AI;
+			path = ../src/Moose/AI;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD88E31185C9C800873F3C /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				ECE414FB11D77341006C0318 /* PhoenixUpdateable.h */,
-				ECCD88E51185C9C800873F3C /* PhoenixAPI.h */,
-				ECCD88E61185C9C800873F3C /* PhoenixAVLTree.h */,
-				ECCD88E71185C9C800873F3C /* PhoenixCacheable.h */,
-				ECCD88E81185C9C800873F3C /* PhoenixConvert.h */,
-				ECCD88E91185C9C800873F3C /* PhoenixCore.h */,
-				ECCD88EA1185C9C800873F3C /* PhoenixEnableable.h */,
-				ECCD88EB1185C9C800873F3C /* PhoenixExceptions.cpp */,
-				ECCD88EC1185C9C800873F3C /* PhoenixExceptions.h */,
-				ECCD88ED1185C9C800873F3C /* PhoenixFocusable.h */,
-				ECCD88EE1185C9C800873F3C /* PhoenixFPSCounter.h */,
-				ECCD88EF1185C9C800873F3C /* PhoenixGlobals.h */,
-				ECCD88F01185C9C800873F3C /* PhoenixGraph.h */,
-				ECCD88F11185C9C800873F3C /* PhoenixGraph.tpp */,
-				ECCD88F21185C9C800873F3C /* PhoenixGraphEdge.h */,
-				ECCD88F31185C9C800873F3C /* PhoenixGraphNode.h */,
-				ECCD88F41185C9C800873F3C /* PhoenixHashTable.h */,
-				ECCD88F51185C9C800873F3C /* PhoenixLog.h */,
-				ECCD88F61185C9C800873F3C /* PhoenixLogger.cpp */,
-				ECCD88F71185C9C800873F3C /* PhoenixLogger.h */,
-				ECCD88F81185C9C800873F3C /* PhoenixNamed.h */,
-				ECCD88F91185C9C800873F3C /* PhoenixNullable.h */,
-				ECCD88FA1185C9C800873F3C /* PhoenixObjectCounter.h */,
-				ECCD88FD1185C9C800873F3C /* PhoenixRadixSort.h */,
-				ECCD88FE1185C9C800873F3C /* PhoenixResourceManager.h */,
-				ECCD88FF1185C9C800873F3C /* PhoenixSelectable.h */,
-				ECCD89001185C9C800873F3C /* PhoenixSingleton.h */,
-				ECCD89011185C9C800873F3C /* PhoenixTagged.h */,
-				ECCD89021185C9C800873F3C /* PhoenixTimer.h */,
-				ECCD89031185C9C800873F3C /* PhoenixTimeStamp.h */,
-				ECCD89041185C9C800873F3C /* PhoenixTypeBase.h */,
-				ECCD89051185C9C800873F3C /* PhoenixUniqueNameCreator.h */,
-				ECCD89061185C9C800873F3C /* PhoenixViewable.h */,
-				ECCD89071185C9C800873F3C /* PhoenixWindowsWrapper.cpp */,
-				ECCD89081185C9C800873F3C /* PhoenixWindowsWrapper.h */,
+				ECE414FB11D77341006C0318 /* MooseUpdateable.h */,
+				ECCD88E51185C9C800873F3C /* MooseAPI.h */,
+				ECCD88E61185C9C800873F3C /* MooseAVLTree.h */,
+				ECCD88E71185C9C800873F3C /* MooseCacheable.h */,
+				ECCD88E81185C9C800873F3C /* MooseConvert.h */,
+				ECCD88E91185C9C800873F3C /* MooseCore.h */,
+				ECCD88EA1185C9C800873F3C /* MooseEnableable.h */,
+				ECCD88EB1185C9C800873F3C /* MooseExceptions.cpp */,
+				ECCD88EC1185C9C800873F3C /* MooseExceptions.h */,
+				ECCD88ED1185C9C800873F3C /* MooseFocusable.h */,
+				ECCD88EE1185C9C800873F3C /* MooseFPSCounter.h */,
+				ECCD88EF1185C9C800873F3C /* MooseGlobals.h */,
+				ECCD88F01185C9C800873F3C /* MooseGraph.h */,
+				ECCD88F11185C9C800873F3C /* MooseGraph.tpp */,
+				ECCD88F21185C9C800873F3C /* MooseGraphEdge.h */,
+				ECCD88F31185C9C800873F3C /* MooseGraphNode.h */,
+				ECCD88F41185C9C800873F3C /* MooseHashTable.h */,
+				ECCD88F51185C9C800873F3C /* MooseLog.h */,
+				ECCD88F61185C9C800873F3C /* MooseLogger.cpp */,
+				ECCD88F71185C9C800873F3C /* MooseLogger.h */,
+				ECCD88F81185C9C800873F3C /* MooseNamed.h */,
+				ECCD88F91185C9C800873F3C /* MooseNullable.h */,
+				ECCD88FA1185C9C800873F3C /* MooseObjectCounter.h */,
+				ECCD88FD1185C9C800873F3C /* MooseRadixSort.h */,
+				ECCD88FE1185C9C800873F3C /* MooseResourceManager.h */,
+				ECCD88FF1185C9C800873F3C /* MooseSelectable.h */,
+				ECCD89001185C9C800873F3C /* MooseSingleton.h */,
+				ECCD89011185C9C800873F3C /* MooseTagged.h */,
+				ECCD89021185C9C800873F3C /* MooseTimer.h */,
+				ECCD89031185C9C800873F3C /* MooseTimeStamp.h */,
+				ECCD89041185C9C800873F3C /* MooseTypeBase.h */,
+				ECCD89051185C9C800873F3C /* MooseUniqueNameCreator.h */,
+				ECCD89061185C9C800873F3C /* MooseViewable.h */,
+				ECCD89071185C9C800873F3C /* MooseWindowsWrapper.cpp */,
+				ECCD89081185C9C800873F3C /* MooseWindowsWrapper.h */,
 			);
 			name = Core;
-			path = ../src/Phoenix/Core;
+			path = ../src/Moose/Core;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD892C1185C9D700873F3C /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
-				EC121F4A11BADEB6003C94EE /* PhoenixBoxRenderable.cpp */,
-				EC121F4B11BADEB6003C94EE /* PhoenixBoxRenderable.h */,
-				EC121F4C11BADEB6003C94EE /* PhoenixSphereRenderable.cpp */,
-				EC121F4D11BADEB6003C94EE /* PhoenixSphereRenderable.h */,
-				EC121F8011BAE317003C94EE /* PhoenixLineRenderable.h */,
-				EC121F8111BAE317003C94EE /* PhoenixLineRenderable.cpp */,
-				EC0A7A2F1189C69100FBAAF9 /* PhoenixSpotLight.mm */,
-				ECCD892E1185C9D700873F3C /* PhoenixAlphaTestOperation.h */,
-				EC0A7A181189C55D00FBAAF9 /* PhoenixAmbientLight.mm */,
-				ECCD89301185C9D700873F3C /* PhoenixAmbientLight.h */,
-				ECCD89311185C9D700873F3C /* PhoenixBlendingOperation.h */,
-				ECCD89321185C9D700873F3C /* PhoenixCamera.cpp */,
-				ECCD89331185C9D700873F3C /* PhoenixCamera.h */,
-				ECCD89341185C9D700873F3C /* PhoenixDDSImage.cpp */,
-				ECCD89351185C9D700873F3C /* PhoenixDDSImage.h */,
-				ECCD89371185C9D700873F3C /* PhoenixDirectionalLight.h */,
-				ECCD893A1185C9D700873F3C /* PhoenixFrameBuffer.cpp */,
-				ECCD893B1185C9D700873F3C /* PhoenixFrameBuffer.h */,
-				ECCD893C1185C9D700873F3C /* PhoenixFrustum.cpp */,
-				ECCD893D1185C9D700873F3C /* PhoenixFrustum.h */,
-				ECCD89401185C9D700873F3C /* PhoenixIndexArray.h */,
-				ECCD89411185C9D700873F3C /* PhoenixLight.h */,
-				ECCD89421185C9D700873F3C /* PhoenixMaterial.h */,
-				ECCD89431185C9D700873F3C /* PhoenixMilkshapeLoader.cpp */,
-				ECCD89441185C9D700873F3C /* PhoenixMilkshapeLoader.h */,
-				ECCD89451185C9D700873F3C /* PhoenixModel.cpp */,
-				ECCD89461185C9D700873F3C /* PhoenixModel.h */,
-				ECCD89471185C9D700873F3C /* PhoenixModelHelper.cpp */,
-				ECCD89481185C9D700873F3C /* PhoenixModelHelper.h */,
-				ECCD89491185C9D700873F3C /* PhoenixModelLoader.cpp */,
-				ECCD894A1185C9D700873F3C /* PhoenixModelLoader.h */,
-				ECCD894B1185C9D700873F3C /* PhoenixObjLoader.cpp */,
-				ECCD894C1185C9D700873F3C /* PhoenixObjLoader.h */,
-				ECCD894D1185C9D700873F3C /* PhoenixOGLConsts.h */,
-				ECCD894F1185C9D700873F3C /* PhoenixOGLRenderer.h */,
-				EC19A7761193180C002D9374 /* PhoenixOGLRenderer.mm */,
-				ECCD89501185C9D700873F3C /* PhoenixParticleSystem.h */,
-				ECCD89521185C9D700873F3C /* PhoenixPointLight.h */,
-				ECCD89531185C9D700873F3C /* PhoenixRenderable.cpp */,
-				ECCD89541185C9D700873F3C /* PhoenixRenderable.h */,
-				ECCD89561185C9D700873F3C /* PhoenixRenderableModel.h */,
-				EC0A7A201189C5CA00FBAAF9 /* PhoenixRenderableModel.mm */,
-				ECCD89581185C9D700873F3C /* PhoenixRenderableModelShared.h */,
-				EC0A7A251189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm */,
-				ECCD89591185C9D700873F3C /* PhoenixRenderableProperty.cpp */,
-				ECCD895A1185C9D700873F3C /* PhoenixRenderableProperty.h */,
-				ECCD895D1185C9D700873F3C /* PhoenixRenderQueue.h */,
-				ECCD895E1185C9D700873F3C /* PhoenixRenderState.cpp */,
-				ECCD895F1185C9D700873F3C /* PhoenixRenderState.h */,
-				ECCD89621185C9D700873F3C /* PhoenixShader.cpp */,
-				ECCD89631185C9D700873F3C /* PhoenixShader.h */,
-				ECCD89651185C9D700873F3C /* PhoenixSkybox.h */,
-				EC0A7A2B1189C65C00FBAAF9 /* PhoenixSkybox.mm */,
-				ECCD89671185C9D700873F3C /* PhoenixSpotLight.h */,
-				ECCD89681185C9D700873F3C /* PhoenixTexture.cpp */,
-				ECCD89691185C9D700873F3C /* PhoenixTexture.h */,
-				ECCD896A1185C9D700873F3C /* PhoenixTGAImage.cpp */,
-				ECCD896B1185C9D700873F3C /* PhoenixTGAImage.h */,
-				ECCD896C1185C9D700873F3C /* PhoenixVertexDescriptor.cpp */,
-				ECCD896D1185C9D700873F3C /* PhoenixVertexDescriptor.h */,
-				EC88533411A3C931009D8112 /* PhoenixPolygonOffset.h */,
-				EC88533511A3C931009D8112 /* PhoenixPolygonOffset.cpp */,
+				EC121F4A11BADEB6003C94EE /* MooseBoxRenderable.cpp */,
+				EC121F4B11BADEB6003C94EE /* MooseBoxRenderable.h */,
+				EC121F4C11BADEB6003C94EE /* MooseSphereRenderable.cpp */,
+				EC121F4D11BADEB6003C94EE /* MooseSphereRenderable.h */,
+				EC121F8011BAE317003C94EE /* MooseLineRenderable.h */,
+				EC121F8111BAE317003C94EE /* MooseLineRenderable.cpp */,
+				EC0A7A2F1189C69100FBAAF9 /* MooseSpotLight.mm */,
+				ECCD892E1185C9D700873F3C /* MooseAlphaTestOperation.h */,
+				EC0A7A181189C55D00FBAAF9 /* MooseAmbientLight.mm */,
+				ECCD89301185C9D700873F3C /* MooseAmbientLight.h */,
+				ECCD89311185C9D700873F3C /* MooseBlendingOperation.h */,
+				ECCD89321185C9D700873F3C /* MooseCamera.cpp */,
+				ECCD89331185C9D700873F3C /* MooseCamera.h */,
+				ECCD89341185C9D700873F3C /* MooseDDSImage.cpp */,
+				ECCD89351185C9D700873F3C /* MooseDDSImage.h */,
+				ECCD89371185C9D700873F3C /* MooseDirectionalLight.h */,
+				ECCD893A1185C9D700873F3C /* MooseFrameBuffer.cpp */,
+				ECCD893B1185C9D700873F3C /* MooseFrameBuffer.h */,
+				ECCD893C1185C9D700873F3C /* MooseFrustum.cpp */,
+				ECCD893D1185C9D700873F3C /* MooseFrustum.h */,
+				ECCD89401185C9D700873F3C /* MooseIndexArray.h */,
+				ECCD89411185C9D700873F3C /* MooseLight.h */,
+				ECCD89421185C9D700873F3C /* MooseMaterial.h */,
+				ECCD89431185C9D700873F3C /* MooseMilkshapeLoader.cpp */,
+				ECCD89441185C9D700873F3C /* MooseMilkshapeLoader.h */,
+				ECCD89451185C9D700873F3C /* MooseModel.cpp */,
+				ECCD89461185C9D700873F3C /* MooseModel.h */,
+				ECCD89471185C9D700873F3C /* MooseModelHelper.cpp */,
+				ECCD89481185C9D700873F3C /* MooseModelHelper.h */,
+				ECCD89491185C9D700873F3C /* MooseModelLoader.cpp */,
+				ECCD894A1185C9D700873F3C /* MooseModelLoader.h */,
+				ECCD894B1185C9D700873F3C /* MooseObjLoader.cpp */,
+				ECCD894C1185C9D700873F3C /* MooseObjLoader.h */,
+				ECCD894D1185C9D700873F3C /* MooseOGLConsts.h */,
+				ECCD894F1185C9D700873F3C /* MooseOGLRenderer.h */,
+				EC19A7761193180C002D9374 /* MooseOGLRenderer.mm */,
+				ECCD89501185C9D700873F3C /* MooseParticleSystem.h */,
+				ECCD89521185C9D700873F3C /* MoosePointLight.h */,
+				ECCD89531185C9D700873F3C /* MooseRenderable.cpp */,
+				ECCD89541185C9D700873F3C /* MooseRenderable.h */,
+				ECCD89561185C9D700873F3C /* MooseRenderableModel.h */,
+				EC0A7A201189C5CA00FBAAF9 /* MooseRenderableModel.mm */,
+				ECCD89581185C9D700873F3C /* MooseRenderableModelShared.h */,
+				EC0A7A251189C60E00FBAAF9 /* MooseRenderableModelShared.mm */,
+				ECCD89591185C9D700873F3C /* MooseRenderableProperty.cpp */,
+				ECCD895A1185C9D700873F3C /* MooseRenderableProperty.h */,
+				ECCD895D1185C9D700873F3C /* MooseRenderQueue.h */,
+				ECCD895E1185C9D700873F3C /* MooseRenderState.cpp */,
+				ECCD895F1185C9D700873F3C /* MooseRenderState.h */,
+				ECCD89621185C9D700873F3C /* MooseShader.cpp */,
+				ECCD89631185C9D700873F3C /* MooseShader.h */,
+				ECCD89651185C9D700873F3C /* MooseSkybox.h */,
+				EC0A7A2B1189C65C00FBAAF9 /* MooseSkybox.mm */,
+				ECCD89671185C9D700873F3C /* MooseSpotLight.h */,
+				ECCD89681185C9D700873F3C /* MooseTexture.cpp */,
+				ECCD89691185C9D700873F3C /* MooseTexture.h */,
+				ECCD896A1185C9D700873F3C /* MooseTGAImage.cpp */,
+				ECCD896B1185C9D700873F3C /* MooseTGAImage.h */,
+				ECCD896C1185C9D700873F3C /* MooseVertexDescriptor.cpp */,
+				ECCD896D1185C9D700873F3C /* MooseVertexDescriptor.h */,
+				EC88533411A3C931009D8112 /* MoosePolygonOffset.h */,
+				EC88533511A3C931009D8112 /* MoosePolygonOffset.cpp */,
 			);
 			name = Graphics;
-			path = ../src/Phoenix/Graphics;
+			path = ../src/Moose/Graphics;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD89B21185C9E700873F3C /* Math */ = {
 			isa = PBXGroup;
 			children = (
-				ECCD89B41185C9E700873F3C /* PhoenixCapsuleCollider.cpp */,
-				ECCD89B51185C9E700873F3C /* PhoenixCapsuleCollider.h */,
-				ECCD89B61185C9E700873F3C /* PhoenixCollider.h */,
-				ECCD89B71185C9E700873F3C /* PhoenixCollision.cpp */,
-				ECCD89B81185C9E700873F3C /* PhoenixCollision.h */,
-				ECCD89B91185C9E700873F3C /* PhoenixCompoundCollider.cpp */,
-				ECCD89BA1185C9E700873F3C /* PhoenixCompoundCollider.h */,
-				ECCD89BB1185C9E700873F3C /* PhoenixLine.h */,
-				ECCD89BC1185C9E700873F3C /* PhoenixLineSegment.h */,
-				ECCD89BD1185C9E700873F3C /* PhoenixMath.cpp */,
-				ECCD89BE1185C9E700873F3C /* PhoenixMath.h */,
-				ECCD89BF1185C9E700873F3C /* PhoenixMathUtils.h */,
-				ECCD89C01185C9E700873F3C /* PhoenixMatrix2x2.h */,
-				ECCD89C11185C9E700873F3C /* PhoenixMatrix3x3.h */,
-				ECCD89C21185C9E700873F3C /* PhoenixMatrix4x4.h */,
-				ECCD89C31185C9E700873F3C /* PhoenixOBBCollider.cpp */,
-				ECCD89C41185C9E700873F3C /* PhoenixOBBCollider.h */,
-				ECCD89C51185C9E700873F3C /* PhoenixPlane.cpp */,
-				ECCD89C61185C9E700873F3C /* PhoenixPlane.h */,
-				ECCD89C71185C9E700873F3C /* PhoenixQuad.cpp */,
-				ECCD89C81185C9E700873F3C /* PhoenixQuad.h */,
-				ECCD89C91185C9E700873F3C /* PhoenixQuaternion.cpp */,
-				ECCD89CA1185C9E700873F3C /* PhoenixQuaternion.h */,
-				ECCD89CB1185C9E700873F3C /* PhoenixRay.h */,
-				ECCD89CC1185C9E700873F3C /* PhoenixSphereCollider.cpp */,
-				ECCD89CD1185C9E700873F3C /* PhoenixSphereCollider.h */,
-				ECCD89CE1185C9E700873F3C /* PhoenixTransform.cpp */,
-				ECCD89CF1185C9E700873F3C /* PhoenixTransform.h */,
-				ECCD89D01185C9E700873F3C /* PhoenixVector2.h */,
-				ECCD89D11185C9E700873F3C /* PhoenixVector3.h */,
-				ECCD89D21185C9E700873F3C /* PhoenixVector4.h */,
+				ECCD89B41185C9E700873F3C /* MooseCapsuleCollider.cpp */,
+				ECCD89B51185C9E700873F3C /* MooseCapsuleCollider.h */,
+				ECCD89B61185C9E700873F3C /* MooseCollider.h */,
+				ECCD89B71185C9E700873F3C /* MooseCollision.cpp */,
+				ECCD89B81185C9E700873F3C /* MooseCollision.h */,
+				ECCD89B91185C9E700873F3C /* MooseCompoundCollider.cpp */,
+				ECCD89BA1185C9E700873F3C /* MooseCompoundCollider.h */,
+				ECCD89BB1185C9E700873F3C /* MooseLine.h */,
+				ECCD89BC1185C9E700873F3C /* MooseLineSegment.h */,
+				ECCD89BD1185C9E700873F3C /* MooseMath.cpp */,
+				ECCD89BE1185C9E700873F3C /* MooseMath.h */,
+				ECCD89BF1185C9E700873F3C /* MooseMathUtils.h */,
+				ECCD89C01185C9E700873F3C /* MooseMatrix2x2.h */,
+				ECCD89C11185C9E700873F3C /* MooseMatrix3x3.h */,
+				ECCD89C21185C9E700873F3C /* MooseMatrix4x4.h */,
+				ECCD89C31185C9E700873F3C /* MooseOBBCollider.cpp */,
+				ECCD89C41185C9E700873F3C /* MooseOBBCollider.h */,
+				ECCD89C51185C9E700873F3C /* MoosePlane.cpp */,
+				ECCD89C61185C9E700873F3C /* MoosePlane.h */,
+				ECCD89C71185C9E700873F3C /* MooseQuad.cpp */,
+				ECCD89C81185C9E700873F3C /* MooseQuad.h */,
+				ECCD89C91185C9E700873F3C /* MooseQuaternion.cpp */,
+				ECCD89CA1185C9E700873F3C /* MooseQuaternion.h */,
+				ECCD89CB1185C9E700873F3C /* MooseRay.h */,
+				ECCD89CC1185C9E700873F3C /* MooseSphereCollider.cpp */,
+				ECCD89CD1185C9E700873F3C /* MooseSphereCollider.h */,
+				ECCD89CE1185C9E700873F3C /* MooseTransform.cpp */,
+				ECCD89CF1185C9E700873F3C /* MooseTransform.h */,
+				ECCD89D01185C9E700873F3C /* MooseVector2.h */,
+				ECCD89D11185C9E700873F3C /* MooseVector3.h */,
+				ECCD89D21185C9E700873F3C /* MooseVector4.h */,
 			);
 			name = Math;
-			path = ../src/Phoenix/Math;
+			path = ../src/Moose/Math;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD89F21185C9F900873F3C /* Scene */ = {
@@ -714,68 +714,68 @@
 			children = (
 				ECCD89F31185C9F900873F3C /* CApplicationStatistics.cpp */,
 				ECCD89F41185C9F900873F3C /* CApplicationStatistics.h */,
-				ECCD89F71185C9F900873F3C /* PhoenixApplication.cpp */,
-				ECCD89F81185C9F900873F3C /* PhoenixApplication.h */,
-				ECCD89F91185C9F900873F3C /* PhoenixCameraObject.cpp */,
-				ECCD89FA1185C9F900873F3C /* PhoenixCameraObject.h */,
-				ECCD89FB1185C9F900873F3C /* PhoenixDirectionalLightObject.cpp */,
-				ECCD89FC1185C9F900873F3C /* PhoenixDirectionalLightObject.h */,
-				ECCD89FD1185C9F900873F3C /* PhoenixGameObject.cpp */,
-				ECCD89FE1185C9F900873F3C /* PhoenixGameObject.h */,
-				ECCD8A001185C9F900873F3C /* PhoenixScene.cpp */,
-				ECCD8A011185C9F900873F3C /* PhoenixScene.h */,
-				ECCD8A021185C9F900873F3C /* PhoenixSpatialGraph.cpp */,
-				ECCD8A031185C9F900873F3C /* PhoenixSpatialGraph.h */,
-				ECCD8A041185C9F900873F3C /* PhoenixTransformGraph.cpp */,
-				ECCD8A051185C9F900873F3C /* PhoenixTransformGraph.h */,
-				ECE7539111E3C6710069E989 /* PhoenixEventQueue.h */,
-				ECE7539211E3C6710069E989 /* PhoenixEventQueue.cpp */,
+				ECCD89F71185C9F900873F3C /* MooseApplication.cpp */,
+				ECCD89F81185C9F900873F3C /* MooseApplication.h */,
+				ECCD89F91185C9F900873F3C /* MooseCameraObject.cpp */,
+				ECCD89FA1185C9F900873F3C /* MooseCameraObject.h */,
+				ECCD89FB1185C9F900873F3C /* MooseDirectionalLightObject.cpp */,
+				ECCD89FC1185C9F900873F3C /* MooseDirectionalLightObject.h */,
+				ECCD89FD1185C9F900873F3C /* MooseGameObject.cpp */,
+				ECCD89FE1185C9F900873F3C /* MooseGameObject.h */,
+				ECCD8A001185C9F900873F3C /* MooseScene.cpp */,
+				ECCD8A011185C9F900873F3C /* MooseScene.h */,
+				ECCD8A021185C9F900873F3C /* MooseSpatialGraph.cpp */,
+				ECCD8A031185C9F900873F3C /* MooseSpatialGraph.h */,
+				ECCD8A041185C9F900873F3C /* MooseTransformGraph.cpp */,
+				ECCD8A051185C9F900873F3C /* MooseTransformGraph.h */,
+				ECE7539111E3C6710069E989 /* MooseEventQueue.h */,
+				ECE7539211E3C6710069E989 /* MooseEventQueue.cpp */,
 			);
 			name = Scene;
-			path = ../src/Phoenix/Scene;
+			path = ../src/Moose/Scene;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD8A171185CA0700873F3C /* Volume */ = {
 			isa = PBXGroup;
 			children = (
-				ECCD8A191185CA0700873F3C /* PhoenixAABB.cpp */,
-				ECCD8A1A1185CA0700873F3C /* PhoenixAABB.h */,
-				ECCD8A1B1185CA0700873F3C /* PhoenixAACube.h */,
-				ECCD8A1C1185CA0700873F3C /* PhoenixBoxBound.cpp */,
-				ECCD8A1D1185CA0700873F3C /* PhoenixBoxBound.h */,
-				ECCD8A1E1185CA0700873F3C /* PhoenixCapsule.h */,
-				EC04F98C11B9200B00B8F605 /* PhoenixCapsule.cpp */,
-				ECCD8A1F1185CA0700873F3C /* PhoenixCone.cpp */,
-				ECCD8A201185CA0700873F3C /* PhoenixCone.h */,
-				ECCD8A211185CA0700873F3C /* PhoenixDecalVolume.h */,
-				ECCD8A221185CA0700873F3C /* PhoenixOBB.cpp */,
-				ECCD8A231185CA0700873F3C /* PhoenixOBB.h */,
-				ECCD8A241185CA0700873F3C /* PhoenixOctree.h */,
-				ECCD8A251185CA0700873F3C /* PhoenixPolytope.h */,
-				ECCD8A261185CA0700873F3C /* PhoenixSphere.cpp */,
-				ECCD8A271185CA0700873F3C /* PhoenixSphere.h */,
-				ECCD8A281185CA0700873F3C /* PhoenixSphereBound.cpp */,
-				ECCD8A291185CA0700873F3C /* PhoenixSphereBound.h */,
+				ECCD8A191185CA0700873F3C /* MooseAABB.cpp */,
+				ECCD8A1A1185CA0700873F3C /* MooseAABB.h */,
+				ECCD8A1B1185CA0700873F3C /* MooseAACube.h */,
+				ECCD8A1C1185CA0700873F3C /* MooseBoxBound.cpp */,
+				ECCD8A1D1185CA0700873F3C /* MooseBoxBound.h */,
+				ECCD8A1E1185CA0700873F3C /* MooseCapsule.h */,
+				EC04F98C11B9200B00B8F605 /* MooseCapsule.cpp */,
+				ECCD8A1F1185CA0700873F3C /* MooseCone.cpp */,
+				ECCD8A201185CA0700873F3C /* MooseCone.h */,
+				ECCD8A211185CA0700873F3C /* MooseDecalVolume.h */,
+				ECCD8A221185CA0700873F3C /* MooseOBB.cpp */,
+				ECCD8A231185CA0700873F3C /* MooseOBB.h */,
+				ECCD8A241185CA0700873F3C /* MooseOctree.h */,
+				ECCD8A251185CA0700873F3C /* MoosePolytope.h */,
+				ECCD8A261185CA0700873F3C /* MooseSphere.cpp */,
+				ECCD8A271185CA0700873F3C /* MooseSphere.h */,
+				ECCD8A281185CA0700873F3C /* MooseSphereBound.cpp */,
+				ECCD8A291185CA0700873F3C /* MooseSphereBound.h */,
 			);
 			name = Volume;
-			path = ../src/Phoenix/Volume;
+			path = ../src/Moose/Volume;
 			sourceTree = SOURCE_ROOT;
 		};
 		ECCD8A3B1185CA1C00873F3C /* Spatial */ = {
 			isa = PBXGroup;
 			children = (
-				ECCD8A3D1185CA1C00873F3C /* PhoenixDimensional1D.h */,
-				ECCD8A3E1185CA1C00873F3C /* PhoenixDimensional2D.h */,
-				ECCD8A3F1185CA1C00873F3C /* PhoenixDimensional3D.h */,
-				ECCD8A401185CA1C00873F3C /* PhoenixOneDirectional.h */,
-				ECCD8A411185CA1C00873F3C /* PhoenixOrientable.cpp */,
-				ECCD8A421185CA1C00873F3C /* PhoenixOrientable.h */,
-				ECCD8A431185CA1C00873F3C /* PhoenixPositional.h */,
-				ECCD8A441185CA1C00873F3C /* PhoenixTriangle.h */,
-				ECCD8A451185CA1C00873F3C /* PhoenixVertex.h */,
+				ECCD8A3D1185CA1C00873F3C /* MooseDimensional1D.h */,
+				ECCD8A3E1185CA1C00873F3C /* MooseDimensional2D.h */,
+				ECCD8A3F1185CA1C00873F3C /* MooseDimensional3D.h */,
+				ECCD8A401185CA1C00873F3C /* MooseOneDirectional.h */,
+				ECCD8A411185CA1C00873F3C /* MooseOrientable.cpp */,
+				ECCD8A421185CA1C00873F3C /* MooseOrientable.h */,
+				ECCD8A431185CA1C00873F3C /* MoosePositional.h */,
+				ECCD8A441185CA1C00873F3C /* MooseTriangle.h */,
+				ECCD8A451185CA1C00873F3C /* MooseVertex.h */,
 			);
 			name = Spatial;
-			path = ../src/Phoenix/Spatial;
+			path = ../src/Moose/Spatial;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -785,140 +785,140 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ECCD88DA1185C9BC00873F3C /* PhoenixAIScript.h in Headers */,
+				ECCD88DA1185C9BC00873F3C /* MooseAIScript.h in Headers */,
 				AA747D9F0F9514B9006C5449 /* iPhoneMoose_Prefix.pch in Headers */,
-				ECCD88BC1185C99900873F3C /* PhoenixALObjectArray.h in Headers */,
-				ECCD88BE1185C99900873F3C /* PhoenixALSampleTypes.h in Headers */,
-				ECCD88C01185C99900873F3C /* PhoenixALSoundTypes.h in Headers */,
-				ECCD88C21185C99900873F3C /* PhoenixAudioSystem.h in Headers */,
-				ECCD88C41185C99900873F3C /* PhoenixListener.h in Headers */,
-				ECCD88C61185C99900873F3C /* PhoenixOggSample.h in Headers */,
-				ECCD88C81185C99900873F3C /* PhoenixOggStreamSample.h in Headers */,
-				ECCD88CA1185C99900873F3C /* PhoenixSoundBase.h in Headers */,
-				ECCD88CC1185C99900873F3C /* PhoenixSoundSampleBase.h in Headers */,
-				ECCD88DE1185C9BC00873F3C /* PhoenixMessageSystem.h in Headers */,
-				ECCD88E21185C9BC00873F3C /* PhoenixStateMachine.h in Headers */,
-				ECCD89091185C9C800873F3C /* PhoenixAPI.h in Headers */,
-				ECCD890A1185C9C800873F3C /* PhoenixAVLTree.h in Headers */,
-				ECCD890B1185C9C800873F3C /* PhoenixCacheable.h in Headers */,
-				ECCD890C1185C9C800873F3C /* PhoenixConvert.h in Headers */,
-				ECCD890D1185C9C800873F3C /* PhoenixCore.h in Headers */,
-				ECCD890E1185C9C800873F3C /* PhoenixEnableable.h in Headers */,
-				ECCD89101185C9C800873F3C /* PhoenixExceptions.h in Headers */,
-				ECCD89111185C9C800873F3C /* PhoenixFocusable.h in Headers */,
-				ECCD89121185C9C800873F3C /* PhoenixFPSCounter.h in Headers */,
-				ECCD89131185C9C800873F3C /* PhoenixGlobals.h in Headers */,
-				ECCD89141185C9C800873F3C /* PhoenixGraph.h in Headers */,
-				ECCD89151185C9C800873F3C /* PhoenixGraphEdge.h in Headers */,
-				ECCD89161185C9C800873F3C /* PhoenixGraphNode.h in Headers */,
-				ECCD89171185C9C800873F3C /* PhoenixHashTable.h in Headers */,
-				ECCD89181185C9C800873F3C /* PhoenixLog.h in Headers */,
-				ECCD891A1185C9C800873F3C /* PhoenixLogger.h in Headers */,
-				ECCD891B1185C9C800873F3C /* PhoenixNamed.h in Headers */,
-				ECCD891C1185C9C800873F3C /* PhoenixNullable.h in Headers */,
-				ECCD891D1185C9C800873F3C /* PhoenixObjectCounter.h in Headers */,
-				ECCD89201185C9C800873F3C /* PhoenixRadixSort.h in Headers */,
-				ECCD89211185C9C800873F3C /* PhoenixResourceManager.h in Headers */,
-				ECCD89221185C9C800873F3C /* PhoenixSelectable.h in Headers */,
-				ECCD89231185C9C800873F3C /* PhoenixSingleton.h in Headers */,
-				ECCD89241185C9C800873F3C /* PhoenixTagged.h in Headers */,
-				ECCD89251185C9C800873F3C /* PhoenixTimer.h in Headers */,
-				ECCD89261185C9C800873F3C /* PhoenixTimeStamp.h in Headers */,
-				ECCD89271185C9C800873F3C /* PhoenixTypeBase.h in Headers */,
-				ECCD89281185C9C800873F3C /* PhoenixUniqueNameCreator.h in Headers */,
-				ECCD89291185C9C800873F3C /* PhoenixViewable.h in Headers */,
-				ECCD892B1185C9C800873F3C /* PhoenixWindowsWrapper.h in Headers */,
-				ECCD89701185C9D700873F3C /* PhoenixAlphaTestOperation.h in Headers */,
-				ECCD89721185C9D700873F3C /* PhoenixAmbientLight.h in Headers */,
-				ECCD89731185C9D700873F3C /* PhoenixBlendingOperation.h in Headers */,
-				ECCD89751185C9D700873F3C /* PhoenixCamera.h in Headers */,
-				ECCD89771185C9D700873F3C /* PhoenixDDSImage.h in Headers */,
-				ECCD89791185C9D700873F3C /* PhoenixDirectionalLight.h in Headers */,
-				ECCD897D1185C9D700873F3C /* PhoenixFrameBuffer.h in Headers */,
-				ECCD897F1185C9D700873F3C /* PhoenixFrustum.h in Headers */,
-				ECCD89821185C9D700873F3C /* PhoenixIndexArray.h in Headers */,
-				ECCD89831185C9D700873F3C /* PhoenixLight.h in Headers */,
-				ECCD89841185C9D700873F3C /* PhoenixMaterial.h in Headers */,
-				ECCD89861185C9D700873F3C /* PhoenixMilkshapeLoader.h in Headers */,
-				ECCD89881185C9D700873F3C /* PhoenixModel.h in Headers */,
-				ECCD898A1185C9D700873F3C /* PhoenixModelHelper.h in Headers */,
-				ECCD898C1185C9D700873F3C /* PhoenixModelLoader.h in Headers */,
-				ECCD898E1185C9D700873F3C /* PhoenixObjLoader.h in Headers */,
-				ECCD898F1185C9D700873F3C /* PhoenixOGLConsts.h in Headers */,
-				ECCD89911185C9D700873F3C /* PhoenixOGLRenderer.h in Headers */,
-				ECCD89921185C9D700873F3C /* PhoenixParticleSystem.h in Headers */,
-				ECCD89941185C9D700873F3C /* PhoenixPointLight.h in Headers */,
-				ECCD89961185C9D700873F3C /* PhoenixRenderable.h in Headers */,
-				ECCD89981185C9D700873F3C /* PhoenixRenderableModel.h in Headers */,
-				ECCD899A1185C9D700873F3C /* PhoenixRenderableModelShared.h in Headers */,
-				ECCD899C1185C9D700873F3C /* PhoenixRenderableProperty.h in Headers */,
-				ECCD899F1185C9D700873F3C /* PhoenixRenderQueue.h in Headers */,
-				ECCD89A11185C9D700873F3C /* PhoenixRenderState.h in Headers */,
-				ECCD89A51185C9D700873F3C /* PhoenixShader.h in Headers */,
-				ECCD89A71185C9D700873F3C /* PhoenixSkybox.h in Headers */,
-				ECCD89A91185C9D700873F3C /* PhoenixSpotLight.h in Headers */,
-				ECCD89AB1185C9D700873F3C /* PhoenixTexture.h in Headers */,
-				ECCD89AD1185C9D700873F3C /* PhoenixTGAImage.h in Headers */,
-				ECCD89AF1185C9D700873F3C /* PhoenixVertexDescriptor.h in Headers */,
-				ECCD89D41185C9E700873F3C /* PhoenixCapsuleCollider.h in Headers */,
-				ECCD89D51185C9E700873F3C /* PhoenixCollider.h in Headers */,
-				ECCD89D71185C9E700873F3C /* PhoenixCollision.h in Headers */,
-				ECCD89D91185C9E700873F3C /* PhoenixCompoundCollider.h in Headers */,
-				ECCD89DA1185C9E700873F3C /* PhoenixLine.h in Headers */,
-				ECCD89DB1185C9E700873F3C /* PhoenixLineSegment.h in Headers */,
-				ECCD89DD1185C9E700873F3C /* PhoenixMath.h in Headers */,
-				ECCD89DE1185C9E700873F3C /* PhoenixMathUtils.h in Headers */,
-				ECCD89DF1185C9E700873F3C /* PhoenixMatrix2x2.h in Headers */,
-				ECCD89E01185C9E700873F3C /* PhoenixMatrix3x3.h in Headers */,
-				ECCD89E11185C9E700873F3C /* PhoenixMatrix4x4.h in Headers */,
-				ECCD89E31185C9E700873F3C /* PhoenixOBBCollider.h in Headers */,
-				ECCD89E51185C9E700873F3C /* PhoenixPlane.h in Headers */,
-				ECCD89E71185C9E700873F3C /* PhoenixQuad.h in Headers */,
-				ECCD89E91185C9E700873F3C /* PhoenixQuaternion.h in Headers */,
-				ECCD89EA1185C9E700873F3C /* PhoenixRay.h in Headers */,
-				ECCD89EC1185C9E700873F3C /* PhoenixSphereCollider.h in Headers */,
-				ECCD89EE1185C9E700873F3C /* PhoenixTransform.h in Headers */,
-				ECCD89EF1185C9E700873F3C /* PhoenixVector2.h in Headers */,
-				ECCD89F01185C9E700873F3C /* PhoenixVector3.h in Headers */,
-				ECCD89F11185C9E700873F3C /* PhoenixVector4.h in Headers */,
+				ECCD88BC1185C99900873F3C /* MooseALObjectArray.h in Headers */,
+				ECCD88BE1185C99900873F3C /* MooseALSampleTypes.h in Headers */,
+				ECCD88C01185C99900873F3C /* MooseALSoundTypes.h in Headers */,
+				ECCD88C21185C99900873F3C /* MooseAudioSystem.h in Headers */,
+				ECCD88C41185C99900873F3C /* MooseListener.h in Headers */,
+				ECCD88C61185C99900873F3C /* MooseOggSample.h in Headers */,
+				ECCD88C81185C99900873F3C /* MooseOggStreamSample.h in Headers */,
+				ECCD88CA1185C99900873F3C /* MooseSoundBase.h in Headers */,
+				ECCD88CC1185C99900873F3C /* MooseSoundSampleBase.h in Headers */,
+				ECCD88DE1185C9BC00873F3C /* MooseMessageSystem.h in Headers */,
+				ECCD88E21185C9BC00873F3C /* MooseStateMachine.h in Headers */,
+				ECCD89091185C9C800873F3C /* MooseAPI.h in Headers */,
+				ECCD890A1185C9C800873F3C /* MooseAVLTree.h in Headers */,
+				ECCD890B1185C9C800873F3C /* MooseCacheable.h in Headers */,
+				ECCD890C1185C9C800873F3C /* MooseConvert.h in Headers */,
+				ECCD890D1185C9C800873F3C /* MooseCore.h in Headers */,
+				ECCD890E1185C9C800873F3C /* MooseEnableable.h in Headers */,
+				ECCD89101185C9C800873F3C /* MooseExceptions.h in Headers */,
+				ECCD89111185C9C800873F3C /* MooseFocusable.h in Headers */,
+				ECCD89121185C9C800873F3C /* MooseFPSCounter.h in Headers */,
+				ECCD89131185C9C800873F3C /* MooseGlobals.h in Headers */,
+				ECCD89141185C9C800873F3C /* MooseGraph.h in Headers */,
+				ECCD89151185C9C800873F3C /* MooseGraphEdge.h in Headers */,
+				ECCD89161185C9C800873F3C /* MooseGraphNode.h in Headers */,
+				ECCD89171185C9C800873F3C /* MooseHashTable.h in Headers */,
+				ECCD89181185C9C800873F3C /* MooseLog.h in Headers */,
+				ECCD891A1185C9C800873F3C /* MooseLogger.h in Headers */,
+				ECCD891B1185C9C800873F3C /* MooseNamed.h in Headers */,
+				ECCD891C1185C9C800873F3C /* MooseNullable.h in Headers */,
+				ECCD891D1185C9C800873F3C /* MooseObjectCounter.h in Headers */,
+				ECCD89201185C9C800873F3C /* MooseRadixSort.h in Headers */,
+				ECCD89211185C9C800873F3C /* MooseResourceManager.h in Headers */,
+				ECCD89221185C9C800873F3C /* MooseSelectable.h in Headers */,
+				ECCD89231185C9C800873F3C /* MooseSingleton.h in Headers */,
+				ECCD89241185C9C800873F3C /* MooseTagged.h in Headers */,
+				ECCD89251185C9C800873F3C /* MooseTimer.h in Headers */,
+				ECCD89261185C9C800873F3C /* MooseTimeStamp.h in Headers */,
+				ECCD89271185C9C800873F3C /* MooseTypeBase.h in Headers */,
+				ECCD89281185C9C800873F3C /* MooseUniqueNameCreator.h in Headers */,
+				ECCD89291185C9C800873F3C /* MooseViewable.h in Headers */,
+				ECCD892B1185C9C800873F3C /* MooseWindowsWrapper.h in Headers */,
+				ECCD89701185C9D700873F3C /* MooseAlphaTestOperation.h in Headers */,
+				ECCD89721185C9D700873F3C /* MooseAmbientLight.h in Headers */,
+				ECCD89731185C9D700873F3C /* MooseBlendingOperation.h in Headers */,
+				ECCD89751185C9D700873F3C /* MooseCamera.h in Headers */,
+				ECCD89771185C9D700873F3C /* MooseDDSImage.h in Headers */,
+				ECCD89791185C9D700873F3C /* MooseDirectionalLight.h in Headers */,
+				ECCD897D1185C9D700873F3C /* MooseFrameBuffer.h in Headers */,
+				ECCD897F1185C9D700873F3C /* MooseFrustum.h in Headers */,
+				ECCD89821185C9D700873F3C /* MooseIndexArray.h in Headers */,
+				ECCD89831185C9D700873F3C /* MooseLight.h in Headers */,
+				ECCD89841185C9D700873F3C /* MooseMaterial.h in Headers */,
+				ECCD89861185C9D700873F3C /* MooseMilkshapeLoader.h in Headers */,
+				ECCD89881185C9D700873F3C /* MooseModel.h in Headers */,
+				ECCD898A1185C9D700873F3C /* MooseModelHelper.h in Headers */,
+				ECCD898C1185C9D700873F3C /* MooseModelLoader.h in Headers */,
+				ECCD898E1185C9D700873F3C /* MooseObjLoader.h in Headers */,
+				ECCD898F1185C9D700873F3C /* MooseOGLConsts.h in Headers */,
+				ECCD89911185C9D700873F3C /* MooseOGLRenderer.h in Headers */,
+				ECCD89921185C9D700873F3C /* MooseParticleSystem.h in Headers */,
+				ECCD89941185C9D700873F3C /* MoosePointLight.h in Headers */,
+				ECCD89961185C9D700873F3C /* MooseRenderable.h in Headers */,
+				ECCD89981185C9D700873F3C /* MooseRenderableModel.h in Headers */,
+				ECCD899A1185C9D700873F3C /* MooseRenderableModelShared.h in Headers */,
+				ECCD899C1185C9D700873F3C /* MooseRenderableProperty.h in Headers */,
+				ECCD899F1185C9D700873F3C /* MooseRenderQueue.h in Headers */,
+				ECCD89A11185C9D700873F3C /* MooseRenderState.h in Headers */,
+				ECCD89A51185C9D700873F3C /* MooseShader.h in Headers */,
+				ECCD89A71185C9D700873F3C /* MooseSkybox.h in Headers */,
+				ECCD89A91185C9D700873F3C /* MooseSpotLight.h in Headers */,
+				ECCD89AB1185C9D700873F3C /* MooseTexture.h in Headers */,
+				ECCD89AD1185C9D700873F3C /* MooseTGAImage.h in Headers */,
+				ECCD89AF1185C9D700873F3C /* MooseVertexDescriptor.h in Headers */,
+				ECCD89D41185C9E700873F3C /* MooseCapsuleCollider.h in Headers */,
+				ECCD89D51185C9E700873F3C /* MooseCollider.h in Headers */,
+				ECCD89D71185C9E700873F3C /* MooseCollision.h in Headers */,
+				ECCD89D91185C9E700873F3C /* MooseCompoundCollider.h in Headers */,
+				ECCD89DA1185C9E700873F3C /* MooseLine.h in Headers */,
+				ECCD89DB1185C9E700873F3C /* MooseLineSegment.h in Headers */,
+				ECCD89DD1185C9E700873F3C /* MooseMath.h in Headers */,
+				ECCD89DE1185C9E700873F3C /* MooseMathUtils.h in Headers */,
+				ECCD89DF1185C9E700873F3C /* MooseMatrix2x2.h in Headers */,
+				ECCD89E01185C9E700873F3C /* MooseMatrix3x3.h in Headers */,
+				ECCD89E11185C9E700873F3C /* MooseMatrix4x4.h in Headers */,
+				ECCD89E31185C9E700873F3C /* MooseOBBCollider.h in Headers */,
+				ECCD89E51185C9E700873F3C /* MoosePlane.h in Headers */,
+				ECCD89E71185C9E700873F3C /* MooseQuad.h in Headers */,
+				ECCD89E91185C9E700873F3C /* MooseQuaternion.h in Headers */,
+				ECCD89EA1185C9E700873F3C /* MooseRay.h in Headers */,
+				ECCD89EC1185C9E700873F3C /* MooseSphereCollider.h in Headers */,
+				ECCD89EE1185C9E700873F3C /* MooseTransform.h in Headers */,
+				ECCD89EF1185C9E700873F3C /* MooseVector2.h in Headers */,
+				ECCD89F01185C9E700873F3C /* MooseVector3.h in Headers */,
+				ECCD89F11185C9E700873F3C /* MooseVector4.h in Headers */,
 				ECCD8A071185C9F900873F3C /* CApplicationStatistics.h in Headers */,
-				ECCD8A091185C9F900873F3C /* PhoenixApplication.h in Headers */,
-				ECCD8A0B1185C9F900873F3C /* PhoenixCameraObject.h in Headers */,
-				ECCD8A0D1185C9F900873F3C /* PhoenixDirectionalLightObject.h in Headers */,
-				ECCD8A0F1185C9F900873F3C /* PhoenixGameObject.h in Headers */,
-				ECCD8A121185C9F900873F3C /* PhoenixScene.h in Headers */,
-				ECCD8A141185C9F900873F3C /* PhoenixSpatialGraph.h in Headers */,
-				ECCD8A161185C9F900873F3C /* PhoenixTransformGraph.h in Headers */,
-				ECCD8A2B1185CA0700873F3C /* PhoenixAABB.h in Headers */,
-				ECCD8A2C1185CA0700873F3C /* PhoenixAACube.h in Headers */,
-				ECCD8A2E1185CA0700873F3C /* PhoenixBoxBound.h in Headers */,
-				ECCD8A2F1185CA0700873F3C /* PhoenixCapsule.h in Headers */,
-				ECCD8A311185CA0700873F3C /* PhoenixCone.h in Headers */,
-				ECCD8A321185CA0700873F3C /* PhoenixDecalVolume.h in Headers */,
-				ECCD8A341185CA0700873F3C /* PhoenixOBB.h in Headers */,
-				ECCD8A351185CA0700873F3C /* PhoenixOctree.h in Headers */,
-				ECCD8A361185CA0700873F3C /* PhoenixPolytope.h in Headers */,
-				ECCD8A381185CA0700873F3C /* PhoenixSphere.h in Headers */,
-				ECCD8A3A1185CA0700873F3C /* PhoenixSphereBound.h in Headers */,
-				ECCD8A461185CA1C00873F3C /* PhoenixDimensional1D.h in Headers */,
-				ECCD8A471185CA1C00873F3C /* PhoenixDimensional2D.h in Headers */,
-				ECCD8A481185CA1C00873F3C /* PhoenixDimensional3D.h in Headers */,
-				ECCD8A491185CA1C00873F3C /* PhoenixOneDirectional.h in Headers */,
-				ECCD8A4B1185CA1C00873F3C /* PhoenixOrientable.h in Headers */,
-				ECCD8A4C1185CA1C00873F3C /* PhoenixPositional.h in Headers */,
-				ECCD8A4D1185CA1C00873F3C /* PhoenixTriangle.h in Headers */,
-				ECCD8A4E1185CA1C00873F3C /* PhoenixVertex.h in Headers */,
-				ECCD8AA31185D28000873F3C /* Phoenix.h in Headers */,
-				ECCD8AA51185D28000873F3C /* PhoenixDefaultEntities.h in Headers */,
-				EC19A6CA11930D26002D9374 /* PhoenixIPhoneAudioSample.h in Headers */,
-				ECF1FB76119A986000212362 /* PhoenixMusicClip.h in Headers */,
-				EC88533611A3C931009D8112 /* PhoenixPolygonOffset.h in Headers */,
-				EC121F4F11BADEB6003C94EE /* PhoenixBoxRenderable.h in Headers */,
-				EC121F5111BADEB7003C94EE /* PhoenixSphereRenderable.h in Headers */,
-				EC121F8211BAE317003C94EE /* PhoenixLineRenderable.h in Headers */,
-				ECE414FC11D77341006C0318 /* PhoenixUpdateable.h in Headers */,
-				ECDD4FD011DB3A800064BB01 /* PhoenixCollisionEvent.h in Headers */,
-				ECE7539311E3C6710069E989 /* PhoenixEventQueue.h in Headers */,
+				ECCD8A091185C9F900873F3C /* MooseApplication.h in Headers */,
+				ECCD8A0B1185C9F900873F3C /* MooseCameraObject.h in Headers */,
+				ECCD8A0D1185C9F900873F3C /* MooseDirectionalLightObject.h in Headers */,
+				ECCD8A0F1185C9F900873F3C /* MooseGameObject.h in Headers */,
+				ECCD8A121185C9F900873F3C /* MooseScene.h in Headers */,
+				ECCD8A141185C9F900873F3C /* MooseSpatialGraph.h in Headers */,
+				ECCD8A161185C9F900873F3C /* MooseTransformGraph.h in Headers */,
+				ECCD8A2B1185CA0700873F3C /* MooseAABB.h in Headers */,
+				ECCD8A2C1185CA0700873F3C /* MooseAACube.h in Headers */,
+				ECCD8A2E1185CA0700873F3C /* MooseBoxBound.h in Headers */,
+				ECCD8A2F1185CA0700873F3C /* MooseCapsule.h in Headers */,
+				ECCD8A311185CA0700873F3C /* MooseCone.h in Headers */,
+				ECCD8A321185CA0700873F3C /* MooseDecalVolume.h in Headers */,
+				ECCD8A341185CA0700873F3C /* MooseOBB.h in Headers */,
+				ECCD8A351185CA0700873F3C /* MooseOctree.h in Headers */,
+				ECCD8A361185CA0700873F3C /* MoosePolytope.h in Headers */,
+				ECCD8A381185CA0700873F3C /* MooseSphere.h in Headers */,
+				ECCD8A3A1185CA0700873F3C /* MooseSphereBound.h in Headers */,
+				ECCD8A461185CA1C00873F3C /* MooseDimensional1D.h in Headers */,
+				ECCD8A471185CA1C00873F3C /* MooseDimensional2D.h in Headers */,
+				ECCD8A481185CA1C00873F3C /* MooseDimensional3D.h in Headers */,
+				ECCD8A491185CA1C00873F3C /* MooseOneDirectional.h in Headers */,
+				ECCD8A4B1185CA1C00873F3C /* MooseOrientable.h in Headers */,
+				ECCD8A4C1185CA1C00873F3C /* MoosePositional.h in Headers */,
+				ECCD8A4D1185CA1C00873F3C /* MooseTriangle.h in Headers */,
+				ECCD8A4E1185CA1C00873F3C /* MooseVertex.h in Headers */,
+				ECCD8AA31185D28000873F3C /* Moose.h in Headers */,
+				ECCD8AA51185D28000873F3C /* MooseDefaultEntities.h in Headers */,
+				EC19A6CA11930D26002D9374 /* MooseIPhoneAudioSample.h in Headers */,
+				ECF1FB76119A986000212362 /* MooseMusicClip.h in Headers */,
+				EC88533611A3C931009D8112 /* MoosePolygonOffset.h in Headers */,
+				EC121F4F11BADEB6003C94EE /* MooseBoxRenderable.h in Headers */,
+				EC121F5111BADEB7003C94EE /* MooseSphereRenderable.h in Headers */,
+				EC121F8211BAE317003C94EE /* MooseLineRenderable.h in Headers */,
+				ECE414FC11D77341006C0318 /* MooseUpdateable.h in Headers */,
+				ECDD4FD011DB3A800064BB01 /* MooseCollisionEvent.h in Headers */,
+				ECE7539311E3C6710069E989 /* MooseEventQueue.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -965,76 +965,76 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ECCD88BD1185C99900873F3C /* PhoenixALSampleTypes.cpp in Sources */,
-				ECCD88BF1185C99900873F3C /* PhoenixALSoundTypes.cpp in Sources */,
-				ECCD88C11185C99900873F3C /* PhoenixAudioSystem.cpp in Sources */,
-				ECCD88C31185C99900873F3C /* PhoenixListener.cpp in Sources */,
-				ECCD88C51185C99900873F3C /* PhoenixOggSample.cpp in Sources */,
-				ECCD88C71185C99900873F3C /* PhoenixOggStreamSample.cpp in Sources */,
-				ECCD88C91185C99900873F3C /* PhoenixSoundBase.cpp in Sources */,
-				ECCD88CB1185C99900873F3C /* PhoenixSoundSampleBase.cpp in Sources */,
-				ECCD88D91185C9BC00873F3C /* PhoenixAIScript.cpp in Sources */,
-				ECCD88DD1185C9BC00873F3C /* PhoenixMessageSystem.cpp in Sources */,
-				ECCD88E11185C9BC00873F3C /* PhoenixStateMachine.cpp in Sources */,
-				ECCD890F1185C9C800873F3C /* PhoenixExceptions.cpp in Sources */,
-				ECCD89191185C9C800873F3C /* PhoenixLogger.cpp in Sources */,
-				ECCD892A1185C9C800873F3C /* PhoenixWindowsWrapper.cpp in Sources */,
-				ECCD89741185C9D700873F3C /* PhoenixCamera.cpp in Sources */,
-				ECCD89761185C9D700873F3C /* PhoenixDDSImage.cpp in Sources */,
-				ECCD897C1185C9D700873F3C /* PhoenixFrameBuffer.cpp in Sources */,
-				ECCD897E1185C9D700873F3C /* PhoenixFrustum.cpp in Sources */,
-				ECCD89851185C9D700873F3C /* PhoenixMilkshapeLoader.cpp in Sources */,
-				ECCD89871185C9D700873F3C /* PhoenixModel.cpp in Sources */,
-				ECCD89891185C9D700873F3C /* PhoenixModelHelper.cpp in Sources */,
-				ECCD898B1185C9D700873F3C /* PhoenixModelLoader.cpp in Sources */,
-				ECCD898D1185C9D700873F3C /* PhoenixObjLoader.cpp in Sources */,
-				ECCD89951185C9D700873F3C /* PhoenixRenderable.cpp in Sources */,
-				ECCD899B1185C9D700873F3C /* PhoenixRenderableProperty.cpp in Sources */,
-				ECCD89A01185C9D700873F3C /* PhoenixRenderState.cpp in Sources */,
-				ECCD89A41185C9D700873F3C /* PhoenixShader.cpp in Sources */,
-				ECCD89AA1185C9D700873F3C /* PhoenixTexture.cpp in Sources */,
-				ECCD89AC1185C9D700873F3C /* PhoenixTGAImage.cpp in Sources */,
-				ECCD89AE1185C9D700873F3C /* PhoenixVertexDescriptor.cpp in Sources */,
-				ECCD89D31185C9E700873F3C /* PhoenixCapsuleCollider.cpp in Sources */,
-				ECCD89D61185C9E700873F3C /* PhoenixCollision.cpp in Sources */,
-				ECCD89D81185C9E700873F3C /* PhoenixCompoundCollider.cpp in Sources */,
-				ECCD89DC1185C9E700873F3C /* PhoenixMath.cpp in Sources */,
-				ECCD89E21185C9E700873F3C /* PhoenixOBBCollider.cpp in Sources */,
-				ECCD89E41185C9E700873F3C /* PhoenixPlane.cpp in Sources */,
-				ECCD89E61185C9E700873F3C /* PhoenixQuad.cpp in Sources */,
-				ECCD89E81185C9E700873F3C /* PhoenixQuaternion.cpp in Sources */,
-				ECCD89EB1185C9E700873F3C /* PhoenixSphereCollider.cpp in Sources */,
-				ECCD89ED1185C9E700873F3C /* PhoenixTransform.cpp in Sources */,
+				ECCD88BD1185C99900873F3C /* MooseALSampleTypes.cpp in Sources */,
+				ECCD88BF1185C99900873F3C /* MooseALSoundTypes.cpp in Sources */,
+				ECCD88C11185C99900873F3C /* MooseAudioSystem.cpp in Sources */,
+				ECCD88C31185C99900873F3C /* MooseListener.cpp in Sources */,
+				ECCD88C51185C99900873F3C /* MooseOggSample.cpp in Sources */,
+				ECCD88C71185C99900873F3C /* MooseOggStreamSample.cpp in Sources */,
+				ECCD88C91185C99900873F3C /* MooseSoundBase.cpp in Sources */,
+				ECCD88CB1185C99900873F3C /* MooseSoundSampleBase.cpp in Sources */,
+				ECCD88D91185C9BC00873F3C /* MooseAIScript.cpp in Sources */,
+				ECCD88DD1185C9BC00873F3C /* MooseMessageSystem.cpp in Sources */,
+				ECCD88E11185C9BC00873F3C /* MooseStateMachine.cpp in Sources */,
+				ECCD890F1185C9C800873F3C /* MooseExceptions.cpp in Sources */,
+				ECCD89191185C9C800873F3C /* MooseLogger.cpp in Sources */,
+				ECCD892A1185C9C800873F3C /* MooseWindowsWrapper.cpp in Sources */,
+				ECCD89741185C9D700873F3C /* MooseCamera.cpp in Sources */,
+				ECCD89761185C9D700873F3C /* MooseDDSImage.cpp in Sources */,
+				ECCD897C1185C9D700873F3C /* MooseFrameBuffer.cpp in Sources */,
+				ECCD897E1185C9D700873F3C /* MooseFrustum.cpp in Sources */,
+				ECCD89851185C9D700873F3C /* MooseMilkshapeLoader.cpp in Sources */,
+				ECCD89871185C9D700873F3C /* MooseModel.cpp in Sources */,
+				ECCD89891185C9D700873F3C /* MooseModelHelper.cpp in Sources */,
+				ECCD898B1185C9D700873F3C /* MooseModelLoader.cpp in Sources */,
+				ECCD898D1185C9D700873F3C /* MooseObjLoader.cpp in Sources */,
+				ECCD89951185C9D700873F3C /* MooseRenderable.cpp in Sources */,
+				ECCD899B1185C9D700873F3C /* MooseRenderableProperty.cpp in Sources */,
+				ECCD89A01185C9D700873F3C /* MooseRenderState.cpp in Sources */,
+				ECCD89A41185C9D700873F3C /* MooseShader.cpp in Sources */,
+				ECCD89AA1185C9D700873F3C /* MooseTexture.cpp in Sources */,
+				ECCD89AC1185C9D700873F3C /* MooseTGAImage.cpp in Sources */,
+				ECCD89AE1185C9D700873F3C /* MooseVertexDescriptor.cpp in Sources */,
+				ECCD89D31185C9E700873F3C /* MooseCapsuleCollider.cpp in Sources */,
+				ECCD89D61185C9E700873F3C /* MooseCollision.cpp in Sources */,
+				ECCD89D81185C9E700873F3C /* MooseCompoundCollider.cpp in Sources */,
+				ECCD89DC1185C9E700873F3C /* MooseMath.cpp in Sources */,
+				ECCD89E21185C9E700873F3C /* MooseOBBCollider.cpp in Sources */,
+				ECCD89E41185C9E700873F3C /* MoosePlane.cpp in Sources */,
+				ECCD89E61185C9E700873F3C /* MooseQuad.cpp in Sources */,
+				ECCD89E81185C9E700873F3C /* MooseQuaternion.cpp in Sources */,
+				ECCD89EB1185C9E700873F3C /* MooseSphereCollider.cpp in Sources */,
+				ECCD89ED1185C9E700873F3C /* MooseTransform.cpp in Sources */,
 				ECCD8A061185C9F900873F3C /* CApplicationStatistics.cpp in Sources */,
-				ECCD8A081185C9F900873F3C /* PhoenixApplication.cpp in Sources */,
-				ECCD8A0A1185C9F900873F3C /* PhoenixCameraObject.cpp in Sources */,
-				ECCD8A0C1185C9F900873F3C /* PhoenixDirectionalLightObject.cpp in Sources */,
-				ECCD8A0E1185C9F900873F3C /* PhoenixGameObject.cpp in Sources */,
-				ECCD8A111185C9F900873F3C /* PhoenixScene.cpp in Sources */,
-				ECCD8A131185C9F900873F3C /* PhoenixSpatialGraph.cpp in Sources */,
-				ECCD8A151185C9F900873F3C /* PhoenixTransformGraph.cpp in Sources */,
-				ECCD8A2A1185CA0700873F3C /* PhoenixAABB.cpp in Sources */,
-				ECCD8A2D1185CA0700873F3C /* PhoenixBoxBound.cpp in Sources */,
-				ECCD8A301185CA0700873F3C /* PhoenixCone.cpp in Sources */,
-				ECCD8A331185CA0700873F3C /* PhoenixOBB.cpp in Sources */,
-				ECCD8A371185CA0700873F3C /* PhoenixSphere.cpp in Sources */,
-				ECCD8A391185CA0700873F3C /* PhoenixSphereBound.cpp in Sources */,
-				ECCD8A4A1185CA1C00873F3C /* PhoenixOrientable.cpp in Sources */,
-				ECCD8AA41185D28000873F3C /* PhoenixDefaultEntities.cpp in Sources */,
-				EC0A7A191189C55D00FBAAF9 /* PhoenixAmbientLight.mm in Sources */,
-				EC0A7A211189C5CA00FBAAF9 /* PhoenixRenderableModel.mm in Sources */,
-				EC0A7A261189C60E00FBAAF9 /* PhoenixRenderableModelShared.mm in Sources */,
-				EC0A7A2C1189C65C00FBAAF9 /* PhoenixSkybox.mm in Sources */,
-				EC0A7A301189C69100FBAAF9 /* PhoenixSpotLight.mm in Sources */,
-				EC19A6CB11930D26002D9374 /* PhoenixIPhoneAudioSample.mm in Sources */,
-				EC19A7771193180C002D9374 /* PhoenixOGLRenderer.mm in Sources */,
-				ECF1FB77119A986000212362 /* PhoenixMusicClip.cpp in Sources */,
-				EC88533711A3C931009D8112 /* PhoenixPolygonOffset.cpp in Sources */,
-				EC04F98D11B9200B00B8F605 /* PhoenixCapsule.cpp in Sources */,
-				EC121F4E11BADEB6003C94EE /* PhoenixBoxRenderable.cpp in Sources */,
-				EC121F5011BADEB7003C94EE /* PhoenixSphereRenderable.cpp in Sources */,
-				EC121F8311BAE317003C94EE /* PhoenixLineRenderable.cpp in Sources */,
-				ECE7539411E3C6710069E989 /* PhoenixEventQueue.cpp in Sources */,
+				ECCD8A081185C9F900873F3C /* MooseApplication.cpp in Sources */,
+				ECCD8A0A1185C9F900873F3C /* MooseCameraObject.cpp in Sources */,
+				ECCD8A0C1185C9F900873F3C /* MooseDirectionalLightObject.cpp in Sources */,
+				ECCD8A0E1185C9F900873F3C /* MooseGameObject.cpp in Sources */,
+				ECCD8A111185C9F900873F3C /* MooseScene.cpp in Sources */,
+				ECCD8A131185C9F900873F3C /* MooseSpatialGraph.cpp in Sources */,
+				ECCD8A151185C9F900873F3C /* MooseTransformGraph.cpp in Sources */,
+				ECCD8A2A1185CA0700873F3C /* MooseAABB.cpp in Sources */,
+				ECCD8A2D1185CA0700873F3C /* MooseBoxBound.cpp in Sources */,
+				ECCD8A301185CA0700873F3C /* MooseCone.cpp in Sources */,
+				ECCD8A331185CA0700873F3C /* MooseOBB.cpp in Sources */,
+				ECCD8A371185CA0700873F3C /* MooseSphere.cpp in Sources */,
+				ECCD8A391185CA0700873F3C /* MooseSphereBound.cpp in Sources */,
+				ECCD8A4A1185CA1C00873F3C /* MooseOrientable.cpp in Sources */,
+				ECCD8AA41185D28000873F3C /* MooseDefaultEntities.cpp in Sources */,
+				EC0A7A191189C55D00FBAAF9 /* MooseAmbientLight.mm in Sources */,
+				EC0A7A211189C5CA00FBAAF9 /* MooseRenderableModel.mm in Sources */,
+				EC0A7A261189C60E00FBAAF9 /* MooseRenderableModelShared.mm in Sources */,
+				EC0A7A2C1189C65C00FBAAF9 /* MooseSkybox.mm in Sources */,
+				EC0A7A301189C69100FBAAF9 /* MooseSpotLight.mm in Sources */,
+				EC19A6CB11930D26002D9374 /* MooseIPhoneAudioSample.mm in Sources */,
+				EC19A7771193180C002D9374 /* MooseOGLRenderer.mm in Sources */,
+				ECF1FB77119A986000212362 /* MooseMusicClip.cpp in Sources */,
+				EC88533711A3C931009D8112 /* MoosePolygonOffset.cpp in Sources */,
+				EC04F98D11B9200B00B8F605 /* MooseCapsule.cpp in Sources */,
+				EC121F4E11BADEB6003C94EE /* MooseBoxRenderable.cpp in Sources */,
+				EC121F5011BADEB7003C94EE /* MooseSphereRenderable.cpp in Sources */,
+				EC121F8311BAE317003C94EE /* MooseLineRenderable.cpp in Sources */,
+				ECE7539411E3C6710069E989 /* MooseEventQueue.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

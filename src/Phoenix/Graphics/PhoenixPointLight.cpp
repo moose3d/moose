@@ -1,1 +1,0 @@
-PhoenixPointLight.mm

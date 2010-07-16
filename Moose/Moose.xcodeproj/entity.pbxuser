@@ -118,7 +118,7 @@
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
 	};
-	ECB42A731182FBF7007C274F /* PhoenixAIScript.cpp */ = {
+	ECB42A731182FBF7007C274F /* MooseAIScript.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {838, 21879}}";
 			sepNavSelRange = "{96, 0}";
@@ -126,210 +126,210 @@
 			sepNavWindowFrame = "{{38, 74}, {1256, 778}}";
 		};
 	};
-	ECB42A741182FBF7007C274F /* PhoenixAIScript.h */ = {
+	ECB42A741182FBF7007C274F /* MooseAIScript.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {698, 5161}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{1117, 638}";
 		};
 	};
-	ECB42A7B1182FBF7007C274F /* PhoenixStateMachine.cpp */ = {
+	ECB42A7B1182FBF7007C274F /* MooseStateMachine.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {519, 245}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 33}";
 		};
 	};
-	ECB42A7C1182FBF7007C274F /* PhoenixStateMachine.h */ = {
+	ECB42A7C1182FBF7007C274F /* MooseStateMachine.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {565, 1859}}";
 			sepNavSelRange = "{134, 0}";
 			sepNavVisRange = "{0, 451}";
 		};
 	};
-	ECB42A961182FC5E007C274F /* PhoenixALObjectArray.h */ = {
+	ECB42A961182FC5E007C274F /* MooseALObjectArray.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {467, 1313}}";
 			sepNavSelRange = "{2405, 0}";
 			sepNavVisRange = "{0, 323}";
 		};
 	};
-	ECB42A9C1182FC5E007C274F /* PhoenixAudioSystem.h */ = {
+	ECB42A9C1182FC5E007C274F /* MooseAudioSystem.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {467, 624}}";
 			sepNavSelRange = "{219, 0}";
 			sepNavVisRange = "{0, 340}";
 		};
 	};
-	ECB42A9D1182FC5E007C274F /* PhoenixListener.cpp */ = {
+	ECB42A9D1182FC5E007C274F /* MooseListener.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {530, 663}}";
 			sepNavSelRange = "{115, 0}";
 			sepNavVisRange = "{0, 338}";
 		};
 	};
-	ECB42AA51182FC5E007C274F /* PhoenixSoundSampleBase.cpp */ = {
+	ECB42AA51182FC5E007C274F /* MooseSoundSampleBase.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 871}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1166}";
 		};
 	};
-	ECB42AA61182FC5E007C274F /* PhoenixSoundSampleBase.h */ = {
+	ECB42AA61182FC5E007C274F /* MooseSoundSampleBase.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 702}}";
 			sepNavSelRange = "{288, 0}";
 			sepNavVisRange = "{243, 1316}";
 		};
 	};
-	ECB42AB81182FC6F007C274F /* PhoenixAPI.h */ = {
+	ECB42AB81182FC6F007C274F /* MooseAPI.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {646, 390}}";
 			sepNavSelRange = "{696, 0}";
 			sepNavVisRange = "{0, 737}";
 		};
 	};
-	ECB42AC41182FC6F007C274F /* PhoenixGraph.tpp */ = {
+	ECB42AC41182FC6F007C274F /* MooseGraph.tpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {646, 4212}}";
 			sepNavSelRange = "{560, 0}";
 			sepNavVisRange = "{0, 718}";
 		};
 	};
-	ECB42AD41182FC6F007C274F /* PhoenixTagged.h */ = {
+	ECB42AD41182FC6F007C274F /* MooseTagged.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 624}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1454}";
 		};
 	};
-	ECB42B021182FC87007C274F /* PhoenixAmbientLight.h */ = {
+	ECB42B021182FC87007C274F /* MooseAmbientLight.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {646, 897}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 708}";
 		};
 	};
-	ECB42B0C1182FC87007C274F /* PhoenixFrameBuffer.cpp */ = {
+	ECB42B0C1182FC87007C274F /* MooseFrameBuffer.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {467, 273}}";
 			sepNavSelRange = "{627, 0}";
 			sepNavVisRange = "{0, 423}";
 		};
 	};
-	ECB42B151182FC87007C274F /* PhoenixMilkshapeLoader.cpp */ = {
+	ECB42B151182FC87007C274F /* MooseMilkshapeLoader.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 12350}}";
 			sepNavSelRange = "{29284, 0}";
 			sepNavVisRange = "{0, 1034}";
 		};
 	};
-	ECB42B161182FC87007C274F /* PhoenixMilkshapeLoader.h */ = {
+	ECB42B161182FC87007C274F /* MooseMilkshapeLoader.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 5291}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1298}";
 		};
 	};
-	ECB42B1F1182FC87007C274F /* PhoenixOGLConsts.h */ = {
+	ECB42B1F1182FC87007C274F /* MooseOGLConsts.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {467, 2639}}";
 			sepNavSelRange = "{1124, 0}";
 			sepNavVisRange = "{0, 418}";
 		};
 	};
-	ECB42B201182FC87007C274F /* PhoenixOGLRenderer.cpp */ = {
+	ECB42B201182FC87007C274F /* MooseOGLRenderer.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {719, 40885}}";
 			sepNavSelRange = "{99969, 0}";
 			sepNavVisRange = "{9794, 1606}";
 		};
 	};
-	ECB42B211182FC87007C274F /* PhoenixOGLRenderer.h */ = {
+	ECB42B211182FC87007C274F /* MooseOGLRenderer.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {646, 10192}}";
 			sepNavSelRange = "{388, 0}";
 			sepNavVisRange = "{0, 669}";
 		};
 	};
-	ECB42B311182FC87007C274F /* PhoenixRenderState.h */ = {
+	ECB42B311182FC87007C274F /* MooseRenderState.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1006, 1768}}";
 			sepNavSelRange = "{286, 0}";
 			sepNavVisRange = "{286, 2110}";
 		};
 	};
-	ECB42B321182FC87007C274F /* PhoenixSDLScreen.cpp */ = {
+	ECB42B321182FC87007C274F /* MooseSDLScreen.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {523, 2028}}";
 			sepNavSelRange = "{140, 0}";
 			sepNavVisRange = "{0, 544}";
 		};
 	};
-	ECB42B331182FC87007C274F /* PhoenixSDLScreen.h */ = {
+	ECB42B331182FC87007C274F /* MooseSDLScreen.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 884}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{309, 397}";
 		};
 	};
-	ECB42B341182FC87007C274F /* PhoenixShader.cpp */ = {
+	ECB42B341182FC87007C274F /* MooseShader.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {677, 689}}";
 			sepNavSelRange = "{87, 0}";
 			sepNavVisRange = "{0, 504}";
 		};
 	};
-	ECB42B3A1182FC87007C274F /* PhoenixTexture.cpp */ = {
+	ECB42B3A1182FC87007C274F /* MooseTexture.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {720, 819}}";
 			sepNavSelRange = "{88, 0}";
 			sepNavVisRange = "{0, 364}";
 		};
 	};
-	ECB42B3B1182FC87007C274F /* PhoenixTexture.h */ = {
+	ECB42B3B1182FC87007C274F /* MooseTexture.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 1716}}";
 			sepNavSelRange = "{144, 0}";
 			sepNavVisRange = "{0, 876}";
 		};
 	};
-	ECB42BC21182FCB5007C274F /* PhoenixApplication.cpp */ = {
+	ECB42BC21182FCB5007C274F /* MooseApplication.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {646, 5304}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 603}";
 		};
 	};
-	ECB42BC31182FCB5007C274F /* PhoenixApplication.h */ = {
+	ECB42BC31182FCB5007C274F /* MooseApplication.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {621, 897}}";
 			sepNavSelRange = "{106, 0}";
 			sepNavVisRange = "{0, 466}";
 		};
 	};
-	ECB42BC91182FCB5007C274F /* PhoenixGameObject.h */ = {
+	ECB42BC91182FCB5007C274F /* MooseGameObject.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {936, 1469}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1553}";
 		};
 	};
-	ECB42BE01182FCCE007C274F /* PhoenixDimensional1D.h */ = {
+	ECB42BE01182FCCE007C274F /* MooseDimensional1D.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 793}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1003}";
 		};
 	};
-	ECB42BF21182FCDC007C274F /* PhoenixAABB.cpp */ = {
+	ECB42BF21182FCDC007C274F /* MooseAABB.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 897}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1414}";
 		};
 	};
-	ECB42BF41182FCDC007C274F /* PhoenixAACube.h */ = {
+	ECB42BF41182FCDC007C274F /* MooseAACube.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {768, 429}}";
 			sepNavSelRange = "{0, 0}";
@@ -337,21 +337,21 @@
 			sepNavWindowFrame = "{{15, 95}, {1256, 778}}";
 		};
 	};
-	ECEC10E6118345E80045CA0A /* Phoenix.h */ = {
+	ECEC10E6118345E80045CA0A /* Moose.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {850, 1196}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 414}";
 		};
 	};
-	ECEC10E7118345E80045CA0A /* PhoenixDefaultEntities.cpp */ = {
+	ECEC10E7118345E80045CA0A /* MooseDefaultEntities.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {646, 1001}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 554}";
 		};
 	};
-	ECEC10E8118345E80045CA0A /* PhoenixDefaultEntities.h */ = {
+	ECEC10E8118345E80045CA0A /* MooseDefaultEntities.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {628, 1963}}";
 			sepNavSelRange = "{0, 0}";
@@ -360,8 +360,8 @@
 	};
 	ECEC26A311D6B41E002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42B1F1182FC87007C274F /* PhoenixOGLConsts.h */;
-		name = "PhoenixOGLConsts.h: 6";
+		fRef = ECB42B1F1182FC87007C274F /* MooseOGLConsts.h */;
+		name = "MooseOGLConsts.h: 6";
 		rLen = 0;
 		rLoc = 186;
 		rType = 0;
@@ -370,8 +370,8 @@
 	};
 	ECEC26A411D6B41E002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42B021182FC87007C274F /* PhoenixAmbientLight.h */;
-		name = "PhoenixAmbientLight.h: 1";
+		fRef = ECB42B021182FC87007C274F /* MooseAmbientLight.h */;
+		name = "MooseAmbientLight.h: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;
@@ -392,8 +392,8 @@
 	};
 	ECEC26D011D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42BC21182FCB5007C274F /* PhoenixApplication.cpp */;
-		name = "PhoenixApplication.cpp: 1";
+		fRef = ECB42BC21182FCB5007C274F /* MooseApplication.cpp */;
+		name = "MooseApplication.cpp: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;
@@ -402,8 +402,8 @@
 	};
 	ECEC26D111D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42AB81182FC6F007C274F /* PhoenixAPI.h */;
-		name = "PhoenixAPI.h: 22";
+		fRef = ECB42AB81182FC6F007C274F /* MooseAPI.h */;
+		name = "MooseAPI.h: 22";
 		rLen = 0;
 		rLoc = 696;
 		rType = 0;
@@ -412,8 +412,8 @@
 	};
 	ECEC26D211D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42A741182FBF7007C274F /* PhoenixAIScript.h */;
-		name = "PhoenixAIScript.h: 1";
+		fRef = ECB42A741182FBF7007C274F /* MooseAIScript.h */;
+		name = "MooseAIScript.h: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;
@@ -422,8 +422,8 @@
 	};
 	ECEC26D311D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42BF41182FCDC007C274F /* PhoenixAACube.h */;
-		name = "PhoenixAACube.h: 1";
+		fRef = ECB42BF41182FCDC007C274F /* MooseAACube.h */;
+		name = "MooseAACube.h: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;
@@ -432,8 +432,8 @@
 	};
 	ECEC26D411D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42A731182FBF7007C274F /* PhoenixAIScript.cpp */;
-		name = "PhoenixAIScript.cpp: 5";
+		fRef = ECB42A731182FBF7007C274F /* MooseAIScript.cpp */;
+		name = "MooseAIScript.cpp: 5";
 		rLen = 0;
 		rLoc = 96;
 		rType = 0;
@@ -442,8 +442,8 @@
 	};
 	ECEC26D511D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42B201182FC87007C274F /* PhoenixOGLRenderer.cpp */;
-		name = "PhoenixOGLRenderer.cpp: 3042";
+		fRef = ECB42B201182FC87007C274F /* MooseOGLRenderer.cpp */;
+		name = "MooseOGLRenderer.cpp: 3042";
 		rLen = 0;
 		rLoc = 99969;
 		rType = 0;
@@ -452,8 +452,8 @@
 	};
 	ECEC26F111D6B91A002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECB42B211182FC87007C274F /* PhoenixOGLRenderer.h */;
-		name = "PhoenixOGLRenderer.h: 12";
+		fRef = ECB42B211182FC87007C274F /* MooseOGLRenderer.h */;
+		name = "MooseOGLRenderer.h: 12";
 		rLen = 0;
 		rLoc = 388;
 		rType = 0;
@@ -494,8 +494,8 @@
 	};
 	ECEC26F611D6B91A002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = ECEC10E7118345E80045CA0A /* PhoenixDefaultEntities.cpp */;
-		name = "PhoenixDefaultEntities.cpp: 1";
+		fRef = ECEC10E7118345E80045CA0A /* MooseDefaultEntities.cpp */;
+		name = "MooseDefaultEntities.cpp: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;

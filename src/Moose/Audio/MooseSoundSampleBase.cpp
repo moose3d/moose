@@ -1,0 +1,68 @@
+#include "MooseSoundSampleBase.h"
+/////////////////////////////////////////////////////////////////
+namespace libname = Moose::Sound;
+/////////////////////////////////////////////////////////////////
+libname::CSoundSampleBase::CSoundSampleBase( size_t nBufSize ) : m_Format(0), m_Size(nBufSize), m_Freq(0), 
+							m_bLoop(false), m_nChannels(0)
+{
+  if( GetBufferSize() > 0)
+    m_pBufferData = new char[GetBufferSize()];
+  else 
+    m_pBufferData = NULL;
+  
+}
+/////////////////////////////////////////////////////////////////
+libname::CSoundSampleBase::~CSoundSampleBase()
+{
+  if ( m_pBufferData) 
+    delete [] m_pBufferData;
+}
+/////////////////////////////////////////////////////////////////
+void		
+libname::CSoundSampleBase::SetFormat( ALenum format ) 
+{
+  m_Format = format; 
+}
+/////////////////////////////////////////////////////////////////
+void		
+libname::CSoundSampleBase::SetFreq( ALsizei f ) 
+{
+  m_Freq = f; 
+}
+/////////////////////////////////////////////////////////////////
+void		
+libname::CSoundSampleBase::SetNumChannels( size_t nCount ) 
+{ 
+  m_nChannels = nCount; 
+}
+/////////////////////////////////////////////////////////////////
+ALenum	
+libname::CSoundSampleBase::GetFormat() 
+{
+  return m_Format; 
+}
+/////////////////////////////////////////////////////////////////
+ALsizei	
+libname::CSoundSampleBase::GetFreq() 
+{
+  return m_Freq; 
+}
+/////////////////////////////////////////////////////////////////
+size_t	
+libname::CSoundSampleBase::GetNumChannels()
+{
+  return m_nChannels;
+}
+/////////////////////////////////////////////////////////////////
+size_t	
+libname::CSoundSampleBase::GetBufferSize() const
+{
+  return m_Size;
+}
+/////////////////////////////////////////////////////////////////
+void		
+libname::CSoundSampleBase::SetBufferSize( size_t nSize )
+{
+  m_Size = nSize;
+}
+/////////////////////////////////////////////////////////////////

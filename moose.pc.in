@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Moose
+Description: 3D game development tool library.
+Requires: CEGUI CEGUI-OPENGL sdl vorbis
+Version: @VERSION@
+Libs: -L${libdir} -lMoose -lGLee -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale
+Cflags: -I${includedir}/Moose  

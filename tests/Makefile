@@ -1,8 +1,8 @@
-UNIT_OBJ=PhoenixVectorTest2.o PhoenixVectorTest3.o PhoenixVectorTest4.o PhoenixQuaternionTest.o PhoenixMatrix3x3Test.o PhoenixMathTest.o PhoenixAVLTreeTest.o PhoenixTest.o PhoenixHashTableTest.o PhoenixResourceManagerTest.o PhoenixCameraTest.o PhoenixCollisionTest.o PhoenixOctreeTest.o PhoenixTransformTest.o PhoenixTimeStampTest.o PhoenixEventHandlerTest.o PhoenixObjLoaderTest.o PhoenixLightTest.o PhoenixSpatialGraphTest.o
+UNIT_OBJ=MooseVectorTest2.o MooseVectorTest3.o MooseVectorTest4.o MooseQuaternionTest.o MooseMatrix3x3Test.o MooseMathTest.o MooseAVLTreeTest.o MooseTest.o MooseHashTableTest.o MooseResourceManagerTest.o MooseCameraTest.o MooseCollisionTest.o MooseOctreeTest.o MooseTransformTest.o MooseTimeStampTest.o MooseEventHandlerTest.o MooseObjLoaderTest.o MooseLightTest.o MooseSpatialGraphTest.o
 
 # helpful targets for unit test compiling
 all: unit
-	g++ -g -Wall $(UNIT_OBJ) -o PhoenixTest -lUnitTest++ `pkg-config --libs phoenix` -ltcl
+	g++ -g -Wall $(UNIT_OBJ) -o MooseTest -lUnitTest++ `pkg-config --libs phoenix` -ltcl
 unit: $(UNIT_OBJ) 
 .cpp.o: $@.cpp 
 	g++ -c -g -Wall `pkg-config --cflags phoenix`  $(@:.o=.cpp) -o $@ 

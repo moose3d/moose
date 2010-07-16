@@ -1,0 +1,175 @@
+///////////////////////////////////////////////////////////////////////////////
+#include "MooseSphereCollider.h"
+#include "MooseCollision.h"
+#include "MooseOGLRenderer.h"
+namespace prefix = Moose::Collision;
+using namespace Moose::Collision;
+///////////////////////////////////////////////////////////////////////////////
+prefix::CSphereCollider::CSphereCollider()
+{
+
+}
+///////////////////////////////////////////////////////////////////////////////
+prefix::CSphereCollider::~CSphereCollider()
+{
+
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Volume::CSphere & sphere ) const
+{
+	if ( m_pTransform )
+	{
+		Moose::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+        float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                             m_pTransform->GetScaling()[1]),
+                                            m_pTransform->GetScaling()[2] );
+        tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+		return SphereIntersectsSphere( tmp, sphere );
+	}
+	return SphereIntersectsSphere(GetBoundingSphere(), sphere);
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Graphics::CFrustum & frustum ) const
+{
+	if ( m_pTransform )
+	{
+		Moose::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+        float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                             m_pTransform->GetScaling()[1]),
+                                            m_pTransform->GetScaling()[2] );
+        tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+		return SphereIntersectsPolytope(tmp, frustum);
+	}
+  return SphereIntersectsPolytope(GetBoundingSphere(), frustum);
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Volume::COrientedBox & box ) const
+{
+	if ( m_pTransform )
+	{
+		Moose::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+        float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                             m_pTransform->GetScaling()[1]),
+                                            m_pTransform->GetScaling()[2] );
+        tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+		return SphereIntersectsOBB(tmp, box);
+	}
+  return SphereIntersectsOBB( GetBoundingSphere(), box );
+}
+///////////////////////////////////////////////////////////////////////////////
+/*bool
+prefix::CSphereCollider::Intersects( const Moose::Volume::CCapsule & capsule ) const
+{
+  return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Volume::CAxisAlignedBox & aabb ) const
+{
+	return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Volume::CCone & cone ) const
+{
+	return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+*/
+bool
+prefix::CSphereCollider::Intersects( const Moose::Math::CRay & ray, float *pfValue ) const
+{
+
+	if ( m_pTransform )
+		{
+			Moose::Volume::CSphere tmp = GetBoundingSphere();
+			tmp.Move( m_pTransform->GetTranslation());
+            float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                                 m_pTransform->GetScaling()[1]),
+                                       m_pTransform->GetScaling()[2] );
+            tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+			return RayIntersectsSphere(ray, pfValue, NULL, tmp);
+		}
+	return RayIntersectsSphere(ray, pfValue, NULL, this->GetBoundingSphere());
+}
+///////////////////////////////////////////////////////////////////////////////
+/*bool
+prefix::CSphereCollider::Intersects( const Moose::Math::CPlane & plane ) const
+{
+	return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Math::CLineSegment & lineSegment ) const
+{
+	return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Math::CLine & line ) const
+{
+	return false;
+	}*/
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Math::CVector3<float> & vPoint ) const
+{
+	if ( m_pTransform )
+	{
+		Moose::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+        float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                             m_pTransform->GetScaling()[1]),
+                                   m_pTransform->GetScaling()[2] );
+        tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+		return PointInsideSphere(tmp, vPoint);
+	}
+  return PointInsideSphere( GetBoundingSphere(), vPoint );
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Collision::ICollider & collider ) const
+{
+	if ( m_pTransform )
+	{
+		Moose::Volume::CSphere tmp = GetBoundingSphere();
+		tmp.Move( m_pTransform->GetTranslation());
+        float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                             m_pTransform->GetScaling()[1]),
+                                   m_pTransform->GetScaling()[0] );
+        tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+		return collider.Intersects(tmp);
+	}
+	return collider.Intersects(GetBoundingSphere());
+}
+///////////////////////////////////////////////////////////////////////////////
+bool
+prefix::CSphereCollider::Intersects( const Moose::Volume::CCapsule & capsule ) const
+{
+    if ( m_pTransform )
+    {
+        Moose::Volume::CSphere tmp = GetBoundingSphere();
+        tmp.Move( m_pTransform->GetTranslation());
+        float fMaxScale = std::max( std::max( m_pTransform->GetScaling()[0], 
+                                             m_pTransform->GetScaling()[1]),
+                                   m_pTransform->GetScaling()[0] );
+        tmp.SetRadius( tmp.GetRadius() * fMaxScale );
+        return SphereIntersectsCapsule(tmp, capsule);
+    }
+    return SphereIntersectsCapsule(GetBoundingSphere(), capsule);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+prefix::CSphereCollider::Render( Moose::Graphics::COglRenderer & renderer )
+{
+	if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
+	renderer.CommitSphere( GetBoundingSphere() );
+	if ( m_pTransform ) renderer.RollbackTransform();
+}
+///////////////////////////////////////////////////////////////////////////////

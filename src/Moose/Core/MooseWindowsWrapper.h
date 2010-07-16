@@ -1,0 +1,28 @@
+#ifndef __MooseWindowsWrapper_h__
+#define __MooseWindowsWrapper_h__
+#ifdef WIN32
+/////////////////////////////////////////////////////////////////
+#include <time.h>
+#include <windows.h>
+#include <math.h>
+#include <winsock.h>
+#include "MooseAPI.h"
+/////////////////////////////////////////////////////////////////
+#if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
+  #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
+#else
+  #define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
+#endif
+/////////////////////////////////////////////////////////////////
+struct timezone 
+{
+  int  tz_minuteswest; /* minutes W of Greenwich */
+  int  tz_dsttime;     /* type of dst correction */
+};
+/////////////////////////////////////////////////////////////////
+MOOSE_API int gettimeofday(struct timeval *tv, struct timezone *tz);
+inline double round(double x) { return (x-floor(x))>0.5 ? ceil(x) : floor(x); }
+inline float  roundf(float x) { return (x-floorf(x))>0.5 ? ceilf(x) : floorf(x); }
+/////////////////////////////////////////////////////////////////
+#endif
+#endif

@@ -6,34 +6,34 @@
 %include "typemaps.i"
 %{
 
-#include <Phoenix.h>
+#include <Moose.h>
 #include <list>
  //#include "CClearBuffers.h"
-  using namespace Phoenix::Graphics;
-  using namespace Phoenix::Math;
+  using namespace Moose::Graphics;
+  using namespace Moose::Math;
 
-inline Phoenix::Scene::CScene * 
-GameObjToScene( Phoenix::Scene::CGameObject *pObj )
+inline Moose::Scene::CScene * 
+GameObjToScene( Moose::Scene::CGameObject *pObj )
 {
-	return dynamic_cast<Phoenix::Scene::CScene *>(pObj);
+	return dynamic_cast<Moose::Scene::CScene *>(pObj);
 }
 
-inline Phoenix::Scene::CGameObject * 
-SceneToGameObj( Phoenix::Scene::CScene *pObj )
+inline Moose::Scene::CGameObject * 
+SceneToGameObj( Moose::Scene::CScene *pObj )
 {
-	return dynamic_cast<Phoenix::Scene::CGameObject *>(pObj);
+	return dynamic_cast<Moose::Scene::CGameObject *>(pObj);
 }
 
-inline Phoenix::Scene::CApplication *
-GameObjToApplication( Phoenix::Scene::CGameObject *pObj )
+inline Moose::Scene::CApplication *
+GameObjToApplication( Moose::Scene::CGameObject *pObj )
 {
-	return dynamic_cast<Phoenix::Scene::CApplication *>(pObj);
+	return dynamic_cast<Moose::Scene::CApplication *>(pObj);
 
 }
 
-inline std::vector<Phoenix::Scene::CGameObject *> ListToVector( std::list<Phoenix::Scene::CGameObject *> & list )
+inline std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::Scene::CGameObject *> & list )
 {
-	std::vector<Phoenix::Scene::CGameObject *> objVec;
+	std::vector<Moose::Scene::CGameObject *> objVec;
 	std::copy( list.begin(), list.end(), back_inserter(objVec)); 
 	return objVec;
 }	
@@ -49,170 +49,170 @@ inline double   ToReal( double * f ) { return *f;}
 %typemap(out) float & {
   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(*$1));
 }
-%include "PhoenixNamed.h"
-%include "PhoenixTimer.h"
-%include "PhoenixFPSCounter.h"
-%include "PhoenixCacheable.h"
-%template (cacheable) Phoenix::Core::CCacheable<GLuint>;
-%include "PhoenixTypeBase.h"
-%template (vertdescTypeBase) Phoenix::Core::CTypeBase< Phoenix::Graphics::ELEMENT_TYPE >;
-%include "PhoenixVertexDescriptor.h"
-%include "PhoenixNullable.h"
-%include "PhoenixResourceManager.h"
+%include "MooseNamed.h"
+%include "MooseTimer.h"
+%include "MooseFPSCounter.h"
+%include "MooseCacheable.h"
+%template (cacheable) Moose::Core::CCacheable<GLuint>;
+%include "MooseTypeBase.h"
+%template (vertdescTypeBase) Moose::Core::CTypeBase< Moose::Graphics::ELEMENT_TYPE >;
+%include "MooseVertexDescriptor.h"
+%include "MooseNullable.h"
+%include "MooseResourceManager.h"
 
-%include "PhoenixSingleton.h"
+%include "MooseSingleton.h"
 
-%template (nameCreator) Phoenix::Core::CSingleton<Phoenix::Core::CUniqueNameCreator>;
-%template (gameObjHandled) Phoenix::Core::CHandled< Phoenix::Scene::CGameObject >;
-%include "PhoenixCore.h"
-
-
-%include "PhoenixGraphEdge.h"
-%template (trEdge) Phoenix::Core::TGraphEdge<Phoenix::Scene::CTransformNode>;
-
-%include "PhoenixGraphNode.h"
-%template (trNode) Phoenix::Core::TGraphNode<Phoenix::Scene::CTransformNode>;
-
-%include "PhoenixGraph.h"
-%template (trGraph) Phoenix::Core::TGraph<Phoenix::Scene::CTransformNode>;
-%include "PhoenixVector2.h"
-%template (CVector2f) Phoenix::Math::CVector2<float>;
-%template (CVector2i) Phoenix::Math::CVector2<int>;
-
-%include "PhoenixVector3.h"
-%template (CVector3f) Phoenix::Math::CVector3<float>;
-%template (CVector3i) Phoenix::Math::CVector3<int>;
-%include "PhoenixVector4.h"
-%template (CVector4f) Phoenix::Math::CVector4<float>;
-%template (CVector4i) Phoenix::Math::CVector4<int>;
-%template (CVector4c) Phoenix::Math::CVector4<unsigned char>;
-
-%include "PhoenixMatrix4x4.h"
-%template (CMatrix4x4f) Phoenix::Math::CMatrix4x4<float>;
-%template (CMatrix4x4i) Phoenix::Math::CMatrix4x4<int>;
+%template (nameCreator) Moose::Core::CSingleton<Moose::Core::CUniqueNameCreator>;
+%template (gameObjHandled) Moose::Core::CHandled< Moose::Scene::CGameObject >;
+%include "MooseCore.h"
 
 
-%include "PhoenixQuaternion.h"
-%include "PhoenixTransform.h"
-%include "PhoenixTransformGraph.h"
-%include "PhoenixSphereBound.h"
-%include "PhoenixViewable.h"
-%include "PhoenixEnableable.h"
-%include "PhoenixBlendingOperation.h"
-%include "PhoenixAlphaTestOperation.h"
-%include "PhoenixMaterial.h"
-%include "PhoenixRenderState.h"
-%include "PhoenixPositional.h"
-%include "PhoenixDimensional1D.h"
-%include "PhoenixDimensional2D.h"
-%include "PhoenixDimensional3D.h"
-%include "PhoenixSphere.h"
-%include "PhoenixOrientable.h"
-%include "PhoenixAABB.h"
-%include "PhoenixOBB.h"
-%include "PhoenixOneDirectional.h"
-%include "PhoenixLine.h"
-%include "PhoenixRay.h"
-%include "PhoenixOrientable.h"
-%include "PhoenixCamera.h"
-%template (CCameraMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera, Phoenix::Core::CHandle<Phoenix::Graphics::CCamera> > >;
-%template (CCameraResMgr) Phoenix::Core::CResourceManager< Phoenix::Graphics::CCamera, Phoenix::Core::CHandle<Phoenix::Graphics::CCamera> >;
-%include "PhoenixRenderableProperty.h"
-%include "PhoenixTagged.h"
-%include "PhoenixNamed.h"
-%include "PhoenixUpdateable.h"
-%include "PhoenixEnableable.h"
-%include "PhoenixAIScript.h"
-%include "PhoenixCollider.h"
-%include "PhoenixSphereCollider.h"
-%include "PhoenixCapsuleCollider.h"
-%include "PhoenixBoxBound.h"
-%include "PhoenixOBBCollider.h"
-%include "PhoenixCompoundCollider.h"
+%include "MooseGraphEdge.h"
+%template (trEdge) Moose::Core::TGraphEdge<Moose::Scene::CTransformNode>;
+
+%include "MooseGraphNode.h"
+%template (trNode) Moose::Core::TGraphNode<Moose::Scene::CTransformNode>;
+
+%include "MooseGraph.h"
+%template (trGraph) Moose::Core::TGraph<Moose::Scene::CTransformNode>;
+%include "MooseVector2.h"
+%template (CVector2f) Moose::Math::CVector2<float>;
+%template (CVector2i) Moose::Math::CVector2<int>;
+
+%include "MooseVector3.h"
+%template (CVector3f) Moose::Math::CVector3<float>;
+%template (CVector3i) Moose::Math::CVector3<int>;
+%include "MooseVector4.h"
+%template (CVector4f) Moose::Math::CVector4<float>;
+%template (CVector4i) Moose::Math::CVector4<int>;
+%template (CVector4c) Moose::Math::CVector4<unsigned char>;
+
+%include "MooseMatrix4x4.h"
+%template (CMatrix4x4f) Moose::Math::CMatrix4x4<float>;
+%template (CMatrix4x4i) Moose::Math::CMatrix4x4<int>;
+
+
+%include "MooseQuaternion.h"
+%include "MooseTransform.h"
+%include "MooseTransformGraph.h"
+%include "MooseSphereBound.h"
+%include "MooseViewable.h"
+%include "MooseEnableable.h"
+%include "MooseBlendingOperation.h"
+%include "MooseAlphaTestOperation.h"
+%include "MooseMaterial.h"
+%include "MooseRenderState.h"
+%include "MoosePositional.h"
+%include "MooseDimensional1D.h"
+%include "MooseDimensional2D.h"
+%include "MooseDimensional3D.h"
+%include "MooseSphere.h"
+%include "MooseOrientable.h"
+%include "MooseAABB.h"
+%include "MooseOBB.h"
+%include "MooseOneDirectional.h"
+%include "MooseLine.h"
+%include "MooseRay.h"
+%include "MooseOrientable.h"
+%include "MooseCamera.h"
+%template (CCameraMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CCamera, Moose::Core::CHandle<Moose::Graphics::CCamera> > >;
+%template (CCameraResMgr) Moose::Core::CResourceManager< Moose::Graphics::CCamera, Moose::Core::CHandle<Moose::Graphics::CCamera> >;
+%include "MooseRenderableProperty.h"
+%include "MooseTagged.h"
+%include "MooseNamed.h"
+%include "MooseUpdateable.h"
+%include "MooseEnableable.h"
+%include "MooseAIScript.h"
+%include "MooseCollider.h"
+%include "MooseSphereCollider.h"
+%include "MooseCapsuleCollider.h"
+%include "MooseBoxBound.h"
+%include "MooseOBBCollider.h"
+%include "MooseCompoundCollider.h"
 // collider mgr template
-%template (CColliderMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Collision::ICollider, Phoenix::Core::CHandle<Phoenix::Collision::ICollider> > >;
-%template (CColliderResMgr) Phoenix::Core::CResourceManager< Phoenix::Collision::ICollider, Phoenix::Core::CHandle<Phoenix::Collision::ICollider> >;
-%include "PhoenixOctree.h"
-%template (gameObj_Octree) Phoenix::Spatial::COctree< Phoenix::Scene::CGameObject *>;
+%template (CColliderMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Collision::ICollider, Moose::Core::CHandle<Moose::Collision::ICollider> > >;
+%template (CColliderResMgr) Moose::Core::CResourceManager< Moose::Collision::ICollider, Moose::Core::CHandle<Moose::Collision::ICollider> >;
+%include "MooseOctree.h"
+%template (gameObj_Octree) Moose::Spatial::COctree< Moose::Scene::CGameObject *>;
 
 
-%include "PhoenixIndexArray.h"
-%include "PhoenixTexture.h"
-%template (TEXTURE_HANDLE) Phoenix::Core::CHandle< Phoenix::Graphics::COglTexture >;
-%include "PhoenixDefaultEntities.h"
-%rename (ostreamModel) operator<<(std::ostream &stream, const Phoenix::Graphics::CModel & model);
-%include "PhoenixShader.h"
+%include "MooseIndexArray.h"
+%include "MooseTexture.h"
+%template (TEXTURE_HANDLE) Moose::Core::CHandle< Moose::Graphics::COglTexture >;
+%include "MooseDefaultEntities.h"
+%rename (ostreamModel) operator<<(std::ostream &stream, const Moose::Graphics::CModel & model);
+%include "MooseShader.h"
 // shader mgr template
-%template (CShaderMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Graphics::CShader, Phoenix::Core::CHandle<Phoenix::Graphics::CShader> > >;
-%template (CShaderResMgr) Phoenix::Core::CResourceManager< Phoenix::Graphics::CShader, Phoenix::Core::CHandle<Phoenix::Graphics::CShader> >;
-%include "PhoenixModel.h"
-%template (CModelMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> > >;
-%template (CModelResMgr) Phoenix::Core::CResourceManager< Phoenix::Graphics::CModel, Phoenix::Core::CHandle<Phoenix::Graphics::CModel> >;
+%template (CShaderMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CShader, Moose::Core::CHandle<Moose::Graphics::CShader> > >;
+%template (CShaderResMgr) Moose::Core::CResourceManager< Moose::Graphics::CShader, Moose::Core::CHandle<Moose::Graphics::CShader> >;
+%include "MooseModel.h"
+%template (CModelMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CModel, Moose::Core::CHandle<Moose::Graphics::CModel> > >;
+%template (CModelResMgr) Moose::Core::CResourceManager< Moose::Graphics::CModel, Moose::Core::CHandle<Moose::Graphics::CModel> >;
 // This is one bugger; Compiler won't accept friend operator defintion for some reason?
-//%rename (ostreamRenderable) operator<<(std::ostream &stream, const Phoenix::Graphics::CRenderable & r);
-%include  "PhoenixRenderable.h"
-%rename (ostreamRenderableModel) operator<<(std::ostream &stream, const Phoenix::Graphics::CRenderableModel & r);
-%include "PhoenixClearBuffers.h"
-%include "PhoenixRenderableModel.h"
-%include "PhoenixGameObject.h"
+//%rename (ostreamRenderable) operator<<(std::ostream &stream, const Moose::Graphics::CRenderable & r);
+%include  "MooseRenderable.h"
+%rename (ostreamRenderableModel) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModel & r);
+%include "MooseClearBuffers.h"
+%include "MooseRenderableModel.h"
+%include "MooseGameObject.h"
 
 // Game object mgr template 
-%template (CGameObjectMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> > >;
-%template (CGameObjectResMgr) Phoenix::Core::CResourceManager< Phoenix::Scene::CGameObject, Phoenix::Core::CHandle<Phoenix::Scene::CGameObject> >;
-%include "PhoenixParticleSystem.h"
-%include "PhoenixSpatialGraph.h"
-%template (CollectObjects) Phoenix::Scene::CSpatialGraph::CollectObjects< std::vector< Phoenix::Scene::CGameObject *> >;
-%include "PhoenixScene.h"
-%rename (ostreamRenderableModelShared) operator<<(std::ostream &stream, const Phoenix::Graphics::CRenderableModelShared & r);
-%include "PhoenixRenderableModelShared.h"
-%include "PhoenixSkybox.h"
-%include "PhoenixApplication.h"
-%include "PhoenixLight.h"
-%include "PhoenixDirectionalLight.h"
-%include "PhoenixDirectionalLightObject.h"
-%include "PhoenixRenderQueue.h"
+%template (CGameObjectMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Scene::CGameObject, Moose::Core::CHandle<Moose::Scene::CGameObject> > >;
+%template (CGameObjectResMgr) Moose::Core::CResourceManager< Moose::Scene::CGameObject, Moose::Core::CHandle<Moose::Scene::CGameObject> >;
+%include "MooseParticleSystem.h"
+%include "MooseSpatialGraph.h"
+%template (CollectObjects) Moose::Scene::CSpatialGraph::CollectObjects< std::vector< Moose::Scene::CGameObject *> >;
+%include "MooseScene.h"
+%rename (ostreamRenderableModelShared) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModelShared & r);
+%include "MooseRenderableModelShared.h"
+%include "MooseSkybox.h"
+%include "MooseApplication.h"
+%include "MooseLight.h"
+%include "MooseDirectionalLight.h"
+%include "MooseDirectionalLightObject.h"
+%include "MooseRenderQueue.h"
  //%include "CClearBuffers.h"
-%include "PhoenixCameraObject.h"
-%include "PhoenixCollision.h"
-%include "PhoenixMath.h"
+%include "MooseCameraObject.h"
+%include "MooseCollision.h"
+%include "MooseMath.h"
 // Audio system classes
-%include "PhoenixListener.h"
-%include "PhoenixALObjectArray.h"
-%template (CALObjectArray1) Phoenix::Sound::CALObjectArray<1>; 
-%template (CALObjectArray2) Phoenix::Sound::CALObjectArray<2>; 
-%include "PhoenixSoundBase.h"
-%include "PhoenixSoundSampleBase.h"
-%include "PhoenixALSampleTypes.h"
-%include "PhoenixALSoundTypes.h"
-%include "PhoenixOggSample.h"
-%include "PhoenixOggStreamSample.h"
-%template (AudioSystem) Phoenix::Core::CSingleton< Phoenix::Sound::CAudioSystem >;
-%include "PhoenixAudioSystem.h"
+%include "MooseListener.h"
+%include "MooseALObjectArray.h"
+%template (CALObjectArray1) Moose::Sound::CALObjectArray<1>; 
+%template (CALObjectArray2) Moose::Sound::CALObjectArray<2>; 
+%include "MooseSoundBase.h"
+%include "MooseSoundSampleBase.h"
+%include "MooseALSampleTypes.h"
+%include "MooseALSoundTypes.h"
+%include "MooseOggSample.h"
+%include "MooseOggStreamSample.h"
+%template (AudioSystem) Moose::Core::CSingleton< Moose::Sound::CAudioSystem >;
+%include "MooseAudioSystem.h"
     
 // sample mgr template
-%template (SampleMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Sound::CALSample, Phoenix::Core::CHandle<Phoenix::Sound::CALSample> > >;
-%template (SampleResMgr) Phoenix::Core::CResourceManager< Phoenix::Sound::CALSample, Phoenix::Core::CHandle<Phoenix::Sound::CALSample> >;
+%template (SampleMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Sound::CALSample, Moose::Core::CHandle<Moose::Sound::CALSample> > >;
+%template (SampleResMgr) Moose::Core::CResourceManager< Moose::Sound::CALSample, Moose::Core::CHandle<Moose::Sound::CALSample> >;
 
 // stream mgr template
-%template (StreamMgr) Phoenix::Core::CSingleton< Phoenix::Core::CResourceManager< Phoenix::Sound::CALStreamSample, Phoenix::Core::CHandle<Phoenix::Sound::CALStreamSample> > >;
-%template (StreamResMgr) Phoenix::Core::CResourceManager< Phoenix::Sound::CALStreamSample, Phoenix::Core::CHandle<Phoenix::Sound::CALStreamSample> >;
+%template (StreamMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Sound::CALStreamSample, Moose::Core::CHandle<Moose::Sound::CALStreamSample> > >;
+%template (StreamResMgr) Moose::Core::CResourceManager< Moose::Sound::CALStreamSample, Moose::Core::CHandle<Moose::Sound::CALStreamSample> >;
 
-%template (GameObjectVector) std::vector<Phoenix::Scene::CGameObject *>;
-%include "PhoenixOGLRenderer.h"
- //%template (FireworksSingleton) Phoenix::Core::CSingleton< CFireWorks >;
-%include "PhoenixPlane.h"
-%template (VertexDescriptorHandle) Phoenix::Core::CHandle< Phoenix::Graphics::CVertexDescriptor >;
-%template (IndexArrayHandle) Phoenix::Core::CHandle< Phoenix::Graphics::CIndexArray >;
-
-
+%template (GameObjectVector) std::vector<Moose::Scene::CGameObject *>;
+%include "MooseOGLRenderer.h"
+ //%template (FireworksSingleton) Moose::Core::CSingleton< CFireWorks >;
+%include "MoosePlane.h"
+%template (VertexDescriptorHandle) Moose::Core::CHandle< Moose::Graphics::CVertexDescriptor >;
+%template (IndexArrayHandle) Moose::Core::CHandle< Moose::Graphics::CIndexArray >;
 
 
 
-Phoenix::Scene::CScene * GameObjToScene( Phoenix::Scene::CGameObject *pObj );
-Phoenix::Scene::CGameObject *  SceneToGameObj( Phoenix::Scene::CScene *pObj );
-Phoenix::Scene::CApplication * GameObjToApplication( Phoenix::Scene::CGameObject *pObj );
+
+
+Moose::Scene::CScene * GameObjToScene( Moose::Scene::CGameObject *pObj );
+Moose::Scene::CGameObject *  SceneToGameObj( Moose::Scene::CScene *pObj );
+Moose::Scene::CApplication * GameObjToApplication( Moose::Scene::CGameObject *pObj );
                              
-std::vector<Phoenix::Scene::CGameObject *> ListToVector( std::list<Phoenix::Scene::CGameObject *> & list );
+std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::Scene::CGameObject *> & list );
 
 
 

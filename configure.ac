@@ -1,12 +1,12 @@
 AC_PREREQ(2.61)
-AC_INIT(src/Phoenix/Phoenix.h)
+AC_INIT(src/Moose/Moose.h)
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER(src/Phoenix/config.h)
-AM_INIT_AUTOMAKE(Phoenix, 0.99, entity@iki.fi)
+AC_CONFIG_HEADER(src/Moose/config.h)
+AM_INIT_AUTOMAKE(Moose, 0.99, entity@iki.fi)
 
 # Checks for programs.
 AC_PROG_CXX
@@ -191,16 +191,16 @@ AC_SUBST(CFLAGS, "$CXXFLAGS $AM_CXXFLAGS" )
 AC_SUBST(LDFLAGS, $LDFLAGS )
 
 AC_OUTPUT( Makefile \
-	   src/Phoenix/Makefile \
-	   src/Phoenix/Audio/Makefile \
-	   src/Phoenix/AI/Makefile \
-	   src/Phoenix/Core/Makefile \
-	   src/Phoenix/Math/Makefile \
-	   src/Phoenix/Spatial/Makefile \
-	   src/Phoenix/Scene/Makefile \
-	   src/Phoenix/Volume/Makefile \
-	   src/Phoenix/Graphics/Makefile \
-	   phoenix.pc
+	   src/Moose/Makefile \
+	   src/Moose/Audio/Makefile \
+	   src/Moose/AI/Makefile \
+	   src/Moose/Core/Makefile \
+	   src/Moose/Math/Makefile \
+	   src/Moose/Spatial/Makefile \
+	   src/Moose/Scene/Makefile \
+	   src/Moose/Volume/Makefile \
+	   src/Moose/Graphics/Makefile \
+	   moose.pc
 )
 AC_MSG_NOTICE(  );
 AC_MSG_NOTICE( $AM_CXXFLAGS );

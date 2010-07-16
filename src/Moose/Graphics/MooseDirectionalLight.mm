@@ -1,0 +1,14 @@
+#include "MooseDirectionalLight.h"
+#include "MooseOGLRenderer.h"
+///////////////////////////////////////////////////////////////////////////////
+Moose::Graphics::CDirectionalLight::CDirectionalLight()
+{
+	SetDirection(0.0f,0.0f,-1.0f);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CDirectionalLight::Render( Moose::Graphics::COglRenderer & renderer )
+{
+	if ( IsEnabled() ) renderer.CommitLight(*this, GetRenderState().GetLightId());
+}
+///////////////////////////////////////////////////////////////////////////////

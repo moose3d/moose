@@ -336,7 +336,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>PhoenixScene.cpp</string>
+								<string>MooseScene.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -344,7 +344,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>PhoenixScene.cpp</string>
+										<string>MooseScene.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
@@ -644,7 +644,7 @@
 	<key>WindowOrderList</key>
 	<array>
 		<string>ECCD8A631185CB0100873F3C</string>
-		<string>/Users/entity/workdir/phoenix/iPhoneMoose/iPhoneMoose.xcodeproj</string>
+		<string>/Users/entity/workdir/moose/iPhoneMoose/iPhoneMoose.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>83 97 1249 781 0 0 1440 878 </string>

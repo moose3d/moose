@@ -1,4 +1,4 @@
-SUBDIRS = src/Phoenix src/Phoenix/Audio src/Phoenix/AI src/Phoenix/Core src/Phoenix/Math src/Phoenix/Graphics src/Phoenix/Scene src/Phoenix/Spatial src/Phoenix/Volume
+SUBDIRS = src/Moose src/Moose/Audio src/Moose/AI src/Moose/Core src/Moose/Math src/Moose/Graphics src/Moose/Scene src/Moose/Spatial src/Moose/Volume
 AUTOMAKE_OPTIONS = foreign
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = phoenix.pc
