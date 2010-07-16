@@ -40,7 +40,7 @@ namespace Moose
             // Abstracted eventqueue.
         class CEventQueue : protected std::queue<Event>
         {
-#if !defined(MOOSE_APPLE_IPHONE)
+#if defined(MOOSE_APPLE_IPHONE)
         protected:
             dispatch_semaphore_t m_Lock;
         public:
