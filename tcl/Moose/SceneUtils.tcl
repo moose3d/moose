@@ -423,46 +423,127 @@ proc Instantiate { skeleton name pos rotation } {
 
 }    
 
-
-proc g_ObjectMgr {} {
-    return [GetObjectMgr]
+proc g_ObjectMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetObjectMgr]
+    } else {
+        return [[GetObjectMgr] GetResource $name]
+    }
 }
 
-proc g_TextureMgr {} {
-    return [GetTextureMgr]
+proc g_TextureMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetTextureMgr]
+    } else {
+        return [[GetTextureMgr] GetResource $name]
+    }
 }
 
-proc g_VertexMgr {} {
-    return [GetVertexMgr]
+proc g_VertexMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetVertexMgr]
+    } else {
+        return [[GetVertexMgr] GetResource $name]
+    }
 }
 
-proc g_IndexMgr {} {
-    return [GetIndexMgr]
+proc g_IndexMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetIndexMgr]
+    } else {
+        return [[GetIndexMgr] GetResource $name]
+    }
 }
 
-proc g_ShaderMgr {} {
-    return [GetShaderMgr]
+proc g_ShaderMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetShaderMgr]
+    } else {
+        return [[GetShaderMgr] GetResource $name]
+    }
 }
 
-proc g_ModelMgr {} {
-    return [GetModelMgr]
+proc g_ModelMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetModelMgr]
+    } else {
+        return [[GetModelMgr] GetResource $name]
+    }
 }    
 
-proc g_CameraMgr {} {
-    return [GetCameraMgr]
+proc g_CameraMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetCameraMgr]
+    } else {
+        return [[GetCameraMgr] GetResource $name]
+    }
 }
 
-proc g_ColliderMgr {} {
-    return [GetColliderMgr]
+proc g_ColliderMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetColliderMgr]
+    } else {
+        return [[GetColliderMgr] GetResource $name]
+    }
 }
 
 proc g_AudioSystem {} {
     return [GetAudioSystem]
 }
 
-proc g_SampleMgr {} {
-    return [GetSoundSampleMgr]
+proc g_SampleMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetSoundSampleMgr]
+    } else {
+        return [[GetSoundSampleMgr] GetResource $name]
+    }
 }
-proc g_StreamMgr {} {
-    return [GetSoundStreamMgr]
+
+proc g_StreamMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetSoundStreamMgr]
+    } else {
+        return [[GetSoundStreamMgr] GetResource $name]
+    }
+}
+
+# More fancy naming
+proc g_Objects { { name "" } } {
+    return [g_ObjectMgr $name]
+}
+
+proc g_Textures { { name ""} } {
+    return [GetTextureMgr $name ]
+}
+
+proc g_Vertices { { name "" } } {
+    return [GetVertexMgr $name]
+}
+
+proc g_Indices { {name "" } } {
+    return [GetIndexMgr $name]
+}
+
+proc g_Shaders { {name "" } } {
+    return [GetShaderMgr $name]
+}
+
+proc g_Models { {name "" } } {
+    return [GetModelMgr $name]
+}    
+
+proc g_Cameras { {name ""} } {
+    return [GetCameraMgr $name]
+}
+
+proc g_Colliders { {name ""} } {
+    return [GetColliderMgr $name]
+}
+
+proc g_Samples { {name ""} } {
+    return [GetSoundSampleMgr $name]
+}
+
+proc g_Streams { {name ""} } {
+    return [GetSoundStreamMgr $name]
 }
