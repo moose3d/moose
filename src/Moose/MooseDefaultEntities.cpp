@@ -5,7 +5,7 @@
 #include "MooseCollider.h"
 #include "MooseAudioSystem.h"
 #include "MooseALSampleTypes.h"
-
+#include "MooseCore.h"
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Default::ObjectMgr *
 Moose::Default::GetObjectMgr()
@@ -73,3 +73,9 @@ Moose::Default::GetSoundStreamMgr()
     return g_StreamMgr;
 }
 ///////////////////////////////////////////////////////////////////////////////
+Moose::Core::CUniqueNameCreator * 
+Moose::Default::GetNameCreator()
+{
+  return Moose::Core::CUniqueNameCreator::GetInstance();
+}
+////////////////////////////////////////////////////////////////////////////////

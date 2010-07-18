@@ -106,6 +106,8 @@
 #include <MooseLineSegment.h>
 #include <MooseQuad.h>
 #include <MooseRay.h>
+#include <MooseGrid.h>
+#include <MooseTransformIndicator.h>
 #if defined(MOOSE_APPLE_IPHONE)
 #include <MooseIPhoneAudioSample.h>
 #include <MooseMusicClip.h>

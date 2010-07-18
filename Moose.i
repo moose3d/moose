@@ -203,8 +203,9 @@ inline double   ToReal( double * f ) { return *f;}
 %include "MoosePlane.h"
 %template (VertexDescriptorHandle) Moose::Core::CHandle< Moose::Graphics::CVertexDescriptor >;
 %template (IndexArrayHandle) Moose::Core::CHandle< Moose::Graphics::CIndexArray >;
-
-
+%include "MooseGrid.h"
+%include "MooseTransformIndicator.h"
+%include "MooseUniqueNameCreator.h"
 
 
 

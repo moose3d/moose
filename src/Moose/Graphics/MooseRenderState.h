@@ -556,7 +556,7 @@ namespace Moose
       unsigned int m_nLightId; ///!< Used in conjunction with LightSource member, hint for Renderer which light to set.
       
       LightRenderableList m_lstLights; ///!< Which lights apply to this renderstate. If renderstate belongs to a light, these must not be set.
-      Moose::Math::CVector4<unsigned char> m_BaseColor;
+      Moose::Graphics::CColor4ub m_BaseColor;
 
       Moose::Default::SHADER_HANDLE     m_ShaderHandle;    ///!< Handle to a shader
       CShaderParamContainer               m_ShaderAttribs;   ///!< All attrib parameters;
@@ -593,8 +593,8 @@ namespace Moose
       inline bool & IsLightSource() { return m_bLightSource; }
       inline void SetLightSource(bool bFlag) { m_bLightSource = bFlag; }
 
-      inline Moose::Math::CVector4<unsigned char> & GetBaseColor() { return m_BaseColor; }
-      inline void SetBaseColor(Moose::Math::CVector4<unsigned char> & col) { m_BaseColor = col; }
+      inline Moose::Graphics::CColor4ub & GetBaseColor() { return m_BaseColor; }
+      inline void SetBaseColor(const Moose::Graphics::CColor4ub & col) { m_BaseColor = col; }
 
       inline bool & GetLighting() { return m_bLighting; }
       inline void SetLighting(bool bFlag) { m_bLighting = bFlag; }

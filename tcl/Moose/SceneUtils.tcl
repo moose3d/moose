@@ -487,6 +487,14 @@ proc g_ColliderMgr { { name "" } } {
     }
 }
 
+proc g_UniqueName { { prefix "" } } {
+    if { $prefix == "" } {
+        return [[GetNameCreator] GetUniqueName]
+    } else {
+        return [[GetNameCreator] GetUniqueName $prefix]
+    }
+}
+
 proc g_AudioSystem {} {
     return [GetAudioSystem]
 }

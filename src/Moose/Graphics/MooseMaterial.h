@@ -2,12 +2,18 @@
 #define __MooseMaterial_h__
 /////////////////////////////////////////////////////////////////
 #include <MooseVector4.h>
+#include <MooseVector3.h>
 #include "MooseAPI.h"
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
   namespace Graphics
   {
+    // Readability tricks.
+    typedef Moose::Math::CVector4<float> CColor4f;
+    typedef Moose::Math::CVector3<float> CColor3f;
+    typedef Moose::Math::CVector4<unsigned char> CColor4ub;
+    typedef Moose::Math::CVector3<unsigned char> CColor3ub;
     /////////////////////////////////////////////////////////////////
     /// A material class which holds the attributes which define
     /// the appearance of an object.
@@ -15,13 +21,13 @@ namespace Moose
     {
     protected:
       /// The diffuse color for this material.
-      Moose::Math::CVector4<float> m_vDiffuse;
+      CColor4f m_vDiffuse;
       /// The ambient color for this material.
-      Moose::Math::CVector4<float> m_vAmbient;
+      CColor4f m_vAmbient;
       /// The specular color for this material.
-      Moose::Math::CVector4<float> m_vSpecular;
+      CColor4f m_vSpecular;
       /// The emissive color for this material.
-      Moose::Math::CVector4<float> m_vEmission;
+      CColor4f m_vEmission;
       /// The shininess factor for this material ( 0.0f - 1.0f ).
       float	    m_fShininess;
     public:
@@ -30,39 +36,39 @@ namespace Moose
       CMaterial();
       ////////////////////
       /// Destructor.
-      ~CMaterial() {}
+      virtual ~CMaterial() {}
       ////////////////////
       /// Returns diffuse color.
       /// \returns Diffuse 4-float vector.
-      const Moose::Math::CVector4<float> & GetDiffuse() const;
+      const CColor4f & GetDiffuse() const;
       ////////////////////
       /// Assigns diffuse color.
       /// \param vDiffuse 4-float vector.
-      void	    SetDiffuse( const Moose::Math::CVector4<float> & vDiffuse);
+      void	    SetDiffuse( const CColor4f & vDiffuse);
       ////////////////////
       /// Returns the Ambient color.
       /// \returns Ambient 4-vector float.
-      const Moose::Math::CVector4<float> & GetAmbient() const;
+      const CColor4f & GetAmbient() const;
       ////////////////////
       /// Assigns ambient color.
       /// \param vAmbient 4-float vector.
-      void	    SetAmbient( const Moose::Math::CVector4<float> & vAmbient);
+      void	    SetAmbient( const CColor4f & vAmbient);
       ////////////////////
       /// Returns specular color.
       /// \returns Specular 4-float vector.
-      const Moose::Math::CVector4<float> & GetSpecular() const;
+      const CColor4f & GetSpecular() const;
       ////////////////////
       /// Assigns specular color.
       /// \param vSpecular 4-float vector.
-      void	    SetSpecular( const Moose::Math::CVector4<float> & vSpecular);
+      void	    SetSpecular( const CColor4f & vSpecular);
       ////////////////////
       /// Returns emissive color.
       /// \returns Emission 4-float vector.
-      const Moose::Math::CVector4<float> & GetEmission() const;
+      const CColor4f & GetEmission() const;
       ////////////////////
       /// Assigns emissive color.
       /// \param vEmission 4-float vector.
-      void	    SetEmission( const Moose::Math::CVector4<float> & vEmission);
+      void	    SetEmission( const CColor4f & vEmission);
       ////////////////////
       /// Returns shininess factor.
       /// \returns Shininess value, range 0.0-1.0f
@@ -81,50 +87,50 @@ inline Moose::Graphics::CMaterial::CMaterial() : m_vDiffuse(0.8f,0.8f,0.8f,1.0f)
 {
 }
 /////////////////////////////////////////////////////////////////
-inline const Moose::Math::CVector4<float> &
+inline const Moose::Graphics::CColor4f &
 Moose::Graphics::CMaterial::GetDiffuse() const
 {
   return m_vDiffuse;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Moose::Graphics::CMaterial::SetDiffuse( const Moose::Math::CVector4<float> & vDiffuse)
+Moose::Graphics::CMaterial::SetDiffuse( const Moose::Graphics::CColor4f & vDiffuse)
 {
   m_vDiffuse = vDiffuse;
 }
 /////////////////////////////////////////////////////////////////
-inline const Moose::Math::CVector4<float> &
+inline const Moose::Graphics::CColor4f &
 Moose::Graphics::CMaterial::GetAmbient() const
 {
   return m_vAmbient;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Moose::Graphics::CMaterial::SetAmbient( const Moose::Math::CVector4<float> & vAmbient )
+Moose::Graphics::CMaterial::SetAmbient( const Moose::Graphics::CColor4f & vAmbient )
 {
   m_vAmbient = vAmbient;
 }
 /////////////////////////////////////////////////////////////////
-inline const Moose::Math::CVector4<float> &
+inline const Moose::Graphics::CColor4f &
 Moose::Graphics::CMaterial::GetSpecular() const
 {
   return m_vSpecular;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Moose::Graphics::CMaterial::SetSpecular( const Moose::Math::CVector4<float> & vSpecular)
+Moose::Graphics::CMaterial::SetSpecular( const Moose::Graphics::CColor4f & vSpecular)
 {
   m_vSpecular = vSpecular;
 }
 /////////////////////////////////////////////////////////////////
-inline const Moose::Math::CVector4<float> &
+inline const Moose::Graphics::CColor4f &
 Moose::Graphics::CMaterial::GetEmission() const
 {
   return m_vEmission;
 }
 /////////////////////////////////////////////////////////////////
 inline void
-Moose::Graphics::CMaterial::SetEmission( const Moose::Math::CVector4<float> & vEmission)
+Moose::Graphics::CMaterial::SetEmission( const Moose::Graphics::CColor4f & vEmission)
 {
   m_vEmission = vEmission;
 }

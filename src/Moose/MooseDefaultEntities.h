@@ -31,6 +31,10 @@ namespace Moose
       class CALStreamSample;
       class CAudioSystem;
   }
+  namespace Core
+  {
+    class CUniqueNameCreator;
+  }
   namespace Default
   {
     // Typedefs for default handle types.
@@ -78,6 +82,7 @@ namespace Moose
     Moose::Sound::CAudioSystem * GetAudioSystem();
     SoundSampleManager * GetSoundSampleMgr();
     SoundStreamManager * GetSoundStreamMgr();
+    Moose::Core::CUniqueNameCreator * GetNameCreator();
   }; // namespace Default
 }; // namespace Moose
 ////////////////////

@@ -200,6 +200,7 @@ AC_OUTPUT( Makefile \
 	   src/Moose/Scene/Makefile \
 	   src/Moose/Volume/Makefile \
 	   src/Moose/Graphics/Makefile \
+       src/Moose/Util/Makefile \
 	   moose.pc
 )
 AC_MSG_NOTICE(  );
