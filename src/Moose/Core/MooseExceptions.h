@@ -9,14 +9,32 @@ namespace Moose
 {
   namespace Exceptions
   {
-    class MOOSE_API CNullPointerException : public std::exception
+    ////////////////////
+    /// Base moose exception.
+    class MOOSE_API CMooseException : public std::exception
     {
-    private:
+    protected:
       std::string reason;
+      CMooseException( const char *szReason );
     public:
-      CNullPointerException( const char *szReason ) ;
-      ~CNullPointerException() throw() {};
+      ~CMooseException() throw() {};
       const char *what() const throw();
+    };
+    ////////////////////
+    /// Null pointer exception.
+    class MOOSE_API CNullPointerException : public Moose::Exceptions::CMooseException
+    {
+    public:
+      CNullPointerException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
+      ~CNullPointerException() throw() {};
+    };
+    ////////////////////
+    /// Renaming exception.
+    class MOOSE_API CRenameException : public Moose::Exceptions::CMooseException
+    {
+    public:
+      CRenameException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
+      ~CRenameException() throw() {};
     };
   }
 }

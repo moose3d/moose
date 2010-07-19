@@ -4,6 +4,7 @@
 #include <MooseDefaultEntities.h>
 #include <string>
 #include <iostream>
+#include <MooseLogger.h>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Core;
 using namespace Moose::Default;
@@ -152,6 +153,68 @@ TEST( MooseResourceManager_Delete )
 
   CIntResourceMgr::DestroyInstance();
   handle5.Nullify();
+}
+////////////////////////////////////////////////////////////////////////////////
+struct RenamingFixture
+{
+  RenamingFixture() { 
+    CIntResourceMgr *pMgr = CIntResourceMgr::GetInstance();
+    pMgr->Create( new int(5), "five");
+    pMgr->Create( new int(6), "six");
+  }
+  ~RenamingFixture() { 
+    CIntResourceMgr::DestroyInstance();
+  }
+  
+};
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE(RenamingFixture,  MooseResourceManager_Rename_NonExistent)
+{
+  
+  CHandle<int> tmp = "this";
+  
+  CHECK_THROW( CIntResourceMgr::GetInstance()->Rename("this", "that"), Moose::Exceptions::CRenameException);
+  CHECK_THROW( CIntResourceMgr::GetInstance()->Rename(tmp, "that"), Moose::Exceptions::CRenameException);
+  
+ 
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE(RenamingFixture,  MooseResourceManager_RenameToExisting)
+{
+  
+  CHandle<int> tmp = "this";
+  
+  CHECK_THROW( CIntResourceMgr::GetInstance()->Rename("five", "six"), Moose::Exceptions::CRenameException);
+  CHECK_THROW( CIntResourceMgr::GetInstance()->Rename(tmp, "six"),    Moose::Exceptions::CRenameException);
+ 
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( RenamingFixture, MooseResourceManager_Rename_Success )
+{
+
+  try 
+  {
+    CHECK_EQUAL(*CIntResourceMgr::GetInstance()->GetResource("five"),5);
+    CHECK_EQUAL(*CIntResourceMgr::GetInstance()->GetResource("six"),6);
+    CIntResourceMgr::GetInstance()->Rename("five", "this");
+    CIntResourceMgr::GetInstance()->Rename("six", "that");
+    CHECK_EQUAL(*CIntResourceMgr::GetInstance()->GetResource("this"),5);
+    CHECK_EQUAL(*CIntResourceMgr::GetInstance()->GetResource("that"),6);
+    CHECK(CIntResourceMgr::GetInstance()->GetResource("five") == NULL);
+    CHECK(CIntResourceMgr::GetInstance()->GetResource("six") == NULL);
+
+    CIntResourceMgr::GetInstance()->Rename("this", "five");
+    CIntResourceMgr::GetInstance()->Rename("that", "six");
+    CHECK_EQUAL(*CIntResourceMgr::GetInstance()->GetResource("five"),5);
+    CHECK_EQUAL(*CIntResourceMgr::GetInstance()->GetResource("six"),6);
+    CHECK(CIntResourceMgr::GetInstance()->GetResource("this") == NULL);
+    CHECK(CIntResourceMgr::GetInstance()->GetResource("that") == NULL);
+  } 
+  catch ( const Moose::Exceptions::CRenameException & ex )
+  {
+    g_Error << ex.what() << "\n";
+    CHECK(false);
+  }
 }
 /////////////////////////////////////////////////////////////////
 class CBaseObject : public CHandled<CBaseObject>

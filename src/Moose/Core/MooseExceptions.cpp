@@ -1,12 +1,12 @@
 #include "MooseExceptions.h"
 /////////////////////////////////////////////////////////////////
-Moose::Exceptions::CNullPointerException::CNullPointerException( const char *szReason )
+Moose::Exceptions::CMooseException::CMooseException( const char *szReason )
 {
   reason = szReason;
 }
 /////////////////////////////////////////////////////////////////
 const char *
-Moose::Exceptions::CNullPointerException::what() const throw()
+Moose::Exceptions::CMooseException::what() const throw()
 {
   return reason.c_str();
 }

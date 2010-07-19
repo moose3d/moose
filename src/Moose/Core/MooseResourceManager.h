@@ -4,11 +4,14 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <sstream>
 #include "MooseAPI.h"
 #include "MooseNullable.h"
 #include "MooseHashTable.h"
 #include "MooseSingleton.h"
 #include "MooseGlobals.h"
+#include "MooseExceptions.h"
+#include <cstring>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
@@ -148,6 +151,13 @@ namespace Moose
       void SetName(const std::string & strName )
       {
 	m_strName = strName;
+      }
+      ////////////////////
+      /// Sets resource name.
+      /// \param szName Name.
+      void SetName(const char *szName )
+      {
+        m_strName = std::string(szName);
       }
       ////////////////////
       /// Gets resource name
@@ -415,6 +425,21 @@ namespace Moose
       /// \param szResName Registered resource name.
       /// \returns Pointer to object, if handle is valid. NULL otherwise.
       OBJECTTYPE *GetResource( const char *szResName ) const;
+      ////////////////////
+      /// Renames a resource. If newName exists already in manager, or szResName does not exist, an exception is thrown.
+      /// \param resName Old resource name. 
+      /// \param newName New name for resource. Such object must not exist.
+      void Rename( const std::string & resName, const std::string & newName ) throw (Moose::Exceptions::CRenameException);
+      ////////////////////
+      /// Renames a resource. If newName exists already in manager, or szResName does not exist, an exception is thrown. 
+      /// \param szResName Old resource name. 
+      /// \param szNewName New name for resource. Such object must not exist.
+      void Rename( const char *szResName, const char *szNewName ) throw (Moose::Exceptions::CRenameException);
+      ////////////////////
+      /// Renames a resource. If handle is null, or szNewName already exists, an exception is thrown. 
+      /// \param handle Handle to resource to be renamed.
+      /// \param szNewName New name for resource. Such object must not exist.
+      void Rename( const HANDLE &handle, const std::string & strNewName ) throw (Moose::Exceptions::CRenameException);
 #if !defined(SWIG)
       ////////////////////
       /// GetResource in more compact form.
@@ -676,6 +701,67 @@ Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::DeleteMemory()
     delete m_pResourceHash;
   }
   m_pResourceHash = NULL;
+}
+////////////////////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline void
+Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::Rename( const std::string & resName, const std::string & newName ) throw (Moose::Exceptions::CRenameException)
+{
+  this->Rename( resName.c_str(), newName.c_str());
+}
+////////////////////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline void
+Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::Rename( const char *szResName, const char * szNewName ) throw (Moose::Exceptions::CRenameException)
+{
+  // No operation on same name
+  if ( strcmp(szResName, szNewName) == 0 ) return;
+
+  if ( !HasResource(szResName) ) 
+  {
+    std::ostringstream s;
+    s << "Cannot rename '" << szResName << "', no such object in manager.";
+    throw Moose::Exceptions::CRenameException(s.str().c_str());
+  }
+
+  if ( HasResource(szNewName) ) 
+  {
+    std::ostringstream s;
+    s << "Cannot rename '" << szResName << "' to '" << szNewName << "', new name points to already existing object in manager.";
+    throw Moose::Exceptions::CRenameException(s.str().c_str());
+  }
+
+  // Get existing hash item for our managed object
+  CHashItem<std::string, CResourceName> *pHashItem = m_pResourceHash->Find(szResName);
+  size_t nIndex = pHashItem->GetObject().GetIndex();
+  
+  // Create mapping name->index
+  CResourceName resourceName;
+  resourceName.SetName( szNewName );
+  resourceName.SetIndex( nIndex );
+  
+  // Create hash item for new name
+  CHashItem<std::string, CResourceName> newHashItem;
+  newHashItem.SetKey( szNewName);
+  newHashItem.SetObject( resourceName );
+  
+  // Change name in existing resource (associated with object)
+  m_vecObjects[nIndex]->SetName(szNewName);
+  // Remove old hash information
+  m_pResourceHash->Delete(szResName);
+  // Add new name
+  m_pResourceHash->Insert(newHashItem);
+}
+////////////////////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+inline void
+Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::Rename( const HANDLE &handle, const std::string & strNewName ) throw (Moose::Exceptions::CRenameException)
+{
+  if ( handle.IsNull() ) 
+  {
+    throw Moose::Exceptions::CRenameException("Cannot rename, handle is null");
+  }
+  this->Rename(m_vecObjects[handle.GetIndex()]->GetName(), strNewName);
 }
 /////////////////////////////////////////////////////////////////
 template<typename OBJECTTYPE, typename HANDLE>

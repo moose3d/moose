@@ -2,10 +2,10 @@ UNIT_OBJ=MooseVectorTest2.o MooseVectorTest3.o MooseVectorTest4.o MooseQuaternio
 
 # helpful targets for unit test compiling
 all: unit
-	g++ -g -Wall $(UNIT_OBJ) -o MooseTest -lUnitTest++ `pkg-config --libs phoenix` -ltcl
+	g++ -g -Wall $(UNIT_OBJ) -o MooseTest -lUnitTest++ `pkg-config --libs moose` -ltcl
 unit: $(UNIT_OBJ) 
 .cpp.o: $@.cpp 
-	g++ -c -g -Wall `pkg-config --cflags phoenix`  $(@:.o=.cpp) -o $@ 
+	g++ -c -g -Wall `pkg-config --cflags moose`  $(@:.o=.cpp) -o $@ 
 .PHONY: clean
 clean:
 	rm -f *.o a.out $(UNIT_OBJ)
