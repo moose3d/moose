@@ -84,6 +84,16 @@ namespace Moose
       /// \param pWorldTransform Pointer to world space transform which controls this renderable position. By default, NULL (no transform is applied).
       void AddRenderable( Moose::Graphics::CRenderable *pRenderable, size_t nLodLevel, Moose::Math::CTransform *pWorldTransform = NULL) ;
       ////////////////////
+      /// Removes renderable (and deletes it) from given lod level, if it exists.
+      /// \param pRenderable Renderable to be deleted.
+      /// \param nLodLevel From which level renderable is deleted from.
+      void RemoveRenderable( size_t nLodLevel, Moose::Graphics::CRenderable *pRenderable );
+      ////////////////////
+      /// Removes renderable (and deletes it) from given lod level, if it exists.
+      /// \param nLodLevel From which level renderable is deleted from.
+      /// \param iId id of renderable to be deleted.
+      void RemoveRenderableById( size_t nLodLevel, int iId );
+      ////////////////////
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
       RenderableList & GetLights();

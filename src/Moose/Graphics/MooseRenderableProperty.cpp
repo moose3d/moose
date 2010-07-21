@@ -131,3 +131,42 @@ Moose::Graphics::CRenderableProperty::GetRenderableById( size_t nLod, int iId )
 	return NULL;
 }
 /////////////////////////////////////////////////////////////////
+void 
+Moose::Graphics::CRenderableProperty::RemoveRenderable( size_t nLodLevel, Moose::Graphics::CRenderable *pRenderable )
+{
+  // sanity check for lod level
+  if ( nLodLevel >= GetNumLodLevels() ) return;
+  // Check objects from given lod.
+  RenderableList::iterator it = GetRenderableObjects(nLodLevel).begin();
+  for ( ; it != GetRenderableObjects(nLodLevel).end(); it++ )
+  {
+    if ( (*it) == pRenderable ) 
+    {
+      GetRenderableObjects(nLodLevel).erase(it);
+      delete pRenderable;
+      return;
+    }
+  }
+  
+}
+/////////////////////////////////////////////////////////////////
+void 
+Moose::Graphics::CRenderableProperty::RemoveRenderableById( size_t nLodLevel, int iId )
+{
+// sanity check for lod level
+  if ( nLodLevel >= GetNumLodLevels() ) return;
+  // Check objects from given lod.
+  RenderableList::iterator it = GetRenderableObjects(nLodLevel).begin();
+  for ( ; it != GetRenderableObjects(nLodLevel).end(); it++ )
+  {
+    if ( (*it)->GetId() == iId ) 
+    {
+      CRenderable *pDEADBEEF = *it;
+      GetRenderableObjects(nLodLevel).erase(it);
+      delete pDEADBEEF;
+      return;
+    }
+  }
+  
+}
+/////////////////////////////////////////////////////////////////
