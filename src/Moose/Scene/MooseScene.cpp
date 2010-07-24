@@ -358,8 +358,8 @@ Moose::Scene::CScene::CollectVisibleGameObjects( CCameraProperty & camProp )
 	GameObjectList & lstLights = camProp.GetActiveLights();
 	lstLights.clear();
 	
-	GetSpatialGraph().CollectObjects( camera, list, 	  LIGHT_TAG | CAMERA_TAG,  CTagged::NOT_AND );
-	GetSpatialGraph().CollectObjects( camera, lstLights,  LIGHT_TAG, CTagged::AND );
+	GetSpatialGraph().CollectObjects( camera, list, 	  LIGHT_TAG | CAMERA_TAG,  NOT_AND );
+	GetSpatialGraph().CollectObjects( camera, lstLights,  LIGHT_TAG, AND );
 }
 ///////////////////////////////////////////////////////////////////////////////
 CCameraProperty *
@@ -571,7 +571,7 @@ Moose::Scene::CScene::UpdateColliders()
         potentialColliders.clear();
         CSphere tmp = (*it)->GetWorldBoundingSphere();
         tmp.SetRadius( tmp.GetRadius()*COLLIDER_SPHERE_FACTOR);
-        GetSpatialGraph().CollectObjects( tmp, potentialColliders, COLLIDER_TAG, CTagged::AND );
+        GetSpatialGraph().CollectObjects( tmp, potentialColliders, COLLIDER_TAG, AND );
     
         GameObjectList tmpList;
         // Sort existing lists for difference
@@ -962,16 +962,16 @@ SCRIPT_CMD_IMPL( ZoomCamera )
 /// On success, returns zero and sets comp to proper value.
 /// On failure, returns 1 and comp is set to NOT_USED.
 int
-Script_ParseOperation( const char *szOperation, CTagged::TagCompare & comp )
+Script_ParseOperation( const char *szOperation, TagCompare & comp )
 {
 
-	if      ( strcasecmp(szOperation, "not_used"  ) == 0 ) comp = CTagged::NOT_USED;
-	else if ( strcasecmp(szOperation, "equal"     ) == 0 ) comp = CTagged::EQUAL;
-	else if ( strcasecmp(szOperation, "not_equal" ) == 0 ) comp = CTagged::EQUAL;
-	else if ( strcasecmp(szOperation, "and"       ) == 0 ) comp = CTagged::AND;
-	else if ( strcasecmp(szOperation, "not_and"   ) == 0 ) comp = CTagged::NOT_AND;
+	if      ( strcasecmp(szOperation, "not_used"  ) == 0 ) comp = NOT_USED;
+	else if ( strcasecmp(szOperation, "equal"     ) == 0 ) comp = EQUAL;
+	else if ( strcasecmp(szOperation, "not_equal" ) == 0 ) comp = EQUAL;
+	else if ( strcasecmp(szOperation, "and"       ) == 0 ) comp = AND;
+	else if ( strcasecmp(szOperation, "not_and"   ) == 0 ) comp = NOT_AND;
 	else {
-		comp = CTagged::NOT_USED;
+		comp = NOT_USED;
 		return 1;
 	}
 	return 0;
@@ -1023,7 +1023,7 @@ SCRIPT_CMD_IMPL( RayCast )
 	if ( ParseKeyValueMap(pInterp, rayParam, objv[1]) != TCL_OK ) return TCL_ERROR;
 	if ( ParseRay( pInterp, rayParam, selectionRay) != TCL_OK ) SCRIPT_ERROR("Invalid ray parameters.");
 
-	CTagged::TagCompare comp;
+	TagCompare comp;
 	if ( Script_ParseOperation( szOp, comp ) )
 	{
 		ostringstream s;
@@ -1056,7 +1056,7 @@ SCRIPT_CMD_IMPL( RayCastVisible )
 	if ( ParseKeyValueMap(pInterp, rayParam, objv[1]) != TCL_OK ) return TCL_ERROR;
 	if ( ParseRay( pInterp, rayParam, selectionRay) != TCL_OK ) SCRIPT_ERROR("Invalid ray parameters.");
 
-	CTagged::TagCompare comp;
+	TagCompare comp;
 	if ( Script_ParseOperation( szOp, comp ) )
 	{
 		ostringstream s;
@@ -1101,7 +1101,7 @@ SCRIPT_CMD_IMPL( RayCastCoords )
 
 
 
-	CTagged::TagCompare comp;
+	TagCompare comp;
 	if ( Script_ParseOperation( szOp, comp ) )
 	{
 		ostringstream s;
@@ -1142,7 +1142,7 @@ SCRIPT_CMD_IMPL( RayCastCoordsVisible )
 	SCRIPT_GET_INT(3, iY);
 	SCRIPT_GET_INT(4, iTag);
 	const char *szOp = SCRIPT_GET_STR(5);
-	CTagged::TagCompare comp;
+	TagCompare comp;
 	if ( Script_ParseOperation( szOp, comp ) )
 	{
 		ostringstream s;
@@ -1188,7 +1188,7 @@ SCRIPT_CMD_IMPL( RectCastCoords)
 	SCRIPT_GET_INT(5, iY2);
 	SCRIPT_GET_INT(6, iTag);
 	const char *szOp = SCRIPT_GET_STR(7);
-	CTagged::TagCompare comp;
+	TagCompare comp;
 	if ( Script_ParseOperation( szOp, comp ) )
 	{
 		ostringstream s;
@@ -1234,7 +1234,7 @@ SCRIPT_CMD_IMPL( RectCastCoordsVisible )
 	SCRIPT_GET_INT(5, iY2);
 	SCRIPT_GET_INT(6, iTag);
 	const char *szOp = SCRIPT_GET_STR(7);
-	CTagged::TagCompare comp;
+	TagCompare comp;
 	if ( Script_ParseOperation( szOp, comp ) )
 	{
 		ostringstream s;

@@ -186,8 +186,8 @@ proc AddModel { model lod id renderstate } {
      
     array set aRenderState $renderstate
     array set aTexNames $g_lstTexNameMap
-    puts "adding model"
-    #set diffuse ""
+
+    set diffuse ""
     if { [ llength [ array get aRenderState .diffuse ] ] > 0 } { 
         set diffuse $aRenderState(.diffuse)
     }
@@ -388,39 +388,40 @@ proc Instantiate { skeleton name pos rotation } {
     } else {
         puts "*** Found skeleton $skeleton"
     }
-    
+
     # Determine skeleton class
     array set skel $skels($skeleton)
     set class $skel(.class)
     
     
-    $class obj
+    set obj [$class]
     # Initialize renderables if explicitly asked    
     if { [llength [array get skel .numLods]] > 0 } {
-        obj InitializeRenderables $skel(.numLods)
+        $obj InitializeRenderables $skel(.numLods)
     } else {
         puts "-> $skeleton has no lod count, using 1."
-        obj InitializeRenderables 1
+        $obj InitializeRenderables 1
     }
     # Create object and add to scene
-    obj SetName $name
+    $obj SetName $name
     if { [llength [array get skel .script]] > 0 } {
-        obj SetScript $skel(.script)
+        $obj SetScript $skel(.script)
     }
-    $scene AddGameObject obj
+    $scene AddGameObject $obj
 
     #  Object is now managed by Phoenix, so let it go from script.
-    obj -disown
-    obj SetChanged 1
+    $obj -disown
+    $obj SetChanged 1
 
     # Translate object to proper location
-    [ obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]
-    [ obj GetLocalTransform ] SetRotation [lindex $rotation 0] [lindex $rotation 1] [lindex $rotation 2]
+    [ $obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]
+    [ $obj GetLocalTransform ] SetRotation [lindex $rotation 0] [lindex $rotation 1] [lindex $rotation 2]
     # Execute post-instantiate script
 	if { [llength [array get skel .postexec]] != 0 } {
-        $skel(.postexec) obj
+        $skel(.postexec) $obj
     }
-
+    # Return object
+    return $obj
 }    
 
 proc g_ObjectMgr { { name "" } } {

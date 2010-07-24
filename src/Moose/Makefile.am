@@ -6,7 +6,7 @@ GENERIC_RELEASE=0:0:1
 GENERIC_LIBRARY_VERSION=1:0:0
 GENERIC_LIBRARY_NAME="Moose"
 
-SUBDIRS = Core Audio Math Graphics Scene AI Spatial Volume
+SUBDIRS = Core Audio Math Graphics Scene AI Spatial Volume Util
 
 h_sources = Moose.h MooseDefaultEntities.h
 

@@ -27,6 +27,7 @@ prefix::CBoxRenderable::CBoxRenderable() : m_Vertices(ELEMENT_TYPE_VERTEX_3F,8),
     
     GetRenderState().SetDepthTest(true);
     GetRenderState().SetDepthWrite(true);
+    assert( GetRenderState().Prepare());
     
 }
 ///////////////////////////////////////////////////////////////////////

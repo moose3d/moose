@@ -1581,8 +1581,8 @@ Moose::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   if ( camera.IsProjectionChanged()) camera.UpdateProjection();
   if ( camera.IsViewChanged()) camera.UpdateView();
 
-  int *pViewport = camera.GetViewport();
-  glViewport(pViewport[0], pViewport[1], pViewport[2], pViewport[3]);
+  Viewport_t & rViewport = camera.GetViewport();
+  glViewport(rViewport.x, rViewport.y, rViewport.width, rViewport.height);
 
 #if !defined(MOOSE_APPLE_IPHONE)
   // these need to be fed to shaders.
@@ -2906,10 +2906,10 @@ Moose::Graphics::COglRenderer::CommitQuad( const Moose::Graphics::CCamera & rCam
 #if !defined(MOOSE_APPLE_IPHONE) 
  glBegin(GL_QUADS);
 
-    COMMIT_COORDINATES( 0.0f,				 0.0f,				0.0f,            0.0f);
-    COMMIT_COORDINATES( rCamera.GetViewport()[2],	 0.0f,				rFBO.GetWidth(), 0.0f);
-    COMMIT_COORDINATES( rCamera.GetViewport()[2],	 rCamera.GetViewport()[3],	rFBO.GetWidth(), rFBO.GetHeight() );
-    COMMIT_COORDINATES( 0.0f,				 rCamera.GetViewport()[3],	0.0f,            rFBO.GetHeight());
+    COMMIT_COORDINATES( 0.0f,				             0.0f,				0.0f,            0.0f);
+    COMMIT_COORDINATES( rCamera.GetViewport().width,	 0.0f,				rFBO.GetWidth(), 0.0f);
+    COMMIT_COORDINATES( rCamera.GetViewport().width,	 rCamera.GetViewport().height,	rFBO.GetWidth(), rFBO.GetHeight() );
+    COMMIT_COORDINATES( 0.0f,				             rCamera.GetViewport().height,	0.0f,            rFBO.GetHeight());
 
   glEnd();
 #endif

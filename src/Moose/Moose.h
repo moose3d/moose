@@ -108,6 +108,7 @@
 #include <MooseRay.h>
 #include <MooseGrid.h>
 #include <MooseTransformIndicator.h>
+#include <MooseAxisObject.h>
 #if defined(MOOSE_APPLE_IPHONE)
 #include <MooseIPhoneAudioSample.h>
 #include <MooseMusicClip.h>

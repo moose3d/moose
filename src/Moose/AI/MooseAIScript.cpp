@@ -1556,18 +1556,28 @@ SCRIPT_CMD_IMPL( GetScreenParams )
 ///////////////////////////////////////////////////////////////////////////////
 struct SendMsg_f {
 	const char *szMessage;
-
+    int requireReceiver;
 	inline void operator()( CGameObject * pObj )
 	{
-		pObj->EnqueueMessage( szMessage );
+      pObj->EnqueueMessage( szMessage, requireReceiver );
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////
 SCRIPT_CMD_IMPL( BroadcastMessage )
 {
-	CHECK_ARGS(1, "message")
+    CHECK_ARGS_BETWEEN(1, 2, "message [requireReceiver]");
 	SendMsg_f f;
 	f.szMessage = SCRIPT_GET_STR(1);
+
+    if ( (objc - 1) == 2 ) 
+    {
+      SCRIPT_GET_INT(2,f.requireReceiver);
+    }
+    else
+    {
+      f.requireReceiver = 0;
+    }
+
 	g_ObjectMgr->ForEachObjectPtr( f);
 	return TCL_OK;
 }

@@ -43,7 +43,7 @@ inline float    ToReal( float * f )  { return *f;}
 inline int      ToInt( float * i )   { return *i;}
 inline double   ToReal( double * f ) { return *f;}
 
-
+inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Moose::Scene::CGameObject *>(); }
 %}
 // This helps in converting individual elements into values
 %typemap(out) float & {
@@ -155,13 +155,13 @@ inline double   ToReal( double * f ) { return *f;}
 %include "MooseClearBuffers.h"
 %include "MooseRenderableModel.h"
 %include "MooseGameObject.h"
-
+%template (GameObjectVector) std::vector<Moose::Scene::CGameObject *>;
 // Game object mgr template 
 %template (CGameObjectMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Scene::CGameObject, Moose::Core::CHandle<Moose::Scene::CGameObject> > >;
 %template (CGameObjectResMgr) Moose::Core::CResourceManager< Moose::Scene::CGameObject, Moose::Core::CHandle<Moose::Scene::CGameObject> >;
 %include "MooseParticleSystem.h"
 %include "MooseSpatialGraph.h"
-%template (CollectObjects) Moose::Scene::CSpatialGraph::CollectObjects< std::vector< Moose::Scene::CGameObject *> >;
+%template (CollectObjectsVec) Moose::Scene::CSpatialGraph::CollectObjects< std::vector< Moose::Scene::CGameObject *> >;
 %include "MooseScene.h"
 %rename (ostreamRenderableModelShared) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModelShared & r);
 %include "MooseRenderableModelShared.h"
@@ -197,7 +197,6 @@ inline double   ToReal( double * f ) { return *f;}
 %template (StreamMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Sound::CALStreamSample, Moose::Core::CHandle<Moose::Sound::CALStreamSample> > >;
 %template (StreamResMgr) Moose::Core::CResourceManager< Moose::Sound::CALStreamSample, Moose::Core::CHandle<Moose::Sound::CALStreamSample> >;
 
-%template (GameObjectVector) std::vector<Moose::Scene::CGameObject *>;
 %include "MooseOGLRenderer.h"
  //%template (FireworksSingleton) Moose::Core::CSingleton< CFireWorks >;
 %include "MoosePlane.h"
@@ -206,7 +205,7 @@ inline double   ToReal( double * f ) { return *f;}
 %include "MooseGrid.h"
 %include "MooseTransformIndicator.h"
 %include "MooseUniqueNameCreator.h"
-
+%include "MooseAxisObject.h"
 
 
 Moose::Scene::CScene * GameObjToScene( Moose::Scene::CGameObject *pObj );

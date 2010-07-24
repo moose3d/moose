@@ -150,10 +150,16 @@ void
 Moose::Scene::CGameObject::SetCollider( Moose::Collision::ICollider *pCollider )
 {
 	m_pCollider = pCollider;
+
 	if ( m_pCollider == NULL )
 	{
 		m_pCollider = this;
-	}
+	} 
+    else 
+    {
+      // assign gameobject's world transform to collider
+      m_pCollider->SetColliderTransform( &GetWorldTransform());
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////
 Moose::Collision::ICollider *

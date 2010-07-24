@@ -2,10 +2,12 @@
 #include "MooseDefaultEntities.h"
 #include "MooseVector3.h"
 #include "MooseOGLRenderer.h"
+#include "MooseTransformGraph.h"
 using namespace Moose::Graphics;
 using namespace Moose::Math;
+using namespace Moose::Scene;
 ////////////////////////////////////////////////////////////////////////////////
-Moose::Util::CTransformIndicator::CTransformIndicator()
+Moose::Util::CTransformIndicator::CTransformIndicator() : m_pTarget(NULL)
 {
   if ( !g_Models("moose_transform_indicator_model") )
   {
@@ -74,16 +76,36 @@ Moose::Util::CTransformIndicator::Render( Moose::Graphics::COglRenderer & r )
 {
   CTransform t;
   r.CommitRenderState(GetRenderState());
-  if ( m_pTransform != NULL )  t =  *m_pTransform ;
+  if ( m_pTransform != NULL )  
+  {
+    t = *m_pTransform;
+  }
   CCamera *pCam = r.GetCurrentCamera();
   float fScaleFudgeFactor = (pCam->GetPosition() - t.GetTranslation()).Length()*0.2f;
+
+
+  // Transform must be the local transform of CTransformController.
+  // scaling of coliders might be little behind (a frame or so, but it should not matter).
   t.SetScaling( fScaleFudgeFactor );
   r.CommitTransform(t);
+
+  if ( m_pTarget ) {
+    m_pTarget->GetLocalTransform().SetScaling(fScaleFudgeFactor);
+    m_pTarget->SetChanged(true);
+  }
+
   CModel & model = **GetModelHandle();
   r.CommitVertexDescriptor( *model.GetColorHandle() );
   r.CommitVertexDescriptor( *model.GetVertexHandle() );
   r.CommitPrimitive( *model.GetIndices() );
-  
-  r.RollbackTransform();
+
+  if ( m_pTransform != NULL )  
+    r.RollbackTransform();
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Util::CTransformIndicator::SetTarget( Moose::Scene::CTransformable *pTransformable )
+{
+  m_pTarget = pTransformable;
 }
 ////////////////////////////////////////////////////////////////////////////////

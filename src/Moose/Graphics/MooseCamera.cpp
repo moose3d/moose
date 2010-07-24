@@ -63,11 +63,10 @@ Moose::Graphics::CCamera::SetViewOrtho( float fLeft, float fRight,
 void 
 Moose::Graphics::CCamera::SetViewport( int iX, int iY, int iWidth, int iHeight)
 {
-
-  m_aViewport[0] = iX;
-  m_aViewport[1] = iY;
-  m_aViewport[2] = iWidth;
-  m_aViewport[3] = iHeight;
+  m_aViewport.x = iX;
+  m_aViewport.y = iY;
+  m_aViewport.width = iWidth;
+  m_aViewport.height = iHeight;
   SetProjectionChanged(1);
 }
 /////////////////////////////////////////////////////////////////
@@ -105,13 +104,13 @@ Moose::Graphics::CCamera::GetFieldOfView() const
   return m_fFieldOfView;
 }
 /////////////////////////////////////////////////////////////////
-int *
+Moose::Graphics::Viewport_t &
 Moose::Graphics::CCamera::GetViewport()
 {
   return m_aViewport;
 }
 /////////////////////////////////////////////////////////////////
-const int *
+const Moose::Graphics::Viewport_t &
 Moose::Graphics::CCamera::GetViewport() const
 {
   return m_aViewport;
@@ -173,8 +172,8 @@ void
 Moose::Graphics::CCamera::CalculateBoundingCone()
 {
   
-  float fHalfHeight = m_aViewport[3] * 0.5f; // Half of the screen height
-  float fHalfWidth = m_aViewport[2] * 0.5f;// Half of the screen width
+  float fHalfHeight = m_aViewport.height * 0.5f; // Half of the screen height
+  float fHalfWidth = m_aViewport.width * 0.5f;// Half of the screen width
 
   // calculate the length of the fov triangle
   float fDepth  = fHalfHeight / tan(Deg2Rad(GetFieldOfView()) * 0.5f);
@@ -241,7 +240,7 @@ void
 Moose::Graphics::CCamera::UpdateProjection() 
 {
   // OpenGL projection matrix is calculated using vertical field of view.
-  float fAspect = (float)m_aViewport[3]/(float)m_aViewport[2];
+  float fAspect = (float)m_aViewport.height/(float)m_aViewport.width;
   
   ////////////////////
   /// Old code; just for reminder
@@ -253,7 +252,7 @@ Moose::Graphics::CCamera::UpdateProjection()
   ////////////////////
   float fH = (fAspect*tan(Deg2Rad(GetFieldOfView()) * 0.5f)) * GetNearClipping(); 
 
-  float fW = fH * (float)m_aViewport[2]/(float)m_aViewport[3];
+  float fW = fH * (float)m_aViewport.width/(float)m_aViewport.height;
   float fFar = m_fFarClipping;
   float fNear = m_fNearClipping;
 
@@ -344,13 +343,13 @@ Moose::Graphics::CCamera::UnProjectToEye( float fX, float fY, float fZ )
 
   // Convert mouse coordinates to opengl window coordinates 
   // ( as it would fill entire screen - there can be _two_ or _more_ viewports on one screen. )
-  float fOglX = fX - (float)m_aViewport[0];
-  float fOglY = fY - (float)m_aViewport[1];
+  float fOglX = fX - (float)m_aViewport.x;
+  float fOglY = fY - (float)m_aViewport.y;
   
-  float fCenterX = (m_aViewport[2] * 0.5f);
-  float fCenterY = (m_aViewport[3] * 0.5f); 
+  float fCenterX = (m_aViewport.width * 0.5f);
+  float fCenterY = (m_aViewport.height * 0.5f); 
   
-  float fAspect =  (float)m_aViewport[3]/(float)m_aViewport[2];
+  float fAspect =  (float)m_aViewport.height/(float)m_aViewport.width;
 
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
@@ -398,13 +397,13 @@ Moose::Graphics::CCamera::UnProject( float fX, float fY, float fZ)
 
   // Convert mouse coordinates to opengl window coordinates 
   // ( as it would fill entire screen - there can be _two_ or _more_ viewports on one screen. )
-  float fOglX = fX - (float)m_aViewport[0];
-  float fOglY = fY - (float)m_aViewport[1];
+  float fOglX = fX - (float)m_aViewport.x;
+  float fOglY = fY - (float)m_aViewport.y;
   
-  float fCenterX = (m_aViewport[2] * 0.5f);
-  float fCenterY = (m_aViewport[3] * 0.5f); 
+  float fCenterX = (m_aViewport.width * 0.5f);
+  float fCenterY = (m_aViewport.height * 0.5f); 
   // We use FovY, so aspect is not width / height, but height / width.
-  float fAspect =  (float)m_aViewport[3]/(float)m_aViewport[2];
+  float fAspect =  (float)m_aViewport.height/(float)m_aViewport.width;
   
   float fNormX = (fOglX - fCenterX) / fCenterX;
   float fNormY = (fOglY - fCenterY) / fCenterY;
@@ -568,8 +567,8 @@ Moose::Graphics::CCamera::Project( const CVector3<float> &vPosition)
   vTmp[1] = vTmp[1] * 0.5f + 0.5f;
   vTmp[2] = vTmp[2] * 0.5f + 0.5f;
   
-  return CVector3<float>(m_aViewport[0] + vTmp[0] * m_aViewport[2],
-			 m_aViewport[1] + vTmp[1] * m_aViewport[3],
+  return CVector3<float>(m_aViewport.x + vTmp[0] * m_aViewport.width,
+			 m_aViewport.y + vTmp[1] * m_aViewport.height,
 			 vTmp[2]);
   
 }
@@ -579,7 +578,7 @@ Moose::Graphics::CCamera::CalculateFrustum()
 {
   float fE = 1.0f / tan( Deg2Rad(GetFieldOfView()) * 0.5f );
   // This is as specified in math for 3d game progrm. & comp. graphics. (height/width)
-  float fAspect = (float)m_aViewport[3]/(float)m_aViewport[2]; 
+  float fAspect = (float)m_aViewport.height/(float)m_aViewport.width; 
   float f1DivSqrtEPow2plus1 = 1.0f / sqrtf( (fE * fE) + 1.0f); 
   float f1DivSqrtEPow2plusAspectPow2 = 1.0f / sqrtf( (fE * fE) + (fAspect * fAspect));
   
@@ -741,9 +740,9 @@ Moose::Graphics::CCamera::CreateRay( float fX, float fY, CRay & ray)
 float
 Moose::Graphics::CCamera::GetAspectRatio() const
 {
-	if ( m_aViewport[3] == 0 ) return 0.0f;
-	return static_cast<float>(m_aViewport[2]) /
-				 static_cast<float>(m_aViewport[3]);
+	if ( m_aViewport.height == 0 ) return 0.0f;
+	return static_cast<float>(m_aViewport.width) /
+				 static_cast<float>(m_aViewport.height);
 }
 /////////////////////////////////////////////////////////////////
 // Float clip[16];

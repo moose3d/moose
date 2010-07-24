@@ -17,6 +17,13 @@ namespace Moose
 {
   namespace Graphics
   {
+    struct MOOSE_API Viewport_t 
+    {
+      int x;
+      int y;
+      int width;
+      int height;
+    };
     /////////////////////////////////////////////////////////////////
     /// Camera class.
     class MOOSE_API CCamera : public Moose::Spatial::CPositional, public Moose::Spatial::COrientable
@@ -24,9 +31,8 @@ namespace Moose
     protected:
       /// field of view angle in degrees.
       float		m_fFieldOfView;  
-      /// viewport for this camera, starting from 
-      /// lower left corner { x, y, width, height } 
-      int		m_aViewport[4];
+      /// viewport for this camera, starting from left corner { x, y, width, height } 
+      Moose::Graphics::Viewport_t		m_aViewport;
       /// The distance of near clipping plane 
       float		m_fNearClipping;
       /// The distance of the far clipping plane.
@@ -99,13 +105,13 @@ namespace Moose
       /// \returns Far clipping plane distance.
       float GetFarClipping();
       ////////////////////
-      /// Returns the array of viewport settings.
+      /// Returns current viewport settings.
       /// \returns Pointer to int array
-      int * GetViewport();
+      Moose::Graphics::Viewport_t & GetViewport();
       ////////////////////
       /// Returns the array of viewport settings.
       /// \returns Pointer to int array
-      const int * GetViewport() const;
+      const Moose::Graphics::Viewport_t & GetViewport() const;
       ////////////////////
       /// Returns field of view angle.
       /// \returns field of view in degrees.

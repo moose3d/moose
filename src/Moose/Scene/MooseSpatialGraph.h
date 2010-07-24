@@ -78,7 +78,7 @@ namespace Moose
       /// \param compare How TAG value is used in comparison. By default, it is not used.
       /// \returns Number of collected objects.
       template<class GameObjPtrContainer>
-      size_t CollectObjects( const Moose::Graphics::CCamera &camera, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::CTagged::TagCompare compare = Moose::Core::CTagged::NOT_USED ) const;
+      size_t CollectObjects( const Moose::Graphics::CCamera &camera, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::TagCompare compare = Moose::Core::NOT_USED ) const;
       ////////////////////
       /// Collects objects from Octree into list of objects.
       /// \param frustum Frustumused in culling.
@@ -87,7 +87,7 @@ namespace Moose
       /// \param compare How TAG value is used in comparison. By default, it is not used.
       /// \returns Number of collected objects.
       template<class GameObjPtrContainer>
-      size_t CollectObjects( const Moose::Graphics::CFrustum &frustum, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::CTagged::TagCompare compare = Moose::Core::CTagged::NOT_USED ) const;
+      size_t CollectObjects( const Moose::Graphics::CFrustum &frustum, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::TagCompare compare = Moose::Core::NOT_USED ) const;
       ////////////////////
       /// Collects objects from Octree into list of objects.
       /// All objects must should be inherited from CGameObject or provide similar interface
@@ -98,7 +98,7 @@ namespace Moose
       /// \param compare How TAG value is used in comparison. By default, it is not used.
       /// \returns Number of collected objects.
       template<class GameObjPtrContainer>
-      size_t CollectObjects( const Moose::Volume::CSphere &sphere, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::CTagged::TagCompare compare = Moose::Core::CTagged::NOT_USED ) const;
+      size_t CollectObjects( const Moose::Volume::CSphere &sphere, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::TagCompare compare = Moose::Core::NOT_USED ) const;
       ////////////////////
       /// Collects objects from Octree into list of objects.
       /// All objects must should be inherited from CGameObject or provide similar interface
@@ -109,7 +109,7 @@ namespace Moose
       /// \param compare How TAG value is used in comparison. By default, it is not used.
       /// \returns Number of collected objects.
       template<class GameObjPtrContainer>
-      size_t CollectObjects( const Moose::Math::CRay &ray, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::CTagged::TagCompare compare = Moose::Core::CTagged::NOT_USED ) const;
+      size_t CollectObjects( const Moose::Math::CRay &ray, GameObjPtrContainer & list, Moose::Core::TAG tag = 0, Moose::Core::TagCompare compare = Moose::Core::NOT_USED ) const;
 
     };
   } // Scene
@@ -120,23 +120,23 @@ namespace Moose
     lstNodePtrs.push_back(pNode->GetChild( OBJ ));\
 }
 /////////////////////////////////////////////////////////////////
-inline bool CheckTagMatch( Moose::Core::TAG tagObj, Moose::Core::TAG tag, Moose::Core::CTagged::TagCompare compare )
+inline bool CheckTagMatch( Moose::Core::TAG tagObj, Moose::Core::TAG tag, Moose::Core::TagCompare compare )
 {
 	using namespace Moose::Core;
 	switch ( compare )
 	{
-	case CTagged::NOT_USED:
+	case NOT_USED:
 		break;
-	case CTagged::EQUAL:
+	case EQUAL:
 		if ( tagObj != tag ) return false;
 		break;
-	case CTagged::NOT_EQUAL:
+	case NOT_EQUAL:
 		if ( tagObj == tag ) return false;
 		break;
-	case CTagged::AND:
+	case AND:
 		if ( !(tagObj & tag) ) return false;
 		break;
-	case CTagged::NOT_AND:
+	case NOT_AND:
 		if ( (tagObj & tag) ) return false;
 		break;
 	}
@@ -146,7 +146,7 @@ inline bool CheckTagMatch( Moose::Core::TAG tagObj, Moose::Core::TAG tag, Moose:
 /////////////////////////////////////////////////////////////////
 template<class GameObjPtrContainer>
 size_t
-Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CFrustum &frustum, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::CTagged::TagCompare compare ) const
+Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CFrustum &frustum, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
 {
   using namespace Moose::Spatial;
 	std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrs;
@@ -200,7 +200,7 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CFrustum &fr
 /////////////////////////////////////////////////////////////////
 template<class GameObjPtrContainer>
 size_t
-Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &camera, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::CTagged::TagCompare compare ) const
+Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &camera, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
 {
   using namespace Moose::Spatial;
 	// TODO place for optimization; create cache for octree nodes ie. Prefetch( camera ) etc. Then use prefetch values in consequent queries.
@@ -257,7 +257,7 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &cam
 /////////////////////////////////////////////////////////////////
 template<class GameObjPtrContainer>
 size_t
-Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Volume::CSphere &cullSphere, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::CTagged::TagCompare compare ) const
+Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Volume::CSphere &cullSphere, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
 {
   using namespace Moose::Spatial;
   std::list< const Moose::Spatial::COctreeNode<CGameObject*> *> lstNodePtrs;
@@ -312,7 +312,7 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Volume::CSphere &cullS
 ////////////////////////////////////////////////////////////////////////////////
 template<class GameObjPtrContainer>
 size_t
-Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Math::CRay &ray, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::CTagged::TagCompare compare ) const
+Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Math::CRay &ray, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
 {
   using namespace Moose::Spatial;
   std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrs;
