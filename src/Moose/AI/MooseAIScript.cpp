@@ -1013,7 +1013,7 @@ ApplyRenderState( Tcl_Interp *pInterp,
 
     if ( MAP_HAS( mapNameObj, ".color" ) )
     {
-      SCRIPT_GET_FLOAT_VECP( mapMaterial[string(".color")], 4, vColor );
+      SCRIPT_GET_FLOAT_VECP( mapNameObj[string(".color")], 4, vColor );
       state.GetBaseColor()[0] = vColor[0] * 255;
       state.GetBaseColor()[1] = vColor[1] * 255;
       state.GetBaseColor()[2] = vColor[2] * 255;
