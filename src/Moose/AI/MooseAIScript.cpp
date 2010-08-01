@@ -1010,6 +1010,15 @@ ApplyRenderState( Tcl_Interp *pInterp,
 	{
 		state.GetShaderHandle() = SCRIPT_GET_STRP( mapNameObj[".shader"] );
 	}
+
+    if ( MAP_HAS( mapNameObj, ".color" ) )
+    {
+      SCRIPT_GET_FLOAT_VECP( mapMaterial[string(".color")], 4, vColor );
+      state.GetBaseColor()[0] = vColor[0] * 255;
+      state.GetBaseColor()[1] = vColor[1] * 255;
+      state.GetBaseColor()[2] = vColor[2] * 255;
+      state.GetBaseColor()[3] = vColor[3] * 255;
+    }
 	return TCL_OK;
 }
 /////////////////////////////////////////////////////////////////
