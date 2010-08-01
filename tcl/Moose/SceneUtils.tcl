@@ -415,7 +415,7 @@ proc Instantiate { skeleton name pos rotation } {
 
     # Translate object to proper location
     [ $obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]
-    [ $obj GetLocalTransform ] SetRotation [lindex $rotation 0] [lindex $rotation 1] [lindex $rotation 2]
+    [ $obj GetLocalTransform ] SetRotation [Deg2Rad [lindex $rotation 0]] [Deg2Rad [lindex $rotation 1]] [Deg2Rad [lindex $rotation 2]]
     # Execute post-instantiate script
 	if { [llength [array get skel .postexec]] != 0 } {
         $skel(.postexec) $obj

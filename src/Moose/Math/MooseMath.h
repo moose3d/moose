@@ -227,6 +227,12 @@ namespace Moose
     /// \param qQuat Quaternion.
     /// \param mMatrix Matrix where result is stored.
     MOOSE_API void QuaternionToMatrix( const CQuaternion &qQuat, CMatrix4x4<float> &mMatrix);
+
+    ////////////////////
+    /// Converts quaternion into euler angles (radians)
+    /// \param qQuat Quaternion, can be unnormalized.
+    /// \param vAnglesRad Vector to receive euler angles.
+    MOOSE_API void QuaternionToEuler( const CQuaternion &qQuat, CVector3<float> &vAnglesRad);
     ////////////////////
     /// Returns minimal rotation angle (in radians) between two vectors.
     /// \return rotation angle.

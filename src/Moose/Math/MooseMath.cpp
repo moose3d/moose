@@ -927,6 +927,37 @@ Moose::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
   fAngleInDegrees = Rad2Deg(acos( fCosAngle )) * 2.0f;
 
 }
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Math::QuaternionToEuler( const CQuaternion &q, CVector3<float> &vAxis )
+{
+    double sqw = q[3]*q[3];
+    double sqx = q[0]*q[0];
+    double sqy = q[1]*q[1];
+    double sqz = q[2]*q[2];
+    // if normalised is one, otherwise is correction factor
+	double unit = sqx + sqy + sqz + sqw; 
+	double test = q[0]*q[1] + q[2]*q[3];
+
+	if (test > 0.4999*unit) 
+    { // singularity at north pole
+      vAxis[1] = 2.0 * atan2(q[0],q[3]);
+      vAxis[2] = PIdiv2;
+	  vAxis[0] = 0.0;
+      return;
+	}
+	if (test < -0.4999*unit) 
+    { // singularity at south pole
+      vAxis[1] = -2.0 * atan2(q[0],q[3]);
+      vAxis[2] = -PIdiv2;
+      vAxis[0] = 0.0;
+      return;
+	}
+    vAxis[1] = atan2(2.0*q[1]*q[3]-2*q[0]*q[2] , sqx - sqy - sqz + sqw);
+	vAxis[2] = asin(2.0*test/unit);
+	vAxis[0] = atan2(2.0*q[0]*q[3]-2*q[1]*q[2] , -sqx + sqy - sqz + sqw);
+}
+
 /////////////////////////////////////////////////////////////////
 void
 Moose::Math::RemoveRowAndColumn(const CMatrix4x4<float> & mMatrix,
