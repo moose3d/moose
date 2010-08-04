@@ -22,7 +22,7 @@ namespace Moose
     {
       friend class Moose::Core::TGraph<CTransformNode>;
     public:
-      ~CTransformNode();
+      virtual ~CTransformNode();
       /// For adding new edges without compiler errors.
       Moose::Core::TGraphEdge<CTransformNode> * AddEdge( CTransformNode *pTo );
       ////////////////////
@@ -102,6 +102,7 @@ namespace Moose
                              public Moose::Core::CHandled<Moose::Scene::CGameObject>
     {
     public:
+      virtual ~CObjectTransform() { TGraphNodeDestroy(); }
       Moose::Scene::CTransformable * GetTransformable();
     };
     ///////////////////////////////////////////////////////////////////////////
@@ -110,6 +111,7 @@ namespace Moose
 
     {
     public:
+      virtual ~CPlainTransform() { TGraphNodeDestroy(); }
       Moose::Scene::CTransformable * GetTransformable()
       {
         return this;

@@ -28,7 +28,12 @@ inline Moose::Scene::CApplication *
 GameObjToApplication( Moose::Scene::CGameObject *pObj )
 {
 	return dynamic_cast<Moose::Scene::CApplication *>(pObj);
+}
 
+inline Moose::Scene::CGameObject *
+TransformableAsGameObject( Moose::Scene::CTransformable *pObj )
+{
+  return dynamic_cast<Moose::Scene::CGameObject *>(pObj);
 }
 
 inline std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::Scene::CGameObject *> & list )
@@ -175,6 +180,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseCameraObject.h"
 %include "MooseCollision.h"
 %include "MooseMath.h"
+%include "MooseMathUtils.h"
 // Audio system classes
 %include "MooseListener.h"
 %include "MooseALObjectArray.h"
