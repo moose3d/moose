@@ -176,6 +176,12 @@ Moose::Scene::CScene::DeleteGameObjects()
     {
         RemoveGameObject(m_lstGameObjects.front());
     }
+    // Cameras are a weird bunch, as they aren't merely common objects.
+    // as they should if collision is to be considered...
+    while( !m_mapCameras.empty() ) 
+    {
+      RemoveCamera(m_mapCameras.begin()->first);
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -293,8 +299,8 @@ Moose::Scene::CScene::Update( float fSeconds )
 			c.CalculateBoundingCone();
 		}
 		CollectVisibleGameObjects( *camIt->second );
-       AssignLightsToObjects( camIt->second->GetActiveLights(), 
-                              camIt->second->GetGameObjectList());
+        AssignLightsToObjects( camIt->second->GetActiveLights(), 
+                               camIt->second->GetGameObjectList());
 
 	}
 }
@@ -305,9 +311,13 @@ Moose::Scene::CScene::Render( COglRenderer & renderer )
 	CameraMap::iterator camIt = m_mapCameras.begin();
 	for( ; camIt != m_mapCameras.end(); camIt++ )
 	{
-		// CollectVisibleGameObjects( camIt->second );
+      // CollectVisibleGameObjects( camIt->second );
+      
 		CCameraProperty & prop = *camIt->second;
 		CCameraObject & c = *prop.GetCamera();
+        // skip disabled cameras
+        if ( c.IsEnabled() == false ) continue;
+
 		prop.GetRenderQueue().Clear();
 		CollectRenderables( c, prop.GetGameObjectList(), prop.GetRenderQueue() );
 		AssignLightsToRenderables( prop.GetActiveLights(), prop.GetRenderQueue() );
@@ -478,7 +488,7 @@ Moose::Scene::CScene::AddCamera( const std::string & name, Moose::Scene::CCamera
 void
 Moose::Scene::CScene::RemoveCamera( const std::string & name )
 {
-    if ( m_mapCameras.find( name ) != m_mapCameras.end() )
+  if ( m_mapCameras.find( name ) != m_mapCameras.end() )
 	{
         RemoveGameObject( g_Objects(name.c_str()) );
     }
