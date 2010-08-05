@@ -33,6 +33,7 @@
 #endif
 
 #endif
-
+// For ffmpeg types 
+#define __STDC_CONSTANT_MACROS
 #endif
 
