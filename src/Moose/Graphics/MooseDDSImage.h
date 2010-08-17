@@ -7,9 +7,9 @@
 #ifndef WIN32
 /////////////////////////////////////////////////////////////////
 // Pointers are tricky, 64-bit ones wreak havoc unless we define them as 32-bit.
-#define LPVOID  uint32_t
+#define LPVOID  u_int32_t
 #define LONG    int32_t
-#define DWORD   uint32_t
+#define DWORD   u_int32_t
 #define WORD    int16_t
 /////////////////////////////////////////////////////////////////
 /// FourCC's : 
