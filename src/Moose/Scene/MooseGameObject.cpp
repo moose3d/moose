@@ -53,8 +53,9 @@ Moose::Scene::CGameObject::~CGameObject()
 	}
 }
 /////////////////////////////////////////////////////////////////
-Moose::Scene::CGameObject::CGameObject( ) : m_nSpatialIndex(0), m_pCollider(NULL), 
-                                              CAIObject( this )
+Moose::Scene::CGameObject::CGameObject( ) : CAIObject( this ),
+                                            m_nSpatialIndex(0),                                             
+                                            m_pCollider(NULL)
 
 
 {

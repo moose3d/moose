@@ -11,9 +11,9 @@ const float CLOSE_TO_ZERO = 0.01f;
 Moose::Scene::CCameraObject::CCameraObject() :
 	m_fSpeed(0.0f),
   m_fZoomSpeed(0.0f),
-  m_vVelocity(0,0,0),
   m_MoveDir( OUT ),
-  m_bMoving(false)
+    m_bMoving(false),
+  m_vVelocity(0,0,0)
 {
     // Set some reasonable defaults
     SetNearClipping(0.01f);

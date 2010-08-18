@@ -913,7 +913,7 @@ Moose::Math::QuaternionToRotationAxisAndAngle( const CQuaternion &qQuat,
 						 CVector3<float> &vAxis,
 						 float &fAngleInDegrees )
 {
-  float fCosAngle = qQuat[4];
+  float fCosAngle = qQuat[3];
   float fSinAngle = sqrt( 1.0f - fCosAngle * fCosAngle );
 
   /// If denominator is too close to zero.

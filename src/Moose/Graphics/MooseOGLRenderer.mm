@@ -1304,7 +1304,7 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
 #else
   GLubyte *       data = NULL;
 #endif
-  GLenum err = GL_NO_ERROR;
+  //GLenum err = GL_NO_ERROR;
   int width, height;
 
   for( size_t i=0;i<6;i++)
@@ -1378,6 +1378,8 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
       delete pTexture;
       return NULL;
     }
+    width = pImage->GetWidth();
+    height = pImage->GetHeight();
     ////////////////////
     int    iGLInternalFormat = 3;
     GLenum iGLformat = GL_RGB;
@@ -1400,7 +1402,7 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     case 32:
       iGLInternalFormat = 4;
       iGLformat = GL_RGBA;
-      std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
+      //std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
       break;
     default:
       delete pImage;
@@ -1410,8 +1412,8 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
       break;
     }
 #endif
-    g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
-    g_Error << "size :"  << width << "x" << height << std::endl;
+    //g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
+    //g_Error << "size :"  << width << "x" << height << std::endl;
     GLenum iGLType = GL_TEXTURE_CUBE_MAP;
     ////////////////////
     // create actual gl texture
@@ -3180,7 +3182,7 @@ Moose::Graphics::COglRenderer::CommitRenderState( const Moose::Graphics::CRender
 	{
 		CommitState( STATE_LIGHTING );
 		LightRenderableList::iterator it = s.GetLights().begin();
-		for( unsigned int i = 0; i < this->GetFeatures().GetMaxLights() && it != s.GetLights().end(); it++, i++)
+		for( int i = 0; i < this->GetFeatures().GetMaxLights() && it != s.GetLights().end(); it++, i++)
 		{
 			CRenderable *pTmp = *it;
 			// Hint light for an id.

@@ -1024,7 +1024,7 @@ SCRIPT_CMD_IMPL( CameraCreateRay )
 SCRIPT_CMD_IMPL( RayCast )
 {
 	CHECK_ARGS(3, "ray tag operation");
-	const char *szName = SCRIPT_GET_STR(1);
+	//const char *szName = SCRIPT_GET_STR(1);
 	int iTag = 0;
 	SCRIPT_GET_INT(2, iTag);
 	const char *szOp = SCRIPT_GET_STR(3);
@@ -1281,7 +1281,7 @@ SCRIPT_CMD_IMPL( RectCastCoordsVisible )
 SCRIPT_CMD_IMPL( Destroy )
 {
   CHECK_ARGS( 1, "objName");
-	int iLen = 0;
+
 	const char *szName = SCRIPT_GET_STR(1);
 	CGameObject *pObj = g_ObjectMgr->GetResource( szName );
 

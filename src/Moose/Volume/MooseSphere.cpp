@@ -17,8 +17,8 @@ Moose::Volume::CalculateBoundingSphere( const Moose::Graphics::CVertexDescriptor
   }
 
   // Minimum and maximum values for each coordinates.
-  CVector3<float> vMaxValues;
-  CVector3<float> vMinValues;
+  CVector3<float> vMaxValues(0,0,0);
+  CVector3<float> vMinValues(0,0,0);
   size_t nNumVertices = vd.GetSize();
 
 
