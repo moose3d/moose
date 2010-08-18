@@ -1,2 +1,7 @@
-ADD_LIBRARY( Core MooseExceptions.cpp  MooseLogger.cpp  MooseWindowsWrapper.cpp )
+add_sources(Moose 
+  MooseExceptions.cpp
+  MooseLogger.cpp
+  MooseWindowsWrapper.cpp
+)
+
 
