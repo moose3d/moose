@@ -44,4 +44,8 @@ src/Moose/Spatial/.deps/
 src/Moose/Spatial/.libs/
 src/Moose/Volume/.deps/
 src/Moose/Volume/.libs/
-
+src/Moose/Util/.deps/
+src/Moose/Util/.libs/
+*.cmake
+CMakeFiles
+CMakeCache.txt

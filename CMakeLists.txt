@@ -1,0 +1,30 @@
+cmake_minimum_required( VERSION 2.6)
+project(Moose)
+#set (Moose_VERSION_MAJOR 1)
+#set (Moose_VERSION_MINOR 0)
+add_definitions("-Wall -O2")
+# Optional cmake config file
+#configure_file ( 
+#  "src/Moose/Core/MooseAPI.h.in"
+#  "src/Moose/Core/MooseAPI.h"
+#)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/AI)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Core)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Math)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Audio)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Scene)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Graphics)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Volume)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Util)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Spatial)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose)
+
+add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Core )
+add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/AI )
+add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Audio )
+#add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Graphics )
+#add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Math )
+#add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Scene )
+#add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Spatial )
+#add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Util )
+#add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Volume )
