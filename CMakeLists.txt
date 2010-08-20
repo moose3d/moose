@@ -1,14 +1,9 @@
 cmake_minimum_required( VERSION 2.6)
 project(Moose)
-#set (Moose_VERSION_MAJOR 1)
-#set (Moose_VERSION_MINOR 0)
+
 add_definitions("-Wall -O2")
-# Optional cmake config file
-#configure_file ( 
-#  "src/Moose/Core/MooseAPI.h.in"
-#  "src/Moose/Core/MooseAPI.h"
-#)
-#set_property (GLOBAL PROPERTY SRCS "")
+
+
 
 
 #- Add sources for a target
@@ -78,3 +73,35 @@ include_directories(${FREETYPE_INCLUDE_DIRS})
 
 find_package(SDL)
 include_directories(${SDL_INCLUDE_DIR})
+
+install( TARGETS Moose 
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+FILE(GLOB files 
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Moose.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/MooseDefaultEntities.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Core/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/AI/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Audio/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Graphics/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Math/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Scene/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Spatial/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Util/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h")
+install( FILES ${files} DESTINATION include/Moose)
+
+#set (Moose_VERSION_MAJOR 1)
+#set (Moose_VERSION_MINOR 0)
+set (prefix ${CMAKE_INSTALL_PREFIX})
+set (exec_prefix "\${prefix}")
+set (libdir "\${exec_prefix}/lib")
+set (includedir "\${prefix}/include")
+
+# Optional cmake config file
+configure_file ( 
+  "moose.pc.in"
+  "moose.pc"
+)
