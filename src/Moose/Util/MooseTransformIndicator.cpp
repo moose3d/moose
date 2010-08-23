@@ -1,4 +1,5 @@
 #include "MooseTransformIndicator.h"
+#include "MooseGameObject.h"
 #include "MooseDefaultEntities.h"
 #include "MooseVector3.h"
 #include "MooseOGLRenderer.h"

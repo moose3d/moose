@@ -57,7 +57,7 @@ namespace Moose
 			Moose::Math::CVector3<float>     	m_vFocusPoint;  ///!< Where camera is focused ATM.
 			MoveDir	      											m_MoveDir;      ///!< Which local direction camera is presently moving.
 			bool		      											m_bMoving;      ///!< Is camera on move
-			Moose::Math::CVector3<float>     	m_vVelocity;    ///!< Velocity of combined movement
+            Moose::Math::CVector3<float>     	m_vVelocity;    ///!< Velocity of combined movement
 			CCameraSettings 										m_Settings;     ///!< Some caps so camera won't overdo it.
 		private:
 			bool IsZoomAtMinimum();

@@ -293,7 +293,9 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>10</integer>
+
+									<integer>24</integer>
+
 									<integer>7</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -337,7 +339,9 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
+
 								<string>MooseApplication.cpp</string>
+
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -345,11 +349,13 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>MooseApplication.cpp</string>
+
+										<string>MooseEventQueue.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>EC9F0F1A12229F67004F60B6</string>
+										<string>EC43933011F11ABB00B81834</string>
+
 										<key>history</key>
 										<array>
 											<string>EC4F293E11C92CDF002DA15B</string>
@@ -418,6 +424,15 @@
 											<string>ECE753E411E3D4D20069E989</string>
 											<string>ECE753E511E3D4D20069E989</string>
 											<string>ECE753E611E3D4D20069E989</string>
+
+											<string>ECE753E911E3D4D20069E989</string>
+											<string>ECE753EA11E3D4D20069E989</string>
+											<string>ECE753EB11E3D4D20069E989</string>
+											<string>ECE753ED11E3D4D20069E989</string>
+											<string>ECE753EE11E3D4D20069E989</string>
+											<string>ECE7541711E3D7170069E989</string>
+											<string>ECE7541811E3D7170069E989</string>
+
 											<string>ECE7542C11E3DA3A0069E989</string>
 											<string>ECE7542D11E3DA3A0069E989</string>
 											<string>ECE7542F11E3DA3A0069E989</string>
@@ -433,6 +448,7 @@
 											<string>EC2CECBC11E3E5E9005165EC</string>
 											<string>ECD3DF3411E675D100ABF45F</string>
 											<string>EC2489A311E9D90A005B9C25</string>
+
 											<string>ECA09319121B2C450000ADF7</string>
 											<string>ECA0931A121B2C450000ADF7</string>
 											<string>ECA0931B121B2C450000ADF7</string>
@@ -448,6 +464,7 @@
 											<string>EC9F0F1712229F67004F60B6</string>
 											<string>EC9F0F1812229F67004F60B6</string>
 											<string>EC9F0F1912229F67004F60B6</string>
+
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -505,9 +522,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>EC9F0F1B12229F67004F60B6</string>
+
+				<string>EC43933111F11ABB00B81834</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>EC9F0F1C12229F67004F60B6</string>
+				<string>EC43933211F11ABB00B81834</string>
+
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -628,7 +647,9 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
+
 	<real>304258919.83940101</real>
+
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -728,7 +749,9 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>ECCD8A631185CB0100873F3C</string>
+
 				<string>EC9F0E4C1222647E004F60B6</string>
+
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

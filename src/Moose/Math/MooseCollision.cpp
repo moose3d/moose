@@ -1708,7 +1708,7 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedCube 
 bool
 Moose::Collision::RayIntersectsOBB( const CRay &ray, const COrientedBox &obBox,  float *pfValue )
 {
-  float fT_min,fT_max;
+  float fT_min = 0.0f,fT_max = 0.0f;
   float fE, fF;
   float f1DivF;
   float fT_1,fT_2;
@@ -1810,7 +1810,7 @@ Moose::Collision::RayIntersectsAACube( const CRay &ray, const CAxisAlignedCube &
 bool
 Moose::Collision::RayIntersectsAABB( const CRay &ray, const CAxisAlignedBox &aaBox,  float *pfValue )
 {
-  float fT_min,fT_max;
+  float fT_min = 0.0f,fT_max = 0.0f;
   float fE, fF;
   float f1DivF;
   float fT_1,fT_2;

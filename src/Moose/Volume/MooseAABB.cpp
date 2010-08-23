@@ -49,7 +49,7 @@ Moose::Volume::CalculateAlignedBox( const Moose::Graphics::CVertexDescriptor &ve
 													vertices.GetPointer<float>()[1],
 													vertices.GetPointer<float>()[2] );
 
-		for( int v=1; v<vertices.GetSize(); v++)
+		for( unsigned int v=1; v<vertices.GetSize(); v++)
 		{
 			STORE_MAX_MIN(vertices.GetPointer<float>(v)[0], vMax[0], vMin[0]);
 			STORE_MAX_MIN(vertices.GetPointer<float>(v)[1], vMax[1], vMin[1]);

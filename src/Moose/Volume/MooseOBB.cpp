@@ -455,7 +455,7 @@ Moose::Volume::MergeOrientedBoxes( const Moose::Volume::COrientedBox &obOne, con
   CVector3<float> vCornerOnLine;
   CVector3<float> vMin(0,0,0);
   CVector3<float> vMax(0,0,0);
-  CVector3<float> vSecondaryAxis;
+  CVector3<float> vSecondaryAxis(0,0,0);
   CVector3<float> vSecAxisCandidate;
 
   float fDot;

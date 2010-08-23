@@ -837,7 +837,6 @@ SCRIPT_CMD_IMPL( LoadTextureCube )
 {
 	CHECK_ARGS( 2, "cubeTexParams resourceName");
 	int len = 0;
-	int len_tex = 0;
 	NameObjMap mapNameObj;
 	char *files[6] = { NULL };
 	if ( ParseKeyValueMap(pInterp, mapNameObj, objv[1]) != TCL_OK) return TCL_ERROR;
@@ -1176,7 +1175,7 @@ SCRIPT_CMD_IMPL( ComputeBoundingBox )
 SCRIPT_CMD_IMPL( UseBoxCollider  )
 {
 	CHECK_ARGS( 1, "boxResource");
-	const char *szBox = SCRIPT_GET_STR(1);
+	//const char *szBox = SCRIPT_GET_STR(1);
 
 	SCRIPT_ERROR("Not implemented");
 
@@ -1478,7 +1477,7 @@ SCRIPT_CMD_IMPL( SetRenderState )
 	SCRIPT_GET_INT( 1, lod );
 	SCRIPT_GET_INT( 2, id );
 	CGameObject *pObj = reinterpret_cast<CGameObject *>(clientData);
-	if ( lod >= pObj->GetNumLodLevels() )
+	if ( (unsigned int)lod >= pObj->GetNumLodLevels() )
 	{
 		ostringstream s;
 		s << "Lod level " << lod << " is too high, max is : " << pObj->GetNumLodLevels();
@@ -1486,7 +1485,7 @@ SCRIPT_CMD_IMPL( SetRenderState )
 	}
 	RenderableList::iterator it = pObj->GetRenderableObjects(lod).begin();
 
-	int iResult = TCL_OK;
+
 
 	std::map<string,Tcl_Obj *> mapNameObj;
 	std::map<string,Tcl_Obj *> mapMaterial;
