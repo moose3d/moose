@@ -7,11 +7,13 @@
  *
  */
 // is not used without iPhoneMoose
-#if defined(MOOSE_APPLE_IPHONE)
+
 #include "MooseEventQueue.h"
 using namespace std;
 namespace prefix = Moose::Scene;
 #define NUM_RESOURCES 1
+
+#if defined(MOOSE_APPLE_IPHONE)
 prefix::CEventQueue::CEventQueue()
 {
     m_Lock = dispatch_semaphore_create(NUM_RESOURCES);

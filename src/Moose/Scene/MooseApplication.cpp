@@ -143,9 +143,10 @@ prefix::CApplication::GetEventQueue()
 void
 prefix::CApplication::ProcessInput()
 {
+    //g_Error << "Pre-check\n";
 	if ( GetCurrentScene() == NULL ) return;
     CScene & scene = *GetCurrentScene();
-    
+    //g_Error << "Processing input\n";
 #if defined(MOOSE_APPLE_IPHONE)
     while ( !m_EventQueue.Empty() )
     {
@@ -161,6 +162,10 @@ prefix::CApplication::ProcessInput()
                 break;
             case kTouchEnded:
                 scene.OnTouchEnded( e.x, e.y, e.flags);
+                break;
+            case kAccelerate:
+                //g_Error << "Moose:Received accel event \n";
+                scene.OnAccelerate( e.x, e.y, e.z, e.flags);
                 break;
             default:
                 assert( NULL && "Event type is not defined!!" );

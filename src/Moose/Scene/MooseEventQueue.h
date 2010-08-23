@@ -22,13 +22,15 @@ namespace Moose
         enum EventType {
             kTouchBegan,
             kTouchMoved,
-            kTouchEnded
+            kTouchEnded,
+            kAccelerate
         };
         
         struct Event {
             int   type;
             float x;
             float y;
+            float z;
             int   flags;
         };
 #else

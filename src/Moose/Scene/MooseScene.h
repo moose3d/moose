@@ -117,6 +117,7 @@ namespace Moose
             virtual void OnTouchBegan( float x, float y, int iFlags ) {}
             virtual void OnTouchMoved( float x, float y, int iFlags ) {}
             virtual void OnTouchEnded( float x, float y, int iFlags ) {}
+            virtual void OnAccelerate( float x, float y, float z, int iFlags) {}
 #else
             // These contain TCL scripting, not enabled on iPhone
             void RegisterUserCommands();
