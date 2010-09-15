@@ -287,14 +287,14 @@
 								<string>0867D691FE84028FC02AAC07</string>
 								<string>08FB77AEFE84172EC02AAC07</string>
 								<string>ECCD89F21185C9F900873F3C</string>
-								<string>ECCD892C1185C9D700873F3C</string>
+								<string>ECCD89B21185C9E700873F3C</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FAAC04509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>18</integer>
+									<integer>16</integer>
 									<integer>7</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -320,7 +320,7 @@
 							<real>299</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>0 50 1440 828 0 0 1440 878 </string>
+						<string>266 49 1440 828 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -338,7 +338,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>MooseScene.cpp</string>
+								<string>MooseGameObject.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -346,15 +346,14 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>MooseScene.cpp</string>
+										<string>MooseGameObject.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>ECE2B36D12413AE700A5F5D0</string>
+										<string>ECE2B47C124158EA00A5F5D0</string>
 										<key>history</key>
 										<array>
 											<string>EC4F293E11C92CDF002DA15B</string>
-											<string>EC4003E411CA6C2600BEDB85</string>
 											<string>EC4003E711CA6C2600BEDB85</string>
 											<string>EC4003E811CA6C2600BEDB85</string>
 											<string>EC4003E911CA6C2600BEDB85</string>
@@ -374,12 +373,9 @@
 											<string>ECE90D2611D0352900FD13B9</string>
 											<string>ECD19D0D11D14D6500459AF9</string>
 											<string>ECE4166C11D7B775006C0318</string>
-											<string>ECE4167111D7B775006C0318</string>
-											<string>ECE4167211D7B775006C0318</string>
 											<string>ECCCB15C11D814C000AB1297</string>
 											<string>ECCCB15D11D814C000AB1297</string>
 											<string>ECDD4FE511DB3E3B0064BB01</string>
-											<string>ECDD4FE611DB3E3B0064BB01</string>
 											<string>ECDD501911DB42650064BB01</string>
 											<string>ECDD503311DB44F40064BB01</string>
 											<string>ECDD503411DB44F40064BB01</string>
@@ -414,9 +410,6 @@
 											<string>ECE753EE11E3D4D20069E989</string>
 											<string>ECE7541711E3D7170069E989</string>
 											<string>ECE7541811E3D7170069E989</string>
-											<string>ECE7542C11E3DA3A0069E989</string>
-											<string>ECE7542D11E3DA3A0069E989</string>
-											<string>ECE7543111E3DA3A0069E989</string>
 											<string>ECE7543511E3DA3A0069E989</string>
 											<string>ECE7544311E3DBAE0069E989</string>
 											<string>ECE7544411E3DBAE0069E989</string>
@@ -446,7 +439,6 @@
 											<string>ECE2B35612413A6900A5F5D0</string>
 											<string>ECE2B35712413A6900A5F5D0</string>
 											<string>ECE2B35812413A6900A5F5D0</string>
-											<string>ECE2B35912413A6900A5F5D0</string>
 											<string>ECE2B35A12413A6900A5F5D0</string>
 											<string>ECE2B35B12413A6900A5F5D0</string>
 											<string>ECE2B35C12413A6900A5F5D0</string>
@@ -458,10 +450,21 @@
 											<string>ECE2B36212413A6900A5F5D0</string>
 											<string>ECE2B36312413A6900A5F5D0</string>
 											<string>ECE2B36412413A6900A5F5D0</string>
-											<string>ECE2B36512413A6900A5F5D0</string>
 											<string>ECE2B36612413A6900A5F5D0</string>
-											<string>ECE2B36B12413AE700A5F5D0</string>
-											<string>ECE2B36C12413AE700A5F5D0</string>
+											<string>ECE2B3CE1241421C00A5F5D0</string>
+											<string>ECE2B3D01241421C00A5F5D0</string>
+											<string>ECE2B41412414F0400A5F5D0</string>
+											<string>ECE2B435124151C800A5F5D0</string>
+											<string>ECE2B436124151C800A5F5D0</string>
+											<string>ECE2B474124158EA00A5F5D0</string>
+											<string>ECE2B475124158EA00A5F5D0</string>
+											<string>ECE2B476124158EA00A5F5D0</string>
+											<string>ECE2B477124158EA00A5F5D0</string>
+											<string>ECE2B478124158EA00A5F5D0</string>
+											<string>ECE2B479124158EA00A5F5D0</string>
+											<string>ECE2B47A124158EA00A5F5D0</string>
+											<string>ECE2B47B124158EA00A5F5D0</string>
+											<string>ECE7542D11E3DA3A0069E989</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -473,14 +476,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1119, 714}}</string>
+								<string>{{0, 0}, {1119, 708}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 50 1440 828 0 0 1440 878 </string>
+								<string>266 49 1440 828 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>714pt</string>
+							<string>708pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -493,14 +496,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 719}, {1119, 68}}</string>
+								<string>{{0, 713}, {1119, 74}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 50 1440 828 0 0 1440 878 </string>
+								<string>266 49 1440 828 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>68pt</string>
+							<string>74pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -519,9 +522,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>ECE2B36912413A6900A5F5D0</string>
+				<string>ECE2B47D124158EA00A5F5D0</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>ECE2B36A12413A6900A5F5D0</string>
+				<string>ECE2B47E124158EA00A5F5D0</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -642,7 +645,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>306264807.40533799</real>
+	<real>306272490.966842</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -663,7 +666,7 @@
 		<string>/Users/entity/workdir/moose/iPhoneMoose/iPhoneMoose.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>0 50 1440 828 0 0 1440 878 </string>
+	<string>266 49 1440 828 0 0 1440 878 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -684,7 +687,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>MooseRenderQueue.h</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -701,8 +704,6 @@
 							<string>394pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -742,7 +743,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>ECCD8A631185CB0100873F3C</string>
-				<string>ECE2B33412412FA400A5F5D0</string>
+				<string>ECE2B47F124158EA00A5F5D0</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
