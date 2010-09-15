@@ -19,7 +19,7 @@ namespace Moose
     public:
       ////////////////////
       /// Sets default ambient value (0.2,0.2,0.2,1.0)
-      CAmbientLight() : m_vColor(51,51,51,255 ) {  }
+      CAmbientLight() : m_vColor(51,51,51,255 ) { }
       ////////////////////
       /// Sets ambient value according to parameters.
       /// \param r ambient red component 0-255

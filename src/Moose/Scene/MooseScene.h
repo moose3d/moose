@@ -28,11 +28,12 @@ namespace Moose
 		{
 		protected:
 
-			Moose::Scene::CCameraObject * 		m_pCamera;					///!< Camera object
+			Moose::Scene::CCameraObject * 	m_pCamera;					///!< Camera object
 			Moose::Scene::GameObjectList	m_lstGameObjects; 	///!< Temporary collection of visible gameobjects.
 			Moose::Scene::GameObjectList	m_lstActiveLights;	///!< Temporary list of visible lights within frustum.
-			RenderQueue											m_RenderQueue; 			///!< Renderqueue for this camera.
-			bool														m_bColliderRendering;  /// Should colliders be rendered for game objects.
+			RenderQueue						m_RenderQueue; 			///!< Renderqueue for opaque objects in this camera.
+			RenderQueue						m_TransparentQueue; 			///!< Renderqueue for transparent objects in this camera.
+			bool							m_bColliderRendering;  /// Should colliders be rendered for game objects.
 		public:
 			CCameraProperty( ) :m_bColliderRendering(false) { }
 			Moose::Scene::CCameraObject *     GetCamera() { return m_pCamera; }
@@ -40,6 +41,7 @@ namespace Moose
 			Moose::Scene::GameObjectList & GetGameObjectList() { return m_lstGameObjects; }
 			Moose::Scene::GameObjectList & GetActiveLights() 	{ return m_lstActiveLights; }
 			RenderQueue										 & GetRenderQueue() { return m_RenderQueue; }
+			RenderQueue										 & GetTransparentQueue() { return m_TransparentQueue; }
 			void															SetColliderRendering( bool bFlag ) { m_bColliderRendering = bFlag; }
 			bool															IsColliderRendering() const { return m_bColliderRendering; }
 
@@ -52,14 +54,12 @@ namespace Moose
 		class CScene : public Moose::Scene::CGameObject
 		{
 		protected:
-			Moose::Scene::CSpatialGraph	*							 m_pSpatialGraph;   ///<! Spatial graph used for collision and culling.
-			Moose::Scene::CTransformGraph *  					 m_pTransformGraph; ///<! Transforms. By default, every object is child of root.
-			GameObjectList               								 m_lstGameObjects;  ///<! list of objects in this scene.
-			RenderQueue											m_PreRenderQueue;   			///!< Render queue rendered before anything else (using all but GUI camera).
-			RenderQueue											m_PostObjectRenderQueue; 	///!< Render queue rendered after all objects have been rendered from current scene. ( using all but GUI camera )
-			RenderQueue											m_PreGUIRenderQueue;    	///!< Render queue rendered before GUI objects (using GUI camera).
-			RenderQueue											m_PostGUIRenderQueue;    	///!< Render queue rendered after  GUI objects (using GUI camera).
-			CameraMap												m_mapCameras;       			///!< Storage for all cameras used in this scene.
+			Moose::Scene::CSpatialGraph	*                       m_pSpatialGraph;   ///<! Spatial graph used for collision and culling.
+			Moose::Scene::CTransformGraph *  					m_pTransformGraph; ///<! Transforms. By default, every object is child of root.
+			GameObjectList               						m_lstGameObjects;  ///<! list of objects in this scene.
+            
+			RenderQueue											m_StaticQueue; 	   ///!< All objects not collected using a camera.
+			CameraMap											m_mapCameras;      ///!< Storage for all cameras used in this scene.
 
             GameObjectCollidersMap                              m_mapPotentialColliders; 	///!< From GameObject ptr to List of possible colliders.
             GameObjectCollidersMap                              m_mapColliders;             ///!< From GameObject ptr to List of currently colliding objects.
@@ -92,21 +92,10 @@ namespace Moose
 			void RemoveCamera( const std::string & name );
 			CCameraProperty * GetCameraProperty( const std::string & name );
 			void Render( Moose::Graphics::COglRenderer & renderer );
-			RenderQueue & GetPreRenderQueue();
-			RenderQueue & GetPostRenderQueue();
-			RenderQueue & GetPreGUIRenderQueue();
-			RenderQueue & GetPostGUIRenderQueue();
-
-			void PushPreRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-			void PushPostRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-			void PushPreGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-			void PushPostGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-
-			void RemovePreRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-			void RemovePostRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-			void RemovePreGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-			void RemovePostGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable );
-
+			RenderQueue & GetStaticRenderQueue();
+			
+			void PushToRenderQueue( Moose::Graphics::CRenderable *pRenderable );
+			void RemoveFromRenderQueue( Moose::Graphics::CRenderable *pRenderable );
             
 			virtual void OnEnter();
             virtual void OnExit();
@@ -122,10 +111,12 @@ namespace Moose
             // These contain TCL scripting, not enabled on iPhone
             void RegisterUserCommands();
 #endif
-          static void AssignLightsToRenderables( GameObjectList & lights, RenderQueue & queue);
-          static void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );
-          static void CollectRenderables( Moose::Graphics::CCamera & camera, GameObjectList & gameObjects, RenderQueue &queue );
-		};
+            static void AssignLightsToRenderables( GameObjectList & lights, RenderQueue & queue);
+            static void AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects );
+            static void CollectRenderables( Moose::Graphics::CCamera & camera, GameObjectList & gameObjects, RenderQueue &queue );
+            // Collects static renderables to given queue.
+            void CollectStaticRenderables( RenderQueue & queue );
+        };
 #if !defined(MOOSE_APPLE_IPHONE)
 
         

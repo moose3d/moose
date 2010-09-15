@@ -540,11 +540,29 @@ namespace Moose
           }
           
       };
+      enum RenderLayerTag {
+          kBackground = 1000,
+          kOpaque = 2000,
+          kTransparent = 3000,
+          kOverlay = 4000,
+          kGUI = 5000
+      };
     /////////////////////////////////////////////////////////////////
     /// Renderstate object. Helps to sort things by transparency, for instance.
+    ///
+    /// Renderlayer values used for sorting are as follows:
+    /// - Background : 1000 - 1999
+    /// - Opaque : 2000 - 2999
+    /// - Transparent : 3000- 3999
+    /// - Overlay :  4000- 4999
+    ///
+    /// By default, renderlayer is set to Opaque.
     class MOOSE_API CRenderState
     {
     private:
+        
+      unsigned short m_iRenderLayer; ///!< To which render layer this renderable belongs (rendered from 0->65536).
+        
       Moose::Graphics::CAlphaTestOperation m_AlphaTestOp; ///!< Is alpha test enabled and what comparison to use.
       Moose::Graphics::CBlendingOperation  m_BlendingOp; ///!< Is blending enabled and what operation to use.
       Moose::Graphics::CPolygonOffset    m_PolyOffset; ///!< Is polygon offset enabled and using which parameters.
@@ -569,12 +587,12 @@ namespace Moose
       /// Handle to textures.
       Moose::Default::TEXTURE_HANDLE			      	   m_aTextureHandles[TEXTURE_HANDLE_COUNT];
       Moose::Graphics::CMaterial                         m_Material;
-        
     public:
         
       CRenderState();
       virtual ~CRenderState();
-        
+        void SetRenderLayer( unsigned short iLayerValue );
+        unsigned short GetRenderLayer() const;
       inline Moose::Graphics::CAlphaTestOperation & GetAlphaOperation()    { return m_AlphaTestOp; }
       inline void SetAlphaOperation(Moose::Graphics::CAlphaTestOperation & op)    { m_AlphaTestOp = op; }
       inline Moose::Graphics::CBlendingOperation  & GetBlendingOperation() { return m_BlendingOp;  }

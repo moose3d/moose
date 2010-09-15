@@ -21,7 +21,7 @@ namespace Moose
         m_Color(0.0f, 0.0f, 0.0f, 1.0f),
         m_iFlags(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
       {
-        
+          GetRenderState().SetRenderLayer(0); 
       }
       ////////////////////
       /// Parametrized for special case.

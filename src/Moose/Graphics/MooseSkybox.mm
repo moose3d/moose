@@ -211,7 +211,7 @@ Moose::Graphics::CSkybox::CSkybox( )
   state.AddShaderAttrib("position", (*m_hModel)->GetVertexHandle() );
   state.AddShaderAttrib("a_texcoord", (*m_hModel)->GetTextureCoordinateHandle() );
   state.AddShaderUniform("diffuse", 0); 
-
+    state.SetRenderLayer( kBackground );
   assert(state.Prepare());
 }
 /////////////////////////////////////////////////////////////////

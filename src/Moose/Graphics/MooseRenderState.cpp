@@ -14,7 +14,8 @@ using namespace Moose::Graphics;
 using namespace Moose::Core;
 using namespace std;
 ///////////////////////////////////////////////////////////////////////////////////
-Moose::Graphics::CRenderState::CRenderState() :  m_DepthTest(false),
+Moose::Graphics::CRenderState::CRenderState() :  m_iRenderLayer(kOpaque),
+                                                    m_DepthTest(false),
 																									 m_DepthWrite(true),
 																									 m_FaceCulling(false),
 																									 m_bLighting(false),
@@ -28,6 +29,18 @@ Moose::Graphics::CRenderState::CRenderState() :  m_DepthTest(false),
 Moose::Graphics::CRenderState::~CRenderState()
 {
 
+}
+///////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CRenderState::SetRenderLayer( unsigned short kLayer )
+{
+    m_iRenderLayer = kLayer;
+}
+///////////////////////////////////////////////////////////////////////////////////
+unsigned short
+Moose::Graphics::CRenderState::GetRenderLayer() const
+{
+    return m_iRenderLayer;
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void

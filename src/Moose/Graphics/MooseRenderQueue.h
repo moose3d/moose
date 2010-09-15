@@ -5,6 +5,7 @@
 #include "MooseCamera.h"
 #include "MooseOGLRenderer.h"
 #include "MooseAPI.h"
+#include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {

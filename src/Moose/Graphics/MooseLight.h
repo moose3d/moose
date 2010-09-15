@@ -54,6 +54,7 @@ namespace Moose
 			SetSpecularColor( Moose::Math::CVector4<unsigned char>(225,225,225,255));
 			SetBrightness(0.0f);
 			GetRenderState().IsLightSource() = true;
+            GetRenderState().SetRenderLayer(500);
       }
     public:
       ////////////////////

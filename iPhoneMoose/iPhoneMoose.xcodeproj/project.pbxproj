@@ -30,6 +30,7 @@
 		EC19A7F311931D68002D9374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC19A7F211931D68002D9374 /* CoreGraphics.framework */; };
 		EC88533611A3C931009D8112 /* MoosePolygonOffset.h in Headers */ = {isa = PBXBuildFile; fileRef = EC88533411A3C931009D8112 /* MoosePolygonOffset.h */; };
 		EC88533711A3C931009D8112 /* MoosePolygonOffset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC88533511A3C931009D8112 /* MoosePolygonOffset.cpp */; };
+		ECC02D9D122EE63B002BB39A /* MooseClearBuffers.h in Headers */ = {isa = PBXBuildFile; fileRef = ECC02D9C122EE63B002BB39A /* MooseClearBuffers.h */; };
 		ECCD88BC1185C99900873F3C /* MooseALObjectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AB1185C99900873F3C /* MooseALObjectArray.h */; };
 		ECCD88BD1185C99900873F3C /* MooseALSampleTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD88AC1185C99900873F3C /* MooseALSampleTypes.cpp */; };
 		ECCD88BE1185C99900873F3C /* MooseALSampleTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD88AD1185C99900873F3C /* MooseALSampleTypes.h */; };
@@ -213,6 +214,7 @@
 		ECCD8AA41185D28000873F3C /* MooseDefaultEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECCD8AA11185D28000873F3C /* MooseDefaultEntities.cpp */; };
 		ECCD8AA51185D28000873F3C /* MooseDefaultEntities.h in Headers */ = {isa = PBXBuildFile; fileRef = ECCD8AA21185D28000873F3C /* MooseDefaultEntities.h */; };
 		ECDD4FD011DB3A800064BB01 /* MooseCollisionEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = ECDD4FCE11DB3A800064BB01 /* MooseCollisionEvent.h */; };
+		ECE2B33F1241387F00A5F5D0 /* MooseDirectionalLight.mm in Sources */ = {isa = PBXBuildFile; fileRef = ECE2B33E1241387F00A5F5D0 /* MooseDirectionalLight.mm */; };
 		ECE414FC11D77341006C0318 /* MooseUpdateable.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE414FB11D77341006C0318 /* MooseUpdateable.h */; };
 		ECE7539311E3C6710069E989 /* MooseEventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE7539111E3C6710069E989 /* MooseEventQueue.h */; };
 		ECE7539411E3C6710069E989 /* MooseEventQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECE7539211E3C6710069E989 /* MooseEventQueue.cpp */; };
@@ -245,6 +247,7 @@
 		EC19A7F211931D68002D9374 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		EC88533411A3C931009D8112 /* MoosePolygonOffset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoosePolygonOffset.h; sourceTree = "<group>"; };
 		EC88533511A3C931009D8112 /* MoosePolygonOffset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MoosePolygonOffset.cpp; sourceTree = "<group>"; };
+		ECC02D9C122EE63B002BB39A /* MooseClearBuffers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseClearBuffers.h; sourceTree = "<group>"; };
 		ECCD88AB1185C99900873F3C /* MooseALObjectArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseALObjectArray.h; sourceTree = "<group>"; };
 		ECCD88AC1185C99900873F3C /* MooseALSampleTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseALSampleTypes.cpp; sourceTree = "<group>"; };
 		ECCD88AD1185C99900873F3C /* MooseALSampleTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseALSampleTypes.h; sourceTree = "<group>"; };
@@ -429,6 +432,7 @@
 		ECCD8AA11185D28000873F3C /* MooseDefaultEntities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MooseDefaultEntities.cpp; path = ../src/Moose/MooseDefaultEntities.cpp; sourceTree = SOURCE_ROOT; };
 		ECCD8AA21185D28000873F3C /* MooseDefaultEntities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MooseDefaultEntities.h; path = ../src/Moose/MooseDefaultEntities.h; sourceTree = SOURCE_ROOT; };
 		ECDD4FCE11DB3A800064BB01 /* MooseCollisionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseCollisionEvent.h; sourceTree = "<group>"; };
+		ECE2B33E1241387F00A5F5D0 /* MooseDirectionalLight.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MooseDirectionalLight.mm; sourceTree = "<group>"; };
 		ECE414FB11D77341006C0318 /* MooseUpdateable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseUpdateable.h; sourceTree = "<group>"; };
 		ECE7539111E3C6710069E989 /* MooseEventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MooseEventQueue.h; sourceTree = "<group>"; };
 		ECE7539211E3C6710069E989 /* MooseEventQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MooseEventQueue.cpp; sourceTree = "<group>"; };
@@ -603,6 +607,7 @@
 		ECCD892C1185C9D700873F3C /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				ECC02D9C122EE63B002BB39A /* MooseClearBuffers.h */,
 				EC121F4A11BADEB6003C94EE /* MooseBoxRenderable.cpp */,
 				EC121F4B11BADEB6003C94EE /* MooseBoxRenderable.h */,
 				EC121F4C11BADEB6003C94EE /* MooseSphereRenderable.cpp */,
@@ -619,6 +624,7 @@
 				ECCD89341185C9D700873F3C /* MooseDDSImage.cpp */,
 				ECCD89351185C9D700873F3C /* MooseDDSImage.h */,
 				ECCD89371185C9D700873F3C /* MooseDirectionalLight.h */,
+				ECE2B33E1241387F00A5F5D0 /* MooseDirectionalLight.mm */,
 				ECCD893A1185C9D700873F3C /* MooseFrameBuffer.cpp */,
 				ECCD893B1185C9D700873F3C /* MooseFrameBuffer.h */,
 				ECCD893C1185C9D700873F3C /* MooseFrustum.cpp */,
@@ -919,6 +925,7 @@
 				ECE414FC11D77341006C0318 /* MooseUpdateable.h in Headers */,
 				ECDD4FD011DB3A800064BB01 /* MooseCollisionEvent.h in Headers */,
 				ECE7539311E3C6710069E989 /* MooseEventQueue.h in Headers */,
+				ECC02D9D122EE63B002BB39A /* MooseClearBuffers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1035,6 +1042,7 @@
 				EC121F5011BADEB7003C94EE /* MooseSphereRenderable.cpp in Sources */,
 				EC121F8311BAE317003C94EE /* MooseLineRenderable.cpp in Sources */,
 				ECE7539411E3C6710069E989 /* MooseEventQueue.cpp in Sources */,
+				ECE2B33F1241387F00A5F5D0 /* MooseDirectionalLight.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

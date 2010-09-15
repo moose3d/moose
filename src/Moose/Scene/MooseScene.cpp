@@ -11,6 +11,7 @@
 #include <MooseVector2.h>
 #include "MooseCollisionEvent.h"
 #include <iostream>
+#include <algorithm>
 ///////////////////////////////////////////////////////////////////////////////
 using namespace Moose::Graphics;
 using namespace Moose::Scene;
@@ -28,9 +29,14 @@ using namespace std;
 class CGameObjectSorter
 {
 public:
-	inline void Sort( std::list< CRenderable * > & list )
+    bool operator()( CRenderable * pFirst, CRenderable *pSecond ) 
+    {
+        return (pFirst->GetRenderState().GetRenderLayer() < pSecond->GetRenderState().GetRenderLayer());
+    }
+    inline void Sort( std::list< CRenderable * > & list )
   {
-    std::list< CRenderable * >::iterator it = list.begin();
+      list.sort(*this);
+    /*std::list< CRenderable * >::iterator it = list.begin();
     std::list< CRenderable * > listNew;
     std::list< CRenderable * > listLights;
     while( it != list.end())
@@ -54,7 +60,7 @@ public:
 
     list.swap(listNew);
     listNew.clear();
-    listLights.clear();
+    listLights.clear();*/
   }
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -319,16 +325,18 @@ Moose::Scene::CScene::Render( COglRenderer & renderer )
         if ( c.IsEnabled() == false ) continue;
 
 		prop.GetRenderQueue().Clear();
+        CollectStaticRenderables( prop.GetRenderQueue());
 		CollectRenderables( c, prop.GetGameObjectList(), prop.GetRenderQueue() );
 		AssignLightsToRenderables( prop.GetActiveLights(), prop.GetRenderQueue() );
-		prop.GetRenderQueue().Sort( game_object_sorter );
+		
+        prop.GetRenderQueue().Sort( game_object_sorter );
 
 		renderer.CommitCamera( c );
 
-		m_PreRenderQueue.Render( renderer );          // before scene objects
+		m_StaticQueue.Render( renderer );          // before scene objects
 		prop.GetRenderQueue().Render( renderer );     // scene objects
-		m_PostObjectRenderQueue.Render( renderer );   // after scene objects
-
+		//prop.GetTransparentQueue().Render( renderer );     // transp. scene objects
+	
 		if ( prop.IsColliderRendering() ) // For collider rendering.
 		{
 			renderer.CommitShader( NULL );
@@ -341,9 +349,9 @@ Moose::Scene::CScene::Render( COglRenderer & renderer )
 		}
 		//g_Log << "Num of renderables: " << prop.GetRenderQueue().GetObjectList().size() << endl;
 	}
-	m_PreGUIRenderQueue.Render( renderer );       // before GUI
-	                                                  // GUI
-	m_PostGUIRenderQueue.Render( renderer );      // After GUI
+    //m_OverlayQueue.Render( renderer );   // overlay objects
+    //m_GUIQueue.Render( renderer );   // GUI objects
+
 
 	renderer.Finalize();
 	// OpenGL context may be created also via other method.
@@ -460,6 +468,14 @@ Moose::Scene::CScene::CollectRenderables( CCamera & camera, GameObjectList & gam
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
+void
+Moose::Scene::CScene::CollectStaticRenderables( CRenderQueue<CRenderable *> &queue )
+{
+    std::copy( m_StaticQueue.GetObjectList().begin(), 
+               m_StaticQueue.GetObjectList().end(), 
+              std::back_inserter(queue.GetObjectList()));
+}
+///////////////////////////////////////////////////////////////////////////////
 bool
 Moose::Scene::CScene::AddCamera( const std::string & name, Moose::Scene::CCameraObject *pCamera )
 {
@@ -496,77 +512,23 @@ Moose::Scene::CScene::RemoveCamera( const std::string & name )
 }
 ///////////////////////////////////////////////////////////////////////////////
 RenderQueue &
-Moose::Scene::CScene::GetPreRenderQueue()
+Moose::Scene::CScene::GetStaticRenderQueue()
 {
-	return m_PreRenderQueue;
-}
-///////////////////////////////////////////////////////////////////////////////
-RenderQueue &
-Moose::Scene::CScene::GetPostRenderQueue()
-{
-	return m_PostObjectRenderQueue;
-}
-///////////////////////////////////////////////////////////////////////////////
-RenderQueue &
-Moose::Scene::CScene::GetPreGUIRenderQueue()
-{
-	return m_PreGUIRenderQueue;
-}
-///////////////////////////////////////////////////////////////////////////////
-RenderQueue &
-Moose::Scene::CScene::GetPostGUIRenderQueue()
-{
-	return m_PostGUIRenderQueue;
+	return m_StaticQueue;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
-Moose::Scene::CScene::PushPreRenderQueue( Moose::Graphics::CRenderable *pRenderable )
+Moose::Scene::CScene::PushToRenderQueue( Moose::Graphics::CRenderable *pRenderable )
 {
-	GetPreRenderQueue().GetObjectList().push_back(pRenderable);
+	m_StaticQueue.GetObjectList().push_back(pRenderable);
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
-Moose::Scene::CScene::PushPostRenderQueue( Moose::Graphics::CRenderable *pRenderable )
+Moose::Scene::CScene::RemoveFromRenderQueue( Moose::Graphics::CRenderable *pRenderable )
 {
-	GetPostRenderQueue().GetObjectList().push_back(pRenderable);
+	m_StaticQueue.GetObjectList().remove(pRenderable);
 }
 ///////////////////////////////////////////////////////////////////////////////
-void
-Moose::Scene::CScene::PushPreGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable )
-{
-	GetPreGUIRenderQueue().GetObjectList().push_back(pRenderable);
-}
-///////////////////////////////////////////////////////////////////////////////
-void
-Moose::Scene::CScene::PushPostGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable )
-{
-	GetPostGUIRenderQueue().GetObjectList().push_back(pRenderable);
-}
-///////////////////////////////////////////////////////////////////////////////
-void
-Moose::Scene::CScene::RemovePreRenderQueue( Moose::Graphics::CRenderable *pRenderable )
-{
-	GetPreRenderQueue().GetObjectList().remove(pRenderable);
-}
-///////////////////////////////////////////////////////////////////////////////
-void
-Moose::Scene::CScene::RemovePostRenderQueue( Moose::Graphics::CRenderable *pRenderable )
-{
-	GetPostRenderQueue().GetObjectList().remove(pRenderable);
-}
-///////////////////////////////////////////////////////////////////////////////
-void
-Moose::Scene::CScene::RemovePreGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable )
-{
-	GetPreGUIRenderQueue().GetObjectList().remove(pRenderable);
-}
-///////////////////////////////////////////////////////////////////////////////
-void
-Moose::Scene::CScene::RemovePostGUIRenderQueue( Moose::Graphics::CRenderable *pRenderable )
-{
-	GetPostGUIRenderQueue().GetObjectList().remove(pRenderable);
-}
-////////////////////////////////////////////////////////////////////////////////
 void
 Moose::Scene::CScene::UpdateColliders()
 {
