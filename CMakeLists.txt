@@ -3,6 +3,10 @@ project(Moose)
 
 add_definitions("-Wall -O2")
 
+SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to
+install directories")
+SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix
+prepended to install directories" FORCE)
 
 
 
