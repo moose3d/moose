@@ -33,7 +33,7 @@ public:
     {
         return (pFirst->GetRenderState().GetRenderLayer() < pSecond->GetRenderState().GetRenderLayer());
     }
-    inline void Sort( std::list< CRenderable * > & list )
+  inline void operator()( std::list< CRenderable * > & list )
   {
       list.sort(*this);
     /*std::list< CRenderable * >::iterator it = list.begin();

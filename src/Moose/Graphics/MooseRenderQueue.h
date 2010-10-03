@@ -38,7 +38,7 @@ namespace Moose
       void Clear();
       ////////////////////
       /// Performs sorting using adapter class.
-      template<class ADAPTER_CLASS> void Sort( ADAPTER_CLASS & rAdapter );
+      template<class SORTER> void Sort( SORTER & rAdapter );
     };
   }
 }
@@ -81,11 +81,11 @@ Moose::Graphics::CRenderQueue<TYPE>::Render( Moose::Graphics::COglRenderer &rend
 }
 /////////////////////////////////////////////////////////////////
 template<typename TYPE>
-template<class ADAPTER_CLASS> 
-void 
-Moose::Graphics::CRenderQueue<TYPE>::Sort( ADAPTER_CLASS &rAdapter )
+template<class SORTER> 
+inline void 
+Moose::Graphics::CRenderQueue<TYPE>::Sort( SORTER &rS )
 {
-  rAdapter.Sort( m_lstObjects );
+  rS( m_lstObjects );
 }
 /////////////////////////////////////////////////////////////////
 
