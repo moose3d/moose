@@ -37,21 +37,21 @@ TEST(CCamera_SetFieldOfView)
 /////////////////////////////////////////////////////////////////
 TEST(CCamera_SetViewport)
 {
-  int aViewport[4] = { 1, 2, 43, 22 };
-  g_Camera.SetViewport( aViewport[0], aViewport[1], aViewport[2], aViewport[3]);
-  CHECK_ARRAY_EQUAL( aViewport, g_Camera.GetViewport(), 4 );
+  Viewport_t aViewport = { 1, 2, 43, 22 };
+  g_Camera.SetViewport( aViewport);
+  CHECK_EQUAL( aViewport, g_Camera.GetViewport() );
 
-  int aViewport2[4] = { 0,0,0,0 };
-  g_Camera.SetViewport( aViewport2[0], aViewport2[1], aViewport2[2], aViewport2[3]);
-  CHECK_ARRAY_EQUAL( aViewport2, g_Camera.GetViewport(), 4 );
+  Viewport_t aViewport2 = { 0,0,0,0 };
+  g_Camera.SetViewport( aViewport2);
+  CHECK_EQUAL( aViewport2, g_Camera.GetViewport() );
 
-  int aViewport3[4] = { -10,-20,-30,-40 };
-  g_Camera.SetViewport( aViewport3[0], aViewport3[1], aViewport3[2], aViewport3[3]);
-  CHECK_ARRAY_EQUAL( aViewport3, g_Camera.GetViewport(), 4 );
+  Viewport_t aViewport3 = { -10,-20,-30,-40 };
+  g_Camera.SetViewport( aViewport3);
+  CHECK_EQUAL( aViewport3, g_Camera.GetViewport() );
 
-  int aViewport4[4] = { -10,20,30,-40 };
-  g_Camera.SetViewport( aViewport4[0], aViewport4[1], aViewport4[2], aViewport4[3]);
-  CHECK_ARRAY_EQUAL( aViewport4, g_Camera.GetViewport(), 4 );
+  Viewport_t aViewport4 = { -10,20,30,-40 };
+  g_Camera.SetViewport( aViewport4);
+  CHECK_EQUAL( aViewport4, g_Camera.GetViewport() );
 
 }
 /////////////////////////////////////////////////////////////////
