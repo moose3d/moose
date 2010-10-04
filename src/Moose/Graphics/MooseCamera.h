@@ -23,6 +23,17 @@ namespace Moose
       int y;
       int width;
       int height;
+
+      bool operator==( const Moose::Graphics::Viewport_t & o ) const
+      {
+        return (x == o.x) && (y == o.y) &&
+        (width == o.width) && (height == o.height);
+      }
+      friend std::ostream & operator<<( std::ostream & os, const Moose::Graphics::Viewport_t & o )
+      {
+        os << o.x << ", " << o.y << ", " << o.width << ", " << o.height;
+        return os;
+      }
     };
     /////////////////////////////////////////////////////////////////
     /// Camera class.
@@ -88,6 +99,10 @@ namespace Moose
       /// \param iWidth Width of viewport.
       /// \param iHeight Height of viewport.
       void SetViewport( int iX, int iY, int iWidth, int iHeight);
+      ////////////////////
+      /// Sets viewport for this camera.
+      /// \param rViewport Viewport struct.
+      void SetViewport( const Moose::Graphics::Viewport_t & rViewport);
       ////////////////////
       /// Sets near clipping plane.
       /// \param fNearClipping Near clipping plane distance

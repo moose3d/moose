@@ -71,6 +71,13 @@ Moose::Graphics::CCamera::SetViewport( int iX, int iY, int iWidth, int iHeight)
 }
 /////////////////////////////////////////////////////////////////
 void 
+Moose::Graphics::CCamera::SetViewport( const Moose::Graphics::Viewport_t & rViewport )
+{
+  m_aViewport = rViewport;
+  SetProjectionChanged(1);
+}
+/////////////////////////////////////////////////////////////////
+void 
 Moose::Graphics::CCamera::SetNearClipping(float fNearClipping)
 {
 
