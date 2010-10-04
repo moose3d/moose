@@ -37,12 +37,6 @@ Moose::Graphics::CRenderState::SetRenderLayer( unsigned short kLayer )
     m_iRenderLayer = kLayer;
 }
 ///////////////////////////////////////////////////////////////////////////////////
-unsigned short
-Moose::Graphics::CRenderState::GetRenderLayer() const
-{
-    return m_iRenderLayer;
-}
-///////////////////////////////////////////////////////////////////////////////////
 void
 Moose::Graphics::CRenderState::ParseFrom( Moose::Graphics::NameValueMap & map )
 {
