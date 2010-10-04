@@ -6,72 +6,101 @@
 #include <cmath>
 #include <iostream>
 #include <cassert>
+#include <vector>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
   namespace Core
   {
-	 ////////////////////////
+    ////////////////////
+    /// Example key retriever for int data.
+    struct RadixIntKeyAccessorOp
+    {
+      int operator()( int & object )
+      {
+        return object;
+      }
+    };
+    ////////////////////////
     /// Class for sorting stuff using radix sort.
-	template < class TYPE, size_t KEY_BITS = 4, size_t KEY_BUCKETS = 16>
+    /// TYPE is the template parameter for actual type of objects to be sorted.
+    /// KEYACCESSOR is functor that accepts TYPE reference and returns an (short) integer. Override with your own.
+    /// KEY_BITS is number of bits to be used from key for one pass. 
+    /// KEY_BUCKETS is number of buckets reserved (related to KEY_BITS)
+	template < class TYPE, class KEYACCESSOR = RadixIntKeyAccessorOp, size_t KEY_BITS = 8, size_t KEY_BUCKETS = 256>
     class CRadixSorter
     {
+    protected:
+      size_t            m_nInstances[KEY_BUCKETS];
+      unsigned short    mask;
+      KEYACCESSOR      m_KeyRetriever;
     public:
-      size_t m_nInstances[KEY_BUCKETS];
-      int mask;
 
       CRadixSorter() : mask( (1 << KEY_BITS)-1 )
       {
-
+        
       }
-      void Sort( TYPE *pData, TYPE *pTmpArray, const size_t SIZE )
+      
+      void Sort( std::vector<TYPE> *pData,  std::vector<TYPE> * pTmpArray, const size_t SIZE )
       {
+        for( size_t b=0;b<2;++b)
+        {
+          unsigned int shift = KEY_BITS * b;
+          mask = ((1 << KEY_BITS)-1) << shift;
+          // for readability
+          std::vector<TYPE> &vecData = *pData;
+          std::vector<TYPE> &vecTmp = *pTmpArray;
+          // zero instance counts
+          for( size_t t=0;t<KEY_BUCKETS;++t)   m_nInstances[t] = 0;
 
-	for( size_t b=0;b<KEY_BUCKETS;++b)
-	{
-	  // zero instance counts
-	  for( size_t t=0;t<KEY_BUCKETS;++t)   m_nInstances[t] = 0;
+          // count instances
+          for( size_t i=0;i<SIZE;i++)
+            ++m_nInstances[ (m_KeyRetriever(vecData[i]) & mask) >> shift ];
 
-	  // count instances
-	  for( size_t i=0;i<SIZE;i++)
-	    ++m_nInstances[GetKey( pData[i],b)];
+          // zero-start sum
+          int tmp = m_nInstances[0]+m_nInstances[1];
+          int sum = tmp;
+          m_nInstances[1] = m_nInstances[0];
+          m_nInstances[0] = 0;
 
-	  // zero-start sum
-	  int tmp = m_nInstances[0]+m_nInstances[1];
-	  int sum = tmp;
-	  m_nInstances[1] = m_nInstances[0];
-	  m_nInstances[0] = 0;
-	  for( size_t i=2;i<KEY_BUCKETS;i++)
-	  {
-	    tmp = m_nInstances[i];
-	    m_nInstances[i] = sum;
-	    sum += tmp;
-	  }
+          for( size_t i=2;i<KEY_BUCKETS;i++)
+          {
+            tmp = m_nInstances[i];
+            m_nInstances[i] = sum;
+            sum += tmp;
+          }
 
+          for( size_t i=0;i<SIZE;i++)
+          {
+            // key value for or element
+            int key = (m_KeyRetriever(vecData[i]) & mask) >> shift;
+            // in which index should it go
+            int idx = m_nInstances[key];
+            // store it to that index
+            vecTmp[ idx ] = vecData[i];
+            // increase index value so next element will be properly placed
+            ++m_nInstances[key];
+          }
+          // swap arrays
+          std::swap( pData, pTmpArray );
+        }
 
-	  for( size_t i=0;i<SIZE;i++)
-	  {
-	    pTmpArray[m_nInstances[GetKey( pData[i],b)]] = pData[i];
-	    ++m_nInstances[GetKey( pData[i],b)];
-	  }
-	  // swap arrays
-	  std::swap( pData, pTmpArray );
-	}
-	// if there were odd number of key buckets, swap arrays for final time.
-	if ( (KEY_BUCKETS % 2) != 0)
-	{
-	  // set elements into proper locations
-	  for( size_t i=0;i<SIZE;i++)
-	  {
-	    pData[i] = pTmpArray[i];
-	  }
-	}
+        // if there were odd number of key buckets, swap arrays for final time.
+        if ( (KEY_BUCKETS % 2) != 0)
+        {
+          // set elements into proper locations
+          for( size_t i=0;i<SIZE;i++)
+          {
+            pData[i] = pTmpArray[i];
+          }
+        }
+
       }
       /// nWhich : 0 .. (n-1).
-      inline TYPE GetKey( TYPE iValue, unsigned int nWhich )
+      unsigned short GetKey( unsigned short iValue, unsigned int nWhich )
       {
-	int shift = (KEY_BITS*nWhich);
-	return ((iValue & (mask << shift )) >> shift);
+        unsigned int shift = (KEY_BITS*nWhich);
+        return ((iValue & (mask << shift )) >> shift);
       }
     };
 
