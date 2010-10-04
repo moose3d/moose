@@ -44,44 +44,44 @@ TEST( CollectObjects )
   CHECK_EQUAL( 3, lstObjects.size());
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::CTagged::NOT_USED);
+  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::NOT_USED);
   CHECK_EQUAL( 3, lstObjects.size());
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::CTagged::NOT_USED);
+  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::NOT_USED);
   CHECK_EQUAL( 3, lstObjects.size());
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::CTagged::EQUAL);
+  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::EQUAL);
   CHECK_EQUAL( 1, lstObjects.size());
   CHECK( lstObjects.front() == pTmp );
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::CTagged::NOT_EQUAL);
+  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::NOT_EQUAL);
   CHECK_EQUAL( 2, lstObjects.size());
 
 
   // reverse comparison
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::CTagged::NOT_EQUAL);
+  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::NOT_EQUAL);
   CHECK_EQUAL( 2, lstObjects.size());
 
 
   pTmp->SetTag( Light | Ship );
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::CTagged::AND);
+  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::AND);
   CHECK_EQUAL( 2, lstObjects.size());
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::CTagged::AND);
+  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::AND);
   CHECK_EQUAL( 1, lstObjects.size());
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::CTagged::NOT_AND);
+  pOctree->CollectObjects( cullSphere, lstObjects, Light, Moose::Core::NOT_AND);
   CHECK_EQUAL( 2, lstObjects.size());
 
   lstObjects.clear();
-  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::CTagged::NOT_AND);
+  pOctree->CollectObjects( cullSphere, lstObjects, Ship, Moose::Core::NOT_AND);
   CHECK_EQUAL( 1, lstObjects.size());
 
 }
