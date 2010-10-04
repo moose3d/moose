@@ -156,8 +156,12 @@ namespace Moose
     /// \returns Reference to stream.
     friend std::ostream & operator<< ( std::ostream & stream, const Moose::Core::CTimeStamp & tTimeStamp )
     {
-	stream << tTimeStamp.GetSeconds() << "." << tTimeStamp.GetMilliSeconds();
-	return stream;
+      stream << tTimeStamp.GetSeconds() << ".";
+
+      if ( tTimeStamp.GetMilliSeconds() < 100 ) stream << "0";
+      if ( tTimeStamp.GetMilliSeconds() < 10) stream << "0";
+      stream << tTimeStamp.GetMilliSeconds();
+      return stream;
     }
 
   };
