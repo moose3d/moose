@@ -1,12 +1,14 @@
 cmake_minimum_required( VERSION 2.6)
 project(Moose)
 
-add_definitions("-Wall -O2")
+
+add_definitions("-Wall -O2 -fPIC")
 
 SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to
 install directories")
 SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix
 prepended to install directories" FORCE)
+
 
 
 
@@ -68,6 +70,7 @@ add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Scene )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Spatial )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Util )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Volume )
+add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose )
 
 get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
 add_library( Moose STATIC ${Moose_SRCS})
@@ -95,7 +98,11 @@ FILE(GLOB files
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Spatial/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Util/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h")
+
 install( FILES ${files} DESTINATION include/Moose)
+
+SET( EXTERNAL_LIBS "-lMoose -lGLee -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL")
+SET( INTERNAL_LIBS libMoose.a -lGLee -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)
 
 #set (Moose_VERSION_MAJOR 1)
 #set (Moose_VERSION_MINOR 0)
@@ -103,9 +110,50 @@ set (prefix ${CMAKE_INSTALL_PREFIX})
 set (exec_prefix "\${prefix}")
 set (libdir "\${exec_prefix}/lib")
 set (includedir "\${prefix}/include")
-
+set (libraries "${EXTERNAL_LIBS}")
 # Optional cmake config file
 configure_file ( 
   "moose.pc.in"
   "moose.pc"
 )
+
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
+SET (TCL_MODULE		MooseTCL)
+SET (INTERFACE_FILES	Moose.i)
+#SET (SRC_FILES		Moose_wrap.cxx )
+FIND_PACKAGE(SWIG REQUIRED)
+INCLUDE(${SWIG_USE_FILE})
+
+#Look for tcl
+
+INCLUDE_DIRECTORIES(${TCL_INCLUDE_PATH})
+FIND_LIBRARY(TCL_LIBRARY NAMES tcl tcl84 tcl85 PATHS  /usr/lib /usr/local/lib)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+SET(CMAKE_SWIG_FLAGS -c++ -DMOOSE_API="" -pkgversion 0.9)
+SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CMAKE_SWIG_FLAGS "-includeall ")
+#SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} ${SRC_FILES})
+SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} )
+
+SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} ${INTERNAL_LIBS})
+SET_TARGET_PROPERTIES( ${TCL_MODULE} 
+  PROPERTIES
+  OUTPUT_NAME Moose
+  PREFIX ""
+  )
+FILE(GLOB tclFiles 
+  "${CMAKE_CURRENT_BINARY_DIR}/Moose.so"
+  "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
+)
+install( FILES ${tclFiles} DESTINATION lib/Moose )
+# Generate pkgIndex.tcl
+ADD_CUSTOM_COMMAND(
+   TARGET ${TCL_MODULE}
+   POST_BUILD 
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   COMMENT "Generating pkgIndex.tcl"
+   COMMAND echo pkg_mkIndex  . Moose.so|tclsh
+ )
