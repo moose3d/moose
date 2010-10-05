@@ -23,7 +23,7 @@ namespace Moose
       int y;
       int width;
       int height;
-
+#if ! defined(SWIG)
       bool operator==( const Moose::Graphics::Viewport_t & o ) const
       {
         return (x == o.x) && (y == o.y) &&
@@ -34,6 +34,7 @@ namespace Moose
         os << o.x << ", " << o.y << ", " << o.width << ", " << o.height;
         return os;
       }
+#endif
     };
     /////////////////////////////////////////////////////////////////
     /// Camera class.
