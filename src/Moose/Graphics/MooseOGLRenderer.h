@@ -410,6 +410,12 @@ namespace Moose
       ////////////////////
       /// Creates new cube texture from TGA images.
       /// \param szFiles texture filenames for tga image.
+      /// [0] Negative X (right)
+      /// [1] Positive X (left)
+      /// [2] Positive Y (top)
+      /// [3] Negative Y (bottom)
+      /// [4] Negative Z (front)
+      /// [5] Positive Z (back)
       /// \returns Pointer to COglTexture.
       Moose::Graphics::COglTexture * CreateCubeTexture( const char * szFiles[6] );
       ////////////////////
