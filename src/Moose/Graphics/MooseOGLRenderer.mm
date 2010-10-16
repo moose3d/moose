@@ -159,16 +159,16 @@ Moose::Graphics::COglRendererFeatures::COglRendererFeatures()
     
 #else
   // Check for required extensions:
-  m_bARB_vertex_program  = GLEE_ARB_vertex_program;
-  m_bARB_vertex_shader   = GLEE_ARB_vertex_shader;
-  m_bARB_fragment_shader = GLEE_ARB_fragment_shader;
-  m_bARB_shader_objects  = GLEE_ARB_shader_objects;
-  m_bEXT_vertex_array    = GLEE_EXT_vertex_array;
-  m_bARB_multitexture    = GLEE_ARB_multitexture;
+  m_bARB_vertex_program  = GLEW_ARB_vertex_program;
+  m_bARB_vertex_shader   = GLEW_ARB_vertex_shader;
+  m_bARB_fragment_shader = GLEW_ARB_fragment_shader;
+  m_bARB_shader_objects  = GLEW_ARB_shader_objects;
+  m_bEXT_vertex_array    = GLEW_EXT_vertex_array;
+  m_bARB_multitexture    = GLEW_ARB_multitexture;
 
-  m_bARB_vertex_buffer_object     = GLEE_ARB_vertex_buffer_object;
-  m_bEXT_framebuffer_object       = GLEE_EXT_framebuffer_object;
-  m_bEXT_texture_compression_s3tc = GLEE_EXT_texture_compression_s3tc;
+  m_bARB_vertex_buffer_object     = GLEW_ARB_vertex_buffer_object;
+  m_bEXT_framebuffer_object       = GLEW_EXT_framebuffer_object;
+  m_bEXT_texture_compression_s3tc = GLEW_EXT_texture_compression_s3tc;
     glGetIntegerv( GL_MAX_LIGHTS,            &m_iMaxLights );
     glGetIntegerv( GL_MAX_ELEMENTS_VERTICES, &m_iMaxElementsVertices);
     glGetIntegerv( GL_MAX_ELEMENTS_INDICES,  &m_iMaxElementsIndices);
@@ -375,6 +375,11 @@ Moose::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NUL
                                                 ,  m_pQuadric(NULL)
 #endif
 {
+  GLenum status = glewInit();
+  if ( status != GLEW_OK  )
+  {
+    g_Error << "COglRenderer: Error initializing GLEW: " << glewGetErrorString(status)<< "\n";
+  }
 
 }
 /////////////////////////////////////////////////////////////////
@@ -422,6 +427,10 @@ Moose::Graphics::COglRenderer::Finalize()
 void
 Moose::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
+
+  return;
+
+
   // implemantation does not take into account if VBO is not supported.
 
   switch( pBuffer->GetType() )
@@ -653,6 +662,7 @@ Moose::Graphics::COglRenderer::CommitVertexDescriptor( CVertexDescriptor *pBuffe
 void
 Moose::Graphics::COglRenderer::RollbackVertexDescriptor( CVertexDescriptor *pBuffer, unsigned int nId )
 {
+  return;
   // implemantation does not take into account if VBO is not supported.
 
   switch( pBuffer->GetType() )
@@ -753,18 +763,18 @@ Moose::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
 
   if ( true || !GetRenderState().IsCurrentIndices( pIndexBuffer ) )
   {
-#if !defined(MOOSE_APPLE_IPHONE)      
+    /*#if !defined(MOOSE_APPLE_IPHONE)      
     if ( pIndices == 0 )
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, pIndexBuffer->GetCache());
     else
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-#else
+      #else*/
       if ( pIndices == 0 )
           glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer->GetCache());
       else
           glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0);
       
-#endif
+      //#endif
       // store current indexbuffer pointer to renderstate
     GetRenderState().SetCurrentIndices(pIndexBuffer);
   }
@@ -811,6 +821,7 @@ Moose::Graphics::COglRenderer::CommitPrimitive( Moose::Graphics::PRIMITIVE_TYPE 
 void
 Moose::Graphics::COglRenderer::CommitVertex( const Moose::Spatial::CVertex & rVertex, int iIgnoreFlags )
 {
+  return;
   // Set multitexture coordinates
 
   if ( !(iIgnoreFlags & VERTEX_COMP_TEXCOORD) )
@@ -832,6 +843,7 @@ Moose::Graphics::COglRenderer::CommitVertex( const Moose::Spatial::CVertex & rVe
 void
 Moose::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
 {
+  return;
   switch ( tType)
   {
   case CLIENT_STATE_VERTEX_ARRAY:
@@ -861,6 +873,7 @@ Moose::Graphics::COglRenderer::DisableClientState( CLIENT_STATE_TYPE tType )
 void
 Moose::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 {
+  return;
   switch ( tType)
   {
   case CLIENT_STATE_VERTEX_ARRAY:
@@ -1281,6 +1294,23 @@ Moose::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename,
 }
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::COglTexture *
+Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFileNegX,
+                                                  const char * szFilePosX,
+                                                  const char * szFilePosY,
+                                                  const char * szFileNegY,
+                                                  const char * szFileNegZ,
+                                                  const char * szFilePosZ )
+{
+  const char *szArray[6] = { szFileNegX,
+                             szFilePosX,
+                             szFilePosY,
+                             szFileNegY,
+                             szFileNegZ,
+                             szFilePosZ };
+  return CreateCubeTexture( szArray );
+}
+/////////////////////////////////////////////////////////////////
+Moose::Graphics::COglTexture *
 Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
 {
 #define CLEANUP() { CGContextRelease(cgContext); free(data); CGColorSpaceRelease(colorSpace); return pTexture; }
@@ -1586,16 +1616,16 @@ Moose::Graphics::COglRenderer::CommitCamera( CCamera &camera )
   Viewport_t & rViewport = camera.GetViewport();
   glViewport(rViewport.x, rViewport.y, rViewport.width, rViewport.height);
 
-#if !defined(MOOSE_APPLE_IPHONE)
+ #if !defined(MOOSE_APPLE_IPHONE)
   // these need to be fed to shaders.
-  glMatrixMode( GL_PROJECTION );
-  glLoadIdentity();
-  glMultTransposeMatrixf( camera.GetProjectionMatrix().GetArray());
+  // glMatrixMode( GL_PROJECTION );
+  //glLoadIdentity();
+  //glMultTransposeMatrixf( camera.GetProjectionMatrix().GetArray());
   ////////////////////
   /// Set up proper position.
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glMultTransposeMatrixf( camera.GetViewMatrix().GetArray());
+  //glMatrixMode(GL_MODELVIEW);
+  //glLoadIdentity();
+  //glMultTransposeMatrixf( camera.GetViewMatrix().GetArray());
 #endif
 
 }
@@ -2034,28 +2064,29 @@ Moose::Graphics::COglRenderer::CommitVertexAttrib( Moose::Graphics::CShader &sha
 /// Sets diffuse, ambient and specular values of a light.
 inline void CommitLightColors( const CLightBase & light, GLenum iLightID )
 {
-	float aTempVector[4];
+
 #if !defined(MOOSE_APPLE_IPHONE)
-	// Set diffuse RGBA intensity
-	aTempVector[0] = (float)light.GetDiffuseColor()[0]/255.0f;
-	aTempVector[1] = (float)light.GetDiffuseColor()[1]/255.0f;
-	aTempVector[2] = (float)light.GetDiffuseColor()[2]/255.0f;
-	aTempVector[3] = (float)light.GetDiffuseColor()[3]/255.0f;
-	glLightfv(iLightID, GL_DIFFUSE, aTempVector);
+  //float aTempVector[4];
+	// // Set diffuse RGBA intensity
+   	// aTempVector[0] = (float)light.GetDiffuseColor()[0]/255.0f;
+	// aTempVector[1] = (float)light.GetDiffuseColor()[1]/255.0f;
+	// aTempVector[2] = (float)light.GetDiffuseColor()[2]/255.0f;
+	// aTempVector[3] = (float)light.GetDiffuseColor()[3]/255.0f;
+	// glLightfv(iLightID, GL_DIFFUSE, aTempVector);
 
-	// Set ambient RGBA intensity
-	aTempVector[0] = (float)light.GetAmbientColor()[0]/255.0f;
-	aTempVector[1] = (float)light.GetAmbientColor()[1]/255.0f;
-	aTempVector[2] = (float)light.GetAmbientColor()[2]/255.0f;
-	aTempVector[3] = (float)light.GetAmbientColor()[3]/255.0f;
-	glLightfv(iLightID, GL_AMBIENT, aTempVector);
+	// // Set ambient RGBA intensity
+	// aTempVector[0] = (float)light.GetAmbientColor()[0]/255.0f;
+	// aTempVector[1] = (float)light.GetAmbientColor()[1]/255.0f;
+	// aTempVector[2] = (float)light.GetAmbientColor()[2]/255.0f;
+	// aTempVector[3] = (float)light.GetAmbientColor()[3]/255.0f;
+	// glLightfv(iLightID, GL_AMBIENT, aTempVector);
 
-	// Set specular RGBA intensity
-	aTempVector[0] = (float)light.GetSpecularColor()[0]/255.0f;
-	aTempVector[1] = (float)light.GetSpecularColor()[1]/255.0f;
-	aTempVector[2] = (float)light.GetSpecularColor()[2]/255.0f;
-	aTempVector[3] = (float)light.GetSpecularColor()[3]/255.0f;
-	glLightfv(iLightID, GL_SPECULAR, aTempVector);
+	// // Set specular RGBA intensity
+	// aTempVector[0] = (float)light.GetSpecularColor()[0]/255.0f;
+	// aTempVector[1] = (float)light.GetSpecularColor()[1]/255.0f;
+	// aTempVector[2] = (float)light.GetSpecularColor()[2]/255.0f;
+	// aTempVector[3] = (float)light.GetSpecularColor()[3]/255.0f;
+	// glLightfv(iLightID, GL_SPECULAR, aTempVector);
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2063,25 +2094,25 @@ void
 Moose::Graphics::COglRenderer::CommitLight( const CDirectionalLight &light, unsigned int nLightId)
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  GLenum iLightID = GL_LIGHT0+nLightId;
-  glEnable(iLightID);
-  float aTempVector[4];
+  // GLenum iLightID = GL_LIGHT0+nLightId;
+  // glEnable(iLightID);
+  // float aTempVector[4];
 
-  // if we have directional light, the position parameter
-  // actually defines the direction
-  aTempVector[0] = -light.GetDirection()[0];
-  aTempVector[1] = -light.GetDirection()[1];
-  aTempVector[2] = -light.GetDirection()[2];
-  aTempVector[3] = 0.0f;
-  glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
-  // Set the light position
-  glLightfv(iLightID, GL_POSITION, aTempVector);
+  // // if we have directional light, the position parameter
+  // // actually defines the direction
+  // aTempVector[0] = -light.GetDirection()[0];
+  // aTempVector[1] = -light.GetDirection()[1];
+  // aTempVector[2] = -light.GetDirection()[2];
+  // aTempVector[3] = 0.0f;
+  // glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
+  // // Set the light position
+  // glLightfv(iLightID, GL_POSITION, aTempVector);
 
-  // Set the intensity distribution of the light.
-  glLightf(iLightID, GL_SPOT_EXPONENT, 0.0f);
+  // // Set the intensity distribution of the light.
+  // glLightf(iLightID, GL_SPOT_EXPONENT, 0.0f);
 
-  // Commit color colors
-  CommitLightColors( light, iLightID );
+  // // Commit color colors
+  // CommitLightColors( light, iLightID );
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2089,29 +2120,29 @@ void
 Moose::Graphics::COglRenderer::CommitLight( const CSpotLight &light, unsigned int nLightId)
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-	GLenum iLightID = GL_LIGHT0+nLightId;
-	glEnable(iLightID);
-	float aTempVector[4];
+	// GLenum iLightID = GL_LIGHT0+nLightId;
+	// glEnable(iLightID);
+	// float aTempVector[4];
 
-	aTempVector[0] = light.GetPosition()[0];
-	aTempVector[1] = light.GetPosition()[1];
-	aTempVector[2] = light.GetPosition()[2];
-	aTempVector[3] = 1.0f;
+	// aTempVector[0] = light.GetPosition()[0];
+	// aTempVector[1] = light.GetPosition()[1];
+	// aTempVector[2] = light.GetPosition()[2];
+	// aTempVector[3] = 1.0f;
 
-	glLightf( iLightID, GL_SPOT_CUTOFF,    light.GetSpotAngle());
-	glLightfv(iLightID, GL_SPOT_DIRECTION, const_cast<CVector3<float> &>(light.GetDirection()).GetArray());
+	// glLightf( iLightID, GL_SPOT_CUTOFF,    light.GetSpotAngle());
+	// glLightfv(iLightID, GL_SPOT_DIRECTION, const_cast<CVector3<float> &>(light.GetDirection()).GetArray());
 
-	// Set the attenuation parameters
-	glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
-	glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
-	glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+	// // Set the attenuation parameters
+	// glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
+	// glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
+	// glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
 
-	// Set the light position
-	glLightfv(iLightID, GL_POSITION, aTempVector);
-		// Set the intensity distribution of the light.
-	glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
+	// // Set the light position
+	// glLightfv(iLightID, GL_POSITION, aTempVector);
+	// 	// Set the intensity distribution of the light.
+	// glLightf(iLightID, GL_SPOT_EXPONENT, light.GetSpotExponent());
 
-	CommitLightColors( light, iLightID );
+	// CommitLightColors( light, iLightID );
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2119,48 +2150,49 @@ void
 Moose::Graphics::COglRenderer::CommitLight( const CPointLight &light, unsigned int nLightId)
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  GLenum iLightID = GL_LIGHT0+nLightId;
-  glEnable(iLightID);
-  float aTempVector[4];
+  // GLenum iLightID = GL_LIGHT0+nLightId;
+  // glEnable(iLightID);
+  // float aTempVector[4];
 
 
 
-	aTempVector[0] = light.GetPosition()[0];
-	aTempVector[1] = light.GetPosition()[1];
-	aTempVector[2] = light.GetPosition()[2];
-	aTempVector[3] = 1.0f;
+  //   aTempVector[0] = light.GetPosition()[0];
+  //   aTempVector[1] = light.GetPosition()[1];
+  //   aTempVector[2] = light.GetPosition()[2];
+  //   aTempVector[3] = 1.0f;
 
-	glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
+  //   glLightf(iLightID, GL_SPOT_CUTOFF, 180.0f);
 
-	// Set the attenuation parameters
-	glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
-	glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
-	glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
+  //   // Set the attenuation parameters
+  //   glLightf(iLightID, GL_LINEAR_ATTENUATION,    light.GetLinearAttenuation());
+  //   glLightf(iLightID, GL_QUADRATIC_ATTENUATION, light.GetQuadraticAttenuation());
+  //   glLightf(iLightID, GL_CONSTANT_ATTENUATION,  light.GetConstantAttenuation());
 
 
 
-  // Set the light position
-  glLightfv(iLightID, GL_POSITION, aTempVector);
+  // // Set the light position
+  // glLightfv(iLightID, GL_POSITION, aTempVector);
 
-  // Set the intensity distribution of the light.
-  glLightf(iLightID, GL_SPOT_EXPONENT,  0.0f);
+  // // Set the intensity distribution of the light.
+  // glLightf(iLightID, GL_SPOT_EXPONENT,  0.0f);
 
-  CommitLightColors(light, iLightID);
+  // CommitLightColors(light, iLightID);
 #endif
 }
 /////////////////////////////////////////////////////////////////
 void
 Moose::Graphics::COglRenderer::CommitLight( const CAmbientLight &light )
 {
-	const float ONE_DIV_255 = 0.00392156862745098039;
+#if !defined(MOOSE_APPLE_IPHONE)
+  //const float ONE_DIV_255 = 0.00392156862745098039;
 
 	// ambient light is global mode
-	float array[4] =  { light.GetColor()[0] * ONE_DIV_255,
+	/*float array[4] =  { light.GetColor()[0] * ONE_DIV_255,
 						light.GetColor()[1] * ONE_DIV_255,
 						light.GetColor()[2] * ONE_DIV_255,
-						light.GetColor()[3] * ONE_DIV_255};
-#if !defined(MOOSE_APPLE_IPHONE)
-	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, array );
+						light.GetColor()[3] * ONE_DIV_255};*/
+
+    //	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, array );
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2248,7 +2280,7 @@ void
 Moose::Graphics::COglRenderer::DisableLight ( unsigned int nLightId )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  glDisable(GL_LIGHT0+nLightId);
+  //  glDisable(GL_LIGHT0+nLightId);
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2288,12 +2320,12 @@ void
 Moose::Graphics::COglRenderer::CommitMaterial( const Moose::Graphics::CMaterial & material, int iFace )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  GLenum glFace = iFace ? GL_BACK : GL_FRONT;
-  glMaterialfv( glFace, GL_DIFFUSE,   material.GetDiffuse().GetArray());
-  glMaterialfv( glFace, GL_AMBIENT,   material.GetAmbient().GetArray());
-  glMaterialfv( glFace, GL_SPECULAR,  material.GetSpecular().GetArray());
-  glMaterialfv( glFace, GL_EMISSION,  material.GetEmission().GetArray());
-  glMaterialf(  glFace, GL_SHININESS, material.GetShininess()*128.0f);
+  // GLenum glFace = iFace ? GL_BACK : GL_FRONT;
+  // glMaterialfv( glFace, GL_DIFFUSE,   material.GetDiffuse().GetArray());
+  // glMaterialfv( glFace, GL_AMBIENT,   material.GetAmbient().GetArray());
+  // glMaterialfv( glFace, GL_SPECULAR,  material.GetSpecular().GetArray());
+  // glMaterialfv( glFace, GL_EMISSION,  material.GetEmission().GetArray());
+  // glMaterialf(  glFace, GL_SHININESS, material.GetShininess()*128.0f);
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2301,7 +2333,7 @@ void
 Moose::Graphics::COglRenderer::CommitAlpha(  Moose::Graphics::ALPHA_TEST_TYPE tType, float fReference )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  glAlphaFunc( static_cast<GLenum>(tType), fReference);
+  //glAlphaFunc( static_cast<GLenum>(tType), fReference);
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2332,7 +2364,7 @@ Moose::Graphics::COglRenderer::CommitSkybox( Moose::Graphics::CSkybox & skybox, 
   mView(0,3) = 0.0f;
   mView(1,3) = 0.0f;
   mView(2,3) = 0.0f;
-#if !defined(MOOSE_APPLE_IPHONE)
+  /*#if !defined(MOOSE_APPLE_IPHONE)
   glPushMatrix();
   glLoadTransposeMatrixf( mView.GetArray());
 
@@ -2353,15 +2385,15 @@ Moose::Graphics::COglRenderer::CommitSkybox( Moose::Graphics::CSkybox & skybox, 
   /////////////////////////////////////////////////////////////////
 
   glPopMatrix();
-#endif
+  #endif*/
 }
 /////////////////////////////////////////////////////////////////
 void
 Moose::Graphics::COglRenderer::CommitTransform( const Moose::Math::CTransform &transform )
 {
 #if !defined(MOOSE_APPLE_IPHONE) 
- glPushMatrix();
-  glMultTransposeMatrixf( const_cast<Moose::Math::CTransform &>(transform).GetMatrix().GetArray());
+  //glPushMatrix();
+  //glMultTransposeMatrixf( const_cast<Moose::Math::CTransform &>(transform).GetMatrix().GetArray());
 #endif
 }
 
@@ -2370,7 +2402,7 @@ void
 Moose::Graphics::COglRenderer::RollbackTransform()
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  glPopMatrix();
+  //glPopMatrix();
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2378,31 +2410,31 @@ void
 Moose::Graphics::COglRenderer::CommitSphere( const Moose::Volume::CSphere &sphere, bool bWireframe )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-    if ( !m_pQuadric )
-    m_pQuadric = gluNewQuadric();
+  //   if ( !m_pQuadric )
+  //   m_pQuadric = gluNewQuadric();
 
-  // Set drawing style.
-  if ( bWireframe )	gluQuadricDrawStyle( m_pQuadric, GLU_SILHOUETTE  );
-  else			    gluQuadricDrawStyle( m_pQuadric, GLU_FILL  );
+  // // Set drawing style.
+  // if ( bWireframe )	gluQuadricDrawStyle( m_pQuadric, GLU_SILHOUETTE  );
+  // else			    gluQuadricDrawStyle( m_pQuadric, GLU_FILL  );
 
-  // Translate and render
-  glPushMatrix();
-    glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
+  // // Translate and render
+  // glPushMatrix();
+  //   glTranslatef( sphere.GetPosition()[0], sphere.GetPosition()[1], sphere.GetPosition()[2]);
 
-    gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
-    glPushMatrix();
-        glRotatef(90.0, 0.0, 1.0, 0.0);
-        gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
-    glPopMatrix();
+  //   gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
+  //   glPushMatrix();
+  //       glRotatef(90.0, 0.0, 1.0, 0.0);
+  //       gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
+  //   glPopMatrix();
 
-    glPushMatrix();
-        glRotatef(90.0, 1.0, 0.0, 0.0);
-        gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
-    glPopMatrix();
+  //   glPushMatrix();
+  //       glRotatef(90.0, 1.0, 0.0, 0.0);
+  //       gluDisk(m_pQuadric, 0.0, sphere.GetRadius(), 16, 1);
+  //   glPopMatrix();
 
 
 
-  glPopMatrix();
+  // glPopMatrix();
   
 #endif
 }
@@ -2413,16 +2445,16 @@ Moose::Graphics::COglRenderer::CommitCircle( const Moose::Math::CVector3<float> 
 					       bool bWireframe )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-    if ( !m_pQuadric )
-    m_pQuadric = gluNewQuadric();
-  gluQuadricDrawStyle( m_pQuadric, (bWireframe ? GLU_SILHOUETTE : GLU_FILL) );
-  glPushMatrix();
-	glTranslatef( vCenter[0], vCenter[1], vCenter[2] );
-	glRotatef( vRotation[2], 0, 0, 1);
-	glRotatef( vRotation[1], 0, 1, 0);
-	glRotatef( vRotation[0], 1, 0, 0);
-	gluDisk( m_pQuadric, 0.0, fRadius, 16, 1);
-        glPopMatrix();
+  //   if ( !m_pQuadric )
+  //   m_pQuadric = gluNewQuadric();
+  // gluQuadricDrawStyle( m_pQuadric, (bWireframe ? GLU_SILHOUETTE : GLU_FILL) );
+  // glPushMatrix();
+  //   glTranslatef( vCenter[0], vCenter[1], vCenter[2] );
+  //   glRotatef( vRotation[2], 0, 0, 1);
+  //   glRotatef( vRotation[1], 0, 1, 0);
+  //   glRotatef( vRotation[0], 1, 0, 0);
+  //   gluDisk( m_pQuadric, 0.0, fRadius, 16, 1);
+  //       glPopMatrix();
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2442,43 +2474,43 @@ Moose::Graphics::COglRenderer::CommitBox( const Moose::Volume::COrientedBox &box
 //     gluSphere(m_pQuadric, sphere.GetRadius(), 16, 16);
 //   glPopMatrix();
 #if !defined(MOOSE_APPLE_IPHONE)
-	glPushAttrib( GL_POLYGON_BIT );
-	if ( bWireframe ) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else 							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glBegin( GL_QUAD_STRIP );
+  //   glPushAttrib( GL_POLYGON_BIT );
+  //   if ( bWireframe ) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  //   else 							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  // glBegin( GL_QUAD_STRIP );
 
-  using namespace Moose::Volume;
-  glNormal3fv( box.GetUpVector().GetArray() );
-  glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
-  glNormal3fv( box.GetRightVector().GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
-  glNormal3fv( (-box.GetUpVector()).GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
-  glNormal3fv( (-box.GetRightVector()).GetArray());
-  glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
+  // using namespace Moose::Volume;
+  // glNormal3fv( box.GetUpVector().GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
+  // glNormal3fv( box.GetRightVector().GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
+  // glNormal3fv( (-box.GetUpVector()).GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
+  // glNormal3fv( (-box.GetRightVector()).GetArray());
+  // glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
   
-  glEnd();
+  // glEnd();
   
-  glBegin(GL_QUADS);
-  glNormal3fv( box.GetForwardVector().GetArray());
-  glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
+  // glBegin(GL_QUADS);
+  // glNormal3fv( box.GetForwardVector().GetArray());
+  // glVertex3fv( box.GetCorner( TOP_LEFT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_LEFT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_RIGHT_FRONT).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_RIGHT_FRONT).GetArray() );
   
-  glNormal3fv( (-box.GetForwardVector()).GetArray());
-  glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
-  glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
-  glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
-  glEnd();
-  glPopAttrib();
+  // glNormal3fv( (-box.GetForwardVector()).GetArray());
+  // glVertex3fv( box.GetCorner( BOTTOM_RIGHT_BACK).GetArray() );
+  // glVertex3fv( box.GetCorner( BOTTOM_LEFT_BACK).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_LEFT_BACK).GetArray() );
+  // glVertex3fv( box.GetCorner( TOP_RIGHT_BACK).GetArray() );
+  // glEnd();
+  // glPopAttrib();
 #endif
 
 }
@@ -2487,36 +2519,36 @@ void
 Moose::Graphics::COglRenderer::CommitCapsule( const Moose::Volume::CCapsule &capsule, bool bWireframe )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-      if ( !m_pQuadric )
-        m_pQuadric = gluNewQuadric();
-    CQuaternion q;
-    CMatrix4x4<float> m;
-    glPushMatrix();
-        // Create rotation from positive z-axis to capsule line segment
-        RotationArc( CVector3<float>(0.0, 0.0, 1.0f), capsule.GetDirection(), q);
-        QuaternionToMatrix(q, m);
-        glMultTransposeMatrixf( m.GetArray());
+    //   if ( !m_pQuadric )
+    //     m_pQuadric = gluNewQuadric();
+    // CQuaternion q;
+    // CMatrix4x4<float> m;
+    // glPushMatrix();
+    //     // Create rotation from positive z-axis to capsule line segment
+    //     RotationArc( CVector3<float>(0.0, 0.0, 1.0f), capsule.GetDirection(), q);
+    //     QuaternionToMatrix(q, m);
+    //     glMultTransposeMatrixf( m.GetArray());
 
-        // Render end spheres
-        CommitSphere( CSphere( CVector3<float>(0,0,0),                          capsule.GetRadius()), true );
-        CommitSphere( CSphere( CVector3<float>(0,0,capsule.GetDistanceEnd()),   capsule.GetRadius()), true );
-        // Render lines
-        glBegin(GL_LINES);
+    //     // Render end spheres
+    //     CommitSphere( CSphere( CVector3<float>(0,0,0),                          capsule.GetRadius()), true );
+    //     CommitSphere( CSphere( CVector3<float>(0,0,capsule.GetDistanceEnd()),   capsule.GetRadius()), true );
+    //     // Render lines
+    //     glBegin(GL_LINES);
 
-            glVertex3f( 0.0, capsule.GetRadius(), 0.0);
-            glVertex3f( 0.0, capsule.GetRadius(), capsule.GetDistanceEnd());
+    //         glVertex3f( 0.0, capsule.GetRadius(), 0.0);
+    //         glVertex3f( 0.0, capsule.GetRadius(), capsule.GetDistanceEnd());
 
-            glVertex3f( 0.0, -capsule.GetRadius(), 0.0);
-            glVertex3f( 0.0, -capsule.GetRadius(), capsule.GetDistanceEnd());
+    //         glVertex3f( 0.0, -capsule.GetRadius(), 0.0);
+    //         glVertex3f( 0.0, -capsule.GetRadius(), capsule.GetDistanceEnd());
 
-            glVertex3f( capsule.GetRadius(), 0.0, 0.0);
-            glVertex3f( capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
+    //         glVertex3f( capsule.GetRadius(), 0.0, 0.0);
+    //         glVertex3f( capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
 
-            glVertex3f( -capsule.GetRadius(), 0.0, 0.0);
-            glVertex3f( -capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
+    //         glVertex3f( -capsule.GetRadius(), 0.0, 0.0);
+    //         glVertex3f( -capsule.GetRadius(), 0.0, capsule.GetDistanceEnd());
 
-        glEnd();
-        glPopMatrix();
+    //     glEnd();
+    //     glPopMatrix();
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2527,22 +2559,22 @@ Moose::Graphics::COglRenderer::CommitQuad( const Moose::Spatial::CVertex &vertex
 					     const Moose::Spatial::CVertex &vertexFour)
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  // Handy macro for multiple similar commands
-#define COMMIT_VERTEX( V ) {			\
-  glColor4ubv( V.GetColor().GetArray() );	\
-  glTexCoord2f( V.GetTextureCoordinates()[0],	\
-		V.GetTextureCoordinates()[1]);	\
-  glNormal3fv( V.GetNormal().GetArray() );	\
-  glVertex3fv( V.GetPosition().GetArray() );	\
-}
+//   // Handy macro for multiple similar commands
+ #define COMMIT_VERTEX( V ) {			\
+   glColor4ubv( V.GetColor().GetArray() );	\
+   glTexCoord2f( V.GetTextureCoordinates()[0],	\
+ 		V.GetTextureCoordinates()[1]);	\
+   glNormal3fv( V.GetNormal().GetArray() );	\
+   glVertex3fv( V.GetPosition().GetArray() );	\
+ }
 
-  glBegin(GL_QUADS);
-    COMMIT_VERTEX( vertexOne );
-    COMMIT_VERTEX( vertexTwo );
-    COMMIT_VERTEX( vertexThree );
-    COMMIT_VERTEX( vertexFour );
-  glEnd();
-#undef COMMIT_VERTEX
+//   glBegin(GL_QUADS);
+//     COMMIT_VERTEX( vertexOne );
+//     COMMIT_VERTEX( vertexTwo );
+//     COMMIT_VERTEX( vertexThree );
+//     COMMIT_VERTEX( vertexFour );
+//   glEnd();
+// #undef COMMIT_VERTEX
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2844,7 +2876,7 @@ Moose::Graphics::COglRenderer::CommitFrameBuffer( const Moose::Graphics::CFrameB
   // but this is better; it allows multiple buffers to be rendered via parameter.
   // Output to buffers must be controlled via GLSL fragment shaders.
 #if !defined(MOOSE_APPLE_IPHONE)
-  glDrawBuffers( nColorBufferCount % TEXTURE_HANDLE_COUNT, g_ColorBufferNames );
+  //  glDrawBuffers( nColorBufferCount % TEXTURE_HANDLE_COUNT, g_ColorBufferNames );
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2861,7 +2893,7 @@ Moose::Graphics::COglRenderer::CommitFrameBufferSingle( const Moose::Graphics::C
   glViewport(0,0, (unsigned int)rFBO.GetWidth(), (unsigned int)rFBO.GetHeight());
 #if !defined(MOOSE_APPLE_IPHONE)
   // select render target
-  glDrawBuffer(GL_COLOR_ATTACHMENT0+nColorBuffer);
+  //glDrawBuffer(GL_COLOR_ATTACHMENT0+nColorBuffer);
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2891,14 +2923,14 @@ void
 Moose::Graphics::COglRenderer::CommitQuad( const Moose::Graphics::CFrameBufferObject & rFBO )
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-  glBegin(GL_QUADS);
+  // glBegin(GL_QUADS);
 
-    COMMIT_COORDINATES( 0.0f,            0.0f,		0.0f,            0.0f);
-    COMMIT_COORDINATES( rFBO.GetWidth(), 0.0f,		rFBO.GetWidth(), 0.0f);
-    COMMIT_COORDINATES( rFBO.GetWidth(), rFBO.GetHeight(),rFBO.GetWidth(), rFBO.GetHeight() );
-    COMMIT_COORDINATES( 0.0f,            rFBO.GetHeight(),0.0f,            rFBO.GetHeight());
+  //   COMMIT_COORDINATES( 0.0f,            0.0f,		0.0f,            0.0f);
+  //   COMMIT_COORDINATES( rFBO.GetWidth(), 0.0f,		rFBO.GetWidth(), 0.0f);
+  //   COMMIT_COORDINATES( rFBO.GetWidth(), rFBO.GetHeight(),rFBO.GetWidth(), rFBO.GetHeight() );
+  //   COMMIT_COORDINATES( 0.0f,            rFBO.GetHeight(),0.0f,            rFBO.GetHeight());
 
-  glEnd();
+  // glEnd();
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2906,14 +2938,14 @@ void
 Moose::Graphics::COglRenderer::CommitQuad( const Moose::Graphics::CCamera & rCamera, const Moose::Graphics::CFrameBufferObject & rFBO)
 {
 #if !defined(MOOSE_APPLE_IPHONE) 
- glBegin(GL_QUADS);
+ // glBegin(GL_QUADS);
 
-    COMMIT_COORDINATES( 0.0f,				             0.0f,				0.0f,            0.0f);
-    COMMIT_COORDINATES( rCamera.GetViewport().width,	 0.0f,				rFBO.GetWidth(), 0.0f);
-    COMMIT_COORDINATES( rCamera.GetViewport().width,	 rCamera.GetViewport().height,	rFBO.GetWidth(), rFBO.GetHeight() );
-    COMMIT_COORDINATES( 0.0f,				             rCamera.GetViewport().height,	0.0f,            rFBO.GetHeight());
+ //    COMMIT_COORDINATES( 0.0f,				             0.0f,				0.0f,            0.0f);
+ //    COMMIT_COORDINATES( rCamera.GetViewport().width,	 0.0f,				rFBO.GetWidth(), 0.0f);
+ //    COMMIT_COORDINATES( rCamera.GetViewport().width,	 rCamera.GetViewport().height,	rFBO.GetWidth(), rFBO.GetHeight() );
+ //    COMMIT_COORDINATES( 0.0f,				             rCamera.GetViewport().height,	0.0f,            rFBO.GetHeight());
 
-  glEnd();
+ //  glEnd();
 #endif
 }
 /////////////////////////////////////////////////////////////////
@@ -2924,7 +2956,7 @@ Moose::Graphics::CFontset *
 Moose::Graphics::COglRenderer::CreateFontset( const char *sPathToFontFile, unsigned int nFontSize)
 {
 #if defined(MOOSE_APPLE_IPHONE)
-    return NULL;
+  return NULL;
 #else
 #define WHITESPACE 32
   // Fontset to be created.

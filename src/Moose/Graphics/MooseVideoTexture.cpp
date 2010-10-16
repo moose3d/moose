@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////
-#include <GL/GLee.h>
+#include "MooseGL.h"
 #include <iostream>
 #include <math.h>
 #include <cassert>

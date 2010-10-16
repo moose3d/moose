@@ -22,20 +22,26 @@ using namespace Moose::Default;
  "m_projMatrix[3][0], m_projMatrix[3][1], m_projMatrix[3][2],m_projMatrix[3][3]);" \
 */
 ////////////////////////////////////////////////////////////////////////////////
-const char *SB_VERT_SH = "attribute vec3 position;"     \
- "attribute vec3 a_texcoord;"                           \
- "varying vec3 v_texcoord;"                             \
- "uniform mat4 m_viewMatrix;"                       \
- "uniform mat4 m_projMatrix;"                       \
- "void main(){"                                                         \
- "mat4 mv = m_viewMatrix;" \
- "mv[3][0] = 0.0; mv[3][1] = 0.0; mv[3][2] = 0.0;"\
- "gl_Position = m_projMatrix * mv * vec4(position,1.0);"              \
+const char *SB_VERT_SH = "attribute vec3 position;"         \
+ "attribute vec3 a_texcoord;"                               \
+ "varying vec3 v_texcoord;"                                 \
+ "uniform mat4 m_viewMatrix;"                               \
+ "uniform mat4 m_projMatrix;"                               \
+ "void main(){"                                             \
+ "mat4 mv = m_viewMatrix;"                                  \
+ "mv[3][0] = 0.0; mv[3][1] = 0.0; mv[3][2] = 0.0;"          \
+ "gl_Position = m_projMatrix * mv * vec4(position,1.0);"    \
  "v_texcoord = a_texcoord;}";
 
-const char *SB_FRAG_SH = "varying mediump vec3 v_texcoord;"\
- "uniform lowp samplerCube diffuse;"                         \
- "void main(){"                                            \
+const char *SB_FRAG_SH =                                \
+ "#ifdef GL_ES\n"                                       \
+ "varying mediump vec3 v_texcoord;\n"                   \
+ "uniform lowp samplerCube diffuse;\n"                  \
+ "#else\n"                                              \
+ "varying vec3 v_texcoord;\n"                           \
+ "uniform samplerCube diffuse;\n"                       \
+ "#endif\n"                                             \
+ "void main(){"                                         \
  "gl_FragColor = textureCube(diffuse,v_texcoord);}";
 /////////////////////////////////////////////////////////////////
 inline void CreateTexCoords( Moose::Graphics::CVertexDescriptor *pTexCoords )
@@ -225,7 +231,7 @@ Moose::Graphics::CSkybox::Render( Moose::Graphics::COglRenderer & renderer)
 {
 
 
-#if defined(MOOSE_APPLE_IPHONE)
+
         
   CModel *pModel = *GetModelHandle();
   COglTexture *pTexture = *GetRenderState().GetTextureHandle(0);
@@ -275,6 +281,7 @@ Moose::Graphics::CSkybox::Render( Moose::Graphics::COglRenderer & renderer)
 
 
   /////////////////////////////////////////////////////////////////
+  /*#if defined(MOOSE_APPLE_IPHONE)
 #else
   glPushMatrix();
   glLoadTransposeMatrixf( renderer.GetCurrentCamera()->GetViewMatrix().GetArray());
@@ -309,7 +316,7 @@ Moose::Graphics::CSkybox::Render( Moose::Graphics::COglRenderer & renderer)
   /////////////////////////////////////////////////////////////////
   glPopMatrix();
 #endif
-
+  */
 }
 
 

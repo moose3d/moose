@@ -10,7 +10,7 @@ using std::vector;
 using std::string;
 using namespace Moose::Graphics;
 /////////////////////////////////////////////////////////////////
-Moose::Graphics::CRenderableModel::CRenderableModel() :m_pModel(NULL), m_bDestroyModel(false)
+Moose::Graphics::CRenderableModel::CRenderableModel() : m_pModel(NULL), m_bDestroyModel(false)
 {
 
 }
@@ -55,7 +55,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   
   ////////////////////
   // Commit textures
-#if !defined(MOOSE_APPLE_IPHONE)
+  /*#if !defined(MOOSE_APPLE_IPHONE)
   CVertexDescriptor *pTemp = NULL;
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
@@ -86,7 +86,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     
 
   }  
-#else
+  #else*/
 
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
@@ -106,7 +106,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
       renderer.DisableTexture(i, NULL);
     }
   } 
-#endif
+  //#endif
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
@@ -124,6 +124,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
       {
         GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
       }
+
       // Send data to shader
       GetRenderState().GetShaderViewUniform().Apply(renderer);
       GetRenderState().GetShaderProjectionUniform().Apply(renderer);
@@ -131,7 +132,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     }
   }
   
-#if !defined(MOOSE_APPLE_IPHONE)
+  /*#if !defined(MOOSE_APPLE_IPHONE)
   // commit normals
   if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
   else	renderer.CommitVertexDescriptor( *model.GetNormalHandle() );
@@ -147,7 +148,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   // commit position data
   if ( model.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY );
   else	renderer.CommitVertexDescriptor ( *model.GetVertexHandle() );
-#endif
+#endif*/
 
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );

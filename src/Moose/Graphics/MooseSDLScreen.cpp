@@ -1,10 +1,12 @@
 /////////////////////////////////////////////////////////////////
 #include "MooseSDLScreen.h"
+#include "MooseLogger.h"
+#include "MooseDefaultEntities.h"
 #include <SDL/SDL.h>
-#include <GL/GLee.h>
-//#include <GL/glu.h>
+#include <GL/glew.h>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Window;
+using namespace Moose::Core;
 /// declare visiblity for static member.
 CSDLScreenParams Moose::Window::CSDLScreen::m_SDLScreenParams;
 /////////////////////////////////////////////////////////////////
@@ -44,11 +46,11 @@ operator<<(std::ostream &stream,
     stream << "OpenGL version " ;
 
     // print OpenGL version information:
-    if      (GLEE_VERSION_2_0)	stream << "2.0";
-    else if (GLEE_VERSION_1_5) stream << "1.5";
-    else if (GLEE_VERSION_1_4) stream << "1.4";
-    else if (GLEE_VERSION_1_3) stream << "1.3";
-    else if (GLEE_VERSION_1_2) stream << "1.2";
+    if      (GLEW_VERSION_2_0)	stream << "2.0";
+    else if (GLEW_VERSION_1_5) stream << "1.5";
+    else if (GLEW_VERSION_1_4) stream << "1.4";
+    else if (GLEW_VERSION_1_3) stream << "1.3";
+    else if (GLEW_VERSION_1_2) stream << "1.2";
     else  stream << "<1.2";
 
 
@@ -129,7 +131,11 @@ Moose::Window::CSDLScreen::CSDLScreen( )
       }
     } // ..!sdlVideoInfo
   } // ..SDL_Init
-
+  GLenum status = glewInit();
+  if ( status != GLEW_OK  )
+  {
+    g_Error << "Error initializing GLEW: " << glewGetErrorString(status)<< "\n";
+  }
 
     // When images are loaded as textures they are flipped and mirrored over Y-axis.
     // By manipulating the texture matrix accordingly we can get rid of the annoyance.

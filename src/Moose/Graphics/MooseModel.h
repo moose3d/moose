@@ -68,13 +68,14 @@ namespace Moose
       /// \param nId From which texture unit these coordinates are retrieved. By default, the first one (zero).
       /// \returns VERTEX_HANDLE.
       Moose::Default::VERTEX_HANDLE & GetTextureCoordinateHandle( unsigned int nId = 0 );
+#ifndef SWIG
       ////////////////////
       /// Debugging output.
       /// \param stream Output stream.
       /// \param renderable Renderable object.
       /// \returns Reference to output stream.
       friend std::ostream & operator<<( std::ostream &stream, const Moose::Graphics::CModel & model );
-
+#endif
     };
 
   }; // namespace Graphics

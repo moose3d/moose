@@ -81,6 +81,9 @@ include_directories(${FREETYPE_INCLUDE_DIRS})
 find_package(SDL)
 include_directories(${SDL_INCLUDE_DIR})
 
+find_package(GLEW)
+include_directories(${GLEW_INCLUDE_DIR})
+
 install( TARGETS Moose 
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -101,8 +104,8 @@ FILE(GLOB files
 
 install( FILES ${files} DESTINATION include/Moose)
 
-SET( EXTERNAL_LIBS "-lMoose -lGLee -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL")
-SET( INTERNAL_LIBS libMoose.a -lGLee -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)
+SET( EXTERNAL_LIBS "-lMoose ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL ")
+SET( INTERNAL_LIBS libMoose.a ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)
 
 #set (Moose_VERSION_MAJOR 1)
 #set (Moose_VERSION_MINOR 0)
@@ -136,7 +139,7 @@ SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CMAKE_SWIG_FLAGS "-includeall ")
 #SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} ${SRC_FILES})
 SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} )
-
+ADD_DEPENDENCIES(${TCL_MODULE} Moose)
 SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} ${INTERNAL_LIBS})
 SET_TARGET_PROPERTIES( ${TCL_MODULE} 
   PROPERTIES

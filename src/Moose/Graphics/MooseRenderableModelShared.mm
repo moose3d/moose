@@ -45,12 +45,12 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   ////////////////////
   // Retrieve resources
   COglTexture *pTexture = NULL;
-  CVertexDescriptor *pTemp = NULL;
+  //CVertexDescriptor *pTemp = NULL;
 
   CModel & model = **m_hModel;
   ////////////////////
   // Commit textures
-#if !defined(MOOSE_APPLE_IPHONE)
+  /*#if !defined(MOOSE_APPLE_IPHONE)
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTemp    = *model.GetTextureCoordinateHandle(i);
@@ -77,7 +77,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
       renderer.DisableTexture(i, NULL);
   }
 
-#else
+  #else*/
 
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
@@ -95,7 +95,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
       renderer.DisableTexture(i, NULL);
     }
   } 
-#endif
+  //#endif
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
@@ -120,7 +120,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     }
   }
 
-#if !defined(MOOSE_APPLE_IPHONE)
+  /*#if !defined(MOOSE_APPLE_IPHONE)
   // commit normals
   if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
   else	renderer.CommitVertexDescriptor( *model.GetNormalHandle() );
@@ -136,7 +136,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   // commit position data
   if ( model.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY );
   else	renderer.CommitVertexDescriptor ( *model.GetVertexHandle() );
-#endif
+  #endif*/
 
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );

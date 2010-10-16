@@ -522,37 +522,37 @@ proc g_Objects { { name "" } } {
 }
 
 proc g_Textures { { name ""} } {
-    return [GetTextureMgr $name ]
+    return [g_TextureMgr $name ]
 }
 
 proc g_Vertices { { name "" } } {
-    return [GetVertexMgr $name]
+    return [g_VertexMgr $name]
 }
 
 proc g_Indices { {name "" } } {
-    return [GetIndexMgr $name]
+    return [g_IndexMgr $name]
 }
 
 proc g_Shaders { {name "" } } {
-    return [GetShaderMgr $name]
+    return [g_ShaderMgr $name]
 }
 
 proc g_Models { {name "" } } {
-    return [GetModelMgr $name]
+    return [g_ModelMgr $name]
 }    
 
 proc g_Cameras { {name ""} } {
-    return [GetCameraMgr $name]
+    return [g_CameraMgr $name]
 }
 
 proc g_Colliders { {name ""} } {
-    return [GetColliderMgr $name]
+    return [g_ColliderMgr $name]
 }
 
 proc g_Samples { {name ""} } {
-    return [GetSoundSampleMgr $name]
+    return [g_SampleMgr $name]
 }
 
 proc g_Streams { {name ""} } {
-    return [GetSoundStreamMgr $name]
+    return [g_StreamMgr $name]
 }

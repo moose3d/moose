@@ -1,7 +1,7 @@
 #ifndef __MooseVideoTexture_h__
 #define __MooseVideoTexture_h__
 /////////////////////////////////////////////////////////////////
-#include <GL/GLee.h>
+#include "MooseGL.h"
 #include <vector>
 #include <list>
 #include "MooseOGLRenderer.h"

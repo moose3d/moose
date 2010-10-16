@@ -15,13 +15,13 @@ using namespace Moose::Core;
 using namespace std;
 ///////////////////////////////////////////////////////////////////////////////////
 Moose::Graphics::CRenderState::CRenderState() :  m_iRenderLayer(kOpaque),
-                                                    m_DepthTest(false),
-																									 m_DepthWrite(true),
-																									 m_FaceCulling(false),
-																									 m_bLighting(false),
-																									 m_bLightSource(false),
-																									 m_nLightId(0),
-																									 m_BaseColor(255,255,255,255)
+                                                 m_DepthTest(false),
+                                                 m_DepthWrite(true),
+                                                 m_FaceCulling(false),
+                                                 m_bLighting(false),
+                                                 m_bLightSource(false),
+                                                 m_nLightId(0),
+                                                 m_BaseColor(255,255,255,255)
 {
 
 }
@@ -60,7 +60,12 @@ Moose::Graphics::CRenderState::GetTextureHandle( unsigned int nId )
 {
   return m_aTextureHandles[nId % TEXTURE_HANDLE_COUNT];
 }
-///////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void 
+Moose::Graphics::CRenderState::SetTexture( unsigned int nId, const char *szName )
+{
+  GetTextureHandle(nId) = szName;
+}
 /////////////////////////////////////////////////////////////////
 vector<Moose::Graphics::TEXTURE_FILTER> &
 Moose::Graphics::CRenderState::GetTextureFilters( unsigned int nId )
@@ -155,6 +160,15 @@ Moose::Graphics::CRenderState::AddShaderUniform( const char *sName, Moose::Math:
     CShaderUniformMat4x4f *pParam = new CShaderUniformMat4x4f();
     pParam->SetName(sName);
     pParam->SetData( pMatrix );  
+    m_ShaderUniforms.Add( pParam ); 
+}
+/////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CRenderState::AddShaderUniform( const char *sName, const Moose::Math::CVector4<float> *pData )
+{ 
+    CShaderUniformVec4fPtr *pParam = new CShaderUniformVec4fPtr();
+    pParam->SetName(sName);
+    pParam->SetData( pData );  
     m_ShaderUniforms.Add( pParam ); 
 }
 /////////////////////////////////////////////////////////////////

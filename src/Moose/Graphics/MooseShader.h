@@ -3,18 +3,7 @@
 /////////////////////////////////////////////////////////////////
 //#include <MooseRenderable.h>
 
-#include "MooseAPI.h"
-#if defined(MOOSE_APPLE_IPHONE)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#elif defined(__APPLE__)
-#include <GL/GLee.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#else
-#include <GL/GLee.h>
-#include <GL/gl.h>
-#endif
+#include "MooseGL.h"
 #include <list>
 #include <string>
 /////////////////////////////////////////////////////////////////

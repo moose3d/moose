@@ -144,6 +144,10 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseIndexArray.h"
 %include "MooseTexture.h"
 %template (TEXTURE_HANDLE) Moose::Core::CHandle< Moose::Graphics::COglTexture >;
+
+%template (CTextureMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::COglTexture, Moose::Core::CHandle<Moose::Graphics::COglTexture> > >;
+%template (CTextureResMgr) Moose::Core::CResourceManager< Moose::Graphics::COglTexture, Moose::Core::CHandle<Moose::Graphics::COglTexture> >;
+%include "MooseModel.h"
 %include "MooseDefaultEntities.h"
 %rename (ostreamModel) operator<<(std::ostream &stream, const Moose::Graphics::CModel & model);
 %include "MooseShader.h"

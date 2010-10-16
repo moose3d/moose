@@ -1,18 +1,7 @@
 #ifndef __MooseTexture_h__
 #define __MooseTexture_h__
 /////////////////////////////////////////////////////////////////
-#include "MooseAPI.h"
-#if defined(MOOSE_APPLE_IPHONE)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#elif defined(__APPLE__)
-#include <GL/GLee.h>
-#include <OpenGL/gl.h>
-#else
-#include <GL/GLee.h>
-#include <GL/gl.h>
-#endif
-#include "MooseAPI.h"
+#include "MooseGL.h"
 //#include <MooseRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Moose

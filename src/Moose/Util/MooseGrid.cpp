@@ -2,6 +2,8 @@
 #include "MooseDefaultEntities.h"
 #include "MooseVertexDescriptor.h"
 #include "MooseIndexArray.h"
+#include "MooseVector4.h"
+#include "MooseMaterial.h"
 #include "MooseModel.h"
 namespace prefix = Moose::Util;
 using namespace Moose::Graphics;
@@ -85,6 +87,13 @@ prefix::CGrid::CGrid()
   }
   GetRenderState().GetBlendingOperation().SetDefaultTransparency();    
   GetRenderState().SetBaseColor( CColor4ub(225,225,255,225) );
+  GetRenderState().GetMaterial().SetDiffuse( CColor4f(0.88,0.88,1.0,0.88) );
+  GetRenderState().GetShaderHandle() = "moose_color_shader";
+  GetRenderState().AddShaderAttrib("a_vertex", (*GetModelHandle())->GetVertexHandle());
+
+  GetRenderState().AddShaderUniform("color", &GetRenderState().GetMaterial().GetDiffuse());
+  assert( GetRenderState().Prepare() );
+  //g_Log << "RenderLayer is : " << GetRenderState().GetRenderLayer() << "\n";
 }
 ////////////////////////////////////////////////////////////////////////////////
 prefix::CGrid::~CGrid()

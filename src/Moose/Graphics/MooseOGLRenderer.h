@@ -2,20 +2,7 @@
 #ifndef __MooseOGLRenderer_h__
 #define __MooseOGLRenderer_h__
 /////////////////////////////////////////////////////////////////
-#include "MooseAPI.h"
-#if defined(MOOSE_APPLE_IPHONE)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#elif defined(__APPLE__)
-#include <GL/GLee.h>
-//#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/GLee.h>
-#include <GL/gl.h>
-#include <GL/glext.h>
-#include <GL/glu.h>
-#endif
+#include "MooseGL.h"
 /////////////////////////////////////////////////////////////////
 #include "MooseVertexDescriptor.h"
 #include "MooseIndexArray.h"
@@ -407,6 +394,7 @@ namespace Moose
       /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
       /// \returns Pointer to COglTexture.
       Moose::Graphics::COglTexture * CreateCompressedTexture( const char * strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
+#ifndef SWIG
       ////////////////////
       /// Creates new cube texture from TGA images.
       /// \param szFiles texture filenames for tga image.
@@ -418,6 +406,22 @@ namespace Moose
       /// [5] Positive Z (back)
       /// \returns Pointer to COglTexture.
       Moose::Graphics::COglTexture * CreateCubeTexture( const char * szFiles[6] );
+#endif
+      ////////////////////
+      /// Creates new cube texture from TGA images.
+      /// \param szFileNegX Negative X (right).
+      /// \param szFilePosX Positive X (left).
+      /// \param szFilePosY Positive Y (top).
+      /// \param szFileNegY Negative Y (bottom).
+      /// \param szFileNegZ Negative Z (front).
+      /// \param szFilePosZ Positive Z (back).
+      /// \returns Pointer to COglTexture.
+      Moose::Graphics::COglTexture * CreateCubeTexture( const char * szFileNegX,
+                                                        const char * szFilePosX,
+                                                        const char * szFilePosY,
+                                                        const char * szFileNegY,
+                                                        const char * szFileNegZ,
+                                                        const char * szFilePosZ );
       ////////////////////
       /// Creates new empty texture.
       /// \param nWidth width of texture.

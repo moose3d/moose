@@ -1,17 +1,7 @@
 #include "MooseFrameBuffer.h"
 #include "MooseDefaultEntities.h"
 /////////////////////////////////////////////////////////////////
-#if defined(MOOSE_APPLE_IPHONE)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#elif defined(__APPLE__)
-#include <GL/GLee.h>
-#include <OpenGL/gl.h>
-#else
-#include <GL/GLee.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
+#include "MooseGL.h"
 #include "MooseOGLConsts.h"
 using namespace Moose::Graphics;
 /////////////////////////////////////////////////////////////////

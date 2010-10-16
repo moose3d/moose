@@ -10,7 +10,8 @@
 #define GL_GLEXT_PROTOTYPES
 #define GLX_GLXEXT_PROTOTYPES
 #include <GL/glew.h>
-#include <GL/gl.h>
+#define GL3_PROTOTYPES 1
+#include <GL3/gl3.h>
 #include <GL/glext.h>
 #include <GL/glu.h>
 #endif

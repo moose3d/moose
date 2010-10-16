@@ -1,16 +1,7 @@
 #ifndef __MooseOGLConsts_h__
 #define __MooseOGLConsts_h__
 /////////////////////////////////////////////////////////////////
-#include "MooseAPI.h"
-#if defined(MOOSE_APPLE_IPHONE)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#else
-#include <GL/GLee.h>
-#if defined(__APPLE__)
-#include <OpenGL/gl.h>
-#endif
-#endif
+#include "MooseGL.h"
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
