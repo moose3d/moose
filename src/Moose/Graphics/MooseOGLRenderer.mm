@@ -1331,8 +1331,7 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
   CGImageRef      cgImage;
   CGContextRef    cgContext;
   CGColorSpaceRef colorSpace;
-#else
-  GLubyte *       data = NULL;
+
 #endif
   //GLenum err = GL_NO_ERROR;
   int width, height;
@@ -1411,26 +1410,26 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     width = pImage->GetWidth();
     height = pImage->GetHeight();
     ////////////////////
-    int    iGLInternalFormat = 3;
+    int    iGLInternalFormat = GL_RGB;
     GLenum iGLformat = GL_RGB;
     ////////////////////
     // Check correct depth
     switch (pImage->GetBPP())
     {
     case 8:
-      iGLInternalFormat = 1;
+      iGLInternalFormat = GL_LUMINANCE;
       iGLformat = GL_LUMINANCE;
       break;
     case 16:
-      iGLInternalFormat = 2;
+      iGLInternalFormat = GL_LUMINANCE_ALPHA;
       iGLformat = GL_LUMINANCE_ALPHA;
       break;
     case 24:
-      iGLInternalFormat = 3;
+      iGLInternalFormat = GL_RGB;
       iGLformat = GL_RGB;
       break;
     case 32:
-      iGLInternalFormat = 4;
+      iGLInternalFormat = GL_RGBA;
       iGLformat = GL_RGBA;
       //std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
       break;
@@ -1482,6 +1481,8 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
       cubeFace = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
       break;
     }
+
+#if defined(MOOSE_APPLE_IPHONE)
     ////////////////////
     // Create texture.
     glTexImage2D( cubeFace, 0, iGLInternalFormat,
@@ -1490,9 +1491,14 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
     // release data
 
     free(data); 
-#if defined(MOOSE_APPLE_IPHONE)
+
     CGContextRelease(cgContext); 
     CGColorSpaceRelease(colorSpace);
+#else
+    glTexImage2D( cubeFace, 0, iGLInternalFormat,
+                  width, height, 0,
+                  iGLformat,  GL_UNSIGNED_BYTE, pImage->GetImg());
+    delete pImage;
 #endif
 
   } // for ( size_t

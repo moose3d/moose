@@ -22,9 +22,10 @@ using namespace Moose::Default;
  "m_projMatrix[3][0], m_projMatrix[3][1], m_projMatrix[3][2],m_projMatrix[3][3]);" \
 */
 ////////////////////////////////////////////////////////////////////////////////
-const char *SB_VERT_SH = "attribute vec3 position;"         \
- "attribute vec3 a_texcoord;"                               \
- "varying vec3 v_texcoord;"                                 \
+const char *SB_VERT_SH = "#version 150\n" \
+ "in vec3 position;"         \
+ "in vec3 a_texcoord;"                               \
+ "out vec3 v_texcoord;"                                 \
  "uniform mat4 m_viewMatrix;"                               \
  "uniform mat4 m_projMatrix;"                               \
  "void main(){"                                             \
@@ -34,15 +35,15 @@ const char *SB_VERT_SH = "attribute vec3 position;"         \
  "v_texcoord = a_texcoord;}";
 
 const char *SB_FRAG_SH =                                \
- "#ifdef GL_ES\n"                                       \
+ "#version 150\n#ifdef GL_ES\n"                                       \
  "varying mediump vec3 v_texcoord;\n"                   \
  "uniform lowp samplerCube diffuse;\n"                  \
  "#else\n"                                              \
- "varying vec3 v_texcoord;\n"                           \
+ "in vec3 v_texcoord;\n"                           \
  "uniform samplerCube diffuse;\n"                       \
- "#endif\n"                                             \
+ "out vec4 gl_FragColor;\n#endif\n"                                             \
  "void main(){"                                         \
- "gl_FragColor = textureCube(diffuse,v_texcoord);}";
+ "gl_FragColor = texture(diffuse,v_texcoord);}";
 /////////////////////////////////////////////////////////////////
 inline void CreateTexCoords( Moose::Graphics::CVertexDescriptor *pTexCoords )
 {

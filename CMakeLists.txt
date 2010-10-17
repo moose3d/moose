@@ -59,7 +59,7 @@ link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Volume)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Util)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Spatial)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose)
-
+link_directories( ${PROJECT_BINARY_DIR} )
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Core )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/AI )
@@ -151,7 +151,7 @@ FILE(GLOB tclFiles
   "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"
   "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
 )
-install( FILES ${tclFiles} DESTINATION lib/Moose )
+
 # Generate pkgIndex.tcl
 ADD_CUSTOM_COMMAND(
    TARGET ${TCL_MODULE}
@@ -160,3 +160,5 @@ ADD_CUSTOM_COMMAND(
    COMMENT "Generating pkgIndex.tcl"
    COMMAND echo pkg_mkIndex  . Moose.so|tclsh
  )
+
+install( FILES ${tclFiles} DESTINATION lib/Moose )
