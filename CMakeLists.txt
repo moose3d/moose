@@ -103,7 +103,7 @@ FILE(GLOB files
 install( FILES ${files} DESTINATION include/Moose)
 
 FILE( GLOB shaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/*")
-install( FILES ${shaderFiles} DESTINATION include/Moose/Shaders)
+install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
 
 SET( EXTERNAL_LIBS "-lMoose ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL ")
 SET( INTERNAL_LIBS libMoose.a ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)

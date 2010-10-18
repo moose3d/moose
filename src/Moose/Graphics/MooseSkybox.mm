@@ -2,6 +2,7 @@
 #include "MooseVertexDescriptor.h"
 #include "MooseOGLRenderer.h"
 #include "MooseDefaultEntities.h"
+#include "MooseAssetBundle.h"
 #include <iostream>
 #include <assert.h>
 /////////////////////////////////////////////////////////////////
@@ -9,6 +10,7 @@ using std::cerr;
 using std::endl;
 using namespace Moose::Graphics;
 using namespace Moose::Default;
+using namespace Moose::Core;
 /* *****************************************************************************
    matrix transpose code 
 ********************************************************************************
@@ -166,7 +168,7 @@ inline void CreateIndices( Moose::Graphics::CIndexArray *pIndices )
     
 }
 /////////////////////////////////////////////////////////////////
-Moose::Graphics::CSkybox::CSkybox( ) 
+Moose::Graphics::CSkybox::CSkybox() 
 {
   m_hModel = MOOSE_SKYBOX_MODEL;
 
@@ -199,8 +201,12 @@ Moose::Graphics::CSkybox::CSkybox( )
   {
     // OpenGL context needs to be created at this point.
     CShader *pShader = new CShader();
-    pShader->CreateVertexShaderFromSource(SB_VERT_SH, "skybox_vertex_shader");
-    pShader->CreateFragmentShaderFromSource(SB_FRAG_SH, "skybox_frag_shader");
+    pShader->LoadVertexShader(CAssetBundle::GetInstance()->GetAssetPath("Shaders/skybox.vert"));
+    pShader->LoadFragmentShader(CAssetBundle::GetInstance()->GetAssetPath("Shaders/skybox.frag"));
+    
+    //pShader->CreateVertexShaderFromSource(SB_VERT_SH, "skybox_vertex_shader");
+    //pShader->CreateFragmentShaderFromSource(SB_FRAG_SH, "skybox_frag_shader");
+
     assert( g_ShaderMgr->Create(pShader, 
                                 MOOSE_SKYBOX_SHADER, 
                                 state.GetShaderHandle()) == 0);

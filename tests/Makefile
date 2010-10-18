@@ -1,4 +1,4 @@
-UNIT_OBJ=MooseVectorTest2.o MooseVectorTest3.o MooseVectorTest4.o MooseQuaternionTest.o MooseMatrix3x3Test.o MooseMathTest.o MooseAVLTreeTest.o MooseTest.o MooseHashTableTest.o MooseResourceManagerTest.o MooseCameraTest.o MooseCollisionTest.o MooseOctreeTest.o MooseTransformTest.o MooseTimeStampTest.o MooseEventHandlerTest.o MooseObjLoaderTest.o MooseLightTest.o MooseSpatialGraphTest.o
+UNIT_OBJ=MooseVectorTest2.o MooseVectorTest3.o MooseVectorTest4.o MooseQuaternionTest.o MooseMatrix3x3Test.o MooseMathTest.o MooseAVLTreeTest.o MooseTest.o MooseHashTableTest.o MooseResourceManagerTest.o MooseCameraTest.o MooseCollisionTest.o MooseOctreeTest.o MooseTransformTest.o MooseTimeStampTest.o MooseEventHandlerTest.o MooseObjLoaderTest.o MooseLightTest.o MooseSpatialGraphTest.o MooseAssetTest.o
 
 # helpful targets for unit test compiling
 all: unit

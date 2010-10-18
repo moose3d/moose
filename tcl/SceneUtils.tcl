@@ -207,6 +207,16 @@ proc AddModel { model lod id renderstate } {
     UseModel $model $lod $id $renderstate
 }
 
+proc AddSharedModel { pGameObject modelName lod id } {
+    set pRenderable [ $pGameObject AddRenderableModel $modelName $lod [$pGameObject GetWorldTransform]]
+    $pRenderable SetId $id
+    set pRs [pRenderable GetRenderState]
+    $pRs AddShaderAttrib "a_vertex"   [[g_Models $modelName] GetVertexHandle 0]
+    $pRs AddShaderAttrib "a_texcoord" [[g_Models $modelName] GetTextureCoordinateHandle 0]
+    # $pRs AddShaderUniform "material" [$pRs GetMaterial 0]
+    
+}
+
 proc NewModel { name params } {
     global g_Models
  
@@ -423,6 +433,14 @@ proc Instantiate { skeleton name pos rotation } {
     # Return object
     return $obj
 }    
+
+proc g_AssetBundle { {name ""} } {
+    if { $name == "" } {
+        return [GetAssetBundle]
+    } else {
+        return [[GetAssetBundle] GetAssetPath $name]
+    }
+}
 
 proc g_ObjectMgr { { name "" } } {
     if { $name == "" } {

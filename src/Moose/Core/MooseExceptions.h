@@ -36,6 +36,14 @@ namespace Moose
       CRenameException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
       ~CRenameException() throw() {};
     };
+    ////////////////////
+    /// No such asset exception.
+    class MOOSE_API CNoSuchAssetException : public Moose::Exceptions::CMooseException
+    {
+    public:
+      CNoSuchAssetException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
+      ~CNoSuchAssetException() throw() {};
+    };
   }
 }
 /////////////////////////////////////////////////////////////////

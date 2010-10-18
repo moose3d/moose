@@ -10,6 +10,7 @@
 //#include "MooseGuiSystem.h"
 #include "MooseAVLTree.h"
 #include "MooseCore.h"
+#include "MooseAssetBundle.h"
 #include "MooseGlobals.h"
 #include "MooseIndexArray.h"
 #include "MooseMath.h"

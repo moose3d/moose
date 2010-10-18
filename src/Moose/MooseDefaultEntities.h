@@ -8,6 +8,7 @@
 #include <MooseVertexDescriptor.h>
 #include <MooseIndexArray.h>
 #include "MooseAPI.h"
+#include <MooseAssetBundle.h>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
@@ -83,6 +84,7 @@ namespace Moose
     SoundSampleManager * GetSoundSampleMgr();
     SoundStreamManager * GetSoundStreamMgr();
     Moose::Core::CUniqueNameCreator * GetNameCreator();
+    Moose::Core::CAssetBundle *       GetAssetBundle();
   }; // namespace Default
 }; // namespace Moose
 ////////////////////
@@ -131,6 +133,7 @@ namespace Moose
 #define g_Samples            (*SoundSampleManager::GetInstance())
 // Audio system
 #define g_AudioSystem          (Moose::Sound::CAudioSystem::GetInstance())
+#define g_AssetBundle        (*Moose::Core::CAssetBundle::GetInstance())
 /////////////////////////////////////////////////////////////////
 #endif
 /////////////////////////////////////////////////////////////////
