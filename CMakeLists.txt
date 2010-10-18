@@ -4,10 +4,8 @@ project(Moose)
 
 add_definitions("-Wall -O2 -fPIC")
 
-SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to
-install directories")
-SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix
-prepended to install directories" FORCE)
+SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to install directories")
+SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
 
 
@@ -103,6 +101,9 @@ FILE(GLOB files
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h")
 
 install( FILES ${files} DESTINATION include/Moose)
+
+FILE( GLOB shaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/*")
+install( FILES ${shaderFiles} DESTINATION include/Moose/Shaders)
 
 SET( EXTERNAL_LIBS "-lMoose ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL ")
 SET( INTERNAL_LIBS libMoose.a ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)
