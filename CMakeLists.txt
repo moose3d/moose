@@ -155,10 +155,10 @@ ADD_CUSTOM_COMMAND(
    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
    COMMENT "Generating pkgIndex.tcl"
    COMMAND echo pkg_mkIndex  . Moose.so|tclsh
- )
-FILE(GLOB tclFiles 
-  "${CMAKE_CURRENT_BINARY_DIR}/Moose.so"
-  "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"
+   )
+SET( tclFiles 
+  "${CMAKE_CURRENT_BINARY_DIR}/Moose.so"  
+  "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"  
   "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
 )
 
