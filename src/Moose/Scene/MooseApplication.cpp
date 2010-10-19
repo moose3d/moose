@@ -356,8 +356,8 @@ prefix::CApplication::LoadDefaultResources()
         assert( g_ShaderMgr->Create(pShader, "moose_line_shader") == 0);
 
         CShader *pColor = new CShader();
-        pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("Scripts/color.vert"));
-        pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("Scripts/color.frag"));
+        pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("Shaders/color.vert"));
+        pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("Shaders/color.frag"));
 
         assert( g_ShaderMgr->Create(pColor, "moose_color_shader") == 0);
     }
