@@ -88,6 +88,12 @@ Moose::Graphics::CRenderState::GetShaderHandle()
 {
   return m_ShaderHandle;
 }
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CRenderState::SetShader( const char *szName )
+{
+  GetShaderHandle() = szName;
+}
 /////////////////////////////////////////////////////////////////
 void
 Moose::Graphics::CRenderState::AddShaderAttrib( const char *sName, Moose::Default::VERTEX_HANDLE & handle )

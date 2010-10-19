@@ -24,8 +24,6 @@ set g_lstShaders {}
 # Maps resource name to proper class and script 
 set g_lstSkeletons {}
 
-
-
 # ---------------------------------------------------------------------------------------
 proc AddCollider { name lstData } {
     
@@ -210,11 +208,23 @@ proc AddModel { model lod id renderstate } {
 proc AddSharedModel { pGameObject modelName lod id } {
     set pRenderable [ $pGameObject AddRenderableModel $modelName $lod [$pGameObject GetWorldTransform]]
     $pRenderable SetId $id
-    set pRs [pRenderable GetRenderState]
-    $pRs AddShaderAttrib "a_vertex"   [[g_Models $modelName] GetVertexHandle 0]
+    set pRs [$pRenderable GetRenderState]
+    $pRs SetShader "moose_default_shader"
+
+    $pRs AddShaderAttrib "a_vertex"   [[g_Models $modelName] GetVertexHandle]
     $pRs AddShaderAttrib "a_texcoord" [[g_Models $modelName] GetTextureCoordinateHandle 0]
+    $pRs AddShaderUniform "diffuse"   0
+
+    if { [$pRs Prepare] == 0 } {
+        puts "Prepare error"
+    } else {
+        puts "prepare ok!"
+    }
+    #if { [[g_Models $modelName] GetTextureCoordinateHandle 1] IsNull} {
+    #    Add under some predefined name into shader
+    #}
     # $pRs AddShaderUniform "material" [$pRs GetMaterial 0]
-    
+    return $pRenderable
 }
 
 proc NewModel { name params } {

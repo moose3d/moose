@@ -294,23 +294,13 @@ void
 prefix::CApplication::LoadDefaultResources()
 {
     // For default volume renderables 
-    if ( g_ShaderMgr->HasResource("moose_color_shader") == false )
+    if ( g_ShaderMgr->HasResource("moose_default_shader") == false )
     {
-    char colorVertexShaderCode[] = "attribute vec3 a_vertex;"\
-    "uniform mat4 m_viewMatrix;"\
-    "uniform mat4 m_projMatrix;"\
-    "uniform mat4 m_modelMatrix;"\
-    "uniform vec4 color;"\
-    "void main()"\
-    "{"\
-    "    gl_Position = m_projMatrix * m_viewMatrix * m_modelMatrix * vec4(a_vertex,1.0);"\
-    "}";
-    char colorFragmentShaderCode[] = "#ifdef GL_ES\nprecision mediump float;\n#endif\n"\
-                                     "uniform vec4 color; void main(){ gl_FragColor = color;}";
-    CShader *pShader = new CShader();
-    pShader->CreateVertexShaderFromSource(colorVertexShaderCode, "color vsh");
-    pShader->CreateFragmentShaderFromSource(colorFragmentShaderCode,"color fsh");
-    assert( g_ShaderMgr->Create(pShader, "moose_color_shader") == 0);
+      
+      CShader *pShader = new CShader();
+      pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("Shaders/default.vert"));
+      pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("Shaders/default.frag"));
+      assert( g_ShaderMgr->Create(pShader, "moose_default_shader") == 0);
     }
     // For boxrenderable
     if ( g_IndexMgr->HasResource("moose_boxrenderable_indices") == false )
@@ -364,7 +354,12 @@ prefix::CApplication::LoadDefaultResources()
         pShader->CreateVertexShaderFromSource(vsh, "line vsh");
         pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
         assert( g_ShaderMgr->Create(pShader, "moose_line_shader") == 0);
-    
+
+        CShader *pColor = new CShader();
+        pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("Scripts/color.vert"));
+        pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("Scripts/color.frag"));
+
+        assert( g_ShaderMgr->Create(pColor, "moose_color_shader") == 0);
     }
 }
 ///////////////////////////////////////////////////////////////////////////////

@@ -133,7 +133,7 @@ namespace Moose
 #define g_Samples            (*SoundSampleManager::GetInstance())
 // Audio system
 #define g_AudioSystem          (Moose::Sound::CAudioSystem::GetInstance())
-#define g_AssetBundle        (*Moose::Core::CAssetBundle::GetInstance())
+#define g_AssetBundle        (Moose::Core::CAssetBundle::GetInstance())
 /////////////////////////////////////////////////////////////////
 #endif
 /////////////////////////////////////////////////////////////////

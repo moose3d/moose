@@ -659,6 +659,10 @@ namespace Moose
       /// \returns SHADER_HANDLE.
       Moose::Default::SHADER_HANDLE  & GetShaderHandle();
       ////////////////////
+      /// Sets shader by name.
+      void SetShader( const char *szName );
+
+      ////////////////////
       /// Inserts shader parameter with name.
       /// \param sName Parameter name in shaders.
       /// \param pAttrib Shader attrib.
