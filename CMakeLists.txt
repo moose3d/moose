@@ -147,11 +147,6 @@ SET_TARGET_PROPERTIES( ${TCL_MODULE}
   OUTPUT_NAME Moose
   PREFIX ""
   )
-FILE(GLOB tclFiles 
-  "${CMAKE_CURRENT_BINARY_DIR}/Moose.so"
-  "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"
-  "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
-)
 
 # Generate pkgIndex.tcl
 ADD_CUSTOM_COMMAND(
@@ -161,5 +156,10 @@ ADD_CUSTOM_COMMAND(
    COMMENT "Generating pkgIndex.tcl"
    COMMAND echo pkg_mkIndex  . Moose.so|tclsh
  )
+FILE(GLOB tclFiles 
+  "${CMAKE_CURRENT_BINARY_DIR}/Moose.so"
+  "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
+)
 
 install( FILES ${tclFiles} DESTINATION lib/Moose )
