@@ -75,13 +75,23 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
     GetRenderState().GetShaderAttribs().Apply(renderer);
     GetRenderState().GetShaderUniforms().Apply(renderer);
 
-    GetRenderState().GetLightUniforms().diffuse[0].SetData()
-    
+    // Setup all lights (3) for shaders
+    LightList::iterator it = GetRenderState().GetLights().begin();
+    for( int i=0; it != GetRenderState().GetLights().end() && i < 3; it++,i++ )
+    {
+      GetRenderState().GetUniformLights().SetData(i,**it, renderer);
+    }    
+    GetRenderState().GetUniformLights().Apply(renderer);
+    // Set global ambient (from Scene)
+    GetRenderState().GetGlobalAmbient().SetData( renderer.GetRenderState().m_pGlobalAmbient);
+    GetRenderState().GetGlobalAmbient().Apply(renderer);
+
     if ( renderer.GetCurrentCamera() )
     {
       // Update matrices 
       GetRenderState().GetShaderViewUniform().SetData(      &renderer.GetCurrentCamera()->GetViewMatrix());
       GetRenderState().GetShaderProjectionUniform().SetData(&renderer.GetCurrentCamera()->GetProjectionMatrix());
+
       if ( GetTransform() != NULL ) // model transform is optional.
       {
         GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
