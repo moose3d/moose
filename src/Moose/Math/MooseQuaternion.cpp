@@ -37,34 +37,41 @@ CQuaternion::CreateFromAxisAngleRad ( float fX, float fY, float fZ, float fRad )
   m_aValues[0] = fX * sinThetaDiv2 ;
   m_aValues[1] = fY * sinThetaDiv2 ;
   m_aValues[2] = fZ * sinThetaDiv2 ;
-  m_aValues[3] = cos( thetaDiv2 );  
+  m_aValues[3] = cos( thetaDiv2 );
 }
 /////////////////////////////////////////////////////////////////
 void 
 CQuaternion::CreateFromAxisAngles( const CVector3<float> &vValues )
 {
-  CQuaternion qX,qY,qZ,qTemp;
+  // CQuaternion qX,qY,qZ,qTemp;
   
-  qX.CreateFromAxisAngle( 1,0,0, vValues[0]);
-  qY.CreateFromAxisAngle( 0,1,0, vValues[1]);
-  qZ.CreateFromAxisAngle( 0,0,1, vValues[2]);
-  qTemp = qZ * qY;
-  qZ = qTemp * qX;
-  *this = qZ;
+  // qX.CreateFromAxisAngle( 1,0,0, vValues[0]);
+  // qY.CreateFromAxisAngle( 0,1,0, vValues[1]);
+  // qZ.CreateFromAxisAngle( 0,0,1, vValues[2]);
+  // qTemp = qZ * qY;
+  // qZ = qTemp * qX;
+  *this = AxisAngles(vValues);
   
 }
 /////////////////////////////////////////////////////////////////
 void
 CQuaternion::CreateFromAxisAnglesRad( const CVector3<float> &vValues )
 {
-  CQuaternion qX,qY,qZ,qCombined;
-
-  qX.CreateFromAxisAngleRad( 1,0,0, vValues[0]);
-  qY.CreateFromAxisAngleRad( 0,1,0, vValues[1]);
-  qZ.CreateFromAxisAngleRad( 0,0,1, vValues[2]);
-  qCombined = qZ * qY * qX;
-  
-  *this = qCombined;
+  *this = AxisAnglesRad(vValues);
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Math::CQuaternion 
+Moose::Math::CQuaternion::AxisAngleRad( float fX, float fY, float fZ, float fRad )
+{
+  double thetaDiv2    = fRad * 0.5f;
+  double sinThetaDiv2 = sin ( thetaDiv2 );
+  return Moose::Math::CQuaternion( fX * sinThetaDiv2,fY * sinThetaDiv2,fZ * sinThetaDiv2, cos( thetaDiv2 ));
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Math::CQuaternion 
+Moose::Math::CQuaternion::AxisAnglesRad( float fX, float fY, float fZ )
+{
+  return AxisAngleRad(0,0,1,fZ) * AxisAngleRad(0,1,0,fY) * AxisAngleRad(1,0,0,fX);
 }
 /////////////////////////////////////////////////////////////////
 #ifndef SWIG

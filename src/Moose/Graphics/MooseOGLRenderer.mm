@@ -2068,7 +2068,7 @@ Moose::Graphics::COglRenderer::CommitVertexAttrib( Moose::Graphics::CShader &sha
 }
 /////////////////////////////////////////////////////////////////
 /// Sets diffuse, ambient and specular values of a light.
-inline void CommitLightColors( const CLightBase & light, GLenum iLightID )
+inline void CommitLightColors( const CLight & light, GLenum iLightID )
 {
 
 #if !defined(MOOSE_APPLE_IPHONE)
@@ -3191,49 +3191,30 @@ Moose::Graphics::COglRenderer::GetFeatures()
 void
 Moose::Graphics::COglRenderer::CommitRenderState( const Moose::Graphics::CRenderState & state )
 {
-	CRenderState & s = const_cast< Moose::Graphics::CRenderState & >(state);
-	CommitBlending( s.GetBlendingOperation());
-	////////////////////
-	// Check depth mask write flag.
-	if ( s.GetDepthWrite()) {  CommitState( STATE_DEPTH_WRITE );  }
-	else DisableState( STATE_DEPTH_WRITE );
-	////////////////////
-	// Check depth test flag.
-	if ( s.GetDepthTest()) CommitState( STATE_DEPTH_TEST );
-	else DisableState( STATE_DEPTH_TEST );
-	////////////////////
-	// Check face culling flag.
-	if ( s.GetFaceCulling()) CommitState( STATE_FACECULLING );
-	else DisableState( STATE_FACECULLING );
-        ////////////////////
-        // Polygon offset.
-        if ( s.GetPolygonOffset().IsEnabled() ) 
-        {
-          CommitState( STATE_POLYGONOFFSET );
-          glPolygonOffset( s.GetPolygonOffset().GetFactor(), 
-                           s.GetPolygonOffset().GetUnits());
-        }
-        else DisableState( STATE_POLYGONOFFSET );
-	////////////////////
-	// Check lighting flag
-	if ( s.GetLighting())
-	{
-		CommitState( STATE_LIGHTING );
-		LightRenderableList::iterator it = s.GetLights().begin();
-		for( int i = 0; i < this->GetFeatures().GetMaxLights() && it != s.GetLights().end(); it++, i++)
-		{
-			CRenderable *pTmp = *it;
-			// Hint light for an id.
-			pTmp->GetRenderState().GetLightId() = i;
-			CommitRenderable( *pTmp );
-		}
-	    CommitMaterial( s.GetMaterial() );
-	}
-	else
-    {
-	    DisableState( STATE_LIGHTING );
-	    CommitColor( s.GetBaseColor() );
-    }
+  CRenderState & s = const_cast< Moose::Graphics::CRenderState & >(state);
+  CommitBlending( s.GetBlendingOperation());
+  ////////////////////
+  // Check depth mask write flag.
+  if ( s.GetDepthWrite()) {  CommitState( STATE_DEPTH_WRITE );  }
+  else DisableState( STATE_DEPTH_WRITE );
+  ////////////////////
+  // Check depth test flag.
+  if ( s.GetDepthTest()) CommitState( STATE_DEPTH_TEST );
+  else DisableState( STATE_DEPTH_TEST );
+  ////////////////////
+  // Check face culling flag.
+  if ( s.GetFaceCulling()) CommitState( STATE_FACECULLING );
+  else DisableState( STATE_FACECULLING );
+  ////////////////////
+  // Polygon offset.
+  if ( s.GetPolygonOffset().IsEnabled() ) 
+  {
+    CommitState( STATE_POLYGONOFFSET );
+    glPolygonOffset( s.GetPolygonOffset().GetFactor(), 
+                     s.GetPolygonOffset().GetUnits());
+  }
+  else DisableState( STATE_POLYGONOFFSET );
+	
 
 
 

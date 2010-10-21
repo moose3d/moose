@@ -315,6 +315,8 @@ void
 Moose::Scene::CScene::Render( COglRenderer & renderer )
 {
 	CameraMap::iterator camIt = m_mapCameras.begin();
+    // Pass global settings to renderer.
+    renderer.GetRenderState().SetGlobalAmbient( &GetRenderSettings().GetGlobalAmbient());
 	for( ; camIt != m_mapCameras.end(); camIt++ )
 	{
       // CollectVisibleGameObjects( camIt->second );
@@ -383,7 +385,7 @@ Moose::Scene::CScene::CollectVisibleGameObjects( CCameraProperty & camProp )
 CCameraProperty *
 Moose::Scene::CScene::GetCameraProperty( const std::string & name )
 {
-	CameraMap::iterator it = m_mapCameras.find(name);
+    CameraMap::iterator it = m_mapCameras.find(name);
 	if ( it != m_mapCameras.end() )
 	{
 		return it->second;
@@ -394,40 +396,40 @@ Moose::Scene::CScene::GetCameraProperty( const std::string & name )
 void
 Moose::Scene::CScene::AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue)
 {
-	std::list<CRenderable * >::iterator rIt = queue.GetObjectList().begin();
-	for( ; rIt != queue.GetObjectList().end(); rIt++)
-	{
-		(*rIt)->GetRenderState().GetLights().clear();
-		GameObjectList::iterator it = lights.begin();
-		for( ; it != lights.end(); it++ )
-		{
-			CGameObject & obj = **it;
-			if ( obj.IsEnabled() )
-			{
-				obj.GetRenderableObjects(0).front();
-				(*rIt)->GetRenderState().GetLights().push_back( obj.GetRenderableObjects(0).front());
-			}
-		}
-	}
+    std::list<CRenderable * >::iterator rIt = queue.GetObjectList().begin();
+    for( ; rIt != queue.GetObjectList().end(); rIt++)
+    {
+      LightList & lightList = (*rIt)->GetRenderState().GetLights();
+      lightList.clear();
+      GameObjectList::iterator it = lights.begin();
+      for( ; it != lights.end(); it++ )
+      {
+        CGameObject * obj = *it;
+        if ( obj->IsEnabled() )
+        {
+          lightList.push_back( dynamic_cast<Moose::Graphics::CLight *>(obj));
+        }
+      }
+    }
 }
 /////////////////////////////////////////////////////////////////
 void
 Moose::Scene::CScene::AssignLightsToObjects ( GameObjectList & lights, GameObjectList & objects )
 {
-	GameObjectList::iterator objIt = objects.begin();
+    GameObjectList::iterator objIt = objects.begin();
 	for( ; objIt != objects.end(); objIt++)
 	{
 		// Remove previous lights, if any
 		(*objIt)->GetLights().clear();
 		//CSphere s = (*objIt)->GetWorldBoundingSphere();
-
+        
 		// Insert new light pointer if it collides with object.
 		GameObjectList::iterator lightIt = lights.begin();
 		for( ; lightIt != lights.end(); lightIt++)
 		{
 			if ( (*lightIt)->IsEnabled() && (*lightIt)->GetCollider()->Intersects( **objIt )  )
 			{
-				(*objIt)->GetLights().push_back( (*lightIt)->GetRenderableObjects(0).front() );
+              (*objIt)->GetLights().push_back( dynamic_cast<Moose::Graphics::CLight *>(*lightIt) );
 			}
 		}
 	}
@@ -527,6 +529,12 @@ void
 Moose::Scene::CScene::RemoveFromRenderQueue( Moose::Graphics::CRenderable *pRenderable )
 {
 	m_StaticQueue.GetObjectList().remove(pRenderable);
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Scene::CRenderSettings & 
+Moose::Scene::CScene::GetRenderSettings()
+{
+  return m_RenderSettings;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void

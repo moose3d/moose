@@ -6,6 +6,7 @@
 #include "MooseAudioSystem.h"
 #include "MooseALSampleTypes.h"
 #include "MooseCore.h"
+#include "MooseModelHelper.h"
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Default::ObjectMgr *
 Moose::Default::GetObjectMgr()
@@ -83,5 +84,11 @@ Moose::Core::CAssetBundle *
 Moose::Default::GetAssetBundle()
 {
   return Moose::Core::CAssetBundle::GetInstance();
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Data::CModelHelper *       
+Moose::Default::GetModelHelper()
+{
+  return g_ModelHelper;
 }
 ////////////////////////////////////////////////////////////////////////////////

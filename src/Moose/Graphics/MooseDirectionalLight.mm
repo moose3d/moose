@@ -9,6 +9,6 @@ Moose::Graphics::CDirectionalLight::CDirectionalLight()
 void
 Moose::Graphics::CDirectionalLight::Render( Moose::Graphics::COglRenderer & renderer )
 {
-	if ( IsEnabled() ) renderer.CommitLight(*this, GetRenderState().GetLightId());
+
 }
 ///////////////////////////////////////////////////////////////////////////////

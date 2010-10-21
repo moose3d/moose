@@ -9,10 +9,6 @@ Moose::Graphics::CPointLight::CPointLight()
 void
 Moose::Graphics::CPointLight::Render( Moose::Graphics::COglRenderer & renderer )
 {
-	if ( IsEnabled() )
-	{
-		if ( GetTransform() != NULL ) SetPosition( GetTransform()->GetTranslation() );
-		renderer.CommitLight(*this, GetRenderState().GetLightId());
-	}
+
 }
 ///////////////////////////////////////////////////////////////////////////////

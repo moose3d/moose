@@ -12,15 +12,6 @@ Moose::Graphics::CSpotLight::CSpotLight()
 void
 Moose::Graphics::CSpotLight::Render( Moose::Graphics::COglRenderer & renderer )
 {
-	if ( IsEnabled() )
-	{
-		if ( GetTransform() != NULL )
-		{
-			SetPosition( GetTransform()->GetTranslation() );
-			// TODO implement light direction vector rotation in some manner; or ignore it completely.
-		}
 
-		renderer.CommitLight(*this, GetRenderState().GetLightId());
-	}
 }
 ///////////////////////////////////////////////////////////////////////////////

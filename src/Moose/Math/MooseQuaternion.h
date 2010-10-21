@@ -39,7 +39,7 @@ namespace Moose
       /// \param fDegrees Rotation angle in degrees.
       inline void CreateFromAxisAngle( float fX, float fY, float fZ, float fDegrees)
       {
-	CreateFromAxisAngleRad( fX, fY, fZ, Deg2Rad(fDegrees) );
+        CreateFromAxisAngleRad( fX, fY, fZ, Deg2Rad(fDegrees) );
       }
       ////////////////////
       /// Creates quaternion from axis angle in degrees
@@ -47,7 +47,7 @@ namespace Moose
       /// \param fDegrees Rotation angle in degrees.
       inline void CreateFromAxisAngle( const Moose::Math::CVector3<float> & vValues, float fDegrees )
       {
-	CreateFromAxisAngleRad( vValues[0],  vValues[1], vValues[2], Deg2Rad(fDegrees) );
+        CreateFromAxisAngleRad( vValues[0],  vValues[1], vValues[2], Deg2Rad(fDegrees) );
       }
       ////////////////////
       /// Creates quaternion from axis angle in radians
@@ -55,7 +55,7 @@ namespace Moose
       /// \param fRad Rotation angle in radians.
       inline void CreateFromAxisAngleRad ( const Moose::Math::CVector3<float> & vValues, float fRad )
       {
-	CreateFromAxisAngleRad( vValues[0], vValues[1], vValues[2], fRad);
+        CreateFromAxisAngleRad( vValues[0], vValues[1], vValues[2], fRad);
       }
       ////////////////////
       /// Creates quaternion from axis angle in radians
@@ -80,24 +80,24 @@ namespace Moose
       CQuaternion operator * ( const CQuaternion & qQuat ) const;
       inline CQuaternion operator+( const CQuaternion & qQuat ) const 
       {
-	return CQuaternion( m_aValues[0] + qQuat[0],
-			    m_aValues[1] + qQuat[1],
-			    m_aValues[2] + qQuat[2],
-			    m_aValues[3] + qQuat[3]);
+        return CQuaternion( m_aValues[0] + qQuat[0],
+                            m_aValues[1] + qQuat[1],
+                            m_aValues[2] + qQuat[2],
+                            m_aValues[3] + qQuat[3]);
       }
       inline CQuaternion operator-( const CQuaternion & qQuat ) const 
       {
-	return CQuaternion( m_aValues[0] - qQuat[0],
-			    m_aValues[1] - qQuat[1],
-			    m_aValues[2] - qQuat[2],
-			    m_aValues[3] - qQuat[3]);
+        return CQuaternion( m_aValues[0] - qQuat[0],
+                            m_aValues[1] - qQuat[1],
+                            m_aValues[2] - qQuat[2],
+                            m_aValues[3] - qQuat[3]);
       }
       inline CQuaternion operator-() const 
       {
-	return CQuaternion( -m_aValues[0],
-			    -m_aValues[1],
-			    -m_aValues[2],
-			    -m_aValues[3]);
+        return CQuaternion( -m_aValues[0],
+                            -m_aValues[1],
+                            -m_aValues[2],
+                            -m_aValues[3]);
       }
 #ifndef SWIG
       ////////////////////
@@ -107,10 +107,10 @@ namespace Moose
       /// \returns Scaled quaternion.
       inline friend CQuaternion operator*( float fValue, const CQuaternion & qQuat )
       {
-	return CQuaternion(qQuat[0] * fValue,
-			   qQuat[1] * fValue,
-			   qQuat[2] * fValue,
-			   qQuat[3] * fValue);
+        return CQuaternion(qQuat[0] * fValue,
+                           qQuat[1] * fValue,
+                           qQuat[2] * fValue,
+                           qQuat[3] * fValue);
       }    
 #endif
       ////////////////////
@@ -118,49 +118,49 @@ namespace Moose
       /// \return square root of sum of squares of each component.
       inline float Magnitude()
       {
-	return Length();
+        return Length();
       }
       ////////////////////
       /// Calculates the Quaternion Conjugate of unit quaternion ie. Inverse.
       inline CQuaternion GetInverse() const
       {
-	float f1DivLen = 1.0f/this->Length();
-	return CQuaternion( -(m_aValues[0]*f1DivLen), 
-			    -(m_aValues[1]*f1DivLen),
-			    -(m_aValues[2]*f1DivLen),
-			     (m_aValues[3]*f1DivLen) );
+        float f1DivLen = 1.0f/this->Length();
+        return CQuaternion( -(m_aValues[0]*f1DivLen), 
+                            -(m_aValues[1]*f1DivLen),
+                            -(m_aValues[2]*f1DivLen),
+                            (m_aValues[3]*f1DivLen) );
       }
       ////////////////////
       /// Calculates the Quaternion Conjugate of quaternion.
       inline CQuaternion GetConjugate() const
       {
 	
-	return CQuaternion( -(m_aValues[0]), 
-			    -(m_aValues[1]),
-			    -(m_aValues[2]),
-			     (m_aValues[3]) );
+        return CQuaternion( -(m_aValues[0]), 
+                            -(m_aValues[1]),
+                            -(m_aValues[2]),
+                            (m_aValues[3]) );
       }
       ////////////////////
       /// Reverses the quaternion (in rotation sense).
       inline void Reverse()
       {
-	m_aValues[3] = -m_aValues[3];
+        m_aValues[3] = -m_aValues[3];
       }
       ////////////////////
       /// Reverses the quaternion (in rotation sense).
       /// \returns Reversed quaterinon.
       inline CQuaternion GetReverse() const
       {
-	return CQuaternion(m_aValues[0], m_aValues[1], m_aValues[2], -m_aValues[3]);
+        return CQuaternion(m_aValues[0], m_aValues[1], m_aValues[2], -m_aValues[3]);
       }
       ////////////////////
       /// Sets identity quaternion (in multiplication sense).
       inline void Identity() 
       {
-	m_aValues[0] = 0.0f;
-	m_aValues[1] = 0.0f;
-	m_aValues[2] = 0.0f;
-	m_aValues[3] = 1.0f;
+        m_aValues[0] = 0.0f;
+        m_aValues[1] = 0.0f;
+        m_aValues[2] = 0.0f;
+        m_aValues[3] = 1.0f;
       }
 #ifndef SWIG
       ////////////////////
@@ -174,12 +174,40 @@ namespace Moose
       /// The assignment operator.
       inline void operator=( CQuaternion qQuat)
       {
-	m_aValues[0] = qQuat.m_aValues[0];
-	m_aValues[1] = qQuat.m_aValues[1];
-	m_aValues[2] = qQuat.m_aValues[2];
-	m_aValues[3] = qQuat.m_aValues[3];
+        m_aValues[0] = qQuat.m_aValues[0];
+        m_aValues[1] = qQuat.m_aValues[1];
+        m_aValues[2] = qQuat.m_aValues[2];
+        m_aValues[3] = qQuat.m_aValues[3];
       }
+      
+      static inline CQuaternion AxisAngle( const Moose::Math::CVector3<float> & vAxis, float fDegrees )
+      {
+        return AxisAngle( vAxis[0], vAxis[1], vAxis[2], fDegrees);
+      }
+      static inline CQuaternion AxisAngleRad( const Moose::Math::CVector3<float> & vAxis, float fRad )
+      {
+        return AxisAngleRad( vAxis[0], vAxis[1], vAxis[2], fRad);
+      }
+      static inline CQuaternion AxisAngles( const Moose::Math::CVector3<float> & vAxisAngles )
+      {
+        return AxisAngles( vAxisAngles[0], vAxisAngles[1], vAxisAngles[2]);
+      }
+      static inline CQuaternion AxisAnglesRad( const Moose::Math::CVector3<float> & vAxisAngles )
+      { 
+        return AxisAnglesRad(vAxisAngles[0], vAxisAngles[1], vAxisAngles[2]);
+      }
+      static inline CQuaternion AxisAngle( float fX, float fY, float fZ, float fDegrees )
+      {
+        return AxisAngleRad( fX,fY,fZ, Deg2Rad(fDegrees));
+      }
+      static inline CQuaternion AxisAngles( float fX, float fY, float fZ )
+      {
+        return AxisAnglesRad( Deg2Rad(fX), Deg2Rad(fY), Deg2Rad(fZ));
+      }
+      static CQuaternion AxisAngleRad( float fX, float fY, float fZ, float fRad );
+      static CQuaternion AxisAnglesRad( float fX, float fY, float fZ );
     };
+    
   }; // namespace Math
 }; // namespace Moose
 /////////////////////////////////////////////////////////////////

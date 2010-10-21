@@ -105,13 +105,13 @@ Moose::Graphics::CRenderableProperty::GetRenderableObjects( size_t nLodLevel ) c
   return m_LodLevels[m_LodLevels.size()-1];
 }
 /////////////////////////////////////////////////////////////////
-Moose::Graphics::RenderableList &
+Moose::Graphics::LightList &
 Moose::Graphics::CRenderableProperty::GetLights()
 {
 	return m_lstLights;
 }
 /////////////////////////////////////////////////////////////////
-const Moose::Graphics::RenderableList &
+const Moose::Graphics::LightList &
 Moose::Graphics::CRenderableProperty::GetLights() const
 {
 	return m_lstLights;

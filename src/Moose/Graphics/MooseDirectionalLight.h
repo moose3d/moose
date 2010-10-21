@@ -13,9 +13,7 @@ namespace Moose
   {
     ////////////////////
     /// Class for lights.
-    class MOOSE_API CDirectionalLight : public Moose::Graphics::CLightBase,
-										  public Moose::Spatial::COneDirectional
-
+    class MOOSE_API CDirectionalLight : public Moose::Graphics::CLight
     {
     public:
       ////////////////////

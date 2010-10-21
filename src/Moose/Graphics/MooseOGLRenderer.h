@@ -41,15 +41,16 @@ namespace Moose
     class MOOSE_API CInternalRenderState
     {
     public:
-      Moose::Graphics::COglTexture *m_pTexture[TEXTURE_HANDLE_COUNT];
-      Moose::Graphics::CShader     *m_pShader;
+      Moose::Graphics::COglTexture       *m_pTexture[TEXTURE_HANDLE_COUNT];
+      Moose::Graphics::CShader           *m_pShader;
       Moose::Graphics::CVertexDescriptor *m_pVertices;
       Moose::Graphics::CVertexDescriptor *m_pNormals;
       Moose::Graphics::CVertexDescriptor *m_pTexCoords[TEXTURE_HANDLE_COUNT];
       Moose::Graphics::CIndexArray       *m_pIndices;
+      Moose::Graphics::CColor4f          *m_pGlobalAmbient;
     public:
 
-      CInternalRenderState()
+      CInternalRenderState() : m_pGlobalAmbient(NULL)
       {
 	for( size_t i=0;i<TEXTURE_HANDLE_COUNT;i++)
 	{
@@ -134,6 +135,10 @@ namespace Moose
       inline void SetCurrentIndices( CIndexArray *pIndices )
       {
 	m_pIndices = pIndices;
+      }
+      inline void SetGlobalAmbient( Moose::Graphics::CColor4f *pColor )
+      {
+        m_pGlobalAmbient = pColor;
       }
     };
     /////////////////////////////////////////////////////////////////

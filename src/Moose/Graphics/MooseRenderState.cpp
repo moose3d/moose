@@ -8,27 +8,63 @@
 #include "MooseConvert.h"
 #include "MooseLogger.h"
 #include "MooseDefaultEntities.h"
+#include "MooseOGLRenderer.h"
 #include <iostream>
 #include <cassert>
 using namespace Moose::Graphics;
 using namespace Moose::Core;
 using namespace std;
+#define RegLightParam(NAME) NAME.SetName(#NAME);
+
 ///////////////////////////////////////////////////////////////////////////////////
 Moose::Graphics::CRenderState::CRenderState() :  m_iRenderLayer(kOpaque),
                                                  m_DepthTest(false),
                                                  m_DepthWrite(true),
                                                  m_FaceCulling(false),
                                                  m_bLighting(false),
-                                                 m_bLightSource(false),
-                                                 m_nLightId(0),
                                                  m_BaseColor(255,255,255,255)
 {
+    RegLightParam( m_Lights.diffuse[0] );
+    RegLightParam( m_Lights.ambient[0] );
+    RegLightParam( m_Lights.specular[0] );
+    RegLightParam( m_Lights.position[0] );
+    RegLightParam( m_Lights.halfVector[0] );
+    RegLightParam( m_Lights.direction[0] );
+    RegLightParam( m_Lights.spotAngle[0] );
+    RegLightParam( m_Lights.spotExponent[0] );
+    RegLightParam( m_Lights.constantAttenuation[0] );
+    RegLightParam( m_Lights.linearAttenuation[0] );
+    RegLightParam( m_Lights.quadraticAttenuation[0] );
 
+    RegLightParam( m_Lights.diffuse[1] );
+    RegLightParam( m_Lights.ambient[1] );
+    RegLightParam( m_Lights.specular[1] );
+    RegLightParam( m_Lights.position[1] );
+    RegLightParam( m_Lights.halfVector[1] );
+    RegLightParam( m_Lights.direction[1] );
+    RegLightParam( m_Lights.spotAngle[1] );
+    RegLightParam( m_Lights.spotExponent[1] );
+    RegLightParam( m_Lights.constantAttenuation[1] );
+    RegLightParam( m_Lights.linearAttenuation[1] );
+    RegLightParam( m_Lights.quadraticAttenuation[1] );
+
+    RegLightParam( m_Lights.diffuse[2] );
+    RegLightParam( m_Lights.ambient[2] );
+    RegLightParam( m_Lights.specular[2] );
+    RegLightParam( m_Lights.position[2] );
+    RegLightParam( m_Lights.halfVector[2] );
+    RegLightParam( m_Lights.direction[2] );
+    RegLightParam( m_Lights.spotAngle[2] );
+    RegLightParam( m_Lights.spotExponent[2] );
+    RegLightParam( m_Lights.constantAttenuation[2] );
+    RegLightParam( m_Lights.linearAttenuation[2] );
+    RegLightParam( m_Lights.quadraticAttenuation[2] );
+    m_GlobalAmbient.SetName("m_globalAmbient");
 }
 ///////////////////////////////////////////////////////////////////////////////////
 Moose::Graphics::CRenderState::~CRenderState()
 {
-
+    
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void
@@ -178,6 +214,12 @@ Moose::Graphics::CRenderState::AddShaderUniform( const char *sName, const Moose:
     m_ShaderUniforms.Add( pParam ); 
 }
 /////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CRenderState::ApplyShaderLights()
+{
+    
+}
+/////////////////////////////////////////////////////////////////
 IShaderParam * 
 Moose::Graphics::CRenderState::GetShaderAttrib( const char *szName)
 {
@@ -219,8 +261,20 @@ Moose::Graphics::CRenderState::GetShaderModelUniform()
 {
     return m_ModelUniform;
 }
-/////////////////////////////////////////////////////////////////
-Moose::Graphics::CMaterial &
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CRenderState::SetGlobalAmbient( Moose::Graphics::CColor4f & color )
+{
+  m_GlobalAmbient.SetData(&color);
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Graphics::CShaderUniformVec4fPtr & 
+Moose::Graphics::CRenderState::GetGlobalAmbient()
+{
+  return m_GlobalAmbient;
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Graphics::CShaderUniformMaterial &
 Moose::Graphics::CRenderState::GetMaterial()
 {
 	return m_Material;
@@ -230,20 +284,72 @@ bool
 Moose::Graphics::CRenderState::Prepare()
 {
     bool bRetval = true;
+    CShader & s = **GetShaderHandle();
     if ( GetShaderHandle().IsNull() == false )
     {
-        GetShaderAttribs().Bind( **GetShaderHandle());
+        GetShaderAttribs().Bind( s);
         bRetval = (*GetShaderHandle())->Link();
-        GetShaderUniforms().Bind( **GetShaderHandle());
+        GetShaderUniforms().Bind( s);
+    
+        for(int i=0;i<NUM_LIGHTS;i++)
+        {
+            m_Lights.diffuse[i].Bind(s,0);
+            m_Lights.ambient[i].Bind(s,0) ;
+            m_Lights.specular[i].Bind(s,0);
+            m_Lights.position[i].Bind(s,0);
+            m_Lights.halfVector[i].Bind(s,0);
+            m_Lights.direction[i].Bind(s,0);
+            m_Lights.spotAngle[i].Bind(s,0);
+            m_Lights.spotExponent[i].Bind(s,0);
+            m_Lights.constantAttenuation[i].Bind(s,0);
+            m_Lights.linearAttenuation[i].Bind(s,0);
+            m_Lights.quadraticAttenuation[i].Bind(s,0);
+        }
+        m_GlobalAmbient.Bind(s,0);
         
         m_ViewUniform.SetName("m_viewMatrix");
-        m_ViewUniform.Bind( **GetShaderHandle(), 0);  // index 0 is not used in uniform
+        m_ViewUniform.Bind( s, 0);  // index 0 is not used in uniform
         m_ProjUniform.SetName("m_projMatrix");
-        m_ProjUniform.Bind( **GetShaderHandle(), 0);  // index 0 is not used in uniform
+        m_ProjUniform.Bind( s, 0);  // index 0 is not used in uniform
         m_ModelUniform.SetName("m_modelMatrix");
-        m_ModelUniform.Bind( **GetShaderHandle(), 0 ); // index 0 is not used in uniform
+        m_ModelUniform.Bind( s, 0 ); // index 0 is not used in uniform
         
     }
     return bRetval;
 }
 /////////////////////////////////////////////////////////////////
+void 
+Moose::Graphics::UniformLights::Apply( Moose::Graphics::COglRenderer & r )
+{
+  for(int i=0;i<NUM_LIGHTS;i++)
+  {
+    diffuse[i].Apply(r);
+    ambient[i].Apply(r);
+    specular[i].Apply(r);
+    position[i].Apply(r);
+    direction[i].Apply(r);
+    spotAngle[i].Apply(r);
+    spotExponent[i].Apply(r);
+    constantAttenuation[i].Apply(r);
+    linearAttenuation[i].Apply(r);
+    quadraticAttenuation[i].Apply(r);
+  }
+}
+////////////////////////////////////////////////////////////////////////////////            
+void 
+Moose::Graphics::UniformLights::SetData(int index, CLight & l, COglRenderer & r )
+{
+  diffuse[index].SetData(&l.GetDiffuseColor());
+  ambient[index].SetData(&l.GetAmbientColor());
+  specular[index].SetData(&l.GetSpecularColor());
+  position[index].SetData(&l.GetPosition());
+  direction[index].SetData(&l.GetDirection());
+  halfVector[index].SetData(r.GetCurrentCamera()->GetPosition()-l.GetPosition());
+  spotAngle[index].SetData(l.GetSpotAngle());
+  spotExponent[index].SetData(l.GetSpotExponent());
+  constantAttenuation[index].SetData(l.GetConstantAttenuation());
+  linearAttenuation[index].SetData(l.GetLinearAttenuation());
+  quadraticAttenuation[index].SetData(l.GetQuadraticAttenuation());
+}
+////////////////////////////////////////////////////////////////////////////////
+

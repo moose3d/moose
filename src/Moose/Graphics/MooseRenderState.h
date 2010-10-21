@@ -11,19 +11,20 @@
 #include "MooseDefaultEntities.h"
 #include "MooseMaterial.h"
 #include "MooseMatrix4x4.h"
-
+#include "MooseLight.h"
 #include <map>
 #include <iostream>
 #include <cassert>
+#include <sstream>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
   namespace Graphics
   {
-
+        
     class CRenderable;
     class COglRenderer;
-    typedef std::list< Moose::Graphics::CRenderable * > LightRenderableList;
+    typedef std::list< Moose::Graphics::CLight * > LightList;
     typedef std::map< std::string, std::string > 				  NameValueMap;
     /////////////////////////////////////////////////////////////////////////
     class MOOSE_API IShaderParam : public Moose::Core::CNamed 
@@ -34,7 +35,46 @@ namespace Moose
       virtual void Apply(Moose::Graphics::COglRenderer & r, size_t nIndex ) = 0;
       virtual void *GetData() = 0;
     };
+///////////////////////////////////////////////////////////////////////
+    class MOOSE_API CShaderUniformMaterial : public Moose::Graphics::IShaderParam,
+                                             public Moose::Graphics::CMaterial
+    {
+    protected:
+      enum { kDiffuse, kAmbient, kSpecular, kEmission, kShininess, kMatParamCount};
+      GLint m_aLocation[kMatParamCount];
+
+    public:
+      CShaderUniformMaterial() 
+      {
+        // initialize values to non-bound
+        for(int i=0;i<kMatParamCount;i++) m_aLocation[i] = -1;
+      }
       
+      void Bind( CShader & s, size_t nIndex ) 
+      {
+        m_aLocation[kDiffuse] = glGetUniformLocation(s.GetProgram(),   "m_Material.diffuse");
+        m_aLocation[kAmbient] = glGetUniformLocation(s.GetProgram(),   "m_Material.ambient");
+        m_aLocation[kSpecular] = glGetUniformLocation(s.GetProgram(),  "m_Material.specular");
+        m_aLocation[kEmission] = glGetUniformLocation(s.GetProgram(),  "m_Material.emission");
+        m_aLocation[kShininess] = glGetUniformLocation(s.GetProgram(), "m_Material.shininess");
+      }
+
+      void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex )
+      {
+        if ( m_aLocation[kDiffuse] == -1 ) return;
+
+        glUniform4fv( m_aLocation[kDiffuse], 1, GetDiffuse().GetArray());
+        glUniform4fv( m_aLocation[kAmbient], 1, GetAmbient().GetArray());
+        glUniform4fv( m_aLocation[kSpecular], 1, GetSpecular().GetArray());
+        glUniform4fv( m_aLocation[kEmission], 1, GetEmission().GetArray());
+        glUniform1f( m_aLocation[kShininess], GetShininess());
+      }
+
+      void * GetData() 
+      { 
+        return this;
+      }
+    };
     ///////////////////////////////////////////////////////////////////
     /// Shader parameter for generic uniform case.
     class MOOSE_API CShaderUniform : public Moose::Graphics::IShaderParam
@@ -299,9 +339,9 @@ namespace Moose
           
       void Bind( CShader & s, size_t nIndex ) 
       {
-        //g_Log << "UNIFORM: Binding " << GetName() << std::endl; 
+        g_Log << "UNIFORM vec4ptr: Binding " << GetName() << std::endl; 
         m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
-        g_Error << "Bound to " << m_iLocation << "\n";
+        g_Error << "vec4ptr Bound to " << m_iLocation << "\n";
       }
       void SetData( const Moose::Math::CVector4<float> * pData )
       {
@@ -309,9 +349,8 @@ namespace Moose
       } 
       void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex = 0 )
       {
-        if ( m_iLocation == -1 ) 
+        if ( m_iLocation == -1 || m_pData == NULL) 
         {
-          g_Error << "no location bound!\n";
           return;
         }
         glUniform4fv( m_iLocation, 1, m_pData->GetArray());
@@ -319,6 +358,74 @@ namespace Moose
       void * GetData()
       {
         return (void *)m_pData;
+      }
+    };
+    /////////////////////////////////////////
+    class MOOSE_API CShaderUniformVec3fPtr : public Moose::Graphics::IShaderParam
+    {
+    protected:
+      GLint  m_iLocation;
+      /// points somewhere else, is never freed.
+      const Moose::Math::CVector3<float>  *m_pData; 
+          
+    public:
+      CShaderUniformVec3fPtr() : m_iLocation(-1),m_pData(NULL) {}
+          
+      void Bind( CShader & s, size_t nIndex ) 
+      {
+        g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
+        m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
+        g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
+      }
+      void SetData( const Moose::Math::CVector3<float> * pData )
+      {
+        m_pData = pData;
+      } 
+      void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex = 0 )
+      {
+        if ( m_iLocation == -1 || m_pData == NULL) 
+        {
+          return;
+        }
+        glUniform3fv( m_iLocation, 1, m_pData->GetArray());
+      }
+      void * GetData()
+      {
+        return (void *)m_pData;
+      }
+    };
+    /////////////////////////////////////////
+    class MOOSE_API CShaderUniformVec3f : public Moose::Graphics::IShaderParam
+    {
+    protected:
+      GLint  m_iLocation;
+      /// points somewhere else, is never freed.
+      Moose::Math::CVector3<float>  m_Data; 
+          
+    public:
+      CShaderUniformVec3f() : m_iLocation(-1) {}
+          
+      void Bind( CShader & s, size_t nIndex ) 
+      {
+        g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
+        m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
+        g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
+      }
+      void SetData( const Moose::Math::CVector3<float> & data )
+      {
+        m_Data = data;
+      } 
+      void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex = 0 )
+      {
+        if ( m_iLocation == -1 ) 
+        {
+          return;
+        }
+        glUniform3fv( m_iLocation, 1, m_Data.GetArray());
+      }
+      void * GetData()
+      {
+        return (void *)&m_Data;
       }
     };
     ///////////////////////////////////////////////////////////////
@@ -569,6 +676,27 @@ namespace Moose
       kOverlay = 4000,
       kGUI = 5000
     };
+
+
+#define NUM_LIGHTS 3        
+    struct UniformLights 
+    {
+      CShaderUniformVec4fPtr diffuse[NUM_LIGHTS];
+      CShaderUniformVec4fPtr ambient[NUM_LIGHTS];
+      CShaderUniformVec4fPtr specular[NUM_LIGHTS];
+      CShaderUniformVec3fPtr position[NUM_LIGHTS];
+      CShaderUniformVec3f    halfVector[NUM_LIGHTS];
+      CShaderUniformVec3fPtr direction[NUM_LIGHTS];
+      CShaderUniformFloat    spotAngle[NUM_LIGHTS];
+      CShaderUniformFloat    spotExponent[NUM_LIGHTS];
+      CShaderUniformFloat    constantAttenuation[NUM_LIGHTS];
+      CShaderUniformFloat    linearAttenuation[NUM_LIGHTS];
+      CShaderUniformFloat    quadraticAttenuation[NUM_LIGHTS];
+
+      void Apply( Moose::Graphics::COglRenderer & r );
+      void SetData(int index, CLight & l, COglRenderer & r );
+
+    };
     /////////////////////////////////////////////////////////////////
     /// Renderstate object. Helps to sort things by transparency, for instance.
     ///
@@ -592,15 +720,13 @@ namespace Moose
       bool	     m_DepthWrite;   ///!< Is Depth write enabled
       bool	     m_FaceCulling;  ///!< Is faceculling enabled.
       bool	     m_bLighting;    ///!< Is lighting enabled.
-      bool 		 m_bLightSource; ///!< Hint for detecting a light source renderable.
-      unsigned int m_nLightId; ///!< Used in conjunction with LightSource member, hint for Renderer which light to set.
-      
-      LightRenderableList m_lstLights; ///!< Which lights apply to this renderstate. If renderstate belongs to a light, these must not be set.
+      LightList  m_lstLights; ///!< Which lights apply to this renderstate. If renderstate belongs to a light, these must not be set.
       Moose::Graphics::CColor4ub m_BaseColor;
 
-      Moose::Default::SHADER_HANDLE     m_ShaderHandle;    ///!< Handle to a shader
+      Moose::Default::SHADER_HANDLE       m_ShaderHandle;    ///!< Handle to a shader
       CShaderParamContainer               m_ShaderAttribs;   ///!< All attrib parameters;
       CShaderParamContainer               m_ShaderUniforms;  ///!< All uniform parameters;
+            
       CShaderUniformMat4x4f               m_ViewUniform;   ///!< View transform.  
       CShaderUniformMat4x4f               m_ProjUniform;   ///!< Projection transform.
       CShaderUniformMat4x4f               m_ModelUniform;   ///!< Model transform.
@@ -608,7 +734,9 @@ namespace Moose
       std::vector<Moose::Graphics::TEXTURE_FILTER>	   m_aTextureFilters[TEXTURE_HANDLE_COUNT];
       /// Handle to textures.
       Moose::Default::TEXTURE_HANDLE			      	   m_aTextureHandles[TEXTURE_HANDLE_COUNT];
-      Moose::Graphics::CMaterial                         m_Material;
+      Moose::Graphics::CShaderUniformMaterial              m_Material;
+      UniformLights                                        m_Lights;
+      CShaderUniformVec4fPtr                               m_GlobalAmbient;
     public:
         
       CRenderState();
@@ -630,18 +758,15 @@ namespace Moose
       inline bool & GetFaceCulling() { return m_FaceCulling; }
       inline void SetFaceCulling(bool bFlag) { m_FaceCulling = bFlag; }
 
-      inline bool & IsLightSource() { return m_bLightSource; }
-      inline void SetLightSource(bool bFlag) { m_bLightSource = bFlag; }
-
       inline Moose::Graphics::CColor4ub & GetBaseColor() { return m_BaseColor; }
       inline void SetBaseColor(const Moose::Graphics::CColor4ub & col) { m_BaseColor = col; }
 
       inline bool & GetLighting() { return m_bLighting; }
       inline void SetLighting(bool bFlag) { m_bLighting = bFlag; }
 
-      inline LightRenderableList & GetLights() { return m_lstLights; }
-      inline unsigned int & GetLightId() { return m_nLightId; }
-      inline void SetLightId(unsigned int nVal) { m_nLightId = nVal; }
+      inline LightList & GetLights() { return m_lstLights; }
+
+      inline UniformLights & GetUniformLights() { return m_Lights; }
       void   ParseFrom( NameValueMap & map );
       inline CPolygonOffset & GetPolygonOffset() { return m_PolyOffset; }
       inline void SetPolygonOffset( Moose::Graphics::CPolygonOffset & offset ) { m_PolyOffset = offset; }
@@ -676,6 +801,9 @@ namespace Moose
       void		AddShaderUniform( const char *sName, GLint iValue );
       void		AddShaderUniform( const char *sName, GLfloat fValue );
       void		AddShaderUniform( const char *sName, const Moose::Math::CVector4<float> *pData );
+      ////////////////////
+      /// Applies currently set lights to shader uniform parameters.
+      void      ApplyShaderLights();
       IShaderParam * GetShaderAttrib( const char *szName);
       IShaderParam * GetShaderUniform( const char *szName);
       ////////////////////
@@ -695,7 +823,9 @@ namespace Moose
       ////////////////////
       /// Returns reference to view transform param in shader.
       CShaderUniformMat4x4f & GetShaderModelUniform();
-        
+
+      CShaderUniformVec4fPtr & GetGlobalAmbient();
+      void SetGlobalAmbient( Moose::Graphics::CColor4f & color );
       ////////////////////
       /// Returns texture filters for given texture.
       /// \param nId Optional texture number, from 0 to TEXTURE_HANDLE_COUNT-1.  By default, it is first (zero).
@@ -708,7 +838,7 @@ namespace Moose
       void		AddTextureFilter( Moose::Graphics::TEXTURE_FILTER tTexFilter, unsigned int nId = 0 );
       ////////////////////
       /// \returns material reference.
-      Moose::Graphics::CMaterial & GetMaterial();
+      Moose::Graphics::CShaderUniformMaterial & GetMaterial();
       ////////////////////
       /// Prepares shader attributes and uniform paramters.
       /// \return true on success, false on failure. 

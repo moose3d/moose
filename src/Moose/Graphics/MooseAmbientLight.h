@@ -9,9 +9,10 @@ namespace Moose
 {
   namespace Graphics
   {
+    class COglRenderer;
 	////////////////////
     /// Class for global ambient light.
-	class MOOSE_API CAmbientLight : public Moose::Graphics::CLightBase
+	class MOOSE_API CAmbientLight : public Moose::Graphics::CLight
     {
     protected:
       /// Global ambient color
@@ -42,7 +43,7 @@ namespace Moose
       ////////////////////
       /// Renders this light using renderer.
       /// \param renderer Renderer to be used in rendering.
-      void Render( COglRenderer & renderer );
+      void Render( Moose::Graphics::COglRenderer & renderer );
     };
   }; // namespace Graphics
 }; // namespace Moose

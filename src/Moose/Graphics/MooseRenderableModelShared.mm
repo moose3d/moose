@@ -48,37 +48,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   //CVertexDescriptor *pTemp = NULL;
 
   CModel & model = **m_hModel;
-  ////////////////////
-  // Commit textures
-  /*#if !defined(MOOSE_APPLE_IPHONE)
-  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
-  {
-    pTemp    = *model.GetTextureCoordinateHandle(i);
-    pTexture = *GetRenderState().GetTextureHandle(i);
-
-    // check that texcoord resources actually exist
-    if ( pTemp == NULL )
-    {
-      glClientActiveTextureARB( GL_TEXTURE0 + i);
-      glDisableClientState( GL_TEXTURE_COORD_ARRAY);
-    }
-    else
-    {
-      renderer.CommitVertexDescriptor( pTemp, i );
-    }
-    // check that texture resource exists
-    if ( pTexture  != NULL )
-    {
-      renderer.CommitTexture( i, pTexture );
-      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), 
-                              pTexture->GetType() );
-    }
-    else
-      renderer.DisableTexture(i, NULL);
-  }
-
-  #else*/
-
+  
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     pTexture = *GetRenderState().GetTextureHandle(i);
@@ -95,7 +65,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
       renderer.DisableTexture(i, NULL);
     }
   } 
-  //#endif
+
 
   CShader *pShader = *GetRenderState().GetShaderHandle();
   renderer.CommitShader( pShader );
@@ -104,6 +74,9 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   {
     GetRenderState().GetShaderAttribs().Apply(renderer);
     GetRenderState().GetShaderUniforms().Apply(renderer);
+
+    GetRenderState().GetLightUniforms().diffuse[0].SetData()
+    
     if ( renderer.GetCurrentCamera() )
     {
       // Update matrices 
@@ -119,24 +92,6 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
       GetRenderState().GetShaderModelUniform().Apply(renderer); 
     }
   }
-
-  /*#if !defined(MOOSE_APPLE_IPHONE)
-  // commit normals
-  if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
-  else	renderer.CommitVertexDescriptor( *model.GetNormalHandle() );
-
-  // Commit colors
-  if ( model.GetColorHandle().IsNull()  )
-  {
-    glDisableClientState( GL_COLOR_ARRAY );
-    renderer.CommitColor( GetRenderState().GetBaseColor() );
-  }
-  else	renderer.CommitVertexDescriptor( *model.GetColorHandle() );
-
-  // commit position data
-  if ( model.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY );
-  else	renderer.CommitVertexDescriptor ( *model.GetVertexHandle() );
-  #endif*/
 
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );

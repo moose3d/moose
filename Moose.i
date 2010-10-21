@@ -1,4 +1,6 @@
 %module Moose
+
+%include "exception.i"
 %include "std_string.i"
 %include "std_map.i"
 %include "std_pair.i"
@@ -8,10 +10,11 @@
 
 #include <Moose.h>
 #include <list>
+
  //#include "CClearBuffers.h"
   using namespace Moose::Graphics;
   using namespace Moose::Math;
-
+  using std::exception;
 inline Moose::Scene::CScene * 
 GameObjToScene( Moose::Scene::CGameObject *pObj )
 {
@@ -35,6 +38,12 @@ TransformableAsGameObject( Moose::Scene::CTransformable *pObj )
 {
   return dynamic_cast<Moose::Scene::CGameObject *>(pObj);
 }
+ 
+inline Moose::Graphics::CLight *
+AsLight( Moose::Scene::CGameObject *pObj )
+{
+  return dynamic_cast<Moose::Graphics::CLight *>(pObj);
+}
 
 inline std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::Scene::CGameObject *> & list )
 {
@@ -54,6 +63,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %typemap(out) float & {
   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(*$1));
 }
+
 %include "MooseNamed.h"
 %include "MooseTimer.h"
 %include "MooseFPSCounter.h"
@@ -70,6 +80,12 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %template (nameCreator) Moose::Core::CSingleton<Moose::Core::CUniqueNameCreator>;
 %template (gameObjHandled) Moose::Core::CHandled< Moose::Scene::CGameObject >;
 %include "MooseCore.h"
+
+
+%template (assetBundle) Moose::Core::CSingleton<Moose::Core::CAssetBundle>;
+%include "MooseAssetBundle.h"
+
+
 
 
 %include "MooseGraphEdge.h"
@@ -154,11 +170,14 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 // shader mgr template
 %template (CShaderMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CShader, Moose::Core::CHandle<Moose::Graphics::CShader> > >;
 %template (CShaderResMgr) Moose::Core::CResourceManager< Moose::Graphics::CShader, Moose::Core::CHandle<Moose::Graphics::CShader> >;
-%include "MooseModel.h"
 %template (CModelMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CModel, Moose::Core::CHandle<Moose::Graphics::CModel> > >;
 %template (CModelResMgr) Moose::Core::CResourceManager< Moose::Graphics::CModel, Moose::Core::CHandle<Moose::Graphics::CModel> >;
 // This is one bugger; Compiler won't accept friend operator defintion for some reason?
 //%rename (ostreamRenderable) operator<<(std::ostream &stream, const Moose::Graphics::CRenderable & r);
+%include "MooseModelLoader.h"
+%template (CModelHelperSingleton) Moose::Core::CSingleton< Moose::Data::CModelHelper >;
+%include "MooseModelHelper.h"
+
 %include  "MooseRenderable.h"
 %rename (ostreamRenderableModel) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModel & r);
 %include "MooseClearBuffers.h"
@@ -224,8 +243,10 @@ Moose::Scene::CApplication * GameObjToApplication( Moose::Scene::CGameObject *pO
                              
 std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::Scene::CGameObject *> & list );
 
-
-
+                             
+                             
                              float    ToReal( float * f ); 
                              int      ToInt( float * i ); 
                              double   ToReal( double * f );
+                             Moose::Graphics::CLight * AsLight( Moose::Scene::CGameObject *pObj );
+

@@ -70,38 +70,95 @@ Moose::Util::CTransformIndicator::CTransformIndicator() : m_pTarget(NULL)
   {
     GetModelHandle() = "moose_transform_indicator_model";
   }
+  
+  if ( g_Shaders("moose_vertcolor_shader") == NULL )
+  {
+    CShader *pShader= new CShader();
+    pShader->LoadVertexShader( g_AssetBundle->GetAssetPath("Shaders/vertcolor.vert"));
+    pShader->LoadFragmentShader( g_AssetBundle->GetAssetPath("Shaders/vertcolor.frag"));
+    g_Shaders.Create( pShader, "moose_vertcolor_shader");
+  }
+  
+  CRenderState &rs = GetRenderState();
+  rs.SetShader( "moose_vertcolor_shader");
+  
+  rs.AddShaderAttrib("a_vertex", (*GetModelHandle())->GetVertexHandle() );
+  rs.AddShaderAttrib("a_color",  (*GetModelHandle())->GetColorHandle());
+  assert(rs.Prepare());
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
 Moose::Util::CTransformIndicator::Render( Moose::Graphics::COglRenderer & r )
 {
-  CTransform t;
+
+
+  CTransform &t = *m_pTransform;
   r.CommitRenderState(GetRenderState());
-  if ( m_pTransform != NULL )  
-  {
-    t = *m_pTransform;
-  }
   CCamera *pCam = r.GetCurrentCamera();
   float fScaleFudgeFactor = (pCam->GetPosition() - t.GetTranslation()).Length()*0.2f;
-
+  
 
   // Transform must be the local transform of CTransformController.
   // scaling of coliders might be little behind (a frame or so, but it should not matter).
   t.SetScaling( fScaleFudgeFactor );
-  r.CommitTransform(t);
 
   if ( m_pTarget ) {
     m_pTarget->GetLocalTransform().SetScaling(fScaleFudgeFactor);
     m_pTarget->SetChanged(true);
   }
 
-  CModel & model = **GetModelHandle();
-  r.CommitVertexDescriptor( *model.GetColorHandle() );
-  r.CommitVertexDescriptor( *model.GetVertexHandle() );
-  r.CommitPrimitive( *model.GetIndices() );
+  ////////////////////
+  // Retrieve resources
+  COglTexture *pTexture = NULL;
+  //CVertexDescriptor *pTemp = NULL;
 
-  if ( m_pTransform != NULL )  
-    r.RollbackTransform();
+  CModel & model = **m_hModel;
+
+
+  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
+  {
+    pTexture = *GetRenderState().GetTextureHandle(i);
+    // check that texture resource exists
+    if ( pTexture  != NULL )
+    {
+      r.CommitTexture( i, pTexture );
+      r.CommitFilters( GetRenderState().GetTextureFilters(i), 
+                              pTexture->GetType() );
+    }
+    else 
+    { 
+      
+      r.DisableTexture(i, NULL);
+    }
+  } 
+
+
+  CShader *pShader = *GetRenderState().GetShaderHandle();
+  r.CommitShader( pShader );
+
+  if ( !GetRenderState().GetShaderHandle().IsNull())
+  {
+    GetRenderState().GetShaderAttribs().Apply(r);
+    GetRenderState().GetShaderUniforms().Apply(r);
+    if ( r.GetCurrentCamera() )
+    {
+      // Update matrices 
+      GetRenderState().GetShaderViewUniform().SetData(      &r.GetCurrentCamera()->GetViewMatrix());
+      GetRenderState().GetShaderProjectionUniform().SetData(&r.GetCurrentCamera()->GetProjectionMatrix());
+      if ( GetTransform() != NULL ) // model transform is optional.
+      {
+        GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+      }
+      // Send data to shader
+      GetRenderState().GetShaderViewUniform().Apply(r);
+      GetRenderState().GetShaderProjectionUniform().Apply(r);
+      GetRenderState().GetShaderModelUniform().Apply(r); 
+    }
+  }
+
+  if ( !model.GetIndices().IsNull() )   r.CommitPrimitive( *model.GetIndices() );
+  if ( m_pTransform != NULL )           r.RollbackTransform();
+
 }
 ////////////////////////////////////////////////////////////////////////////////
 void

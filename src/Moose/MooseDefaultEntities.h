@@ -17,6 +17,10 @@ namespace Moose
 	  class CGameObject;
 
   }
+  namespace Data
+  {
+    class CModelHelper;
+  }
   namespace Graphics
   {
 	  class CModel;
@@ -85,6 +89,7 @@ namespace Moose
     SoundStreamManager * GetSoundStreamMgr();
     Moose::Core::CUniqueNameCreator * GetNameCreator();
     Moose::Core::CAssetBundle *       GetAssetBundle();
+    Moose::Data::CModelHelper *       GetModelHelper();
   }; // namespace Default
 }; // namespace Moose
 ////////////////////

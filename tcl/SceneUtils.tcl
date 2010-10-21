@@ -500,6 +500,10 @@ proc g_ModelMgr { { name "" } } {
     }
 }    
 
+proc g_ModelHelper {} {
+    return [GetModelHelper]
+}
+
 proc g_CameraMgr { { name "" } } {
     if { $name == "" } {
         return [GetCameraMgr]

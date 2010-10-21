@@ -2,6 +2,7 @@
 #define __MooseGameRenderable_h__
 /////////////////////////////////////////////////////////////////
 #include "MooseAPI.h"
+#include "MooseLight.h"
 #include "MooseResourceManager.h"
 #include "MooseRenderable.h"
 #include "MooseRenderableModel.h"
@@ -21,6 +22,7 @@ namespace Moose
     /// One object can consist of several renderables that are drawn consequently.
     /// Each object may have several LOD levels.
     typedef std::vector< float >			    LodLevels;
+    typedef std::list< Moose::Graphics::CLight *>    LightList;
     typedef std::list< Moose::Graphics::CRenderable *>    RenderableList;
     typedef std::vector< RenderableList >		    LodLevelObjects;
 
@@ -30,7 +32,7 @@ namespace Moose
     {
     private:
       LodLevelObjects			m_LodLevels; ///!< Renderable objects.
-      RenderableList		        m_lstLights; ///!< Lights that have effect on this Object.
+      LightList		            m_lstLights; ///!< Lights that have effect on this Object.
       LodLevels			        m_LodDistances; ///!< Maximum distance values per index (lod). First value is max value for lod level 0, second value is max for lod level 1, etc. Values must be stored as squared distances.
     public:
       ////////////////////
@@ -96,11 +98,11 @@ namespace Moose
       ////////////////////
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
-      RenderableList & GetLights();
+      LightList & GetLights();
       ////////////////////
       /// Returns list of pointers to Renderables (lights).
       /// \returns List containing pointers to Renderables.
-      const RenderableList & GetLights() const;
+      const LightList & GetLights() const;
       ////////////////////
       /// Returns renderable with id iId from lod iLod, if found.
       /// \param nLod Lod level where search is applied.

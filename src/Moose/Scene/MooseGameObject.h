@@ -47,7 +47,7 @@ namespace Moose
                                     public Moose::Core::CHandled<Moose::Scene::CGameObject>,
                                     public Moose::AI::CAIObject,
                                     public Moose::Core::IUpdateable,
-                                    public Moose::Core::CEnableable
+                                    public virtual Moose::Core::CEnableable
     {
     protected:
         friend class Moose::AI::CMessageQueue;

@@ -13,8 +13,7 @@ namespace Moose
   {
     ////////////////////
     /// Class for lights.
-    class MOOSE_API CPointLight : public Moose::Graphics::CLightBase,
-									public Moose::Spatial::CPositional
+    class MOOSE_API CPointLight : public Moose::Graphics::CLight
     {
     public:
       ////////////////////
