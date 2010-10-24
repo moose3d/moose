@@ -17,35 +17,68 @@ struct MLights
   vec3 position[3]; 
   vec3 halfVector[3];
   vec3 direction[3];
-  float spotCutoff[3]; 
+  float spotAngle[3]; 
   float spotExponent[3];
   float constantAttenuation[3];
   float linearAttenuation[3];
   float quadraticAttenuation[3];
+  bool  enabled[3];
 };
+
+out  vec2        texcoord;
+out  vec3        normal;
+
+out  float       ldist[3];
+out  vec3        lightDir[3];
+out  vec3        halfVector[3];
 
 in  vec3 a_vertex;
 in  vec2 a_texcoord;
 in  vec3 a_normal;
-out vec2 v_texcoord;
-out vec3 v_normal;
 
 uniform mat4 m_viewMatrix;
 uniform mat4 m_projMatrix;
 uniform mat4 m_modelMatrix;
 
 uniform MLights m_Lights;
+uniform MMaterial m_Material;
 uniform vec4    m_globalAmbient;
-out vec4 v_color;
 
 void main()
 {
-   vec4 vert    = m_viewMatrix * m_modelMatrix * vec4(a_vertex,1.0);
-   vec4 lDir    = vec4(-m_Lights.direction[0],0.0);
-   float NdotL = max(dot((m_modelMatrix * vec4(a_normal,0.0)).xyz, lDir.xyz),0.0);
-   vec4 diffuse = vec4(0.7,0.7,0.7,1.0) * m_Lights.diffuse[0];
+  
+  //globalAmbient = m_globalAmbient * m_Material.ambient;
+  vec4 vert    = m_modelMatrix * vec4(a_vertex,1.0);
+  vec3 vert2light;
 
-   v_color = NdotL * diffuse + m_globalAmbient;
-   gl_Position  = m_projMatrix * vert;
-   v_normal = a_normal;
+  for( int i=0;i<3;i++)
+  {
+    
+    if ( m_Lights.enabled[i] )
+    {
+      if ( m_Lights.spotAngle[i] < 0.0 )  /* directional light */
+      {
+        lightDir[i] = normalize((m_viewMatrix * vec4(-m_Lights.direction[i],0.0)).xyz);
+        halfVector[i] = normalize((m_viewMatrix * vec4(m_Lights.halfVector[i],0.0)).xyz);
+
+        //diffuse[i]  = m_Material.diffuse * m_Lights.diffuse[i];
+        //ambient[i]  = m_Material.ambient * m_Lights.ambient[i];
+      } 
+      else if ( m_Lights.spotAngle[i] < 90.001 ) /* spotlight */
+      {
+        
+      }
+      else  /* pointlight */
+      {
+        vert2light = m_Lights.position[i] - vert.xyz;
+        lightDir[i]   = normalize((m_viewMatrix * vec4(vert2light,0.0)).xyz);
+        halfVector[i] = normalize((m_viewMatrix * vec4(m_Lights.halfVector[i],0.0)).xyz);
+        //diffuse[i]  = m_Material.diffuse * m_Lights.diffuse[i];
+        //ambient[i]  = m_Material.ambient * m_Lights.ambient[i];
+        ldist[i] = length(vert2light);
+      }
+    }
+  }
+  gl_Position  = m_projMatrix * m_viewMatrix * vert;
+  normal = normalize((m_viewMatrix * m_modelMatrix * vec4(a_normal,0.0)).xyz);
 }                 

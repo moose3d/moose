@@ -28,7 +28,7 @@ namespace Moose
       CColor4f m_vSpecular;
       /// The emissive color for this material.
       CColor4f m_vEmission;
-      /// The shininess factor for this material ( 0.0f - 1.0f ).
+      /// The shininess factor for this material ( 1.0f - 127.0f ).
       float	    m_fShininess;
     public:
       ////////////////////
@@ -144,13 +144,13 @@ Moose::Graphics::CMaterial::GetShininess() const
 inline void
 Moose::Graphics::CMaterial::SetShininess( float fShininess)
 {
-  if ( fShininess > 1.0f ) 
+  if ( fShininess > 127.0f ) 
+  {
+    m_fShininess = 127.0f;
+  } 
+  else if ( fShininess < 1.0f )
   {
     m_fShininess = 1.0f;
-  } 
-  else if ( fShininess < 0.0f )
-  {
-    m_fShininess = 0.0f;
   }
   else
   {

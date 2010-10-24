@@ -105,17 +105,17 @@ Moose::Math::CTransform::SetScaling( float fScale )
 void
 Moose::Math::CTransform::SetScaling( float fX, float fY, float fZ)
 {
-    m_vScaling[0] = fX;
-    m_vScaling[1] = fY;
-    m_vScaling[2] = fZ;
-    SetChanged(true);
+  m_vScaling[0] = fX;
+  m_vScaling[1] = fY;
+  m_vScaling[2] = fZ;
+  SetChanged(true);
 }
 /////////////////////////////////////////////////////////////////
 void
 Moose::Math::CTransform::SetScaling( const CVector3<float> & vScale )
 {
-    m_vScaling = vScale;
-    SetChanged(true);
+  m_vScaling = vScale;
+  SetChanged(true);
 }
 /////////////////////////////////////////////////////////////////
 const CVector3<float> &
@@ -200,5 +200,21 @@ Moose::Math::CTransform::GetUpVector()
 {
   const CMatrix4x4<float> & matrix = GetMatrix();
   return CVector3<float>(matrix(0,1), matrix(1,1), matrix(2,1));
+}
+////////////////////////////////////////////////////////////////////////////////
+void 
+Moose::Math::CTransform::Scale( const CVector3<float> & vScale )
+{
+  m_vScaling += vScale;
+  SetChanged(true);
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Math::CTransform::Scale( float fX, float fY, float fZ )
+{
+  m_vScaling[0] += fX;
+  m_vScaling[1] += fY;
+  m_vScaling[2] += fZ;  
+  SetChanged(true);
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -77,14 +77,20 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
 
     // Setup all lights (3) for shaders
     LightList::iterator it = GetRenderState().GetLights().begin();
-    for( int i=0; it != GetRenderState().GetLights().end() && i < 3; it++,i++ )
+
+    for( int i=0; i < 3; it++,i++ )
     {
-      GetRenderState().GetUniformLights().SetData(i,**it, renderer);
-    }    
+      if (it != GetRenderState().GetLights().end())
+        GetRenderState().GetUniformLights().SetData(i,**it, renderer);
+      else // disable lights that do not have parameters set
+        GetRenderState().GetUniformLights().enabled[i].SetData(0);
+    }
+
     GetRenderState().GetUniformLights().Apply(renderer);
     // Set global ambient (from Scene)
     GetRenderState().GetGlobalAmbient().SetData( renderer.GetRenderState().m_pGlobalAmbient);
     GetRenderState().GetGlobalAmbient().Apply(renderer);
+    GetRenderState().GetMaterial().Apply(renderer);
 
     if ( renderer.GetCurrentCamera() )
     {

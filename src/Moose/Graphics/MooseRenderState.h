@@ -59,15 +59,13 @@ namespace Moose
         m_aLocation[kShininess] = glGetUniformLocation(s.GetProgram(), "m_Material.shininess");
       }
 
-      void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex )
+      void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex = 0)
       {
-        if ( m_aLocation[kDiffuse] == -1 ) return;
-
-        glUniform4fv( m_aLocation[kDiffuse], 1, GetDiffuse().GetArray());
-        glUniform4fv( m_aLocation[kAmbient], 1, GetAmbient().GetArray());
-        glUniform4fv( m_aLocation[kSpecular], 1, GetSpecular().GetArray());
-        glUniform4fv( m_aLocation[kEmission], 1, GetEmission().GetArray());
-        glUniform1f( m_aLocation[kShininess], GetShininess());
+        if ( m_aLocation[kDiffuse] != -1 )   glUniform4fv( m_aLocation[kDiffuse],  1, GetDiffuse().GetArray());
+        if ( m_aLocation[kAmbient] != -1 )   glUniform4fv( m_aLocation[kAmbient],  1, GetAmbient().GetArray());
+        if ( m_aLocation[kSpecular] != -1 )  glUniform4fv( m_aLocation[kSpecular], 1, GetSpecular().GetArray());
+        if ( m_aLocation[kEmission] != -1 )  glUniform4fv( m_aLocation[kEmission], 1, GetEmission().GetArray());
+        if ( m_aLocation[kShininess] != -1 ) glUniform1f(  m_aLocation[kShininess],   GetShininess());
       }
 
       void * GetData() 
@@ -692,7 +690,7 @@ namespace Moose
       CShaderUniformFloat    constantAttenuation[NUM_LIGHTS];
       CShaderUniformFloat    linearAttenuation[NUM_LIGHTS];
       CShaderUniformFloat    quadraticAttenuation[NUM_LIGHTS];
-
+      CShaderUniformInt      enabled[NUM_LIGHTS];
       void Apply( Moose::Graphics::COglRenderer & r );
       void SetData(int index, CLight & l, COglRenderer & r );
 

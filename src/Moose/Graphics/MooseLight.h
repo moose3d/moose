@@ -129,7 +129,7 @@ namespace Moose
       /// Sets spot angle.
       /// \param fValue Exponent value.
       void SetSpotExponent( float fValue );
-      ////////////////////
+       ////////////////////
       /// Returns spot exponent.
       /// \returns  Exponent value.
       float GetSpotExponent() const;

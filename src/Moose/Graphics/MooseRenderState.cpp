@@ -35,6 +35,7 @@ Moose::Graphics::CRenderState::CRenderState() :  m_iRenderLayer(kOpaque),
     RegLightParam( m_Lights.constantAttenuation[0] );
     RegLightParam( m_Lights.linearAttenuation[0] );
     RegLightParam( m_Lights.quadraticAttenuation[0] );
+    RegLightParam( m_Lights.enabled[0] );
 
     RegLightParam( m_Lights.diffuse[1] );
     RegLightParam( m_Lights.ambient[1] );
@@ -47,6 +48,7 @@ Moose::Graphics::CRenderState::CRenderState() :  m_iRenderLayer(kOpaque),
     RegLightParam( m_Lights.constantAttenuation[1] );
     RegLightParam( m_Lights.linearAttenuation[1] );
     RegLightParam( m_Lights.quadraticAttenuation[1] );
+    RegLightParam( m_Lights.enabled[1] );
 
     RegLightParam( m_Lights.diffuse[2] );
     RegLightParam( m_Lights.ambient[2] );
@@ -59,6 +61,8 @@ Moose::Graphics::CRenderState::CRenderState() :  m_iRenderLayer(kOpaque),
     RegLightParam( m_Lights.constantAttenuation[2] );
     RegLightParam( m_Lights.linearAttenuation[2] );
     RegLightParam( m_Lights.quadraticAttenuation[2] );
+    RegLightParam( m_Lights.enabled[2] );
+
     m_GlobalAmbient.SetName("m_globalAmbient");
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -304,9 +308,11 @@ Moose::Graphics::CRenderState::Prepare()
             m_Lights.constantAttenuation[i].Bind(s,0);
             m_Lights.linearAttenuation[i].Bind(s,0);
             m_Lights.quadraticAttenuation[i].Bind(s,0);
+            m_Lights.enabled[i].Bind(s,0);
         }
         m_GlobalAmbient.Bind(s,0);
-        
+        m_Material.Bind(s,0);
+
         m_ViewUniform.SetName("m_viewMatrix");
         m_ViewUniform.Bind( s, 0);  // index 0 is not used in uniform
         m_ProjUniform.SetName("m_projMatrix");
@@ -333,23 +339,27 @@ Moose::Graphics::UniformLights::Apply( Moose::Graphics::COglRenderer & r )
     constantAttenuation[i].Apply(r);
     linearAttenuation[i].Apply(r);
     quadraticAttenuation[i].Apply(r);
+    enabled[i].Apply(r);
   }
 }
 ////////////////////////////////////////////////////////////////////////////////            
 void 
 Moose::Graphics::UniformLights::SetData(int index, CLight & l, COglRenderer & r )
 {
+  enabled[index].SetData(l.IsEnabled());
   diffuse[index].SetData(&l.GetDiffuseColor());
   ambient[index].SetData(&l.GetAmbientColor());
   specular[index].SetData(&l.GetSpecularColor());
   position[index].SetData(&l.GetPosition());
   direction[index].SetData(&l.GetDirection());
-  halfVector[index].SetData(r.GetCurrentCamera()->GetPosition()-l.GetPosition());
+  halfVector[index].SetData((r.GetCurrentCamera()->GetPosition()-l.GetPosition()).GetNormalized());
   spotAngle[index].SetData(l.GetSpotAngle());
   spotExponent[index].SetData(l.GetSpotExponent());
   constantAttenuation[index].SetData(l.GetConstantAttenuation());
   linearAttenuation[index].SetData(l.GetLinearAttenuation());
   quadraticAttenuation[index].SetData(l.GetQuadraticAttenuation());
+
+
 }
 ////////////////////////////////////////////////////////////////////////////////
 

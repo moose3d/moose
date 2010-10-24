@@ -8,8 +8,8 @@
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
-	namespace Math
-	{
+  namespace Math
+  {
     /////////////////////////////////////////////////////////////////
     /// A class which stores scaling, rotation and translation into
     /// 4x4 matrix and provides methods for easily changing any of 
@@ -34,13 +34,13 @@ namespace Moose
       ////////////////////
       /// Default constructor.
       CTransform() : m_bChanged(0),
-                     m_vScaling(1.0f,1.0f,1.0),
-                     m_mTransform(1,0,0,0,
-																	0,1,0,0,
-																	0,0,1,0,
-																	0,0,0,1 ),
-                     m_qRotation(0.0f,0.0f,0.0f,1.0f),
-                     m_vTranslation(0.0f,0.0f,0.0f) { }
+      m_vScaling(1.0f,1.0f,1.0),
+      m_mTransform(1,0,0,0,
+                   0,1,0,0,
+                   0,0,1,0,
+                   0,0,0,1 ),
+      m_qRotation(0.0f,0.0f,0.0f,1.0f),
+      m_vTranslation(0.0f,0.0f,0.0f) { }
       virtual ~CTransform()  {}
       ////////////////////
       /// Adds hook to given matrix.
@@ -92,20 +92,30 @@ namespace Moose
       /// \returns Quaternion.
       const CQuaternion & GetRotation() const;
       ////////////////////
+      /// Scales all axis according to given values (appends values to existing scale).
+      /// \param vScale Scale values to be appended to axes.
+      void Scale( const CVector3<float> & vScale );
+      ////////////////////
+      /// Scales all axis according to given values (appends values to existing scale).
+      /// \param fX Scale x axis.
+      /// \param fY Scale y axis.
+      /// \param fZ Scale z axis.
+      void Scale( float fX, float fY, float fZ );
+      ////////////////////
       /// Assigns uniform scaling factor.
       /// \param fScale the factor.
       void SetScaling( float fScale );
-        ////////////////////
-        /// Assigns scaling factors.
-        /// \param fX Scale x axis.
-        /// \param fY Scale y axis.
-        /// \param fZ Scale z axis.
-        void SetScaling( float fX, float fY, float fZ);
-        ////////////////////
-        /// Assigns scaling factors.
-        /// \param vScale Vector containing each axis scale values.
-        void SetScaling( const CVector3<float> & vScale );
-        ////////////////////
+      ////////////////////
+      /// Assigns scaling factors.
+      /// \param fX Scale x axis.
+      /// \param fY Scale y axis.
+      /// \param fZ Scale z axis.
+      void SetScaling( float fX, float fY, float fZ);
+      ////////////////////
+      /// Assigns scaling factors.
+      /// \param vScale Vector containing each axis scale values.
+      void SetScaling( const CVector3<float> & vScale );
+      ////////////////////
       /// Returns uniform scaling factor.
       /// \returns Scaling factor.
       const CVector3<float> & GetScaling() const;
@@ -150,8 +160,8 @@ namespace Moose
     /// \param rTransformLeft  Left-side transform.
     /// \param rTransformResult Resulting transform.
     MOOSE_API void Multiply( const CTransform & rTransformLeft, 
-			       const CTransform & rTransformRight, 
-			       CTransform & rTransformResult);
+                             const CTransform & rTransformRight, 
+                             CTransform & rTransformResult);
 
 
   }; // namespace Math
