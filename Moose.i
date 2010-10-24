@@ -198,6 +198,8 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseLight.h"
 %include "MooseDirectionalLight.h"
 %include "MooseDirectionalLightObject.h"
+%include "MoosePointLight.h"
+%include "MoosePointLightObject.h"
 %include "MooseRenderQueue.h"
  //%include "CClearBuffers.h"
 %include "MooseCameraObject.h"

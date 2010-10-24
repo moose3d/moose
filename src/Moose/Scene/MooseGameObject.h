@@ -17,21 +17,21 @@
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
-    namespace AI
-    {
-        class CCollisionEnter;
-        class CCollisionStay;
-        class CCollisionExit;
-    }
+  namespace AI
+  {
+    class CCollisionEnter;
+    class CCollisionStay;
+    class CCollisionExit;
+  }
   namespace Scene
   {
   	/////////////////////////////////////////////////////////////////
   	enum Tags {
-  		NOT_TAGGED, 	///!< Default.
-  		LIGHT_TAG = 1,  	///!< Lights have their own tags
-  		COLLIDER_TAG = 2, ///!< Object is colliding object.
-        CAMERA_TAG = 4,  ///!< Object is camera.
-  		USER_TAG = 8     ///!< First allowed user-specified tag value.
+      NOT_TAGGED, 	///!< Default.
+      LIGHT_TAG = 1,  	///!< Lights have their own tags
+      COLLIDER_TAG = 2, ///!< Object is colliding object.
+      CAMERA_TAG = 4,  ///!< Object is camera.
+      USER_TAG = 8     ///!< First allowed user-specified tag value.
   	};
   	/////////////////////////////////////////////////////////////////
   	class CSpatialGraph;
@@ -40,24 +40,25 @@ namespace Moose
     typedef std::set<CGameObject *> GameObjectSet;
     /////////////////////////////////////////////////////////////////
     /// GameObject class; base for every object in a game.
-    class MOOSE_API CGameObject : public Moose::Scene::CTransformable,																		public Moose::Graphics::CRenderableProperty,
-                                    public Moose::Core::CTagged,
-                                    public Moose::Collision::CSphereCollider,
-                                    public Moose::Core::CNamed,
-                                    public Moose::Core::CHandled<Moose::Scene::CGameObject>,
-                                    public Moose::AI::CAIObject,
-                                    public Moose::Core::IUpdateable,
-                                    public virtual Moose::Core::CEnableable
+    class MOOSE_API CGameObject : public Moose::Scene::CTransformable,
+                                  public Moose::Graphics::CRenderableProperty,
+                                  public Moose::Core::CTagged,
+                                  public Moose::Collision::CSphereCollider,
+                                  public Moose::Core::CNamed,
+                                  public Moose::Core::CHandled<Moose::Scene::CGameObject>,
+                                  public Moose::AI::CAIObject,
+                                  public Moose::Core::IUpdateable,
+                                  public virtual Moose::Core::CEnableable
     {
     protected:
-        friend class Moose::AI::CMessageQueue;
+      friend class Moose::AI::CMessageQueue;
       unsigned int                     m_nSpatialIndex; ///!< In which spatial index of spatial graph this object is in.
       Moose::Collision::ICollider *  m_pCollider; 		///!< Specialized collider instead of Sphere.
-        int m_iUserInfo;
+      int m_iUserInfo;
     protected:
-        void OnCollisionEnter_( const Moose::AI::CCollisionEnter *pMsg ) ;
-        void OnCollisionStay_( const Moose::AI::CCollisionStay *pMsg ) ;
-        void OnCollisionExit_( const Moose::AI::CCollisionExit *pMsg ) ;
+      void OnCollisionEnter_( const Moose::AI::CCollisionEnter *pMsg ) ;
+      void OnCollisionStay_( const Moose::AI::CCollisionStay *pMsg ) ;
+      void OnCollisionExit_( const Moose::AI::CCollisionExit *pMsg ) ;
     public:
       ////////////////////
       /// Constructor.
@@ -104,13 +105,13 @@ namespace Moose
       /// Updates game object.
       /// \param fSecondsPassed Seconds passed since last Update().
       void Update( float fSecondsPassed );
-        virtual void OnCollisionEnter( Moose::Scene::CGameObject *pCollider );
-        virtual void OnCollisionStay( Moose::Scene::CGameObject *pCollider );
-        virtual void OnCollisionExit( Moose::Scene::CGameObject *pCollider );
-        void SetUserInfo( int iValue ) { m_iUserInfo = iValue; }
-        int & GetUserInfo()  { return m_iUserInfo;}
+      virtual void OnCollisionEnter( Moose::Scene::CGameObject *pCollider );
+      virtual void OnCollisionStay( Moose::Scene::CGameObject *pCollider );
+      virtual void OnCollisionExit( Moose::Scene::CGameObject *pCollider );
+      void SetUserInfo( int iValue ) { m_iUserInfo = iValue; }
+      int & GetUserInfo()  { return m_iUserInfo;}
 #if !defined(SWIG)
-        const int GetUserInfo() const { return m_iUserInfo; }
+      const int GetUserInfo() const { return m_iUserInfo; }
 #endif
     };
   }; // namespace Scene

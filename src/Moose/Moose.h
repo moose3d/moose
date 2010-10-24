@@ -102,6 +102,7 @@
 #include <MooseApplication.h>
 #include <MooseEventQueue.h>
 #include <MooseDirectionalLightObject.h>
+#include <MoosePointLightObject.h>
 #include <MoosePlane.h>
 #include <MooseLine.h>
 #include <MooseLineSegment.h>
