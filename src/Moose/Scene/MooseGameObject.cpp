@@ -59,13 +59,13 @@ Moose::Scene::CGameObject::CGameObject( ) : CAIObject( this ),
 
 
 {
-        m_pCollider = this;
-        SetEnabled(true); // by default, each object is active
-        SetColliderTransform( & GetWorldTransform() ); // collider tracks world transform
-    // Register handlers for enter-stay-exit for collisions.
-    GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionEnter_);
-    GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionStay_);
-    GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionExit_);
+  m_pCollider = this;
+  SetEnabled(true); // by default, each object is active
+  SetColliderTransform( & GetWorldTransform() ); // collider tracks world transform
+  // Register handlers for enter-stay-exit for collisions.
+  GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionEnter_);
+  GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionStay_);
+  GetMessageQueue().RegisterHandler(this, &CGameObject::OnCollisionExit_);
 
 }
 /////////////////////////////////////////////////////////////////
