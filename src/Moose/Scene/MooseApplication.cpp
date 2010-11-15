@@ -298,8 +298,8 @@ prefix::CApplication::LoadDefaultResources()
     {
       
       CShader *pShader = new CShader();
-      pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("Shaders/default.vert"));
-      pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("Shaders/default.frag"));
+      pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("default.vert"));
+      pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("default.frag"));
       assert( g_ShaderMgr->Create(pShader, "moose_default_shader") == 0);
     }
     // For boxrenderable
@@ -356,8 +356,8 @@ prefix::CApplication::LoadDefaultResources()
         assert( g_ShaderMgr->Create(pShader, "moose_line_shader") == 0);
 
         CShader *pColor = new CShader();
-        pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("Shaders/color.vert"));
-        pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("Shaders/color.frag"));
+        pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("color.vert"));
+        pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("color.frag"));
 
         assert( g_ShaderMgr->Create(pColor, "moose_color_shader") == 0);
     }
