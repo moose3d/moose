@@ -1,5 +1,6 @@
 /////////////////////////////////////////////////////////////////
-#define __STDC_CONSTANT_MACROS 
+#include "MooseAPI.h"
+#if !defined(MOOSE_APPLE_IPHONE)
 #include "MooseFFMpeg.h"
 #include "MooseDefaultEntities.h"
 #include "MooseLogger.h"
@@ -450,3 +451,4 @@ prefix::CFFMpegStream::SetSection( unsigned int nTime, unsigned int nDuration )
 }
 /////////////////////////////////////////////////////////////////
 
+#endif

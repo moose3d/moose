@@ -2,6 +2,7 @@
 #define __MooseTexture_h__
 /////////////////////////////////////////////////////////////////
 #include "MooseGL.h"
+#include "MooseAPI.h"
 //#include <MooseRenderable.h>
 /////////////////////////////////////////////////////////////////
 namespace Moose
@@ -11,7 +12,9 @@ namespace Moose
     enum TEXTURE_TYPE
     {
       TEXTURE_2D,      /* Normal 2D texture */
+#if !defined(MOOSE_APPLE_IPHONE)
       TEXTURE_RECT,    /* Rectangular 2D texture */
+#endif
       TEXTURE_DEPTH2D, /* 2D depth texture */
       TEXTURE_CUBE     /* Cube texture map */
     };

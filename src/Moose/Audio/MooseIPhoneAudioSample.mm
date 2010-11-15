@@ -2,6 +2,7 @@
 #include "MooseIPhoneAudioSample.h"
 #include "MooseLogger.h"
 #include "MooseDefaultEntities.h"
+#import <Foundation/NSString.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AudioToolbox/ExtendedAudioFile.h>
 #include <string>

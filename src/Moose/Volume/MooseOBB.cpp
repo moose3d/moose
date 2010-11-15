@@ -337,14 +337,14 @@ Moose::Volume::CalculateOrientedBoundingBox( const Moose::Graphics::CVertexDescr
   }
   /////////////////////////////////////////////////////////////////
   COrientedBox obOrientedBox;
-#ifdef DEBUG
+  /*#ifdef DEBUG
   CLogger::Error() << DEBUG_HEADER << "minR " << fMinR << endl;
   CLogger::Error() << DEBUG_HEADER << "maxR " << fMaxR << endl;
   CLogger::Error() << DEBUG_HEADER << "minS " << fMinS << endl;
   CLogger::Error() << DEBUG_HEADER << "maxS " << fMaxS << endl;
   CLogger::Error() << DEBUG_HEADER << "minT " << fMinT << endl;
   CLogger::Error() << DEBUG_HEADER << "maxT " << fMaxT << endl;
-#endif
+  #endif*/
 
   float fRlen = fMaxR - fMinR;
   float fSlen = fMaxS - fMinS;

@@ -1,6 +1,8 @@
 #ifndef __MooseRenderableVideo_h__
 #define __MooseRenderableVideo_h__
 ///////////////////////////////////////////////////////////////////////////////
+#include "MooseAPI.h"
+#if !defined(MOOSE_APPLE_IPHONE)
 #include "MooseRenderable.h"
 #include "MooseFFMpeg.h"
 #include "MooseFrameBuffer.h"
@@ -8,12 +10,13 @@
 #include "MooseDefaultEntities.h"
 #include <string>
 ///////////////////////////////////////////////////////////////////////////////
+
 namespace Moose
 {
 
     namespace Graphics
     {
-
+      
         ///////////////////////////////////////////////////////////////////////
         /// Renderable quad for video stream.
         class CRenderableVideo : public Moose::Graphics::CFFMpegStream,
@@ -35,5 +38,5 @@ namespace Moose
     }
 
 }
-
+#endif 
 #endif /* MOOSERENDERABLEVIDEO_H_ */

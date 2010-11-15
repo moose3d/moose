@@ -1,14 +1,97 @@
 cmake_minimum_required( VERSION 2.6)
 project(Moose)
 
+if(APPLE)
+# Platform Info
+SET (CMAKE_SYSTEM_VERSION 1)
+SET (CMAKE_SYSTEM_PROCESSOR arm)
+
+# SDK Info
+SET (SDKVER "4.0")
+SET (DEVROOT "/Developer/Platforms/iPhoneOS.platform/Developer")
+SET (SDKROOT "${DEVROOT}/SDKs/iPhoneOS${SDKVER}.sdk")
+SET (CMAKE_OSX_SYSROOT "${SDKROOT}")
+SET (CMAKE_OSX_ARCHITECTURES "armv6 armv7")
+SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+
+# C Compiler
+SET (CMAKE_C_COMPILER "${DEVROOT}/usr/bin/llvm-gcc-4.2")
+#SET (LINK_FLAGS "-arch armv6 -arch armv7")
+#SET (CMAKE_C_LINK_EXECUTABLE "${DEVROOT}/usr/bin/g++-4.2")
+SET (CMAKE_C_FLAGS "-x objective-c")
+SET (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -DDEBUG=1 -ggdb")
+SET (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -DNDEBUG=1")
+SET (CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -DNDEBUG=1 -ggdb")
+
+# CXX Compiler
+SET (CMAKE_CXX_COMPILER "${DEVROOT}/usr/bin/llvm-g++-4.2")
+SET (CMAKE_CXX_FLAGS "-x objective-c++")
+SET (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -DDEBUG=1 -ggdb")
+SET (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -DNDEBUG=1")
+SET (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -DNDEBUG=1 -ggdb")
+
+# Definitions
+ADD_DEFINITIONS("-arch armv6")
+ADD_DEFINITIONS("-arch armv7")
+ADD_DEFINITIONS("-pipe")
+ADD_DEFINITIONS("-no-cpp-precomp")
+ADD_DEFINITIONS("--sysroot=${SDKROOT}")
+ADD_DEFINITIONS("-miphoneos-version-min=${SDKVER}")
+
+# System Includes
+INCLUDE_DIRECTORIES(SYSTEM "${SDKROOT}/usr/include")
+INCLUDE_DIRECTORIES(SYSTEM "${SDKROOT}/usr/include/c++/4.2.1")
+INCLUDE_DIRECTORIES(SYSTEM "${SDKROOT}/usr/include/c++/4.2.1/armv6-apple-darwin10")
+INCLUDE_DIRECTORIES(SYSTEM "${SDKROOT}/opt/iphone-${SDKVER}/include")
+INCLUDE_DIRECTORIES(SYSTEM "${SDKROOT}/usr/local/iphone-${SDKVER}/include")
+
+# System Libraries
+LINK_DIRECTORIES("${SDKROOT}/usr/lib")
+LINK_DIRECTORIES("${SDKROOT}/usr/lib/gcc/arm-apple-darwin10/4.2.1/")
+#LINK_DIRECTORIES("${SDKROOT}/opt/iphone-${SDKVER}/lib")
+#LINK_DIRECTORIES("${SDKROOT}/usr/local/iphone-${SDKVER}/lib")
+
+# Root Paths
+SET (CMAKE_FIND_ROOT_PATH "${SDKROOT}" "/opt/iphone-${SDKVER}/" "/usr/local/iphone-${SDKVER}/")
+SET (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
+SET (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+# CMake Parameters
+SET (iPhone 1)
+SET (iPhoneOS 1)
+SET (iPhoneOS_VERSION ${SDKVER})
+SET (CMAKE_CROSSCOMPILING 1)
+
+#SET_TARGET_PROPERTIES(p3dm PROPERTIES LINK_FLAGS "-arch armv6 -arch armv7")
+
+# HELPERS
+#---------
+
+# MACRO(ADD_FRAMEWORK appname fwname)
+#     find_library(FRAMEWORK_${fwname}
+#         NAMES ${fwname}
+#         PATHS ${SDKROOT}/System/Library
+#         PATH_SUFFIXES Frameworks
+#         NO_DEFAULT_PATH)
+#     if( ${FRAMEWORK_${fwname}} STREQUAL FRAMEWORK_${fwname}-NOTFOUND)
+#         MESSAGE(ERROR ": Framework ${fwname} not found")
+#     else()
+#         TARGET_LINK_LIBRARIES(${appname} ${FRAMEWORK_${fwname}})
+#         MESSAGE(STATUS "Framework ${fwname} found at ${FRAMEWORK_${fwname}}")
+#     endif()
+# endmacro(ADD_FRAMEWORK)
+
+
+endif(APPLE)
 
 add_definitions("-Wall -O2 -fPIC")
 
+# Setting prefix for Linux
+if(UNIX AND (NOT APPLE))
 SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to install directories")
 SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
-
-
-
+endif(UNIX AND (NOT APPLE))
 
 #- Add sources for a target
 #
@@ -71,24 +154,64 @@ add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Volume )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose )
 
 get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
+
+#if(APPLE)
+#add_library( Moose SHARED ${Moose_SRCS})
+#set_target_properties( Moose PROPERTIES FRAMEWORK TRUE )
+#else(APPLE)
+# For linux, build regular static library
 add_library( Moose STATIC ${Moose_SRCS})
-# For apple, disable these dependencies
-if(NOT APPLE)
+
+# ----------------------------------------------------------------------------
+# iPhone-specific frameworks
+# ----------------------------------------------------------------------------
+if(APPLE)
+
+find_library( FOUNDATION_LIB Foundation)
+find_library( OPENAL_LIB OpenAL)
+find_library( OPENGLES_LIB OpenGLES)
+find_library( AUDIOTOOLBOX_LIB AudioToolbox)
+find_library( UIKIT_LIB UIKit)
+find_library( QUARTZCORE_LIB QuartzCore)
+find_library( COREGRAPHICS_LIB CoreGraphics)
+MARK_AS_ADVANCED(FOUNDATION_LIB
+OPENAL_LIB
+OPENGLES_LIB
+AUDIOTOOLBOX_LIB
+UIKIT_LIB
+QUARTZCORE_LIB
+COREGRAPHICS_LIB
+)
+SET(EXTRA_LIBS ${FOUNDATION_LIB})
+TARGET_LINK_LIBRARIES( Moose ${EXTRA_LIBS})
+elseif(NOT APPLE)
+# ----------------------------------------------------------------------------
+# Linux-specific frameworks
+# ----------------------------------------------------------------------------
 find_package(Freetype)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-
 find_package(SDL)
-include_directories(${SDL_INCLUDE_DIR})
-
 find_package(GLEW)
+include_directories(${FREETYPE_INCLUDE_DIRS})
+include_directories(${SDL_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_DIR})
-endif(NOT APPLE)
+endif(APPLE)
 
+
+
+
+#if(APPLE)
+#install( TARGETS Moose 
+#  FRAMEWORK DESTINATION Library/Frameworks
+#)
+#else(APPLE)
 install( TARGETS Moose 
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
 )
+#endif(APPLE)
+
+
 FILE(GLOB files 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Moose.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/MooseDefaultEntities.h"
@@ -128,6 +251,8 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
 SET (TCL_MODULE		MooseTCL)
 SET (INTERFACE_FILES	Moose.i)
 #SET (SRC_FILES		Moose_wrap.cxx )
+
+if(NOT APPLE)
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
@@ -165,3 +290,4 @@ SET( tclFiles
 )
 
 install( FILES ${tclFiles} DESTINATION lib/Moose )
+endif(NOT APPLE)

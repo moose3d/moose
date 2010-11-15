@@ -1,5 +1,8 @@
 /////////////////////////////////////////////////////////////////
 #include "MooseSDLScreen.h"
+
+#if !defined(MOOSE_APPLE_IPHONE)
+
 #include "MooseLogger.h"
 #include "MooseDefaultEntities.h"
 #include <SDL/SDL.h>
@@ -161,3 +164,4 @@ Moose::Window::CSDLScreen::SwapBuffers()
   SDL_GL_SwapBuffers();
 }
 /////////////////////////////////////////////////////////////////
+#endif

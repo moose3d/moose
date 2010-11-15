@@ -1,5 +1,5 @@
-#define __STDC_CONSTANT_MACROS 
 #include "MooseRenderableVideo.h"
+#if !defined(MOOSE_APPLE_IPHONE)
 #include "MooseVideoTexture.h"
 #include "MooseRenderable.h"
 #include "MooseDefaultEntities.h"
@@ -64,3 +64,4 @@ prefix::CRenderableVideo::Update( float fSeconds )
      m_Renderer.RollbackFrameBuffer( *m_pFrameBufferObj );
 }
 ///////////////////////////////////////////////////////////////////////////////
+#endif

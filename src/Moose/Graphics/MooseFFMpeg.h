@@ -1,6 +1,8 @@
 #ifndef __MooseFFMpeg_h__
 #define __MooseFFMpeg_h__
 ///////////////////////////////////////////////////////////////////////////////
+#include "MooseAPI.h"
+#if !defined(MOOSE_APPLE_IPHONE)
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -11,6 +13,7 @@ namespace Moose
 {
     namespace Graphics
     {
+
         /////////////////////////////////////////////////////////////////
         /// A Frame class which holds the ffmpeg AVFrame and the time it will be displayed on screen in seconds.
         class CFFMpegFrame
@@ -204,7 +207,9 @@ namespace Moose
             inline int GetWidth() const { return m_pCodecCtx->width; }
             inline int GetHeight() const { return m_pCodecCtx->height; }
         };
+
     } // Graphics
 } // Moose
 /////////////////////////////////////////////////////////////////
+#endif
 #endif

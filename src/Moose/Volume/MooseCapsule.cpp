@@ -7,12 +7,17 @@
  *
  */
 #include "MooseCapsule.h"
+#include "MooseDefaultEntities.h"
+#include "MooseLogger.h"
 #include "MooseVector3.h"
 #include "MooseMatrix3x3.h"
 #include "MooseMath.h"
 #include "MooseVertexDescriptor.h"
 using namespace Moose::Math;
 using namespace Moose::Volume;
+using namespace Moose::Core;
+using namespace Moose::Default;
+using namespace std;
 Moose::Volume::CCapsule
 Moose::Volume::CalculateBoundingCapsule( const Moose::Graphics::CVertexDescriptor &rVertices )
 {
@@ -204,12 +209,12 @@ Moose::Volume::CalculateBoundingCapsule( const Moose::Graphics::CVertexDescripto
     /////////////////////////////////////////////////////////////////
     CCapsule capsule;
 #ifdef DEBUG
-    CLogger::Error() << DEBUG_HEADER << "minR " << fMinR << endl;
-    CLogger::Error() << DEBUG_HEADER << "maxR " << fMaxR << endl;
-    CLogger::Error() << DEBUG_HEADER << "minS " << fMinS << endl;
-    CLogger::Error() << DEBUG_HEADER << "maxS " << fMaxS << endl;
-    CLogger::Error() << DEBUG_HEADER << "minT " << fMinT << endl;
-    CLogger::Error() << DEBUG_HEADER << "maxT " << fMaxT << endl;
+    g_Error << "minR " << fMinR << endl;
+    g_Error << "maxR " << fMaxR << endl;
+    g_Error << "minS " << fMinS << endl;
+    g_Error << "maxS " << fMaxS << endl;
+    g_Error << "minT " << fMinT << endl;
+    g_Error << "maxT " << fMaxT << endl;
 #endif
     
     float fRlen = fMaxR - fMinR;

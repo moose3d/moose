@@ -11,6 +11,7 @@ add_sources (Moose
 
 # Check for Apple platform
 if(APPLE)
+  add_sources (Moose MooseIPhoneAudioSample.mm)
   add_sources (Moose MooseMusicClip.cpp)
 else(APPLE)
   message(STATUS  "Disabling apple SDK")

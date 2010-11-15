@@ -375,11 +375,13 @@ Moose::Graphics::COglRenderer::COglRenderer() : m_pFeatures(NULL), m_pCamera(NUL
                                                 ,  m_pQuadric(NULL)
 #endif
 {
+    #if !defined(MOOSE_APPLE_IPHONE)
   GLenum status = glewInit();
   if ( status != GLEW_OK  )
   {
     g_Error << "COglRenderer: Error initializing GLEW: " << glewGetErrorString(status)<< "\n";
   }
+#endif
 
 }
 /////////////////////////////////////////////////////////////////
