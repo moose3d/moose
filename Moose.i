@@ -15,6 +15,7 @@
  //#include "CClearBuffers.h"
   using namespace Moose::Graphics;
   using namespace Moose::Math;
+  using namespace Moose::Core;
   using std::exception;
 inline Moose::Scene::CScene * 
 GameObjToScene( Moose::Scene::CGameObject *pObj )

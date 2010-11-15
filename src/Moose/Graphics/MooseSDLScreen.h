@@ -41,9 +41,9 @@ namespace Moose
 				       const CSDLScreenParams & oglSP);
     };
     /////////////////////////////////////////////////////////////////
-    class MOOSE_API CSDLScreen : public CSingleton<CSDLScreen>
+    class MOOSE_API CSDLScreen : public Moose::Core::CSingleton<Moose::Window::CSDLScreen>
     {
-      friend class CSingleton<CSDLScreen>;
+      friend class Moose::Core::CSingleton<Moose::Window::CSDLScreen>;
     private:
       ////////////////////
       /// The constructor
