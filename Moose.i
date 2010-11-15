@@ -1,11 +1,12 @@
 %module Moose
-
+#ifdef SWIGTCL
 %include "exception.i"
 %include "std_string.i"
 %include "std_map.i"
 %include "std_pair.i"
 %include "std_vector.i"
 %include "typemaps.i"
+#endif
 %{
 
 #include <Moose.h>

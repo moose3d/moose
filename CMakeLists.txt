@@ -72,7 +72,8 @@ add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose )
 
 get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
 add_library( Moose STATIC ${Moose_SRCS})
-
+# For apple, disable these dependencies
+if(NOT APPLE)
 find_package(Freetype)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
@@ -81,6 +82,7 @@ include_directories(${SDL_INCLUDE_DIR})
 
 find_package(GLEW)
 include_directories(${GLEW_INCLUDE_DIR})
+endif(NOT APPLE)
 
 install( TARGETS Moose 
   LIBRARY DESTINATION lib
