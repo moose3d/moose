@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <list>
-#include <assert.h>
+#include <cassert>
 #include "MooseLogger.h"
 /////////////////////////////////////////////////////////////////
 #if TRISTRIPPER == 1
@@ -256,10 +256,12 @@ Moose::Data::CMilkshapeLoader::Handle_Vertices( unsigned char *pWorkBuffer, unsi
 	memcpy(&m_pVertices[i], pWorkBuffer, sizeof(MS3D_Vertex_t));
 	pWorkBuffer+=sizeof(MS3D_Vertex_t);
 #ifdef DEBUG
+#if DEBUG>1
 	cerr << "v[0] = " << m_pVertices[i].vertex[0]
 			  << "v[1] = " << m_pVertices[i].vertex[1]
 			  << "v[2] = " << m_pVertices[i].vertex[2] 
 			  << "boneid = " << (int)m_pVertices[i].boneId  << std::endl;
+#endif
 #endif
 
       }
@@ -605,6 +607,7 @@ Moose::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
   }
 
 #ifdef DEBUG
+#if DEBUG>1
   for( size_t i=0; i< m_nNumVertices; ++i)
   {
     vector< TriInd > & tris = vertTriangles[i];
@@ -615,6 +618,7 @@ Moose::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
     cerr << m_pVertices[i].vertex[2] << ")";
     cerr << " has " << tris.size() << "triangles." << endl;
   }
+#endif
 #endif
   vecVertices.clear();
   vecIndices.clear();
@@ -662,7 +666,9 @@ Moose::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
 	tris[t].index[whichVertex] = vecVertices.size()-1;
 
 #ifdef DEBUG
+#if DEBUG>1
 	cerr << "checking vert" << i << ", inserting : " << vertex << endl;
+#endif
 #endif
 
       }
@@ -670,8 +676,10 @@ Moose::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
   } // vertices
 
 #ifdef DEBUG
+#if DEBUG>1
   cerr << "copying index data" << endl;
   cerr << "#different vertices: " << vecVertices.size() << endl;
+#endif
 #endif
   //
   // copy index data from TriInd to actual triangles, so it can be 
@@ -703,7 +711,9 @@ Moose::Data::CMilkshapeLoader::CreateTriangleList( vector<CVertex> &vecVertices,
     }
   }
 #ifdef DEBUG
+#if DEBUG>1
   cerr << "creating triangle list" << endl;
+#endif
 #endif
   // go through each triangle and create a list.
   

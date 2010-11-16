@@ -92,7 +92,8 @@ prefix::CGrid::CGrid()
   GetRenderState().AddShaderAttrib("a_vertex", (*GetModelHandle())->GetVertexHandle());
 
   GetRenderState().AddShaderUniform("color", &GetRenderState().GetMaterial().GetDiffuse());
-  assert( GetRenderState().Prepare() );
+  bool bVal = GetRenderState().Prepare();
+  assert( bVal );
   //g_Log << "RenderLayer is : " << GetRenderState().GetRenderLayer() << "\n";
 }
 ////////////////////////////////////////////////////////////////////////////////

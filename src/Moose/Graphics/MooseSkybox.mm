@@ -4,7 +4,7 @@
 #include "MooseDefaultEntities.h"
 #include "MooseAssetBundle.h"
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
@@ -179,15 +179,18 @@ Moose::Graphics::CSkybox::CSkybox()
     // create texcoords
     CVertexDescriptor *pTexCoords = new Moose::Graphics::CVertexDescriptor( Moose::Graphics::ELEMENT_TYPE_TEX_3F, 8);
     CreateTexCoords(pTexCoords);
-    assert(g_VertexMgr->Create( pTexCoords, MOOSE_SKYBOX_TEXCOORDS, pModel->GetTextureCoordinateHandle(0)) == 0);
+    int iRetval = g_VertexMgr->Create( pTexCoords, MOOSE_SKYBOX_TEXCOORDS, pModel->GetTextureCoordinateHandle(0));
+    assert(iRetval == 0);
     // vertices
     CVertexDescriptor *pVertices = new Moose::Graphics::CVertexDescriptor( Moose::Graphics::ELEMENT_TYPE_VERTEX_3F, 8);
     CreateVertices( pVertices );
-    assert(g_VertexMgr->Create( pVertices, MOOSE_SKYBOX_VERTICES, pModel->GetVertexHandle()) == 0);
+    iRetval = g_VertexMgr->Create( pVertices, MOOSE_SKYBOX_VERTICES, pModel->GetVertexHandle());
+    assert( iRetval == 0);
     // indices
     CIndexArray *pIndices = new Moose::Graphics::CIndexArray( Moose::Graphics::PRIMITIVE_TRI_LIST, 36);
     CreateIndices( pIndices );
-    assert(g_IndexMgr->Create( pIndices, MOOSE_SKYBOX_INDICES, pModel->GetIndices()) == 0);
+    iRetval = g_IndexMgr->Create( pIndices, MOOSE_SKYBOX_INDICES, pModel->GetIndices());
+    assert(iRetval == 0);
     // manage actual model
     g_ModelMgr->Create( pModel, MOOSE_SKYBOX_MODEL, m_hModel);
   }
@@ -206,10 +209,8 @@ Moose::Graphics::CSkybox::CSkybox()
     
     //pShader->CreateVertexShaderFromSource(SB_VERT_SH, "skybox_vertex_shader");
     //pShader->CreateFragmentShaderFromSource(SB_FRAG_SH, "skybox_frag_shader");
-
-    assert( g_ShaderMgr->Create(pShader, 
-                                MOOSE_SKYBOX_SHADER, 
-                                state.GetShaderHandle()) == 0);
+    int iRetval = g_ShaderMgr->Create(pShader, MOOSE_SKYBOX_SHADER, state.GetShaderHandle());
+    assert( iRetval == 0);
   }
   state.AddTextureFilter(T_WRAP_CLAMP_TO_EDGE);
   state.AddTextureFilter(S_WRAP_CLAMP_TO_EDGE);
@@ -224,8 +225,9 @@ Moose::Graphics::CSkybox::CSkybox()
   state.AddShaderAttrib("position", (*m_hModel)->GetVertexHandle() );
   state.AddShaderAttrib("a_texcoord", (*m_hModel)->GetTextureCoordinateHandle() );
   state.AddShaderUniform("diffuse", 0); 
-    state.SetRenderLayer( kBackground );
-  assert(state.Prepare());
+  state.SetRenderLayer( kBackground );
+  bool bVal = state.Prepare();
+  assert(bVal);
 }
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CSkybox::~CSkybox()

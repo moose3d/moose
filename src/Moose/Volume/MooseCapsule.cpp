@@ -209,12 +209,14 @@ Moose::Volume::CalculateBoundingCapsule( const Moose::Graphics::CVertexDescripto
     /////////////////////////////////////////////////////////////////
     CCapsule capsule;
 #ifdef DEBUG
+#if DEBUG>1
     g_Error << "minR " << fMinR << endl;
     g_Error << "maxR " << fMaxR << endl;
     g_Error << "minS " << fMinS << endl;
     g_Error << "maxS " << fMaxS << endl;
     g_Error << "minT " << fMinT << endl;
     g_Error << "maxT " << fMaxT << endl;
+#endif
 #endif
     
     float fRlen = fMaxR - fMinR;

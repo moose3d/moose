@@ -3,7 +3,7 @@
 #include "MooseMath.h"
 #include "MooseCamera.h"
 #include "MooseCollision.h"
-#include <assert.h>
+#include <cassert>
 /////////////////////////////////////////////////////////////////
 using std::cerr;
 using std::endl;
@@ -654,66 +654,68 @@ Moose::Graphics::CCamera::CalculateFrustum()
 
   // Calculate corners
   CVector3<float> vCorner;
-  
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
-				 m_Frustum.GetPlane(BACK),
-				 m_Frustum.GetPlane(LEFT),
-				 vCorner ) == 0);
+  int iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+                                       m_Frustum.GetPlane(BACK),
+                                       m_Frustum.GetPlane(LEFT),
+                                       vCorner );
+  assert( iRetval == 0);
 
 
   m_Frustum.SetCorner( CFrustum::TOP_NEAR_LEFT, vCorner );
-  
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
-				 m_Frustum.GetPlane(BACK),
-				 m_Frustum.GetPlane(RIGHT),
-				 vCorner ) == 0);
+  iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+                                   m_Frustum.GetPlane(BACK),
+                                   m_Frustum.GetPlane(RIGHT),
+                                   vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::TOP_NEAR_RIGHT, vCorner );
-  
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
-				 m_Frustum.GetPlane(FRONT),
-				 m_Frustum.GetPlane(LEFT),
-				 vCorner ) == 0);
+  iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+                                       m_Frustum.GetPlane(FRONT),
+                                       m_Frustum.GetPlane(LEFT),
+                                       vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::TOP_FAR_LEFT, vCorner );
-
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
-				 m_Frustum.GetPlane(FRONT),
-				 m_Frustum.GetPlane(RIGHT),
-				 vCorner ) == 0);
+  iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(TOP), 
+                                   m_Frustum.GetPlane(FRONT),
+                                   m_Frustum.GetPlane(RIGHT),
+                                   vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::TOP_FAR_RIGHT, vCorner );
   
-  
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
-				 m_Frustum.GetPlane(BACK),
-				 m_Frustum.GetPlane(LEFT),
-				 vCorner ) == 0);
+  iRetval =CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+                                  m_Frustum.GetPlane(BACK),
+                                  m_Frustum.GetPlane(LEFT),
+                                  vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::BOTTOM_NEAR_LEFT, vCorner );
   
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
-				 m_Frustum.GetPlane(BACK),
-				 m_Frustum.GetPlane(RIGHT),
-				 vCorner ) == 0);
+  iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+                                   m_Frustum.GetPlane(BACK),
+                                   m_Frustum.GetPlane(RIGHT),
+                                   vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::BOTTOM_NEAR_RIGHT, vCorner );
-  
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
-				 m_Frustum.GetPlane(FRONT),
-				 m_Frustum.GetPlane(LEFT),
-				 vCorner ) == 0);
+  iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+                                   m_Frustum.GetPlane(FRONT),
+                                   m_Frustum.GetPlane(LEFT),
+                                   vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::BOTTOM_FAR_LEFT, vCorner );
-
-  assert( CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
-				 m_Frustum.GetPlane(FRONT),
-				 m_Frustum.GetPlane(RIGHT),
-				 vCorner ) == 0);
+  
+  iRetval = CollisionPoint3Planes( m_Frustum.GetPlane(BOTTOM), 
+                                   m_Frustum.GetPlane(FRONT),
+                                   m_Frustum.GetPlane(RIGHT),
+                                   vCorner );
+  assert( iRetval == 0);
   
   m_Frustum.SetCorner( CFrustum::BOTTOM_FAR_RIGHT, vCorner);
   
-
+  
 }
 /////////////////////////////////////////////////////////////////
 void 

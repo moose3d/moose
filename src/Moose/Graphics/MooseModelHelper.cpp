@@ -4,7 +4,7 @@
 #include "MooseDefaultEntities.h"
 #include <sstream>
 #include <string>
-#include <assert.h>
+#include <cassert>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Graphics;
 using namespace Moose::Data;
@@ -82,65 +82,71 @@ Moose::Graphics::CModel *
 Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, bool bInterleaved )
 {
 
-	CModel *pModel = new CModel();
+  CModel *pModel = new CModel();
 
-	  /* determine which data is used in comparison */
-	  // int iCompFlags = VERTEX_COMP_POSITION;
-	//   if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL;
-	//   if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;
-	//   if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD;
+  /* determine which data is used in comparison */
+  // int iCompFlags = VERTEX_COMP_POSITION;
+  //   if ( iFlags &  OPT_VERTEX_NORMALS  ) iCompFlags |= VERTEX_COMP_NORMAL;
+  //   if ( iFlags &  OPT_VERTEX_COLORS )   iCompFlags |= VERTEX_COMP_COLOR;
+  //   if ( iFlags &  OPT_VERTEX_TEXCOORDS) iCompFlags |= VERTEX_COMP_TEXCOORD;
 
 
 
-	  /* Resource allocation is one-way, either everything succeeds or nothing goes.*/
+  /* Resource allocation is one-way, either everything succeeds or nothing goes.*/
 
-	  if ( bInterleaved )
-	  {
-	  	CVertexDescriptor *pInterleaved = m_pLoader->GetInterleavedArray();
-	    // manage array
-	  	assert( g_DefaultVertexManager->Create( pInterleaved,  g_UniqueName, pModel->GetVertexHandle() ) == 0);
-	  }
-	  else
-	  {
-	    // Create vertex handle
-	    assert( g_DefaultVertexManager->Create(m_pLoader->GetVertexArray(m_fScale),  g_UniqueName, pModel->GetVertexHandle() ) == 0);
+  if ( bInterleaved )
+  {
+    CVertexDescriptor *pInterleaved = m_pLoader->GetInterleavedArray();
+    // manage array
+    int iRetval = g_DefaultVertexManager->Create( pInterleaved,  g_UniqueName, pModel->GetVertexHandle() );
+    assert( iRetval == 0);
+  }
+  else
+  {
+    // Create vertex handle
+    int iRetval = g_DefaultVertexManager->Create(m_pLoader->GetVertexArray(m_fScale),  g_UniqueName, pModel->GetVertexHandle() );
+    assert( iRetval == 0);
 
-	    /* load vertex normals */
-	    if ( iFlags & OPT_VERTEX_NORMALS && m_pLoader->HasNormalArray() )
-	    {
-	      /* Create normal handle */
-	      assert ( g_DefaultVertexManager->Create(m_pLoader->GetNormalArray(), g_UniqueName, pModel->GetNormalHandle()) == 0);
-	    }
-	    /* load texture coordinates */
-	    if ( iFlags & OPT_VERTEX_TEXCOORDS && m_pLoader->HasTexCoordArray())
-	    {
-	      /* Create texcoord handle */
-	      assert ( g_DefaultVertexManager->Create(m_pLoader->GetTexCoordArray(), g_UniqueName, pModel->GetTextureCoordinateHandle(0)) == 0);
-	    }
-	    /* load colors */
-	    if ( iFlags & OPT_VERTEX_COLORS )
-	    {
-	      /* Create texcoord handle */
-	      /*assert ( g_DefaultVertexManager->Create(pLoader->GetVertexColors(),*/
-	      /*name + "_colors",*/
-	      /*  rModel.GetTextureCoordinateHandle()) == 0);		     */
+    /* load vertex normals */
+    if ( iFlags & OPT_VERTEX_NORMALS && m_pLoader->HasNormalArray() )
+    {
+      /* Create normal handle */
+      iRetval = g_DefaultVertexManager->Create(m_pLoader->GetNormalArray(), g_UniqueName, pModel->GetNormalHandle());
+      assert( iRetval == 0);
+    }
+    /* load texture coordinates */
+    if ( iFlags & OPT_VERTEX_TEXCOORDS && m_pLoader->HasTexCoordArray())
+    {
+      /* Create texcoord handle */
+      iRetval = g_DefaultVertexManager->Create(m_pLoader->GetTexCoordArray(), g_UniqueName, pModel->GetTextureCoordinateHandle(0));
+      assert( iRetval == 0);
+    }
+    /* load colors */
+    if ( iFlags & OPT_VERTEX_COLORS )
+    {
+      /* Create texcoord handle */
+      /*assert ( g_DefaultVertexManager->Create(pLoader->GetVertexColors(),*/
+      /*name + "_colors",*/
+      /*  rModel.GetTextureCoordinateHandle()) == 0);		     */
 
-	    }
-	  }
-	  if ( szGroupName == NULL || szGroupName[0] == '\n')
-	  {
-	  	CIndexArray *pArray = m_pLoader->GetIndexArray();
-	  	assert( pArray->GetNumIndices() > 0 );
-	    assert( g_DefaultIndexManager->Create( pArray, g_UniqueName, pModel->GetIndices()) == 0 );
-	  }
-	  else
-	  {
-	      CIndexArray *pIndices = m_pLoader->GetIndexArray( szGroupName );
-	      assert ( pIndices != NULL && "Group is NULL" );
-	      assert (pIndices->GetNumIndices() > 0 && "Not enough indices ");
-	      assert( g_DefaultIndexManager->Create( pIndices, g_UniqueName, pModel->GetIndices() ) == 0 );
+    }
+  }
+  if ( szGroupName == NULL || szGroupName[0] == '\n')
+  {
+    CIndexArray *pArray = m_pLoader->GetIndexArray();
+    assert( pArray->GetNumIndices() > 0 );
+    int iRetval = g_DefaultIndexManager->Create( pArray, g_UniqueName, pModel->GetIndices());
+    assert( iRetval == 0 );
+  }
+  else
+  {
+    CIndexArray *pIndices = m_pLoader->GetIndexArray( szGroupName );
+    assert ( pIndices != NULL && "Group is NULL" );
+    assert (pIndices->GetNumIndices() > 0 && "Not enough indices ");
+    int iRetval = g_DefaultIndexManager->Create( pIndices, g_UniqueName, pModel->GetIndices() );
+    assert( iRetval == 0 );
 
-	  }
+  }
 
   return pModel;
 }

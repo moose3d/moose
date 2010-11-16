@@ -84,7 +84,8 @@ Moose::Util::CTransformIndicator::CTransformIndicator() : m_pTarget(NULL)
   
   rs.AddShaderAttrib("a_vertex", (*GetModelHandle())->GetVertexHandle() );
   rs.AddShaderAttrib("a_color",  (*GetModelHandle())->GetColorHandle());
-  assert(rs.Prepare());
+  bool bVal = rs.Prepare();
+  assert(bVal);
 }
 ////////////////////////////////////////////////////////////////////////////////
 void

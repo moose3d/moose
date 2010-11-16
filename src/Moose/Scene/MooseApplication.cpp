@@ -300,7 +300,8 @@ prefix::CApplication::LoadDefaultResources()
       CShader *pShader = new CShader();
       pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("Shaders/default.vert"));
       pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("Shaders/default.frag"));
-      assert( g_ShaderMgr->Create(pShader, "moose_default_shader") == 0);
+      int iRetval = g_ShaderMgr->Create(pShader, "moose_default_shader");
+      assert( iRetval == 0);
     }
     // For boxrenderable
     if ( g_IndexMgr->HasResource("moose_boxrenderable_indices") == false )
@@ -353,13 +354,14 @@ prefix::CApplication::LoadDefaultResources()
         CShader *pShader = new CShader();
         pShader->CreateVertexShaderFromSource(vsh, "line vsh");
         pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
-        assert( g_ShaderMgr->Create(pShader, "moose_line_shader") == 0);
+        int iRetval = g_ShaderMgr->Create(pShader, "moose_line_shader");
+        assert( iRetval == 0);
 
         CShader *pColor = new CShader();
         pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("Shaders/color.vert"));
         pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("Shaders/color.frag"));
-
-        assert( g_ShaderMgr->Create(pColor, "moose_color_shader") == 0);
+        iRetval  = g_ShaderMgr->Create(pColor, "moose_color_shader");
+        assert( iRetval  == 0);
     }
 }
 ///////////////////////////////////////////////////////////////////////////////

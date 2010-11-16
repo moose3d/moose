@@ -1,7 +1,7 @@
 #include <math.h>
 #include <iostream>
 #include "MooseMath.h"
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 #ifdef WIN32
 // isnan() is C99

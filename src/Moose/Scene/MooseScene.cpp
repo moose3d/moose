@@ -106,22 +106,23 @@ Moose::Scene::CScene::Init()
 Moose::Scene::CGameObject *
 Moose::Scene::CScene::AddGameObject( Moose::Scene::CGameObject *pObj )
 {
-	// Create handle to object
-	assert( g_ObjectMgr->Create(pObj, pObj->GetName(), pObj->GetObjectHandle()) == 0 );
-    // Intialize after object has been registered, so it can be accessed during script init via
-    // objectmgr.
-    pObj->Init();
-	// so it is affected by transforms.
-	/*CObjectTransform *pObjTr = */GetTransformGraph().Insert(pObj);
+  // Create handle to object
+  int iRetval = g_ObjectMgr->Create(pObj, pObj->GetName(), pObj->GetObjectHandle());
+  assert( iRetval == 0 );
+  // Intialize after object has been registered, so it can be accessed during script init via
+  // objectmgr.
+  pObj->Init();
+  // so it is affected by transforms.
+  /*CObjectTransform *pObjTr = */GetTransformGraph().Insert(pObj);
 
-	// So it can be culled
-	GetSpatialGraph().InsertObject(pObj);
+  // So it can be culled
+  GetSpatialGraph().InsertObject(pObj);
 
-	// insert local to local ptr list
-	m_lstGameObjects.push_back( pObj );
-    m_mapPotentialColliders[pObj] = new GameObjectList();
-    m_mapColliders[pObj]          = new GameObjectList();
-	return pObj;
+  // insert local to local ptr list
+  m_lstGameObjects.push_back( pObj );
+  m_mapPotentialColliders[pObj] = new GameObjectList();
+  m_mapColliders[pObj]          = new GameObjectList();
+  return pObj;
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Scene::CDirectionalLightObject *

@@ -8,7 +8,7 @@
  */
 
 #include "MooseSphereRenderable.h"
-
+#include <cassert>
 using namespace Moose::Graphics;
 namespace prefix=Moose::Graphics;
 ///////////////////////////////////////////////////////////

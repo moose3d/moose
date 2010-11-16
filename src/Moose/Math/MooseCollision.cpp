@@ -3,7 +3,7 @@
 #include "MooseIndexArray.h"
 #include "MooseVertexDescriptor.h"
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Math;
 using namespace Moose::Volume;

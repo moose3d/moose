@@ -176,24 +176,24 @@ Moose::Scene::CCameraObject::Update( float fSeconds )
   {
   	assert( GetTransformNode() != NULL);
   	CTransformable *pParent = GetTransformNode()->GetParentTransformNode()->GetTransformable();
-		assert( pParent != NULL );
+    assert( pParent != NULL );
 
   	if ( m_Settings.m_bUseParentRotation )
   	{
-  		SetRotation( pParent->GetWorldTransform().GetRotation() );
-  		// Update position from world transforms of parent node.
-  		SetPosition( pParent->GetWorldTransform().GetTranslation() );
+      SetRotation( pParent->GetWorldTransform().GetRotation() );
+      // Update position from world transforms of parent node.
+      SetPosition( pParent->GetWorldTransform().GetTranslation() );
   	}
   	else
   	{
-        SetPosition( pParent->GetWorldTransform().GetTranslation() - (GetForwardVector() * this->GetTrackballDistance()) );
+      SetPosition( pParent->GetWorldTransform().GetTranslation() - (GetForwardVector() * this->GetTrackballDistance()) );
   	}
   }
   else
   {
-      SetRotation( GetWorldTransform().GetRotation());
-      SetPosition( GetWorldTransform().GetTranslation());
-      //-(GetForwardVector() * this->GetTrackballDistance()) );
+    SetRotation( GetWorldTransform().GetRotation());
+    SetPosition( GetWorldTransform().GetTranslation());
+    //-(GetForwardVector() * this->GetTrackballDistance()) );
   }
   UpdateScript(fSeconds);
 }

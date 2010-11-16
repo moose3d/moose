@@ -104,17 +104,19 @@ SCRIPT_CMD_DECL( RayPlaneCollision );      // returns point where given ray and 
 ///////////////////////////////////////////////////////////////////////////////
 // Macro for creating commands. FUNC must be an existing static function
 // declared with SCRIPT_CMD_DECL and implemented using SCRIPT_CMD_IMPL.
-#define CREATE_CMD(  FUNC ) {				\
-	assert(Tcl_CreateObjCommand( m_pInterp, #FUNC,		\
-				     FUNC, (ClientData)m_pEntity,	\
-				     NULL) != NULL );		\
+#define CREATE_CMD(  FUNC ) {                                           \
+	Tcl_Command c = Tcl_CreateObjCommand( m_pInterp, #FUNC,             \
+                                          FUNC, (ClientData)m_pEntity,	\
+                                          NULL);                        \
+    assert( c!= NULL );                                                 \
 }
 /////////////////////////////////////////////////////////////////
 /// Same as CREATE_CMD, but with alternate data passed as client parameter.
-#define CREATE_CMD_PTR(  FUNC, OBJPTR) {			\
-	assert(Tcl_CreateObjCommand( m_pInterp, #FUNC,		\
-				     FUNC, (ClientData)OBJPTR,	\
-				     NULL) != NULL );		\
+#define CREATE_CMD_PTR(  FUNC, OBJPTR) {                            \
+	Tcl_Command c =Tcl_CreateObjCommand( m_pInterp, #FUNC,          \
+                                         FUNC, (ClientData)OBJPTR,	\
+                                         NULL);                     \
+    assert(c != NULL );                                             \
 }
 #endif // MOOSE_APPLE_IPHONE
 

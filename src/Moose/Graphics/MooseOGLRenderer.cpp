@@ -23,7 +23,7 @@
 #include "MooseSphere.h"
 #include "MooseMath.h"
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 #include "MooseLogger.h"
 
 

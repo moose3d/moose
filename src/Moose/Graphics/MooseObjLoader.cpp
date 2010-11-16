@@ -8,7 +8,7 @@
 #include <exception>
 #include <iostream>
 #include <sstream>
-#include <assert.h>
+#include <cassert>
 #include <stdlib.h>
 /////////////////////////////////////////////////////////////////
 using std::fstream;
@@ -492,7 +492,8 @@ Moose::Data::CObjLoader::Load( const char *szFilename )
   }  
   
 
-#ifdef DEBUG
+#ifdef DEBUG 
+#if DEBUG > 1
   cerr << "#vert: " << m_Vertices.size() << endl;
   cerr << "#norm: " << m_Normals.size() << endl;
   cerr << "#texc: " << m_TexCoords.size() << endl;
@@ -501,6 +502,7 @@ Moose::Data::CObjLoader::Load( const char *szFilename )
   for_each( m_Normals.begin(), m_Normals.end(), printIt);
   for_each( m_TexCoords.begin(), m_TexCoords.end(), printIt);
   for_each( m_Faces.begin(), m_Faces.end(), printIt);
+#endif
 #endif
   GenerateModelData();
   delete [] pBuffer;
@@ -582,7 +584,9 @@ Moose::Data::CObjLoader::GenerateModelData()
   {
     vector< ObjFaceInd > & faces = allFaces[v];
 #ifdef DEBUG
+#if DEBUG > 1
     cerr << "#Faces in " << v << " : " <<  faces.size() << endl;
+#endif
 #endif
     for( size_t f=0; f<faces.size(); ++f)
     {
@@ -696,10 +700,12 @@ Moose::Data::CObjLoader::GenerateModelData()
   {
     ObjFace & face = m_Faces[f];
 #ifdef DEBUG
+#if DEBUG>1
     cerr << "v1: " << face.v1 << endl;
     cerr << "v2: " << face.v2 << endl;
     cerr << "v3: " << face.v3 << endl;
     cerr << "vertices total: " << vecVertices.size() << endl;
+#endif
 #endif
     assert( face.v1 < (int)vecVertices.size());
     assert( face.v2 < (int)vecVertices.size());
@@ -754,7 +760,9 @@ Moose::Data::CObjLoader::GenerateModelData()
     }
   }
 #ifdef DEBUG
+#if DEBUG>1
   cerr << "total groups: " << m_mapGroupFaces.size() << endl;
+#endif
 #endif
 
   // Create indices for groups
@@ -762,7 +770,9 @@ Moose::Data::CObjLoader::GenerateModelData()
   for( ; it != m_mapGroupFaces.end(); it++)
   {
 #ifdef DEBUG
+#if DEBUG>1
     cerr << "group : " << it->first  << endl;
+#endif
 #endif
     // Create index array; each triangle has three vertices
     CIndexArray *pIndices = new CIndexArray( PRIMITIVE_TRI_LIST, (it->second).size()*3);

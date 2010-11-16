@@ -18,7 +18,8 @@ prefix::CRenderableVideo::CRenderableVideo( const std::string & strFilename )
 
     COglTexture *pTexture = r.CreateTexture(GetWidth(), GetHeight(), TEXTURE_RECT );
     assert( pTexture != NULL );
-    assert( g_TextureMgr->Create(pTexture, g_UniqueNameStr,  GetRenderState().GetTextureHandle()) == 0 );
+    int iRetval = g_TextureMgr->Create(pTexture, g_UniqueNameStr,  GetRenderState().GetTextureHandle());
+    assert( iRetval == 0 );
 
     m_pFrameBufferObj = r.CreateFramebuffer( GetWidth(), GetHeight(), FBO_COLOR_BUFFER );
     r.AttachTextureToFramebuffer(*m_pFrameBufferObj, GetRenderState().GetTextureHandle(), 0 );

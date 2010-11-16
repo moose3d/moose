@@ -8,6 +8,7 @@
  */
 
 #include "MooseLineRenderable.h"
+#include <cassert>
 using namespace Moose::Graphics;
 using namespace Moose::Math;
 namespace prefix = Moose::Graphics;
