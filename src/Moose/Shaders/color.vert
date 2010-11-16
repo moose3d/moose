@@ -1,5 +1,11 @@
-#version 150
-in  vec3 a_vertex;
+#ifdef GL_ES
+#define IN attribute
+#define OUT varying
+#else
+#define IN in
+#define OUT out
+#endif
+IN  vec3 a_vertex;
 
 uniform mat4 m_viewMatrix;
 uniform mat4 m_projMatrix;

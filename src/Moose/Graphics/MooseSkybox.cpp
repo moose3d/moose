@@ -24,29 +24,6 @@ using namespace Moose::Core;
  "m_projMatrix[3][0], m_projMatrix[3][1], m_projMatrix[3][2],m_projMatrix[3][3]);" \
 */
 ////////////////////////////////////////////////////////////////////////////////
-const char *SB_VERT_SH = "#version 150\n" \
- "in vec3 position;"         \
- "in vec3 a_texcoord;"                               \
- "out vec3 v_texcoord;"                                 \
- "uniform mat4 m_viewMatrix;"                               \
- "uniform mat4 m_projMatrix;"                               \
- "void main(){"                                             \
- "mat4 mv = m_viewMatrix;"                                  \
- "mv[3][0] = 0.0; mv[3][1] = 0.0; mv[3][2] = 0.0;"          \
- "gl_Position = m_projMatrix * mv * vec4(position,1.0);"    \
- "v_texcoord = a_texcoord;}";
-
-const char *SB_FRAG_SH =                                \
- "#version 150\n#ifdef GL_ES\n"                                       \
- "varying mediump vec3 v_texcoord;\n"                   \
- "uniform lowp samplerCube diffuse;\n"                  \
- "#else\n"                                              \
- "in vec3 v_texcoord;\n"                           \
- "uniform samplerCube diffuse;\n"                       \
- "out vec4 gl_FragColor;\n#endif\n"                                             \
- "void main(){"                                         \
- "gl_FragColor = texture(diffuse,v_texcoord);}";
-/////////////////////////////////////////////////////////////////
 inline void CreateTexCoords( Moose::Graphics::CVertexDescriptor *pTexCoords )
 {
   pTexCoords->GetPointer<float>()[0] = -1.0f;
@@ -204,11 +181,8 @@ Moose::Graphics::CSkybox::CSkybox()
   {
     // OpenGL context needs to be created at this point.
     CShader *pShader = new CShader();
-    pShader->LoadVertexShader(CAssetBundle::GetInstance()->GetAssetPath("Shaders/skybox.vert"));
-    pShader->LoadFragmentShader(CAssetBundle::GetInstance()->GetAssetPath("Shaders/skybox.frag"));
-    
-    //pShader->CreateVertexShaderFromSource(SB_VERT_SH, "skybox_vertex_shader");
-    //pShader->CreateFragmentShaderFromSource(SB_FRAG_SH, "skybox_frag_shader");
+    pShader->LoadVertexShader(CAssetBundle::GetInstance()->GetAssetPath("skybox.vert"));
+    pShader->LoadFragmentShader(CAssetBundle::GetInstance()->GetAssetPath("skybox.frag"));
     int iRetval = g_ShaderMgr->Create(pShader, MOOSE_SKYBOX_SHADER, state.GetShaderHandle());
     assert( iRetval == 0);
   }
@@ -238,10 +212,6 @@ Moose::Graphics::CSkybox::~CSkybox()
 void
 Moose::Graphics::CSkybox::Render( Moose::Graphics::COglRenderer & renderer)
 {
-
-
-
-        
   CModel *pModel = *GetModelHandle();
   COglTexture *pTexture = *GetRenderState().GetTextureHandle(0);
   CIndexArray *pIndices = *pModel->GetIndices();
@@ -290,42 +260,7 @@ Moose::Graphics::CSkybox::Render( Moose::Graphics::COglRenderer & renderer)
 
 
   /////////////////////////////////////////////////////////////////
-  /*#if defined(MOOSE_APPLE_IPHONE)
-#else
-  glPushMatrix();
-  glLoadTransposeMatrixf( renderer.GetCurrentCamera()->GetViewMatrix().GetArray());
 
-  CModel *pModel = *GetModelHandle();
-  COglTexture *pTexture = *GetRenderState().GetTextureHandle(0);
-  CIndexArray *pIndices = *pModel->GetIndices();
-  CVertexDescriptor *pTexCoords = *pModel->GetTextureCoordinateHandle(0);
-  CVertexDescriptor *pVertices  = *pModel->GetVertexHandle();
-  renderer.CommitRenderState( GetRenderState() );
-  // draw actual skybox
-  if ( pVertices )  renderer.CommitVertexDescriptor( pVertices );
-  if ( pTexCoords ) renderer.CommitVertexDescriptor( pTexCoords );
-  if ( pTexture )
-  {
-  renderer.CommitTexture( 0, pTexture );
-  renderer.CommitFilters( GetRenderState().GetTextureFilters(0), pTexture->GetType());
-}
-  if ( pIndices )   renderer.CommitPrimitive( pIndices );
-
-  renderer.DisableTexture(0, pTexture);
-  renderer.CommitShader( NULL );
-  renderer.DisableCaches();
-  glUseProgram(0);
-
-  for( int i=0;i<8;i++)
-  {
-  glClientActiveTexture( GL_TEXTURE0 + i);
-  glDisableClientState( GL_TEXTURE_COORD_ARRAY);
-}
-
-  /////////////////////////////////////////////////////////////////
-  glPopMatrix();
-#endif
-  */
 }
 
 
