@@ -12,5 +12,9 @@ uniform samplerCube diffuse;
 OUT vec4 gl_FragColor;
 #endif
 void main(){
+#ifdef GL_ES
+     gl_FragColor = textureCube(diffuse,v_texcoord);
+#else
      gl_FragColor = texture(diffuse,v_texcoord);
+#endif
 }
