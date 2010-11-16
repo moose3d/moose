@@ -1,4 +1,10 @@
-#version 150
+#ifdef GL_ES
+#define IN attribute
+#define OUT varying
+#else
+#define IN in
+#define OUT out
+#endif
 struct MMaterial {
   vec4 diffuse;
   vec4 ambient;
@@ -25,16 +31,16 @@ struct MLights
   bool  enabled[3];
 };
 
-out  vec2        texcoord;
-out  vec3        normal;
+OUT  vec2        texcoord;
+OUT  vec3        normal;
 
-out  float       ldist[3];
-out  vec3        lightDir[3];
-out  vec3        halfVector[3];
+OUT  float       ldist[3];
+OUT  vec3        lightDir[3];
+OUT  vec3        halfVector[3];
 
-in  vec3 a_vertex;
-in  vec2 a_texcoord;
-in  vec3 a_normal;
+IN  vec3 a_vertex;
+IN  vec2 a_texcoord;
+IN  vec3 a_normal;
 
 uniform mat4 m_viewMatrix;
 uniform mat4 m_projMatrix;

@@ -1,4 +1,11 @@
-#version 150
+#ifdef GL_ES
+#define IN varying
+#define OUT 
+precision mediump float;
+#else
+#define IN in
+#define OUT out
+#endif
 // Moose material struct
 ////////////////////////////////////////////////////////////////////////////////
 struct MMaterial { 
@@ -32,14 +39,15 @@ uniform MLights   m_Lights;
 uniform sampler2D diffusetex;
 uniform vec4 m_globalAmbient;
 
-in vec2  texcoord;
-in vec3  lightDir[3];
-in vec3  normal;
-in vec3  halfVector[3];
-in float ldist[3];
+IN vec2  texcoord;
+IN vec3  lightDir[3];
+IN vec3  normal;
+IN vec3  halfVector[3];
+IN float ldist[3];
 
-
-out vec4 gl_FragColor;
+#ifndef GL_ES
+OUT vec4 gl_FragColor;
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 void main()
