@@ -1,6 +1,9 @@
 #include "MooseAssetBundle.h"
 #include "MooseExceptions.h"
 #include "MooseAPI.h"
+#if defined(MOOSE_APPLE_IPHONE)
+#import <Foundation/Foundation.h>
+#endif
 #include <fstream>
 #include <sstream>
 using namespace std;
@@ -9,7 +12,12 @@ namespace prefix=Moose::Core;
 ////////////////////////////////////////////////////////////////////////////////
 prefix::CAssetBundle::CAssetBundle()
 {
-  AddAssetRoot("/usr/share/Moose/Assets");
+#if !defined(MOOSE_APPLE_IPHONE)
+    AddAssetRoot("/usr/share/Moose/Assets");
+    AddAssetRoot("/usr/share/Moose/Assets/Shaders");
+#else
+    AddAssetRoot( [[[NSBundle mainBundle] bundlePath] UTF8String]);
+#endif
 }
 ////////////////////////////////////////////////////////////////////////////////
 prefix::CAssetBundle::~CAssetBundle()

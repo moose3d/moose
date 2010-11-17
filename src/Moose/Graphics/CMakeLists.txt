@@ -19,6 +19,7 @@ add_sources (Moose
   MooseFFMpeg.cpp
   MoosePointLight.cpp
   MooseSphereRenderable.cpp
+  MooseCapsuleRenderable.cpp
   MooseFrameBuffer.cpp
   MoosePolygonOffset.cpp
   MooseSpotLight.cpp

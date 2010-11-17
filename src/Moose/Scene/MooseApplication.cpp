@@ -293,79 +293,95 @@ prefix::CApplication::GetTimer()
 void
 prefix::CApplication::LoadDefaultResources()
 {
-    // For default volume renderables 
-    if ( g_ShaderMgr->HasResource("moose_default_shader") == false )
-    {
+  // For default volume renderables 
+  if ( g_ShaderMgr->HasResource("moose_default_shader") == false )
+  {
       
-      CShader *pShader = new CShader();
+    CShader *pShader = new CShader();
 
-      pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("default.vert"));
-      pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("default.frag"));
-      int iRetval = g_ShaderMgr->Create(pShader, "moose_default_shader");
-      assert( iRetval == 0);
+    pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("default.vert"));
+    pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("default.frag"));
+    int iRetval = g_ShaderMgr->Create(pShader, "moose_default_shader");
+    assert( iRetval == 0);
 
-    }
-    // For boxrenderable
-    if ( g_IndexMgr->HasResource("moose_boxrenderable_indices") == false )
-    {
-        unsigned short int indices[] = { 0,1,2,3,0,4,5,6,7,4,7,3,2,6,5,1};
-        CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 16);
-        pTmp->Copy(indices);
-        g_IndexMgr->Create( pTmp, "moose_boxrenderable_indices");
-    }
+  }
+  // For boxrenderable
+  if ( g_IndexMgr->HasResource("moose_boxrenderable_indices") == false )
+  {
+    unsigned short int indices[] = { 0,1,2,3,0,4,5,6,7,4,7,3,2,6,5,1};
+    CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 16);
+    pTmp->Copy(indices);
+    g_IndexMgr->Create( pTmp, "moose_boxrenderable_indices");
+  }
     
-    // For sphererenderable
-    if ( g_IndexMgr->HasResource("moose_sphererenderable_indices") == false )
-    {
-        unsigned short int indices[] = { 0, 1,  2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,0,
-                                         16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,16,
-                                        32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,32 };
-        CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 51);
-        pTmp->Copy(indices);
-        g_IndexMgr->Create( pTmp, "moose_sphererenderable_indices");
-    }
+  // For sphererenderable
+  if ( g_IndexMgr->HasResource("moose_sphererenderable_indices") == false )
+  {
+    unsigned short int indices[] = { 0, 1,  2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,0,
+                                     16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,16,
+                                     32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,32 };
+    CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 51);
+    pTmp->Copy(indices);
+    g_IndexMgr->Create( pTmp, "moose_sphererenderable_indices");
+    assert(g_IndexMgr->HasResource("moose_sphererenderable_indices"));
+  }
     
-    if ( g_IndexMgr->HasResource("moose_linerenderable_indices") == false)
-    {
-        unsigned short int indices[] = { 0,1,2,3 };
-        CIndexArray *pTmp = new CIndexArray(PRIMITIVE_TRI_STRIP,4);
-        pTmp->Copy(indices);
-        g_IndexMgr->Create(pTmp, "moose_linerenderable_indices");
-    }
+  // For capsulerenderable
+  if ( g_IndexMgr->HasResource("moose_capsulerenderable_indices") == false )
+  {
+    unsigned short int indices[] = { 0,  1,  2,  3,  4,  5,  6, 
+                                     7,  8,  9, 10, 11, 12, 13, 
+                                     0, 14, 15, 16, 17, 18, 19,
+                                     7, 20, 21, 22, 23, 24, 25, 0};
+      
+    CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 29);
+    pTmp->Copy(indices);
+    g_IndexMgr->Create( pTmp, "moose_capsulerenderable_indices");
+    assert(g_IndexMgr->HasResource("moose_capsulerenderable_indices"));
+  }
+
+  if ( g_IndexMgr->HasResource("moose_linerenderable_indices") == false)
+  {
+    unsigned short int indices[] = { 0,1,2,3 };
+    CIndexArray *pTmp = new CIndexArray(PRIMITIVE_TRI_STRIP,4);
+    pTmp->Copy(indices);
+    g_IndexMgr->Create(pTmp, "moose_linerenderable_indices");
+    assert(g_IndexMgr->HasResource("moose_linerenderable_indices"));
+  }
     
-    if ( g_ShaderMgr->HasResource("moose_line_shader") == false )
-    {
-        // does NOT use model transform
-        const char vsh[] = "attribute vec3 a_vertex;"\
-            "attribute vec4 a_endpos_thickness;"\
-            "uniform mat4 m_viewMatrix;"\
-            "uniform mat4 m_projMatrix;"\
-            "void main()"\
-            "{"\
-            "vec4 endPos   = m_viewMatrix * vec4(a_endpos_thickness.xyz,1.0);"\
-            "vec4 startPos = m_viewMatrix * vec4(a_vertex,1.0);"\
-            "vec3 linedir = (endPos.xyz - startPos.xyz);"\
-            "vec3 offsetVec = normalize(cross(startPos.xyz,linedir));"\
-            "startPos = vec4(startPos.xyz + (offsetVec * a_endpos_thickness.w),startPos.w);"\
-            "gl_Position = m_projMatrix * startPos;"\
-            "}";
+  if ( g_ShaderMgr->HasResource("moose_line_shader") == false )
+  {
+    // does NOT use model transform
+    const char vsh[] = "attribute vec3 a_vertex;"\
+    "attribute vec4 a_endpos_thickness;"\
+    "uniform mat4 m_viewMatrix;"\
+    "uniform mat4 m_projMatrix;"\
+    "void main()"\
+    "{"\
+    "vec4 endPos   = m_viewMatrix * vec4(a_endpos_thickness.xyz,1.0);"\
+    "vec4 startPos = m_viewMatrix * vec4(a_vertex,1.0);"\
+    "vec3 linedir = (endPos.xyz - startPos.xyz);"\
+    "vec3 offsetVec = normalize(cross(startPos.xyz,linedir));"\
+    "startPos = vec4(startPos.xyz + (offsetVec * a_endpos_thickness.w),startPos.w);"\
+    "gl_Position = m_projMatrix * startPos;"\
+    "}";
             
             
-        const char fsh[] = "#ifdef GL_ES\nprecision mediump float;\n#endif\n"\
-                            "uniform vec4 color;void main(){gl_FragColor = color;}";
-        CShader *pShader = new CShader();
-        pShader->CreateVertexShaderFromSource(vsh, "line vsh");
-        pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
-        int iRetval = g_ShaderMgr->Create(pShader, "moose_line_shader");
-        assert( iRetval == 0);
+    const char fsh[] = "#ifdef GL_ES\nprecision mediump float;\n#endif\n"\
+    "uniform vec4 color;void main(){gl_FragColor = color;}";
+    CShader *pShader = new CShader();
+    pShader->CreateVertexShaderFromSource(vsh, "line vsh");
+    pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
+    int iRetval = g_ShaderMgr->Create(pShader, "moose_line_shader");
+    assert( iRetval == 0);
 
-        CShader *pColor = new CShader();
+    CShader *pColor = new CShader();
 
-        pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("color.vert"));
-        pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("color.frag"));
-        iRetval  = g_ShaderMgr->Create(pColor, "moose_color_shader");
-        assert( iRetval  == 0);
-    }
+    pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("color.vert"));
+    pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("color.frag"));
+    iRetval  = g_ShaderMgr->Create(pColor, "moose_color_shader");
+    assert( iRetval  == 0);
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 int MainLoop( void * data )

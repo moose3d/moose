@@ -1105,6 +1105,15 @@ Moose::Collision::OBBIntersectsCapsule( const Moose::Volume::COrientedBox & box,
 
   return ( fDistanceSqr < (capsule.GetRadiusSqr() + (fEffRadius*fEffRadius)) );
 }
+////////////////////////////////////////////////////////////////////////////////
+bool
+Moose::Collision::CapsuleIntersectsCapsule( const Moose::Volume::CCapsule & a,
+                                            const Moose::Volume::CCapsule & b )
+{
+  float fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( a, b);
+  float fRadiiSum = a.GetRadius() + b.GetRadius();
+  return ( fDistanceSqr <= fRadiiSum * fRadiiSum );
+}
 /////////////////////////////////////////////////////////////////
 Moose::Collision::S2S_COLLISION_TYPE
 Moose::Collision::SphereIntersectsSphere( const Moose::Volume::CSphere &sphereOne,

@@ -229,7 +229,10 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 // stream mgr template
 %template (StreamMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Sound::CALStreamSample, Moose::Core::CHandle<Moose::Sound::CALStreamSample> > >;
 %template (StreamResMgr) Moose::Core::CResourceManager< Moose::Sound::CALStreamSample, Moose::Core::CHandle<Moose::Sound::CALStreamSample> >;
-
+%include "MooseSphereRenderable.h"
+%include "MooseLineRenderable.h"
+%include "MooseBoxRenderable.h"
+%include "MooseCapsuleRenderable.h"
 %include "MooseOGLRenderer.h"
  //%template (FireworksSingleton) Moose::Core::CSingleton< CFireWorks >;
 %include "MoosePlane.h"

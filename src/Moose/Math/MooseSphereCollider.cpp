@@ -168,8 +168,8 @@ prefix::CSphereCollider::Intersects( const Moose::Volume::CCapsule & capsule ) c
 void
 prefix::CSphereCollider::Render( Moose::Graphics::COglRenderer & renderer )
 {
-	if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
-	renderer.CommitSphere( GetBoundingSphere() );
-	if ( m_pTransform ) renderer.RollbackTransform();
+  if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
+  renderer.CommitSphere( GetBoundingSphere() );
+  if ( m_pTransform ) renderer.RollbackTransform();
 }
 ///////////////////////////////////////////////////////////////////////////////

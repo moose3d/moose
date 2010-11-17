@@ -2330,3 +2330,206 @@ TEST_FIXTURE( OBBFixture, OBBintersectsOBB_Yaxis)
   CHECK_EQUAL( false, OBBIntersectsOBB( b,a) );
 }
 ////////////////////////////////////////////////////////////////////////////////
+struct CapsuleFixture 
+{
+  CCapsule a;
+  CCapsule b;
+  CapsuleFixture()
+  {
+    a.Set( CVector3<float>(0,0,1), CVector3<float>( 0,0,-1));
+    a.SetRadius(0.5);
+    b = a;
+  }
+};
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleFixture, CapsuleX_plus)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0.999,0,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0.001,0,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0.001,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0.5,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleFixture, CapsuleX_minus)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(-0.999,0,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(-0.001,0,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(-0.001,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(-0.5,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleFixture, CapsuleY_plus)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.999,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.001,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.001,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.5,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleFixture, CapsuleY_minus)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.999,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.001,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.001,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.5,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleFixture, CapsuleZ_plus)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,2.0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,0.999));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,0.001));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,0.5));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleFixture, CapsuleZ_minus)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,-2.0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,-0.999));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,-0.001));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,-0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,-0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0,-0.5));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+struct CapsuleNonParallelFixture 
+{
+  CCapsule a;
+  CCapsule b;
+  CapsuleNonParallelFixture()
+  {
+    a.Set( CVector3<float>(0,0,1), CVector3<float>( 0,0,-1));
+    a.SetRadius(0.5);
+    
+    b.Set( CVector3<float>(0,0,-1), CVector3<float>(-2,0,1) );
+    b.SetRadius(0.5);
+  }
+};
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleX)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  b.Move(CVector3<float>(-1,0,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  b.Move(CVector3<float>(-0.001,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  b.Move(CVector3<float>(-0.001,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleX2)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  
+  b.Move(CVector3<float>(3.0,0,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+
+  b.Move(CVector3<float>(0.001,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  
+  b.Move(CVector3<float>(0.001,0,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleY_p)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.999,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.001,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.001,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,0.5,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleY_m)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.999,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.001,0));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.001,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+  a.Move(CVector3<float>(0,-0.5,0));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleZ_p)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,0.999));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,0.001));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  
+  a.Move(CVector3<float>(0,0,0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,0.5));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleZ_m)
+{
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,-2.999));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,-0.001));
+  CHECK_EQUAL( true, CapsuleIntersectsCapsule(a,b));
+  
+  a.Move(CVector3<float>(0,0,-0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,-0.001));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+
+  a.Move(CVector3<float>(0,0,-0.5));
+  CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
+}
+///////////////////////////////////////////////////////////////////////////////

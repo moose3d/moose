@@ -4,6 +4,7 @@
 #include "MooseDefaultEntities.h"
 #include "MooseOGLRenderer.h"
 #include <iostream>
+#include <algorithm>
 ///////////////////////////////////////////////////////////////////////////////
 namespace prefix=Moose::Collision;
 using namespace Moose::Core;
@@ -64,23 +65,28 @@ prefix::CCapsuleCollider::Intersects( const Moose::Volume::COrientedBox & box ) 
 bool
 prefix::CCapsuleCollider::Intersects( const Moose::Volume::CCapsule & capsule ) const
 {
-    float fDistanceSqr;
-    float fRadiiSum;
+
+
     if ( m_pTransform )
     {
-        CVector3<float > vStart, vEnd;
-        Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
-        Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
-        CCapsule capsTransf(vStart, vEnd, GetBoundingCapsule().GetRadius());
-        fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( capsule, capsTransf);
-        fRadiiSum = capsule.GetRadius() + capsTransf.GetRadius();
+      // Transform capsule
+      CVector3<float > vStart, vEnd;
+      Transform( GetBoundingCapsule().GetStart(), *m_pTransform, vStart);
+      Transform( GetBoundingCapsule().GetEnd(), *m_pTransform, vEnd);
+      CCapsule capsTransf(vStart, vEnd, GetBoundingCapsule().GetRadius());
+      return CapsuleIntersectsCapsule( capsTransf, capsule);
     }
     else
     {
-        fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( capsule, GetBoundingCapsule());
-        fRadiiSum = capsule.GetRadius() + GetBoundingCapsule().GetRadius();
+      return CapsuleIntersectsCapsule( GetBoundingCapsule(), capsule);
     }
-    return ( fDistanceSqr <= fRadiiSum * fRadiiSum );
+    /*float fDistanceSqr;
+    float fRadiiSum;*/
+    /*fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( capsule, capsTransf);
+      fRadiiSum = capsule.GetRadius() + capsTransf.GetRadius();*/    
+    /*fDistanceSqr = LineSegmentToLineSegmentDistanceSquared( capsule, GetBoundingCapsule());
+      fRadiiSum = capsule.GetRadius() + GetBoundingCapsule().GetRadius();*/
+    /*return ( fDistanceSqr <= fRadiiSum * fRadiiSum );*/
 }
 ///////////////////////////////////////////////////////////////////////////////
 bool
@@ -159,9 +165,9 @@ prefix::CCapsuleCollider::Intersects( const Moose::Collision::ICollider & collid
 void
 prefix::CCapsuleCollider::Render( Moose::Graphics::COglRenderer & renderer )
 {
-    if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
-    renderer.CommitCapsule( GetBoundingCapsule() );
-    if ( m_pTransform ) renderer.RollbackTransform();
+  if ( m_pTransform ) renderer.CommitTransform( *m_pTransform );
+  renderer.CommitCapsule( GetBoundingCapsule() );
+  if ( m_pTransform ) renderer.RollbackTransform();
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Volume::CCapsule &

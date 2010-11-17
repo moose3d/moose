@@ -319,7 +319,15 @@ namespace Moose
     /// \returns false on non-intersection.
     /// \returns true on intersection.
     MOOSE_API bool OBBIntersectsCapsule( const Moose::Volume::COrientedBox & box,
-					   const Moose::Volume::CCapsule & capsule );
+                                         const Moose::Volume::CCapsule & capsule );
+    ////////////////////
+    /// Checks does a capsule intersect another capsule.
+    /// \param a First capsule object.
+    /// \param b Second capsule object.
+    /// \returns false on non-intersection.
+    /// \returns true on intersection.
+    MOOSE_API bool CapsuleIntersectsCapsule( const Moose::Volume::CCapsule & a,
+                                             const Moose::Volume::CCapsule & b );
     ////////////////////
     /// Checks do two moving spheres intersect.
     /// \param sphereOne First sphere
@@ -419,6 +427,8 @@ namespace Moose
     /// \return OUTSIDE if the do not intersect.
     MOOSE_API VOLUME_INTERSECTION  CapsuleIntersectsPolytope( const Moose::Volume::CCapsule & capsule, const Moose::Volume::CPolytope & poly );
 
+
+    
     ////////////////////
     /// Checks intersection with ray and OBB.
     /// \param ray Ray object.
