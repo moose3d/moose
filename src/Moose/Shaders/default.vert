@@ -2,6 +2,7 @@
 #define IN attribute
 #define OUT varying
 #else
+#version 150
 #define IN in
 #define OUT out
 #endif

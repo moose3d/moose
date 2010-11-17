@@ -23,7 +23,8 @@ prefix::CSphereRenderable::CSphereRenderable() : m_Vertices(ELEMENT_TYPE_VERTEX_
     GetRenderState().AddShaderUniform("color", &m_Color);
     GetRenderState().SetDepthTest(true);
     GetRenderState().SetDepthWrite(true);
-    
+    bool bVal = GetRenderState().Prepare();
+    assert(bVal);    
 }
 //////////////////////////////////////////////////////////////////////////
 void 

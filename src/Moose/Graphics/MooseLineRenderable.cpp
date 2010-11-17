@@ -25,6 +25,8 @@ prefix::CLineRenderable::CLineRenderable() : m_Vertices(ELEMENT_TYPE_ATTRIB_3F, 
     GetRenderState().AddShaderUniform("color", &m_Color);
     GetRenderState().SetDepthTest(true);
     GetRenderState().SetDepthWrite(true);
+    bool bVal = GetRenderState().Prepare();
+    assert(bVal);
 }
 //////////////////////////////////////////////////////////////////////////
 void 

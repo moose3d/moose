@@ -135,6 +135,8 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseOBB.h"
 %include "MooseOneDirectional.h"
 %include "MooseLine.h"
+%include "MooseLineSegment.h"
+%include "MooseCapsule.h"
 %include "MooseRay.h"
 %include "MooseOrientable.h"
 %include "MooseCamera.h"

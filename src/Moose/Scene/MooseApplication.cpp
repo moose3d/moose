@@ -329,12 +329,21 @@ prefix::CApplication::LoadDefaultResources()
   // For capsulerenderable
   if ( g_IndexMgr->HasResource("moose_capsulerenderable_indices") == false )
   {
-    unsigned short int indices[] = { 0,  1,  2,  3,  4,  5,  6, 
-                                     7,  8,  9, 10, 11, 12, 13, 
-                                     0, 14, 15, 16, 17, 18, 19,
-                                     7, 20, 21, 22, 23, 24, 25, 0};
+    unsigned short int indices[] = { 3,  4,  5,  6,  
+                                     7,  8,  9, 
+                                     10, 11, 12, 13, 
+                                     /* lower horiz ring*/
+                                     34,35,25,36,37,7,38,39,20,40,41,13,
+                                     0,  
+                                     /* higher horiz ring*/
+                                     26,27,14,28,29,6,30,31,19,32,33,0,
+                                     1,  2,  
+                                     3, 17, 18, 19, 20, 21, 22, 
+                                     10, 23, 24, 25, 14,15,16, 
+                                     3 
+    };
       
-    CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 29);
+    CIndexArray *pTmp = new CIndexArray(PRIMITIVE_LINE_STRIP, 53);
     pTmp->Copy(indices);
     g_IndexMgr->Create( pTmp, "moose_capsulerenderable_indices");
     assert(g_IndexMgr->HasResource("moose_capsulerenderable_indices"));

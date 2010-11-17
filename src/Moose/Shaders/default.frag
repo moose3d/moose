@@ -3,6 +3,7 @@
 #define OUT 
 precision mediump float;
 #else
+#version 150
 #define IN in
 #define OUT out
 #endif
