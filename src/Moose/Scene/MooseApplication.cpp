@@ -360,27 +360,10 @@ prefix::CApplication::LoadDefaultResources()
     
   if ( g_ShaderMgr->HasResource("moose_line_shader") == false )
   {
-    // does NOT use model transform
-    const char vsh[] = "attribute vec3 a_vertex;"\
-    "attribute vec4 a_endpos_thickness;"\
-    "uniform mat4 m_viewMatrix;"\
-    "uniform mat4 m_projMatrix;"\
-    "void main()"\
-    "{"\
-    "vec4 endPos   = m_viewMatrix * vec4(a_endpos_thickness.xyz,1.0);"\
-    "vec4 startPos = m_viewMatrix * vec4(a_vertex,1.0);"\
-    "vec3 linedir = (endPos.xyz - startPos.xyz);"\
-    "vec3 offsetVec = normalize(cross(startPos.xyz,linedir));"\
-    "startPos = vec4(startPos.xyz + (offsetVec * a_endpos_thickness.w),startPos.w);"\
-    "gl_Position = m_projMatrix * startPos;"\
-    "}";
-            
-            
-    const char fsh[] = "#ifdef GL_ES\nprecision mediump float;\n#endif\n"\
-    "uniform vec4 color;void main(){gl_FragColor = color;}";
+    
     CShader *pShader = new CShader();
-    pShader->CreateVertexShaderFromSource(vsh, "line vsh");
-    pShader->CreateFragmentShaderFromSource(fsh,"line fsh");
+    pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("line.vert"));
+    pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("line.frag"));
     int iRetval = g_ShaderMgr->Create(pShader, "moose_line_shader");
     assert( iRetval == 0);
 
