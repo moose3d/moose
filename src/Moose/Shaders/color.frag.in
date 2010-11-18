@@ -1,9 +1,9 @@
+@version@
 #ifdef GL_ES
-precision mediump float;
 #define IN varying
 #define OUT 
+precision mediump float;
 #else
-#version 150
 #define IN in
 #define OUT out
 #endif
@@ -15,5 +15,5 @@ OUT vec4 gl_FragColor;
 #endif
 
 void main(){
-  gl_FragColor = color;
+     gl_FragColor = color;
 }

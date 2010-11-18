@@ -1,8 +1,8 @@
+@version@
 #ifdef GL_ES
 #define OUT varying
 #define IN attribute
 #else
-#version 150
 #define OUT out
 #define IN in
 #endif

@@ -1,3 +1,4 @@
+@version@
 #ifdef GL_ES
 #define IN attribute
 #define OUT varying

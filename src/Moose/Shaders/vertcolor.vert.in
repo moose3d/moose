@@ -1,13 +1,8 @@
-#ifdef GL_ES
-#define IN attribute
-#define OUT varying
-#else
-#version 150
-#define IN in
-#define OUT out
-#endif
-IN  vec3 a_vertex;
-
+@version@
+in  vec3 a_vertex;
+in  vec4 a_color;
+out vec4 v_color;
+ 
 uniform mat4 m_viewMatrix;
 uniform mat4 m_projMatrix;
 uniform mat4 m_modelMatrix;
@@ -15,4 +10,5 @@ uniform mat4 m_modelMatrix;
 void main()
 {
    gl_Position = m_projMatrix * m_viewMatrix * m_modelMatrix * vec4(a_vertex,1.0);
+   v_color = a_color;
 }

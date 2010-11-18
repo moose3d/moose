@@ -227,8 +227,7 @@ FILE(GLOB files
 
 install( FILES ${files} DESTINATION include/Moose)
 
-FILE( GLOB shaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/*")
-install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
+
 
 SET( EXTERNAL_LIBS "-lMoose ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL ")
 SET( INTERNAL_LIBS libMoose.a ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)
@@ -245,6 +244,25 @@ configure_file (
   "moose.pc.in"
   "moose.pc"
 )
+
+
+FILE(GLOB shaderInFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/" "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/*.in")
+
+foreach(shader ${shaderInFiles})
+  string(REPLACE ".in" "" realShader ${shader})
+  set (version "")
+  IF(NOT APPLE)
+    set (version "#version 150")
+  endif(NOT APPLE)
+  configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/${shader}" 
+                  "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/${realShader}")
+endforeach(shader)
+
+FILE( GLOB shaderFiles 
+  "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/*.vert"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/*.frag"
+)
+install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
 
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
