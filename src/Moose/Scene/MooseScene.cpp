@@ -615,9 +615,6 @@ Moose::Scene::CScene::CheckCollisions( Moose::Scene::CGameObject *pObj )
         if ( pObj->GetCollider()->Intersects( *(*it)->GetCollider() ) )
         {
 
-
-
-
             // Check new collisions and register them to colliders.
             if ( find( currentColliders.begin(), currentColliders.end(), *it) == currentColliders.end() )
             {

@@ -91,6 +91,10 @@ add_definitions("-Wall -O2 -fPIC")
 if(UNIX AND (NOT APPLE))
 SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to install directories")
 SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
+elseif(UNIX AND APPLE)
+SET(MY_OWN_INSTALL_PREFIX "~/Library/Moose" CACHE PATH "Prefix prepended to install directories")
+SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
+
 endif(UNIX AND (NOT APPLE))
 
 #- Add sources for a target
@@ -199,23 +203,20 @@ endif(APPLE)
 
 
 
-#if(APPLE)
-#install( TARGETS Moose 
-#  FRAMEWORK DESTINATION Library/Frameworks
-#)
-#else(APPLE)
+
 install( TARGETS Moose 
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
 )
-#endif(APPLE)
+
 
 
 FILE(GLOB files 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Moose.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/MooseDefaultEntities.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Core/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Core/*.tpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/AI/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Audio/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Graphics/*.h"
@@ -225,7 +226,7 @@ FILE(GLOB files
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Util/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h")
 
-install( FILES ${files} DESTINATION include/Moose)
+install( FILES ${files} DESTINATION headers)
 
 
 
@@ -262,15 +263,20 @@ FILE( GLOB shaderFiles
   "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/*.vert"
   "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/*.frag"
 )
+if(APPLE)
+install( FILES ${shaderFiles} DESTINATION Assets/Shaders)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION .)
+else(APPLE)
 install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
-
-
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
+endif(APPLE)
+
+if(NOT APPLE)
+
 SET (TCL_MODULE		MooseTCL)
 SET (INTERFACE_FILES	Moose.i)
 #SET (SRC_FILES		Moose_wrap.cxx )
 
-if(NOT APPLE)
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 

@@ -107,18 +107,16 @@ prefix::CCapsuleRenderable::UseCapsule( const Moose::Volume::CCapsule & capsule 
   {
     perp[0] = 0.0; perp[1] = 1.0;
   }
-  // Get UP vector and scale length to capsule radius   
+  // Get UP vector and scale to unit length   
   CVector3<float> up = capsule.GetDirection().Cross(perp);
   up.Normalize();
-  up *= capsule.GetRadius();
   
   CVector3<float> fwd = capsule.GetDirection()*capsule.GetRadius();
   
-  // Get RIGHT vector and scale length to capsule radius 
+  // Get RIGHT vector and scale to unit length 
   CVector3<float> right = fwd.Cross(up);
   right.Normalize();
-  right *= capsule.GetRadius();
-
+ 
   float fPart = ((Moose::Math::PI)/6.0f);
 
   // ------------------------------------------------------------

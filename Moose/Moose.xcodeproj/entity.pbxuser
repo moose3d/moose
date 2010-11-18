@@ -78,10 +78,11 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 299283131;
-			PBXWorkspaceStateSaveDate = 299283131;
+			PBXPerProjectTemplateStateSaveDate = 311766071;
+			PBXWorkspaceStateSaveDate = 311766071;
 		};
 		perUserProjectItems = {
+			EC4EC8D412952C47002F57AE /* PBXTextBookmark */ = EC4EC8D412952C47002F57AE /* PBXTextBookmark */;
 			ECEC26A311D6B41E002C92B3 /* PBXTextBookmark */ = ECEC26A311D6B41E002C92B3 /* PBXTextBookmark */;
 			ECEC26A411D6B41E002C92B3 /* PBXTextBookmark */ = ECEC26A411D6B41E002C92B3 /* PBXTextBookmark */;
 			ECEC26D011D6B5F0002C92B3 /* PBXTextBookmark */ = ECEC26D011D6B5F0002C92B3 /* PBXTextBookmark */;
@@ -94,7 +95,6 @@
 			ECEC26F211D6B91A002C92B3 /* PBXTextBookmark */ = ECEC26F211D6B91A002C92B3 /* PBXTextBookmark */;
 			ECEC26F411D6B91A002C92B3 /* PBXTextBookmark */ = ECEC26F411D6B91A002C92B3 /* PBXTextBookmark */;
 			ECEC26F611D6B91A002C92B3 /* PBXTextBookmark */ = ECEC26F611D6B91A002C92B3 /* PBXTextBookmark */;
-			ECEC270911D6B994002C92B3 /* XCBuildMessageTextBookmark */ = ECEC270911D6B994002C92B3 /* XCBuildMessageTextBookmark */;
 			ECEC270B11D6BD8F002C92B3 /* PBXTextBookmark */ = ECEC270B11D6BD8F002C92B3 /* PBXTextBookmark */;
 		};
 		sourceControlManager = ECB42A711182FBE6007C274F /* Source Control */;
@@ -103,6 +103,22 @@
 	};
 	8DC2EF4F0486A6940098B216 /* Moose */ = {
 		activeExec = 0;
+	};
+	EC4EC8D412952C47002F57AE /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = EC4EC8D512952C47002F57AE /* glext.h */;
+		name = "glext.h: 3134";
+		rLen = 0;
+		rLoc = 136396;
+		rType = 0;
+		vrLen = 878;
+		vrLoc = 135834;
+	};
+	EC4EC8D512952C47002F57AE /* glext.h */ = {
+		isa = PBXFileReference;
+		name = glext.h;
+		path = /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glext.h;
+		sourceTree = "<absolute>";
 	};
 	ECB42A711182FBE6007C274F /* Source Control */ = {
 		isa = PBXSourceControlManager;
@@ -378,18 +394,6 @@
 		vrLen = 708;
 		vrLoc = 0;
 	};
-	ECEC26B011D6B4B7002C92B3 /* glext.h */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.c.h;
-		name = glext.h;
-		path = /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glext.h;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {670, 69914}}";
-			sepNavSelRange = "{136396, 0}";
-			sepNavVisRange = "{135999, 874}";
-		};
-	};
 	ECEC26D011D6B5F0002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = ECB42BC21182FCB5007C274F /* MooseApplication.cpp */;
@@ -472,6 +476,7 @@
 	};
 	ECEC26F311D6B91A002C92B3 /* gl.h */ = {
 		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
 		name = gl.h;
 		path = /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Headers/gl.h;
 		sourceTree = "<absolute>";
@@ -488,6 +493,7 @@
 	};
 	ECEC26F511D6B91A002C92B3 /* GLee.h */ = {
 		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
 		name = GLee.h;
 		path = "/Users/entity/workdir/GLee-5.4.0-src/GLee.h";
 		sourceTree = "<absolute>";
@@ -502,15 +508,6 @@
 		vrLen = 554;
 		vrLoc = 0;
 	};
-	ECEC270911D6B994002C92B3 /* XCBuildMessageTextBookmark */ = {
-		isa = PBXTextBookmark;
-		comments = "'void GLeeFuncPtr_glActiveTextureARB(GLenum)' redeclared as different kind of symbol";
-		fRef = ECEC26B011D6B4B7002C92B3 /* glext.h */;
-		fallbackIsa = XCBuildMessageTextBookmark;
-		rLen = 1;
-		rLoc = 3133;
-		rType = 1;
-	};
 	ECEC270B11D6BD8F002C92B3 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = ECEC270C11D6BD8F002C92B3 /* glext.h */;
@@ -523,13 +520,9 @@
 	};
 	ECEC270C11D6BD8F002C92B3 /* glext.h */ = {
 		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
 		name = glext.h;
 		path = /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glext.h;
 		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {670, 69914}}";
-			sepNavSelRange = "{136396, 0}";
-			sepNavVisRange = "{135999, 874}";
-		};
 	};
 }

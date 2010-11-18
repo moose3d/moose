@@ -195,7 +195,26 @@
 	<key>Name</key>
 	<string>Default</string>
 	<key>Notifications</key>
-	<array/>
+	<array>
+		<dict>
+			<key>XCObserverAutoDisconnectKey</key>
+			<true/>
+			<key>XCObserverDefintionKey</key>
+			<dict/>
+			<key>XCObserverFactoryKey</key>
+			<string>XCPerspectivesSpecificationIdentifier</string>
+			<key>XCObserverGUIDKey</key>
+			<string>XCObserverProjectIdentifier</string>
+			<key>XCObserverNotificationKey</key>
+			<string>PBXStatusBuildStateMessageNotification</string>
+			<key>XCObserverTargetKey</key>
+			<string>XCMainBuildResultsModuleGUID</string>
+			<key>XCObserverTriggerKey</key>
+			<string>awakenModuleWithObserver:</string>
+			<key>XCObserverValidationKey</key>
+			<dict/>
+		</dict>
+	</array>
 	<key>OpenEditors</key>
 	<array/>
 	<key>PerspectiveWidths</key>
@@ -268,13 +287,11 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 							<array>
 								<string>0867D691FE84028FC02AAC07</string>
-								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FAAC04509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>7</integer>
 									<integer>6</integer>
 								</array>
 							</array>
@@ -326,7 +343,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>ECEC270B11D6BD8F002C92B3</string>
+										<string>EC4EC8D412952C47002F57AE</string>
 										<key>history</key>
 										<array>
 											<string>ECEC26A311D6B41E002C92B3</string>
@@ -341,7 +358,7 @@
 											<string>ECEC26F211D6B91A002C92B3</string>
 											<string>ECEC26F411D6B91A002C92B3</string>
 											<string>ECEC26F611D6B91A002C92B3</string>
-											<string>ECEC270911D6B994002C92B3</string>
+											<string>ECEC270B11D6BD8F002C92B3</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -353,14 +370,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {707, 308}}</string>
+								<string>{{0, 0}, {707, 296}}</string>
 								<key>RubberWindowFrame</key>
 								<string>155 120 957 731 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>308pt</string>
+							<string>296pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -373,14 +390,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 313}, {707, 377}}</string>
+								<string>{{0, 301}, {707, 389}}</string>
 								<key>RubberWindowFrame</key>
 								<string>155 120 957 731 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>377pt</string>
+							<string>389pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -399,9 +416,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>ECEC26A711D6B41E002C92B3</string>
+				<string>EC4EC8D612952C47002F57AE</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>ECEC26A811D6B41E002C92B3</string>
+				<string>EC4EC8D712952C47002F57AE</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -522,7 +539,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>0.0</real>
+	<real>311766087.31159103</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -564,7 +581,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>glext.h</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -581,8 +598,6 @@
 							<string>218pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -590,9 +605,9 @@
 								<key>PBXProjectModuleLabel</key>
 								<string>Build Results</string>
 								<key>XCBuildResultsTrigger_Collapse</key>
-								<integer>1021</integer>
+								<integer>1022</integer>
 								<key>XCBuildResultsTrigger_Open</key>
-								<integer>1011</integer>
+								<integer>1010</integer>
 							</dict>
 							<key>GeometryConfiguration</key>
 							<dict>
@@ -622,7 +637,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>ECB42A901182FC0D007C274F</string>
-				<string>ECEC269811D6B2DC002C92B3</string>
+				<string>EC4EC8D812952C47002F57AE</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
