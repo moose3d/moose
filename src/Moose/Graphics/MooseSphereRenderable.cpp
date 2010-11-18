@@ -10,6 +10,7 @@
 #include "MooseSphereRenderable.h"
 #include <cassert>
 using namespace Moose::Graphics;
+using namespace Moose::Math;
 namespace prefix=Moose::Graphics;
 ///////////////////////////////////////////////////////////
 prefix::CSphereRenderable::CSphereRenderable() : m_Vertices(ELEMENT_TYPE_VERTEX_3F,48), 
@@ -55,7 +56,14 @@ prefix::CSphereRenderable::Render( COglRenderer & r )
             // Update matrices 
             GetRenderState().GetShaderViewUniform().SetData(      &r.GetCurrentCamera()->GetViewMatrix());
             GetRenderState().GetShaderProjectionUniform().SetData(&r.GetCurrentCamera()->GetProjectionMatrix());
-            GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+            if ( GetTransform() )
+            { 
+              GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+            } 
+            else 
+            {
+              GetRenderState().GetShaderModelUniform().SetData( &CMatrix4x4<float>::Identity );
+            }
             // Send data to shader
             GetRenderState().GetShaderViewUniform().Apply(r);
             GetRenderState().GetShaderProjectionUniform().Apply(r);

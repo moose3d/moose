@@ -541,10 +541,10 @@ namespace Moose
 }; // namespace Moose
 /////////////////////////////////////////////////////////////////
 template<class T>
-const Moose::Math::CMatrix4x4<T> Moose::Math::CMatrix4x4<T>::Zero(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+const Moose::Math::CMatrix4x4<T> Moose::Math::CMatrix4x4<T>::Zero = Moose::Math::CMatrix4x4<T>(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 template<class T>
-const Moose::Math::CMatrix4x4<T> Moose::Math::CMatrix4x4<T>::Identity(1,0,0,0,
-                                                                      0,1,0,0,
-                                                                      0,0,1,0,
-                                                                      0,0,0,1);
+const Moose::Math::CMatrix4x4<T> Moose::Math::CMatrix4x4<T>::Identity = Moose::Math::CMatrix4x4<T>(1,0,0,0,
+                                                                                                   0,1,0,0,
+                                                                                                   0,0,1,0,
+                                                                                                   0,0,0,1);
 #endif

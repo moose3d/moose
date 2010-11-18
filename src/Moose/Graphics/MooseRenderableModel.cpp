@@ -9,6 +9,7 @@ using std::endl;
 using std::vector;
 using std::string;
 using namespace Moose::Graphics;
+using namespace Moose::Math;
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CRenderableModel::CRenderableModel() : m_pModel(NULL), m_bDestroyModel(false)
 {
@@ -120,10 +121,12 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
       // Update matrices 
       GetRenderState().GetShaderViewUniform().SetData(      &renderer.GetCurrentCamera()->GetViewMatrix());
       GetRenderState().GetShaderProjectionUniform().SetData(&renderer.GetCurrentCamera()->GetProjectionMatrix());
-      if ( GetTransform() != NULL ) // model transform is optional.
+
+      if ( GetTransform() ) 
       {
         GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
       }
+      else GetRenderState().GetShaderModelUniform().SetData( &CMatrix4x4<float>::Identity );
 
       // Send data to shader
       GetRenderState().GetShaderViewUniform().Apply(renderer);

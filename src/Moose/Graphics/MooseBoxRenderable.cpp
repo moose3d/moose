@@ -52,7 +52,14 @@ prefix::CBoxRenderable::Render( COglRenderer & r )
             // Update matrices 
             GetRenderState().GetShaderViewUniform().SetData(      &r.GetCurrentCamera()->GetViewMatrix());
             GetRenderState().GetShaderProjectionUniform().SetData(&r.GetCurrentCamera()->GetProjectionMatrix());
-            GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+            if ( GetTransform() )
+            { 
+              GetRenderState().GetShaderModelUniform().SetData( &GetTransform()->GetMatrix() );
+            } 
+            else 
+            {
+              GetRenderState().GetShaderModelUniform().SetData( &CMatrix4x4<float>::Identity );
+            }
             // Send data to shader
             GetRenderState().GetShaderViewUniform().Apply(r);
             GetRenderState().GetShaderProjectionUniform().Apply(r);

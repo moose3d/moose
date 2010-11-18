@@ -110,6 +110,12 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %template (CVector4i) Moose::Math::CVector4<int>;
 %template (CVector4c) Moose::Math::CVector4<unsigned char>;
 
+%include "MooseMatrix2x2.h"
+%template (CMatrix2x2f) Moose::Math::CMatrix2x2<float>;
+%template (CMatrix2x2i) Moose::Math::CMatrix2x2<int>;
+%include "MooseMatrix3x3.h"
+%template (CMatrix3x3f) Moose::Math::CMatrix3x3<float>;
+%template (CMatrix3x3i) Moose::Math::CMatrix3x3<int>;
 %include "MooseMatrix4x4.h"
 %template (CMatrix4x4f) Moose::Math::CMatrix4x4<float>;
 %template (CMatrix4x4i) Moose::Math::CMatrix4x4<int>;

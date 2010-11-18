@@ -29,10 +29,10 @@ namespace Moose
       /// \param m10 index value at row 1, column 0
       /// \param m11 index value at row 1, column 1
       CMatrix2x2( TYPE m00, TYPE m01,  
-		  TYPE m10, TYPE m11 )  
+                  TYPE m10, TYPE m11 )  
       {
-	m_aValues[0]  = m00; m_aValues[1]  = m01; 
-	m_aValues[2]  = m10; m_aValues[3]  = m11; 
+        m_aValues[0]  = m00; m_aValues[1]  = m01; 
+        m_aValues[2]  = m10; m_aValues[3]  = m11; 
       }
       ////////////////////
       /// Assigns matrix values.
@@ -41,10 +41,10 @@ namespace Moose
       /// \param m10 index value at row 1, column 0
       /// \param m11 index value at row 1, column 1
       void Set( TYPE m00, TYPE m01,  
-		TYPE m10, TYPE m11 )  
+                TYPE m10, TYPE m11 )  
       {
-	m_aValues[0]  = m00; m_aValues[1]  = m01; 
-	m_aValues[2]  = m10; m_aValues[3]  = m11; 
+        m_aValues[0]  = m00; m_aValues[1]  = m01; 
+        m_aValues[2]  = m10; m_aValues[3]  = m11; 
       }
       ////////////////////
       // Returns a singledimensional array of floats in Row-Major mode.
@@ -52,7 +52,7 @@ namespace Moose
       // then the second row, etc.
       TYPE *GetArray() 
       {
-	return m_aValues;
+        return m_aValues;
       }
       ////////////////////
       // Returns a singledimensional array of floats in Row-Major mode.
@@ -60,7 +60,7 @@ namespace Moose
       // then the second row, etc.
       const TYPE *GetArray() const
       {
-	return m_aValues;
+        return m_aValues;
       }
       ////////////////////
       /// The effective operation of this * mMatrix.
@@ -70,17 +70,17 @@ namespace Moose
       CMatrix2x2 operator*(const CMatrix2x2 &mMatrix) const
       {
 
-	return CMatrix2x2( m_aValues[0] * mMatrix.m_aValues[0] + 
-			   m_aValues[1] * mMatrix.m_aValues[2],
+        return CMatrix2x2( m_aValues[0] * mMatrix.m_aValues[0] + 
+                           m_aValues[1] * mMatrix.m_aValues[2],
 
-			   m_aValues[0] * mMatrix.m_aValues[1] + 
-			   m_aValues[1] * mMatrix.m_aValues[3],
+                           m_aValues[0] * mMatrix.m_aValues[1] + 
+                           m_aValues[1] * mMatrix.m_aValues[3],
 
-			   m_aValues[2] * mMatrix.m_aValues[0] +
-			   m_aValues[3] * mMatrix.m_aValues[2],
+                           m_aValues[2] * mMatrix.m_aValues[0] +
+                           m_aValues[3] * mMatrix.m_aValues[2],
 
-			   m_aValues[2] * mMatrix.m_aValues[1] +
-			   m_aValues[3] * mMatrix.m_aValues[3] );
+                           m_aValues[2] * mMatrix.m_aValues[1] +
+                           m_aValues[3] * mMatrix.m_aValues[3] );
       }
       
       ////////////////////
@@ -88,10 +88,10 @@ namespace Moose
       /// \param m Matrix where values are copied to this.
       void operator=(const CMatrix2x2 &m)
       {
-	m_aValues[0] = m.m_aValues[0];
-	m_aValues[1] = m.m_aValues[1];
-	m_aValues[2] = m.m_aValues[2];
-	m_aValues[3] = m.m_aValues[3];
+        m_aValues[0] = m.m_aValues[0];
+        m_aValues[1] = m.m_aValues[1];
+        m_aValues[2] = m.m_aValues[2];
+        m_aValues[3] = m.m_aValues[3];
 
       }
       ////////////////////
@@ -101,10 +101,10 @@ namespace Moose
       CMatrix2x2 operator+( const CMatrix2x2 &m) const
       {
 
-	return CMatrix2x2( m_aValues[0] + m.m_aValues[0],
-			   m_aValues[1] + m.m_aValues[1],
-			   m_aValues[2] + m.m_aValues[2],
-			   m_aValues[3] + m.m_aValues[3] );
+        return CMatrix2x2( m_aValues[0] + m.m_aValues[0],
+                           m_aValues[1] + m.m_aValues[1],
+                           m_aValues[2] + m.m_aValues[2],
+                           m_aValues[3] + m.m_aValues[3] );
       }
       ////////////////////
       /// Subtracts matrix from this matrix.
@@ -112,18 +112,18 @@ namespace Moose
       /// \return CMatrix2x2 subtraction result.
       CMatrix2x2 operator-( const CMatrix2x2 &m) const
       {
-	return CMatrix2x2( m_aValues[0] - m.m_aValues[0],
-			   m_aValues[1] - m.m_aValues[1],
-			   m_aValues[2] - m.m_aValues[2],
-			   m_aValues[3] - m.m_aValues[3] );
+        return CMatrix2x2( m_aValues[0] - m.m_aValues[0],
+                           m_aValues[1] - m.m_aValues[1],
+                           m_aValues[2] - m.m_aValues[2],
+                           m_aValues[3] - m.m_aValues[3] );
       }
       ////////////////////
       /// Negates matrix values.
       /// \return CMatrix2x2 with negated values.
       CMatrix2x2 operator-() const
       {
-	return CMatrix2x2( -m_aValues[0],  -m_aValues[1],  
-			   -m_aValues[2],   -m_aValues[3] );
+        return CMatrix2x2( -m_aValues[0],  -m_aValues[1],  
+                           -m_aValues[2],   -m_aValues[3] );
       }
       ////////////////////
       /// Multiplies matrix with scalar value.
@@ -131,10 +131,10 @@ namespace Moose
       /// \return CMatrix2x2 multiplication result.
       CMatrix2x2 operator*( TYPE value ) const
       {
-	return CMatrix2x2( m_aValues[0] * value,
-			   m_aValues[1] * value,
-			   m_aValues[2] * value,
-			   m_aValues[3] * value);
+        return CMatrix2x2( m_aValues[0] * value,
+                           m_aValues[1] * value,
+                           m_aValues[2] * value,
+                           m_aValues[3] * value);
       }
       ////////////////////
       /// Divides matrix with scalar value value.
@@ -142,11 +142,11 @@ namespace Moose
       /// \return CMatrix2x2 division result.
       CMatrix2x2 operator/( TYPE value ) const
       {
-	TYPE t1DivValue = 1.0f / value;
-	return CMatrix2x2( m_aValues[0] * t1DivValue,
-			   m_aValues[1] * t1DivValue,
-			   m_aValues[2] * t1DivValue,
-			   m_aValues[3] * t1DivValue);
+        TYPE t1DivValue = 1.0f / value;
+        return CMatrix2x2( m_aValues[0] * t1DivValue,
+                           m_aValues[1] * t1DivValue,
+                           m_aValues[2] * t1DivValue,
+                           m_aValues[3] * t1DivValue);
       }
       ////////////////////
       /// Returns value (logically ) located at the
@@ -156,8 +156,9 @@ namespace Moose
       /// \returns Value at matrix[ iRow, iCol ].
       inline const TYPE At(unsigned int iRow, unsigned int iCol) const
       {
-	return m_aValues[(iRow*2)+iCol];
+        return m_aValues[(iRow*2)+iCol];
       }
+#ifndef SWIG
       ////////////////////
       /// Returns reference to value logically located at the
       /// iRow:th row and iCol:th column of the matrix. 
@@ -166,7 +167,7 @@ namespace Moose
       /// \returns reference to value at matrix[ iRow, iCol ].
       inline TYPE &operator()( unsigned int iRow, unsigned int iCol )
       {
-	return m_aValues[(iRow*2)+iCol];
+        return m_aValues[(iRow*2)+iCol];
       }
       ////////////////////
       /// Returns reference to value logically located at the
@@ -176,56 +177,59 @@ namespace Moose
       /// \returns reference to value at matrix[ iRow, iCol ].
       inline const TYPE &operator()( unsigned int iRow, unsigned int iCol ) const
       {
-	return m_aValues[(iRow*2)+iCol];
+        return m_aValues[(iRow*2)+iCol];
       }
+#endif
       ////////////////////
       /// Transposes matrix.
       void Transpose()
       {
-	TYPE tTemp = m_aValues[1];
-	m_aValues[1] = m_aValues[2];
-	m_aValues[2] = tTemp;
+        TYPE tTemp = m_aValues[1];
+        m_aValues[1] = m_aValues[2];
+        m_aValues[2] = tTemp;
       }
       ////////////////////
       /// Returns transposed matrix as a copy.
       CMatrix2x2 GetTransposition() const
       {
-	return CMatrix2x2( m_aValues[0],  m_aValues[2],
-			   m_aValues[1],  m_aValues[3]);
+        return CMatrix2x2( m_aValues[0],  m_aValues[2],
+                           m_aValues[1],  m_aValues[3]);
       }
       ////////////////////
       /// Returns the sum of the diagonal elements.
       inline TYPE Trace() const
       {
-	return m_aValues[0] + m_aValues[3];
+        return m_aValues[0] + m_aValues[3];
       }
+#ifndef SWIG
       ////////////////////
       /// Division operator with assign.
       /// \param divider value for division.
       void operator/=(TYPE divider)
       {
-	TYPE t1DivValue = 1.0f / divider;
-	m_aValues[0] *= t1DivValue;
-	m_aValues[1] *= t1DivValue;
-	m_aValues[2] *= t1DivValue;
-	m_aValues[3] *= t1DivValue;
+        TYPE t1DivValue = 1.0f / divider;
+        m_aValues[0] *= t1DivValue;
+        m_aValues[1] *= t1DivValue;
+        m_aValues[2] *= t1DivValue;
+        m_aValues[3] *= t1DivValue;
       }
+#endif
       ////////////////////
       /// Swaps the two rows.
       /// \param iRow1 Row one.
       /// \param iRow2 Row two.
       void SwapRows(unsigned int iRow1, unsigned int iRow2)
       {
-	TYPE tmpRow[2];
-	// copy iRow1th row to tmpRow
-	tmpRow[0] = (*this)(iRow1, 0);
-	tmpRow[1] = (*this)(iRow1, 1);
-	// copy iRow2th row to iRow1th row
-	(*this)(iRow1,0) = (*this)(iRow2, 0);
-	(*this)(iRow1,1) = (*this)(iRow2, 1);
-	// copy tmpRow row to iRow2
-	(*this)(iRow2, 0) = tmpRow[0];
-	(*this)(iRow2, 1) = tmpRow[1];
+        TYPE tmpRow[2];
+        // copy iRow1th row to tmpRow
+        tmpRow[0] = (*this)(iRow1, 0);
+        tmpRow[1] = (*this)(iRow1, 1);
+        // copy iRow2th row to iRow1th row
+        (*this)(iRow1,0) = (*this)(iRow2, 0);
+        (*this)(iRow1,1) = (*this)(iRow2, 1);
+        // copy tmpRow row to iRow2
+        (*this)(iRow2, 0) = tmpRow[0];
+        (*this)(iRow2, 1) = tmpRow[1];
       }
       ////////////////////
       /// Divides row with given value.
@@ -233,9 +237,9 @@ namespace Moose
       /// \param tDivider value which is the divider.
       void DivideRowBy(unsigned int iRow, TYPE tDivider )
       {
-	TYPE t1DivValue = 1.0f / tDivider;
-	(*this)(iRow,0) *= t1DivValue;
-	(*this)(iRow,1) *= t1DivValue;
+        TYPE t1DivValue = 1.0f / tDivider;
+        (*this)(iRow,0) *= t1DivValue;
+        (*this)(iRow,1) *= t1DivValue;
       }
       ////////////////////
       /// Multiplies row with value.
@@ -244,8 +248,8 @@ namespace Moose
       void MultiplyRowBy(unsigned int iRow, TYPE tMultiplier )
       {
 	
-	(*this)(iRow,0) *= tMultiplier;
-	(*this)(iRow,1) *= tMultiplier;
+        (*this)(iRow,0) *= tMultiplier;
+        (*this)(iRow,1) *= tMultiplier;
 	
       }
       ////////////////////
@@ -255,9 +259,9 @@ namespace Moose
       void DivideColumnBy(unsigned int iCol, TYPE tDivider )
       {
 
-	TYPE t1DivValue = 1.0f / tDivider;
-	(*this)(0,iCol) *= t1DivValue;
-	(*this)(1,iCol) *= t1DivValue;
+        TYPE t1DivValue = 1.0f / tDivider;
+        (*this)(0,iCol) *= t1DivValue;
+        (*this)(1,iCol) *= t1DivValue;
 		
       }
       ////////////////////
@@ -266,9 +270,10 @@ namespace Moose
       /// \param tMultiplier multiplication value.
       void MultiplyColumnBy(unsigned int iCol, TYPE tMultiplier )
       {
-	(*this)(0,iCol) *= tMultiplier;
-	(*this)(1,iCol) *= tMultiplier;
+        (*this)(0,iCol) *= tMultiplier;
+        (*this)(1,iCol) *= tMultiplier;
       }
+#ifndef SWIG
       ////////////////////
       /// Prints the matrix values to stream.
       /// \param stream The output stream where matrix is printed.
@@ -276,30 +281,31 @@ namespace Moose
       /// \return a reference to output stream.
       friend std::ostream& operator<<(std::ostream &stream, const CMatrix2x2 &mat)
       {
-	unsigned int iIndex = 0;
-	for( iIndex = 0; iIndex<4; iIndex++)
-	{
-	  if ( iIndex != 0 && !(iIndex % 2)){
-	    stream << std::endl;
-	  }
-	  stream << mat.m_aValues[iIndex] << " ";
-	}
-	stream << std::endl;
-	return stream;
+        unsigned int iIndex = 0;
+        for( iIndex = 0; iIndex<4; iIndex++)
+        {
+          if ( iIndex != 0 && !(iIndex % 2)){
+            stream << std::endl;
+          }
+          stream << mat.m_aValues[iIndex] << " ";
+        }
+        stream << std::endl;
+        return stream;
       }
+#endif
       ////////////////////
       /// Initializes a matrix to Identity matrix.
       void IdentityMatrix()
       {
-	m_aValues[0] = 1; m_aValues[1] = 0; 
-	m_aValues[2] = 0; m_aValues[3] = 1; 
+        m_aValues[0] = 1; m_aValues[1] = 0; 
+        m_aValues[2] = 0; m_aValues[3] = 1; 
       }
       ////////////////////
       /// Zeroes matrix.
       void ZeroMatrix()
       {
-	m_aValues[0] = 0; m_aValues[1] = 0; 
-	m_aValues[2] = 0; m_aValues[3] = 0; 
+        m_aValues[0] = 0; m_aValues[1] = 0; 
+        m_aValues[2] = 0; m_aValues[3] = 0; 
       }
     }; // template CMatrix2x2
     
@@ -307,8 +313,8 @@ namespace Moose
 } // namespace Moose
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
-const Moose::Math::CMatrix2x2<T> Moose::Math::CMatrix2x2<T>::Zero(0,0,0,0);
+const Moose::Math::CMatrix2x2<T> Moose::Math::CMatrix2x2<T>::Zero = Moose::Math::CMatrix2x2<T>(0,0,0,0);
 template<class T>
-const Moose::Math::CMatrix2x2<T> Moose::Math::CMatrix2x2<T>::Identity(1,0,0,1);
+const Moose::Math::CMatrix2x2<T> Moose::Math::CMatrix2x2<T>::Identity = Moose::Math::CMatrix2x2<T>(1,0,0,1);
 ////////////////////////////////////////////////////////////////////////////////
 #endif
