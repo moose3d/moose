@@ -15,6 +15,9 @@ namespace Moose
     template <typename TYPE>
     class MOOSE_API CMatrix3x3
     {
+    public:
+      static const CMatrix3x3 Zero;
+      static const CMatrix3x3 Identity;
     protected:
       TYPE m_aValues[9];
     public:
@@ -410,5 +413,12 @@ namespace Moose
     
   }; // namespace Math
 }; // namespace Moose
-/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+const Moose::Math::CMatrix3x3<T> Moose::Math::CMatrix3x3<T>::Zero(0,0,0, 0,0,0, 0,0,0);
+template<class T>
+const Moose::Math::CMatrix3x3<T> Moose::Math::CMatrix3x3<T>::Identity(1,0,0,
+                                                         0,1,0,
+                                                         0,0,1);
+////////////////////////////////////////////////////////////////////////////////
 #endif

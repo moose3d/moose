@@ -13,6 +13,8 @@ namespace Moose
     template <typename TYPE>
     class MOOSE_API CMatrix2x2
     {
+      static const CMatrix2x2 Zero;
+      static const CMatrix2x2 Identity;
     protected:
       TYPE m_aValues[4];
     public:
@@ -303,4 +305,10 @@ namespace Moose
     
   } // namespace Math
 } // namespace Moose
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+const Moose::Math::CMatrix2x2<T> Moose::Math::CMatrix2x2<T>::Zero(0,0,0,0);
+template<class T>
+const Moose::Math::CMatrix2x2<T> Moose::Math::CMatrix2x2<T>::Identity(1,0,0,1);
+////////////////////////////////////////////////////////////////////////////////
 #endif
