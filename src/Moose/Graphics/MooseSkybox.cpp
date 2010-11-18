@@ -200,8 +200,7 @@ Moose::Graphics::CSkybox::CSkybox()
   state.AddShaderAttrib("a_texcoord", (*m_hModel)->GetTextureCoordinateHandle() );
   state.AddShaderUniform("diffuse", 0); 
   state.SetRenderLayer( kBackground );
-  bool bVal = state.Prepare();
-  assert(bVal);
+
 }
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CSkybox::~CSkybox()
