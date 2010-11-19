@@ -14,18 +14,18 @@ namespace Moose
   {
     ////////////////////
     enum PRIMITIVE_TYPE
-    {
-      PRIMITIVE_POINT_LIST,
-      PRIMITIVE_TRI_LIST,
-      PRIMITIVE_TRI_STRIP,
-      PRIMITIVE_LINE_LIST,
-      PRIMITIVE_LINE_STRIP
+      {
+        PRIMITIVE_POINT_LIST,
+        PRIMITIVE_TRI_LIST,
+        PRIMITIVE_TRI_STRIP,
+        PRIMITIVE_LINE_LIST,
+        PRIMITIVE_LINE_STRIP
 #if !defined(MOOSE_APPLE_IPHONE)
         ,
-      PRIMITIVE_QUAD_LIST,
-      PRIMITIVE_QUAD_STRIP
+        PRIMITIVE_QUAD_LIST,
+        PRIMITIVE_QUAD_STRIP
 #endif
-    };
+      };
     /////////////////////////////////////////////////////////////////
     /// Contains an array of indices and their count.
     class MOOSE_API CIndexArray : public Moose::Core::CCacheable<GLuint>
@@ -44,12 +44,12 @@ namespace Moose
       ////////////////////
       /// Constructor. Initializes index count and sets drawable indices to max indices.
       CIndexArray( PRIMITIVE_TYPE nType, unsigned int nNumIndices) : m_nNumIndices(nNumIndices),
-								     m_nType(nType),
-								     m_nNumDrawableIndices(nNumIndices)
+      m_nType(nType),
+      m_nNumDrawableIndices(nNumIndices)
       {
 	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
 	else			       m_pIndexData = new unsigned int[GetNumIndices()];
-          GetCache() = 0;
+        GetCache() = 0;
       }
       ////////////////////
       /// Copy constructor.
@@ -60,7 +60,7 @@ namespace Moose
 	m_nNumDrawableIndices = m_nNumIndices;
 	m_pIndexData = new char[ GetByteSize() ];
 	memcpy( m_pIndexData, obj.m_pIndexData, GetByteSize());
-          GetCache() = obj.GetCache();
+        GetCache() = obj.GetCache();
       }
       ////////////////////
       /// Destructor.
@@ -131,21 +131,32 @@ namespace Moose
       }
       inline void Copy( const void *pArray )
       {
-          memcpy(m_pIndexData, pArray, GetByteSize());
+        memcpy(m_pIndexData, pArray, GetByteSize());
       }
         
-      int CreateCache( GLenum kPerformanceHint )
+      void CreateCache()
       {
-          if ( !IsCached() )
-          {
+        if ( !IsCached() )
+        {
           glGenBuffers(1, &GetCache());
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GetCache());
-          glBufferData( GL_ELEMENT_ARRAY_BUFFER, GetByteSize(), GetPointer<unsigned short int>(), kPerformanceHint);
+          glBufferData( GL_ELEMENT_ARRAY_BUFFER, GetByteSize(), GetPointer<unsigned short int>(), 
+                        ( (GetUsage() == Moose::Core::CACHE_DYNAMIC) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW ) );
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-              SetState( Moose::Core::CACHE_UP2DATE);
-              return 0;
-          }
-          return 1;  
+          SetState( Moose::Core::CACHE_UP2DATE);
+
+        }
+      }
+      void UpdateCache()
+      {
+        if ( IsCached() )
+        {
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GetCache());
+          glBufferData( GL_ELEMENT_ARRAY_BUFFER, GetByteSize(), GetPointer<unsigned short int>(), 
+                        ( (GetUsage() == Moose::Core::CACHE_DYNAMIC) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW ) );
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+          SetState( Moose::Core::CACHE_UP2DATE);
+        }
       }
         
     };

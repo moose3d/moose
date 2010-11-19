@@ -757,7 +757,12 @@ Moose::Graphics::COglRenderer::CommitPrimitive( CIndexArray *pIndexBuffer )
   //bool bIsActive = (GetRenderState().m_pIndexArray == pIndexBuffer ) ;
   GLenum iIndexBufferType;
   GLvoid *pIndices = pIndexBuffer->IsCached() ? 0 :  pIndexBuffer->GetPointer<void>();
-
+  if ( pIndexBuffer->IsCached() && 
+       pIndexBuffer->GetState() == Moose::Core::CACHE_REFRESH ) 
+  {
+    pIndexBuffer->UpdateCache();
+  }
+  
   ////////////////////
   // Check data type and render.
   if ( pIndexBuffer->IsShortIndices() ) iIndexBufferType = GL_UNSIGNED_SHORT;

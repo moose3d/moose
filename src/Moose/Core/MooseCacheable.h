@@ -12,17 +12,22 @@
 ////////////////////////////////////////////////////////////////
 namespace Moose
 {
-	namespace Core
-	{
+  namespace Core
+  {
 
-	////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     /// Which states caches can have.
     enum CACHE_STATE_TYPE
-    {
-      CACHE_NOCACHE = 0,  /// Cache is not used.
-      CACHE_REFRESH = 1,  /// Original data has changed, cache needs refreshing.
-      CACHE_UP2DATE = 2   /// Cache matches original data.
-    };
+      {
+        CACHE_NOCACHE = 0,  ///!< Cache is not used.
+        CACHE_REFRESH = 1,  ///!< Original data has changed, cache needs refreshing.
+        CACHE_UP2DATE = 2   ///!< Cache matches original data.
+      };
+    enum CACHE_USAGE_TYPE 
+      {
+        CACHE_STATIC,    ///!< Cache is written once, read many.
+        CACHE_DYNAMIC  ///!< Cache is written many times and read many.
+      };
     /////////////////////////////////////////////////////////////////
     /// Template class for different cache objects.
     template<typename CACHE_TYPE>
@@ -31,9 +36,13 @@ namespace Moose
     protected:
       CACHE_STATE_TYPE m_nState;
       CACHE_TYPE       m_nCacheId;
+      CACHE_USAGE_TYPE m_nUsage;
       ////////////////////
       /// Constructor.
-      CCacheable() : m_nState(CACHE_NOCACHE) { }
+      CCacheable() : m_nState(CACHE_NOCACHE)  
+      { 
+        m_nUsage = CACHE_STATIC;
+      }
     public:
       ////////////////////
       /// Constructor.
@@ -74,8 +83,22 @@ namespace Moose
       {
 	return m_nState;
       }
-      };
-	}
+      inline CACHE_USAGE_TYPE GetUsage() const 
+      {
+        return m_nUsage;
+      }
+      inline void SetUsage( CACHE_USAGE_TYPE kUsage )
+      {
+        m_nUsage = kUsage;
+      }
+      ////////////////////
+      /// Generates cache.
+      virtual void CreateCache() = 0;
+      ////////////////////
+      /// Updates cache.
+      virtual void UpdateCache() = 0;
+    };
+  }
 }
 
 #endif /* MOOSECACHEABLE_H_ */

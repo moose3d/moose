@@ -70,7 +70,12 @@ namespace Moose
       /// \param nNumElements Number of elements copied from pData.
       /// \param pData Data buffer pointer where data is copied from. 
       void Copy( size_t nToWhichIndex, size_t nNumElements, const void *pData );
-        void CreateCache( GLenum kPerformanceHint );
+      ////////////////////
+      /// Creates a VBO cache for this object.
+      void CreateCache();
+      ////////////////////
+      /// Recreates a VBO cache for this object.
+      void UpdateCache();
     };
   };  // end namespace Graphics
 };// end namespace Moose

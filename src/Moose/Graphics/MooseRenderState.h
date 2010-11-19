@@ -33,7 +33,15 @@ namespace Moose
       virtual ~IShaderParam() {}
       virtual void Bind( CShader & s, size_t nIndex ) = 0;
       virtual void Apply(Moose::Graphics::COglRenderer & r, size_t nIndex ) = 0;
+      ////////////////////
+      /// This needs to be called when data has changed.
+      virtual void TriggerCacheUpdate() {};
+      ////////////////////
+      /// Allows to set possible cache usage type.
+      /// \param type Cache usage type \see Moose::Core::CCacheable
+      virtual void SetCacheUsageHint( Moose::Core::CACHE_USAGE_TYPE type ) {}
       virtual void *GetData() = 0;
+
     };
 ///////////////////////////////////////////////////////////////////////
     class MOOSE_API CShaderUniformMaterial : public Moose::Graphics::IShaderParam,
@@ -439,7 +447,19 @@ namespace Moose
         //g_Log << "ATTRIB: binding " << GetName() << " to index : " << nIndex << std::endl;
         glBindAttribLocation(s.GetProgram(), nIndex, GetName().c_str());
       }
-          
+
+      void SetCacheUsageHint( Moose::Core::CACHE_USAGE_TYPE type )
+      {
+        if ( m_pData ) m_pData->SetUsage(type);
+      }
+      void TriggerCacheUpdate() 
+      {
+        using namespace Moose::Core;
+        if ( m_pData && m_pData->IsCached() )
+        {
+          m_pData->SetState( CACHE_REFRESH);
+        }
+      }
       void SetData( Moose::Graphics::CVertexDescriptor * pData ) 
       {
         m_pData = pData;
@@ -452,7 +472,8 @@ namespace Moose
         GLvoid *tmp = 0;
               
         // check whether VBO is used.
-        if ( !m_pData->IsCached() ) m_pData->CreateCache( GL_STATIC_DRAW );
+        if ( !m_pData->IsCached() ) m_pData->CreateCache();
+        else if ( m_pData->GetState() == Moose::Core::CACHE_REFRESH) m_pData->UpdateCache();
         glBindBuffer(GL_ARRAY_BUFFER, m_pData->GetCache());              
 
         switch( m_pData->GetType() )
@@ -534,9 +555,23 @@ namespace Moose
           
       void Bind( CShader & s, size_t nIndex ) 
       {
-        //g_Log << "ATTRIB: binding " << GetName() << " to index : " << nIndex << std::endl;
         glBindAttribLocation(s.GetProgram(), nIndex, GetName().c_str());
       }
+      
+      void TriggerCacheUpdate()
+      {
+          using namespace Moose::Core;
+        if ( (m_hData.IsNull() == false) && (*m_hData)->IsCached() )  
+        {
+          (*m_hData)->SetState(CACHE_REFRESH);
+        }
+      }
+      
+      void SetCacheUsageHint( Moose::Core::CACHE_USAGE_TYPE type ) 
+      { 
+        if ( m_hData.IsNull() == false) (*m_hData)->SetUsage(type);
+      }
+
       void SetData( Moose::Default::VERTEX_HANDLE & handle ) 
       {
         m_hData = handle;
@@ -548,7 +583,9 @@ namespace Moose
         GLvoid *tmp = 0;
         Moose::Graphics::CVertexDescriptor *pData = *m_hData;
         // check whether VBO is used.
-        if ( !pData->IsCached() ) pData->CreateCache( GL_STATIC_DRAW );
+        if ( !pData->IsCached() ) pData->CreateCache();
+        else if ( pData->GetState() == Moose::Core::CACHE_REFRESH ) pData->UpdateCache();
+        
         glBindBuffer(GL_ARRAY_BUFFER, pData->GetCache());      
               
         switch( pData->GetType() )

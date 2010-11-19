@@ -1,6 +1,7 @@
 #include "MooseVertexDescriptor.h"
 #include <cassert>
 #include <cstring>
+using namespace Moose::Core;
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType, 
                                                         unsigned int nNumElements) 
@@ -155,14 +156,29 @@ Moose::Graphics::CVertexDescriptor::Copy( size_t nToWhichIndex, size_t nNumEleme
 }
 /////////////////////////////////////////////////////////////////
 void
-Moose::Graphics::CVertexDescriptor::CreateCache( GLenum kPerformanceHint )
+Moose::Graphics::CVertexDescriptor::CreateCache(  )
 {
-    if ( ! IsCached() )
-    {
+  if ( ! IsCached() )
+  {
     glGenBuffers(1, &GetCache());
     glBindBuffer(GL_ARRAY_BUFFER, GetCache());
-    glBufferData( GL_ARRAY_BUFFER, GetByteSize(), GetPointer<float>(), kPerformanceHint);
+    glBufferData( GL_ARRAY_BUFFER, GetByteSize(), GetPointer<float>(), 
+                  ( (GetUsage() == Moose::Core::CACHE_DYNAMIC) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW ));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-        SetState(Moose::Core::CACHE_UP2DATE);
-    }
+    SetState(Moose::Core::CACHE_UP2DATE);
+  }
 }
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Graphics::CVertexDescriptor::UpdateCache(  )
+{
+  if ( IsCached() )
+  {
+    glBindBuffer(GL_ARRAY_BUFFER, GetCache());
+    glBufferData( GL_ARRAY_BUFFER, GetByteSize(), GetPointer<float>(), 
+                  ( (GetUsage() == Moose::Core::CACHE_DYNAMIC) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW ));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    SetState(Moose::Core::CACHE_UP2DATE);
+  }
+}
+////////////////////////////////////////////////////////////////////////////////
