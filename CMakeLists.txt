@@ -226,9 +226,11 @@ FILE(GLOB files
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Util/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h")
 
+if(APPLE)
 install( FILES ${files} DESTINATION headers)
-
-
+elseif(NOT APPLE)
+install( FILES ${files} DESTINATION include/Moose)
+endif(APPLE)
 
 SET( EXTERNAL_LIBS "-lMoose ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL ")
 SET( INTERNAL_LIBS libMoose.a ${GLEW_LIBRARY} -lGL -lGLU -lfreetype  -lvorbisfile -lvorbis -lm -logg -lopenal -ltcl -lavcodec -lavformat -lavutil -lswscale -lSDL)
