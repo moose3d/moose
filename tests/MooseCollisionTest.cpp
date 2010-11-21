@@ -2599,3 +2599,83 @@ TEST_FIXTURE( CapsuleOBBColliderFixture, capsuleOBBTestTr)
   
 }
 ////////////////////////////////////////////////////////////////////////////////
+struct DifferentOBBCapsuleTest 
+{
+  CCapsuleCollider c;
+  COBBCollider     b;
+  
+  DifferentOBBCapsuleTest()
+  {
+    c.GetBoundingCapsule().Set(CVector3<float>(0,0,0), CVector3<float>(0,-1,0));
+    c.GetBoundingCapsule().SetRadius(0.125);
+
+    b.GetBoundingBox().SetPosition(0,0,0);
+    b.GetBoundingBox().SetOrientation( CVector3<float>(0,1,0),
+                      CVector3<float>(0,0,1),
+                      CVector3<float>(1,0,0));
+    b.GetBoundingBox().SetLength(2.0);
+    b.GetBoundingBox().SetHeight(0.06);
+    b.GetBoundingBox().SetWidth(2.0);
+  }
+  bool
+  intersectionTest( const Moose::Volume::COrientedBox & box, const Moose::Volume::CCapsule & capsule )
+{
+  CVector3<float> vPointOnSegment;
+  cerr << "boxpos: " <<  box.GetPosition() << "\n";
+  cerr << "capsulestart: " << capsule.GetStart() << "\n";
+  cerr << "capsuleend: " << capsule.GetEnd() << "\n";
+  ClosestPointOnLineSegment( box.GetPosition(), capsule, vPointOnSegment );
+  cerr << "pointOnSegment: " << vPointOnSegment << "\n";
+  CVector3<float> vSegmentToBox = box.GetPosition()-vPointOnSegment;
+  float fDistanceSqr = vSegmentToBox.LengthSqr();
+
+  cerr << "segm2box: " << vSegmentToBox << "\n";
+  cerr << "distSqr: " << fDistanceSqr << "\n";
+  // In case we get too close, then problems start emerging.
+  if ( TOO_CLOSE_TO_ZERO(fDistanceSqr))
+    vSegmentToBox[0] = vSegmentToBox[1] = vSegmentToBox[2] = 0.0;
+  else     vSegmentToBox.Normalize();
+  float fEffRadius = 0.5f * ( fabsf((box.GetForwardVector()*box.GetLength()).Dot(vSegmentToBox)) +
+			      fabsf((box.GetRightVector()*box.GetWidth()).Dot(vSegmentToBox)) +
+			      fabsf((box.GetUpVector()*box.GetHeight()).Dot(vSegmentToBox)) );
+
+  cerr << "effrad: " << fEffRadius << "\n";
+  cerr << "result: " << "( " << fDistanceSqr << " <= ( " << (capsule.GetRadiusSqr() + (2.0f*fEffRadius * capsule.GetRadius()) + (fEffRadius*fEffRadius)) << " )\n";
+  // c^2 <= (a+b)^2 
+  return ( fDistanceSqr <= (capsule.GetRadiusSqr() + (2.0f*fEffRadius * capsule.GetRadius()) + (fEffRadius*fEffRadius)) );
+}
+};
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( DifferentOBBCapsuleTest, capsuleOBBTestTr2)
+{
+  CTransform ctr;
+  CTransform btr;
+  
+  ctr.SetTranslation(0,3.25,0);
+  ctr.SetRotation(CQuaternion(0,-0.989795,0,-0.142454));
+  ctr.SetScaling(1,2.33921,1);
+
+  btr.SetTranslation( 0.00378628,1.39942,0.0618424);
+  btr.SetRotation(CQuaternion(0.0220692, -0.0071816, -0.00151039, 0.99973));
+  btr.SetScaling(0.24,0.24,0.24);
+
+ 
+  CVector3<float > vStart, vEnd;
+  Transform( c.GetBoundingCapsule().GetStart(), ctr, vStart);
+  Transform( c.GetBoundingCapsule().GetEnd(), ctr, vEnd);
+  CCapsule capsule(vStart, vEnd, c.GetBoundingCapsule().GetRadius());
+  
+  COrientedBox thisbox = b.GetBoundingBox();
+  thisbox.Move( btr.GetTranslation());
+  thisbox.AppendToRotation( btr.GetRotation() );
+  CVector3<float> vScale = btr.GetScaling();
+  thisbox.SetWidth(thisbox.GetWidth()*vScale[0]);
+  thisbox.SetHeight(thisbox.GetHeight()*vScale[1]);
+  thisbox.SetLength(thisbox.GetLength()*vScale[2]);
+  
+  //c.SetColliderTransform( &ctr);
+  //b.SetColliderTransform( &btr);
+  //CHECK_EQUAL( true,  c.Intersects(b));
+  CHECK_EQUAL( true,  intersectionTest(thisbox,capsule));
+}
+////////////////////////////////////////////////////////////////////////////////

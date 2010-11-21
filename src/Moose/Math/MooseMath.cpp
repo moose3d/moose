@@ -786,10 +786,10 @@ Moose::Math::Transform( const CVector3<float> &v, const CMatrix4x4<float> &m, CV
 void
 Moose::Math::Transform( const CVector3<float> &v, const CTransform &t, CVector3<float> & result)
 {
-	result = v;
-	RotateVector(t.GetRotation(), result);
-	result+=t.GetTranslation();
-	result*=t.GetScaling();
+  // TRS-scaling (scaling first)
+  result = v * t.GetScaling();
+  RotateVector(t.GetRotation(), result);
+  result+=t.GetTranslation();
 }
 /////////////////////////////////////////////////////////////////
 void
