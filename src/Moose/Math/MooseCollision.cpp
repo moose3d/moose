@@ -1098,12 +1098,15 @@ Moose::Collision::OBBIntersectsCapsule( const Moose::Volume::COrientedBox & box,
   ClosestPointOnLineSegment( box.GetPosition(), capsule, vPointOnSegment );
   CVector3<float> vSegmentToBox = box.GetPosition()-vPointOnSegment;
   float fDistanceSqr = vSegmentToBox.LengthSqr();
-  vSegmentToBox.Normalize();
+  // In case we get too close, then problems start emerging.
+  if ( TOO_CLOSE_TO_ZERO(fDistanceSqr))
+    vSegmentToBox[0] = vSegmentToBox[1] = vSegmentToBox[2] = 0.0;
+  else     vSegmentToBox.Normalize();
   float fEffRadius = 0.5f * ( fabsf((box.GetForwardVector()*box.GetLength()).Dot(vSegmentToBox)) +
 			      fabsf((box.GetRightVector()*box.GetWidth()).Dot(vSegmentToBox)) +
 			      fabsf((box.GetUpVector()*box.GetHeight()).Dot(vSegmentToBox)) );
-
-  return ( fDistanceSqr < (capsule.GetRadiusSqr() + (fEffRadius*fEffRadius)) );
+  // c^2 <= (a+b)^2 
+  return ( fDistanceSqr <= (capsule.GetRadiusSqr() + (2.0f*fEffRadius * capsule.GetRadius()) + (fEffRadius*fEffRadius)) );
 }
 ////////////////////////////////////////////////////////////////////////////////
 bool

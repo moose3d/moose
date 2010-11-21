@@ -2,6 +2,8 @@
 #include <MooseMath.h>
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
+#include <MooseCapsuleCollider.h>
+#include <MooseOBBCollider.h>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Collision;
 using namespace Moose::Math;
@@ -2533,3 +2535,67 @@ TEST_FIXTURE( CapsuleNonParallelFixture, CapsuleZ_m)
   CHECK_EQUAL( false, CapsuleIntersectsCapsule(a,b));
 }
 ///////////////////////////////////////////////////////////////////////////////
+struct CapsuleOBBColliderFixture 
+{
+  CCapsuleCollider a;
+  COBBCollider b;
+  CapsuleOBBColliderFixture()
+  {
+    a.GetBoundingCapsule().SetRadius(0.5);
+    a.GetBoundingCapsule().Set( CVector3<float>(0,0,0), CVector3<float>(0,-1,0));
+    b.GetBoundingBox().SetPosition(0,0,0);
+    b.GetBoundingBox().SetWidth(1.0);
+    b.GetBoundingBox().SetHeight(1.0);
+    b.GetBoundingBox().SetLength(1.0);
+
+  }
+
+};
+
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleOBBColliderFixture, capsuleOBBTest)
+{
+
+  
+  CHECK_EQUAL( true, OBBIntersectsCapsule(b.GetBoundingBox(),a.GetBoundingCapsule() ));
+  CHECK_EQUAL( true, a.Intersects(b));
+  
+  b.GetBoundingBox().Move( CVector3<float>(0,-1.999,0) );
+  CHECK_EQUAL( true, a.Intersects(b));
+
+  b.GetBoundingBox().Move( CVector3<float>(0,-0.001,0) );
+  CHECK_EQUAL( true, a.Intersects(b));
+  
+  b.GetBoundingBox().Move( CVector3<float>(0,-0.001,0) );
+  CHECK_EQUAL( false, a.Intersects(b));
+  
+  b.GetBoundingBox().Move( CVector3<float>(0,-0.001,0) );
+  CHECK_EQUAL( false, a.Intersects(b));
+
+  
+}
+////////////////////////////////////////////////////////////////////////////////
+TEST_FIXTURE( CapsuleOBBColliderFixture, capsuleOBBTestTr)
+{
+  CTransform tr;
+  tr.SetScaling(1,2.0,1);
+  a.SetColliderTransform(&tr);
+  
+  CHECK_EQUAL( true, OBBIntersectsCapsule(b.GetBoundingBox(),a.GetBoundingCapsule() ));
+  CHECK_EQUAL( true, a.Intersects(b));
+  
+  b.GetBoundingBox().Move( CVector3<float>(0,-2.999,0) );
+  CHECK_EQUAL( true, a.Intersects(b));
+
+  b.GetBoundingBox().Move( CVector3<float>(0,-0.001,0) );
+  CHECK_EQUAL( true, a.Intersects(b));
+  
+  b.GetBoundingBox().Move( CVector3<float>(0,-0.001,0) );
+  CHECK_EQUAL( false, a.Intersects(b));
+  
+  b.GetBoundingBox().Move( CVector3<float>(0,-0.001,0) );
+  CHECK_EQUAL( false, a.Intersects(b));
+
+  
+}
+////////////////////////////////////////////////////////////////////////////////
