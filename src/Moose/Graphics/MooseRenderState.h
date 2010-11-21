@@ -113,7 +113,7 @@ namespace Moose
           else g_Error << GetName() << ": Location is null" << std::endl;
           return;
         }
-#if defined(DEBUG)
+#if defined(DEBUG) && DEBUG>1
         g_Log << "UNIFORM: applying " << GetName() << std::endl;
 #endif
         Moose::Graphics::CVertexDescriptor *pData = *m_hData;
@@ -191,7 +191,7 @@ namespace Moose
           else g_Error << GetName() << ": Location is null" << std::endl;
           return;
         }
-#if defined(DEBUG)
+#if defined(DEBUG) && DEBUG>1
         g_Log << "UNIFORM: applying " << GetName() << std::endl;
 #endif
         Moose::Graphics::CVertexDescriptor *pData = m_pData;
