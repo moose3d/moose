@@ -140,11 +140,16 @@ prefix::CApplication::GetEventQueue()
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////
+
 void
 prefix::CApplication::ProcessInput()
 {
     //g_Error << "Pre-check\n";
-	if ( GetCurrentScene() == NULL ) return;
+  if ( GetCurrentScene() == NULL ) 
+  {
+    m_EventQueue.Clear();
+    return;
+  }
     CScene & scene = *GetCurrentScene();
     //g_Error << "Processing input\n";
 #if defined(MOOSE_APPLE_IPHONE)
@@ -155,17 +160,41 @@ prefix::CApplication::ProcessInput()
         switch( e.type )
         {
             case kTouchBegan:
-                scene.OnTouchBegan( e.x, e.y, e.flags);
-                break;
+              {
+                Touches lstTouches;
+                  assert(e.touches < 5 && "touch count is too large!");
+                  for(int i=0;i<e.touches;i++)
+                {
+                  lstTouches.push_back( Touch(e.x[i],e.y[i]) );
+                }
+                scene.OnTouchBegan( lstTouches );
+              }
+              break;
             case kTouchMoved:
-                scene.OnTouchMoved( e.x, e.y, e.flags);
+              {
+                Touches lstTouches;
+                  assert(e.touches < 5 && "touch count is too large!");
+                  for(int i=0;i<e.touches;i++)
+                {
+                  lstTouches.push_back( Touch(e.x[i],e.y[i]) );
+                }
+                scene.OnTouchMoved( lstTouches);
+              }
                 break;
             case kTouchEnded:
-                scene.OnTouchEnded( e.x, e.y, e.flags);
+              {
+                Touches lstTouches;
+                  assert(e.touches < 5 && "touch count is too large!");
+                  for(int i=0;i<e.touches;i++)
+                {
+                  lstTouches.push_back( Touch(e.x[i],e.y[i]) );
+                }
+                scene.OnTouchEnded( lstTouches);
+              }
                 break;
             case kAccelerate:
                 //g_Error << "Moose:Received accel event \n";
-                scene.OnAccelerate( e.x, e.y, e.z, e.flags);
+                scene.OnAccelerate( e.x[0], e.y[0], e.z, e.flags);
                 break;
             default:
                 assert( NULL && "Event type is not defined!!" );
@@ -366,14 +395,27 @@ prefix::CApplication::LoadDefaultResources()
     pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("line.frag"));
     int iRetval = g_ShaderMgr->Create(pShader, "moose_line_shader");
     assert( iRetval == 0);
-
+  }
+  if ( g_ShaderMgr->HasResource("moose_color_shader") == false)
+  {
     CShader *pColor = new CShader();
 
     pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("color.vert"));
     pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("color.frag"));
-    iRetval  = g_ShaderMgr->Create(pColor, "moose_color_shader");
+    int iRetval  = g_ShaderMgr->Create(pColor, "moose_color_shader");
     assert( iRetval  == 0);
   }
+  
+  if ( g_ShaderMgr->HasResource("moose_billboard_particle_shader") == false)
+  {
+    CShader *pColor = new CShader();
+
+    pColor->LoadVertexShader(g_AssetBundle->GetAssetPath("bbps.vert"));
+    pColor->LoadFragmentShader(g_AssetBundle->GetAssetPath("bbps.frag"));
+    int iRetval  = g_ShaderMgr->Create(pColor, "moose_billboard_particle_shader");
+    assert( iRetval  == 0);
+  }
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 int MainLoop( void * data )

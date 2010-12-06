@@ -1,38 +1,75 @@
 
 
 add_sources (Moose
+
+  MooseAlphaTestOperation.h
   MooseAmbientLight.cpp  
-  MooseModel.cpp
-  MooseRenderableVideo.cpp
+  MooseAmbientLight.h  
+  MooseBlendingOperation.h
   MooseBoxRenderable.cpp
-  MooseModelHelper.cpp
-  MooseRenderState.cpp
+  MooseBoxRenderable.h
   MooseCamera.cpp
-  MooseModelLoader.cpp
-  MooseSDLScreen.cpp
-  MooseDDSImage.cpp
-  MooseObjLoader.cpp
-  MooseShader.cpp
-  MooseDirectionalLight.cpp
-  MooseOGLRenderer.cpp
-  MooseSkybox.cpp
-  MooseFFMpeg.cpp
-  MoosePointLight.cpp
-  MooseSphereRenderable.cpp
+  MooseCamera.h
   MooseCapsuleRenderable.cpp
+  MooseCapsuleRenderable.h
+  MooseDDSImage.cpp
+  MooseDDSImage.h
+  MooseDirectionalLight.cpp
+  MooseDirectionalLight.h
+  MooseFFMpeg.cpp
+  MooseFFMpeg.h
   MooseFrameBuffer.cpp
-  MoosePolygonOffset.cpp
-  MooseSpotLight.cpp
+  MooseFrameBuffer.h
   MooseFrustum.cpp
-  MooseRenderable.cpp
-  MooseTexture.cpp
-  MooseRenderableModel.cpp
-  MooseTGAImage.cpp
+  MooseFrustum.h
   MooseLineRenderable.cpp
-  MooseRenderableModelShared.cpp
-  MooseVertexDescriptor.cpp
+  MooseLineRenderable.h
   MooseMilkshapeLoader.cpp
+  MooseMilkshapeLoader.h
+  MooseModel.cpp
+  MooseModel.h
+  MooseModelHelper.cpp
+  MooseModelHelper.h
+  MooseModelLoader.cpp
+  MooseModelLoader.h
+  MooseOGLRenderer.cpp
+  MooseOGLRenderer.h
+  MooseObjLoader.cpp
+  MooseObjLoader.h
+  MooseParticleSystem.h
+  MooseParticleSystemRenderable.h
+  MoosePointLight.cpp
+  MoosePointLight.h
+  MoosePolygonOffset.cpp
+  MoosePolygonOffset.h
+  MooseRenderState.cpp
+  MooseRenderState.h
+  MooseRenderable.cpp
+  MooseRenderable.h
+  MooseRenderableModel.cpp
+  MooseRenderableModel.h
+  MooseRenderableModelShared.cpp
+  MooseRenderableModelShared.h
   MooseRenderableProperty.cpp
+  MooseRenderableProperty.h
+  MooseRenderableVideo.cpp
+  MooseRenderableVideo.h
+  MooseSDLScreen.cpp
+  MooseSDLScreen.h
+  MooseShader.cpp
+  MooseShader.h
+  MooseSkybox.cpp
+  MooseSkybox.h
+  MooseSphereRenderable.cpp
+  MooseSphereRenderable.h
+  MooseSpotLight.cpp
+  MooseSpotLight.h
+  MooseTGAImage.cpp
+  MooseTGAImage.h
+  MooseTexture.cpp
+  MooseTexture.h
+  MooseVertexDescriptor.cpp
+  MooseVertexDescriptor.h
   )
 
 #set (graphics_sources  MooseVideoTexture.cpp)

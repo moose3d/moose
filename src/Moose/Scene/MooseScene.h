@@ -14,7 +14,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(MOOSE_APPLE_IPHONE)
 struct Tcl_Interp;
+#else
+namespace Moose
+{
+  namespace Scene
+  {
+    /// Touches passed to scene.
+    struct Touch
+    {
+      float x;
+      float y;
+      /// For easier creation of touch objects.
+      Touch( float fX, float fY) : x(fX), y(fY) { }
+    };
+    typedef std::list<Touch> Touches;
+  }
+}
 #endif
+
 namespace Moose
 {
   namespace Scene
@@ -22,6 +39,7 @@ namespace Moose
     class CRTSCamera;
     class CDirectionalLightObject;
     typedef Moose::Graphics::CRenderQueue< Moose::Graphics::CRenderable *> RenderQueue;
+
     ///////////////////////////////////////////////////////////////////////////////
     /// Camera with its properties related to rendering.
     class CCameraProperty
@@ -121,9 +139,10 @@ namespace Moose
       virtual void Unload();
       virtual void Reload();
 #if defined(MOOSE_APPLE_IPHONE)
-      virtual void OnTouchBegan( float x, float y, int iFlags ) {}
-      virtual void OnTouchMoved( float x, float y, int iFlags ) {}
-      virtual void OnTouchEnded( float x, float y, int iFlags ) {}
+      virtual void OnTouchBegan( const Moose::Scene::Touches & touches ) {}
+      virtual void OnTouchMoved( const Moose::Scene::Touches & touches ) {}
+      virtual void OnTouchEnded( const Moose::Scene::Touches & touches ) {}
+      virtual void OnTouchCanceled( const Moose::Scene::Touches & touches ) {}
       virtual void OnAccelerate( float x, float y, float z, int iFlags) {}
 #else
       // These contain TCL scripting, not enabled on iPhone

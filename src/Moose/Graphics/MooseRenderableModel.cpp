@@ -56,39 +56,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
   
   ////////////////////
   // Commit textures
-  /*#if !defined(MOOSE_APPLE_IPHONE)
-  CVertexDescriptor *pTemp = NULL;
-  for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
-  {
-    pTemp    = *model.GetTextureCoordinateHandle(i);
-    pTexture = *GetRenderState().GetTextureHandle(i);
-
-
-
-    // check that texcoord resources actually exist
-    if ( pTemp == NULL )
-    {
-      glClientActiveTexture( GL_TEXTURE0 + i);
-      glDisableClientState( GL_TEXTURE_COORD_ARRAY);
-    }
-    else
-    {
-      renderer.CommitVertexDescriptor( pTemp, i );
-    }
-    //// check that texture resource exists
-    if ( pTexture  != NULL )
-    {
-      renderer.CommitTexture( i, pTexture );
-      renderer.CommitFilters( GetRenderState().GetTextureFilters(i), pTexture->GetType() );
-    }
-    else
-      renderer.DisableTexture(i, NULL);
-
-    
-
-  }  
-  #else*/
-
+ 
   for( unsigned int i=0; i<TEXTURE_HANDLE_COUNT; i++)
   {
     //pTemp    = *model.GetTextureCoordinateHandle(i);
@@ -135,24 +103,7 @@ Moose::Graphics::CRenderableModel::Render( COglRenderer & renderer )
     }
   }
   
-  /*#if !defined(MOOSE_APPLE_IPHONE)
-  // commit normals
-  if ( model.GetNormalHandle().IsNull() )  glDisableClientState( GL_NORMAL_ARRAY );
-  else	renderer.CommitVertexDescriptor( *model.GetNormalHandle() );
-
-  // Commit colors
-  if ( model.GetColorHandle().IsNull()  )
-  {
-    glDisableClientState( GL_COLOR_ARRAY );
-    renderer.CommitColor( GetRenderState().GetBaseColor() );
-  }
-  else	renderer.CommitVertexDescriptor( *model.GetColorHandle() );
-
-  // commit position data
-  if ( model.GetVertexHandle().IsNull() )	glDisableClientState( GL_VERTEX_ARRAY );
-  else	renderer.CommitVertexDescriptor ( *model.GetVertexHandle() );
-#endif*/
-
+ 
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );
 

@@ -70,6 +70,7 @@
 #include "MooseSpatialGraph.h"
 #include "MooseScene.h"
 #include "MooseParticleSystem.h"
+#include "MooseParticleSystemRenderable.h"
 #include "MooseUpdateable.h"
 #if !defined(MOOSE_APPLE_IPHONE)
 #include "MooseStateMachine.h"

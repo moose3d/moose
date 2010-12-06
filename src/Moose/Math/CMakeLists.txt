@@ -9,5 +9,17 @@ add_sources(Moose
   MooseQuad.cpp
   MooseMath.cpp
   MooseQuaternion.cpp
+
+  MooseCapsuleCollider.h
+  MooseOBBCollider.h
+  MooseSphereCollider.h
+  MooseCollision.h
+  MoosePlane.h
+  MooseTransform.h
+  MooseCompoundCollider.h
+  MooseQuad.h
+  MooseMath.h
+  MooseQuaternion.h
+
 )
  
