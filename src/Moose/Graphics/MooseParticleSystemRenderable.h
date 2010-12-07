@@ -168,7 +168,7 @@ Moose::Graphics::CParticleSystemRenderable<PS>::UpdateRenderableData( )
   }
   // In case of VBOs, cache needs to be updated.
   if ( m_Vertices.IsCached()   ) m_Vertices.SetState( Moose::Core::CACHE_REFRESH);
-  if ( m_ShaderData.IsCached() ) m_Vertices.SetState( Moose::Core::CACHE_REFRESH);
+  if ( m_ShaderData.IsCached() ) m_ShaderData.SetState( Moose::Core::CACHE_REFRESH);
 
   m_Indices.SetDrawableCount( m_pPS->GetAliveCount()*6-2 );
 }
