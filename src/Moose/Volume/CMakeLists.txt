@@ -6,5 +6,13 @@ add_sources(Moose
   MooseOBB.cpp
   MooseSphereBound.cpp
   MooseSphere.cpp
+
+  MooseAABB.h 
+  MooseBoxBound.h 
+  MooseCapsule.h
+  MooseCone.h
+  MooseOBB.h
+  MooseSphereBound.h
+  MooseSphere.h
   )
 

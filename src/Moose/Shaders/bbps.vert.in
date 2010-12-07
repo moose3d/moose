@@ -1,0 +1,34 @@
+@version@
+#ifdef GL_ES
+#define IN attribute
+#define OUT varying
+#else
+#define IN in
+#define OUT out
+#endif
+struct MMaterial {
+  vec4 diffuse;
+  vec4 ambient;
+  vec4 specular;
+  vec4 emission;
+  float shininess;
+};
+
+IN vec4 a_data;
+IN vec3 a_position;
+
+OUT float v_alpha;
+OUT vec2 v_texcoord;
+uniform mat4 m_viewMatrix;
+uniform mat4 m_projMatrix;
+void main()
+{
+	vec4 center = m_viewMatrix * vec4(a_position,1);
+	center.x += a_data.w * a_data.x;
+	center.y += a_data.w * a_data.y;
+	v_alpha = a_data.z;
+	v_texcoord.s = clamp(a_data.x + 1.0, 0.0, 1.0);
+	v_texcoord.t = clamp(a_data.y + 1.0, 0.0, 1.0);
+	gl_Position = m_projMatrix * center;
+}
+

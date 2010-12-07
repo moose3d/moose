@@ -1,0 +1,33 @@
+@version@
+#ifdef GL_ES
+#define IN varying
+#define OUT 
+precision mediump float;
+#else
+#define IN in
+#define OUT out
+#endif
+// Moose material struct
+////////////////////////////////////////////////////////////////////////////////
+struct MMaterial { 
+  vec4 diffuse;
+  vec4 ambient;
+  vec4 specular;
+  vec4 emission;
+  float shininess;
+};
+
+uniform lowp sampler2D texture;
+IN vec2 v_texcoord;
+IN float v_alpha;
+
+#ifndef GL_ES
+OUT vec4 gl_FragColor;
+#endif
+
+void main()
+{
+	vec4 color = texture2D(texture,v_texcoord); 
+	color.a *= v_alpha;
+	gl_FragColor = color;
+}

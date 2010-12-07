@@ -8,5 +8,16 @@ add_sources( Moose
   MooseScene.cpp
   MooseSpatialGraph.cpp
   MooseTransformGraph.cpp
+
+  MooseApplication.h
+  MooseCameraObject.h
+  MooseDirectionalLightObject.h
+  MoosePointLightObject.h
+  MooseEventQueue.h
+  MooseGameObject.h
+  MooseScene.h
+  MooseSpatialGraph.h
+  MooseTransformGraph.h
+
 )
 

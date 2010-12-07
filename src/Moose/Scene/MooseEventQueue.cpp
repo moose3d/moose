@@ -57,4 +57,12 @@ prefix::CEventQueue::Empty() const
     dispatch_semaphore_signal(m_Lock);    
     return isEmpty;
 }
+
+void
+prefix::CEventQueue::Clear() 
+{
+    dispatch_semaphore_wait(m_Lock,DISPATCH_TIME_FOREVER);
+    while( !empty()) pop();
+    dispatch_semaphore_signal(m_Lock);
+}
 #endif

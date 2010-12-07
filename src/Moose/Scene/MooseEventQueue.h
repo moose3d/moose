@@ -25,14 +25,37 @@ namespace Moose
             kTouchEnded,
             kAccelerate
         };
-        
-        struct Event {
-            int   type;
-            float x;
-            float y;
-            float z;
-            int   flags;
-        };
+#define MAX_TOUCH_PER_EVENT 5
+      struct Event 
+      {
+        char   type;
+        char  touches; ///!< Number of touches in this event.
+        float x[MAX_TOUCH_PER_EVENT];
+        float y[MAX_TOUCH_PER_EVENT];
+        float z;
+        int   flags;
+        Event() {}
+        Event( const Event & e )
+        {
+          *this = e;
+        }
+        void operator=( const Event & e )
+        {
+          type = e.type;
+          touches = e.touches;
+          // kAccelerate might leave touches as zero, while still using first two values.
+          x[0] = e.x[0];
+          y[0] = e.y[0];
+          
+          for(int i=1;i<e.touches;i++)
+          {
+            x[i] = e.x[i];
+            y[i] = e.y[i];
+          }
+          z = e.z;
+          flags = e.flags;
+        }
+      };
 #else
 #include <SDL.h>
         typedef Uint8 EventType;
@@ -52,6 +75,7 @@ namespace Moose
             void Pop();
             bool Empty() const;
             Event Front() const;
+            void Clear();
 #endif
         };
     } // Scene
