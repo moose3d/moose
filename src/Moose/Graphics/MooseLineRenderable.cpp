@@ -125,4 +125,7 @@ prefix::CLineRenderable::SetLine( const Moose::Math::CVector3<float> & vStartPos
     m_EndposThickness.GetPointer<float>()[14] = vStartPos[2];
     m_EndposThickness.GetPointer<float>()[15] = GetThickness();
     
+    if ( m_Vertices.IsCached() ) m_Vertices.SetState(Moose::Core::CACHE_REFRESH);
+    if ( m_EndposThickness.IsCached() ) m_EndposThickness.SetState(Moose::Core::CACHE_REFRESH);
+        
 }

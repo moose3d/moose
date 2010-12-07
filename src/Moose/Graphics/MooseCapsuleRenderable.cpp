@@ -269,6 +269,8 @@ prefix::CCapsuleRenderable::UseCapsule( const Moose::Volume::CCapsule & capsule 
     m_Vertices.GetPointer<float>(i+30)[1] = tmp[1];
     m_Vertices.GetPointer<float>(i+30)[2] = tmp[2];
   }
+    
+    if ( m_Vertices.IsCached() ) m_Vertices.SetState(Moose::Core::CACHE_REFRESH);
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -278,5 +280,6 @@ prefix::CCapsuleRenderable::SetColor( float fR, float fG, float fB, float fA)
   m_Color.GetPointer<float>()[1] = fG;
   m_Color.GetPointer<float>()[2] = fB;
   m_Color.GetPointer<float>()[3] = fA; 
+    if ( m_Color.IsCached()) m_Color.SetState(Moose::Core::CACHE_REFRESH);
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -115,5 +115,7 @@ prefix::CBoxRenderable::UseBox( const COrientedBox & box  )
     m_Vertices.GetPointer<float>(7)[0] = vTmp[0];
     m_Vertices.GetPointer<float>(7)[1] = vTmp[1];
     m_Vertices.GetPointer<float>(7)[2] = vTmp[2];
+    
+    if ( m_Vertices.IsCached() ) m_Vertices.SetState(Moose::Core::CACHE_REFRESH);
 }
 //////////////////////////////////////////////////////////////////////                                        

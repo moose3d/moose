@@ -100,5 +100,7 @@ prefix::CSphereRenderable::UseSphere( const Moose::Volume::CSphere & sphere )
         m_Vertices.GetPointer<float>(i)[1] = sinf((i-32)*fPart)*sphere.GetRadius() + sphere.GetPosition()[1];
         m_Vertices.GetPointer<float>(i)[2] = cosf((i-32)*fPart)*sphere.GetRadius() + sphere.GetPosition()[2];
     }
+    
+    if ( m_Vertices.IsCached() ) m_Vertices.SetState(Moose::Core::CACHE_REFRESH);
 }
 ////////////////////////////////////////////////////////////////
