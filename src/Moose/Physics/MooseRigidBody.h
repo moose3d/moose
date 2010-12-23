@@ -1,18 +1,24 @@
 ////////////////////////////////////////////////////////////////////////////////
-
+#include <btBulletDynamicsCommon.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace Moose
 {
   namespace Physics 
   {
-    class CRigidBody 
+    ////////////////////
+    /// Rigid body type.
+    enum RigidBodyType 
+    { 
+      DynamicRigidBody,  ///!< Positive mass, Moving
+      StaticRigidBody,   ///!< Zero mass, no movement
+      KinematicRigidBody ///!< Zero mass, no effect from dynamics.
+    };
+    ////////////////////
+    /// Basic physics object.
+    class CRigidBody : public Moose::Core::CTypeBase<Moose::Physics::RigidBodyType>
     {
     public:
-      enum RotationMode  ///!< Rotation mode for body
-        { 
-          kInfiniteSimal, ///!< Faster to computer, more error-prone.
-          kFinite         ///!< Slower to compute, might help in some situations.
-        } ;
+     
     protected:
       dBodyID m_BodyID; ///!< ODE Body id.
     public:
@@ -55,8 +61,7 @@ namespace Moose
       void GetForce( const Moose::Math::CVector3<float> & vForce );
       void GetTorque( const Moose::Math::CVector3<float> & vTorque );
 
-      void SetKinematic ( bool bFlag );
-      bool IsKinematic();
+
       
       void SetEnabled( bool bFlag );
       bool IsEnabled();

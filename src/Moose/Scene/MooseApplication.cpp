@@ -147,7 +147,9 @@ prefix::CApplication::ProcessInput()
     //g_Error << "Pre-check\n";
   if ( GetCurrentScene() == NULL ) 
   {
+#if defined(MOOSE_APPLE_IPHONE)
     m_EventQueue.Clear();
+#endif
     return;
   }
     CScene & scene = *GetCurrentScene();

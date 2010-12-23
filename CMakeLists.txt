@@ -131,9 +131,10 @@ include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Graphics)
 include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Volume)
 include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Util)
 include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Spatial)
+include_directories( ${PROJECT_SOURCE_DIR}/src/Moose/Physics)
 include_directories( ${PROJECT_SOURCE_DIR}/src/Moose)
 
-# Make sure the linker can find the Hello library once it is built.
+# Make sure the linker can find the Moose library once it is built.
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/AI)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Core)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Math)
@@ -143,7 +144,9 @@ link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Graphics)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Volume)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Util)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Spatial)
+link_directories( ${PROJECT_BINARY_DIR}/src/Moose/Physics)
 link_directories( ${PROJECT_BINARY_DIR}/src/Moose)
+
 link_directories( ${PROJECT_BINARY_DIR} )
 
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Core )
@@ -210,56 +213,59 @@ SET( EXTERNAL_LIBS "-lMoose")
 SET( INTERNAL_LIBS "libMoose.a")
 
 IF(GLEW_FOUND)
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${GLEW_LIBRARY}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${GLEW_LIBRARY}")
+LIST(APPEND EXTERNAL_LIBS ${GLEW_LIBRARY})
+LIST(APPEND INTERNAL_LIBS ${GLEW_LIBRARY})
 ENDIF()
 
 IF(SDL_FOUND)
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${SDL_LIBRARY}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${SDL_LIBRARY}")
+  LIST(APPEND EXTERNAL_LIBS ${SDL_LIBRARY})
+  LIST(APPEND INTERNAL_LIBS ${SDL_LIBRARY})
 ENDIF()
 
 IF(FREETYPE_FOUND)
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${FREETYPE_LIBRARIES}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${FREETYPE_LIBRARIES}")
+LIST(APPEND EXTERNAL_LIBS ${FREETYPE_LIBRARIES})
+LIST(APPEND INTERNAL_LIBS ${FREETYPE_LIBRARIES})
 ENDIF()
 
 IF(BULLET_FOUND)
-include_directories(${BULLET_INCLUDE_DIRS})
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${BULLET_LIBRARIES}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${BULLET_LIBRARIES}")
+include_directories(${BULLET_INCLUDE_DIR})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${BULLET_LIBRARIES})
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${BULLET_LIBRARIES})
 ENDIF()
 
 IF(OPENGL_FOUND)
 include_directories(${OPENGL_INCLUDE_DIR})
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${OPENGL_LIBRARIES}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${OPENGL_LIBRARIES}")
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENGL_LIBRARIES})
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${OPENGL_LIBRARIES})
 ENDIF()
 
 IF(OPENAL_FOUND)
 include_directories(${OPENAL_INCLUDE_DIR})
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${OPENAL_LIBRARY}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${OPENAL_LIBRARY}")
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENAL_LIBRARY})
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${OPENAL_LIBRARY})
 ENDIF()
 
 IF(TCL_FOUND)
 include_directories(${TCL_INCLUDE_DIR})
-SET(EXTERNAL_LIBS "${EXTERNAL_LIBS} ${TCL_LIBRARY}")
-SET(INTERNAL_LIBS "${INTERNAL_LIBS} ${TCL_LIBRARY}")
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${TCL_LIBRARY})
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${TCL_LIBRARY})
 ENDIF()
 
 
-SET( EXTERNAL_LIBS "${EXTERNAL_LIBS} -lvorbisfile -lvorbis -lm -logg  -lavcodec -lavformat -lavutil -lswscale")
-SET( INTERNAL_LIBS "${INTERNAL_LIBS} -lvorbisfile -lvorbis -lm -logg  -lavcodec -lavformat -lavutil -lswscale" )
-
+SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lvorbisfile -lvorbis -lm -logg  -lavcodec -lavformat -lavutil -lswscale")
+SET( INTERNAL_LIBS ${INTERNAL_LIBS} "-lvorbisfile -lvorbis -lm -logg  -lavcodec -lavformat -lavutil -lswscale" )
+# ------------------------------
+# Replace semicolons with whitespace
+string(REPLACE ";" " " TMP "${EXTERNAL_LIBS}")
+SET( EXTERNAL_LIBS ${TMP})
+string(REPLACE ";" "" TMP "${INTERNAL_LIBS}")
+SET( INTERNAL_LIBS ${TMP})
 
 install( TARGETS Moose 
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
 )
-
-
 
 FILE(GLOB files 
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Moose.h"
@@ -273,7 +279,8 @@ FILE(GLOB files
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Scene/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Spatial/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Util/*.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h")
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Physics/*.h")
 
 if(APPLE)
 install( FILES ${files} DESTINATION headers)
@@ -294,8 +301,7 @@ configure_file (
   "moose.pc.in"
   "moose.pc"
 )
-
-
+# Process shaders for separate platforms
 FILE(GLOB shaderInFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/" "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/*.in")
 
 foreach(shader ${shaderInFiles})
