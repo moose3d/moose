@@ -791,6 +791,24 @@ Moose::Math::Transform( const CVector3<float> &v, const CTransform &t, CVector3<
   RotateVector(t.GetRotation(), result);
   result+=t.GetTranslation();
 }
+////////////////////////////////////////////////////////////////////////////////
+/// Not tested!
+void 
+Moose::Math::Transform( Moose::Graphics::CVertexDescriptor & vVertices, const Moose::Math::CQuaternion & q )
+{
+  // Sanity check, transform only vertices
+  assert( vVertices.GetType() == ELEMENT_TYPE_VERTEX_3F);
+
+  for( size_t v=0;v<vVertices.GetSize();v++)
+  {
+    float *pVector = vVertices.GetPointer<float>(v);
+    CVector3<float> tmp(pVector[0], pVector[1], pVector[2]);
+    RotateVector(tmp,q);
+    pVector[0] = tmp[0];
+    pVector[1] = tmp[1];
+    pVector[2] = tmp[2];
+  }
+}
 /////////////////////////////////////////////////////////////////
 void
 Moose::Math::MultiplyFromRight( const CMatrix3x3<float> & mMatrix, const CVector3<float> &vVector, CVector3<float> &result)

@@ -154,6 +154,11 @@ namespace Moose
     // Transforms vector v by given Transform object (scaling, rotation and translation is applied)
     MOOSE_API void Transform( const Moose::Math::CVector3<float> &v, const Moose::Math::CTransform &t, CVector3<float> & result);
     ////////////////////
+    /// Transforms vertices using given quaternion.
+    /// \param vVertices Vertices to be transformed. Resulting transformation will be here.
+    /// \param q Quaternion used in transformation.
+    MOOSE_API void Transform( Moose::Graphics::CVertexDescriptor & vVertices, const Moose::Math::CQuaternion & q );
+    ////////////////////
     // Multiplies vector vVector from right by matrix mMatrix  ( mMatrix * vVector );
     MOOSE_API void MultiplyFromRight( const Moose::Math::CMatrix3x3<float> & mMatrix, const Moose::Math::CVector3<float> &vVector, CVector3<float> & result);
     ////////////////////
