@@ -6,7 +6,7 @@
 #include "MooseLogger.h"
 #include "MooseDefaultEntities.h"
 #include <SDL/SDL.h>
-#include <GL/glew.h>
+#include <glew.h>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Window;
 using namespace Moose::Core;

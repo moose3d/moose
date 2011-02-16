@@ -1,7 +1,9 @@
 cmake_minimum_required( VERSION 2.6)
 project(Moose)
+# By default, build for IOS
+SET(IOS 1)
 
-if(APPLE)
+if(APPLE AND IOS)
 # Platform Info
 SET (CMAKE_SYSTEM_VERSION 1)
 SET (CMAKE_SYSTEM_PROCESSOR arm)
@@ -81,21 +83,22 @@ SET (CMAKE_CROSSCOMPILING 1)
 #         MESSAGE(STATUS "Framework ${fwname} found at ${FRAMEWORK_${fwname}}")
 #     endif()
 # endmacro(ADD_FRAMEWORK)
-
-
-endif(APPLE)
+endif(APPLE AND IOS)
 
 add_definitions("-Wall -O2 -fPIC")
 
 # Setting prefix for Linux
-if(UNIX AND (NOT APPLE))
+if(UNIX AND (NOT IOS))
+
 SET(MY_OWN_INSTALL_PREFIX "/usr" CACHE PATH "Prefix prepended to install directories")
 SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
-elseif(UNIX AND APPLE)
-SET(MY_OWN_INSTALL_PREFIX "~/Library/Moose" CACHE PATH "Prefix prepended to install directories")
+
+elseif(UNIX AND IOS)
+
+SET(MY_OWN_INSTALL_PREFIX "~/Library/Moose-iOS" CACHE PATH "Prefix prepended to install directories")
 SET(CMAKE_INSTALL_PREFIX "${MY_OWN_INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
-endif(UNIX AND (NOT APPLE))
+endif()
 
 #- Add sources for a target
 #
@@ -158,6 +161,7 @@ add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Scene )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Spatial )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Util )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Volume )
+add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose/Physics )
 add_subdirectory( ${PROJECT_SOURCE_DIR}/src/Moose )
 
 get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
@@ -172,7 +176,7 @@ add_library( Moose STATIC ${Moose_SRCS})
 # ----------------------------------------------------------------------------
 # iPhone-specific frameworks
 # ----------------------------------------------------------------------------
-if(APPLE)
+if(APPLE AND IOS)
 
 find_library( FOUNDATION_LIB Foundation)
 find_library( OPENAL_LIB OpenAL)
@@ -191,7 +195,7 @@ COREGRAPHICS_LIB
 )
 SET(EXTRA_LIBS ${FOUNDATION_LIB})
 TARGET_LINK_LIBRARIES( Moose ${EXTRA_LIBS})
-elseif(NOT APPLE)
+elseif(APPLE AND (NOT IOS))
 # ----------------------------------------------------------------------------
 # Linux-specific frameworks
 # ----------------------------------------------------------------------------
@@ -201,16 +205,22 @@ find_package(GLEW)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 include_directories(${SDL_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_DIR})
-endif(APPLE)
+include_directories("/usr/include")
+endif()
 
 FIND_PACKAGE(Bullet)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(OpenAL)
 FIND_PACKAGE(TCL)
-
+FIND_PACKAGE(Vorbis)
 # libs settings
 SET( EXTERNAL_LIBS "-lMoose")
 SET( INTERNAL_LIBS "libMoose.a")
+
+IF(Vorbis_FOUND)
+LIST(APPEND EXTERNAL_LIBS ${Vorbis_LIBRARY})
+LIST(APPEND INTERNAL_LIBS ${Vorbis_LIBRARY})
+ENDIF()
 
 IF(GLEW_FOUND)
 LIST(APPEND EXTERNAL_LIBS ${GLEW_LIBRARY})
@@ -282,11 +292,11 @@ FILE(GLOB files
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Volume/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Physics/*.h")
 
-if(APPLE)
+if(APPLE AND IOS)
 install( FILES ${files} DESTINATION headers)
-elseif(NOT APPLE)
+elseif(APPLE AND (NOT IOS))
 install( FILES ${files} DESTINATION include/Moose)
-endif(APPLE)
+endif()
 
 
 #set (Moose_VERSION_MAJOR 1)
@@ -307,9 +317,9 @@ FILE(GLOB shaderInFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/
 foreach(shader ${shaderInFiles})
   string(REPLACE ".in" "" realShader ${shader})
   set (version "")
-  IF(NOT APPLE)
+  IF(UNIX AND (NOT IOS))
     set (version "#version 150")
-  endif(NOT APPLE)
+  endif()
   configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/src/Moose/Shaders/${shader}" 
                   "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/${realShader}")
 endforeach(shader)
@@ -318,15 +328,15 @@ FILE( GLOB shaderFiles
   "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/*.vert"
   "${CMAKE_CURRENT_BINARY_DIR}/src/Moose/Shaders/*.frag"
 )
-if(APPLE)
+if(APPLE AND IOS)
 install( FILES ${shaderFiles} DESTINATION Assets/Shaders)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION .)
-else(APPLE)
+else()
 install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
-endif(APPLE)
+endif()
 
-if(NOT APPLE)
+if((NOT IOS) AND (NOT APPLE))
 
 SET (TCL_MODULE		MooseTCL)
 SET (INTERFACE_FILES	Moose.i)
@@ -347,7 +357,7 @@ SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CMAKE_SWIG_FLAGS "-inc
 #SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} ${SRC_FILES})
 SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} )
 ADD_DEPENDENCIES(${TCL_MODULE} Moose)
-SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} )
+SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} libMoose.a -framework vorbis ${EXTERNAL_LIBS} )
 SET_TARGET_PROPERTIES( ${TCL_MODULE} 
   PROPERTIES
   OUTPUT_NAME Moose
@@ -369,4 +379,4 @@ SET( tclFiles
 )
 
 install( FILES ${tclFiles} DESTINATION lib/Moose )
-endif(NOT APPLE)
+endif((NOT IOS) AND (NOT APPLE))

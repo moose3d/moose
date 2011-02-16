@@ -1,5 +1,5 @@
 add_sources(Moose 
-  MoosePhysicsWorld.cpp
-  MooseRigidBody.cpp
+  MoosePhysicsWorld.h
+  MooseRigidBody.h
 )
  

@@ -3,7 +3,7 @@
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 #elif defined(__APPLE__)
-#include <GL/glew.h>
+#include <glew.h>
 //#include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else

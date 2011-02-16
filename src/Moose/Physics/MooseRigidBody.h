@@ -20,13 +20,28 @@ namespace Moose
     public:
      
     protected:
-      dBodyID m_BodyID; ///!< ODE Body id.
+      btRigidBody *m_pBody; ///!< Bullet Body id.
+        
     public:
       /// Creates body.
-      CRigidBody();
+        CRigidBody() : m_pBody(NULL) { }
       /// Destroys body.
-      virtual ~CRigidBody();
-
+        virtual ~CRigidBody() { }
+        void SetRigidBody( btRigidBody *pBOdy );
+        btRigidBody * GetRigidBody();
+        void GetTransform( CVector3<float> & vTransform )
+        {
+            if ( m_pRigidBody && m_pRigidBody->getMotionState() )
+            {
+                btTransform trans;
+                m_pRigidBody->getMotionState()->getWorldTransform(trans);
+                vTransform[0] = trans.getOrigin().getX();
+                vTransform[1] = trans.getOrigin().getY();
+                vTransform[2] = trans.getOrigin().getZ();
+            }
+        }
+        
+        /*
       void SetPosition( const Moose::Math.:CVector3<float> & vPosition );
       const Moose::Math::CVector3<float> GetPosition();
 
@@ -127,7 +142,7 @@ namespace Moose
       /// Called when body moves.
       inline static void OnMoveTrigger( dBodyId id );
 
-      void UseSphere( Moose::Volume::CSphere & sphere );
+      void UseSphere( Moose::Volume::CSphere & sphere );*/
       //      void Physics
     };
   } // UseBox

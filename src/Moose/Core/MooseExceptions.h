@@ -20,30 +20,19 @@ namespace Moose
       ~CMooseException() throw() {};
       const char *what() const throw();
     };
-    ////////////////////
-    /// Null pointer exception.
-    class MOOSE_API CNullPointerException : public Moose::Exceptions::CMooseException
-    {
-    public:
-      CNullPointerException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
-      ~CNullPointerException() throw() {};
+#define DECL_MOOSE_EXCEPTION( NAME ) \
+    \
+    class MOOSE_API NAME : public Moose::Exceptions::CMooseException \
+    {\
+    public:\
+      NAME( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}\
+      ~NAME() throw() {};\
     };
-    ////////////////////
-    /// Renaming exception.
-    class MOOSE_API CRenameException : public Moose::Exceptions::CMooseException
-    {
-    public:
-      CRenameException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
-      ~CRenameException() throw() {};
-    };
-    ////////////////////
-    /// No such asset exception.
-    class MOOSE_API CNoSuchAssetException : public Moose::Exceptions::CMooseException
-    {
-    public:
-      CNoSuchAssetException( const char *szReason ) : Moose::Exceptions::CMooseException(szReason) {}
-      ~CNoSuchAssetException() throw() {};
-    };
+      
+      DECL_MOOSE_EXCEPTION( CNullPointerException );
+      DECL_MOOSE_EXCEPTION( CRenameException );
+      DECL_MOOSE_EXCEPTION( CNoSuchAssetException );
+      DECL_MOOSE_EXCEPTION( CAlreadyExistsException );
   }
 }
 /////////////////////////////////////////////////////////////////

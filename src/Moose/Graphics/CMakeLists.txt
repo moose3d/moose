@@ -16,8 +16,7 @@ add_sources (Moose
   MooseDDSImage.h
   MooseDirectionalLight.cpp
   MooseDirectionalLight.h
-  MooseFFMpeg.cpp
-  MooseFFMpeg.h
+
   MooseFrameBuffer.cpp
   MooseFrameBuffer.h
   MooseFrustum.cpp
@@ -52,8 +51,6 @@ add_sources (Moose
   MooseRenderableModelShared.h
   MooseRenderableProperty.cpp
   MooseRenderableProperty.h
-  MooseRenderableVideo.cpp
-  MooseRenderableVideo.h
   MooseSDLScreen.cpp
   MooseSDLScreen.h
   MooseShader.cpp
@@ -72,5 +69,13 @@ add_sources (Moose
   MooseVertexDescriptor.h
   )
 
+if(UNIX AND (NOT APPLE))
+  add_sources( Moose
+    MooseFFMpeg.cpp
+    MooseFFMpeg.h
+    MooseRenderableVideo.cpp
+    MooseRenderableVideo.h
+  )
+endif()
 #set (graphics_sources  MooseVideoTexture.cpp)
 #set (graphics_sources  MooseGuiSystem.cpp)

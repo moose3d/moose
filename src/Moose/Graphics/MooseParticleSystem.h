@@ -500,7 +500,7 @@ void
 Moose::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_TYPE >::Init(const size_t nNumParticles )
 {
   size_t nAmount = nNumParticles;
-  float  fParticleMaxSize = 0.0f;
+
   if ( GetAliveCount() + nAmount > GetMaxParticles() )
   {
     nAmount = GetMaxParticles() - GetAliveCount();
@@ -516,14 +516,9 @@ Moose::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_T
     {
       // init policy must take care of all positioning, we might have different types of 
       // particles that require additional structures to be set (Such as tails of energy weapons)
-      // m_aParticles[nCount].m_vPosition = vPosition;
       // Init policy takes care of positioning, if necessary.
       m_InitializePolicy(m_aParticles[nCount]);
       
-      if ( m_aParticles[nCount].m_fSize > fParticleMaxSize)
-      {
-	fParticleMaxSize = m_aParticles[nCount].m_fSize; 
-      }
     }
   }
   // update bounds

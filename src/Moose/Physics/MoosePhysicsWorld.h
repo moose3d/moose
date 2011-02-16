@@ -8,9 +8,18 @@ namespace Moose
     class CPhysicsWorld
     {
     protected:
-      dWorldID m_WorldID;
-      bool     m_bQuickStep; ///!< Is quickstep algorithm enabled.
-      
+    
+        btDefaultCollisionConfiguration *      m_pCollisionConfiguration;
+        btCollisionDispatcher *                m_pCollisionDispatcher;
+        btDiscreteDynamicsWorld *              m_pDynamicsWorld;
+        btSequentialImpulseConstraintSolver *  m_pSolver;
+        btAxisSweep3 *                         m_pOverlappingPairCache;
+        CVector3<float> m_WorldAABBMin;
+        CVector3<float> m_WorldAABBMax;
+        
+        bool     m_bQuickStep; ///!< Is quickstep algorithm enabled.
+        int m_iMaxProxies;
+
     public:
       /// Creates world.
       CPhysicsWorld();
@@ -20,7 +29,8 @@ namespace Moose
       /// \param vGravity Gravity to be set.
       void SetGravity( const Moose::Math::CVector3<float> & vGravity );
       /// \returns Gravity for this world.
-      const Moose::Math::CVector3<float> & GetGravity();
+      const Moose::Math::CVector3<float> GetGravity();
+        /*
       /// Sets error correction per step. (commonly 0.1- 0.8)
       /// \param fErp Error correctionm value.
       void SetERP( float fErp );
@@ -82,7 +92,7 @@ namespace Moose
 
       void SetContactSurfaceLayer( float fDepth );
       float GetContactSurfaceLayer();
-
+*/
 
 
       

@@ -12,6 +12,7 @@
 #include "MooseGlobals.h"
 #include "MooseExceptions.h"
 #include <cstring>
+#include <cassert>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {

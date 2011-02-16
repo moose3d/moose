@@ -345,9 +345,9 @@ namespace Moose
           
       void Bind( CShader & s, size_t nIndex ) 
       {
-        g_Log << "UNIFORM vec4ptr: Binding " << GetName() << std::endl; 
+        //g_Log << "UNIFORM vec4ptr: Binding " << GetName() << std::endl; 
         m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
-        g_Error << "vec4ptr Bound to " << m_iLocation << "\n";
+        //g_Error << "vec4ptr Bound to " << m_iLocation << "\n";
       }
       void SetData( const Moose::Math::CVector4<float> * pData )
       {
@@ -379,9 +379,9 @@ namespace Moose
           
       void Bind( CShader & s, size_t nIndex ) 
       {
-        g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
+        //g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
         m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
-        g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
+        //g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
       }
       void SetData( const Moose::Math::CVector3<float> * pData )
       {
@@ -413,9 +413,9 @@ namespace Moose
           
       void Bind( CShader & s, size_t nIndex ) 
       {
-        g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
+        //g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
         m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
-        g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
+        //g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
       }
       void SetData( const Moose::Math::CVector3<float> & data )
       {

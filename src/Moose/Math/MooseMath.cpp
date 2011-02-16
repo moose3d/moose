@@ -803,7 +803,7 @@ Moose::Math::Transform( Moose::Graphics::CVertexDescriptor & vVertices, const Mo
   {
     float *pVector = vVertices.GetPointer<float>(v);
     CVector3<float> tmp(pVector[0], pVector[1], pVector[2]);
-    RotateVector(tmp,q);
+    RotateVector(q,tmp);
     pVector[0] = tmp[0];
     pVector[1] = tmp[1];
     pVector[2] = tmp[2];
