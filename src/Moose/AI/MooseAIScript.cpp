@@ -10,6 +10,7 @@
 #include "MooseOGLRenderer.h"
 #include "MooseDefaultEntities.h"
 #include "MooseCollision.h"
+#include "MooseExceptions.h"
 #include <string>
 
 #if !defined(MOOSE_APPLE_IPHONE)
@@ -24,6 +25,7 @@ using namespace Moose::AI;
 using namespace Moose::Scene;
 using namespace Moose::Graphics;
 using namespace Moose::Volume;
+using namespace Moose::Exceptions;
 #if !defined(MOOSE_APPLE_IPHONE)
 using namespace Moose::Window;
 #endif
@@ -774,12 +776,12 @@ SCRIPT_CMD_IMPL( CreateModelFromFile )
 	// interleaved flags
 	int       bInterleaved = 0;
 	Tcl_GetIntFromObj(pInterp, pInterleaved, &bInterleaved );
-
-	if ( g_ModelHelper->Load(szFilename) != 0 )
-	{
-		ostringstream s;
-		s << "There was an error while loading model file " << szFilename;
-		SCRIPT_ERROR(s.str().c_str());
+    try 
+    {
+        g_ModelHelper->Load(szFilename);
+    }
+	catch ( CMooseException & ex ) {
+		SCRIPT_ERROR(ex.what());
 	}
 	//g_Error << "Creating resource '" << szResource << "'" << endl;
 	//g_Error << "Group name is '" << (szGroupName == NULL ? "NULL" : szGroupName ) << "'" << endl;
@@ -1333,11 +1335,12 @@ SCRIPT_CMD_IMPL( LoadModelFile )
 {
 	CHECK_ARGS(1, "filename");
 	const char *szModel = SCRIPT_GET_STR(1);
-	if ( g_ModelHelper->Load( szModel ) != 0 )
+	try {
+      g_ModelHelper->Load( szModel );
+    }
+    catch( CMooseException & ex )
 	{
-		ostringstream s;
-		s << "Could not load model file " << szModel;
-		SCRIPT_ERROR( s.str().c_str() );
+		SCRIPT_ERROR( ex.what() );
 	}
 	return TCL_OK;
 }
@@ -1404,20 +1407,17 @@ SCRIPT_CMD_IMPL( CreateNormalResource )
 /////////////////////////////////////////////////////////////////
 SCRIPT_CMD_IMPL( CreateIndexResource )
 {
-	CHECK_ARGS(2, "groupName resourceName");
+	CHECK_ARGS(2, "resourceName");
 
-	const char *szGroup = SCRIPT_GET_STR(1);
-	const char *szRes = SCRIPT_GET_STR(2);
+	const char *szRes = SCRIPT_GET_STR(1);
 	if ( szRes == NULL || strlen(szRes) == 0 )
 		SCRIPT_ERROR("Invalid resource name");
-	if ( szGroup == NULL || strlen(szGroup) == 0 ) szGroup = NULL;
 
-	if ( g_IndexMgr->Create( g_ModelHelper->GetModelLoader()->GetIndexArray(szGroup), szRes ) != 0 )
+	if ( g_IndexMgr->Create( g_ModelHelper->GetModelLoader()->GetIndexArray(), szRes ) != 0 )
 	{
 		ostringstream s;
 		s << "Failed to create index resource '" << szRes << "' ";
-		if ( szGroup != NULL ) s << "from group '" << szGroup << "'" << endl;
-		else							     s << "from all vertices.";
+		s << "from all vertices.";
 
 		SCRIPT_ERROR(s.str().c_str());
 	}

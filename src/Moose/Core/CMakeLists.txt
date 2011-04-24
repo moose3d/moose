@@ -37,9 +37,9 @@ MooseViewable.h
 MooseWindowsWrapper.h
 
 )
-if(APPLE)
+if(APPLE AND IOS)
   add_sources(Moose MooseAssetBundle.mm)
-else(APPLE)
+elseif(APPLE)
   add_sources(Moose MooseAssetBundle.cpp)
-endif(APPLE)
+endif()
 

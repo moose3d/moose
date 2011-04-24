@@ -2,12 +2,12 @@
 /////////////////////////////////////////////////////////////////
 Moose::Exceptions::CMooseException::CMooseException( const char *szReason )
 {
-  reason = szReason;
+    if ( szReason ) m_Reason = szReason;
 }
 /////////////////////////////////////////////////////////////////
 const char *
 Moose::Exceptions::CMooseException::what() const throw()
 {
-  return reason.c_str();
+  return m_Reason.c_str();
 }
 /////////////////////////////////////////////////////////////////
