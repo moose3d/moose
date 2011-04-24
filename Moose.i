@@ -16,6 +16,7 @@
   using namespace Moose::Graphics;
   using namespace Moose::Math;
   using namespace Moose::Core;
+  using namespace Moose::Data;
   using std::exception;
 inline Moose::Scene::CScene * 
 GameObjToScene( Moose::Scene::CGameObject *pObj )
@@ -187,7 +188,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseModelLoader.h"
 %template (CModelHelperSingleton) Moose::Core::CSingleton< Moose::Data::CModelHelper >;
 %include "MooseModelHelper.h"
-
+%include "MooseOpenAssetImportLoader.h"
 %include  "MooseRenderable.h"
 %rename (ostreamRenderableModel) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModel & r);
 %include "MooseClearBuffers.h"

@@ -35,6 +35,8 @@ add_sources (Moose
   MooseOGLRenderer.h
   MooseObjLoader.cpp
   MooseObjLoader.h
+  MooseOpenAssetImportLoader.h
+  MooseOpenAssetImportLoader.cpp
   MooseParticleSystem.h
   MooseParticleSystemRenderable.h
   MoosePointLight.cpp

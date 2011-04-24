@@ -87,6 +87,7 @@
 #include "MooseCollisionEvent.h"
 #include "MooseModelLoader.h"
 #include "MooseObjLoader.h"
+#include <MooseOpenAssetImportLoader.h>
 #include <MooseALObjectArray.h>
 #include <MooseALSampleTypes.h>
 #include <MooseALSoundTypes.h>

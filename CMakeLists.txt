@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 2.6)
 project(Moose)
 # By default, build for IOS
-SET(IOS 1)
+#SET(IOS 1)
 
 if(APPLE AND IOS)
 # Platform Info
@@ -197,73 +197,103 @@ SET(EXTRA_LIBS ${FOUNDATION_LIB})
 TARGET_LINK_LIBRARIES( Moose ${EXTRA_LIBS})
 elseif(APPLE AND (NOT IOS))
 # ----------------------------------------------------------------------------
-# Linux-specific frameworks
-# ----------------------------------------------------------------------------
+# Apple-specific frameworks
+# ---------------------------------------------------------------------------
 find_package(Freetype)
 find_package(SDL)
-find_package(GLEW)
+FIND_PACKAGE(Assimp)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 include_directories(${SDL_INCLUDE_DIR})
-include_directories(${GLEW_INCLUDE_DIR})
 include_directories("/usr/include")
+
+find_library(VORBIS_LIB Vorbis)
+MARK_AS_ADVANCED(
+  VORBIS_LIB
+)
+
+
+IF(ASSIMP_FOUND)
+include_directories(${ASSIMP_INCLUDE_DIR})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} " ${ASSIMP_LIBRARIES}")
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${ASSIMP_LIBRARIES}")
+ENDIF()
+
+
+elseif(UNIX AND (NOT APPLE) AND (NOT IOS))
+# ----------------------------------------------------------------------------
+# Linux-specific libraries
+# ----------------------------------------------------------------------------
+FIND_PACKAGE(Vorbis)
+IF(VORBIS_FOUND)
+LIST(APPEND EXTERNAL_LIBS ${VORBIS_LIBRARY})
+LIST(APPEND INTERNAL_LIBS ${VORBIS_LIBRARY})
+ENDIF()
+
+FIND_PACKAGE(Assimp)
+IF(ASSIMP_FOUND)
+include_directories(${ASSIMP_INCLUDE_DIR})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${ASSIMP_LIBRARIES})
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${ASSIMP_LIBRARIES})
+ENDIF()
+
 endif()
 
+find_package(GLEW)
 FIND_PACKAGE(Bullet)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(OpenAL)
 FIND_PACKAGE(TCL)
-FIND_PACKAGE(Vorbis)
-# libs settings
-SET( EXTERNAL_LIBS "-lMoose")
-SET( INTERNAL_LIBS "libMoose.a")
 
-IF(Vorbis_FOUND)
-LIST(APPEND EXTERNAL_LIBS ${Vorbis_LIBRARY})
-LIST(APPEND INTERNAL_LIBS ${Vorbis_LIBRARY})
-ENDIF()
+
 
 IF(GLEW_FOUND)
-LIST(APPEND EXTERNAL_LIBS ${GLEW_LIBRARY})
-LIST(APPEND INTERNAL_LIBS ${GLEW_LIBRARY})
+include_directories(${GLEW_INCLUDE_DIR})
+LIST(APPEND EXTERNAL_LIBS " ${GLEW_LIBRARY}")
+LIST(APPEND INTERNAL_LIBS " ${GLEW_LIBRARY}")
 ENDIF()
 
 IF(SDL_FOUND)
-  LIST(APPEND EXTERNAL_LIBS ${SDL_LIBRARY})
-  LIST(APPEND INTERNAL_LIBS ${SDL_LIBRARY})
+  LIST(APPEND EXTERNAL_LIBS " ${SDL_LIBRARY}")
+  LIST(APPEND INTERNAL_LIBS " ${SDL_LIBRARY}")
 ENDIF()
 
 IF(FREETYPE_FOUND)
-LIST(APPEND EXTERNAL_LIBS ${FREETYPE_LIBRARIES})
-LIST(APPEND INTERNAL_LIBS ${FREETYPE_LIBRARIES})
+LIST(APPEND EXTERNAL_LIBS " ${FREETYPE_LIBRARIES}")
+LIST(APPEND INTERNAL_LIBS " ${FREETYPE_LIBRARIES}")
 ENDIF()
 
 IF(BULLET_FOUND)
 include_directories(${BULLET_INCLUDE_DIR})
-SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${BULLET_LIBRARIES})
-SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${BULLET_LIBRARIES})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} " ${BULLET_LIBRARIES}")
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${BULLET_LIBRARIES}")
 ENDIF()
 
 IF(OPENGL_FOUND)
 include_directories(${OPENGL_INCLUDE_DIR})
-SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENGL_LIBRARIES})
-SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${OPENGL_LIBRARIES})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} " ${OPENGL_LIBRARIES}")
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${OPENGL_LIBRARIES}")
 ENDIF()
 
 IF(OPENAL_FOUND)
 include_directories(${OPENAL_INCLUDE_DIR})
-SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENAL_LIBRARY})
-SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${OPENAL_LIBRARY})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} " ${OPENAL_LIBRARY}")
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${OPENAL_LIBRARY}")
 ENDIF()
 
 IF(TCL_FOUND)
 include_directories(${TCL_INCLUDE_DIR})
-SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${TCL_LIBRARY})
-SET(INTERNAL_LIBS ${INTERNAL_LIBS} ${TCL_LIBRARY})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} " ${TCL_LIBRARY}")
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${TCL_LIBRARY}")
 ENDIF()
 
 
-SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lvorbisfile -lvorbis -lm -logg  -lavcodec -lavformat -lavutil -lswscale")
-SET( INTERNAL_LIBS ${INTERNAL_LIBS} "-lvorbisfile -lvorbis -lm -logg  -lavcodec -lavformat -lavutil -lswscale" )
+# libs settings
+#SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lMoose")
+#SET( INTERNAL_LIBS ${INTERNAL_LIBS} "libMoose.a")
+
+
+SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lm -logg  -lavcodec -lavformat -lavutil -lswscale")
+SET( INTERNAL_LIBS ${INTERNAL_LIBS} "-lm -logg  -lavcodec -lavformat -lavutil -lswscale")
 # ------------------------------
 # Replace semicolons with whitespace
 string(REPLACE ";" " " TMP "${EXTERNAL_LIBS}")
@@ -336,7 +366,11 @@ install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
 endif()
 
-if((NOT IOS) AND (NOT APPLE))
+MESSAGE( STATUS ${EXTERNAL_LIBS})
+
+
+ # BUILD Tcl module
+if((NOT IOS))
 
 SET (TCL_MODULE		MooseTCL)
 SET (INTERFACE_FILES	Moose.i)
@@ -357,13 +391,45 @@ SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CMAKE_SWIG_FLAGS "-inc
 #SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} ${SRC_FILES})
 SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} )
 ADD_DEPENDENCIES(${TCL_MODULE} Moose)
-SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} libMoose.a -framework vorbis ${EXTERNAL_LIBS} )
+#SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} ${INTERNAL_LIBS} )
+SWIG_LINK_LIBRARIES(${TCL_MODULE} libMoose.a ${VORBIS_LIBRARY} ${OPENAL_LIBRARY} ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} tcl -L/opt/local/lib -lfreetype -logg -lvorbisfile )
 SET_TARGET_PROPERTIES( ${TCL_MODULE} 
   PROPERTIES
   OUTPUT_NAME Moose
   PREFIX ""
   )
+IF(APPLE)
+SET_TARGET_PROPERTIES( ${TCL_MODULE} 
+  PROPERTIES
+  SUFFIX ".dylib"
+)
+# Generate pkgIndex.tcl
+ADD_CUSTOM_COMMAND(
+   TARGET ${TCL_MODULE}
+   POST_BUILD 
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   COMMENT "Generating pkgIndex.tcl"
+   COMMAND echo pkg_mkIndex  . Moose.dylib|tclsh
+   )
 
+ADD_CUSTOM_COMMAND(
+   TARGET ${TCL_MODULE}
+   POST_BUILD 
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   COMMENT "Enabling auto-sourcing of SceneUtils"
+   COMMAND echo "source \\$$dir/SceneUtils.tcl" >> pkgIndex.tcl
+   )
+
+
+SET( tclFiles 
+  "${CMAKE_CURRENT_BINARY_DIR}/Moose.dylib"  
+  "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"  
+  "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
+)
+# Mac OS X has default TCL installation apparently in /opt/local? 
+# At least in my system.
+install( FILES ${tclFiles} DESTINATION /opt/local/lib/Moose )
+ELSEIF(UNIX AND (NOT APPLE))
 # Generate pkgIndex.tcl
 ADD_CUSTOM_COMMAND(
    TARGET ${TCL_MODULE}
@@ -372,11 +438,23 @@ ADD_CUSTOM_COMMAND(
    COMMENT "Generating pkgIndex.tcl"
    COMMAND echo pkg_mkIndex  . Moose.so|tclsh
    )
+
+ADD_CUSTOM_COMMAND(
+   TARGET ${TCL_MODULE}
+   POST_BUILD 
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   COMMENT "Enabling auto-sourcing of SceneUtils"
+   COMMAND echo "source \\$$dir/SceneUtils.tcl" >> pkgIndex.tcl
+   )
+
 SET( tclFiles 
   "${CMAKE_CURRENT_BINARY_DIR}/Moose.so"  
   "${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl"  
   "${CMAKE_CURRENT_SOURCE_DIR}/tcl/SceneUtils.tcl"
 )
-
 install( FILES ${tclFiles} DESTINATION lib/Moose )
-endif((NOT IOS) AND (NOT APPLE))
+ENDIF()
+
+
+
+endif((NOT IOS))
