@@ -55,7 +55,6 @@ inline std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::S
 	return objVec;
 }	
 
-
 inline float    ToReal( float * f )  { return *f;}
 inline int      ToInt( float * i )   { return *i;}
 inline double   ToReal( double * f ) { return *f;}
@@ -83,7 +82,8 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %template (nameCreator) Moose::Core::CSingleton<Moose::Core::CUniqueNameCreator>;
 %template (gameObjHandled) Moose::Core::CHandled< Moose::Scene::CGameObject >;
 %include "MooseCore.h"
-
+%template (sdlScreen) Moose::Core::CSingleton<Moose::Window::CSDLScreen>;
+%include "MooseSDLScreen.h"
 
 %template (assetBundle) Moose::Core::CSingleton<Moose::Core::CAssetBundle>;
 %include "MooseAssetBundle.h"
@@ -205,6 +205,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %rename (ostreamRenderableModelShared) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModelShared & r);
 %include "MooseRenderableModelShared.h"
 %include "MooseSkybox.h"
+%template (CApplicationSingleton) Moose::Core::CSingleton<Moose::Scene::CApplication>;
 %include "MooseApplication.h"
 %include "MooseLight.h"
 %include "MooseDirectionalLight.h"
