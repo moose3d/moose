@@ -35,5 +35,11 @@
 #endif
 // For ffmpeg types 
 #define __STDC_CONSTANT_MACROS
+
+// SDL helper
+#if (SDL_MAJOR_VERSION==1 && SDL_MINOR_VERSION==3) || (SDL_MAJOR_VERSION == 2)
+#define MOOSE_USE_OPENGL3 
+#endif
+
 #endif
 
