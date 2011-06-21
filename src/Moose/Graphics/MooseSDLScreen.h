@@ -4,6 +4,7 @@
 /////////////////////////////////////////////////////////////////
 #include "MooseCore.h"
 #include "MooseAPI.h"
+#include <string>
 /////////////////////////////////////////////////////////////////
 #if !defined(MOOSE_APPLE_IPHONE)
 namespace Moose
@@ -29,6 +30,10 @@ namespace Moose
       int m_iMultiSampleBuffers; ///< Number of multisample buffers
       int m_iMultiSampleSamples;  ///< Number of samples.
 
+      int m_iGLMajorVersion;      ///< Requested OGL major version, defaults to 3. Applies only to SDL-1.3+
+      int m_iGLMinorVersion;      ///< Requested OGL minor version, defaults to 2. Applies only to SDL-1.3+
+      int m_bVerticalSync;        ///< Vertical sync on / off.
+      std::string m_ScreenName;        ///< Screen name for window
       ////////////////////
       /// The default constructor, sets default values for members.
       CSDLScreenParams();
@@ -37,14 +42,24 @@ namespace Moose
       /// \param stream output stream
       /// \param oglSP SDL screne object.
       /// \retruns reference to output stream.
+#ifndef SWIG
       friend std::ostream& operator<<( std::ostream &stream,
 				       const CSDLScreenParams & oglSP);
+#endif
+      std::string ToString() const;
     };
+#ifndef SWIG
+    std::ostream& operator<<( std::ostream &stream, const CSDLScreenParams & oglSP);
+#endif
     /////////////////////////////////////////////////////////////////
     class MOOSE_API CSDLScreen : public Moose::Core::CSingleton<Moose::Window::CSDLScreen>
     {
       friend class Moose::Core::CSingleton<Moose::Window::CSDLScreen>;
     private:
+#ifdef MOOSE_USE_OPENGL3
+      SDL_Window *  m_pMainWindow; ///< Our window.
+      SDL_GLContext m_pGLContext;  ///< GL context for 3.0+
+#endif
       ////////////////////
       /// The constructor
       CSDLScreen();
