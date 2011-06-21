@@ -220,11 +220,16 @@ ENDIF()
 
 
 elseif(UNIX AND (NOT APPLE) AND (NOT IOS))
+
 # ----------------------------------------------------------------------------
 # Linux-specific libraries
 # ----------------------------------------------------------------------------
+
+
+
 FIND_PACKAGE(Vorbis)
 IF(VORBIS_FOUND)
+include_directories(${VORBIS_INCLUDE_DIR})
 LIST(APPEND EXTERNAL_LIBS ${VORBIS_LIBRARY})
 LIST(APPEND INTERNAL_LIBS ${VORBIS_LIBRARY})
 ENDIF()
@@ -243,7 +248,7 @@ FIND_PACKAGE(Bullet)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(OpenAL)
 FIND_PACKAGE(TCL)
-
+FIND_PACKAGE(SDL)
 
 
 IF(GLEW_FOUND)
@@ -253,14 +258,22 @@ LIST(APPEND INTERNAL_LIBS " ${GLEW_LIBRARY}")
 ENDIF()
 
 IF(SDL_FOUND)
+  include_directories(${SDL_INCLUDE_DIR})
   LIST(APPEND EXTERNAL_LIBS " ${SDL_LIBRARY}")
   LIST(APPEND INTERNAL_LIBS " ${SDL_LIBRARY}")
 ENDIF()
 
+FIND_PACKAGE(Freetype)
+
 IF(FREETYPE_FOUND)
-LIST(APPEND EXTERNAL_LIBS " ${FREETYPE_LIBRARIES}")
-LIST(APPEND INTERNAL_LIBS " ${FREETYPE_LIBRARIES}")
+  include_directories(${FREETYPE_INCLUDE_DIRS})
+  LIST(APPEND EXTERNAL_LIBS " ${FREETYPE_LIBRARIES}")
+  LIST(APPEND INTERNAL_LIBS " ${FREETYPE_LIBRARIES}")
+  MESSAGE( STATUS "Found freetype: ${FREETYPE_INCLUDE_DIRS}")
+ELSE()
+  MESSAGE( ERROR "Freetype not found!")
 ENDIF()
+
 
 IF(BULLET_FOUND)
 include_directories(${BULLET_INCLUDE_DIR})
