@@ -39,7 +39,7 @@ MooseWindowsWrapper.h
 )
 if(APPLE AND IOS)
   add_sources(Moose MooseAssetBundle.mm)
-elseif(APPLE)
+elseif(APPLE OR UNIX)
   add_sources(Moose MooseAssetBundle.cpp)
 endif()
 
