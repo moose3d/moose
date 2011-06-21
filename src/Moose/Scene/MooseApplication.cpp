@@ -255,8 +255,9 @@ prefix::CApplication::ProcessInput()
 			}
 			break;
 			case SDL_QUIT:
-				this->EnqueueMessage( "OnQuit", m_bHasQuit );
-				break;
+              if ( m_bHasQuit ) this->EnqueueMessage( "OnQuit", m_bHasQuit );
+              else              this->SetEnabled(false);
+              break;
 		}
 	}
 #endif

@@ -20,8 +20,10 @@ namespace Moose
 		///////////////////////////////////////////////////////////////////////////////
 		typedef std::map<const std::string, Moose::Scene::CScene * > SceneMap;
 		///////////////////////////////////////////////////////////////////////////////
-		class CApplication : public Moose::Scene::CGameObject
+      class CApplication : public Moose::Scene::CGameObject,
+                           public Moose::Core::CSingleton<Moose::Scene::CApplication>
 		{
+          friend class Moose::Core::CSingleton<Moose::Scene::CApplication>;
 		protected:
 
 			SceneMap  											m_mapScenes;      	///!< from names to scene pointers
@@ -54,12 +56,9 @@ namespace Moose
             unsigned short int           m_nCollisionCheckIntervalMs;
             float                        m_fColliderUpdateTime;
             float                        m_fCollisionCheckTime;
-            
+            CApplication( );
         public:
-
-			CApplication( );
-			virtual ~CApplication();
-
+          virtual ~CApplication();
 			Moose::Scene::CScene * GetCurrentScene();
 			void     SetCurrentScene( const std::string & name );
 			void 		 AddScene( const std::string & name, Moose::Scene::CScene *pScene );

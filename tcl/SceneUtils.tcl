@@ -429,9 +429,31 @@ proc Instantiate { skeleton name pos rotation } {
     }
     $scene AddGameObject $obj
 
-    #  Object is now managed by Phoenix, so let it go from script.
+    #  Object is now managed by Moose, so let it go from script.
     $obj -disown
     $obj SetChanged 1
+    
+    # --------------------
+    # Add renderable to our object from model file, 
+    # setup renderstate and shaders
+    # --------------------
+    set r [$obj AddRenderableModel $skel(.model).model 0 [$obj GetWorldTransform]]
+    puts "done here.. $r"
+    set rs [$r GetRenderState]
+    $rs SetShader "moose_default_shader"
+    [$rs GetMaterial] SetSpecular [new_CVector4f 1.0 1.0 1.0 1.0]
+    [$rs GetMaterial] SetDiffuse [new_CVector4f 0.7 0.7 0.7 1.0]
+    [$rs GetMaterial] SetAmbient [new_CVector4f 0.27 0.27 0.27 1.0]
+    [$rs GetMaterial] SetShininess 128.0
+    puts "Model is: [g_Models $skel(.model).model]"
+
+    $rs AddShaderAttrib "a_vertex" [[g_Models $skel(.model).model] GetVertexHandle]
+    $rs AddShaderAttrib "a_normal" [[g_Models $skel(.model).model] GetNormalHandle]
+    $rs AddShaderAttrib "a_texcoord" [[g_Models $skel(.model).model] GetTextureCoordinateHandle]
+    $rs AddShaderUniform "m_globalAmbient" [new_CVector4f 0.2 0.2 0.2 1.0]
+    $rs SetDepthTest 1
+    $rs SetDepthWrite 1
+    $rs Prepare
 
     # Translate object to proper location
     [ $obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]
@@ -587,4 +609,16 @@ proc g_Samples { {name ""} } {
 
 proc g_Streams { {name ""} } {
     return [g_StreamMgr $name]
+}
+
+proc g_Application {} {
+    return [GetApplication]
+}
+
+proc GetScene { { name "" } } {
+    if { $name == "" } {
+        return [[GetApplication] GetCurrentScene]
+    } else {
+        return [[GetApplication] GetScene $name]
+    }
 }

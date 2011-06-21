@@ -9,13 +9,15 @@
 #include <MooseIndexArray.h>
 #include "MooseAPI.h"
 #include <MooseAssetBundle.h>
+#include <MooseSDLScreen.h>
+
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
   namespace Scene
   {
 	  class CGameObject;
-
+    class CApplication;
   }
   namespace Data
   {
@@ -90,6 +92,8 @@ namespace Moose
     Moose::Core::CUniqueNameCreator * GetNameCreator();
     Moose::Core::CAssetBundle *       GetAssetBundle();
     Moose::Data::CModelHelper *       GetModelHelper();
+    Moose::Window::CSDLScreen *       GetScreen();
+    Moose::Scene::CApplication *      GetApplication();
   }; // namespace Default
 }; // namespace Moose
 ////////////////////

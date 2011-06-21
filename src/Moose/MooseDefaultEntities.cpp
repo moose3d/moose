@@ -7,6 +7,7 @@
 #include "MooseALSampleTypes.h"
 #include "MooseCore.h"
 #include "MooseModelHelper.h"
+#include "MooseApplication.h"
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Default::ObjectMgr *
 Moose::Default::GetObjectMgr()
@@ -90,5 +91,17 @@ Moose::Data::CModelHelper *
 Moose::Default::GetModelHelper()
 {
   return g_ModelHelper;
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Window::CSDLScreen *       
+Moose::Default::GetScreen()
+{
+  return Moose::Window::CSDLScreen::GetInstance();
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Scene::CApplication *
+Moose::Default::GetApplication()
+{
+  return Moose::Scene::CApplication::GetInstance();
 }
 ////////////////////////////////////////////////////////////////////////////////
