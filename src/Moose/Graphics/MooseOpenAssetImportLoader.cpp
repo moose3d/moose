@@ -72,7 +72,7 @@ prefix::COpenAssetImportLoader::GetTexCoordArray( size_t nTexUnit ) const
   {
     pTexc->GetPointer<float>(i)[0] = m_pMesh->mTextureCoords[0][i].x;
     pTexc->GetPointer<float>(i)[1] = m_pMesh->mTextureCoords[0][i].y;
-    pTexc->GetPointer<float>(i)[2] = m_pMesh->mTextureCoords[0][i].z;
+    //pTexc->GetPointer<float>(i)[2] = m_pMesh->mTextureCoords[0][i].z;
   }  
   return pTexc;
 }
