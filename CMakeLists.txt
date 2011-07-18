@@ -85,7 +85,7 @@ SET (CMAKE_CROSSCOMPILING 1)
 # endmacro(ADD_FRAMEWORK)
 endif(APPLE AND IOS)
 
-add_definitions("-Wall -O2 -fPIC")
+
 
 # Setting prefix for Linux
 if(UNIX AND (NOT IOS))
@@ -172,6 +172,14 @@ get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
 #else(APPLE)
 # For linux, build regular static library
 add_library( Moose STATIC ${Moose_SRCS})
+
+FILE(GLOB audio_files 
+  "${PROJECT_SOURCE_DIR}/src/Moose/Audio/*.h"
+  "${PROJECT_SOURCE_DIR}/src/Moose/Audio/*.cpp"
+)
+# Set specific cxxflags for audio sources, samples tend to corrupt if any optimizations are used.
+set_source_files_properties( ${Moose_SRCS} PROPERTIES COMPILE_FLAGS "-Wall -O2 -fPIC")
+set_source_files_properties( ${audio_files} PROPERTIES COMPILE_FLAGS "-Wall -O0 -fPIC")
 
 # ----------------------------------------------------------------------------
 # iPhone-specific frameworks
@@ -410,7 +418,8 @@ SET_TARGET_PROPERTIES( ${TCL_MODULE}
   PROPERTIES
   OUTPUT_NAME Moose
   PREFIX ""
-  )
+)
+
 IF(APPLE)
 SET_TARGET_PROPERTIES( ${TCL_MODULE} 
   PROPERTIES
