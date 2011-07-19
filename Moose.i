@@ -61,6 +61,7 @@ inline double   ToReal( double * f ) { return *f;}
 
 inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Moose::Scene::CGameObject *>(); }
 %}
+
 // This helps in converting individual elements into values
 %typemap(out) float & {
   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(*$1));
@@ -137,6 +138,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseDimensional2D.h"
 %include "MooseDimensional3D.h"
 %include "MooseSphere.h"
+%include "MoosePolytope.h"
 %include "MooseOrientable.h"
 %include "MooseAABB.h"
 %include "MooseOBB.h"
@@ -146,6 +148,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseCapsule.h"
 %include "MooseRay.h"
 %include "MooseOrientable.h"
+%include "MooseFrustum.h"
 %include "MooseCamera.h"
 %template (CCameraMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CCamera, Moose::Core::CHandle<Moose::Graphics::CCamera> > >;
 %template (CCameraResMgr) Moose::Core::CResourceManager< Moose::Graphics::CCamera, Moose::Core::CHandle<Moose::Graphics::CCamera> >;
@@ -164,6 +167,10 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 // collider mgr template
 %template (CColliderMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Collision::ICollider, Moose::Core::CHandle<Moose::Collision::ICollider> > >;
 %template (CColliderResMgr) Moose::Core::CResourceManager< Moose::Collision::ICollider, Moose::Core::CHandle<Moose::Collision::ICollider> >;
+
+%template (CSphereMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Volume::CSphere, Moose::Core::CHandle<Moose::Volume::CSphere> > >;
+%template (CSphereResMgr) Moose::Core::CResourceManager< Moose::Volume::CSphere, Moose::Core::CHandle<Moose::Volume::CSphere> >;
+
 %include "MooseOctree.h"
 %template (gameObj_Octree) Moose::Spatial::COctree< Moose::Scene::CGameObject *>;
 
@@ -213,6 +220,8 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MoosePointLight.h"
 %include "MoosePointLightObject.h"
 %include "MooseRenderQueue.h"
+%template (CRenderableRenderQueue) Moose::Graphics::CRenderQueue< Moose::Graphics::CRenderable *>;
+
  //%include "CClearBuffers.h"
 %include "MooseCameraObject.h"
 %include "MooseCollision.h"

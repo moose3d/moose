@@ -29,6 +29,7 @@ Moose::Graphics::CRenderableProperty::~CRenderableProperty()
 void
 Moose::Graphics::CRenderableProperty::InitializeRenderables( size_t nLodLevels )
 {
+  if ( !m_LodLevels.empty() ) return;
   if ( nLodLevels == 0 ) nLodLevels = 1;
   for ( size_t i=0;i<nLodLevels;i++)
   {

@@ -88,7 +88,7 @@ namespace Moose
       ////////////////////
       /// Returns bounding sphere transformed using current world transform.
       /// \return Bounding sphere in world coordinates.
-      Moose::Volume::CSphere GetWorldBoundingSphere() const;
+      virtual Moose::Volume::CSphere GetWorldBoundingSphere() const;
       ////////////////////
       // In case we need to optimize world bounding sphere computation by adding cache for sphere,
       // this comes in handy.

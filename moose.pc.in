@@ -7,5 +7,5 @@ Name: Moose
 Description: 3D game development tool library.
 Requires: sdl vorbis
 Version: @VERSION@
-Libs: -L${libdir} @libraries@
+Libs: -L${libdir} -lMoose @libraries@
 Cflags: -I${includedir}/Moose  
