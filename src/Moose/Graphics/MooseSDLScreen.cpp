@@ -23,7 +23,7 @@ Moose::Window::CSDLScreenParams::CSDLScreenParams()
   m_iRedSize = 8;
   m_iGreenSize = 8;
   m_iBlueSize = 8;
-  m_bDoubleBuffer = 1;
+  m_bDoubleBuffer = 0;
   m_iDepthBufferSize = 16;
   m_iScreenDepth = 24;
   m_iWidth  = 800;

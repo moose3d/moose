@@ -9,7 +9,7 @@ set g_lstTexNameMap {}
 # eg. { file1 { name1 name2 name3 ... } file2 { name4 name5 name6} ... } 
 set g_lstModelNameCache {}
 
-set g_lstKnownModelParams { .models .group }
+set g_lstKnownModelParams { .model .group }
 set g_lstKnownTextureParams { .diffuse .bump .specular .occlusion }
  
 array set g_TexParamToIndex { 
@@ -269,6 +269,7 @@ proc NewTexture { texname texturefile } {
         lappend g_lstTexNameMap $texname $tmp($texturefile)
         puts "Using cached texture $texname = $tmp($texturefile)..."
     }     
+
 }
 
 
@@ -431,39 +432,29 @@ proc Instantiate { skeleton name pos rotation } {
     #  Object is now managed by Moose, so let it go from script.
     $obj -disown
     $obj SetChanged 1
-     
+    
     # --------------------
     # Add renderable to our object from model file, 
     # setup renderstate and shaders
     # --------------------
-    if { [llength [array get skel .models]] > 0 } {
-        puts "Skeleton has [llength $skel(.models)] models"
-        foreach {m} $skel(.models) {
-            $obj SetBoundingSphere [g_Spheres $m.boundingSphere]
-            set r [$obj AddRenderableModel $m.model 0 [$obj GetWorldTransform]]
-            puts "done here.. $r"
-            set rs [$r GetRenderState]
-            $rs SetShader "moose_default_shader"
-            [$rs GetMaterial] SetSpecular [new_CVector4f 1.0 1.0 1.0 1.0]
-            [$rs GetMaterial] SetDiffuse [new_CVector4f 0.7 0.7 0.7 1.0]
-            [$rs GetMaterial] SetAmbient [new_CVector4f 0.27 0.27 0.27 1.0]
-            [$rs GetMaterial] SetShininess 128.0
-            puts "Model is: [g_Models $skel(.models).model]"
-            $rs SetTexture 0 $m.diffuse
-            puts "Texture handle [$rs GetTextureHandle]"
-            $rs AddShaderAttrib "a_vertex" [[g_Models $m.model] GetVertexHandle]
-            if { [[[g_Models $m.model] GetNormalHandle] IsNull] == 0 } {
-                $rs AddShaderAttrib "a_normal" [[g_Models $m.model] GetNormalHandle]
-            }
-            $rs AddShaderAttrib "a_texcoord" [[g_Models $m.model] GetTextureCoordinateHandle]
-            $rs AddShaderUniform "m_globalAmbient" [new_CVector4f 0.2 0.2 0.2 1.0]
-            $rs AddShaderUniform diffusetex 0
-            
-            $rs SetDepthTest 1
-            $rs SetDepthWrite 1
-            $rs Prepare   
-        }
-    }
+    set r [$obj AddRenderableModel $skel(.model).model 0 [$obj GetWorldTransform]]
+    puts "done here.. $r"
+    set rs [$r GetRenderState]
+    $rs SetShader "moose_default_shader"
+    [$rs GetMaterial] SetSpecular [new_CVector4f 1.0 1.0 1.0 1.0]
+    [$rs GetMaterial] SetDiffuse [new_CVector4f 0.7 0.7 0.7 1.0]
+    [$rs GetMaterial] SetAmbient [new_CVector4f 0.27 0.27 0.27 1.0]
+    [$rs GetMaterial] SetShininess 128.0
+    puts "Model is: [g_Models $skel(.model).model]"
+
+    $rs AddShaderAttrib "a_vertex" [[g_Models $skel(.model).model] GetVertexHandle]
+    $rs AddShaderAttrib "a_normal" [[g_Models $skel(.model).model] GetNormalHandle]
+    $rs AddShaderAttrib "a_texcoord" [[g_Models $skel(.model).model] GetTextureCoordinateHandle]
+    $rs AddShaderUniform "m_globalAmbient" [new_CVector4f 0.2 0.2 0.2 1.0]
+    $rs SetDepthTest 1
+    $rs SetDepthWrite 1
+    $rs Prepare
+
     # Translate object to proper location
     [ $obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]
     [ $obj GetLocalTransform ] SetRotation [Deg2Rad [lindex $rotation 0]] [Deg2Rad [lindex $rotation 1]] [Deg2Rad [lindex $rotation 2]]
@@ -559,14 +550,6 @@ proc g_UniqueName { { prefix "" } } {
     }
 }
 
-proc g_SphereMgr { { name "" } } {
-    if { $name == "" } {
-        return [GetSphereMgr]
-    } else {
-        return [[GetSphereMgr] GetResource $name]
-    }
-}
-
 proc g_AudioSystem {} {
     return [GetAudioSystem]
 }
@@ -638,8 +621,4 @@ proc GetScene { { name "" } } {
     } else {
         return [[GetApplication] GetScene $name]
     }
-}
-
-proc g_Spheres { {name ""} } {
-    return [g_SphereMgr $name]
 }

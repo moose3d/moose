@@ -39,10 +39,6 @@ namespace Moose
       ////////////////////
       /// Performs sorting using adapter class.
       template<class SORTER> void Sort( SORTER & rAdapter );
-      ////////////////////
-      /// Returns number of elements in queue.
-      /// \returns queue size
-      size_t GetSize() const;
     };
   }
 }
@@ -92,11 +88,5 @@ Moose::Graphics::CRenderQueue<TYPE>::Sort( SORTER &rS )
   rS( m_lstObjects );
 }
 /////////////////////////////////////////////////////////////////
-template<typename TYPE>
-size_t
-Moose::Graphics::CRenderQueue<TYPE>::GetSize() const
-{
-  return m_lstObjects.size();
-}
-/////////////////////////////////////////////////////////////////
+
 #endif

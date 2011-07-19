@@ -95,6 +95,6 @@ void main()
       }
     }
   }
-  gl_FragColor = texture(diffusetex, texcoord) * color;
+  gl_FragColor = color;
 }
 ////////////////////////////////////////////////////////////////////////////////

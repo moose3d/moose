@@ -225,13 +225,11 @@ Moose::Scene::CCameraObject::HandleMouseRotation( const CVector2<int> & vOldPos,
   CVector3<float> vPoint = m_vFocusPoint;
   vPoint[1] = GetPosition()[1];
   AppendToRotation(q);
-  GetLocalTransform().Rotate(q);
   //RotateAroundPoint(vPoint, q);
   q.CreateFromAxisAngle( GetRightVector(), vNewPos[1] - vOldPos[1]);
   AppendToRotation(q);
 	//RotateAroundPoint( m_vFocusPoint, q );
-  // propagate rotation to transformations too
-  GetLocalTransform().Rotate(q);
+
 
 }
 /////////////////////////////////////////////////////////////////

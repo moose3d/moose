@@ -49,11 +49,10 @@ namespace Moose
       /// \param pGameObject Object to be updated.
       void Update( CGameObject *pGameObject )
       {
-        //Moose::Math::CVector3<float> vTmp = pGameObject->GetWorldTransform().GetTranslation();
-        //vTmp += pGameObject->GetBoundingSphere().GetPosition();
-        Moose::Volume::CSphere worldSphere = pGameObject->GetWorldBoundingSphere();
-        Moose::Math::CVector3<float> vTmp = worldSphere.GetPosition();
-        unsigned int nLevel = this->GetObjectDepth( worldSphere.GetRadius() );
+        Moose::Math::CVector3<float> vTmp = pGameObject->GetWorldTransform().GetTranslation();
+        vTmp += pGameObject->GetBoundingSphere().GetPosition();
+
+        unsigned int nLevel = this->GetObjectDepth( pGameObject->GetBoundingSphere().GetRadius() );
         unsigned int nIndex = this->GetIndex1D(nLevel, vTmp[0], vTmp[1], vTmp[2]);
 
         // If object has changed spatial location enough
@@ -226,17 +225,12 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &cam
       it = pNode->GetObjects().begin();
       for( ; it!=pNode->GetObjects().end();it++)
       {
-        //g_Log << "before tag: " << (*it)->GetName() << "\n";
-
     	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
 
     	  // Then compare bounding volumes
-    	  //sphere = (*it)->GetBoundingSphere();
-    	  //sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
-          sphere = (*it)->GetWorldBoundingSphere();
-          //g_Log << "processing it: " << (*it)->GetName() << "\n";
-          //g_Log << "collision s2s: " <<  Moose::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) << "\n";
-          //g_Log << "collision s2p: " <<  Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum()) << "\n";
+    	  sphere = (*it)->GetBoundingSphere();
+    	  sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+
     	  if ( Moose::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
     		   Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ))
     	  {
@@ -290,9 +284,9 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Volume::CSphere &cullS
 
     	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
 
-    	  //sphere = (*it)->GetBoundingSphere();
-    	  //sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
-          sphere = (*it)->GetWorldBoundingSphere();
+    	  sphere = (*it)->GetBoundingSphere();
+    	  sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+
     	  if ( Moose::Collision::SphereIntersectsSphere( sphere, cullSphere) )
     	  {
     		  list.push_back( *it );
