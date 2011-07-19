@@ -38,6 +38,10 @@ namespace Moose
       class CALStreamSample;
       class CAudioSystem;
   }
+  namespace Volume 
+  {
+    class CSphere;
+  }
   namespace Core
   {
     class CUniqueNameCreator;
@@ -55,6 +59,7 @@ namespace Moose
     typedef Moose::Core::CHandle<Moose::Collision::ICollider>		 COLLIDER_HANDLE;
     typedef Moose::Core::CHandle<Moose::Sound::CALSample>            SOUND_SAMPLE_HANDLE;
     typedef Moose::Core::CHandle<Moose::Sound::CALStreamSample>      SOUND_STREAM_HANDLE;
+    typedef Moose::Core::CHandle<Moose::Volume::CSphere>             SPHERE_HANDLE;
     ////////////////////
     // Typedefs for default resource manager types.
     typedef Moose::Core::CResourceManager< Moose::Graphics::COglTexture,		TEXTURE_HANDLE > TextureManager;
@@ -67,6 +72,7 @@ namespace Moose
     typedef Moose::Core::CResourceManager< Moose::Collision::ICollider, 		COLLIDER_HANDLE > ColliderManager;
     typedef Moose::Core::CResourceManager< Moose::Sound::CALSample,             SOUND_SAMPLE_HANDLE>   SoundSampleManager;
     typedef Moose::Core::CResourceManager< Moose::Sound::CALStreamSample,       SOUND_STREAM_HANDLE>   SoundStreamManager;
+    typedef Moose::Core::CResourceManager< Moose::Volume::CSphere,              SPHERE_HANDLE>         SphereManager;
     ////////////////////
 #ifdef WIN32
 #ifndef MOOSE_DLL_EXPORT
@@ -89,6 +95,7 @@ namespace Moose
     Moose::Sound::CAudioSystem * GetAudioSystem();
     SoundSampleManager * GetSoundSampleMgr();
     SoundStreamManager * GetSoundStreamMgr();
+    SphereManager *      GetSphereMgr();
     Moose::Core::CUniqueNameCreator * GetNameCreator();
     Moose::Core::CAssetBundle *       GetAssetBundle();
     Moose::Data::CModelHelper *       GetModelHelper();
@@ -128,6 +135,7 @@ namespace Moose
 // TODO should these be combined?
 #define g_StreamMgr            (SoundStreamManager::GetInstance())
 #define g_SampleMgr            (SoundSampleManager::GetInstance())
+#define g_SphereMgr            (SphereManager::GetInstance())
 // For even easier access to resources
 #define g_Objects            (*Moose::Default::ObjectMgr::GetInstance())
 #define g_Textures           (*Moose::Default::TextureManager::GetInstance())

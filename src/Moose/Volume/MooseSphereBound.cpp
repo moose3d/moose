@@ -22,3 +22,9 @@ Moose::Volume::CSphereBound::GetBoundingSphere() const
   return m_BoundingSphere;
 }
 /////////////////////////////////////////////////////////////////
+void 
+Moose::Volume::CSphereBound::SetBoundingSphere( const Moose::Volume::CSphere & s )
+{
+  m_BoundingSphere = s;
+}
+/////////////////////////////////////////////////////////////////

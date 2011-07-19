@@ -52,7 +52,8 @@ prefix::COpenAssetImportLoader::SelectMesh( const char *szMeshname )
   // Throw exception with available mesh names
   if ( m_pMesh == NULL )
   {
-    CMooseRuntimeError err("No such mesh found!");
+    CMooseRuntimeError err("No such mesh '");
+    err << szMeshname << "' found!";
     err << "\nAvailable meshes:\n";
     for ( size_t i=0; i< m_pScene->mNumMeshes; i++) 
     {
@@ -160,7 +161,7 @@ prefix::COpenAssetImportLoader::GetIndexArray( ) const
 ////////////////////////////////////////////////////////////////////////////////
 bool  prefix::COpenAssetImportLoader::HasTexCoordArray( size_t nTexUnit ) const
 {
-    return  (m_pMesh->mTextureCoords != NULL);
+  return  (m_pMesh->HasTextureCoords(nTexUnit));
 }
 ////////////////////////////////////////////////////////////////////////////////
 bool  prefix::COpenAssetImportLoader::HasColorArray() const
@@ -170,7 +171,7 @@ bool  prefix::COpenAssetImportLoader::HasColorArray() const
 ////////////////////////////////////////////////////////////////////////////////
 bool  prefix::COpenAssetImportLoader::HasNormalArray() const
 {
-    return (m_pMesh->mNormals);
+  return (m_pMesh->HasNormals());
 }
 ////////////////////////////////////////////////////////////////////////////////
 bool  prefix::COpenAssetImportLoader::HasVertexArray() const
@@ -180,6 +181,6 @@ bool  prefix::COpenAssetImportLoader::HasVertexArray() const
 ////////////////////////////////////////////////////////////////////////////////
 bool  prefix::COpenAssetImportLoader::HasIndexArray() const
 {
-    return (m_pMesh->mNumFaces > 0);
+  return (m_pMesh->HasFaces());
 }
 ////////////////////////////////////////////////////////////////////////////////

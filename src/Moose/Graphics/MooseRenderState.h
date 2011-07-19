@@ -835,7 +835,18 @@ namespace Moose
       void		AddShaderUniform( const char *sName, Moose::Math::CMatrix4x4<float> *pMatrix );
       void		AddShaderUniform( const char *sName, GLint iValue );
       void		AddShaderUniform( const char *sName, GLfloat fValue );
+#if defined(SWIG)
+      void		AddShaderUniform( const char *sName, int iValue ) 
+      { 
+        AddShaderUniform( sName, static_cast<GLint>(iValue));
+      }
+      void		AddShaderUniform( const char *sName, float fValue )
+      {
+        AddShaderUniform( sName, static_cast<GLfloat>(fValue));
+      }
+#endif
       void		AddShaderUniform( const char *sName, const Moose::Math::CVector4<float> *pData );
+
       ////////////////////
       /// Applies currently set lights to shader uniform parameters.
       void      ApplyShaderLights();

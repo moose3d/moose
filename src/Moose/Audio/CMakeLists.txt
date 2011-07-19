@@ -1,5 +1,4 @@
 add_sources (Moose
-
   MooseALSampleTypes.cpp
   MooseListener.cpp
   MooseOggStreamSample.cpp
@@ -17,7 +16,6 @@ add_sources (Moose
   MooseOggSample.h
   MooseSoundSampleBase.h
  ) 
-
 # Check for Apple platform
 if(APPLE)
   add_sources (Moose MooseIPhoneAudioSample.mm)
@@ -27,5 +25,4 @@ if(APPLE)
 else(APPLE)
   message(STATUS  "Disabling apple SDK")
 endif(APPLE)
-
 

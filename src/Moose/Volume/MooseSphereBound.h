@@ -23,6 +23,10 @@ namespace Moose
 		  /// Returns bounding sphere.
 		  /// \returns Reference to bounding sphere.
 		  const Moose::Volume::CSphere & GetBoundingSphere() const;
+          ////////////////////
+          /// Sets bounding sphere.
+          /// \param s Sphere to be used.
+          void SetBoundingSphere( const Moose::Volume::CSphere & s );
 		};
 	} // Volume
 } // Moose

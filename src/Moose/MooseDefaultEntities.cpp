@@ -8,6 +8,7 @@
 #include "MooseCore.h"
 #include "MooseModelHelper.h"
 #include "MooseApplication.h"
+#include "MooseSphere.h"
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Default::ObjectMgr *
 Moose::Default::GetObjectMgr()
@@ -73,6 +74,12 @@ Moose::Default::SoundStreamManager *
 Moose::Default::GetSoundStreamMgr()
 {
     return g_StreamMgr;
+}
+///////////////////////////////////////////////////////////////////////////////
+Moose::Default::SphereManager *      
+Moose::Default::GetSphereMgr()
+{
+  return g_SphereMgr;
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Core::CUniqueNameCreator * 
