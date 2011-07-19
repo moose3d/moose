@@ -171,7 +171,7 @@ get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
 #set_target_properties( Moose PROPERTIES FRAMEWORK TRUE )
 #else(APPLE)
 # For linux, build regular static library
-add_library( Moose STATIC ${Moose_SRCS})
+add_library( Moose SHARED ${Moose_SRCS})
 
 FILE(GLOB audio_files 
   "${PROJECT_SOURCE_DIR}/src/Moose/Audio/*.h"
@@ -347,6 +347,8 @@ if(APPLE AND IOS)
 install( FILES ${files} DESTINATION headers)
 elseif(APPLE AND (NOT IOS))
 install( FILES ${files} DESTINATION include/Moose)
+elseif(UNIX)
+install( FILES ${files} DESTINATION include/Moose)
 endif()
 
 
@@ -387,9 +389,6 @@ install( FILES ${shaderFiles} DESTINATION share/Moose/Assets/Shaders)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/moose.pc" DESTINATION lib/pkgconfig)
 endif()
 
-MESSAGE( STATUS ${EXTERNAL_LIBS})
-
-
  # BUILD Tcl module
 if((NOT IOS))
 
@@ -411,9 +410,9 @@ SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CMAKE_SWIG_FLAGS "-includeall ")
 #SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} ${SRC_FILES})
 SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} )
-ADD_DEPENDENCIES(${TCL_MODULE} Moose)
+#ADD_DEPENDENCIES(${TCL_MODULE} Moose)
 #SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} ${INTERNAL_LIBS} )
-SWIG_LINK_LIBRARIES(${TCL_MODULE} libMoose.a ${VORBIS_LIBRARY} ${OPENAL_LIBRARY} ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} tcl -L/opt/local/lib -lfreetype -logg -lvorbisfile )
+SWIG_LINK_LIBRARIES(${TCL_MODULE} libMoose.so ${VORBIS_LIBRARY} ${OPENAL_LIBRARY} ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} tcl -L/opt/local/lib -lfreetype -logg -lvorbisfile -lswscale -lavcodec -lavutil -lavformat)
 SET_TARGET_PROPERTIES( ${TCL_MODULE} 
   PROPERTIES
   OUTPUT_NAME Moose
@@ -476,7 +475,5 @@ SET( tclFiles
 )
 install( FILES ${tclFiles} DESTINATION lib/Moose )
 ENDIF()
-
-
 
 endif((NOT IOS))
