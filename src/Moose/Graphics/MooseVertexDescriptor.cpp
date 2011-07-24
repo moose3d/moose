@@ -1,6 +1,7 @@
 #include "MooseVertexDescriptor.h"
 #include <cassert>
 #include <cstring>
+#include <Rocket/Core.h>
 using namespace Moose::Core;
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType, 
@@ -87,6 +88,10 @@ Moose::Graphics::CVertexDescriptor::CVertexDescriptor( ELEMENT_TYPE nType,
     m_pData = new float[8*nNumElements];
     m_nElementByteSize = sizeof(float)*8;
     break;
+  case ELEMENT_TYPE_ROCKET_DATA:
+    m_pData = new unsigned char[sizeof(Rocket::Core::Vertex)*nNumElements];
+    m_nElementByteSize = sizeof(Rocket::Core::Vertex);
+    break;
   default:
     assert( NULL && "Wrong type" );
     break;
@@ -136,8 +141,12 @@ Moose::Graphics::CVertexDescriptor::~CVertexDescriptor()
   case ELEMENT_TYPE_ATTRIB_4I:
     delete [] reinterpret_cast<int *>(m_pData);
     break;
+  case ELEMENT_TYPE_ROCKET_DATA:
+    delete [] reinterpret_cast<Rocket::Core::Vertex *>(m_pData);
+    break;
   }
   m_pData = NULL;
+  if ( IsCached() ) glDeleteBuffers( 1, &GetCache());
 }
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CVertexDescriptor::CVertexDescriptor( const Moose::Graphics::CVertexDescriptor & obj )
