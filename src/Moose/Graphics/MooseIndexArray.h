@@ -47,40 +47,41 @@ namespace Moose
       m_nType(nType),
       m_nNumDrawableIndices(nNumIndices)
       {
-	if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
-	else			       m_pIndexData = new unsigned int[GetNumIndices()];
+        if ( GetNumIndices() > 65536)  m_pIndexData = new unsigned short int[GetNumIndices()];
+        else			       m_pIndexData = new unsigned int[GetNumIndices()];
         GetCache() = 0;
       }
       ////////////////////
       /// Copy constructor.
       CIndexArray( const CIndexArray & obj )
       {
-	m_nNumIndices = obj.m_nNumIndices;
-	m_nType = obj.m_nType;
-	m_nNumDrawableIndices = m_nNumIndices;
-	m_pIndexData = new char[ GetByteSize() ];
-	memcpy( m_pIndexData, obj.m_pIndexData, GetByteSize());
+        m_nNumIndices = obj.m_nNumIndices;
+        m_nType = obj.m_nType;
+        m_nNumDrawableIndices = m_nNumIndices;
+        m_pIndexData = new char[ GetByteSize() ];
+        memcpy( m_pIndexData, obj.m_pIndexData, GetByteSize());
         GetCache() = obj.GetCache();
       }
       ////////////////////
       /// Destructor.
       ~CIndexArray()
       {
-	if ( IsShortIndices())
-	{
-	  delete [] reinterpret_cast<unsigned short int *>(m_pIndexData);
-	}
-	else
-	{
-	  delete [] reinterpret_cast<unsigned int *>(m_pIndexData);
-	}
+        if ( IsShortIndices())
+        {
+          delete [] reinterpret_cast<unsigned short int *>(m_pIndexData);
+        }
+        else
+        {
+          delete [] reinterpret_cast<unsigned int *>(m_pIndexData);
+        }
+        if ( IsCached()) glDeleteBuffers(1, &GetCache());
       }
       ////////////////////
       /// Returns number of indices.
       /// \returns m_nNumIndices.
       inline unsigned int GetNumIndices() const
       {
-	return m_nNumIndices;
+        return m_nNumIndices;
       }
       ////////////////////
       /// Returns pointer to index data .
@@ -88,46 +89,46 @@ namespace Moose
       template<typename TYPE>
       inline TYPE *GetPointer() const
       {
-	return reinterpret_cast<TYPE *>(m_pIndexData);
+        return reinterpret_cast<TYPE *>(m_pIndexData);
       }
       ////////////////////
       /// Returns true if indices are stored with ushort int data type.
       /// \returns boolean
       inline int IsShortIndices() const
       {
-	return (GetNumIndices() <= 65536);
+        return (GetNumIndices() <= 65536);
       }
       ////////////////////
       /// Returns primitive type.
       /// \returns PRIMITIVE_TYPE
       inline int GetPrimitiveType() const
       {
-	return m_nType;
+        return m_nType;
       }
       ////////////////////
       /// Returns the number of drawable indices.
       /// \returns Number of indices that is allowed to be drawn.
       inline unsigned int GetDrawableCount() const
       {
-	return m_nNumDrawableIndices;
+        return m_nNumDrawableIndices;
       }
       ////////////////////
       /// Sets the number of drawable indices.
       /// \param nCount Number of indices that is allowed to be drawn.
       inline void SetDrawableCount( unsigned int nCount )
       {
-	// Safety check
-	if ( nCount > GetNumIndices())
-	  m_nNumDrawableIndices = GetNumIndices();
-	else
-	  m_nNumDrawableIndices = nCount;
+        // Safety check
+        if ( nCount > GetNumIndices())
+          m_nNumDrawableIndices = GetNumIndices();
+        else
+          m_nNumDrawableIndices = nCount;
       }
       ////////////////////
       /// Returns byte size for entire array.
       inline size_t GetByteSize()
       {
-	if ( IsShortIndices()) return (sizeof(unsigned short int)*GetNumIndices());
-	return (sizeof(unsigned int)*GetNumIndices());
+        if ( IsShortIndices()) return (sizeof(unsigned short int)*GetNumIndices());
+        return (sizeof(unsigned int)*GetNumIndices());
       }
       inline void Copy( const void *pArray )
       {
