@@ -13,7 +13,7 @@ Moose::Scene::CCameraObject::CCameraObject() :
     m_fZoomSpeed(0.0f),
     m_MoveDir( OUT ),
     m_bMoving(false),
-    m_vVelocity(0,0,0)
+    m_vDirection(0,0,0)
 {
     // Set some reasonable defaults
     SetNearClipping(0.01f);
@@ -86,38 +86,38 @@ Moose::Scene::CCameraObject::Update( float fSeconds )
 
             vXZ = GetRightVector();
             vXZ[1] = 0.0f;
-            m_vVelocity = -vXZ;
+            m_vDirection = -vXZ;
 
             break;
         case RIGHT:
 
             vXZ = GetRightVector();
             vXZ[1] = 0.0f;
-            m_vVelocity = vXZ;
+            m_vDirection = vXZ;
 
             break;
         case FORWARD:
 
             vXZ = GetForwardVector();
             vXZ[1] = 0.0f;
-            m_vVelocity = vXZ;
+            m_vDirection = vXZ;
 
             break;
         case BACKWARD:
 
             vXZ = GetForwardVector();
             vXZ[1] = 0.0f;
-            m_vVelocity = -vXZ;
+            m_vDirection = -vXZ;
 
             break;
         default:
             break;
         }
 
-        m_vVelocity.Normalize();
+        m_vDirection.Normalize();
         m_fSpeed += m_Settings.m_fAccelSpeed * timeSeconds;
         if ( m_fSpeed > m_Settings.m_fMaxSpeed) m_fSpeed = m_Settings.m_fMaxSpeed;
-        GetLocalTransform().Move( m_vVelocity * m_fSpeed * timeSeconds );
+        GetLocalTransform().Move( m_vDirection * m_fSpeed * timeSeconds );
     }
     else
     {
@@ -128,11 +128,11 @@ Moose::Scene::CCameraObject::Update( float fSeconds )
             m_fSpeed -= fDecrement;
             if ( m_fSpeed > CLOSE_TO_ZERO)
             {
-                GetLocalTransform().Move( m_vVelocity * m_fSpeed * timeSeconds );
+                GetLocalTransform().Move( m_vDirection * m_fSpeed * timeSeconds );
             }
             else
             {
-                //m_vVelocity[0] = m_vVelocity[1] = m_vVelocity[2] = 0.0f;
+                //m_vDirection[0] = m_vDirection[1] = m_vDirection[2] = 0.0f;
                 m_fSpeed = 0.0f;
             }
         }

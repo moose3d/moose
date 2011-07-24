@@ -27,9 +27,11 @@
 #include "MooseTimer.h"
 #include "MooseFPSCounter.h"
 #include "MooseTypeBase.h"
+#include "MooseStateBase.h"
 #include "MooseUniqueNameCreator.h"
 #include "MooseViewable.h"
 #include "MooseObjectCounter.h"
+#include "MooseThreadedTask.h"
 /////////////////////////////////////////////////////////////////
 #endif
 /////////////////////////////////////////////////////////////////

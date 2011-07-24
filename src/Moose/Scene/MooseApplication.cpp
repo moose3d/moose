@@ -1,12 +1,15 @@
 #include "MooseApplication.h"
 #include "MooseLogger.h"
-
+#include "MooseRocketRenderInterface.h"
+#include "MooseExceptions.h"
+#include <Rocket/Core.h>
 #include <sstream>
 #include <iostream>
 #include <cassert>
 using namespace Moose::Graphics;
 using namespace Moose::Scene;
 using namespace Moose::Core;
+using namespace Moose::Exceptions;
 #if !defined(MOOSE_APPLE_IPHONE)
 #include "MooseSDLScreen.h"
 using namespace Moose::Window;
@@ -20,84 +23,100 @@ namespace prefix = Moose::Scene;
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
 {
-	SetEnabled(true);
-	m_bSceneHasKeyUp = false;
-	m_bSceneHasKeyDown = false;
-	m_bSceneHasMouseDown = false;
-	m_bSceneHasMouseUp = false;
-	m_bSceneHasMouseMotion = false;
-	m_bHasQuit = false;
-	m_pMainLoopThread = NULL;
-    m_nUpdateIntervalMs         = DEFAULT_UPDATE_INTERVAL_MS;
-    m_nColliderUpdateIntervalMs = DEFAULT_COLLIDER_UPDATE_INTERVAL_MS;
-    m_nCollisionCheckIntervalMs = DEFAULT_COLLISION_CHECK_INTERVAL_MS;
-    m_fColliderUpdateTime = 0;
-    m_fCollisionCheckTime = 0;
-    GetTimer().Reset();
-    
+  SetEnabled(true);
+  m_bSceneHasKeyUp = false;
+  m_bSceneHasKeyDown = false;
+  m_bSceneHasMouseDown = false;
+  m_bSceneHasMouseUp = false;
+  m_bSceneHasMouseMotion = false;
+  m_bHasQuit = false;
+  m_pMainLoopThread = NULL;
+  m_nUpdateIntervalMs         = DEFAULT_UPDATE_INTERVAL_MS;
+  m_nColliderUpdateIntervalMs = DEFAULT_COLLIDER_UPDATE_INTERVAL_MS;
+  m_nCollisionCheckIntervalMs = DEFAULT_COLLISION_CHECK_INTERVAL_MS;
+  m_fColliderUpdateTime = 0;
+  m_fCollisionCheckTime = 0;
+  GetTimer().Reset();
+  m_pRenderInterface = new CRocketRenderInterface();
+  // Initialize rocket library
+  Rocket::Core::SetRenderInterface(m_pRenderInterface);
+  Rocket::Core::SetSystemInterface(this);
+  //Rocket::Core::SetFileInterface();
+  Rocket::Core::Initialise();  
+  Rocket::Core::String font_names[4];
+  font_names[0] = "Delicious-Roman.otf";
+  font_names[1] = "Delicious-Italic.otf";
+  font_names[2] = "Delicious-Bold.otf";
+  font_names[3] = "Delicious-BoldItalic.otf";
+  // Right, this needs to be fixed.
+  for (size_t i = 0; i < sizeof(font_names) / sizeof(Rocket::Core::String); i++)
+  {
+    Rocket::Core::FontDatabase::LoadFontFace(Rocket::Core::String("/home/entity/downloads/libRocket/Samples/assets/") + font_names[i]);
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CApplication::~CApplication()
 {
-	m_pCurrentScene = NULL;
-	while( m_mapScenes.empty() == false)
-	{
-		delete m_mapScenes.begin()->second;
-		m_mapScenes.erase( m_mapScenes.begin());
-	}
+  m_pCurrentScene = NULL;
+  while( m_mapScenes.empty() == false)
+  {
+    delete m_mapScenes.begin()->second;
+    m_mapScenes.erase( m_mapScenes.begin());
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::Init()
 {
-		if ( GetName().empty() )
-		{
-			g_Error << "Application must have an unique non-empty string as a name!" << endl;
-			abort();
-		}
-		g_ObjectMgr->Create(this, GetName());
-		CGameObject::Init();
+  if ( GetName().empty() )
+  {
+    g_Error << "Application must have an unique non-empty string as a name!" << endl;
+    abort();
+  }
+  g_ObjectMgr->Create(this, GetName());
+  CGameObject::Init();
 #if !defined(MOOSE_APPLE_IPHONE)
-		m_bHasQuit 									= HasCommand("OnQuit");
+  m_bHasQuit 									= HasCommand("OnQuit");
 #endif
-    LoadDefaultResources();
+  LoadDefaultResources();
 }
 ///////////////////////////////////////////////////////////////////////////////
 prefix::CScene *
 prefix::CApplication::GetCurrentScene()
 {
-	return m_pCurrentScene;
+  return m_pCurrentScene;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::SetCurrentScene( const std::string & name )
 {
-	SceneMap::iterator it = m_mapScenes.find( name );
+  SceneMap::iterator it = m_mapScenes.find( name );
 
-	if ( m_pCurrentScene ) m_pCurrentScene->OnExit();
+  if ( m_pCurrentScene ) m_pCurrentScene->OnExit();
     
-    if ( it != m_mapScenes.end() ) 
-    {
-        m_pCurrentScene = it->second;
-        m_pCurrentScene->OnEnter();
-	}
-    else 
-    {
-        m_pCurrentScene = NULL;
-	}
-    CheckSceneInputs();
+  if ( it != m_mapScenes.end() ) 
+  {
+    m_pCurrentScene = it->second;
+    m_pRenderInterface->SetRenderable(m_pCurrentScene->GetGUI().m_pGUIRenderable);
+    m_pCurrentScene->OnEnter();
+  }
+  else 
+  {
+    m_pCurrentScene = NULL;
+  }
+  CheckSceneInputs();
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::CheckSceneInputs()
 {
-	if ( m_pCurrentScene == NULL ) return;
+  if ( m_pCurrentScene == NULL ) return;
 #if !defined(MOOSE_APPLE_IPHONE)
-	m_bSceneHasKeyUp 						= m_pCurrentScene->HasCommand("OnKeyUp");
-	m_bSceneHasKeyDown 					= m_pCurrentScene->HasCommand("OnKeyDown");
-	m_bSceneHasMouseDown 				= m_pCurrentScene->HasCommand("OnMouseDown");
-	m_bSceneHasMouseUp 					= m_pCurrentScene->HasCommand("OnMouseUp");
-	m_bSceneHasMouseMotion 			= m_pCurrentScene->HasCommand("OnMouseMotion");
+  m_bSceneHasKeyUp 						= m_pCurrentScene->HasCommand("OnKeyUp");
+  m_bSceneHasKeyDown 					= m_pCurrentScene->HasCommand("OnKeyDown");
+  m_bSceneHasMouseDown 				= m_pCurrentScene->HasCommand("OnMouseDown");
+  m_bSceneHasMouseUp 					= m_pCurrentScene->HasCommand("OnMouseUp");
+  m_bSceneHasMouseMotion 			= m_pCurrentScene->HasCommand("OnMouseMotion");
 #endif
 
 }
@@ -105,30 +124,30 @@ prefix::CApplication::CheckSceneInputs()
 void
 prefix::CApplication::AddScene( const std::string & name, CScene *pScene )
 {
-	// just in case
-	pScene->SetName( name );
-	if ( GetScene( name ) == NULL ) m_mapScenes[name] = pScene;
+  // just in case
+  pScene->SetName( name );
+  if ( GetScene( name ) == NULL ) m_mapScenes[name] = pScene;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::RemoveScene( const std::string & name )
 {
-	SceneMap::iterator it = m_mapScenes.find( name );
-	if ( it != m_mapScenes.end() )
-	{
-		if ( it->second == GetCurrentScene() ) m_pCurrentScene = NULL;
-		delete it->second;
-		m_mapScenes.erase( it );
-	}
+  SceneMap::iterator it = m_mapScenes.find( name );
+  if ( it != m_mapScenes.end() )
+  {
+    if ( it->second == GetCurrentScene() ) m_pCurrentScene = NULL;
+    delete it->second;
+    m_mapScenes.erase( it );
+  }
 
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Scene::CScene *
 prefix::CApplication::GetScene( const std::string & name )
 {
-	SceneMap::iterator it = m_mapScenes.find( name );
-	if ( it == m_mapScenes.end() ) return NULL;
-	else return it->second;
+  SceneMap::iterator it = m_mapScenes.find( name );
+  if ( it == m_mapScenes.end() ) return NULL;
+  else return it->second;
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,7 +155,7 @@ prefix::CApplication::GetScene( const std::string & name )
 Moose::Scene::CEventQueue & 
 prefix::CApplication::GetEventQueue()
 {
-    return m_EventQueue;
+  return m_EventQueue;
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,7 +163,7 @@ prefix::CApplication::GetEventQueue()
 void
 prefix::CApplication::ProcessInput()
 {
-    //g_Error << "Pre-check\n";
+  //g_Error << "Pre-check\n";
   if ( GetCurrentScene() == NULL ) 
   {
 #if defined(MOOSE_APPLE_IPHONE)
@@ -152,160 +171,185 @@ prefix::CApplication::ProcessInput()
 #endif
     return;
   }
-    CScene & scene = *GetCurrentScene();
-    //g_Error << "Processing input\n";
+  CScene & scene = *GetCurrentScene();
+  //g_Error << "Processing input\n";
 #if defined(MOOSE_APPLE_IPHONE)
-    while ( !m_EventQueue.Empty() )
+  while ( !m_EventQueue.Empty() )
+  {
+    Event e = m_EventQueue.Front();
+    m_EventQueue.Pop();
+    switch( e.type )
     {
-        Event e = m_EventQueue.Front();
-        m_EventQueue.Pop();
-        switch( e.type )
+    case kTouchBegan:
+      {
+        Touches lstTouches;
+        assert(e.touches < 5 && "touch count is too large!");
+        for(int i=0;i<e.touches;i++)
         {
-            case kTouchBegan:
-              {
-                Touches lstTouches;
-                  assert(e.touches < 5 && "touch count is too large!");
-                  for(int i=0;i<e.touches;i++)
-                {
-                  lstTouches.push_back( Touch(e.x[i],e.y[i]) );
-                }
-                scene.OnTouchBegan( lstTouches );
-              }
-              break;
-            case kTouchMoved:
-              {
-                Touches lstTouches;
-                  assert(e.touches < 5 && "touch count is too large!");
-                  for(int i=0;i<e.touches;i++)
-                {
-                  lstTouches.push_back( Touch(e.x[i],e.y[i]) );
-                }
-                scene.OnTouchMoved( lstTouches);
-              }
-                break;
-            case kTouchEnded:
-              {
-                Touches lstTouches;
-                  assert(e.touches < 5 && "touch count is too large!");
-                  for(int i=0;i<e.touches;i++)
-                {
-                  lstTouches.push_back( Touch(e.x[i],e.y[i]) );
-                }
-                scene.OnTouchEnded( lstTouches);
-              }
-                break;
-            case kAccelerate:
-                //g_Error << "Moose:Received accel event \n";
-                scene.OnAccelerate( e.x[0], e.y[0], e.z, e.flags);
-                break;
-            default:
-                assert( NULL && "Event type is not defined!!" );
-                break;
+          lstTouches.push_back( Touch(e.x[i],e.y[i]) );
         }
+        scene.OnTouchBegan( lstTouches );
+      }
+      break;
+    case kTouchMoved:
+      {
+        Touches lstTouches;
+        assert(e.touches < 5 && "touch count is too large!");
+        for(int i=0;i<e.touches;i++)
+        {
+          lstTouches.push_back( Touch(e.x[i],e.y[i]) );
+        }
+        scene.OnTouchMoved( lstTouches);
+      }
+      break;
+    case kTouchEnded:
+      {
+        Touches lstTouches;
+        assert(e.touches < 5 && "touch count is too large!");
+        for(int i=0;i<e.touches;i++)
+        {
+          lstTouches.push_back( Touch(e.x[i],e.y[i]) );
+        }
+        scene.OnTouchEnded( lstTouches);
+      }
+      break;
+    case kAccelerate:
+      //g_Error << "Moose:Received accel event \n";
+      scene.OnAccelerate( e.x[0], e.y[0], e.z, e.flags);
+      break;
+    default:
+      assert( NULL && "Event type is not defined!!" );
+      break;
     }
+  }
 #else
 	
-	SDL_Event event;
-	while ( SDL_PollEvent(&event ))
-	{
-		switch(event.type)
-		{
-		  case SDL_KEYUP:
-			{
-				ostringstream s;
-				s << "OnKeyUp " << SDL_GetKeyName(event.key.keysym.sym);
-				scene.EnqueueMessage(s.str().c_str(), m_bSceneHasKeyUp );
-			}
-			break;
-			case SDL_KEYDOWN:
-			{
-				ostringstream s;
-				s << "OnKeyDown "
-					<< SDL_GetKeyName(event.key.keysym.sym);
-				scene.EnqueueMessage(s.str().c_str(), m_bSceneHasKeyDown );
-			}
-			break;
-			case SDL_MOUSEMOTION:
-			{
-				ostringstream s;
-				s << "OnMouseMotion "
-					<< event.motion.x << " "
-					<< event.motion.y;
-				scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseMotion );
-			}
-			break;
-			case SDL_MOUSEBUTTONDOWN:
-			{
-				ostringstream s;
-				s << "OnMouseDown "
-					<< (unsigned int)event.button.button << " "
-					<< event.button.x 		 << " "
-					<< event.button.y;
-				scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseDown );
-			}
-			break;
-			case SDL_MOUSEBUTTONUP:
-			{
-				ostringstream s;
-				s << "OnMouseUp "
-					<< (unsigned int)event.button.button << " "
-					<< event.button.x 		 << " "
-					<< event.button.y;
-				scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseUp );
-			}
-			break;
-			case SDL_QUIT:
-              if ( m_bHasQuit ) this->EnqueueMessage( "OnQuit", m_bHasQuit );
-              else              this->SetEnabled(false);
-              break;
-		}
-	}
+  SDL_Event event;
+  while ( SDL_PollEvent(&event ))
+  {
+    switch(event.type)
+    {
+    case SDL_KEYUP:
+      {
+        ostringstream s;
+        s << "OnKeyUp " << SDL_GetKeyName(event.key.keysym.sym);
+
+        scene.EnqueueMessage(s.str().c_str(), m_bSceneHasKeyUp );
+      }
+      break;
+    case SDL_KEYDOWN:
+      {
+        ostringstream s;
+        s << "OnKeyDown "
+          << SDL_GetKeyName(event.key.keysym.sym);
+        scene.EnqueueMessage(s.str().c_str(), m_bSceneHasKeyDown );
+      }
+      break;
+    case SDL_MOUSEMOTION:
+      {
+        scene.GetGUI().m_pContext->ProcessMouseMove( event.motion.x, 
+                                                     event.motion.y, 0 );
+        ostringstream s;
+        s << "OnMouseMotion "
+          << event.motion.x << " "
+          << event.motion.y;
+        scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseMotion );
+      }
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+      {
+        scene.GetGUI().m_pContext->ProcessMouseButtonDown( event.button.button-1, 0 );
+        ostringstream s;
+        s << "OnMouseDown "
+          << (unsigned int)event.button.button << " "
+          << event.button.x 		 << " "
+          << event.button.y;
+        scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseDown );
+      }
+      break;
+    case SDL_MOUSEBUTTONUP:
+      {
+        scene.GetGUI().m_pContext->ProcessMouseButtonUp( event.button.button-1, 0 );
+        ostringstream s;
+        s << "OnMouseUp "
+          << (unsigned int)event.button.button << " "
+          << event.button.x 		 << " "
+          << event.button.y;
+        scene.EnqueueMessage( s.str().c_str(), m_bSceneHasMouseUp );
+      }
+      break;
+    case SDL_QUIT:
+      if ( m_bHasQuit ) this->EnqueueMessage( "OnQuit", m_bHasQuit );
+      else              this->SetEnabled(false);
+      break;
+    }
+  }
 #endif
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::Render()
 {
-	if ( GetCurrentScene() != NULL )
-	{
-		GetCurrentScene()->Render( GetRenderer());
-	}
+  if ( GetCurrentScene() != NULL )
+  {
+    GetCurrentScene()->Render( GetRenderer());
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
 prefix::CApplication::Update()
 {
-	ProcessInput();
+  ProcessInput();
 
-	m_Timer.Update();
-    m_fColliderUpdateTime += m_Timer.GetPassedTime().ToSeconds();
-	m_fCollisionCheckTime += m_Timer.GetPassedTime().ToSeconds();
-    if ( m_Timer.HasPassed(0, m_nUpdateIntervalMs )) 
-	{
-      // Update our own script
-      UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
-      // TODO add pause capability.
-        if ( GetCurrentScene() != NULL)
-        {
-            GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
-        }  
-      m_Timer.Reset();
-	}
-    
-    if ( m_fColliderUpdateTime*1000 >= m_nColliderUpdateIntervalMs)
+  m_Timer.Update();
+  m_RunningTime.Update();
+  m_fColliderUpdateTime += m_Timer.GetPassedTime().ToSeconds();
+  m_fCollisionCheckTime += m_Timer.GetPassedTime().ToSeconds();
+
+  // Take care of tasks starting and erasing
+  TaskList::iterator it = m_lstTasks.begin();
+  while( it != m_lstTasks.end() )
+  {
+    if ( (*it)->GetState() == kFinalized )
     {
-        if ( GetCurrentScene() != NULL)
-        {
-            GetCurrentScene()->UpdateColliders();
-        }
-        m_fColliderUpdateTime = 0;
+      delete *it;
+      it = m_lstTasks.erase(it);
+            
     }
-    
-    if ( m_fCollisionCheckTime*1000 >= m_nCollisionCheckIntervalMs )
+    else if ( (*it)->GetState() == kInit )
     {
-        if ( GetCurrentScene() != NULL ) GetCurrentScene()->CheckCollisions();
-        m_fCollisionCheckTime = 0;
+      (*it)->Start();
+      it++;
+
+    } else { it++; }
+  }
+
+  if ( m_Timer.HasPassed(0, m_nUpdateIntervalMs )) 
+  {
+    // Update our own script
+    UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
+    // TODO add pause capability.
+    if ( GetCurrentScene() != NULL)
+    {
+      GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );
+    }  
+    m_Timer.Reset();
+  }
+    
+  if ( m_fColliderUpdateTime*1000 >= m_nColliderUpdateIntervalMs)
+  {
+    if ( GetCurrentScene() != NULL)
+    {
+      GetCurrentScene()->UpdateColliders();
     }
+    m_fColliderUpdateTime = 0;
+  }
+    
+  if ( m_fCollisionCheckTime*1000 >= m_nCollisionCheckIntervalMs )
+  {
+    if ( GetCurrentScene() != NULL ) GetCurrentScene()->CheckCollisions();
+    m_fCollisionCheckTime = 0;
+  }
 
     
 }
@@ -313,13 +357,19 @@ prefix::CApplication::Update()
 Moose::Graphics::COglRenderer &
 prefix::CApplication::GetRenderer()
 {
-	return m_Renderer;
+  return m_Renderer;
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Core::CTimer &
 prefix::CApplication::GetTimer()
 {
-	return m_Timer;
+  return m_Timer;
+}
+//////////////////////////////////////////////////////////////////////////////
+float 
+prefix::CApplication::GetElapsedTime()
+{
+  return m_RunningTime.GetPassedTime().ToSeconds();
 }
 //////////////////////////////////////////////////////////////////////////////
 void
@@ -334,7 +384,8 @@ prefix::CApplication::LoadDefaultResources()
     pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("default.vert"));
     pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("default.frag"));
     int iRetval = g_ShaderMgr->Create(pShader, "moose_default_shader");
-    assert( iRetval == 0);
+    if( iRetval != 0)
+      throw CMooseRuntimeError("Could not create moose_default_shader");
 
   }
   // For boxrenderable
@@ -418,28 +469,40 @@ prefix::CApplication::LoadDefaultResources()
     int iRetval  = g_ShaderMgr->Create(pColor, "moose_billboard_particle_shader");
     assert( iRetval  == 0);
   }
+  // For default volume renderables 
+  if ( g_ShaderMgr->HasResource("moose_gui_shader") == false )
+  {
+      
+    CShader *pShader = new CShader();
 
+    pShader->LoadVertexShader(g_AssetBundle->GetAssetPath("gui.vert"));
+    pShader->LoadFragmentShader(g_AssetBundle->GetAssetPath("gui.frag"));
+    int iRetval = g_ShaderMgr->Create(pShader, "moose_gui_shader");
+    if( iRetval != 0)
+      throw CMooseRuntimeError("Could not create moose_gui_shader");
+  
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 int MainLoop( void * data )
 {
-	CApplication *pApp = reinterpret_cast<CApplication *>(data);
-	if ( !pApp ) return 1;
-	CFpsCounter & fps = pApp->GetFPSCounter();
-	while( pApp->IsEnabled() )
-	{
-		pApp->Update();
-		pApp->Render();
-		fps++;
-		fps.Update();
-		if ( fps.HasPassed(1,0))
-		{
-			//cout << "FPS: " << counter.GetFPS() << endl;
-			fps.Reset();
-		}
-	}
+  CApplication *pApp = reinterpret_cast<CApplication *>(data);
+  if ( !pApp ) return 1;
+  CFpsCounter & fps = pApp->GetFPSCounter();
+  while( pApp->IsEnabled() )
+  {
+    pApp->Update();
+    pApp->Render();
+    fps++;
+    fps.Update();
+    if ( fps.HasPassed(1,0))
+    {
+      //cout << "FPS: " << counter.GetFPS() << endl;
+      fps.Reset();
+    }
+  }
 
-	return 0;
+  return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -453,16 +516,22 @@ prefix::CApplication::Run()
 void
 prefix::CApplication::Halt()
 {
-	SetEnabled(false);
+  SetEnabled(false);
 #if !defined(MOOSE_APPLE_IPHONE)
-	if ( m_pMainLoopThread ) SDL_WaitThread(m_pMainLoopThread, NULL);
+  if ( m_pMainLoopThread ) SDL_WaitThread(m_pMainLoopThread, NULL);
 #endif
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+prefix::CApplication::AddTask( Moose::Core::IThreadedTask *pTask )
+{
+  m_lstTasks.push_back(pTask);
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Core::CFpsCounter &
 prefix::CApplication::GetFPSCounter()
 {
-	return m_FpsCounter;
+  return m_FpsCounter;
 }
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(MOOSE_APPLE_IPHONE)
@@ -473,7 +542,7 @@ void
 prefix::CApplication::RegisterUserCommands()
 {
 #if !defined(MOOSE_APPLE_IPHONE)
-	CREATE_CMD( OpenScreen );
+  CREATE_CMD( OpenScreen );
 #endif
 }
 #if !defined(MOOSE_APPLE_IPHONE)
@@ -481,33 +550,33 @@ prefix::CApplication::RegisterUserCommands()
 SCRIPT_CMD_IMPL( OpenScreen )
 {
 
-	CHECK_ARGS( 1, "screenParams")
-	if ( CSDLScreen::Exists() ) SCRIPT_ERROR( "Screen is already open.");
+  CHECK_ARGS( 1, "screenParams")
+  if ( CSDLScreen::Exists() ) SCRIPT_ERROR( "Screen is already open.");
 
-	NameObjMap mapNameObj;
-	if ( ParseKeyValueMap(pInterp, mapNameObj, objv[1]) != TCL_OK ) return TCL_ERROR;
+  NameObjMap mapNameObj;
+  if ( ParseKeyValueMap(pInterp, mapNameObj, objv[1]) != TCL_OK ) return TCL_ERROR;
 
-	CSDLScreenParams p;
-	int bFullscreen = 0;
-	MAP_GET_INT( mapNameObj, ".redBits", p.m_iRedSize);
-	MAP_GET_INT( mapNameObj, ".greenBits", p.m_iGreenSize);
-	MAP_GET_INT( mapNameObj, ".blueBits", p.m_iBlueSize);
-	MAP_GET_INT( mapNameObj, ".doubleBuffer", p.m_bDoubleBuffer);
-	MAP_GET_INT( mapNameObj, ".depthBits", p.m_iDepthBufferSize);
-	MAP_GET_INT( mapNameObj, ".width", p.m_iWidth);
-	MAP_GET_INT( mapNameObj, ".height", p.m_iHeight);
-	MAP_GET_INT( mapNameObj, ".colorDepth", p.m_iScreenDepth);
-	MAP_GET_INT( mapNameObj, ".fullscreen", bFullscreen);
-	if ( bFullscreen ) p.m_iVideoModeFlags |= SDL_FULLSCREEN;
-	// videomodeflags is intentionally left without parsing.
-	MAP_GET_INT( mapNameObj, ".multiSampleBuffers", p.m_iMultiSampleBuffers);
-	MAP_GET_INT( mapNameObj, ".multiSampleSamples", p.m_iMultiSampleSamples);
-	CSDLScreen::m_SDLScreenParams = p;
-	if ( CSDLScreen::GetInstance() == NULL )
-	{
-		SCRIPT_ERROR("Could not open screen.");
-	}
-	return TCL_OK;
+  CSDLScreenParams p;
+  int bFullscreen = 0;
+  MAP_GET_INT( mapNameObj, ".redBits", p.m_iRedSize);
+  MAP_GET_INT( mapNameObj, ".greenBits", p.m_iGreenSize);
+  MAP_GET_INT( mapNameObj, ".blueBits", p.m_iBlueSize);
+  MAP_GET_INT( mapNameObj, ".doubleBuffer", p.m_bDoubleBuffer);
+  MAP_GET_INT( mapNameObj, ".depthBits", p.m_iDepthBufferSize);
+  MAP_GET_INT( mapNameObj, ".width", p.m_iWidth);
+  MAP_GET_INT( mapNameObj, ".height", p.m_iHeight);
+  MAP_GET_INT( mapNameObj, ".colorDepth", p.m_iScreenDepth);
+  MAP_GET_INT( mapNameObj, ".fullscreen", bFullscreen);
+  if ( bFullscreen ) p.m_iVideoModeFlags |= SDL_FULLSCREEN;
+  // videomodeflags is intentionally left without parsing.
+  MAP_GET_INT( mapNameObj, ".multiSampleBuffers", p.m_iMultiSampleBuffers);
+  MAP_GET_INT( mapNameObj, ".multiSampleSamples", p.m_iMultiSampleSamples);
+  CSDLScreen::m_SDLScreenParams = p;
+  if ( CSDLScreen::GetInstance() == NULL )
+  {
+    SCRIPT_ERROR("Could not open screen.");
+  }
+  return TCL_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////
 #endif

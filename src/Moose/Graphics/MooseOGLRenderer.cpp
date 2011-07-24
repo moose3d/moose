@@ -25,7 +25,7 @@
 #include <fstream>
 #include <cassert>
 #include "MooseLogger.h"
-
+#include "MooseExceptions.h"
 
 #if !defined(MOOSE_APPLE_IPHONE)
 // include freetype stuff
@@ -39,6 +39,7 @@ using namespace Moose::Spatial;
 using namespace Moose::Core;
 using namespace Moose::Math;
 using namespace Moose::Volume;
+using namespace Moose::Exceptions;
 using std::endl;
 using std::cerr;
 using std::ifstream;
@@ -907,356 +908,97 @@ Moose::Graphics::COglRenderer::EnableClientState( CLIENT_STATE_TYPE tType )
 }
 #endif
 /////////////////////////////////////////////////////////////////
-
-#if !defined(MOOSE_APPLE_IPHONE)
 Moose::Graphics::COglTexture *
-Moose::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
+Moose::Graphics::COglRenderer::CreateTexture( Moose::Util::ITextureData *pData, TEXTURE_TYPE tType  )
 {
-  int             width, height;
-  COglTexture *pTexture = NULL;
-
-  ////////////////////
-#define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
-  ////////////////////
-  CTGAImage *pImage = new CTGAImage();
-  void *data = NULL;
-  switch ( pImage->Load( strFilename ) )
-  {
-  case IMG_OK:
-    break;
-  case IMG_ERR_NO_FILE:
-    std::cerr << "No such file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  case IMG_ERR_UNSUPPORTED:
-    std::cerr << "Unsupported format in file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  case IMG_ERR_MEM_FAIL:
-    std::cerr << "Out of memory while loading file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  case IMG_ERR_BAD_FORMAT:
-    std::cerr << "Bad format while loading file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  }
-  ////////////////////
-  int    iGLInternalFormat = 3;
-  GLenum iGLformat = GL_RGB;
-  ////////////////////
-  // Check correct depth
-  switch (pImage->GetBPP())
-  {
-  case 8:
-    iGLInternalFormat = 1;
-    iGLformat = GL_LUMINANCE;
-    break;
-  case 16:
-    iGLInternalFormat = 2;
-    iGLformat = GL_LUMINANCE_ALPHA;
-    break;
-  case 24:
-    iGLInternalFormat = 3;
-    iGLformat = GL_RGB;
-    break;
-  case 32:
-    iGLInternalFormat = 4;
-    iGLformat = GL_RGBA;
-    std::cerr << "Texture " << strFilename << " has alpha channel." <<  std::endl;
-    break;
-  default:
-    delete pImage;
-    std::cerr << "Not 8, 16, 24 or 32 BBP image (was " << pImage->GetBPP()
-	      << "):  '" << strFilename << "'" << std::endl;
-    return NULL;
-  }
-
-  width = pImage->GetWidth();
-  height = pImage->GetHeight();
-  data =pImage->GetImg();
-
-  // create texture
-  GLuint iTexId;
-
-  glGenTextures( 1, &iTexId);
-  pTexture = new COglTexture( iTexId, tType );
-
-  // set texture dimensions
-  pTexture->SetHeight( height);
-  pTexture->SetWidth( width);
-
-  // check memory allocation
-  if ( !pTexture )
-  {
-    std::cerr << "Failed to allocate memory while loading file '"
-              << strFilename << "'" << std::endl;
-    return NULL;
-  }
-
-  GLenum iGLType = GetGLTextureType( tType );
-
-  // create actual gl texture
-//  glEnable( iGLType );
-  glBindTexture(iGLType, pTexture->GetID());
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  /// ****************************************
-  /// build mipmaps automatically.
-  /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
-  /// Somehow it prevents it occurring.
-  /// ****************************************
-
-  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
-  glTexImage2D( iGLType, 0, iGLformat, /* OpenGL ES 2.0 requirement internal must be equal to glformat!*/
-		width, height, 0,
-		iGLformat, GL_UNSIGNED_BYTE, data);
-  // build mipmaps
-  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
-    pImage->GetWidth(), pImage->GetHeight(),
-    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
-
-  GLenum err = GL_NO_ERROR;
-  glDisable( iGLType );
-  if ( (err = glGetError() ) != GL_NO_ERROR )
-  {
-    g_Error << "Texture creation error: " << err << endl;
-  }
-  // ReleaseMemory
-  CLEANUP();
-
-#undef CLEANUP
-}
-#else
-////////////////////////////////////////////////////////////////////////////////
-/// Apple iPhone PNG implementation
-#define CLEANUP() { CGContextRelease(cgContext); free(data); CGColorSpaceRelease(colorSpace); return pTexture; }
-Moose::Graphics::COglTexture *
-Moose::Graphics::COglRenderer::CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType  )
-{
-
-int             width, height;
-COglTexture *pTexture = NULL;
-
-
-  /* APPLE IPHONE CODE */
-
-  // Right, boys and girls, this is Objective-C++!
-  UIImage *       image = nil;
-  CGImageRef      cgImage;
-  GLubyte *       data = nil;
-  CGContextRef    cgContext;
-  CGColorSpaceRef colorSpace;
-
-  GLenum err;
-
+    CMooseRuntimeError err("");
+    // create texture
+    GLuint iTexId;
   
-  NSString *path =  [ [NSString alloc] initWithUTF8String:strFilename.c_str() ];
-  
-  image = [UIImage imageWithContentsOfFile:path];
-  
-  
-  if (image == nil)
-  {
-    g_Error << "Failed to load '" << strFilename<< "'" << endl;
-    return NULL;
-  }
-  
-  cgImage = [image CGImage];
-  width = CGImageGetWidth(cgImage);
-  height = CGImageGetHeight(cgImage);
-  colorSpace = CGColorSpaceCreateDeviceRGB();
-  
-  // Malloc may be used instead of calloc if your cg image has dimensions equal to the dimensions of the cg bitmap context
-  data = (GLubyte *)calloc(width * height * 4, sizeof(GLubyte));
-  cgContext = CGBitmapContextCreate(data, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
-  if (cgContext == NULL) 
-  {
-    CLEANUP();
-  }
-  // Set the blend mode to copy. We don't care about the previous contents.
-  CGContextSetBlendMode(cgContext, kCGBlendModeCopy);
-  CGContextDrawImage(cgContext, CGRectMake(0.0f, 0.0f, width, height), cgImage);
-  ////////////////////
-  int    iGLInternalFormat = 3;
-  GLenum iGLformat = GL_RGB;
-  ////////////////////
-  // Check correct depth
-  switch ( CGImageGetBitsPerPixel(cgImage) )
-  {
-  case 8:
-    iGLInternalFormat = 1;
-    iGLformat = GL_LUMINANCE;
-    break;
-  case 16:
-    iGLInternalFormat = 2;
-    iGLformat = GL_LUMINANCE_ALPHA;
-    break;
-  case 24:
-    iGLInternalFormat = 3;
-    iGLformat = GL_RGB;
-    break;
-  case 32:
-    iGLInternalFormat = 4;
-    iGLformat = GL_RGBA;
-    std::cerr << "Texture " << strFilename << " has alpha channel." <<  std::endl;
-    break;
-  default:
+    glGenTextures( 1, &iTexId);
+    COglTexture *pTexture = new COglTexture( iTexId, tType );
+
     
-    std::cerr << "Not 8, 16, 24 or 32 BBP image (was " 
-              <<  CGImageGetBitsPerPixel(cgImage)
-              << "):  '" << strFilename << "'" << std::endl;
-    CLEANUP();
-  }
-  g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
-  g_Error << "size :"  << width << "x" << height << std::endl;
-  // create texture
-  GLuint iTexId;
+    // check memory allocation
+    if ( !pTexture )
+    {
+        err << "Failed to allocate memory for texture. '";
+        glDeleteTextures(1, &iTexId);
+        throw err;
+    }
+    // set texture dimensions
+    pTexture->SetHeight( pData->GetHeight());
+    pTexture->SetWidth( pData->GetWidth());
 
-  glGenTextures( 1, &iTexId);
-  pTexture = new COglTexture( iTexId, tType );
+    GLenum iGLType = GetGLTextureType( tType );
 
-  // set texture dimensions
-  pTexture->SetHeight( height);
-  pTexture->SetWidth( width);
+    // create actual gl texture
+    //  glEnable( iGLType );
+    glBindTexture(iGLType, pTexture->GetID());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  // check memory allocation
-  if ( !pTexture )
-  {
-    std::cerr << "Failed to allocate memory while loading file '"
-              << strFilename << "'" << std::endl;
-    return NULL;
-  }
-
-  GLenum iGLType = GetGLTextureType( tType );
-
-  // create actual gl texture
-//  glEnable( iGLType );
-  glBindTexture(iGLType, pTexture->GetID());
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  /// ****************************************
-  /// build mipmaps automatically.
-  /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
-  /// Somehow it prevents it occurring.
-  /// ****************************************
+    /// ****************************************
+    /// build mipmaps automatically.
+    /// This is required because of nvidia 64-bit bug related to gluBuild2DMipmaps?
+    /// Somehow it prevents it occurring.
+    /// ***************************************
 #if !defined(MOOSE_APPLE_IPHONE)
-  glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
+    glTexParameteri( iGLType, GL_GENERATE_MIPMAP, GL_TRUE);
 #endif
-  glTexImage2D( iGLType, 0, iGLformat, /* OpenGL ES 2.0 requirement internal must be equal to glformat!*/
-		width, height, 0,
-		iGLformat, GL_UNSIGNED_BYTE, data);
-  // build mipmaps
-#if defined(MOOSE_APPLE_IPHONE)
-  //glGenerateMipmap(iGLType);
-#endif
-  /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
-    pImage->GetWidth(), pImage->GetHeight(),
-    iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
 
-  
-  glDisable( iGLType );
-  if ( (err = glGetError() ) != GL_NO_ERROR )
-  {
-    g_Error << "Texture creation error: " << err << endl;
-  }
-  // ReleaseMemory
-  CLEANUP();
+    glTexImage2D( iGLType, 0, 
+                  pData->GetFormat(), /* OpenGL ES 2.0 requirement internal must be equal to glformat!*/
+                  pData->GetWidth(), 
+                  pData->GetHeight(), 
+                  0,
+                  pData->GetFormat(), GL_UNSIGNED_BYTE, pData->GetData());
+    // build mipmaps
+    /*gluBuild2DMipmaps(iGLType, iGLInternalFormat,
+      pImage->GetWidth(), pImage->GetHeight(),
+      iGLformat, GL_UNSIGNED_BYTE, pImage->GetImg());*/
 
-#undef CLEANUP
-
+    GLenum error = GL_NO_ERROR;
+    glDisable( iGLType );
+    if ( (error = glGetError() ) != GL_NO_ERROR )
+    {
+        g_Error << "Texture creation error: " << error << endl;
+    }
+    return pTexture;
 }
-#endif
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::COglTexture *
-Moose::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename, TEXTURE_TYPE tType  )
+Moose::Graphics::COglRenderer::CreateCompressedTexture( Moose::Util::ITextureData  *pData, TEXTURE_TYPE tType  )
 {
 #if defined(MOOSE_APPLE_IPHONE)
-    g_Error << "CreateCompressedTexture: Not implemented" << endl;
-    return NULL;
-#else
-    
-  ////////////////////
-#define CLEANUP() { if ( pImage ) delete pImage; pImage = NULL; return pTexture; }
-  ////////////////////
-  /// Sanity check.
-  if ( !GetFeatures().HasTextureCompressionS3TC() ) return NULL;
-  ////////////////////
-  CDDSImage *pImage = new CDDSImage();
-  COglTexture *pTexture = NULL;
-  assert( strFilename != NULL && "Texture filename is NULL");
-  switch ( pImage->Load( strFilename ) )
-  {
-  case IMG_OK:
-    break;
-  case IMG_ERR_NO_FILE:
-    std::cerr << "No such file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  case IMG_ERR_UNSUPPORTED:
-    std::cerr << "Unsupported format in file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  case IMG_ERR_MEM_FAIL:
-    std::cerr << "Out of memory while loading file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  case IMG_ERR_BAD_FORMAT:
-    std::cerr << "Bad format while loading file '" << strFilename << "'" << std::endl;
-    CLEANUP();
-    break;
-  }
+    throw CMooseRuntimeError( "CreateCompressedTexture: Not implemented");
+#endif
+   
 
   ////////////////////
-  size_t nBlockSize = 16;
-  GLenum glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-  ////////////////////
-  // Check correct format:
-  switch (pImage->GetFormat())
+  /// Sanity check.
+  if ( !GetFeatures().HasTextureCompressionS3TC() ) 
   {
-  case DDS_FORMAT_DXT1:
-    nBlockSize = 8;
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-    break;
-  case DDS_FORMAT_DXT3:
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-    nBlockSize = 16;
-    break;
-  case DDS_FORMAT_DXT5:
-    glFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-    nBlockSize = 16;
-    break;
-  default:
-    delete pImage;
-    std::cerr << "Not in DXT1, DXT3, DXT5 format (was "
-	      << (pImage->GetFormat() == DDS_FORMAT_DXT2  ? "DXT2" : "DXT4")
-	      << "):  '" << strFilename << "'" << std::endl;
-    return NULL;
+      throw CMooseRuntimeError( "Platform does not support compressed textures.");
   }
 
   // create texture
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
-  pTexture = new COglTexture( iTexId, tType );
-  // set texture dimensions
-  pTexture->SetHeight( pImage->GetHeight());
-  pTexture->SetWidth( pImage->GetWidth());
-
+  COglTexture *pTexture = new COglTexture( iTexId, tType );
   // check memory allocation
   if ( !pTexture )
   {
-    std::cerr << "Failed to allocate memory while loading file '"
-	      << strFilename << "'" << std::endl;
-    return NULL;
+      CMooseRuntimeError err("");
+      err << "Failed to allocate texture memory";
+      glDeleteTextures(1,&iTexId);
+      throw err;
   }
-
-
+  // set texture dimensions
+  pTexture->SetHeight( pData->GetHeight());
+  pTexture->SetWidth( pData->GetWidth());
 
   GLenum iGLType = GetGLTextureType( tType );
 
@@ -1272,18 +1014,20 @@ Moose::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename,
 
   int nSize;
   int nOffset = 0;
-  int nWidth = pImage->GetWidth();
-  int nHeight = pImage->GetHeight();
+  int nWidth = pData->GetWidth();
+  int nHeight = pData->GetHeight();
 
-  for( int i = 0; i < pImage->GetNumMipMaps(); i++ )
+  for( int i = 0; i < pData->GetNumMipMaps(); i++ )
   {
     if ( nWidth == 0 ) nWidth = 1;
     if ( nHeight == 0 ) nHeight = 1;
 
-    nSize = ((nWidth+3)/4) * ((nHeight+3)/4) * nBlockSize;
+    nSize = ((nWidth+3)/4) * ((nHeight+3)/4) * pData->GetBlockSize();
 
-    glCompressedTexImage2D( GL_TEXTURE_2D,  i,  glFormat,  nWidth,  nHeight,
-			       0, nSize, pImage->GetPixelData() + nOffset );
+    glCompressedTexImage2D( GL_TEXTURE_2D,  i,  
+                            pData->GetFormat(),  
+                            nWidth,  nHeight,
+                            0, nSize, pData->GetData() + nOffset );
     nOffset += nSize;
 
     // Half the image size for next mipmap
@@ -1292,165 +1036,39 @@ Moose::Graphics::COglRenderer::CreateCompressedTexture( const char *strFilename,
   }
 
   glDisable( iGLType );
-
-  // ReleaseMemory
-  CLEANUP();
-
-#undef CLEANUP
-#endif
+  return pTexture;
 }
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::COglTexture *
-Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFileNegX,
-                                                  const char * szFilePosX,
-                                                  const char * szFilePosY,
-                                                  const char * szFileNegY,
-                                                  const char * szFileNegZ,
-                                                  const char * szFilePosZ )
+Moose::Graphics::COglRenderer::CreateCubeTexture( Moose::Util::ITextureData * pNegX,
+                                                  Moose::Util::ITextureData * pPosX,
+                                                  Moose::Util::ITextureData * pPosY,
+                                                  Moose::Util::ITextureData * pNegY,
+                                                  Moose::Util::ITextureData * pNegZ,
+                                                  Moose::Util::ITextureData * pPosZ)
 {
-  const char *szArray[6] = { szFileNegX,
-                             szFilePosX,
-                             szFilePosY,
-                             szFileNegY,
-                             szFileNegZ,
-                             szFilePosZ };
-  return CreateCubeTexture( szArray );
+    Moose::Util::ITextureData *szArray[6] = { pNegX,
+                                              pPosX,
+                                              pPosY,
+                                              pNegY,
+                                              pNegZ,
+                                              pPosZ };
+    return CreateCubeTexture( szArray );
 }
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::COglTexture *
-Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
+Moose::Graphics::COglRenderer::CreateCubeTexture( Moose::Util::ITextureData * pData[6] )
 {
-#define CLEANUP() { CGContextRelease(cgContext); free(data); CGColorSpaceRelease(colorSpace); return pTexture; }
-  // Files must not be null
-  if ( szFiles == NULL ) return NULL;
 
   unsigned int iTexId;
   glGenTextures( 1, &iTexId);
   COglTexture *pTexture = new COglTexture( iTexId, TEXTURE_CUBE );
-
-
-  // Right, boys and girls, this is Objective-C++!
-
-
-#if defined(MOOSE_APPLE_IPHONE)
-  GLubyte *       data = nil;
-  UIImage *       image = nil;
-  CGImageRef      cgImage;
-  CGContextRef    cgContext;
-  CGColorSpaceRef colorSpace;
-
-#endif
-  //GLenum err = GL_NO_ERROR;
-  int width, height;
-
-  for( size_t i=0;i<6;i++)
+  GLenum iGLType = GL_TEXTURE_CUBE_MAP;
+  for( size_t i=0; i<6; i++ )
   {
-#if defined(MOOSE_APPLE_IPHONE)
-    NSString *path =  [ [NSString alloc] initWithUTF8String:szFiles[i] ];
-  
-    image = [UIImage imageWithContentsOfFile:path];
-  
-  
-    if (image == nil)
-    {
-      g_Error << "Failed to load '" << szFiles[i]<< "'" << endl;
-      return NULL;
-    }
-  
-    cgImage = [image CGImage];
-    width = CGImageGetWidth(cgImage);
-    height = CGImageGetHeight(cgImage);
-    colorSpace = CGColorSpaceCreateDeviceRGB();
-  
-    // Malloc may be used instead of calloc if your cg image has dimensions equal to the dimensions of the cg bitmap context
-    data = (GLubyte *)calloc(width * height * 4, sizeof(GLubyte));
-    cgContext = CGBitmapContextCreate(data, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
-    if (cgContext == NULL) 
-    {
-      CLEANUP();
-    }
-    // Set the blend mode to copy. We don't care about the previous contents.
-    CGContextSetBlendMode(cgContext, kCGBlendModeCopy);
-    CGContextDrawImage(cgContext, CGRectMake(0.0f, 0.0f, width, height), cgImage);
-    ////////////////////
-    int    iGLInternalFormat = 3;
-    GLenum iGLformat = GL_RGB;
-    ////////////////////
-    // Check correct depth
-    switch ( CGImageGetBitsPerPixel(cgImage) )
-    {
-    case 8:
-      iGLInternalFormat = GL_LUMINANCE;
-      iGLformat = GL_LUMINANCE;
-      break;
-    case 16:
-      iGLInternalFormat = GL_LUMINANCE_ALPHA;
-      iGLformat = GL_LUMINANCE_ALPHA;
-      break;
-    case 24:
-      iGLInternalFormat = GL_RGB;
-      iGLformat = GL_RGB;
-      break;
-    case 32:
-      iGLInternalFormat = GL_RGBA;
-      iGLformat = GL_RGBA;
-      std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
-      break;
-    default:
-    
-      std::cerr << "Not 8, 16, 24 or 32 BBP image (was " 
-                <<  CGImageGetBitsPerPixel(cgImage)
-                << "):  '" << szFiles[i] << "'" << std::endl;
-      CLEANUP();
-    }
-
-#else
-    
-    ////////////////////
-    CTGAImage *pImage = CTGAImage::LoadTGAImage( szFiles[i] );
-    if ( pImage == NULL )
-    {
-      g_Error << __FUNCTION__ << " : Unable to load TGA image for CUBE TEXTURE." << endl;
-      delete pTexture;
-      return NULL;
-    }
-    width = pImage->GetWidth();
-    height = pImage->GetHeight();
-    ////////////////////
-    int    iGLInternalFormat = GL_RGB;
-    GLenum iGLformat = GL_RGB;
-    ////////////////////
-    // Check correct depth
-    switch (pImage->GetBPP())
-    {
-    case 8:
-      iGLInternalFormat = GL_LUMINANCE;
-      iGLformat = GL_LUMINANCE;
-      break;
-    case 16:
-      iGLInternalFormat = GL_LUMINANCE_ALPHA;
-      iGLformat = GL_LUMINANCE_ALPHA;
-      break;
-    case 24:
-      iGLInternalFormat = GL_RGB;
-      iGLformat = GL_RGB;
-      break;
-    case 32:
-      iGLInternalFormat = GL_RGBA;
-      iGLformat = GL_RGBA;
-      //std::cerr << "Texture " << szFiles[i] << " has alpha channel." <<  std::endl;
-      break;
-    default:
-      delete pImage;
-      std::cerr << "Not 8, 16, 24 or 32 BBP image (was "
-                << pImage->GetBPP() << "):  '" << szFiles[i] << "'"
-                << std::endl;
-      break;
-    }
-#endif
     //g_Error << "Internalformat: " << iGLInternalFormat << std::endl;
     //g_Error << "size :"  << width << "x" << height << std::endl;
-    GLenum iGLType = GL_TEXTURE_CUBE_MAP;
+
     ////////////////////
     // create actual gl texture
     glEnable( iGLType );
@@ -1492,20 +1110,15 @@ Moose::Graphics::COglRenderer::CreateCubeTexture( const char * szFiles[6] )
 #if defined(MOOSE_APPLE_IPHONE)
     ////////////////////
     // Create texture.
-    glTexImage2D( cubeFace, 0, iGLInternalFormat,
-                  width, height, 0,
-                  iGLformat,  GL_UNSIGNED_BYTE, data);
-    // release data
-
-    free(data); 
-
-    CGContextRelease(cgContext); 
-    CGColorSpaceRelease(colorSpace);
+    glTexImage2D( cubeFace, 0, pData[i]->GetFormat(),
+                  pData[i]->GetWidth(), pData[i]->GetHeight(), 0,
+                  pData[i]->GetFormat(),  
+                  GL_UNSIGNED_BYTE, pData[i]->GetData());
 #else
-    glTexImage2D( cubeFace, 0, iGLInternalFormat,
-                  width, height, 0,
-                  iGLformat,  GL_UNSIGNED_BYTE, pImage->GetImg());
-    delete pImage;
+    glTexImage2D( cubeFace, 0, pData[i]->GetInternalFormat(),
+                  pData[i]->GetWidth(), pData[i]->GetHeight(), 0,
+                  pData[i]->GetFormat(),   
+                  GL_UNSIGNED_BYTE, pData[i]->GetData());
 #endif
 
   } // for ( size_t
@@ -2832,10 +2445,10 @@ Moose::Graphics::COglRenderer::AttachTextureToFramebuffer( Moose::Graphics::CFra
     glBindFramebuffer(GL_FRAMEBUFFER, rFBO.GetID());
 
     // Duplicate handle to texture
-    g_DefaultTextureManager->DuplicateHandle( hTexture, rFBO.GetTextureHandle( nColorBuffer ) );
+    g_TextureMgr->DuplicateHandle( hTexture, rFBO.GetTextureHandle( nColorBuffer ) );
     ////////////////////
     // Attach texture to framebuffer
-    COglTexture *pTexture = g_DefaultTextureManager->GetResource( rFBO.GetTextureHandle(nColorBuffer) );
+    COglTexture *pTexture = g_TextureMgr->GetResource( rFBO.GetTextureHandle(nColorBuffer) );
 
     // Determine texture type
     GLenum iTexType = GetGLTextureType(pTexture->GetType());

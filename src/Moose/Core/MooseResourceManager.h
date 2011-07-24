@@ -568,6 +568,9 @@ Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
   else
   {
     Handle.Nullify();
+    Moose::Exceptions::CMooseRuntimeError err("");
+    err << "Resource '" << szStrName << "' already exists!";
+    throw err;
   }
   return -1;
 }
@@ -614,6 +617,12 @@ Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::Create( OBJECTTYPE *pType,
 
     m_pResourceHash->Insert( hashItem );
     return 0;
+  }
+  else 
+  {
+      Moose::Exceptions::CMooseRuntimeError err("");
+      err << "Resource '" << szStrName << "' already exists!";
+    throw err;
   }
 
   return -1;

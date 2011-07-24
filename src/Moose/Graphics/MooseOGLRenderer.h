@@ -20,6 +20,7 @@
 #include "MooseRenderState.h"
 #include "MooseBlendingOperation.h"
 #include "MooseAlphaTestOperation.h"
+#include "MooseTextureData.h"
 #include "MooseVertex.h"
 #include "MooseAPI.h"
 /////////////////////////////////////////////////////////////////
@@ -389,20 +390,20 @@ namespace Moose
       void DisableTexture( unsigned int nTexUnit, Moose::Graphics::COglTexture *pTexture = NULL);
       ////////////////////
       /// Creates new texture from TGA image.
-      /// \param strFilename filename for tga image.
+      /// \param pData Texture data object.
       /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
       /// \returns Pointer to COglTexture.
-      Moose::Graphics::COglTexture * CreateTexture( const std::string &strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
+      Moose::Graphics::COglTexture * CreateTexture( Moose::Util::ITextureData *pData, TEXTURE_TYPE tType = TEXTURE_2D );
       ////////////////////
       /// Creates new texture from DDS image.
-      /// \param strFilename filename for DDS image.
+      /// \param pData Texture data object.
       /// \param tType Texture type for new texture, defaults to TEXTURE_2D.
       /// \returns Pointer to COglTexture.
-      Moose::Graphics::COglTexture * CreateCompressedTexture( const char * strFilename, TEXTURE_TYPE tType = TEXTURE_2D );
+      Moose::Graphics::COglTexture * CreateCompressedTexture( Moose::Util::ITextureData *pData, TEXTURE_TYPE tType = TEXTURE_2D );
 #ifndef SWIG
       ////////////////////
       /// Creates new cube texture from TGA images.
-      /// \param szFiles texture filenames for tga image.
+      /// \param pData texture data array for images.
       /// [0] Negative X (right)
       /// [1] Positive X (left)
       /// [2] Positive Y (top)
@@ -410,23 +411,23 @@ namespace Moose
       /// [4] Negative Z (front)
       /// [5] Positive Z (back)
       /// \returns Pointer to COglTexture.
-      Moose::Graphics::COglTexture * CreateCubeTexture( const char * szFiles[6] );
+      Moose::Graphics::COglTexture * CreateCubeTexture( Moose::Util::ITextureData *pData[6] );
 #endif
       ////////////////////
       /// Creates new cube texture from TGA images.
-      /// \param szFileNegX Negative X (right).
-      /// \param szFilePosX Positive X (left).
-      /// \param szFilePosY Positive Y (top).
-      /// \param szFileNegY Negative Y (bottom).
-      /// \param szFileNegZ Negative Z (front).
-      /// \param szFilePosZ Positive Z (back).
+      /// \param pNegX Negative X (right).
+      /// \param pPosX Positive X (left).
+      /// \param pPosY Positive Y (top).
+      /// \param pNegY Negative Y (bottom).
+      /// \param pNegZ Negative Z (front).
+      /// \param pPosZ Positive Z (back).
       /// \returns Pointer to COglTexture.
-      Moose::Graphics::COglTexture * CreateCubeTexture( const char * szFileNegX,
-                                                        const char * szFilePosX,
-                                                        const char * szFilePosY,
-                                                        const char * szFileNegY,
-                                                        const char * szFileNegZ,
-                                                        const char * szFilePosZ );
+      Moose::Graphics::COglTexture * CreateCubeTexture( Moose::Util::ITextureData * pNegX,
+                                                        Moose::Util::ITextureData * pPosX,
+                                                        Moose::Util::ITextureData * pPosY,
+                                                        Moose::Util::ITextureData * pNegY,
+                                                        Moose::Util::ITextureData * pNegZ,
+                                                        Moose::Util::ITextureData * pPosZ );
       ////////////////////
       /// Creates new empty texture.
       /// \param nWidth width of texture.

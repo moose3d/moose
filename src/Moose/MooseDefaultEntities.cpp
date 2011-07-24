@@ -81,6 +81,12 @@ Moose::Default::GetSphereMgr()
 {
   return g_SphereMgr;
 }
+////////////////////////////////////////////////////////////////////////////////
+Moose::Default::TextureDataManager * 
+Moose::Default::GetTextureDataMgr()
+{
+    return g_TextureDataMgr;
+}
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Core::CUniqueNameCreator * 
 Moose::Default::GetNameCreator()

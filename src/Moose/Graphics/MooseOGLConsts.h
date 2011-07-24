@@ -158,8 +158,8 @@ namespace Moose
           ELEMENT_TYPE_UNIFORM_4I,
           ELEMENT_TYPE_UNIFORM_2X2F,
           ELEMENT_TYPE_UNIFORM_3X3F,
-          ELEMENT_TYPE_UNIFORM_4X4F,/* this is critical value, must be last of uniforms */
-          ELEMENT_TYPE_ATTRIB_1F, /* this is critical value, must be first of attribs */
+          ELEMENT_TYPE_UNIFORM_4X4F,/**< this is critical value, must be last of uniforms */
+          ELEMENT_TYPE_ATTRIB_1F, /**<  this is critical value, must be first of attribs */
           ELEMENT_TYPE_ATTRIB_2F,
           ELEMENT_TYPE_ATTRIB_3F,
           ELEMENT_TYPE_ATTRIB_4F,
@@ -170,9 +170,10 @@ namespace Moose
           ELEMENT_TYPE_ATTRIB_1UB,
           ELEMENT_TYPE_ATTRIB_2UB,
           ELEMENT_TYPE_ATTRIB_3UB,
-          ELEMENT_TYPE_ATTRIB_4UB, /* this is critical value, must be last of attribs */
+          ELEMENT_TYPE_ATTRIB_4UB, /**< this is critical value, must be last of attribs */
           // following types are for combined data
-          ELEMENT_TYPE_V3F_N3F_T2F
+          ELEMENT_TYPE_V3F_N3F_T2F,
+          ELEMENT_TYPE_ROCKET_DATA ///< Contains rocket vertex data.
         };
   } // namespace Graphics
 } // namespace Moose

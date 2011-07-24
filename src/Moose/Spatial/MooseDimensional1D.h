@@ -32,6 +32,7 @@ namespace Moose
 	SetWidth(fWidth);
     }
   public:
+    virtual ~CDimensional1D(){}
     ////////////////////
     /// Assigns the width.
     /// \param fWidth The value for width.

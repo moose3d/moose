@@ -11,11 +11,15 @@
 #include "MooseDefaultEntities.h"
 #include "MooseMaterial.h"
 #include "MooseMatrix4x4.h"
+#include "MooseVector2.h"
 #include "MooseLight.h"
+#include <Rocket/Core.h>
 #include <map>
 #include <iostream>
 #include <cassert>
 #include <sstream>
+#include <MooseExceptions.h>
+#define BUFFER_OFFSET(i) ((char*)NULL + (i))
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
@@ -434,6 +438,40 @@ namespace Moose
         return (void *)&m_Data;
       }
     };
+/////////////////////////////////////////
+    class MOOSE_API CShaderUniformVec2f : public Moose::Graphics::IShaderParam
+    {
+    protected:
+      GLint  m_iLocation;
+      /// points somewhere else, is never freed.
+      Moose::Math::CVector2<float>  m_Data; 
+          
+    public:
+      CShaderUniformVec2f() : m_iLocation(-1) {}
+          
+      void Bind( CShader & s, size_t nIndex ) 
+      {
+        //g_Log << "UNIFORM vec3ptr: Binding " << GetName() << std::endl; 
+        m_iLocation = glGetUniformLocation(s.GetProgram(), GetName().c_str());
+        //g_Error << "vec3ptr Bound to " << m_iLocation << "\n";
+      }
+      void SetData( const Moose::Math::CVector2<float> & data )
+      {
+        m_Data = data;
+      } 
+      void Apply( Moose::Graphics::COglRenderer & r, size_t nIndex = 0 )
+      {
+        if ( m_iLocation == -1 ) 
+        {
+          return;
+        }
+        glUniform2fv( m_iLocation, 1, m_Data.GetArray());
+      }
+      void * GetData()
+      {
+        return (void *)&m_Data;
+      }
+    };
     ///////////////////////////////////////////////////////////////
     /// Case for shader attribs.
     class MOOSE_API CShaderAttribPtr : public Moose::Graphics::IShaderParam 
@@ -542,9 +580,103 @@ namespace Moose
         return m_pData;
       }
     };
-      
-      
-      
+    ///////////////////////////////////////////////////////////////
+    class MOOSE_API CShaderAttribRocketPos : public Moose::Graphics::CShaderAttribPtr 
+    {
+    public:
+      void Apply(Moose::Graphics::COglRenderer & r, size_t nIndex)
+      {
+        if ( m_pData == NULL ) return;
+              
+
+              
+        // check whether VBO is used.
+        if ( !m_pData->IsCached() ) m_pData->CreateCache();
+        else if ( m_pData->GetState() == Moose::Core::CACHE_REFRESH) m_pData->UpdateCache();
+        glBindBuffer(GL_ARRAY_BUFFER, m_pData->GetCache());              
+
+        switch( m_pData->GetType() )
+        {
+        case ELEMENT_TYPE_ROCKET_DATA:
+          // rocket vertex colors are after position.
+          glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 
+                                sizeof(Rocket::Core::Vertex), 
+                                0 ); 
+          break;
+        default:
+          {
+            throw Moose::Exceptions::CMooseRuntimeError("Wrong data type for CShaderAttribRocketPos");
+          }
+          break;
+        }
+        glEnableVertexAttribArray(nIndex);
+      }
+    };
+    ///////////////////////////////////////////////////////////////
+    class MOOSE_API CShaderAttribRocketColor : public Moose::Graphics::CShaderAttribPtr 
+    {
+    public:
+      void Apply(Moose::Graphics::COglRenderer & r, size_t nIndex)
+      {
+        if ( m_pData == NULL ) return;
+              
+
+              
+        // check whether VBO is used.
+        if ( !m_pData->IsCached() ) m_pData->CreateCache();
+        else if ( m_pData->GetState() == Moose::Core::CACHE_REFRESH) m_pData->UpdateCache();
+        glBindBuffer(GL_ARRAY_BUFFER, m_pData->GetCache());              
+
+        switch( m_pData->GetType() )
+        {
+        case ELEMENT_TYPE_ROCKET_DATA:
+          // rocket vertex colors are after position.
+          glVertexAttribPointer(nIndex, 4, GL_UNSIGNED_BYTE, 0,
+                                sizeof(Rocket::Core::Vertex), 
+                                BUFFER_OFFSET(sizeof(Rocket::Core::Vector2f)) ); 
+          break;
+        default:
+          {
+            throw Moose::Exceptions::CMooseRuntimeError("Wrong data type for CShaderAttribRocketColor");
+          }
+          break;
+        }
+        glEnableVertexAttribArray(nIndex);
+      }
+    };
+    ///////////////////////////////////////////////////////////////
+    class MOOSE_API CShaderAttribRocketTexCoord : public Moose::Graphics::CShaderAttribPtr 
+    {
+    public:
+      void Apply(Moose::Graphics::COglRenderer & r, size_t nIndex)
+      {
+        if ( m_pData == NULL ) return;
+        
+
+              
+        // check whether VBO is used.
+        if ( !m_pData->IsCached() ) m_pData->CreateCache();
+        else if ( m_pData->GetState() == Moose::Core::CACHE_REFRESH) m_pData->UpdateCache();
+        glBindBuffer(GL_ARRAY_BUFFER, m_pData->GetCache());              
+
+        switch( m_pData->GetType() )
+        {
+        case ELEMENT_TYPE_ROCKET_DATA:
+          // rocket vertex colors are after position.
+          glVertexAttribPointer(nIndex, 2, GL_FLOAT, 0, 
+                                sizeof(Rocket::Core::Vertex), 
+                                BUFFER_OFFSET(sizeof(Rocket::Core::Vector2f)+
+                                              sizeof(Rocket::Core::Colourb)) ); 
+          break;
+        default:
+          {
+            throw Moose::Exceptions::CMooseRuntimeError("Wrong data type for CShaderAttribRocketTexCoord");
+          }
+          break;
+        }
+        glEnableVertexAttribArray(nIndex);
+      }
+    };
     ///////////////////////////////////////////////////////////////
     /// Case for shader attribs.
     class MOOSE_API CShaderAttrib : public Moose::Graphics::IShaderParam 

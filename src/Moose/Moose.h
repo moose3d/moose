@@ -65,6 +65,7 @@
 #include "MooseSphereRenderable.h"
 #include "MooseLineRenderable.h"
 #include "MooseCapsuleRenderable.h"
+#include "MooseTextRenderable.h"
 #include "MooseTransform.h"
 #include "MooseTransformGraph.h"
 #include "MooseSpatialGraph.h"
@@ -114,7 +115,11 @@
 #include <MooseGrid.h>
 #include <MooseTransformIndicator.h>
 #include <MooseAxisObject.h>
+#include <MooseTextureData.h>
+#include <MooseTGAData.h>
+#include <MooseDDSData.h>
 #if defined(MOOSE_APPLE_IPHONE)
+#include <MoosePNGData.h>
 #include <MooseIPhoneAudioSample.h>
 #include <MooseMusicClip.h>
 #endif

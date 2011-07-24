@@ -152,6 +152,7 @@ namespace Moose
       DDS_FORMAT_TYPE	m_Format;
       int		m_iNumMipMaps;
       unsigned char *	m_pPixels;
+      size_t            m_byteSize;
     public:
       ////////////////////
       /// Constructor.
@@ -176,6 +177,7 @@ namespace Moose
       size_t	      GetHeight() const {	return m_nHeight; }
       int	      GetNumMipMaps() const {	return m_iNumMipMaps; }
       int	      GetComponents() const { return m_iComponents; }
+      size_t      GetByteSize() const { return m_byteSize; }
     private:
       ////////////////////
       /// Cleans up existing data.

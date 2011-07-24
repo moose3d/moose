@@ -11,6 +11,9 @@
 #include "MooseDefaultEntities.h"
 #include "MooseCollision.h"
 #include "MooseExceptions.h"
+#include "MooseTextureData.h"
+#include "MooseDDSData.h"
+#include "MooseTGAData.h"
 #include <string>
 
 #if !defined(MOOSE_APPLE_IPHONE)
@@ -26,6 +29,7 @@ using namespace Moose::Scene;
 using namespace Moose::Graphics;
 using namespace Moose::Volume;
 using namespace Moose::Exceptions;
+using namespace Moose::Util;
 #if !defined(MOOSE_APPLE_IPHONE)
 using namespace Moose::Window;
 #endif
@@ -827,38 +831,36 @@ SCRIPT_CMD_IMPL( LoadTexture2D )
     int len_tex = 0;
     const char *szTextureFile = Tcl_GetStringFromObj( objv[1], &len_tex);
     const char *szResourceName = Tcl_GetStringFromObj( objv[2], &len );
-    COglRenderer tmp;
-    COglTexture *pTex = NULL;
+
+    ITextureData *pData = NULL;
     //g_Log << "Loading textures '" << &szTextureFile[len_tex-4] << "'" << endl;
-    if ( strncasecmp( &szTextureFile[len_tex-4], ".dds", 4) == 0 )
+    try 
     {
-
-        pTex= tmp.CreateCompressedTexture( szTextureFile, TEXTURE_2D);
-    }
-    else
-    {
-        //g_Log << "Loading regular textures" << endl;
-        pTex =tmp.CreateTexture( szTextureFile, TEXTURE_2D);
-    }
-
-    if (pTex == NULL )
+        if ( strncasecmp( &szTextureFile[len_tex-4], ".dds", 4) == 0 )
+        {
+            pData = new CDDSData();
+            pData->Load( szTextureFile);
+            g_TextureData.Create(pData, szResourceName);
+        }
+        else
+        {
+            //g_Log << "Loading regular textures" << endl;
+            pData = new CTGAData();
+            pData->Load(szTextureFile);
+            g_TextureData.Create(pData, szResourceName);
+        }
+    } 
+    catch ( CMooseException & ex )
     {
         ostringstream tmp;
-        tmp << "No such texture file '" << szTextureFile << "'";
-        SCRIPT_ERROR( tmp.str().c_str());
-    }
-
-    if ( g_TextureMgr->Create(pTex, szResourceName) )
-    {
-        delete pTex;
-        ostringstream tmp;
-        tmp << "Cannot create resource '" << szResourceName << "'";
+        tmp << "Cannot create resource '" << szResourceName << "'. ";
+        tmp << ex.what();
         SCRIPT_ERROR(tmp.str().c_str());
     }
     //else g_Log << "created texture resource '" << szResourceName << "'" << endl;
     return TCL_OK;
 }
-/////////////////////////////////////////////////////////////////
+
 SCRIPT_CMD_IMPL( LoadTextureCube )
 {
     CHECK_ARGS( 2, "cubeTexParams resourceName");
@@ -875,7 +877,7 @@ SCRIPT_CMD_IMPL( LoadTextureCube )
 
     const char *szResourceName = Tcl_GetStringFromObj( objv[2], &len );
     COglRenderer tmp;
-    COglTexture *pTex = NULL;
+
     //g_Log << "Loading textures '" << &szTextureFile[len_tex-4] << "'" << endl;
     if ( files[0] == NULL )     SCRIPT_ERROR(".left texture is invalid.");
     if ( files[1] == NULL )     SCRIPT_ERROR(".right texture is invalid.");
@@ -884,20 +886,45 @@ SCRIPT_CMD_IMPL( LoadTextureCube )
     if ( files[4] == NULL )     SCRIPT_ERROR(".back texture is invalid.");
     if ( files[5] == NULL )     SCRIPT_ERROR(".front texture is invalid.");
 
-    pTex= tmp.CreateCubeTexture( (const char **)files );
-
-    if (pTex == NULL )
+    try {
+        CTGAData *pData[6] = { NULL };
+        for( int i=0;i<6;i++) 
+        {
+            pData[i] = new CTGAData();
+            pData[i]->Load( files[i] );
+            ostringstream s;
+            s << szResourceName;
+            switch(i)
+            {
+            case 0:
+                s << ".left";
+                break;
+            case 1:
+                s << ".right";
+                break;
+            case 2:
+                s << ".top";
+                break;
+            case 3:
+                s << ".bottom";
+                break;
+            case 4:
+                s << ".back";
+                break;
+            case 5:
+                s << ".front";
+                break;
+            default:
+                break;
+            }
+            g_TextureData.Create( pData[i], s.str());
+        }
+    } 
+    catch ( CMooseException & ex )
     {
         ostringstream tmp;
-        tmp << "Could not create cube texture '" << szResourceName<< "'. Problem with TGA files?";
-        SCRIPT_ERROR( tmp.str().c_str());
-    }
-
-    if ( g_TextureMgr->Create(pTex, szResourceName) )
-    {
-        delete pTex;
-        ostringstream tmp;
-        tmp << "Cannot create resource '" << szResourceName << "'";
+        tmp << "Cannot create resource '" << szResourceName << "'.";
+        tmp << ex.what();
         SCRIPT_ERROR(tmp.str().c_str());
     }
 

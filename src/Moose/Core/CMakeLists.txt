@@ -35,11 +35,13 @@ MooseUniqueNameCreator.h
 MooseUpdateable.h
 MooseViewable.h
 MooseWindowsWrapper.h
-
 )
 if(APPLE AND IOS)
   add_sources(Moose MooseAssetBundle.mm)
 elseif(APPLE OR UNIX)
-  add_sources(Moose MooseAssetBundle.cpp)
+  add_sources(Moose 
+    MooseAssetBundle.cpp
+    MooseThreadedTask.h
+    MooseThreadedTask.cpp
+    )
 endif()
-

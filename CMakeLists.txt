@@ -258,6 +258,7 @@ FIND_PACKAGE(OpenAL)
 FIND_PACKAGE(TCL)
 FIND_PACKAGE(SDL)
 
+FIND_PACKAGE(FTGL)
 
 IF(GLEW_FOUND)
 include_directories(${GLEW_INCLUDE_DIR})
@@ -308,13 +309,20 @@ SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${TCL_LIBRARY}")
 ENDIF()
 
 
+IF(FTGL_FOUND)
+include_directories(${FTGL_INCLUDE_DIR})
+SET(EXTERNAL_LIBS ${EXTERNAL_LIBS} " ${FTGL_LIBRARY}")
+SET(INTERNAL_LIBS ${INTERNAL_LIBS} " ${FTGL_LIBRARY}")
+ENDIF()
+
+
 # libs settings
 #SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lMoose")
 #SET( INTERNAL_LIBS ${INTERNAL_LIBS} "libMoose.a")
 
 
-SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lm -logg  -lavcodec -lavformat -lavutil -lswscale")
-SET( INTERNAL_LIBS ${INTERNAL_LIBS} "-lm -logg  -lavcodec -lavformat -lavutil -lswscale")
+SET( EXTERNAL_LIBS ${EXTERNAL_LIBS} "-lm -logg  -lavcodec -lavformat -lavutil -lswscale -lRocketCore")
+SET( INTERNAL_LIBS ${INTERNAL_LIBS} "-lm -logg  -lavcodec -lavformat -lavutil -lswscale -lRocketCore")
 # ------------------------------
 # Replace semicolons with whitespace
 string(REPLACE ";" " " TMP "${EXTERNAL_LIBS}")
@@ -412,7 +420,8 @@ SET_SOURCE_FILES_PROPERTIES(${INTERFACE_FILES} PROPERTIES CMAKE_SWIG_FLAGS "-inc
 SWIG_ADD_MODULE( ${TCL_MODULE} tcl ${INTERFACE_FILES} )
 #ADD_DEPENDENCIES(${TCL_MODULE} Moose)
 #SWIG_LINK_LIBRARIES(${TCL_MODULE} ${TCL_LIBRARIES} ${INTERNAL_LIBS} )
-SWIG_LINK_LIBRARIES(${TCL_MODULE} libMoose.so ${VORBIS_LIBRARY} ${OPENAL_LIBRARY} ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} tcl -L/opt/local/lib -lfreetype -logg -lvorbisfile -lswscale -lavcodec -lavutil -lavformat)
+SWIG_LINK_LIBRARIES(${TCL_MODULE} libMoose.so ${VORBIS_LIBRARY} ${OPENAL_LIBRARY} ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} ${FTGL_LIBRARY} tcl -L/opt/local/lib -lfreetype -logg -lvorbisfile -lswscale -lavcodec -lavutil -lavformat -lRocketCore)
+
 SET_TARGET_PROPERTIES( ${TCL_MODULE} 
   PROPERTIES
   OUTPUT_NAME Moose

@@ -46,7 +46,7 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
   {
     CVertexDescriptor *pInterleaved = m_pLoader->GetInterleavedArray();
     // manage array
-    int iRetval = g_DefaultVertexManager->Create( pInterleaved, 
+    int iRetval = g_VertexMgr->Create( pInterleaved, 
                                                   g_UniqueName, 
                                                   pModel->GetVertexHandle() );
     if ( iRetval != 0 )
@@ -57,7 +57,7 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
   else
   {
     // Create vertex handle
-    int iRetval = g_DefaultVertexManager->Create( m_pLoader->GetVertexArray(),  
+    int iRetval = g_VertexMgr->Create( m_pLoader->GetVertexArray(),  
                                                   g_UniqueName, 
                                                   pModel->GetVertexHandle() );
     if ( iRetval != 0 )
@@ -69,7 +69,7 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
     if ( iFlags & OPT_VERTEX_NORMALS && m_pLoader->HasNormalArray() )
     {
       /* Create normal handle */
-      iRetval = g_DefaultVertexManager->Create(m_pLoader->GetNormalArray(), 
+      iRetval = g_VertexMgr->Create(m_pLoader->GetNormalArray(), 
                                                g_UniqueName, 
                                                pModel->GetNormalHandle());
       if ( iRetval != 0 )
@@ -81,7 +81,7 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
     if ( iFlags & OPT_VERTEX_TEXCOORDS && m_pLoader->HasTexCoordArray())
     {
       /* Create texcoord handle */
-      iRetval = g_DefaultVertexManager->Create(m_pLoader->GetTexCoordArray(), g_UniqueName, pModel->GetTextureCoordinateHandle(0));
+      iRetval = g_VertexMgr->Create(m_pLoader->GetTexCoordArray(), g_UniqueName, pModel->GetTextureCoordinateHandle(0));
 
       if ( iRetval != 0 )
       {
@@ -101,7 +101,7 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
   {
     CIndexArray *pArray = m_pLoader->GetIndexArray();
     assert( pArray->GetNumIndices() > 0 );
-    int iRetval = g_DefaultIndexManager->Create( pArray, g_UniqueName, pModel->GetIndices());
+    int iRetval = g_IndexMgr->Create( pArray, g_UniqueName, pModel->GetIndices());
 
     if ( iRetval != 0 )
     {
@@ -112,7 +112,7 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
   else
   {
     CIndexArray *pIndices = m_pLoader->GetIndexArray();
-    int iRetval = g_DefaultIndexManager->Create( pIndices, g_UniqueName, pModel->GetIndices() );
+    int iRetval = g_IndexMgr->Create( pIndices, g_UniqueName, pModel->GetIndices() );
 
     if ( iRetval != 0 )
     {

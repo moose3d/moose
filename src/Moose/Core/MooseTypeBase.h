@@ -11,26 +11,26 @@
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
-  namespace Core
-  {
-   /////////////////////////////////////////////////////////////////
-    /// Template base for each typed object.
-    template <typename TYPE>
-    class MOOSE_API CTypeBase
+    namespace Core
     {
-    protected:
-      /// Stores the type
-      TYPE m_Type;
-    public:
-      ////////////////////
-      /// Assigns type.
-      /// \param rType TYPE to be set.
-      void SetType( const TYPE &rType ) { m_Type = rType;  }
-      ////////////////////
-      /// Return current type.
-      /// \returns Currently set type.
-      const TYPE & GetType() const { return m_Type; }
-    };
-  } // Core
+        /////////////////////////////////////////////////////////////////
+        /// Template base for each typed object.
+        template <typename TYPE>
+        class MOOSE_API CTypeBase
+        {
+        protected:
+            /// Stores the type
+            TYPE m_Type;
+        public:
+            ////////////////////
+            /// Assigns type.
+            /// \param rType TYPE to be set.
+            void SetType( const TYPE &rType ) { m_Type = rType;  }
+            ////////////////////
+            /// Return current type.
+            /// \returns Currently set type.
+            const TYPE & GetType() const { return m_Type; }
+        };
+    } // Core
 } // Moose
 #endif /* MOOSETYPEBASE_H_ */

@@ -18,6 +18,7 @@ namespace Moose
       ////////////////////
       /// Constructor.
       COneDirectional() {}
+      virtual ~COneDirectional(){}
       ////////////////////
       /// Constructor.
       COneDirectional( const Moose::Math::CVector3<float> & vDir ) { SetDirection(vDir); }

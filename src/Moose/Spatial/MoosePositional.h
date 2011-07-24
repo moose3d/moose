@@ -31,6 +31,9 @@ namespace Moose
         {
         }
         ////////////////////
+        /// Destructor.
+        virtual ~CPositional() {}
+        ////////////////////
         /// Assigns position.
         /// \param vPosition vector of which values are used.
         inline void SetPosition( const Moose::Math::CVector3<float> &vPosition )

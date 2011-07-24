@@ -61,7 +61,7 @@ namespace Moose
 	m_fAttrib1 = 0.0f;
 
     }
-
+    virtual ~CVertex() {}
     //       bool operator==( const CVertex & vert)
 //       {
 // 	for(int iT=0;iT<TEXTURE_HANDLE_COUNT;iT++)

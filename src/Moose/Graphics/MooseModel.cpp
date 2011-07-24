@@ -52,13 +52,13 @@ Moose::Graphics::CModel::~CModel()
   // nullify all handles
   for(unsigned int i=0;i<TEXTURE_HANDLE_COUNT;i++)
   {
-    //g_DefaultTextureManager->Release(m_aTextureHandles[i]);
-    g_DefaultVertexManager->Release(m_aTextureCoordinateHandles[i]);
+    //g_TextureManager->Release(m_aTextureHandles[i]);
+    g_VertexMgr->Release(m_aTextureCoordinateHandles[i]);
   }
-  g_DefaultVertexManager->Release( m_VertexDescriptorHandle);
-  g_DefaultVertexManager->Release( m_VertexColorHandle);
-  g_DefaultVertexManager->Release( m_VertexNormalHandle );
-  g_DefaultIndexManager->Release( GetIndices() );
+  g_VertexMgr->Release( m_VertexDescriptorHandle);
+  g_VertexMgr->Release( m_VertexColorHandle);
+  g_VertexMgr->Release( m_VertexNormalHandle );
+  g_IndexMgr->Release( GetIndices() );
 
 
   //g_DefaultShaderManager->Release(m_ShaderHandle);

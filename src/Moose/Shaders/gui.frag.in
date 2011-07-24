@@ -1,0 +1,25 @@
+@version@
+#ifdef GL_ES
+#define IN varying
+#define OUT 
+precision mediump float;
+#else
+#define IN in
+#define OUT out
+#endif
+uniform sampler2D diffusetex;
+IN vec2  texcoord;
+IN vec4  color;
+
+#ifndef GL_ES
+OUT vec4 gl_FragColor;
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+void main()
+{
+    // simple output, texture tinted with color.
+  gl_FragColor = texture(diffusetex, texcoord) * color;
+
+}
+////////////////////////////////////////////////////////////////////////////////

@@ -148,11 +148,10 @@ Moose::Graphics::CRenderState::AddShaderAttrib( const char *sName, Moose::Defaul
 void
 Moose::Graphics::CRenderState::AddShaderAttrib( const char *sName, Moose::Graphics::CVertexDescriptor *pData )
 { 
-    CShaderAttribPtr *pParam = new CShaderAttribPtr();
-    pParam->SetName(sName);
-    pParam->SetData( pData );  
-    m_ShaderAttribs.Add( pParam ); 
-    
+  CShaderAttribPtr *pParam = new CShaderAttribPtr();
+  pParam->SetName(sName);
+  pParam->SetData( pData );
+  m_ShaderAttribs.Add( pParam ); 
 }
 /////////////////////////////////////////////////////////////////
 void

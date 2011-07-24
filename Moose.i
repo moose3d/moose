@@ -66,7 +66,9 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %typemap(out) float & {
   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(*$1));
 }
-
+%include "MooseStateBase.h"
+%template (threadState) Moose::Core::CStateBase< Moose::Core::ThreadState >;
+%include "MooseThreadedTask.h"
 %include "MooseNamed.h"
 %include "MooseTimer.h"
 %include "MooseFPSCounter.h"
@@ -82,6 +84,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 
 %template (nameCreator) Moose::Core::CSingleton<Moose::Core::CUniqueNameCreator>;
 %template (gameObjHandled) Moose::Core::CHandled< Moose::Scene::CGameObject >;
+
 %include "MooseCore.h"
 %template (sdlScreen) Moose::Core::CSingleton<Moose::Window::CSDLScreen>;
 %include "MooseSDLScreen.h"
@@ -182,6 +185,9 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %template (CTextureMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::COglTexture, Moose::Core::CHandle<Moose::Graphics::COglTexture> > >;
 %template (CTextureResMgr) Moose::Core::CResourceManager< Moose::Graphics::COglTexture, Moose::Core::CHandle<Moose::Graphics::COglTexture> >;
 %include "MooseModel.h"
+%template (CTextureDataMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Util::ITextureData, Moose::Core::CHandle<Moose::Util::ITextureData> > >;
+%template (CTextureDataResMgr) Moose::Core::CResourceManager< Moose::Util::ITextureData, Moose::Core::CHandle<Moose::Util::ITextureData> >;
+
 %include "MooseDefaultEntities.h"
 %rename (ostreamModel) operator<<(std::ostream &stream, const Moose::Graphics::CModel & model);
 %include "MooseShader.h"
@@ -252,6 +258,7 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseLineRenderable.h"
 %include "MooseBoxRenderable.h"
 %include "MooseCapsuleRenderable.h"
+%include "MooseTextRenderable.h"
 %include "MooseOGLRenderer.h"
  //%template (FireworksSingleton) Moose::Core::CSingleton< CFireWorks >;
 %include "MoosePlane.h"
@@ -261,7 +268,9 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseTransformIndicator.h"
 %include "MooseUniqueNameCreator.h"
 %include "MooseAxisObject.h"
-
+%include "MooseTextureData.h"
+%include "MooseDDSData.h"
+%include "MooseTGAData.h"
 
 Moose::Scene::CScene * GameObjToScene( Moose::Scene::CGameObject *pObj );
 Moose::Scene::CGameObject *  SceneToGameObj( Moose::Scene::CScene *pObj );

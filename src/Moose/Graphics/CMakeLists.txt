@@ -69,6 +69,15 @@ add_sources (Moose
   MooseTexture.h
   MooseVertexDescriptor.cpp
   MooseVertexDescriptor.h
+
+# Obsolete, remove?
+  MooseTextRenderable.h
+  MooseTextRenderable.cpp
+
+  MooseRocketRenderable.h
+  MooseRocketRenderable.cpp
+  MooseRocketRenderInterface.h
+  MooseRocketRenderInterface.cpp
   )
 
 if(UNIX AND (NOT APPLE))

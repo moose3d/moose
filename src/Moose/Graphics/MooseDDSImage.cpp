@@ -98,7 +98,7 @@ Moose::Graphics::CDDSImage::Load( const char *szFilename )
     iBufferSize = ddsd.dwLinearSize * iMipmapFactor;
   else
     iBufferSize = ddsd.dwLinearSize;
-
+  m_byteSize = iBufferSize;
   ////////////////////
   /// allocate memory
   m_pPixels = new unsigned char[iBufferSize];

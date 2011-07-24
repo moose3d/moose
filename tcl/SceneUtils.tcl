@@ -4,7 +4,8 @@ set g_Models {}
 set g_lstTexNameCache {}
 # Maps texture names into existing textures if same
 set g_lstTexNameMap {}
-
+# Texture resources that have not yet been loaded.
+set g_lstNotCreatedTextures {}
 # Maps all model names that use same model file.
 # eg. { file1 { name1 name2 name3 ... } file2 { name4 name5 name6} ... } 
 set g_lstModelNameCache {}
@@ -162,13 +163,14 @@ proc LoadShaders {} {
 
 proc SetModelTextureCached { model index texturefile texname } {
     
-    global g_lstTexNameCache g_lstTexNameMap
+    global g_lstTexNameCache g_lstTexNameMap g_lstNotCreatedTextures
     array set tmp $g_lstTexNameCache
     puts "$model $index $texturefile $texname"
     if { [ llength [ array get tmp $texturefile ] ] == 0 } { 
         # First time that this texture is loaded.
         LoadTexture2D $texturefile $texname
         lappend g_lstTexNameCache $texturefile $texname
+        lappend g_lstNotCreatedTextures $texname
         puts "Loading new texture $texturefile -> $texname..."
         
     } else {
@@ -252,16 +254,16 @@ proc NewModel { name params } {
     }
 }
 
-
 proc NewTexture { texname texturefile } {
 
-    global g_lstTexNameCache g_lstTexNameMap
+    global g_lstTexNameCache g_lstTexNameMap g_lstNotCreatedTextures
     array set tmp $g_lstTexNameCache
             
     if { [ llength [ array get tmp $texturefile ] ] == 0 } { 
         # First time that this texture is loaded.
         LoadTexture2D $texturefile $texname
         lappend g_lstTexNameCache $texturefile $texname
+        lappend g_lstNotCreatedTextures $texname
         puts "Loading new texture $texturefile -> $texname..."
         
     } else {
@@ -271,6 +273,24 @@ proc NewTexture { texname texturefile } {
     }     
 }
 
+# Call this only from renderer thread!
+proc CreateTextures {} {
+    global g_lstNotCreatedTextures
+
+    foreach { texname } $g_lstNotCreatedTextures {
+
+        if { [g_Textures $texname] == "NULL" } {
+            # Make texture object
+            if { [g_TextureData $texname] != "NULL" } {
+                set texture [ [[g_Application] GetRenderer] CreateTexture [g_TextureData $texname] ]
+                [g_Textures] Create $texture $texname
+                # Release data, it is already converted into proper texture
+                [g_TextureData] Destroy $texname
+            }
+        }
+    }
+    set g_lstNotCreatedTextures {}
+}
 
 proc LoadModels {} {
     global g_Models g_lstKnownModelParams g_lstKnownTextureParams g_TexParamToIndex g_lstTexNameCache g_lstModelNameCache 
@@ -341,7 +361,7 @@ proc LoadModels {} {
             ComputeBoundingSphere ${modelname}.model ${modelname}.boundingSphere
             puts "done!"
         } 
-
+        # Loads only texture data, actual texture obejct is created later.
         foreach p $g_lstKnownTextureParams {
             foreach { texparmname file } [ array get model_params ${modelname}${p} ] {
                 SetModelTextureCached ${modelname}.model $g_TexParamToIndex($p) $file $texparmname
@@ -393,7 +413,7 @@ proc AddSkeleton { name params } {
     } else {
         puts "Object skeleton $name already exists, I will leave it be."
     }
-    puts [llength $g_lstSkeletons]
+    puts "skeletons: [llength $g_lstSkeletons]"
     
 }
 
@@ -499,6 +519,14 @@ proc g_TextureMgr { { name "" } } {
     }
 }
 
+proc g_TextureDataMgr { { name "" } } {
+    if { $name == "" } {
+        return [GetTextureDataMgr]
+    } else {
+        return [[GetTextureDataMgr] GetResource $name]
+    }
+}
+
 proc g_VertexMgr { { name "" } } {
     if { $name == "" } {
         return [GetVertexMgr]
@@ -594,6 +622,10 @@ proc g_Objects { { name "" } } {
 
 proc g_Textures { { name ""} } {
     return [g_TextureMgr $name ]
+}
+
+proc g_TextureData { { name "" } } {
+    return [g_TextureDataMgr $name]
 }
 
 proc g_Vertices { { name "" } } {

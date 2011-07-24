@@ -11,26 +11,35 @@
 #include <MooseRenderQueue.h>
 #include <MooseCameraObject.h>
 #include <MooseRenderable.h>
+#include <MooseRocketRenderable.h>
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(MOOSE_APPLE_IPHONE)
 struct Tcl_Interp;
 #else
 namespace Moose
 {
-  namespace Scene
-  {
-    /// Touches passed to scene.
-    struct Touch
+    namespace Scene
     {
-      float x;
-      float y;
-      /// For easier creation of touch objects.
-      Touch( float fX, float fY) : x(fX), y(fY) { }
-    };
-    typedef std::list<Touch> Touches;
-  }
+        /// Touches passed to scene.
+        struct Touch
+        {
+            float x;
+            float y;
+            /// For easier creation of touch objects.
+            Touch( float fX, float fY) : x(fX), y(fY) { }
+        };
+        typedef std::list<Touch> Touches;
+    }
 }
 #endif
+
+namespace Rocket
+{
+    namespace Core
+    {
+        class Context;
+    }
+}
 
 namespace Moose
 {
@@ -38,6 +47,8 @@ namespace Moose
   {
     class CRTSCamera;
     class CDirectionalLightObject;
+    class CApplication;
+    class CScene;
     typedef Moose::Graphics::CRenderQueue< Moose::Graphics::CRenderable *> RenderQueue;
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -58,10 +69,10 @@ namespace Moose
       void													   SetCamera( Moose::Scene::CCameraObject* pCamera ) { m_pCamera = pCamera; }
       Moose::Scene::GameObjectList & GetGameObjectList() { return m_lstGameObjects; }
       Moose::Scene::GameObjectList & GetActiveLights() 	{ return m_lstActiveLights; }
-      RenderQueue										 & GetRenderQueue() { return m_RenderQueue; }
-      RenderQueue										 & GetTransparentQueue() { return m_TransparentQueue; }
-      void															SetColliderRendering( bool bFlag ) { m_bColliderRendering = bFlag; }
-      bool															IsColliderRendering() const { return m_bColliderRendering; }
+      RenderQueue				   	 & GetRenderQueue() { return m_RenderQueue; }
+      RenderQueue					 & GetTransparentQueue() { return m_TransparentQueue; }
+      void		  				   SetColliderRendering( bool bFlag ) { m_bColliderRendering = bFlag; }
+      bool						   IsColliderRendering() const { return m_bColliderRendering; }
 
     }; // CCameraProperty
     ///////////////////////////////////////////////////////////////////////////////
@@ -86,20 +97,47 @@ namespace Moose
         m_vGlobalAmbient = color; 
       }
     };
+    ////////////////////
+    /// Gui settings for scenes.
+    class MOOSE_API CGUI 
+    {
+      friend class Moose::Scene::CScene;
+      friend class Moose::Scene::CApplication;
+    protected:
+      Moose::Graphics::CCamera                            m_Camera;      ///< Camera with orthogonal view.
+      Rocket::Core::Context *                             m_pContext;    ///< Rocket GUI context. 
+      Rocket::Core::ElementDocument *                     m_pDocument;   ///< Loaded GUI Document.
+      RenderQueue                                         m_Queue;       ///< All GUI objects.
+      Moose::Graphics::CRocketRenderable                 *m_pGUIRenderable;
+    public:
+      Moose::Graphics::CCamera &        GetCamera();
+      RenderQueue &                     GetRenderQueue();
+      void Init( const std::string & name, int width, int height );
+      void Load( const std::string & file );
+      void Show();
+      void Hide();
+      void Render();
+      void Update();
+      
+    };
+    ////////////////////    
     /// Scene where everything is.
-    class CScene : public Moose::Scene::CGameObject
+    class MOOSE_API CScene : public Moose::Scene::CGameObject
     {
     protected:
-      Moose::Scene::CSpatialGraph	*                       m_pSpatialGraph;   ///<! Spatial graph used for collision and culling.
-      Moose::Scene::CTransformGraph *  					m_pTransformGraph; ///<! Transforms. By default, every object is child of root.
-      GameObjectList               						m_lstGameObjects;  ///<! list of objects in this scene.
+      Moose::Scene::CSpatialGraph	*                       m_pSpatialGraph;   ///< Spatial graph used for collision and culling.
+      Moose::Scene::CTransformGraph *  					m_pTransformGraph; ///< Transforms. By default, every object is child of root.
+      GameObjectList               						m_lstGameObjects;  ///< list of objects in this scene.
             
-      RenderQueue											m_StaticQueue; 	   ///!< All objects not collected using a camera.
-      CameraMap											m_mapCameras;      ///!< Storage for all cameras used in this scene.
+      RenderQueue											m_StaticQueue; 	   ///< All objects not collected using a camera.
 
-      GameObjectCollidersMap                              m_mapPotentialColliders; 	///!< From GameObject ptr to List of possible colliders.
-      GameObjectCollidersMap                              m_mapColliders;             ///!< From GameObject ptr to List of currently colliding objects.
+      CameraMap											m_mapCameras;      ///< Storage for all cameras used in this scene.
+
+      GameObjectCollidersMap                              m_mapPotentialColliders; 	///< From GameObject ptr to List of possible colliders.
+      GameObjectCollidersMap                              m_mapColliders;             ///< From GameObject ptr to List of currently colliding objects.
       CRenderSettings                                     m_RenderSettings;
+
+      CGUI                                          m_GUI;
     protected:
       void   					 CollectVisibleGameObjects( CCameraProperty & cameraProp );
       /// Removes object pointer from caches.
@@ -132,7 +170,13 @@ namespace Moose
 			
       void PushToRenderQueue( Moose::Graphics::CRenderable *pRenderable );
       void RemoveFromRenderQueue( Moose::Graphics::CRenderable *pRenderable );
+      void PushToGUIQueue( Moose::Graphics::CRenderable *pRenderable );
+      void RemoveFromGUIQueue( Moose::Graphics::CRenderable *pRenderable );
+            
+      Moose::Graphics::CCamera & GetGUICamera();
+      CGUI & GetGUI();
       Moose::Scene::CRenderSettings & GetRenderSettings();
+      
       virtual void OnEnter();
       virtual void OnExit();
       virtual void Load();

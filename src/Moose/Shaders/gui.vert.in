@@ -1,0 +1,32 @@
+@version@
+#ifdef GL_ES
+#define IN attribute
+#define OUT varying
+#else
+#define IN in
+#define OUT out
+#endif
+
+OUT  vec2        texcoord;
+OUT  vec4        color;
+
+IN  vec3 a_vertex;
+IN  vec2 a_texcoord;
+IN  vec4 a_color;
+
+uniform vec2 a_position;
+uniform mat4 m_viewMatrix;
+uniform mat4 m_projMatrix;
+
+void main()
+{
+    // simple transform
+    vec4 vert    =  vec4(a_vertex.x+a_position.x, 
+                         a_vertex.y+a_position.y, 
+                         a_vertex.z, 
+                         1.0);
+    color = a_color*0.00392156;// x / 255
+    texcoord = a_texcoord;
+    gl_Position  = m_projMatrix * m_viewMatrix * vert;
+
+}                 
