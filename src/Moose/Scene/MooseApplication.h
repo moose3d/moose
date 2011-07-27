@@ -41,6 +41,7 @@ namespace Moose
 
       SceneMap  						m_mapScenes;      	///< from names to scene pointers
       Moose::Scene::CScene *			m_pCurrentScene;	///< For faster access.
+      Moose::Scene::CScene *            m_pNextScene;      ///< To enforce proper order of update->render during scene change.
       Moose::Graphics::COglRenderer     m_Renderer;		    ///< This is usually needed. :)
       Moose::Core::CTimer 				m_Timer;			///< Main timer.
       Moose::Core::CTimer               m_RunningTime;      ///< Keeps track of how long program has been running.

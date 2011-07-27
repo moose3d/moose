@@ -110,6 +110,7 @@ namespace Moose
       RenderQueue                                         m_Queue;       ///< All GUI objects.
       Moose::Graphics::CRocketRenderable                 *m_pGUIRenderable;
     public:
+      CGUI();
       Moose::Graphics::CCamera &        GetCamera();
       RenderQueue &                     GetRenderQueue();
       void Init( const std::string & name, int width, int height );

@@ -65,7 +65,6 @@
 #include "MooseSphereRenderable.h"
 #include "MooseLineRenderable.h"
 #include "MooseCapsuleRenderable.h"
-#include "MooseTextRenderable.h"
 #include "MooseTransform.h"
 #include "MooseTransformGraph.h"
 #include "MooseSpatialGraph.h"

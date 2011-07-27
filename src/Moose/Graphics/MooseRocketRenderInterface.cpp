@@ -43,7 +43,7 @@ prefix::CRocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,
   {
     glActiveTexture( GL_TEXTURE0);
     glDisable( GL_TEXTURE_2D );
-  }
+    }
 
 
   renderer.CommitShader(*rs.GetShaderHandle());
@@ -128,7 +128,7 @@ prefix::CRocketRenderInterface::EnableScissorRegion(bool enable)
 void 
 prefix::CRocketRenderInterface::SetScissorRegion(int x, int y, int width, int height)
 {
-  glScissor(x, 768 - (y + height), width, height);
+  glScissor(x, 600 - (y + height), width, height);
 }
 
 // Set to byte packing, or the compiler will expand our struct, which means it won't read correctly from file

@@ -21,7 +21,7 @@ namespace prefix = Moose::Scene;
 #define DEFAULT_COLLIDER_UPDATE_INTERVAL_MS 100
 #define DEFAULT_COLLISION_CHECK_INTERVAL_MS 25
 ///////////////////////////////////////////////////////////////////////////////
-prefix::CApplication::CApplication() : m_pCurrentScene(NULL)
+prefix::CApplication::CApplication() : m_pCurrentScene(NULL), m_pNextScene(NULL)
 {
   SetEnabled(true);
   m_bSceneHasKeyUp = false;
@@ -88,15 +88,13 @@ prefix::CApplication::GetCurrentScene()
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
-prefix::CApplication::SetCurrentScene( const std::string & name )
+prefix::CApplication::SetCurrentScene( Moose::Scene::CScene * pScene )
 {
-  SceneMap::iterator it = m_mapScenes.find( name );
-
   if ( m_pCurrentScene ) m_pCurrentScene->OnExit();
     
-  if ( it != m_mapScenes.end() ) 
+  if ( pScene ) 
   {
-    m_pCurrentScene = it->second;
+    m_pCurrentScene = pScene;
     m_pRenderInterface->SetRenderable(m_pCurrentScene->GetGUI().m_pGUIRenderable);
     m_pCurrentScene->OnEnter();
   }
@@ -104,7 +102,16 @@ prefix::CApplication::SetCurrentScene( const std::string & name )
   {
     m_pCurrentScene = NULL;
   }
+  m_pNextScene = NULL;
   CheckSceneInputs();
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+prefix::CApplication::SetCurrentScene( const std::string & name )
+{
+  SceneMap::iterator it = m_mapScenes.find( name );
+  if ( it != m_mapScenes.end() )  m_pNextScene = it->second;
+  else                            m_pNextScene = NULL;
 }
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -329,6 +336,10 @@ prefix::CApplication::Update()
     // Update our own script
     UpdateScript( m_Timer.GetPassedTime().ToSeconds() );
     // TODO add pause capability.
+    // If next scene is marked to be changed, then process it here.
+    if ( m_pNextScene ) SetCurrentScene(m_pNextScene);
+
+
     if ( GetCurrentScene() != NULL)
     {
       GetCurrentScene()->Update( m_Timer.GetPassedTime().ToSeconds() );

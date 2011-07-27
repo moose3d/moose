@@ -258,7 +258,6 @@ inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Mo
 %include "MooseLineRenderable.h"
 %include "MooseBoxRenderable.h"
 %include "MooseCapsuleRenderable.h"
-%include "MooseTextRenderable.h"
 %include "MooseOGLRenderer.h"
  //%template (FireworksSingleton) Moose::Core::CSingleton< CFireWorks >;
 %include "MoosePlane.h"

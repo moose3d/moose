@@ -110,6 +110,7 @@ Moose::Scene::CScene::Init()
   if ( tmpName.empty() )
   {
     tmpName = CreateUniqueNameStr("Scene_");
+    SetName(tmpName);
   }
   // For messaging
   g_ObjectMgr->Create( this, tmpName, this->GetObjectHandle() );
@@ -744,6 +745,11 @@ Moose::Scene::CScene::Reload()
 {
   Unload();
   Load();
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Scene::CGUI::CGUI() : m_pContext(NULL), m_pDocument(NULL), m_pGUIRenderable(NULL)
+{
+  
 }
 ////////////////////////////////////////////////////////////////////////////////
 Moose::Graphics::CCamera & 
