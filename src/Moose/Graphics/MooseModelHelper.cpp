@@ -31,6 +31,17 @@ Moose::Data::CModelHelper::Load( const char *szFilename  )
   m_pLoader = new COpenAssetImportLoader();
   m_pLoader->Load(szFilename);
 }
+////////////////////////////////////////////////////////////////////////////////
+Moose::Data::MeshNameList
+Moose::Data::CModelHelper::GetAvailableMeshes() const
+{
+  // If we have stuff, then return name list (vector)
+  if ( m_pLoader ) 
+  {
+    return m_pLoader->GetMeshes();
+  }
+  else return MeshNameList(); // otherwise return empty list
+}
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CModel *
 Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, bool bInterleaved )

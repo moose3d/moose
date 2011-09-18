@@ -38,6 +38,10 @@ prefix::CTGAData::Load( const char *szFile )
       delete pImage;
       throw err;
     break;
+  default:
+    err << "Something unknown happened when loading TGA image.";
+    throw err;
+    break;
   }
 
   ////////////////////

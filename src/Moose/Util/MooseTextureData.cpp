@@ -54,6 +54,12 @@ prefix::ITextureData::GetDataByteSize()
     return m_nDataByteSize;
 }
 ////////////////////////////////////////////////////////////////////////////////
+size_t
+prefix::ITextureData::GetBytesPerPixel()
+{
+  return GetDataByteSize() / (GetWidth()*GetHeight());
+}
+////////////////////////////////////////////////////////////////////////////////
 void
 prefix::ITextureData::AllocateEmpty( size_t bytes )
 {

@@ -46,7 +46,7 @@ using std::ifstream;
 using std::ios;
 using std::string;
 /////////////////////////////////////////////////////////////////
-#define BUFFER_OFFSET(i) ((char *)NULL+(i))
+//#define BUFFER_OFFSET(i) ((char *)NULL+(i))
 /////////////////////////////////////////////////////////////////
 /// Famous last words: Eight color buffers is enough for anyone :)
 const GLenum g_ColorBufferNames[] = { 
@@ -951,8 +951,8 @@ Moose::Graphics::COglRenderer::CreateTexture( Moose::Util::ITextureData *pData, 
 
     glTexImage2D( iGLType, 0, 
                   pData->GetFormat(), /* OpenGL ES 2.0 requirement internal must be equal to glformat!*/
-                  pData->GetWidth(), 
-                  pData->GetHeight(), 
+                  static_cast<GLuint>(pData->GetWidth()), 
+                  static_cast<GLuint>(pData->GetHeight()), 
                   0,
                   pData->GetFormat(), GL_UNSIGNED_BYTE, pData->GetData());
     // build mipmaps

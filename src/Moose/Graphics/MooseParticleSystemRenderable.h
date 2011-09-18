@@ -122,7 +122,7 @@ Moose::Graphics::CParticleSystemRenderable<PS>::Render( Moose::Graphics::COglRen
   }
 
   renderer.CommitPrimitive( &m_Indices );
-
+  GetRenderState().GetShaderAttribs().Disable(renderer);
 
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -4,9 +4,13 @@
 #include "MooseRenderState.h"
 #include "MooseVector2.h"
 #include "MooseExceptions.h"
+#include "MooseTGAData.h"
+#include <iostream>
 using namespace Moose::Scene;
 using namespace Moose::Math;
 using namespace Moose::Exceptions;
+using namespace Moose::Util;
+using namespace std;
 namespace prefix=Moose::Graphics;
 ////////////////////////////////////////////////////////////////////////////////
 prefix::CRocketRenderInterface::CRocketRenderInterface(  ) : m_pRenderable(NULL)
@@ -22,30 +26,36 @@ prefix::CRocketRenderInterface::SetRenderable( Moose::Graphics::CRenderable *pR 
 ////////////////////////////////////////////////////////////////////////////////
 void 
 prefix::CRocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices, 
-                       int num_vertices, 
-                       int* indices, int num_indices, 
-                       const Rocket::Core::TextureHandle texture, 
-                       const Rocket::Core::Vector2f& translation)
+                                               int num_vertices, 
+                                               int* indices, int num_indices, 
+                                               const Rocket::Core::TextureHandle texture, 
+                                               const Rocket::Core::Vector2f& translation)
 {
-
+  //return;
   COglRenderer & renderer = CApplication::GetInstance()->GetRenderer();
   CRenderState & rs = m_pRenderable->GetRenderState();
   renderer.CommitRenderState( rs );
+  //glActiveTexture( GL_TEXTURE0);
   glDisable(GL_TEXTURE_CUBE_MAP);		
   glDisable(GL_TEXTURE_RECTANGLE_ARB);  
+  //g_Log << "Texture will be : " << texture << "\n";
   if ( texture )
   {
     glActiveTexture( GL_TEXTURE0);
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texture );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   } 
   else 
   {
     glActiveTexture( GL_TEXTURE0);
     glDisable( GL_TEXTURE_2D );
-    }
-
-
+  }
+  
   renderer.CommitShader(*rs.GetShaderHandle());
   if ( rs.GetShaderHandle().IsNull()) 
   {
@@ -54,13 +64,16 @@ prefix::CRocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,
   
   CVertexDescriptor pos(ELEMENT_TYPE_ROCKET_DATA,num_vertices);
   pos.Copy(0, num_vertices, vertices);
-
+  
+  
   dynamic_cast<CShaderAttribRocketPos *>(rs.GetShaderAttrib("a_vertex"))->SetData( &pos);
-  dynamic_cast<CShaderAttribRocketPos *>(rs.GetShaderAttrib("a_vertex"))->TriggerCacheUpdate();
+
   dynamic_cast<CShaderAttribRocketColor *>(rs.GetShaderAttrib("a_color"))->SetData( &pos);
-  dynamic_cast<CShaderAttribRocketColor *>(rs.GetShaderAttrib("a_color"))->TriggerCacheUpdate();
   dynamic_cast<CShaderAttribRocketTexCoord *>(rs.GetShaderAttrib("a_texcoord"))->SetData( &pos);
-  dynamic_cast<CShaderAttribRocketTexCoord *>(rs.GetShaderAttrib("a_texcoord"))->TriggerCacheUpdate();
+
+  //dynamic_cast<CShaderAttribRocketPos *>(rs.GetShaderAttrib("a_vertex"))->TriggerCacheUpdate();
+  //dynamic_cast<CShaderAttribRocketColor *>(rs.GetShaderAttrib("a_color"))->TriggerCacheUpdate();
+  //dynamic_cast<CShaderAttribRocketTexCoord *>(rs.GetShaderAttrib("a_texcoord"))->TriggerCacheUpdate();
 
   dynamic_cast<CShaderUniformVec2f *>(rs.GetShaderUniform("a_position"))->SetData( Moose::Math::CVector2<float>(translation.x, translation.y));
   dynamic_cast<CShaderUniformVec2f *>(rs.GetShaderUniform("a_position"))->TriggerCacheUpdate();
@@ -68,9 +81,10 @@ prefix::CRocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,
   rs.GetShaderUniforms().Apply(renderer);
 
   CIndexArray arr(PRIMITIVE_TRI_LIST, num_indices);
+  //g_Log << "is short? " << arr.IsShortIndices() << "\n";
   for(int i=0;i<num_indices;i++)
   {
-    arr.GetPointer<unsigned short>()[i] = indices[i];
+    arr.GetPointer<unsigned short>()[i] = (unsigned short int)indices[i];
   }
   arr.CreateCache();
     
@@ -88,7 +102,7 @@ prefix::CRocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,
 
   }
 
-  
+  rs.GetShaderAttribs().Disable(renderer);
 }
 // Called by Rocket when it wants to compile geometry it believes will be static for the forseeable future.		
 Rocket::Core::CompiledGeometryHandle 
@@ -156,83 +170,27 @@ bool prefix::CRocketRenderInterface::LoadTexture(Rocket::Core::TextureHandle& te
                                                  Rocket::Core::Vector2i& texture_dimensions,
                                                  const Rocket::Core::String& source)
 {
-  Rocket::Core::FileInterface* file_interface = Rocket::Core::GetFileInterface();
-  Rocket::Core::FileHandle file_handle = file_interface->Open(source);
-  g_Log << "Opening " << source.CString() << "\n";
-  if (!file_handle)
-  {
-    CMooseRuntimeError err("Failed to open file ");
-    err << "'" << source.CString() << "'";
-    throw err;
-    return false;
-  }
-	
-  file_interface->Seek(file_handle, 0, SEEK_END);
-  size_t buffer_size = file_interface->Tell(file_handle);
-  file_interface->Seek(file_handle, 0, SEEK_SET);
-	
-  char* buffer = new char[buffer_size];
-  file_interface->Read(buffer, buffer_size, file_handle);
-  file_interface->Close(file_handle);
+  
+  CTGAData data;
+  data.Load(source.CString());
+  COglRenderer r;
+  COglTexture * pTex = r.CreateTexture( &data);
+  if ( !pTex ) throw CMooseRuntimeError("Cannot create texture");
 
-  TGAHeader header;
-  memcpy(&header, buffer, sizeof(TGAHeader));
-	
-  int color_mode = header.bitsPerPixel / 8;
-  int image_size = header.width * header.height * 4; // We always make 32bit textures 
-	
-  if (header.dataType != 2)
-  {
-    Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Only 24/32bit uncompressed TGAs are supported.");
-    return false;
-  }
-	
-  // Ensure we have at least 3 colors
-  if (color_mode < 3)
-  {
-    Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Only 24 and 32bit textures are supported");
-    return false;
-  }
-	
-  const char* image_src = buffer + sizeof(TGAHeader);
-  unsigned char* image_dest = new unsigned char[image_size];
-	
-  // Targa is BGR, swap to RGB and flip Y axis
-  for (long y = 0; y < header.height; y++)
-  {
-    long read_index = y * header.width * color_mode;
-    long write_index = ((header.imageDescriptor & 32) != 0) ? read_index : (header.height - y - 1) * header.width * color_mode;
-    for (long x = 0; x < header.width; x++)
-    {
-      image_dest[write_index] = image_src[read_index+2];
-      image_dest[write_index+1] = image_src[read_index+1];
-      image_dest[write_index+2] = image_src[read_index];
-      if (color_mode == 4)
-        image_dest[write_index+3] = image_src[read_index+3];
-      else
-        image_dest[write_index+3] = 255;
-			
-      write_index += 4;
-      read_index += color_mode;
-    }
-  }
+  // We must tell the texture handle for Rocket, as well as the texture dimensions so
+  // it knows how to set the layout.
+  texture_handle = pTex->GetID();
+  texture_dimensions.x = static_cast<int>(data.GetWidth());
+  texture_dimensions.y = static_cast<int>(data.GetHeight());   
 
-  texture_dimensions.x = header.width;
-  texture_dimensions.y = header.height;
-	
-  bool success = GenerateTexture(texture_handle, image_dest, texture_dimensions);
-	
-  delete [] image_dest;
-  delete [] buffer;
-	
-  return success;
+  return true;
 }
 
 // Called by Rocket when a texture is required to be built from an internally-generated sequence of pixels.
 bool
 prefix::CRocketRenderInterface::GenerateTexture(Rocket::Core::TextureHandle& texture_handle,
-                             const Rocket::Core::byte* source, 
-                             const Rocket::Core::Vector2i& source_dimensions)
+                                                const Rocket::Core::byte* source, 
+                                                const Rocket::Core::Vector2i& source_dimensions)
 {
   GLuint texture_id = 0;
   glGenTextures(1, &texture_id);

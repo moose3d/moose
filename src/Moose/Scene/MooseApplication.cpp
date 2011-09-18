@@ -297,9 +297,10 @@ prefix::CApplication::ProcessInput()
 void
 prefix::CApplication::Render()
 {
-  if ( GetCurrentScene() != NULL )
+  CScene *pScene = GetCurrentScene();
+  if ( pScene != NULL )
   {
-    GetCurrentScene()->Render( GetRenderer());
+    pScene->Render( GetRenderer());
   }
 }
 ///////////////////////////////////////////////////////////////////////////////

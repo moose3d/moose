@@ -815,7 +815,13 @@ namespace Moose
           m_vecParams[i]->Apply(r, i);
         }
       }
-          
+      /// Must only be called for shader attribs.
+      void Disable( COglRenderer & r )
+      {
+        for (size_t i=0;i<m_vecParams.size();i++) {
+          glDisableVertexAttribArray(i);
+        }
+      }    
       void Add( IShaderParam *pParam )
       {
         m_mapNameToParam[pParam->GetName()] = pParam;

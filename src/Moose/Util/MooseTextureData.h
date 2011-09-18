@@ -15,6 +15,7 @@ namespace Moose
             int                 m_iBlockSize; ///< Only for DDS.
             int                 m_iNumMipMaps; ///< only for DDS.
             size_t              m_nDataByteSize;
+
         public:
             ITextureData();
             virtual ~ITextureData();
@@ -26,6 +27,7 @@ namespace Moose
             int                 GetBlockSize(); ///< only for DDS
             int                 GetNumMipMaps(); ///< Only for DDS
             size_t              GetDataByteSize();
+            size_t              GetBytesPerPixel();
             void                AllocateEmpty( size_t bytes );
         };
     }

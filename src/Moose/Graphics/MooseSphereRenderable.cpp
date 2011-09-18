@@ -71,7 +71,7 @@ prefix::CSphereRenderable::Render( COglRenderer & r )
         }
     }
     r.CommitPrimitive( g_IndexMgr->GetResource("moose_sphererenderable_indices") );
-    
+    GetRenderState().GetShaderAttribs().Disable(r);
     if ( m_pTransform != NULL )
         r.RollbackTransform();
     

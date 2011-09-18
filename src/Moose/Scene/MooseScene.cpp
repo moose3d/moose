@@ -73,6 +73,7 @@ Moose::Scene::CScene::CScene( unsigned int nNumLevels, float fWorldSize )
 {
   m_pSpatialGraph   = new CSpatialGraph(nNumLevels, fWorldSize);
   m_pTransformGraph = new CTransformGraph();
+  m_bPrepared = false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Scene::CScene::CScene( const char *szName, unsigned int nNumLevels, float fWorldSize )
@@ -80,6 +81,7 @@ Moose::Scene::CScene::CScene( const char *szName, unsigned int nNumLevels, float
   m_pSpatialGraph   = new CSpatialGraph(nNumLevels, fWorldSize);
   m_pTransformGraph = new CTransformGraph();
   SetName( szName );
+  m_bPrepared = false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 Moose::Scene::CScene::~CScene()
@@ -115,18 +117,7 @@ Moose::Scene::CScene::Init()
   // For messaging
   g_ObjectMgr->Create( this, tmpName, this->GetObjectHandle() );
 
-  
-
-  // Initialize GUI
-  m_GUI.Init(GetName(), 
-             CSDLScreen::m_SDLScreenParams.m_iWidth,
-             CSDLScreen::m_SDLScreenParams.m_iHeight);
-  m_GUI.m_pGUIRenderable = new CRocketRenderable(m_GUI.m_pContext);
-  if ( m_GUI.m_pGUIRenderable->GetRenderState().Prepare() == false)
-  {
-    throw CMooseRuntimeError("Gui renderable flawed");
-  }
-  m_GUI.m_Queue.GetObjectList().push_back(m_GUI.m_pGUIRenderable);
+  PrepareGUI();
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -345,9 +336,39 @@ Moose::Scene::CScene::Update( float fSeconds )
   m_GUI.Update();
 }
 ///////////////////////////////////////////////////////////////////////////////
+bool
+Moose::Scene::CScene::IsPrepared() const
+{
+  return m_bPrepared;
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+Moose::Scene::CScene::SetPrepared(bool bFlag )
+{
+  m_bPrepared = bFlag;
+}
+///////////////////////////////////////////////////////////////////////////////
+void 
+Moose::Scene::CScene::PrepareGUI( )
+{
+
+  // Initialize GUI
+  m_GUI.Init(GetName(), 
+             CSDLScreen::m_SDLScreenParams.m_iWidth,
+             CSDLScreen::m_SDLScreenParams.m_iHeight);
+  m_GUI.m_pGUIRenderable = new CRocketRenderable(m_GUI.m_pContext);
+  if ( m_GUI.m_pGUIRenderable->GetRenderState().Prepare() == false)
+  {
+    throw CMooseRuntimeError("Gui renderable flawed");
+  }
+  m_GUI.m_Queue.GetObjectList().push_back(m_GUI.m_pGUIRenderable);
+}
+////////////////////////////////////////////////////////////////////////////////
 void
 Moose::Scene::CScene::Render( COglRenderer & renderer )
 {
+
+
   CameraMap::iterator camIt = m_mapCameras.begin();
   // Pass global settings to renderer.
   renderer.GetRenderState().SetGlobalAmbient( &GetRenderSettings().GetGlobalAmbient());
@@ -778,6 +799,7 @@ Moose::Scene::CGUI::Init( const std::string & name, int width, int height )
 void
 Moose::Scene::CGUI::Load( const std::string & file )
 {
+  if ( m_pContext == NULL ) throw CMooseRuntimeError("Cannot load GUI with NULL context");
   m_pDocument = m_pContext->LoadDocument( file.c_str() );
   if ( m_pDocument == NULL )
   {
@@ -790,25 +812,44 @@ Moose::Scene::CGUI::Load( const std::string & file )
 void 
 Moose::Scene::CGUI::Show()
 {
-  m_pDocument->Show();
+  if ( m_pDocument )  m_pDocument->Show();
 }
 ////////////////////////////////////////////////////////////////////////////////
 void 
 Moose::Scene::CGUI::Hide()
 {
-  m_pDocument->Hide();
+  if ( m_pDocument ) m_pDocument->Hide();
 }
 ////////////////////////////////////////////////////////////////////////////////
 void 
 Moose::Scene::CGUI::Render()
 {
-  m_pContext->Render();
+  if ( m_pContext )  m_pContext->Render();
 }
 ////////////////////////////////////////////////////////////////////////////////
 void 
 Moose::Scene::CGUI::Update()
 {
-  m_pContext->Update();
+  if ( m_pContext )  m_pContext->Update();
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Scene::CGUI::SetText( const std::string & element, 
+                                const std::string & text )
+{
+  if ( m_pDocument )
+  {
+    Rocket::Core::Element * pE = m_pDocument->GetElementById( Rocket::Core::String(element.c_str()) );
+    if ( !pE ) 
+    {
+      CMooseRuntimeError err("No such element ");
+      err << "'" << element << "' in GUI";
+      throw err;
+    }
+    
+    pE->SetInnerRML(text.c_str());
+    
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(MOOSE_APPLE_IPHONE)

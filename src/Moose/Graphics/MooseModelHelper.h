@@ -38,6 +38,7 @@ namespace Moose
       /// \param bInterleaved Use interleaved data on model. By default, false.
       /// \returns On success, pointer to CModel object, on failure NULL ptr.
       Moose::Graphics::CModel * CreateModel( int iFlags, const char *szGroupName = NULL, bool bInterleaved = false );
+      Moose::Data::MeshNameList GetAvailableMeshes() const;
       ////////////////////
       /// Accesses current model loader.
       /// \returns Pointer to current model loader.

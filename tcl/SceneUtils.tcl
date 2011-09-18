@@ -28,7 +28,7 @@ set g_lstSkeletons {}
 # ---------------------------------------------------------------------------------------
 proc AddCollider { name lstData } {
     
-    if { [llength $lstData] > 1 } {
+    if { [llength $lstData] > 2 } {
         CCompoundCollider c;
         foreach { type data } $lstData {
             if { [string equal $type sphere] } {
@@ -48,7 +48,6 @@ proc AddCollider { name lstData } {
                 [bc GetBoundingBox] SetLength [lindex $p(.dimensions) 2]
                 c AddCollider bc
                 bc -disown
-                [bc GetBoundingBox] CalculateCorners
             }
         }
         if { [[g_ColliderMgr] Create c $name] != 0 } {
@@ -61,9 +60,9 @@ proc AddCollider { name lstData } {
         
         if { [string equal [lindex $lstData 0] sphere] } {
                 
-            array set p lindex $lstData 1]
+            array set p [lindex $lstData 1]
             CSphereCollider sc
-            [sc GetBoundingSphere] SetPosition $p(.position)
+            [sc GetBoundingSphere] SetPosition [lindex $p(.position) 0] [lindex $p(.position) 1] [lindex $p(.position) 2]
             [sc GetBoundingSphere] SetRadius $p(.radius)
             if { [[g_ColliderMgr] Create sc $name] != 0 } {
                 error "Could not create sphere collider resource $name"
@@ -78,7 +77,6 @@ proc AddCollider { name lstData } {
             [bc GetBoundingBox] SetWidth [lindex $p(.dimensions) 0]
             [bc GetBoundingBox] SetHeight [lindex $p(.dimensions) 1]
             [bc GetBoundingBox] SetLength [lindex $p(.dimensions) 2]
-            [bc GetBoundingBox] CalculateCorners
             if { [[g_ColliderMgr] Create bc $name] != 0 } {
                 error "Could not create box collider resource $name"
             } else {
@@ -249,19 +247,27 @@ proc NewModel { name params } {
     array set m $g_Models 
     array set tmp_params $m($name)
     if { [llength [array get m $name]] > 0 } {
-        # Add cache, since it was not found
+        # Add cache, since it was not found (.model is filename suffix!)
         AppendToModelNameCache $tmp_params(${name}.model) $name
     }
 }
 
-proc NewTexture { texname texturefile } {
+proc NewTexture { texname propertyList } {
 
     global g_lstTexNameCache g_lstTexNameMap g_lstNotCreatedTextures
     array set tmp $g_lstTexNameCache
-            
-    if { [ llength [ array get tmp $texturefile ] ] == 0 } { 
+    array set props $propertyList
+
+    if { [ llength [ array get tmp $props(.file) ] ] == 0 } { 
         # First time that this texture is loaded.
-        LoadTexture2D $texturefile $texname
+        switch $props(.type) {
+            2d {
+                LoadTexture2D $props(.file) $texname
+            }
+            cube {
+                LoadTextureCube [list $props(.left) $props(.right) $props(.top) $props(.bottom) $props(.back) $props(.front)] $texname
+            }
+        }
         lappend g_lstTexNameCache $texturefile $texname
         lappend g_lstNotCreatedTextures $texname
         puts "Loading new texture $texturefile -> $texname..."
@@ -293,7 +299,7 @@ proc CreateTextures {} {
 }
 
 proc LoadModels {} {
-    global g_Models g_lstKnownModelParams g_lstKnownTextureParams g_TexParamToIndex g_lstTexNameCache g_lstModelNameCache 
+    global g_Models g_lstKnownModelParams  g_lstModelNameCache 
 
     # Create array from list 
     array set m $g_Models 
@@ -301,7 +307,7 @@ proc LoadModels {} {
     # Find out what models haven't been loaded yet
     set lstNotLoadedModels {}
     foreach { modelname } [array names m] {
-        if { [[GetModelMgr] HasResource ${modelname}.model] == 1} {
+        if { [[GetModelMgr] HasResource ${modelname}] == 1} {
             continue
         } else {
             lappend lstNotLoadedModels $modelname
@@ -330,18 +336,28 @@ proc LoadModels {} {
             
             puts -nonewline "-> $modelname ..."    
 
-            set modelGroup ""  
-	    set interleavedData 0
-            if { [llength [ array get model_params ${modelname}.group ] ] > 0 } {
-                set modelGroup $model_params(${modelname}.group)
+            set modelGroups ""  
+            set interleavedData 0
+            if { [llength [ array get model_params ${modelname}.groups ] ] > 0 } {
+                set modelGroups $model_params(${modelname}.groups)
             }
-	    if { [llength [ array get model_params ${modelname}.interleaved ] ] > 0 } {
+
+            if { [llength [ array get model_params ${modelname}.interleaved ] ] > 0 } {
                 set interleavedData $model_params(${modelname}.interleaved)
             }
-            # Create model from currently loaded data 
-            CreateModel [ list ${modelname}.model [ list 1 2 4 8 ] $modelGroup $interleavedData ]
-            # Compute bounding sphere for this model.
-            ComputeBoundingSphere ${modelname}.model ${modelname}.boundingSphere
+            
+            if { [llength $modelGroups] > 0 } {
+                foreach { group } $modelGroups {
+                    # Create model from currently loaded data 
+                    CreateModel [ list ${modelname}.$group [ list 1 2 4 8 ] $group $interleavedData ]
+                    # Compute bounding sphere for this model.
+                    ComputeBoundingSphere ${modelname}.$group ${modelname}.$group.boundingSphere
+                }
+            } else {
+                CreateModel [ list ${modelname} [ list 1 2 4 8 ] "" $interleavedData ]
+                # Compute bounding sphere for this model.
+                ComputeBoundingSphere ${modelname} ${modelname}.boundingSphere
+            }
             
             puts "done!"
             
@@ -349,28 +365,34 @@ proc LoadModels {} {
             puts -nonewline "-> $modelname ..."
             # Use existing model as base;
             # (first model name from model name list registered to modelfile)
+            puts "array contains: [array get c]"
             set firstModel [lindex $c(${modelname}.model) 0]
             set modelGroup "" 
 
             if { [llength [ array get model_params ${modelname}.group ] ] > 0 } {
                 set modelGroup $model_params(${modelname}.group)
             }
-            DuplicateModel $firstModel ${modelname}.model
-            CreateIndexResource "$modelGroup" ${modelname}.model.indices
-            SetModelIndices ${modelname}.model ${modelname}.model.indices
-            ComputeBoundingSphere ${modelname}.model ${modelname}.boundingSphere
+            DuplicateModel $firstModel ${modelname}
+            CreateIndexResource "$modelGroup" ${modelname}.indices
+            SetModelIndices ${modelname} ${modelname}.indices
+            ComputeBoundingSphere ${modelname} ${modelname}.boundingSphere
             puts "done!"
         } 
-        # Loads only texture data, actual texture obejct is created later.
-        foreach p $g_lstKnownTextureParams {
-            foreach { texparmname file } [ array get model_params ${modelname}${p} ] {
-                SetModelTextureCached ${modelname}.model $g_TexParamToIndex($p) $file $texparmname
-            }   
-        }
+       
         puts "-> Model $modelname done."    
     }
 }
 
+proc LoadTextures { } {
+    global g_lstKnownTextureParams g_TexParamToIndex g_lstTexNameCache
+    # Loads only texture data, actual texture obejct is created later.
+    # \TODO Does not work yet!!!
+    foreach p $g_lstKnownTextureParams {
+        foreach { texparmname file } [ array get model_params ${modelname}${p} ] {
+            SetModelTextureCached ${modelname} $g_TexParamToIndex($p) $file $texparmname
+        }   
+    }
+}
 
 proc Scale { vector value } {
     set scaledVec {}
@@ -460,7 +482,7 @@ proc Instantiate { skeleton name pos rotation } {
         puts "Skeleton has [llength $skel(.models)] models"
         foreach {m} $skel(.models) {
             $obj SetBoundingSphere [g_Spheres $m.boundingSphere]
-            set r [$obj AddRenderableModel $m.model 0 [$obj GetWorldTransform]]
+            set r [$obj AddRenderableModel $m 0 [$obj GetWorldTransform]]
             puts "done here.. $r"
             set rs [$r GetRenderState]
             $rs SetShader "moose_default_shader"
@@ -468,14 +490,14 @@ proc Instantiate { skeleton name pos rotation } {
             [$rs GetMaterial] SetDiffuse [new_CVector4f 0.7 0.7 0.7 1.0]
             [$rs GetMaterial] SetAmbient [new_CVector4f 0.27 0.27 0.27 1.0]
             [$rs GetMaterial] SetShininess 128.0
-            puts "Model is: [g_Models $skel(.models).model]"
+            puts "Model is: [g_Models $skel(.models)]"
             $rs SetTexture 0 $m.diffuse
             puts "Texture handle [$rs GetTextureHandle]"
-            $rs AddShaderAttrib "a_vertex" [[g_Models $m.model] GetVertexHandle]
-            if { [[[g_Models $m.model] GetNormalHandle] IsNull] == 0 } {
-                $rs AddShaderAttrib "a_normal" [[g_Models $m.model] GetNormalHandle]
+            $rs AddShaderAttrib "a_vertex" [[g_Models $m] GetVertexHandle]
+            if { [[[g_Models $m] GetNormalHandle] IsNull] == 0 } {
+                $rs AddShaderAttrib "a_normal" [[g_Models $m] GetNormalHandle]
             }
-            $rs AddShaderAttrib "a_texcoord" [[g_Models $m.model] GetTextureCoordinateHandle]
+            $rs AddShaderAttrib "a_texcoord" [[g_Models $m] GetTextureCoordinateHandle]
             $rs AddShaderUniform "m_globalAmbient" [new_CVector4f 0.2 0.2 0.2 1.0]
             $rs AddShaderUniform diffusetex 0
             

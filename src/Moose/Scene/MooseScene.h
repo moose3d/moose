@@ -119,12 +119,13 @@ namespace Moose
       void Hide();
       void Render();
       void Update();
-      
+      void SetText( const std::string & element, const std::string & text );
     };
     ////////////////////    
     /// Scene where everything is.
     class MOOSE_API CScene : public Moose::Scene::CGameObject
     {
+      friend class Moose::Scene::CApplication;
     protected:
       Moose::Scene::CSpatialGraph	*                       m_pSpatialGraph;   ///< Spatial graph used for collision and culling.
       Moose::Scene::CTransformGraph *  					m_pTransformGraph; ///< Transforms. By default, every object is child of root.
@@ -138,11 +139,14 @@ namespace Moose
       GameObjectCollidersMap                              m_mapColliders;             ///< From GameObject ptr to List of currently colliding objects.
       CRenderSettings                                     m_RenderSettings;
 
-      CGUI                                          m_GUI;
+      CGUI                                                m_GUI;
+      bool                                                m_bPrepared;
     protected:
       void   					 CollectVisibleGameObjects( CCameraProperty & cameraProp );
       /// Removes object pointer from caches.
       void             RemoveFromCaches( Moose::Scene::CGameObject *pObject );
+      bool IsPrepared() const;
+      void SetPrepared( bool bFlag );
     public:
 
       CScene(unsigned int nNumLevels, float fWorldSize );
@@ -166,6 +170,9 @@ namespace Moose
       bool AddCamera( const std::string & name, Moose::Scene::CCameraObject *pCamera  );
       void RemoveCamera( const std::string & name );
       CCameraProperty * GetCameraProperty( const std::string & name );
+      ////////////////////
+      /// Overwrite this to execute something just before first rendering call.
+      void PrepareGUI();
       void Render( Moose::Graphics::COglRenderer & renderer );
       RenderQueue & GetStaticRenderQueue();
 			
@@ -177,7 +184,7 @@ namespace Moose
       Moose::Graphics::CCamera & GetGUICamera();
       CGUI & GetGUI();
       Moose::Scene::CRenderSettings & GetRenderSettings();
-      
+
       virtual void OnEnter();
       virtual void OnExit();
       virtual void Load();

@@ -115,6 +115,7 @@ Moose::Graphics::CRenderableModelShared::Render( COglRenderer & renderer )
   if ( !model.GetIndices().IsNull() )
     renderer.CommitPrimitive( *model.GetIndices() );
 
+  GetRenderState().GetShaderAttribs().Disable(renderer);
   if ( m_pTransform != NULL )
     renderer.RollbackTransform();
 }

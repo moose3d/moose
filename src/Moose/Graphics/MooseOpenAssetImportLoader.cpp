@@ -184,3 +184,15 @@ bool  prefix::COpenAssetImportLoader::HasIndexArray() const
   return (m_pMesh->HasFaces());
 }
 ////////////////////////////////////////////////////////////////////////////////
+std::vector< std::string > 
+prefix::COpenAssetImportLoader::GetMeshes() const
+{
+  MeshNameList meshNames(m_pScene->mNumMeshes);
+  
+  for ( size_t i=0; i< m_pScene->mNumMeshes; i++)
+  {
+    meshNames.push_back(std::string(m_pScene->mMeshes[i]->mName.data));
+  } 
+  return meshNames;
+}
+////////////////////////////////////////////////////////////////////////////////

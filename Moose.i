@@ -60,6 +60,12 @@ inline int      ToInt( float * i )   { return *i;}
 inline double   ToReal( double * f ) { return *f;}
 
 inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Moose::Scene::CGameObject *>(); }
+template< class T > 
+T * As( Moose::Collision::ICollider *pColl ) { 
+  return dynamic_cast<T *>(pColl);
+}
+
+
 %}
 
 // This helps in converting individual elements into values
@@ -279,8 +285,18 @@ std::vector<Moose::Scene::CGameObject *> ListToVector( std::list<Moose::Scene::C
 
                              
                              
-                             float    ToReal( float * f ); 
-                             int      ToInt( float * i ); 
-                             double   ToReal( double * f );
-                             Moose::Graphics::CLight * AsLight( Moose::Scene::CGameObject *pObj );
+float    ToReal( float * f ); 
+int      ToInt( float * i ); 
+double   ToReal( double * f );
+Moose::Graphics::CLight * AsLight( Moose::Scene::CGameObject *pObj );
 
+// Write converters using swig templating feature.
+template< class T > 
+T * As( Moose::Collision::ICollider *pColl ) { 
+  return dynamic_cast<T *>(pColl);
+}
+
+%template (AsSphereCollider)  As<Moose::Collision::CSphereCollider>;
+%template (AsBoxCollider)     As<Moose::Collision::COBBCollider>;
+%template (AsCapsuleCollider) As<Moose::Collision::CCapsuleCollider>;
+%template (StringVector) std::vector<std::string>;

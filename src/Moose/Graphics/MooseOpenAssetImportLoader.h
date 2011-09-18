@@ -5,11 +5,14 @@
 #include "MooseAPI.h"
 #include <assimp.hpp>
 #include <aiScene.h> 
+#include <vector>
+#include <string>
 ////////////////////////////////////////////////////////////////////////////////
 namespace Moose
 {
   namespace Data
   {
+    typedef std::vector<std::string> MeshNameList;
     class COpenAssetImportLoader 
     {
     private:
@@ -32,6 +35,7 @@ namespace Moose
         bool  HasNormalArray() const;
         bool  HasVertexArray() const;
         bool  HasIndexArray() const;
+      MeshNameList GetMeshes() const;
     };
   }
 }

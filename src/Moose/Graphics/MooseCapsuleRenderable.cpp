@@ -49,6 +49,7 @@ prefix::CCapsuleRenderable::Render( Moose::Graphics::COglRenderer & r )
     }
   }
   r.CommitPrimitive( g_IndexMgr->GetResource("moose_capsulerenderable_indices") );
+  GetRenderState().GetShaderAttribs().Disable(r);
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
