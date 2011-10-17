@@ -366,12 +366,14 @@ proc LoadModels {} {
             # Use existing model as base;
             # (first model name from model name list registered to modelfile)
             puts "array contains: [array get c]"
-            set firstModel [lindex $c(${modelname}.model) 0]
+            set firstModel [lindex [lsort -unique $c($file)] 0]
             set modelGroup "" 
 
             if { [llength [ array get model_params ${modelname}.group ] ] > 0 } {
                 set modelGroup $model_params(${modelname}.group)
             }
+
+            puts "Now what: $firstModel $modelname"
             DuplicateModel $firstModel ${modelname}
             CreateIndexResource "$modelGroup" ${modelname}.indices
             SetModelIndices ${modelname} ${modelname}.indices

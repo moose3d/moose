@@ -1671,7 +1671,39 @@ Moose::Collision::SphereIntersectsPolytope( const CSphere &sphere, const Moose::
 Moose::Collision::VOLUME_INTERSECTION
 Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedBox &aabb, const Moose::Volume::CPolytope & poly )
 {
-  CVector3<float> vNormal;
+
+  bool bIntersecting = false;
+  std::vector<Moose::Math::CPlane>::const_iterator it;
+  
+  Moose::Math::CVector3<float> vMin,vMax;
+
+  int k;
+  for( k=0, it = poly.GetPlanes().begin(); 
+      it != poly.GetPlanes().end();  it++,k++)
+  {
+    const CPlane & plane = *it;
+    for(int i=0;i<3;i++)
+    {
+      if ( plane[i] >= 0 )
+      {
+        vMin[i] = aabb.GetMin()[i];
+        vMax[i] = aabb.GetMax()[i];
+      }
+      else
+      {
+        vMin[i] = aabb.GetMax()[i];
+        vMax[i] = aabb.GetMin()[i];
+      }
+    }
+    // Positive half-space = inside
+    CVector3<float> vN(plane[0],plane[1],plane[2]);
+    if ( vN.Dot(vMin)+plane[3] < 0 ) return OUTSIDE;
+    if ( vN.Dot(vMax)+plane[3] <= 0 ) bIntersecting = true;
+  }
+  if ( bIntersecting ) return INTERSECTION;
+  else return INSIDE;
+
+  /*  CVector3<float> vNormal;
   CVector3<float> vX(1,0,0), vY(0,1,0), vZ(0,0,1);
   float fEffectiveRadius;
 
@@ -1687,13 +1719,44 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedBox &
   }
 
   // Frustum intersects box.
-  return INTERSECTION;
+  return INTERSECTION;*/
 }
 /////////////////////////////////////////////////////////////////
 Moose::Collision::VOLUME_INTERSECTION
 Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedCube &aabb, const Moose::Volume::CPolytope & poly )
 {
 
+  bool bIntersecting = false;
+  std::vector<Moose::Math::CPlane>::const_iterator it;
+  Moose::Math::CVector3<float> vMin,vMax;
+ 
+  int k;
+  for(k = 0, it = poly.GetPlanes().begin(); 
+      it != poly.GetPlanes().end();  it++,k++)
+  {
+    const CPlane & plane = *it;
+    for(int i=0;i<3;i++)
+    {
+      if ( plane[i] >= 0 )
+      {
+        vMin[i] = aabb.GetMin()[i];
+        vMax[i] = aabb.GetMax()[i];
+      }
+      else
+      {
+        vMin[i] = aabb.GetMax()[i];
+        vMax[i] = aabb.GetMin()[i];
+      }
+    }
+    // Positive half-space = inside
+    CVector3<float> vN(plane[0],plane[1],plane[2]);
+    if ( vN.Dot(vMin)+plane[3] < 0 ) return OUTSIDE;
+    if ( vN.Dot(vMax)+plane[3] <= 0 ) bIntersecting = true;
+  }
+  if ( bIntersecting ) return INTERSECTION;
+  else return INSIDE;
+
+  /*
   CVector3<float> vNormal;
   float fEffectiveRadius;
 
@@ -1715,6 +1778,8 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedCube 
 
   // Frustum intersects cube.
   return INTERSECTION;
+*/
+
 }
 /////////////////////////////////////////////////////////////////
 bool

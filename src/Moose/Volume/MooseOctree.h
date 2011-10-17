@@ -135,7 +135,7 @@ namespace Moose
 
     };/// class COctreeNode
     /////////////////////////////////////////////////////////////////
-    /// Octree class template.
+    /// Octree class template. Width defines all dimensions, hence CDimensional1D.
     template<typename TYPE>
     class MOOSE_API COctree : protected Moose::Spatial::CDimensional1D
     {
@@ -714,7 +714,7 @@ Moose::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
 				     vPosition[2]);
   COctreeNode<TYPE> *pNode = &m_pAllNodes[nIndex];
   //std::cerr << "pushing object into " << pNode  << " at index:" << nIndex << std::endl;
-  if ( pNode->GetObjects().size() == 0)
+  if ( pNode->GetObjects().empty() )
   {
     pNode->GetObjects().push_back( object );
     PropagateChildrenStatus( pNode );
@@ -723,9 +723,7 @@ Moose::Spatial::COctree<TYPE>::InsertObject( const TYPE & object,
   {
     //std::cerr << "already objects"  << std::endl;
     pNode->GetObjects().push_back( object );
-
   }
-
   return nIndex;
 }
 /////////////////////////////////////////////////////////////////
@@ -785,7 +783,5 @@ Moose::Spatial::COctreeNode<TYPE>::HasObjects() const
 {
   return !GetObjects().empty();
 }
-/////////////////////////////////////////////////////////////////
-
 /////////////////////////////////////////////////////////////////
 #endif
