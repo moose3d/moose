@@ -1684,7 +1684,7 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedBox &
     const CPlane & plane = *it;
     for(int i=0;i<3;i++)
     {
-      if ( plane[i] >= 0 )
+      if ( plane[i] < 0.0f )
       {
         vMin[i] = aabb.GetMin()[i];
         vMax[i] = aabb.GetMax()[i];
@@ -1697,8 +1697,8 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedBox &
     }
     // Positive half-space = inside
     CVector3<float> vN(plane[0],plane[1],plane[2]);
-    if ( vN.Dot(vMin)+plane[3] < 0 ) return OUTSIDE;
-    if ( vN.Dot(vMax)+plane[3] <= 0 ) bIntersecting = true;
+    if ( vN.Dot(vMin)+plane[3] < 0.0f ) return OUTSIDE;
+    if ( vN.Dot(vMax)+plane[3] <= 0.0f ) bIntersecting = true;
   }
   if ( bIntersecting ) return INTERSECTION;
   else return INSIDE;
@@ -1737,7 +1737,7 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedCube 
     const CPlane & plane = *it;
     for(int i=0;i<3;i++)
     {
-      if ( plane[i] >= 0 )
+      if ( plane[i] < 0.0f )
       {
         vMin[i] = aabb.GetMin()[i];
         vMax[i] = aabb.GetMax()[i];
@@ -1750,8 +1750,8 @@ Moose::Collision::AABBIntersectsPolytope( const Moose::Volume::CAxisAlignedCube 
     }
     // Positive half-space = inside
     CVector3<float> vN(plane[0],plane[1],plane[2]);
-    if ( vN.Dot(vMin)+plane[3] < 0 ) return OUTSIDE;
-    if ( vN.Dot(vMax)+plane[3] <= 0 ) bIntersecting = true;
+    if ( vN.Dot(vMin)+plane[3] < 0.0f ) return OUTSIDE;
+    if ( vN.Dot(vMax)+plane[3] <= 0.0f ) bIntersecting = true;
   }
   if ( bIntersecting ) return INTERSECTION;
   else return INSIDE;
