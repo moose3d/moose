@@ -468,9 +468,16 @@ proc Instantiate { skeleton name pos rotation } {
     if { [llength [array get skel .models]] > 0 } {
         puts "Skeleton has [llength $skel(.models)] models"
 
+        set s [CSphere]
+        $s SetRadius 0.0
+        $s SetPosition 0.0 0.0 0.0
+
+
         foreach {m} $skel(.models) {
             puts "Processing model $m"
-            $obj SetBoundingSphere [g_Spheres $m.boundingSphere]
+            # Merge spheres from all models
+            set s [MergeSpheres $s [g_Spheres $m.boundingSphere]]
+            
             set r [$obj AddRenderableModel $m 0 [$obj GetWorldTransform]]
             puts "done here.. $r"
             set rs [$r GetRenderState]
@@ -481,9 +488,11 @@ proc Instantiate { skeleton name pos rotation } {
             [$rs GetMaterial] SetShininess 128.0
 
             #puts "I should use texture: ${m}.diffuse $textures(${m}.diffuse)"
+            if { [llength [array get textures ${m}.diffuse]] > 0 } {
+                $rs SetTexture 0 $textures(${m}.diffuse)
+            }
 
-            $rs SetTexture 0 $textures(${m}.diffuse)
-            puts "Texture handle is null? [[$rs GetTextureHandle] IsNull]"
+
             $rs AddShaderAttrib "a_vertex" [[g_Models $m] GetVertexHandle]
             if { [[[g_Models $m] GetNormalHandle] IsNull] == 0 } {
                 $rs AddShaderAttrib "a_normal" [[g_Models $m] GetNormalHandle]
@@ -496,6 +505,7 @@ proc Instantiate { skeleton name pos rotation } {
             $rs SetDepthWrite 1
             $rs Prepare   
         }
+        $obj SetBoundingSphere $s
     }
     # Translate object to proper location
     [ $obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]
