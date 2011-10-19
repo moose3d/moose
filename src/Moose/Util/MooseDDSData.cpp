@@ -82,6 +82,7 @@ prefix::CDDSData::Load( const char *szFile )
     m_nDataByteSize = pImage->GetByteSize();
     m_pData = new unsigned char[m_nDataByteSize];
     memcpy(m_pData, pImage->GetPixelData(), m_nDataByteSize);
+    m_iNumMipMaps = pImage->GetNumMipMaps();
     delete pImage;
 
 }
