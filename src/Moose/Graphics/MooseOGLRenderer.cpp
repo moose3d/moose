@@ -964,7 +964,7 @@ Moose::Graphics::COglRenderer::CreateTexture( Moose::Util::ITextureData *pData, 
     glDisable( iGLType );
     if ( (error = glGetError() ) != GL_NO_ERROR )
     {
-        g_Error << "Texture creation error: " << error << endl;
+      g_Error << "Texture creation error: " << error << " with " << pData->GetFilename() << "\n";
     }
     return pTexture;
 }
@@ -976,7 +976,7 @@ Moose::Graphics::COglRenderer::CreateCompressedTexture( Moose::Util::ITextureDat
     throw CMooseRuntimeError( "CreateCompressedTexture: Not implemented");
 #endif
    
-
+    g_Log << "compressed texture\n";
   ////////////////////
   /// Sanity check.
   if ( !GetFeatures().HasTextureCompressionS3TC() ) 
@@ -1001,7 +1001,7 @@ Moose::Graphics::COglRenderer::CreateCompressedTexture( Moose::Util::ITextureDat
   pTexture->SetWidth( pData->GetWidth());
 
   GLenum iGLType = GetGLTextureType( tType );
-
+  if ( iGLType != GL_TEXTURE_2D) throw "Oh no!";
   // create actual gl texture
   glEnable( iGLType );
   glBindTexture(iGLType, pTexture->GetID());
@@ -1009,8 +1009,8 @@ Moose::Graphics::COglRenderer::CreateCompressedTexture( Moose::Util::ITextureDat
   // Set default texture parameters
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
   int nSize;
   int nOffset = 0;

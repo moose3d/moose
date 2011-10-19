@@ -4,6 +4,7 @@
 #include "MooseDefaultEntities.h"
 #include <iostream>
 #include <cstring>
+#include <fstream>
 /////////////////////////////////////////////////////////////////
 Moose::Graphics::CDDSImage::CDDSImage() : 
   m_nWidth(0), m_nHeight(0), m_iComponents(0), m_Format(DDS_FORMAT_DXT1), 
@@ -20,9 +21,11 @@ Moose::Graphics::CDDSImage::~CDDSImage()
 int
 Moose::Graphics::CDDSImage::Load( const char *szFilename )
 {
-  int iRetval		= 0;
+  int iRetval		= IMG_OK;
   int iMipmapFactor	= 0;
   int iBufferSize	= 0;
+  size_t curPos,endPos;
+  
   Destroy();
   using namespace std;
   // for identifying dds files.
@@ -98,7 +101,15 @@ Moose::Graphics::CDDSImage::Load( const char *szFilename )
     iBufferSize = ddsd.dwLinearSize * iMipmapFactor;
   else
     iBufferSize = ddsd.dwLinearSize;
+
+  /*curPos = file.tellg();
+  file.seekg(0,ios::end);
+  endPos = file.tellg();
+  iBufferSize = endPos-curPos;
+  file.seekg( curPos, ios::beg);*/
+
   m_byteSize = iBufferSize;
+  //g_Log << "buffersize is : " << m_byteSize << "\n";
   ////////////////////
   /// allocate memory
   m_pPixels = new unsigned char[iBufferSize];

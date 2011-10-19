@@ -1,5 +1,6 @@
 # ---------------------------------------------------------------------------------------
 set g_Models {}  
+
 # Maps texture file into resourcename set first
 set g_lstTexNameCache {}
 # Maps texture names into existing textures if same
@@ -268,27 +269,29 @@ proc NewTexture { texname propertyList } {
                 LoadTextureCube [list $props(.left) $props(.right) $props(.top) $props(.bottom) $props(.back) $props(.front)] $texname
             }
         }
-        lappend g_lstTexNameCache $texturefile $texname
+        lappend g_lstTexNameCache $props(.file) $texname
+        lappend g_lstTexNameMap $texname $texname
         lappend g_lstNotCreatedTextures $texname
-        puts "Loading new texture $texturefile -> $texname..."
+        puts "Loading new texture $props(.file) -> $texname..."
         
     } else {
         # Use previous name from this resource
-        lappend g_lstTexNameMap $texname $tmp($texturefile)
-        puts "Using cached texture $texname = $tmp($texturefile)..."
+        lappend g_lstTexNameMap $texname $tmp($props(.file))
+        puts "Using cached texture $texname = $tmp($props(.file))..."
     }     
 }
 
 # Call this only from renderer thread!
 proc CreateTextures {} {
     global g_lstNotCreatedTextures
-
+    #puts "calling createtextures..... $g_lstNotCreatedTextures"
     foreach { texname } $g_lstNotCreatedTextures {
 
         if { [g_Textures $texname] == "NULL" } {
             # Make texture object
             if { [g_TextureData $texname] != "NULL" } {
-                set texture [ [[g_Application] GetRenderer] CreateTexture [g_TextureData $texname] ]
+                set texture [ [g_TextureData $texname] CreateTexture [[g_Application] GetRenderer] ]
+                puts "-> Creating texture $texname..."
                 [g_Textures] Create $texture $texname
                 # Release data, it is already converted into proper texture
                 [g_TextureData] Destroy $texname
@@ -299,7 +302,7 @@ proc CreateTextures {} {
 }
 
 proc LoadModels {} {
-    global g_Models g_lstKnownModelParams  g_lstModelNameCache 
+    global g_Models g_lstKnownModelParams  g_lstModelNameCache  g_ResourceAlias
 
     # Create array from list 
     array set m $g_Models 
@@ -329,61 +332,45 @@ proc LoadModels {} {
         array set model_params $m($modelname)
         set file $model_params(${modelname}.model)
         puts "$modelname file: $file"
-        if { [IsModelFileLoaded $file] == 0 } {
+        
+        puts "Processing file : $file with [llength $c($file)] references..."
+        
+        LoadModelFile $file
+        puts -nonewline "-> $modelname ..."    
+        
+        set modelGroups ""  
+        set interleavedData 0
 
-            puts "Processing file : $file with [llength $c($file)] references..."
-            LoadModelFile $file
-            
-            puts -nonewline "-> $modelname ..."    
+        if { [llength [ array get model_params ${modelname}.group ] ] > 0 } {
+            set modelGroups $model_params(${modelname}.group)
+        }
+        
+        if { [llength [ array get model_params ${modelname}.interleaved ] ] > 0 } {
+            set interleavedData $model_params(${modelname}.interleaved)
+        }
+        
+        # Register model textures
+        if { [llength [ array get model_params ${modelname}.diffuse ] ] > 0 } {
+            NewTexture ${modelname}.diffuse [list .file $model_params(${modelname}.diffuse) .type 2d]
+        }
 
-            set modelGroups ""  
-            set interleavedData 0
-            if { [llength [ array get model_params ${modelname}.groups ] ] > 0 } {
-                set modelGroups $model_params(${modelname}.groups)
-            }
-
-            if { [llength [ array get model_params ${modelname}.interleaved ] ] > 0 } {
-                set interleavedData $model_params(${modelname}.interleaved)
-            }
-            
-            if { [llength $modelGroups] > 0 } {
-                foreach { group } $modelGroups {
-                    # Create model from currently loaded data 
-                    CreateModel [ list ${modelname}.$group [ list 1 2 4 8 ] $group $interleavedData ]
-                    # Compute bounding sphere for this model.
-                    ComputeBoundingSphere ${modelname}.$group ${modelname}.$group.boundingSphere
-                }
-            } else {
-                CreateModel [ list ${modelname} [ list 1 2 4 8 ] "" $interleavedData ]
+        if { [llength $modelGroups] > 0 } {
+            foreach { group } $modelGroups {
+                # Create model from currently loaded data 
+                CreateModel [ list ${modelname} [ list 1 2 4 8 ] $group $interleavedData ]
                 # Compute bounding sphere for this model.
                 ComputeBoundingSphere ${modelname} ${modelname}.boundingSphere
             }
-            
-            puts "done!"
-            
         } else {
-            puts -nonewline "-> $modelname ..."
-            # Use existing model as base;
-            # (first model name from model name list registered to modelfile)
-            puts "array contains: [array get c]"
-            set firstModel [lindex $c(${modelname}.model) 0]
-            set modelGroup "" 
-
-            if { [llength [ array get model_params ${modelname}.group ] ] > 0 } {
-                set modelGroup $model_params(${modelname}.group)
-            }
-            DuplicateModel $firstModel ${modelname}
-            CreateIndexResource "$modelGroup" ${modelname}.indices
-            SetModelIndices ${modelname} ${modelname}.indices
+            CreateModel [ list ${modelname} [ list 1 2 4 8 ] "" $interleavedData ]
+            # Compute bounding sphere for this model.
             ComputeBoundingSphere ${modelname} ${modelname}.boundingSphere
-            puts "done!"
-        } 
-       
-        puts "-> Model $modelname done."    
+        }
+        puts "-> Model $modelname done."            
     }
 }
 
-proc LoadTextures { } {
+proc LoadTextures {} {
     global g_lstKnownTextureParams g_TexParamToIndex g_lstTexNameCache
     # Loads only texture data, actual texture obejct is created later.
     # \TODO Does not work yet!!!
@@ -440,7 +427,7 @@ proc AddSkeleton { name params } {
 }
 
 proc Instantiate { skeleton name pos rotation } {
-    global g_lstSkeletons
+    global g_lstSkeletons g_lstTexNameMap
     set scene [GetScene]
     array set skels $g_lstSkeletons
 
@@ -453,7 +440,7 @@ proc Instantiate { skeleton name pos rotation } {
     # Determine skeleton class
     array set skel $skels($skeleton)
     set class $skel(.class)
-    
+    array set textures $g_lstTexNameMap
     
     set obj [$class]
     # Initialize renderables if explicitly asked    
@@ -480,8 +467,17 @@ proc Instantiate { skeleton name pos rotation } {
     # --------------------
     if { [llength [array get skel .models]] > 0 } {
         puts "Skeleton has [llength $skel(.models)] models"
+
+        set s [CSphere]
+        $s SetRadius 0.0
+        $s SetPosition 0.0 0.0 0.0
+
+
         foreach {m} $skel(.models) {
-            $obj SetBoundingSphere [g_Spheres $m.boundingSphere]
+            puts "Processing model $m"
+            # Merge spheres from all models
+            set s [MergeSpheres $s [g_Spheres $m.boundingSphere]]
+            
             set r [$obj AddRenderableModel $m 0 [$obj GetWorldTransform]]
             puts "done here.. $r"
             set rs [$r GetRenderState]
@@ -490,9 +486,13 @@ proc Instantiate { skeleton name pos rotation } {
             [$rs GetMaterial] SetDiffuse [new_CVector4f 0.7 0.7 0.7 1.0]
             [$rs GetMaterial] SetAmbient [new_CVector4f 0.27 0.27 0.27 1.0]
             [$rs GetMaterial] SetShininess 128.0
-            puts "Model is: [g_Models $skel(.models)]"
-            $rs SetTexture 0 $m.diffuse
-            puts "Texture handle [$rs GetTextureHandle]"
+
+            #puts "I should use texture: ${m}.diffuse $textures(${m}.diffuse)"
+            if { [llength [array get textures ${m}.diffuse]] > 0 } {
+                $rs SetTexture 0 $textures(${m}.diffuse)
+            }
+
+
             $rs AddShaderAttrib "a_vertex" [[g_Models $m] GetVertexHandle]
             if { [[[g_Models $m] GetNormalHandle] IsNull] == 0 } {
                 $rs AddShaderAttrib "a_normal" [[g_Models $m] GetNormalHandle]
@@ -505,6 +505,7 @@ proc Instantiate { skeleton name pos rotation } {
             $rs SetDepthWrite 1
             $rs Prepare   
         }
+        $obj SetBoundingSphere $s
     }
     # Translate object to proper location
     [ $obj GetLocalTransform ] SetTranslation [ lindex $pos 0 ] [ lindex $pos 1 ] [ lindex $pos 2 ]

@@ -13,6 +13,7 @@
 #include "MooseExceptions.h"
 #include <cstring>
 #include <cassert>
+#include <map>
 /////////////////////////////////////////////////////////////////
 namespace Moose
 {
@@ -306,6 +307,7 @@ namespace Moose
 	} // while(
       }
     };
+    typedef std::map< std::string, std::string> ResourceMap;
     ////////////////////
     /// Resource Manager class.
     template<typename OBJECTTYPE, typename HANDLE>
@@ -315,6 +317,7 @@ namespace Moose
     protected:
       CHashTable<std::string,CResourceName> *m_pResourceHash;
       std::vector<CResource<OBJECTTYPE,HANDLE> *> m_vecObjects;
+      ResourceMap                                 m_mapResources;
       ////////////////////
       /// Constructor.
       CResourceManager();
@@ -474,8 +477,16 @@ namespace Moose
       /// Apply functor for each object pointer in the manager.
       /// \param f Functor with operator() overwritten appropriately.
       template<typename Functor> void ForEachObjectPtr( Functor f );
-
-
+      ////////////////////
+      /// Registers a specific resource under a name.
+      /// \param strPath path to resource file.
+      /// \param name Name of stored resource.
+      void RegisterPath( const std::string & strPath, const std::string & name );
+      ////////////////////
+      /// Checks whether a path is registered.
+      /// \param strPath path to resource file.
+      /// \return true if registered, false otherwise.
+      bool IsPathRegistered( const std::string & strPath);
     private:
       void DeleteMemory();
       ////////////////////
@@ -1079,4 +1090,22 @@ Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::ForEachObject( Functor f )
 	}
 }
 /////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+void 
+Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::RegisterPath( const std::string & strPath, 
+                                                                const std::string & name )
+{
+  if ( m_mapResources.find(strPath) == m_mapResources.end() )
+  {
+    m_mapResources[strPath] = name;
+  }
+}
+////////////////////////////////////////////////////////////////////////////////
+template<typename OBJECTTYPE, typename HANDLE>
+bool 
+Moose::Core::CResourceManager<OBJECTTYPE,HANDLE>::IsPathRegistered( const std::string & strPath )
+{
+  return ( m_mapResources.find(strPath) != m_mapResources.end());
+}
+////////////////////////////////////////////////////////////////////////////////
 #endif

@@ -26,6 +26,14 @@ namespace Moose
       /// The parameterized constructor.
       CAxisAlignedCube( const Moose::Math::CVector3<float> &vCenter, float fEdgeLength ) :
     		  Moose::Spatial::CPositional( vCenter ), Moose::Spatial::CDimensional1D( fEdgeLength ) {  }
+      Moose::Math::CVector3<float> GetMin() const
+      {
+        return GetPosition()-Moose::Math::CVector3<float>(GetHalfWidth(),GetHalfWidth(),GetHalfWidth());
+      }
+      Moose::Math::CVector3<float> GetMax() const
+      {
+        return GetPosition()+Moose::Math::CVector3<float>(GetHalfWidth(),GetHalfWidth(),GetHalfWidth());
+      }
     }; // AACube
   } // Volume
 } // Moose

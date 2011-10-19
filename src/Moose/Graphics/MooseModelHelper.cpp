@@ -107,30 +107,49 @@ Moose::Data::CModelHelper::CreateModel( int iFlags, const char *szGroupName, boo
 
     }
   }
+
+  CIndexArray *pArray = m_pLoader->GetIndexArray();
+  assert( pArray->GetNumIndices() > 0 );
+  int iRetval = g_IndexMgr->Create( pArray, g_UniqueName, pModel->GetIndices());
   
-  if ( szGroupName == NULL || szGroupName[0] == '\n')
+  if ( iRetval != 0 )
   {
-    CIndexArray *pArray = m_pLoader->GetIndexArray();
-    assert( pArray->GetNumIndices() > 0 );
-    int iRetval = g_IndexMgr->Create( pArray, g_UniqueName, pModel->GetIndices());
-
-    if ( iRetval != 0 )
-    {
-      throw CMooseRuntimeError("Cannot create index array");
-    }
-    
+    throw CMooseRuntimeError("Cannot create index array");
   }
-  else
-  {
-    CIndexArray *pIndices = m_pLoader->GetIndexArray();
-    int iRetval = g_IndexMgr->Create( pIndices, g_UniqueName, pModel->GetIndices() );
-
-    if ( iRetval != 0 )
-    {
-      throw CMooseRuntimeError("Cannot create index array");
-    }
-  }
+ 
   return pModel;
+}
+/////////////////////////////////////////////////////////////////
+CIndexArray * 
+Moose::Data::CModelHelper::CreateIndices( const char *szGroupName, const char *szResourceName )
+{
+  // Sanity check, no data, no indices.
+  if ( !m_pLoader ) return NULL;
+
+  m_pLoader->SelectMesh(szGroupName);  
+  CIndexArray *pIndices = NULL;
+
+  pIndices = m_pLoader->GetIndexArray();
+
+  // Create resource either by unique name or resource name
+  int iRetval;
+  if ( szResourceName == NULL ) 
+  {
+    iRetval = g_IndexMgr->Create( pIndices, g_UniqueName);
+  } 
+  else 
+  {
+    iRetval = g_IndexMgr->Create( pIndices, szResourceName);
+  }
+    
+  if ( iRetval != 0 )
+  {
+    throw CMooseRuntimeError("Cannot create index array");
+  }
+    
+
+ 
+  return pIndices;
 }
 /////////////////////////////////////////////////////////////////
 void

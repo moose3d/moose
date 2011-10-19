@@ -3,6 +3,8 @@
 #include <MooseExceptions.h>
 #include <MooseDDSImage.h>
 #include <MooseGlobals.h>
+#include <MooseOGLRenderer.h>
+#include <MooseTexture.h>
 #include <cstring>
 ////////////////////////////////////////////////////////////////////////////////
 namespace prefix=Moose::Util;
@@ -13,6 +15,7 @@ using namespace Moose::Graphics;
 void
 prefix::CDDSData::Load( const char *szFile )
 {
+  m_szFilename = szFile;
     CDDSImage *pImage = new CDDSImage();
     CMooseRuntimeError err("");
     switch ( pImage->Load( szFile ) )
@@ -39,6 +42,11 @@ prefix::CDDSData::Load( const char *szFile )
         delete pImage;
         throw err;
         break;
+    default:
+      err << "Whatta heck? unhandled exception?" << __PRETTY_FUNCTION__ ;
+      delete pImage;
+      throw err;
+      break;
     }
 
     ////////////////////
@@ -69,10 +77,20 @@ prefix::CDDSData::Load( const char *szFile )
 
         throw err;
     }
+    SetWidth( pImage->GetWidth());
+    SetHeight( pImage->GetHeight());
     m_nDataByteSize = pImage->GetByteSize();
     m_pData = new unsigned char[m_nDataByteSize];
     memcpy(m_pData, pImage->GetPixelData(), m_nDataByteSize);
+    m_iNumMipMaps = pImage->GetNumMipMaps();
     delete pImage;
-    
+
 }
 ////////////////////////////////////////////////////////////////////////////////
+Moose::Graphics::COglTexture * 
+prefix::CDDSData::CreateTexture( Moose::Graphics::COglRenderer & r, Moose::Graphics::TEXTURE_TYPE t )
+{
+  return r.CreateCompressedTexture(this,t);
+}
+////////////////////////////////////////////////////////////////////////////////
+

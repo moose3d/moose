@@ -12,6 +12,9 @@ namespace Moose
     /////////////////////////////////////////////////////////////////
     /// Structure for storing objects and retrieving them according
     /// to intersection volume.
+    /// \TODO 1. limit by contents, depth and object size
+    /// \TODO 2. Split into invisible, partially and completely visible nodes. 
+    /// Completely visible nodes do not need to check their child nodes.
     class CSpatialGraph : public Moose::Spatial::COctree<Moose::Scene::CGameObject *>
     {
     public:
@@ -28,7 +31,7 @@ namespace Moose
         assert(pGameObject!=NULL);
 
         unsigned int nSpatialIndex = Moose::Spatial::COctree<CGameObject *>::InsertObject(
-                                                                                            pGameObject, pGameObject->GetWorldBoundingSphere());
+                                                                                          pGameObject, pGameObject->GetWorldBoundingSphere());
         assert( nSpatialIndex < this->GetNodeCount() );
         pGameObject->SetSpatialIndex( nSpatialIndex );
 
@@ -120,6 +123,10 @@ namespace Moose
   if ( pNode->GetChild( OBJ ) != NULL ) \
     lstNodePtrs.push_back(pNode->GetChild( OBJ ));\
 }
+#define INSERT_NO_TEST( OBJ ) { \
+  if ( pNode->GetChild( OBJ ) != NULL ) \
+    lstNodePtrsNoTest.push_back(pNode->GetChild( OBJ ));  \
+}
 /////////////////////////////////////////////////////////////////
 inline bool CheckTagMatch( Moose::Core::TAG tagObj, Moose::Core::TAG tag, Moose::Core::TagCompare compare )
 {
@@ -150,62 +157,9 @@ size_t
 Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CFrustum &frustum, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
 {
   using namespace Moose::Spatial;
-	std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrs;
-	lstNodePtrs.push_back(GetRoot());
-
-	const Moose::Spatial::COctreeNode<CGameObject *> *pNode = NULL;
-	Moose::Volume::CSphere sphere;
-	std::list<CGameObject *>::const_iterator it;
-
-	while(!lstNodePtrs.empty())
-	{
-		// Pop first node from list
-		pNode = lstNodePtrs.front();
-		lstNodePtrs.pop_front();
-
-		// Check does cube intersect frustum
-		if ( Moose::Collision::AABBIntersectsPolytope( *pNode, frustum) )
-		{
-			// Check do objects intersect frustum and if so,
-			// insert them into list
-			it = pNode->GetObjects().begin();
-			for( ; it!=pNode->GetObjects().end();it++)
-			{
-				if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
-
-				// Then compare bounding volumes
-				sphere = (*it)->GetWorldBoundingSphere();
-
-				if ( Moose::Collision::SphereIntersectsPolytope( sphere , frustum ))
-				{
-					list.push_back( *it );
-				}
-			}
-			// If there's objects left in children, push them into nodeptr list
-			if ( pNode->ChildrenContainObjects())
-			{
-		INSERT( O_TOP_LEFT_FRONT );
-		INSERT( O_TOP_LEFT_BACK );
-		INSERT( O_TOP_RIGHT_FRONT );
-		INSERT( O_TOP_RIGHT_BACK );
-		INSERT( O_BOTTOM_LEFT_FRONT );
-		INSERT( O_BOTTOM_LEFT_BACK );
-		INSERT( O_BOTTOM_RIGHT_FRONT );
-		INSERT( O_BOTTOM_RIGHT_BACK );
-			}
-		}
-	}
-	// return number of currently visible objects.
-	return list.size();
-}
-/////////////////////////////////////////////////////////////////
-template<class GameObjPtrContainer>
-size_t
-Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &camera, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
-{
-  using namespace Moose::Spatial;
-	// TODO place for optimization; create cache for octree nodes ie. Prefetch( camera ) etc. Then use prefetch values in consequent queries.
+  using namespace Moose::Collision;
   std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrs;
+  std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrsNoTest;
   lstNodePtrs.push_back(GetRoot());
 
   const Moose::Spatial::COctreeNode<CGameObject *> *pNode = NULL;
@@ -217,9 +171,114 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &cam
     // Pop first node from list
     pNode = lstNodePtrs.front();
     lstNodePtrs.pop_front();
+    VOLUME_INTERSECTION kIntersection = AABBIntersectsPolytope( *pNode, frustum);
 
     // Check does cube intersect frustum
-    if ( Moose::Collision::AABBIntersectsPolytope( *pNode, camera.Frustum()) )
+    if ( kIntersection != OUTSIDE  )
+    {
+      // Check do objects intersect frustum and if so,
+      // insert them into list
+      it = pNode->GetObjects().begin();
+      for( ; it!=pNode->GetObjects().end();it++)
+      {
+        if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+
+        // Then compare bounding volumes for partial intersection,
+        // if completely inside then include automatically.
+        sphere = (*it)->GetWorldBoundingSphere();
+        if ( kIntersection == INSIDE ) list.push_back(*it);        
+        else if ( Moose::Collision::SphereIntersectsPolytope( sphere , frustum ))
+        {
+          list.push_back( *it );
+        }
+      }
+      
+      if (kIntersection == INSIDE )
+      {
+        // These can be included without test.
+        if ( pNode->ChildrenContainObjects())
+        {
+          INSERT_NO_TEST( O_TOP_LEFT_FRONT );
+          INSERT_NO_TEST( O_TOP_LEFT_BACK );
+          INSERT_NO_TEST( O_TOP_RIGHT_FRONT );
+          INSERT_NO_TEST( O_TOP_RIGHT_BACK );
+          INSERT_NO_TEST( O_BOTTOM_LEFT_FRONT );
+          INSERT_NO_TEST( O_BOTTOM_LEFT_BACK );
+          INSERT_NO_TEST( O_BOTTOM_RIGHT_FRONT );
+          INSERT_NO_TEST( O_BOTTOM_RIGHT_BACK );
+        }
+      }
+      else {
+
+        // If there's objects left in children, push them into nodeptr list
+        if ( pNode->ChildrenContainObjects())
+        {
+          INSERT( O_TOP_LEFT_FRONT );
+          INSERT( O_TOP_LEFT_BACK );
+          INSERT( O_TOP_RIGHT_FRONT );
+          INSERT( O_TOP_RIGHT_BACK );
+          INSERT( O_BOTTOM_LEFT_FRONT );
+          INSERT( O_BOTTOM_LEFT_BACK );
+          INSERT( O_BOTTOM_RIGHT_FRONT );
+          INSERT( O_BOTTOM_RIGHT_BACK );
+        }
+      }
+    }
+  }
+  // include all objects from nodes that were completely inside the frustum
+  while(!lstNodePtrsNoTest.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrsNoTest.front();
+    lstNodePtrsNoTest.pop_front();
+
+    // insert them into list
+    it = pNode->GetObjects().begin();
+    for( ; it!=pNode->GetObjects().end();it++)
+    {
+      if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+      list.push_back( *it );
+    }
+    // Insert children 
+    if ( pNode->ChildrenContainObjects())
+    {
+      INSERT_NO_TEST( O_TOP_LEFT_FRONT );
+      INSERT_NO_TEST( O_TOP_LEFT_BACK );
+      INSERT_NO_TEST( O_TOP_RIGHT_FRONT );
+      INSERT_NO_TEST( O_TOP_RIGHT_BACK );
+      INSERT_NO_TEST( O_BOTTOM_LEFT_FRONT );
+      INSERT_NO_TEST( O_BOTTOM_LEFT_BACK );
+      INSERT_NO_TEST( O_BOTTOM_RIGHT_FRONT );
+      INSERT_NO_TEST( O_BOTTOM_RIGHT_BACK );
+    }
+  }
+  // return number of currently visible objects.
+  return list.size();
+}
+/////////////////////////////////////////////////////////////////
+template<class GameObjPtrContainer>
+size_t
+Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &camera, GameObjPtrContainer & list, Moose::Core::TAG tag, Moose::Core::TagCompare compare ) const
+{
+  using namespace Moose::Spatial;
+  using namespace Moose::Collision;
+  // TODO place for optimization; create cache for octree nodes ie. Prefetch( camera ) etc. Then use prefetch values in consequent queries.
+  std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrs;
+  std::list< const Moose::Spatial::COctreeNode<CGameObject *> *> lstNodePtrsNoTest;
+  lstNodePtrs.push_back(GetRoot());
+
+  const Moose::Spatial::COctreeNode<CGameObject *> *pNode = NULL;
+  Moose::Volume::CSphere sphere;
+  std::list<CGameObject *>::const_iterator it;
+
+  while(!lstNodePtrs.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrs.front();
+    lstNodePtrs.pop_front();
+    VOLUME_INTERSECTION kIntersection = Moose::Collision::AABBIntersectsPolytope( *pNode, camera.Frustum());
+    // Check does cube intersect frustum
+    if ( kIntersection != OUTSIDE )
     {
       // Check do objects intersect frustum and if so,
       // insert them into list
@@ -228,33 +287,84 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Graphics::CCamera &cam
       {
         //g_Log << "before tag: " << (*it)->GetName() << "\n";
 
-    	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+        if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
 
-    	  // Then compare bounding volumes
-    	  //sphere = (*it)->GetBoundingSphere();
-    	  //sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
-          sphere = (*it)->GetWorldBoundingSphere();
-          //g_Log << "processing it: " << (*it)->GetName() << "\n";
-          //g_Log << "collision s2s: " <<  Moose::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) << "\n";
-          //g_Log << "collision s2p: " <<  Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum()) << "\n";
-    	  if ( Moose::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
-    		   Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ))
-    	  {
-    		  list.push_back( *it );
-    	  }
+        // Then compare bounding volumes
+        //sphere = (*it)->GetBoundingSphere();
+        //sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+        sphere = (*it)->GetWorldBoundingSphere();
+        if ( kIntersection == INSIDE ) list.push_back( *it );
+        else if ( Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ) ) 
+        {
+          list.push_back( *it );
+        }
+        //g_Log << "processing it: " << (*it)->GetName() << "\n";
+        //g_Log << "collision s2s: " <<  Moose::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) << "\n";
+        //g_Log << "collision s2p: " <<  Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum()) << "\n";
+        //if ( Moose::Collision::SphereIntersectsSphere( sphere, camera.FrustumSphere()) &&
+        //	   Moose::Collision::SphereIntersectsPolytope( sphere , camera.Frustum() ))
+        //{
+        //list.push_back( *it );
+        //}
       }
-      // If there's objects left in children, push them into nodeptr list
-      if ( pNode->ChildrenContainObjects())
+      if ( kIntersection == INSIDE )
       {
-		INSERT( O_TOP_LEFT_FRONT );
-		INSERT( O_TOP_LEFT_BACK );
-		INSERT( O_TOP_RIGHT_FRONT );
-		INSERT( O_TOP_RIGHT_BACK );
-		INSERT( O_BOTTOM_LEFT_FRONT );
-		INSERT( O_BOTTOM_LEFT_BACK );
-		INSERT( O_BOTTOM_RIGHT_FRONT );
-		INSERT( O_BOTTOM_RIGHT_BACK );
+        // If there's objects left in children, push them into nodeptr without testing
+        if ( pNode->ChildrenContainObjects())
+        {
+          INSERT_NO_TEST( O_TOP_LEFT_FRONT );
+          INSERT_NO_TEST( O_TOP_LEFT_BACK );
+          INSERT_NO_TEST( O_TOP_RIGHT_FRONT );
+          INSERT_NO_TEST( O_TOP_RIGHT_BACK );
+          INSERT_NO_TEST( O_BOTTOM_LEFT_FRONT );
+          INSERT_NO_TEST( O_BOTTOM_LEFT_BACK );
+          INSERT_NO_TEST( O_BOTTOM_RIGHT_FRONT );
+          INSERT_NO_TEST( O_BOTTOM_RIGHT_BACK );
+        }
       }
+      else 
+      {
+        // If there's objects left in children, push them into nodeptr list
+        if ( pNode->ChildrenContainObjects())
+        {
+          INSERT( O_TOP_LEFT_FRONT );
+          INSERT( O_TOP_LEFT_BACK );
+          INSERT( O_TOP_RIGHT_FRONT );
+          INSERT( O_TOP_RIGHT_BACK );
+          INSERT( O_BOTTOM_LEFT_FRONT );
+          INSERT( O_BOTTOM_LEFT_BACK );
+          INSERT( O_BOTTOM_RIGHT_FRONT );
+          INSERT( O_BOTTOM_RIGHT_BACK );
+        }
+      }
+    }
+  }
+
+  // include all objects from nodes that were completely inside the frustum
+  while(!lstNodePtrsNoTest.empty())
+  {
+    // Pop first node from list
+    pNode = lstNodePtrsNoTest.front();
+    lstNodePtrsNoTest.pop_front();
+
+    // insert them into list
+    it = pNode->GetObjects().begin();
+    for( ; it!=pNode->GetObjects().end();it++)
+    {
+      if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+      list.push_back( *it );
+    }
+    // Insert children 
+    if ( pNode->ChildrenContainObjects())
+    {
+      INSERT_NO_TEST( O_TOP_LEFT_FRONT );
+      INSERT_NO_TEST( O_TOP_LEFT_BACK );
+      INSERT_NO_TEST( O_TOP_RIGHT_FRONT );
+      INSERT_NO_TEST( O_TOP_RIGHT_BACK );
+      INSERT_NO_TEST( O_BOTTOM_LEFT_FRONT );
+      INSERT_NO_TEST( O_BOTTOM_LEFT_BACK );
+      INSERT_NO_TEST( O_BOTTOM_RIGHT_FRONT );
+      INSERT_NO_TEST( O_BOTTOM_RIGHT_BACK );
     }
   }
   // return number of currently visible objects.
@@ -288,27 +398,27 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Volume::CSphere &cullS
       for( ; it!=pNode->GetObjects().end();it++)
       {
 
-    	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+        if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
 
-    	  //sphere = (*it)->GetBoundingSphere();
-    	  //sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
-          sphere = (*it)->GetWorldBoundingSphere();
-    	  if ( Moose::Collision::SphereIntersectsSphere( sphere, cullSphere) )
-    	  {
-    		  list.push_back( *it );
-    	  }
+        //sphere = (*it)->GetBoundingSphere();
+        //sphere.Move( (*it)->GetWorldTransform().GetTranslation() );
+        sphere = (*it)->GetWorldBoundingSphere();
+        if ( Moose::Collision::SphereIntersectsSphere( sphere, cullSphere) )
+        {
+          list.push_back( *it );
+        }
       }
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
       {
-	INSERT( O_TOP_LEFT_FRONT );
-	INSERT( O_TOP_LEFT_BACK );
-	INSERT( O_TOP_RIGHT_FRONT );
-	INSERT( O_TOP_RIGHT_BACK );
-	INSERT( O_BOTTOM_LEFT_FRONT );
-	INSERT( O_BOTTOM_LEFT_BACK );
-	INSERT( O_BOTTOM_RIGHT_FRONT );
-	INSERT( O_BOTTOM_RIGHT_BACK );
+        INSERT( O_TOP_LEFT_FRONT );
+        INSERT( O_TOP_LEFT_BACK );
+        INSERT( O_TOP_RIGHT_FRONT );
+        INSERT( O_TOP_RIGHT_BACK );
+        INSERT( O_BOTTOM_LEFT_FRONT );
+        INSERT( O_BOTTOM_LEFT_BACK );
+        INSERT( O_BOTTOM_RIGHT_FRONT );
+        INSERT( O_BOTTOM_RIGHT_BACK );
       }
     }
   }
@@ -342,24 +452,24 @@ Moose::Scene::CSpatialGraph::CollectObjects( const Moose::Math::CRay &ray, GameO
       it = pNode->GetObjects().begin();
       for( ; it!=pNode->GetObjects().end();it++)
       {
-    	  if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
+        if ( ! CheckTagMatch( (*it)->GetTag(), tag, compare) ) continue;
 
-    	  if ( (*it)->Intersects(ray) )
-    	  {
-    		  list.push_back( *it );
-    	  }
+        if ( (*it)->Intersects(ray) )
+        {
+          list.push_back( *it );
+        }
       }
       // If there's objects left in children, push them into nodeptr list
       if ( pNode->ChildrenContainObjects())
       {
-	INSERT( O_TOP_LEFT_FRONT );
-	INSERT( O_TOP_LEFT_BACK );
-	INSERT( O_TOP_RIGHT_FRONT );
-	INSERT( O_TOP_RIGHT_BACK );
-	INSERT( O_BOTTOM_LEFT_FRONT );
-	INSERT( O_BOTTOM_LEFT_BACK );
-	INSERT( O_BOTTOM_RIGHT_FRONT );
-	INSERT( O_BOTTOM_RIGHT_BACK );
+        INSERT( O_TOP_LEFT_FRONT );
+        INSERT( O_TOP_LEFT_BACK );
+        INSERT( O_TOP_RIGHT_FRONT );
+        INSERT( O_TOP_RIGHT_BACK );
+        INSERT( O_BOTTOM_LEFT_FRONT );
+        INSERT( O_BOTTOM_LEFT_BACK );
+        INSERT( O_BOTTOM_RIGHT_FRONT );
+        INSERT( O_BOTTOM_RIGHT_BACK );
       }
     }
   }

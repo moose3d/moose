@@ -33,7 +33,10 @@ namespace Moose
     /////////////////////////////////////////////////////////////////////////
     class MOOSE_API IShaderParam : public Moose::Core::CNamed 
     {
+    private:
+      bool m_bErrorLogged;
     public:
+      IShaderParam() : m_bErrorLogged(false){}
       virtual ~IShaderParam() {}
       virtual void Bind( CShader & s, size_t nIndex ) = 0;
       virtual void Apply(Moose::Graphics::COglRenderer & r, size_t nIndex ) = 0;
@@ -45,7 +48,8 @@ namespace Moose
       /// \param type Cache usage type \see Moose::Core::CCacheable
       virtual void SetCacheUsageHint( Moose::Core::CACHE_USAGE_TYPE type ) {}
       virtual void *GetData() = 0;
-
+      bool IsErrorLogged() const { return m_bErrorLogged; }
+      void SetErrorLogged( bool bFlag ) { m_bErrorLogged = bFlag;}
     };
 ///////////////////////////////////////////////////////////////////////
     class MOOSE_API CShaderUniformMaterial : public Moose::Graphics::IShaderParam,
@@ -113,8 +117,13 @@ namespace Moose
       {
         if ( m_hData.IsNull() || m_iLocation == -1 ) 
         {
-          if ( m_hData.IsNull()) g_Error << GetName() << ": Data is null" << std::endl;
-          else g_Error << GetName() << ": Location is null" << std::endl;
+          if ( !IsErrorLogged())
+          {
+            if ( m_hData.IsNull()) g_Error << GetName() << ": Data is null" << std::endl;
+            else g_Error << GetName() << ": Location is null" << std::endl;
+            SetErrorLogged(true);
+          }
+
           return;
         }
 #if defined(DEBUG) && DEBUG>1
@@ -191,8 +200,12 @@ namespace Moose
       {
         if ( m_pData == NULL || m_iLocation == -1 ) 
         {
-          if ( !m_pData ) g_Error << GetName() << ": Data is null" << std::endl;
-          else g_Error << GetName() << ": Location is null" << std::endl;
+          if ( !IsErrorLogged())
+          {
+            if ( !m_pData ) g_Error << GetName() << ": Data is null" << std::endl;
+            else g_Error << GetName() << ": Location is null" << std::endl;
+            SetErrorLogged(true);
+          }
           return;
         }
 #if defined(DEBUG) && DEBUG>1

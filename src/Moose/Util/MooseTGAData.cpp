@@ -3,6 +3,8 @@
 #include "MooseExceptions.h"
 #include "MooseTGAImage.h"
 #include <cstring>
+#include "MooseOGLRenderer.h"
+#include "MooseTexture.h"
 ////////////////////////////////////////////////////////////////////////////////
 using namespace Moose::Exceptions;
 using namespace Moose::Graphics;
@@ -11,6 +13,7 @@ namespace prefix = Moose::Util;
 void
 prefix::CTGAData::Load( const char *szFile )
 {
+  m_szFilename = szFile;
   ////////////////////
   CTGAImage *pImage = new CTGAImage();
   CMooseRuntimeError err("");
