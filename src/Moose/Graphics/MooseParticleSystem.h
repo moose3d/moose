@@ -466,7 +466,7 @@ Moose::Graphics::CParticleSystem<SIZE,InitializePolicy, ActionPolicy, PARTICLE_T
     PARTICLE_TYPE &p = m_aParticles[i];
     m_ActionPolicy(p);
     // Is particle is dead
-    if ( p.m_fEnergy <= 0.0f && m_nNumParticlesAlive > 0)
+    if ( p.m_fEnergy < 0.001f && m_nNumParticlesAlive > 0)
     {
       // Replace dead particle with last known live one
       m_aParticles[i] = m_aParticles[m_nNumParticlesAlive - 1];

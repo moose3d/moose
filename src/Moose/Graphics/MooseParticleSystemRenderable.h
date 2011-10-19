@@ -5,6 +5,7 @@
 #include <MooseRenderable.h>
 #include <MooseTransform.h>
 #include <MooseParticleSystem.h>
+#include <algorithm>
 namespace Moose
 {
   namespace Graphics
@@ -170,7 +171,10 @@ Moose::Graphics::CParticleSystemRenderable<PS>::UpdateRenderableData( )
   if ( m_Vertices.IsCached()   ) m_Vertices.SetState( Moose::Core::CACHE_REFRESH);
   if ( m_ShaderData.IsCached() ) m_ShaderData.SetState( Moose::Core::CACHE_REFRESH);
 
-  m_Indices.SetDrawableCount( m_pPS->GetAliveCount()*6-2 );
+  if ( m_pPS->GetAliveCount() > 0 )
+    m_Indices.SetDrawableCount( m_pPS->GetAliveCount()*6-2 );
+  else
+    m_Indices.SetDrawableCount( 0 );
 }
 ////////////////////////////////////////////////////////////////////////////////
 #endif
