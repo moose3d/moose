@@ -9,7 +9,7 @@
 #include <MooseIndexArray.h>
 #include "MooseAPI.h"
 #include <MooseAssetBundle.h>
-#include <MooseSDLScreen.h>
+#include <MooseScreen.h>
 #include <MooseTextureData.h>
 /////////////////////////////////////////////////////////////////
 namespace Moose
@@ -103,7 +103,7 @@ namespace Moose
         Moose::Core::CUniqueNameCreator * GetNameCreator();
         Moose::Core::CAssetBundle *       GetAssetBundle();
         Moose::Data::CModelHelper *       GetModelHelper();
-        Moose::Window::CSDLScreen *       GetScreen();
+        Moose::Window::CScreen *          GetScreen();
         Moose::Scene::CApplication *      GetApplication();
     }; // namespace Default
 }; // namespace Moose

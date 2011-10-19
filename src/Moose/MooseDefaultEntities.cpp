@@ -106,10 +106,10 @@ Moose::Default::GetModelHelper()
   return g_ModelHelper;
 }
 ////////////////////////////////////////////////////////////////////////////////
-Moose::Window::CSDLScreen *       
+Moose::Window::CScreen *       
 Moose::Default::GetScreen()
 {
-  return Moose::Window::CSDLScreen::GetInstance();
+  return Moose::Window::CScreen::GetInstance();
 }
 ////////////////////////////////////////////////////////////////////////////////
 Moose::Scene::CApplication *

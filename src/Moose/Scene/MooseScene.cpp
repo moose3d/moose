@@ -6,7 +6,7 @@
 #include "MooseDirectionalLightObject.h"
 #include "MooseLogger.h"
 #if !defined(MOOSE_APPLE_IPHONE)
-#include <MooseSDLScreen.h>
+#include <MooseScreen.h>
 #endif
 #include "MooseCameraObject.h"
 #include <MooseVector2.h>
@@ -354,8 +354,8 @@ Moose::Scene::CScene::PrepareGUI( )
 
   // Initialize GUI
   m_GUI.Init(GetName(), 
-             CSDLScreen::m_SDLScreenParams.m_iWidth,
-             CSDLScreen::m_SDLScreenParams.m_iHeight);
+             CScreen::m_iWidth,
+             CScreen::m_iHeight);
   m_GUI.m_pGUIRenderable = new CRocketRenderable(m_GUI.m_pContext);
   if ( m_GUI.m_pGUIRenderable->GetRenderState().Prepare() == false)
   {
@@ -418,7 +418,7 @@ Moose::Scene::CScene::Render( COglRenderer & renderer )
   renderer.Finalize();
   // OpenGL context may be created also via other method.
 #if !defined(MOOSE_APPLE_IPHONE)
-  if (CSDLScreen::Exists()){ CSDLScreen::GetInstance()->SwapBuffers();}
+  if (CScreen::Exists()){ CScreen::GetInstance()->SwapBuffers();}
 #endif
   // for each camera do
   // CollectVisibleGameObjects();

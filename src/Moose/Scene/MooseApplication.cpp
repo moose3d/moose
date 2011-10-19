@@ -563,28 +563,28 @@ SCRIPT_CMD_IMPL( OpenScreen )
 {
 
   CHECK_ARGS( 1, "screenParams")
-  if ( CSDLScreen::Exists() ) SCRIPT_ERROR( "Screen is already open.");
+  if ( CScreen::Exists() ) SCRIPT_ERROR( "Screen is already open.");
 
   NameObjMap mapNameObj;
   if ( ParseKeyValueMap(pInterp, mapNameObj, objv[1]) != TCL_OK ) return TCL_ERROR;
 
-  CSDLScreenParams p;
+  CScreenParams p;
   int bFullscreen = 0;
-  MAP_GET_INT( mapNameObj, ".redBits", p.m_iRedSize);
-  MAP_GET_INT( mapNameObj, ".greenBits", p.m_iGreenSize);
-  MAP_GET_INT( mapNameObj, ".blueBits", p.m_iBlueSize);
-  MAP_GET_INT( mapNameObj, ".doubleBuffer", p.m_bDoubleBuffer);
-  MAP_GET_INT( mapNameObj, ".depthBits", p.m_iDepthBufferSize);
-  MAP_GET_INT( mapNameObj, ".width", p.m_iWidth);
-  MAP_GET_INT( mapNameObj, ".height", p.m_iHeight);
-  MAP_GET_INT( mapNameObj, ".colorDepth", p.m_iScreenDepth);
+  MAP_GET_INT( mapNameObj, ".redBits", CScreen::m_iRedSize);
+  MAP_GET_INT( mapNameObj, ".greenBits", CScreen::m_iGreenSize);
+  MAP_GET_INT( mapNameObj, ".blueBits", CScreen::m_iBlueSize);
+  MAP_GET_INT( mapNameObj, ".doubleBuffer", CScreen::m_bDoubleBuffer);
+  MAP_GET_INT( mapNameObj, ".depthBits", CScreen::m_iDepthBufferSize);
+  MAP_GET_INT( mapNameObj, ".width", CScreen::m_iWidth);
+  MAP_GET_INT( mapNameObj, ".height", CScreen::m_iHeight);
+  MAP_GET_INT( mapNameObj, ".colorDepth", CScreen::m_iScreenDepth);
   MAP_GET_INT( mapNameObj, ".fullscreen", bFullscreen);
-  if ( bFullscreen ) p.m_iVideoModeFlags |= SDL_FULLSCREEN;
+  if ( bFullscreen ) CScreen::m_iVideoModeFlags |= SDL_FULLSCREEN;
   // videomodeflags is intentionally left without parsing.
-  MAP_GET_INT( mapNameObj, ".multiSampleBuffers", p.m_iMultiSampleBuffers);
-  MAP_GET_INT( mapNameObj, ".multiSampleSamples", p.m_iMultiSampleSamples);
-  CSDLScreen::m_SDLScreenParams = p;
-  if ( CSDLScreen::GetInstance() == NULL )
+  MAP_GET_INT( mapNameObj, ".multiSampleBuffers", CScreen::m_iMultiSampleBuffers);
+  MAP_GET_INT( mapNameObj, ".multiSampleSamples", CScreen::m_iMultiSampleSamples);
+
+  if ( CScreen::GetInstance() == NULL )
   {
     SCRIPT_ERROR("Could not open screen.");
   }

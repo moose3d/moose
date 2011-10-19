@@ -17,7 +17,7 @@
 #include <string>
 
 #if !defined(MOOSE_APPLE_IPHONE)
-#include "MooseSDLScreen.h"
+#include "MooseScreen.h"
 #include <SDL/SDL.h>
 #endif
 ////////////////////////////////////////////////////////////////////////////////
@@ -1601,7 +1601,7 @@ SCRIPT_CMD_IMPL( RotationFromAxisAngles )
 SCRIPT_CMD_IMPL( GetScreenParams )
 {
     Tcl_Obj *pList = Tcl_NewListObj(0, NULL );
-    CSDLScreenParams & p = CSDLScreen::m_SDLScreenParams;
+    CScreenParams & p = *CScreen::GetInstance();
     SCRIPT_LIST_ADD_INT( pList, ".redBits", p.m_iRedSize);
     SCRIPT_LIST_ADD_INT( pList, ".greenBits", p.m_iGreenSize);
     SCRIPT_LIST_ADD_INT( pList, ".blueBits", p.m_iBlueSize);

@@ -92,8 +92,8 @@ T * As( Moose::Collision::ICollider *pColl ) {
 %template (gameObjHandled) Moose::Core::CHandled< Moose::Scene::CGameObject >;
 
 %include "MooseCore.h"
-%template (sdlScreen) Moose::Core::CSingleton<Moose::Window::CSDLScreen>;
-%include "MooseSDLScreen.h"
+%template (screen) Moose::Core::CSingleton<Moose::Window::CScreen>;
+%include "MooseScreen.h"
 
 %template (assetBundle) Moose::Core::CSingleton<Moose::Core::CAssetBundle>;
 %include "MooseAssetBundle.h"

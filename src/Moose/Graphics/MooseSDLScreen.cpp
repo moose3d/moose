@@ -15,10 +15,25 @@
 using namespace Moose::Window;
 using namespace Moose::Core;
 using namespace std;
-/// declare visiblity for static member.
-CSDLScreenParams Moose::Window::CSDLScreen::m_SDLScreenParams;
 /////////////////////////////////////////////////////////////////
-Moose::Window::CSDLScreenParams::CSDLScreenParams()
+int Moose::Window::CScreenParams::m_iRedSize;///< The number of red bits
+int Moose::Window::CScreenParams::m_iGreenSize;///< The number of green bits
+int Moose::Window::CScreenParams::m_iBlueSize;///< The number of blue bits
+int Moose::Window::CScreenParams::m_bDoubleBuffer;///< The double buffer flag
+int Moose::Window::CScreenParams::m_iDepthBufferSize;///< The bits for the depth buffer
+int Moose::Window::CScreenParams::m_iWidth;///< The width of the screen
+int Moose::Window::CScreenParams::m_iHeight;///< The height of the screen
+int Moose::Window::CScreenParams::m_iScreenDepth;///< The depth of the screen
+int Moose::Window::CScreenParams::m_iVideoModeFlags; ///< The video mode flags for SDL Screen
+int Moose::Window::CScreenParams::m_iMultiSampleBuffers; ///< Number of multisample buffers
+int Moose::Window::CScreenParams::m_iMultiSampleSamples;  ///< Number of samples.
+
+int Moose::Window::CScreenParams::m_iGLMajorVersion;      ///< Requested OGL major version, defaults to 3. Applies only to SDL-1.3+
+int Moose::Window::CScreenParams::m_iGLMinorVersion;      ///< Requested OGL minor version, defaults to 2. Applies only to SDL-1.3+
+int Moose::Window::CScreenParams::m_bVerticalSync;        ///< Vertical sync on / off.
+std::string Moose::Window::CScreenParams::m_ScreenName;        ///< Screen name for window
+/////////////////////////////////////////////////////////////////
+Moose::Window::CScreenParams::CScreenParams()
 {
   m_iRedSize = 8;
   m_iGreenSize = 8;
@@ -38,7 +53,7 @@ Moose::Window::CSDLScreenParams::CSDLScreenParams()
 }
 /////////////////////////////////////////////////////////////////
 std::ostream &
-Moose::Window::operator<<(std::ostream &stream, const CSDLScreenParams & oglSP)
+Moose::Window::operator<<(std::ostream &stream, const CScreenParams & oglSP)
 {
     int iVal = 0;
     const char *tmp = oglSP.m_bDoubleBuffer ? "yes" : "no";
@@ -86,14 +101,14 @@ Moose::Window::operator<<(std::ostream &stream, const CSDLScreenParams & oglSP)
 }
 /////////////////////////////////////////////////////////////////
 std::string
-Moose::Window::CSDLScreenParams::ToString() const
+Moose::Window::CScreenParams::ToString() const
 {
   ostringstream s;
   s << *this;
   return s.str();
 }
 /////////////////////////////////////////////////////////////////
-Moose::Window::CSDLScreen::~CSDLScreen()
+Moose::Window::CScreen::~CScreen()
 {
 #ifdef MOOSE_USE_OPENGL3
   SDL_GL_DeleteContext(m_pGLContext);
@@ -103,7 +118,7 @@ Moose::Window::CSDLScreen::~CSDLScreen()
   g_Error << "Screen destroyed, exiting.\n";
 }
 /////////////////////////////////////////////////////////////////
-Moose::Window::CSDLScreen::CSDLScreen( )
+Moose::Window::CScreen::CScreen()
 {
   
   const SDL_VideoInfo *sdlVideoInfo = 0;
@@ -126,7 +141,7 @@ Moose::Window::CSDLScreen::CSDLScreen( )
     {
       // Define which screen depth should be used, currently allowed are
       // 32, 24 and 16. Any other ScreenDepth will revert to desktop depth.
-      switch ( m_SDLScreenParams.m_iScreenDepth ) {
+      switch ( m_iScreenDepth ) {
 
       case 32:
       case 24:
@@ -134,29 +149,29 @@ Moose::Window::CSDLScreen::CSDLScreen( )
         break;
 
       default:
-        m_SDLScreenParams.m_iScreenDepth = sdlVideoInfo->vfmt->BitsPerPixel;
+        m_iScreenDepth = sdlVideoInfo->vfmt->BitsPerPixel;
         break;
       }
 
 
 
 
-      SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   m_SDLScreenParams.m_iRedSize);
-      SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, m_SDLScreenParams.m_iGreenSize);
-      SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  m_SDLScreenParams.m_iBlueSize);
-      SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_SDLScreenParams.m_iDepthBufferSize);
-      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_SDLScreenParams.m_iMultiSampleBuffers );
-      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_SDLScreenParams.m_iMultiSampleSamples );
-      SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, m_SDLScreenParams.m_bDoubleBuffer);
+      SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   m_iRedSize);
+      SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, m_iGreenSize);
+      SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  m_iBlueSize);
+      SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_iDepthBufferSize);
+      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, m_iMultiSampleBuffers );
+      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_iMultiSampleSamples );
+      SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, m_bDoubleBuffer);
 #ifdef MOOSE_USE_OPENGL3
-      SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, m_SDLScreenParams.m_iGLMajorVersion);
-      SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, m_SDLScreenParams.m_iGLMinorVersion);
+      SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, m_iGLMajorVersion);
+      SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, m_iGLMinorVersion);
 
-      m_pMainWindow = SDL_CreateWindow( m_SDLScreenParams.m_ScreenName.c_str(),
+      m_pMainWindow = SDL_CreateWindow( m_ScreenName.c_str(),
                                         SDL_WINDOWPOS_CENTERED, 
                                         SDL_WINDOWPOS_CENTERED, 
-                                        m_SDLScreenParams.m_iWidth,
-                                        m_SDLScreenParams.m_iHeight,
+                                        m_iWidth,
+                                        m_iHeight,
                                         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
       if ( m_pMainWindow == NULL)
       {
@@ -168,10 +183,10 @@ Moose::Window::CSDLScreen::CSDLScreen( )
       m_pGLContext = SDL_GL_CreateContext(m_pMainWindow);
       g_Log << "Ladies and gents, we have OpenGL 3.2!\n";
 #else
-      if ( SDL_SetVideoMode( m_SDLScreenParams.m_iWidth,
-                             m_SDLScreenParams.m_iHeight,
-                             m_SDLScreenParams.m_iScreenDepth,
-                             m_SDLScreenParams.m_iVideoModeFlags) == NULL )
+      if ( SDL_SetVideoMode( m_iWidth,
+                             m_iHeight,
+                             m_iScreenDepth,
+                             m_iVideoModeFlags) == NULL )
       {
         
         g_Error << "Couldn't initialize screen "
@@ -190,14 +205,14 @@ Moose::Window::CSDLScreen::CSDLScreen( )
   }
 #ifdef MOOSE_USE_OPENGL3
 
-  SDL_GL_SetSwapInterval(m_SDLScreenParams.m_bVerticalSync);
+  SDL_GL_SetSwapInterval(m_bVerticalSync);
   // check actual state
   switch(SDL_GL_GetSwapInterval())
   {
   case 1:
-    m_SDLScreenParams.m_bVerticalSync = 1;
+    m_bVerticalSync = 1;
   default:
-    m_SDLScreenParams.m_bVerticalSync = 0;
+    m_bVerticalSync = 0;
   }
 #endif
   // When images are loaded as textures they are flipped and mirrored over Y-axis.
@@ -214,19 +229,16 @@ Moose::Window::CSDLScreen::CSDLScreen( )
 
   // Register ffmpeg-provided codecs for video textures
   //av_register_all();
-
-
 }
 /////////////////////////////////////////////////////////////////
 void
-Moose::Window::CSDLScreen::SwapBuffers()
+Moose::Window::CScreen::SwapBuffers()
 {
 #if SDL_OPENGLV3
   SDL_GL_SwapWindow(m_pMainWindow);
 #else
   SDL_GL_SwapBuffers();
 #endif
-
 }
 /////////////////////////////////////////////////////////////////
 #endif
