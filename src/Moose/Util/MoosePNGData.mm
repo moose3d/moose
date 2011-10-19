@@ -16,7 +16,7 @@ using namespace Moose::Graphics;
 ////////////////////////////////////////////////////////////////////////////////
 prefix::CPNGData::Load( const char *szFile )
 {
-
+    m_szFilename = szFile;
     CMooseRuntimeError err("");
     /* APPLE IPHONE CODE */
 

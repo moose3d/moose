@@ -1,5 +1,7 @@
 #include "MooseTextureData.h"
 #include "MooseGL.h"
+#include "MooseOGLRenderer.h"
+#include "MooseTexture.h"
 ////////////////////////////////////////////////////////////////////////////////
 namespace prefix = Moose::Util;
 ////////////////////////////////////////////////////////////////////////////////
@@ -8,7 +10,8 @@ prefix::ITextureData::ITextureData() : m_pData(NULL),
                                        m_iGLInternalFormat(GL_RGB),
                                        m_iBlockSize(16),
                                        m_iNumMipMaps(1),
-                                       m_nDataByteSize(0)
+                                       m_nDataByteSize(0),
+                                       m_szFilename(NULL)
 {
     
 }
@@ -65,5 +68,17 @@ prefix::ITextureData::AllocateEmpty( size_t bytes )
 {
     m_pData = new unsigned char[bytes];
     m_nDataByteSize = bytes;
+}
+////////////////////////////////////////////////////////////////////////////////
+const char *
+prefix::ITextureData::GetFilename() const
+{
+  return m_szFilename;
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Graphics::COglTexture * 
+prefix::ITextureData::CreateTexture( Moose::Graphics::COglRenderer & r, Moose::Graphics::TEXTURE_TYPE t )
+{
+  return r.CreateTexture(this, t);
 }
 ////////////////////////////////////////////////////////////////////////////////

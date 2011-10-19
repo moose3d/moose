@@ -1462,6 +1462,11 @@ SCRIPT_CMD_IMPL( CreateIndexResource )
     if ( szRes == NULL || strlen(szRes) == 0 )
         SCRIPT_ERROR("Invalid resource name");
 
+    if ( g_ModelHelper->GetModelLoader()->GetIndexArray() == NULL )
+    {
+      SCRIPT_ERROR("index array is null");
+    }
+
     if ( g_IndexMgr->Create( g_ModelHelper->GetModelLoader()->GetIndexArray(), szRes ) != 0 )
     {
         ostringstream s;

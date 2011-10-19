@@ -38,6 +38,14 @@ namespace Moose
       /// \param bInterleaved Use interleaved data on model. By default, false.
       /// \returns On success, pointer to CModel object, on failure NULL ptr.
       Moose::Graphics::CModel * CreateModel( int iFlags, const char *szGroupName = NULL, bool bInterleaved = false );
+      ////////////////////
+      /// Creates indices under resource name and returns index array pointer.
+      /// \param szGroupName Which mesh will be loaded as model. If NULL, then the first.
+      /// \param szResourceName Under which resource name data will be stored in resource manager.
+      /// \return Index array pointer.
+      Moose::Graphics::CIndexArray * CreateIndices( const char *szGroupName = NULL, const char *szResourceName = NULL );
+      ////////////////////
+      /// \return a list of available meshes.
       Moose::Data::MeshNameList GetAvailableMeshes() const;
       ////////////////////
       /// Accesses current model loader.

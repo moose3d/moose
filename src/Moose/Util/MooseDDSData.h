@@ -9,6 +9,8 @@ namespace Moose
         {
         public:
             void Load( const char *szFile );
+            Moose::Graphics::COglTexture * CreateTexture( Moose::Graphics::COglRenderer & r, 
+                                                          Moose::Graphics::TEXTURE_TYPE t = Moose::Graphics::TEXTURE_2D);
         };
     }
 }

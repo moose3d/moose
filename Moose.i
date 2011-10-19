@@ -206,8 +206,8 @@ T * As( Moose::Collision::ICollider *pColl ) {
 //%rename (ostreamRenderable) operator<<(std::ostream &stream, const Moose::Graphics::CRenderable & r);
 %include "MooseModelLoader.h"
 %template (CModelHelperSingleton) Moose::Core::CSingleton< Moose::Data::CModelHelper >;
-%include "MooseModelHelper.h"
 %include "MooseOpenAssetImportLoader.h"
+%include "MooseModelHelper.h"
 %include  "MooseRenderable.h"
 %rename (ostreamRenderableModel) operator<<(std::ostream &stream, const Moose::Graphics::CRenderableModel & r);
 %include "MooseClearBuffers.h"
@@ -269,6 +269,8 @@ T * As( Moose::Collision::ICollider *pColl ) {
 %include "MoosePlane.h"
 %template (VertexDescriptorHandle) Moose::Core::CHandle< Moose::Graphics::CVertexDescriptor >;
 %template (IndexArrayHandle) Moose::Core::CHandle< Moose::Graphics::CIndexArray >;
+%template (CIndexMgr) Moose::Core::CSingleton< Moose::Core::CResourceManager< Moose::Graphics::CIndexArray, Moose::Core::CHandle<Moose::Graphics::CIndexArray> > >;
+%template (CIndexResMgr) Moose::Core::CResourceManager< Moose::Graphics::CIndexArray, Moose::Core::CHandle<Moose::Graphics::CIndexArray> >;
 %include "MooseGrid.h"
 %include "MooseTransformIndicator.h"
 %include "MooseUniqueNameCreator.h"
