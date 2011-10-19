@@ -98,7 +98,7 @@ namespace Moose
         Moose::Sound::CAudioSystem * GetAudioSystem();
         SoundSampleManager * GetSoundSampleMgr();
         SoundStreamManager * GetSoundStreamMgr();
-        SphereManager *      GetSphereMgr();
+        SphereManager *      GetSphereMgr(); 
         TextureDataManager * GetTextureDataMgr();
         Moose::Core::CUniqueNameCreator * GetNameCreator();
         Moose::Core::CAssetBundle *       GetAssetBundle();

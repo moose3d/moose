@@ -9,7 +9,7 @@ SET (CMAKE_SYSTEM_VERSION 1)
 SET (CMAKE_SYSTEM_PROCESSOR arm)
 
 # SDK Info
-SET (SDKVER "4.1")
+SET (SDKVER "4.3")
 SET (DEVROOT "/Developer/Platforms/iPhoneOS.platform/Developer")
 SET (SDKROOT "${DEVROOT}/SDKs/iPhoneOS${SDKVER}.sdk")
 SET (CMAKE_OSX_SYSROOT "${SDKROOT}")
@@ -171,7 +171,7 @@ get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
 #set_target_properties( Moose PROPERTIES FRAMEWORK TRUE )
 #else(APPLE)
 # For linux, build regular static library
-add_library( Moose SHARED ${Moose_SRCS})
+add_library( Moose STATIC ${Moose_SRCS})
 
 FILE(GLOB audio_files 
   "${PROJECT_SOURCE_DIR}/src/Moose/Audio/*.h"
@@ -258,7 +258,7 @@ FIND_PACKAGE(OpenAL)
 FIND_PACKAGE(TCL)
 FIND_PACKAGE(SDL)
 
-FIND_PACKAGE(FTGL)
+#FIND_PACKAGE(FTGL)
 
 IF(GLEW_FOUND)
 include_directories(${GLEW_INCLUDE_DIR})
