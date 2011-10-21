@@ -171,7 +171,7 @@ get_property(Moose_SRCS GLOBAL PROPERTY Moose_SRCS)
 #set_target_properties( Moose PROPERTIES FRAMEWORK TRUE )
 #else(APPLE)
 # For linux, build regular static library
-add_library( Moose STATIC ${Moose_SRCS})
+add_library( Moose SHARED ${Moose_SRCS})
 
 FILE(GLOB audio_files 
   "${PROJECT_SOURCE_DIR}/src/Moose/Audio/*.h"

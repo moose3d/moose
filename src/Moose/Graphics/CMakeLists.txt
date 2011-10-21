@@ -53,8 +53,8 @@ add_sources (Moose
   MooseRenderableModelShared.h
   MooseRenderableProperty.cpp
   MooseRenderableProperty.h
+  MooseScreen.h
   MooseSDLScreen.cpp
-  MooseSDLScreen.h
   MooseShader.cpp
   MooseShader.h
   MooseSkybox.cpp

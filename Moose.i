@@ -17,6 +17,7 @@
   using namespace Moose::Math;
   using namespace Moose::Core;
   using namespace Moose::Data;
+  using namespace Moose::Util;
   using std::exception;
 inline Moose::Scene::CScene * 
 GameObjToScene( Moose::Scene::CGameObject *pObj )
@@ -60,9 +61,10 @@ inline int      ToInt( float * i )   { return *i;}
 inline double   ToReal( double * f ) { return *f;}
 
 inline std::list<Moose::Scene::CGameObject *> GetNewList() { return std::list<Moose::Scene::CGameObject *>(); }
-template< class T > 
-T * As( Moose::Collision::ICollider *pColl ) { 
-  return dynamic_cast<T *>(pColl);
+
+template< class TO, class FROM > 
+TO * As( FROM *pColl ) { 
+  return dynamic_cast<TO *>(pColl);
 }
 
 
@@ -141,7 +143,10 @@ T * As( Moose::Collision::ICollider *pColl ) {
 %include "MooseBlendingOperation.h"
 %include "MooseAlphaTestOperation.h"
 %include "MooseMaterial.h"
+%typemap(in,parse="I") int CONSTANT "";
+%apply unsigned short CONSTANT { unsigned short iLayerValue };
 %include "MooseRenderState.h"
+
 %include "MoosePositional.h"
 %include "MooseDimensional1D.h"
 %include "MooseDimensional2D.h"
@@ -278,7 +283,7 @@ T * As( Moose::Collision::ICollider *pColl ) {
 %include "MooseTextureData.h"
 %include "MooseDDSData.h"
 %include "MooseTGAData.h"
-
+%include "MooseCatmullRomSpline.h"
 Moose::Scene::CScene * GameObjToScene( Moose::Scene::CGameObject *pObj );
 Moose::Scene::CGameObject *  SceneToGameObj( Moose::Scene::CScene *pObj );
 Moose::Scene::CApplication * GameObjToApplication( Moose::Scene::CGameObject *pObj );
@@ -292,13 +297,16 @@ int      ToInt( float * i );
 double   ToReal( double * f );
 Moose::Graphics::CLight * AsLight( Moose::Scene::CGameObject *pObj );
 
-// Write converters using swig templating feature.
-template< class T > 
-T * As( Moose::Collision::ICollider *pColl ) { 
-  return dynamic_cast<T *>(pColl);
+template< class TO, class FROM > 
+TO * As( FROM *pColl ) { 
+  return dynamic_cast<TO *>(pColl);
 }
 
-%template (AsSphereCollider)  As<Moose::Collision::CSphereCollider>;
-%template (AsBoxCollider)     As<Moose::Collision::COBBCollider>;
-%template (AsCapsuleCollider) As<Moose::Collision::CCapsuleCollider>;
+
+%template (AsSphereCollider)  As<Moose::Collision::CSphereCollider, Moose::Collision::ICollider>;
+%template (AsBoxCollider)     As<Moose::Collision::COBBCollider, Moose::Collision::ICollider>;
+%template (AsCapsuleCollider) As<Moose::Collision::CCapsuleCollider, Moose::Collision::ICollider>;
+%template (AsLineRenderable)  As<Moose::Graphics::CLineRenderable, Moose::Graphics::CRenderable>;
 %template (StringVector) std::vector<std::string>;
+
+

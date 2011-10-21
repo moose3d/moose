@@ -11,6 +11,8 @@ add_sources(Moose
   MooseDDSData.cpp  
   MooseTGAData.h
   MooseTGAData.cpp
+  MooseCatmullRomSpline.h
+  MooseCatmullRomSpline.cpp
 )
 if( APPLE AND IOS )
 add_sources(   MoosePNGData.h  MoosePNGData.mm)

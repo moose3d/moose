@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////
-#include "MooseSDLScreen.h"
+//#include "MooseSDLScreen.h"
+#include "MooseScreen.h"
 
 #if !defined(MOOSE_APPLE_IPHONE)
-
 #include "MooseLogger.h"
 #include "MooseDefaultEntities.h"
+
+#ifdef MOOSE_USE_OPENGL3
 #define GL3_PROTOTYPES 1
 #include <GL3/gl3.h>
+#endif
+
 #include <glew.h>
 #include <SDL/SDL.h>
 #include <string>
@@ -106,16 +110,6 @@ Moose::Window::CScreenParams::ToString() const
   ostringstream s;
   s << *this;
   return s.str();
-}
-/////////////////////////////////////////////////////////////////
-Moose::Window::CScreen::~CScreen()
-{
-#ifdef MOOSE_USE_OPENGL3
-  SDL_GL_DeleteContext(m_pGLContext);
-  SDL_DestroyWindow(m_pMainWindow);
-#endif
-  SDL_Quit();
-  g_Error << "Screen destroyed, exiting.\n";
 }
 /////////////////////////////////////////////////////////////////
 Moose::Window::CScreen::CScreen()
@@ -229,6 +223,17 @@ Moose::Window::CScreen::CScreen()
 
   // Register ffmpeg-provided codecs for video textures
   //av_register_all();
+}
+/////////////////////////////////////////////////////////////////
+Moose::Window::CScreen::~CScreen()
+{
+#ifdef MOOSE_USE_OPENGL3
+  SDL_GL_DeleteContext(m_pGLContext);
+  SDL_DestroyWindow(m_pMainWindow);
+#endif
+  SDL_Quit();
+  g_Error << "Screen destroyed, exiting.\n";
+
 }
 /////////////////////////////////////////////////////////////////
 void

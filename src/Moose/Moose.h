@@ -117,6 +117,7 @@
 #include <MooseTextureData.h>
 #include <MooseTGAData.h>
 #include <MooseDDSData.h>
+#include <MooseCatmullRomSpline.h>
 #if defined(MOOSE_APPLE_IPHONE)
 #include <MoosePNGData.h>
 #include <MooseIPhoneAudioSample.h>
