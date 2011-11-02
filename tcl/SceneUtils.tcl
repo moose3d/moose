@@ -427,7 +427,7 @@ proc AddSkeleton { name params } {
 }
 
 proc Instantiate { skeleton name pos rotation } {
-    global g_lstSkeletons g_lstTexNameMap
+    global g_lstSkeletons g_lstTexNameMap g_Models
     set scene [GetScene]
     array set skels $g_lstSkeletons
 
@@ -481,7 +481,19 @@ proc Instantiate { skeleton name pos rotation } {
             set r [$obj AddRenderableModel $m 0 [$obj GetWorldTransform]]
             puts "done here.. $r"
             set rs [$r GetRenderState]
-            $rs SetShader "moose_default_shader"
+            
+            array set tmpModels $g_Models
+            #puts "params: [array get tmpModels]"
+            array set tmpParams $tmpModels($m)
+
+            #puts "HEYYYYYYY would load $tmpParams($m.shader)"
+            # Load specific shader if parameter is defined
+            # Otherwise, stick to default.
+            if { [llength [array get tmpParams $m.shader]] > 0 } {
+                $rs SetShader $tmpParams($m.shader)
+            } else {
+                $rs SetShader "moose_default_shader"
+            }
             [$rs GetMaterial] SetSpecular [new_CVector4f 1.0 1.0 1.0 1.0]
             [$rs GetMaterial] SetDiffuse [new_CVector4f 0.7 0.7 0.7 1.0]
             [$rs GetMaterial] SetAmbient [new_CVector4f 0.27 0.27 0.27 1.0]
