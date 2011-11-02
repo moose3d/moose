@@ -1,5 +1,6 @@
 #include "MooseTransform.h"
 #include "MooseMath.h"
+#include "MooseQuaternion.h"
 #include <iostream>
 /////////////////////////////////////////////////////////////////
 using namespace Moose::Math;
@@ -144,6 +145,14 @@ void
 Moose::Math::CTransform::Rotate( const CQuaternion & q )
 {
   m_qRotation = q * m_qRotation;
+  m_bChanged = 1;
+}
+/////////////////////////////////////////////////////////////////
+void
+Moose::Math::CTransform::Slerp( const CQuaternion & q, float fValue )
+{
+  CQuaternion qApplied = q * m_qRotation;
+  Moose::Math::Slerp( m_qRotation, qApplied, fValue, m_qRotation);
   m_bChanged = 1;
 }
 /////////////////////////////////////////////////////////////////

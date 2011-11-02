@@ -134,6 +134,11 @@ namespace Moose
       /// \param q Rotation quaternion.
       void Rotate( const CQuaternion & q);
       ////////////////////
+      /// Appends rotation to current transform using SLERP.
+      /// \param q Rotation quaternion to be applied.
+      /// \param fValue relative amount of applied rotation [0.0 - 1.0].
+      void Slerp( const CQuaternion & q, float fValue );
+      ////////////////////
       /// Is this transform been changed.
       /// \returns true if changed, false otherwise.
       bool IsChanged() const;
