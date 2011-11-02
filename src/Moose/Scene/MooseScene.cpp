@@ -12,6 +12,7 @@
 #include <MooseVector2.h>
 #include "MooseCollisionEvent.h"
 #include <Rocket/Core.h>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,14 +70,14 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 CGameObjectSorter game_object_sorter;
 ///////////////////////////////////////////////////////////////////////////////
-Moose::Scene::CScene::CScene( unsigned int nNumLevels, float fWorldSize )
+Moose::Scene::CScene::CScene( unsigned int nNumLevels, float fWorldSize ) : m_GUI(this)
 {
   m_pSpatialGraph   = new CSpatialGraph(nNumLevels, fWorldSize);
   m_pTransformGraph = new CTransformGraph();
   m_bPrepared = false;
 }
 ///////////////////////////////////////////////////////////////////////////////
-Moose::Scene::CScene::CScene( const char *szName, unsigned int nNumLevels, float fWorldSize )
+Moose::Scene::CScene::CScene( const char *szName, unsigned int nNumLevels, float fWorldSize ) : m_GUI(this)
 {
   m_pSpatialGraph   = new CSpatialGraph(nNumLevels, fWorldSize);
   m_pTransformGraph = new CTransformGraph();
@@ -464,6 +465,7 @@ Moose::Scene::CScene::GetGUI()
 {
   return m_GUI;
 }
+
 ///////////////////////////////////////////////////////////////////////////////
 void
 Moose::Scene::CScene::AssignLightsToRenderables( GameObjectList & lights, CRenderQueue<CRenderable *> & queue)
@@ -740,13 +742,13 @@ Moose::Scene::CScene::CheckCollisions()
 void
 Moose::Scene::CScene::OnEnter()
 {
-  
+  EnqueueMessage("OnEnter");
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
 Moose::Scene::CScene::OnExit()
 {
-
+  EnqueueMessage("OnExit");
 }
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -768,9 +770,61 @@ Moose::Scene::CScene::Reload()
   Load();
 }
 ////////////////////////////////////////////////////////////////////////////////
-Moose::Scene::CGUI::CGUI() : m_pContext(NULL), m_pDocument(NULL), m_pGUIRenderable(NULL)
+Moose::Scene::CGUI::CGUI( Moose::Scene::CScene *pScene ) : m_pContext(NULL), m_pDocument(NULL), 
+                                                           m_pGUIRenderable(NULL), m_pScene(pScene)
 {
   
+}
+////////////////////////////////////////////////////////////////////////////////
+Moose::Scene::CGUI::~CGUI()
+{
+  
+}
+////////////////////////////////////////////////////////////////////////////////
+void 
+Moose::Scene::CGUI::ProcessEvent(Rocket::Core::Event& event)
+{
+  ostringstream s;
+  s << "OnGUI " << event.GetType().CString() << " " << event.GetTargetElement()->GetId().CString();
+  m_pScene->EnqueueMessage( s.str(), true );
+}
+////////////////////////////////////////////////////////////////////////////////
+void 
+Moose::Scene::CGUI::AddListener( const std::string & element, const std::string &event  )
+{
+  if ( m_pDocument )
+  {
+    Rocket::Core::Element * pE = m_pDocument->GetElementById( Rocket::Core::String(element.c_str()) );
+    if ( pE ) 
+    {
+      pE->AddEventListener( Rocket::Core::String(event.c_str()), this);
+    }
+    else
+    {
+      CMooseRuntimeError err("AddListener - No such element '");
+      err << element << "'";
+      throw err;
+    }
+  } else throw CMooseRuntimeError("There is no document!");
+}
+////////////////////////////////////////////////////////////////////////////////
+void
+Moose::Scene::CGUI::RemoveListener( const std::string & element, const std::string & event )
+{
+  if ( m_pDocument )
+  {
+    Rocket::Core::Element * pE = m_pDocument->GetElementById( Rocket::Core::String(element.c_str()) );
+    if ( pE ) 
+    {
+      pE->RemoveEventListener( Rocket::Core::String(event.c_str()), this);
+    }
+    else
+    {
+      CMooseRuntimeError err("Removelistener - No such element '");
+      err << element << "'";
+      throw err;
+    }
+  } else throw CMooseRuntimeError("There is no document!");
 }
 ////////////////////////////////////////////////////////////////////////////////
 Moose::Graphics::CCamera & 

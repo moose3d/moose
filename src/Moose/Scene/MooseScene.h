@@ -99,7 +99,7 @@ namespace Moose
     };
     ////////////////////
     /// Gui settings for scenes.
-    class MOOSE_API CGUI 
+    class MOOSE_API CGUI : public Rocket::Core::EventListener
     {
       friend class Moose::Scene::CScene;
       friend class Moose::Scene::CApplication;
@@ -108,9 +108,11 @@ namespace Moose
       Rocket::Core::Context *                             m_pContext;    ///< Rocket GUI context. 
       Rocket::Core::ElementDocument *                     m_pDocument;   ///< Loaded GUI Document.
       RenderQueue                                         m_Queue;       ///< All GUI objects.
-      Moose::Graphics::CRocketRenderable                 *m_pGUIRenderable;
+      Moose::Graphics::CRocketRenderable *                m_pGUIRenderable;
+      Moose::Scene::CScene *                              m_pScene;      /// <Scene where GUI resides.
     public:
-      CGUI();
+      CGUI(Moose::Scene::CScene *pScene);
+      virtual ~CGUI();
       Moose::Graphics::CCamera &        GetCamera();
       RenderQueue &                     GetRenderQueue();
       void Init( const std::string & name, int width, int height );
@@ -120,6 +122,9 @@ namespace Moose
       void Render();
       void Update();
       void SetText( const std::string & element, const std::string & text );
+      void ProcessEvent(Rocket::Core::Event& event);
+      void AddListener( const std::string & element, const std::string & event  ); 
+      void RemoveListener( const std::string & element, const std::string & event );
     };
     ////////////////////    
     /// Scene where everything is.
