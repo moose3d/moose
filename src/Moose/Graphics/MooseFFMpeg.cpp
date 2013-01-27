@@ -43,7 +43,7 @@ prefix::CFFMpegStream::CFFMpegStream( const CFFMpegStream &ref)
   {
     g_Error << "Cannot open stream!" << endl;
     // Move to same position
-    av_seek_frame( m_pFormatCtx, m_iVideoStream, ref.m_pFormatCtx->timestamp, AVSEEK_FLAG_ANY );
+    av_seek_frame( m_pFormatCtx, m_iVideoStream, ref.m_pFormatCtx->start_time, AVSEEK_FLAG_ANY );
     GetNextFrame();
   }
 }
@@ -70,7 +70,7 @@ prefix::CFFMpegStream::Destroy()
   if ( m_pCodecCtx != NULL )  avcodec_close(m_pCodecCtx);
   m_pCodecCtx = NULL;
 
-  if ( m_pFormatCtx != NULL ) av_close_input_file(m_pFormatCtx);
+  if ( m_pFormatCtx != NULL ) avformat_close_input(&m_pFormatCtx);
   m_pFormatCtx = NULL;
 
   if ( m_pBuffer != NULL ) delete m_pBuffer;
@@ -78,6 +78,7 @@ prefix::CFFMpegStream::Destroy()
 
   m_iVideoStream = -1;
   m_bLooping = 0;  
+
 }
 /////////////////////////////////////////////////////////////////
 prefix::CFFMpegStream &
@@ -92,7 +93,7 @@ prefix::CFFMpegStream::operator=( const prefix::CFFMpegStream & obj )
   // open another stream context 
   SetStream( obj.m_pFormatCtx->filename );
   // Move to same position
-  av_seek_frame( m_pFormatCtx, m_iVideoStream, obj.m_pFormatCtx->timestamp, AVSEEK_FLAG_ANY );
+  av_seek_frame( m_pFormatCtx, m_iVideoStream, obj.m_pFormatCtx->start_time, AVSEEK_FLAG_ANY );
   GetNextFrame();
   return *this;
 }
@@ -113,7 +114,7 @@ prefix::CFFMpegStream::SetStream( const char *sFilename )
   Destroy();
 
   // Open file
-  if(av_open_input_file(&m_pFormatCtx, sFilename, NULL, 0, NULL)!=0) 
+  if(avformat_open_input(&m_pFormatCtx, sFilename, NULL, NULL)!=0) 
   {
     g_Error << "Couldn't open file '" << sFilename  << "'" << endl;
     return -1;
@@ -136,7 +137,7 @@ prefix::CFFMpegStream::SetStream( const char *sFilename )
   m_iVideoStream=-1;
   for(i=0; i<m_pFormatCtx->nb_streams; i++)
   {
-    if(m_pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO)
+    if(m_pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO)
     {
       m_iVideoStream=i;
       break;
